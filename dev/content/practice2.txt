@@ -1,0 +1,709 @@
+Practice Doc by Prof. Saurabh, WILP               Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+
+       Linear Algebra — Practice Set
+   Vector Spaces & Subspaces • Linear Combination, Dependence & Independence •
+                                 Basis & Dimension
+
+
+        THE BIG IDEA
+        Subspaces are vector spaces. Every subspace W of a vector space V is itself
+        a vector space (under the same addition and scalar multiplication as V). Once
+        you confirm closure and the zero vector, all eight vector-space axioms are
+        inherited automatically — that's why the 3-step Subspace Test is enough.
+
+
+                                      The Subspace Test
+
+        1. Contains 0?                  2. Closed under +?                   3. Closed under ·?
+            Is the zero                        u, v ∈ W ⇒                        c ∈ ℝ, u ∈ W ⇒
+           vector in W?                        u+v∈W                                c·u ∈ W
+
+
+        If all three pass → W is a subspace (and therefore a vector space in its own right).
+
+
+
+        DEFINITION — Vector Space
+        A set V together with two operations — vector addition (+) and scalar
+        multiplication (·) — that satisfies 8 axioms: closure under + and ·,
+        commutativity and associativity of +, existence of a zero vector and additive
+        inverses, and four distributive/identity laws (c(u+v) = cu + cv, (c+d)u = cu +
+        du,   (cd)u = c(du),      1·u = u). Examples: ℝⁿ, polynomials, m×n matrices,
+        continuous functions on [a, b].
+
+
+        DEFINITION — Subspace
+        A subset W ⊆ V is a subspace if it is itself a vector space using the same
+        operations as V. By the Subspace Test: W is a subspace ⇔ (1) 0 ∈ W, (2) u, v ∈
+        W ⇒ u+v ∈ W, (3) c ∈ ℝ, u ∈ W ⇒ c·u ∈ W.
+
+
+        INTUITION
+        Picture a subspace as a flat sheet (a line, a plane, or higher-dimensional
+        analogue) passing through the origin. You can never "escape" it by adding
+        two of its arrows or by stretching one — it is a closed world. If a candidate set
+        misses the origin, or you can hop out by adding/scaling, it is not a subspace.
+
+
+
+
+                                                    Page 1
+Practice Doc by Prof. Saurabh, WILP       Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+
+    Subspace ✓          y                       Not a subspace
+                                                            y ✗
+    line through origin                         misses the origin
+
+
+
+
+                                      x                                          x
+                          0
+
+
+
+
+     closed under +, scaling                        fails: 0-vector not in set
+
+
+ How to use this worksheet: Each section opens with a short concept primer
+ (definitions, intuition, geometric picture), followed by 6 problems graded as Easy /
+ Medium / Difficult. Solutions are written step-by-step in plain language so students can
+ self-check.
+
+
+ What's Inside
+
+            Topic                         Concepts you'll master                     Page
+
+                                          the 8 axioms, the 3-step subspace
+     §1     Vector Spaces & Subspaces                                                4
+                                          test, lines & planes through origin
+
+            Linear       Combinations,    vectors as recipes, redundancy, REF
+     §2                                                                              7
+            Dependence & Independence     & determinant methods
+
+                                          minimum spanning sets, degrees of
+     §3     Basis & Dimension                                                        12
+                                          freedom, dim of subspaces
+
+                                          one-page summary of every test in
+     ★      Review at a Glance                                                       15
+                                          this worksheet
+
+
+
+ How the Three Topics Fit Together
+ These three topics are the spine of linear algebra and they build on each other. The
+ picture below shows the dependency: vector spaces are the playground; linear
+ combinations describe what you can build inside; basis & dimension measure how
+ much room there is.
+
+
+
+
+                                           Page 2
+Practice Doc by Prof. Saurabh, WILP        Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+
+            Concept flow: structure → operations → measurement
+
+
+          Vector Space                Linear Combos                    Basis & Dim
+           the playground             what you can build               how much room
+
+
+
+
+        ANALOGY
+        A useful analogy: a vector space is like a kitchen. Linear combinations are the
+        recipes you can cook. The basis is your minimum-shopping-list of ingredients,
+        and the dimension is how many ingredients are on that list. Different shopping
+        lists (bases) can cook the same menu, but they all have the same length
+        (dimension).
+
+
+
+
+                                            Page 3
+Practice Doc by Prof. Saurabh, WILP            Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+
+          Section 1 — Vector Spaces and Subspaces
+
+        INTUITION
+        Vectors aren't just arrows. They are anything you can add together and
+        stretch — tuples in ℝⁿ, polynomials, matrices, even functions. A vector space is
+        the playground for these objects, and a subspace is a smaller playground
+        inside that still works on its own. The magic: passing the 3-step Subspace Test
+        gets you all 8 vector space axioms for free, because they were already true in
+        the parent.
+
+
+        STRATEGY
+        How to attack a subspace problem:
+        1. Check 0: Plug in the zero vector — does it satisfy the rule defining W? (If not,
+        stop — W is not a subspace.)
+        2. Check +: Pick generic u, v ∈ W and verify that u + v still satisfies the rule.
+        3. Check ·: Pick generic c ∈ ℝ and u ∈ W; verify c·u still satisfies the rule.
+        If any one fails, give a concrete counter-example — that is enough to
+        disprove.
+
+
+        WATCH OUT
+        Sets defined with strict inequalities (like x > 0), nonzero constants (like x +
+        y = 5), or products of variables (like xy = 0) typically fail the test. Subspaces
+        correspond to linear, homogeneous conditions like x + 2y − 3z = 0.
+
+
+   ★    Easy
+
+ Q1 (Easy): Show that W = {(x, 0) : x ∈ ℝ} is a subspace of ℝ².
+ Solution:
+   Strategy: apply the three subspace tests.
+   (1) Zero vector: Take x = 0. Then (0, 0) is in W. ✓
+   (2) Closed under addition: Take u = (a, 0) and v = (b, 0) in W. Then u + v = (a + b, 0).
+   The second coordinate is still 0, so u + v ∈ W. ✓
+   (3) Closed under scalar multiplication: For c ∈ ℝ and u = (a, 0) ∈ W, c·u = (ca, 0) ∈
+   W. ✓
+   All three pass, so W is a subspace of ℝ².
+    In simple words: W is just the x-axis. A line through the origin in ℝ² is always a subspace.
+
+ Q2 (Easy): Determine whether W = {(x, y) ∈ ℝ² : x + y = 0} is a subspace of ℝ².
+ Solution:
+   Strategy: the rule x + y = 0 is linear and homogeneous — promising.
+   (1) Zero vector: 0 + 0 = 0, so (0, 0) ∈ W. ✓
+   (2) Addition: If a + b = 0 and c + d = 0, then (a + c) + (b + d) = (a + b) + (c + d) = 0. ✓
+
+
+                                                Page 4
+Practice Doc by Prof. Saurabh, WILP            Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+    (3) Scalar multiplication: ka + kb = k(a + b) = k·0 = 0. ✓
+    Hence W is a subspace of ℝ².
+    Geometric picture: W is the line y = −x through the origin.
+
+   ★★     Medium
+
+ Q3 (Medium): Show that W = {(x, y, z) ∈ ℝ³ : x + y + z = 0} is a subspace of ℝ³.
+ Solution:
+   Strategy: linear homogeneous equation in 3 variables — likely a plane through origin.
+   (1) Zero: 0 + 0 + 0 = 0. (0,0,0) ∈ W. ✓
+   (2) Addition: If x₁+y₁+z₁ = 0 and x₂+y₂+z₂ = 0, then (x₁+x₂)+(y₁+y₂)+(z₁+z₂) = 0+0 =
+   0. ✓
+   (3) Scaling: c·(x+y+z) = c·0 = 0. ✓
+   Therefore W is a subspace of ℝ³. Geometrically, it's a plane through the origin.
+
+ Q4 (Medium): Show that W = {(x, y) ∈ ℝ² : x ≥ 0} is NOT a subspace of ℝ².
+ Solution:
+   Strategy: only one failure is needed for disproof. Try a negative scalar.
+   Take u = (2, 3) ∈ W (since 2 ≥ 0) and c = −1. Then c·u = (−2, −3), and −2 is not ≥ 0.
+   So c·u ∉ W. W fails closure under scalar multiplication, hence W is not a subspace.
+    In simple words: W is the right half-plane. Negating a vector flips it to the other side, violating
+    closure.
+
+   ★★★      Difficult
+
+ Q5 (Difficult): Let V be the set of all 2×2 real matrices. Show that the set W of all 2×2
+ symmetric matrices (matrices A with Aᵀ = A) is a subspace of V.
+ Solution:
+   Strategy: use transpose properties (A+B)ᵀ = Aᵀ + Bᵀ and (cA)ᵀ = c·Aᵀ.
+   (1) Zero matrix: The 2×2 zero matrix equals its own transpose. So 0 ∈ W. ✓
+   (2) Addition: If Aᵀ = A and Bᵀ = B, then (A+B)ᵀ = Aᵀ + Bᵀ = A + B. So A+B ∈ W. ✓
+   (3) Scaling: (cA)ᵀ = c·Aᵀ = c·A. So cA ∈ W. ✓
+   All three hold, so W is a subspace of V.
+    In simple words: symmetric matrices mirror across the diagonal. Adding or scaling preserves
+    that mirror symmetry.
+
+ Q6 (Difficult): Show that the set Pₙ of all polynomials of degree ≤ n (with the zero
+ polynomial included) is a vector space under usual polynomial addition and scalar
+ multiplication.
+ Solution:
+   Strategy: Pₙ sits inside the vector space of all polynomials, so the 8 axioms
+   (commutativity, associativity, distributivity, identity, inverses) are inherited from real
+   addition. We just verify closure and the special elements.
+   Closure under addition: If deg(p) ≤ n and deg(q) ≤ n, then deg(p+q) ≤ n. ✓
+
+
+                                                 Page 5
+Practice Doc by Prof. Saurabh, WILP          Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+    Closure under scaling: If deg(p) ≤ n and c ∈ ℝ, then deg(c·p) ≤ n. ✓
+    Zero element: the zero polynomial 0(x) is in Pₙ and p + 0 = p. ✓
+    Additive inverse: for p(x) = a₀ + a₁x + … + aₙxⁿ, −p(x) = −a₀ − a₁x − … − aₙxⁿ ∈ Pₙ and
+    p + (−p) = 0. ✓
+    Remaining axioms: commutativity, associativity, distributivity ((c+d)p = cp + dp,
+    c(p+q) = cp + cq), associativity of scalar product (cd)p = c(dp), and identity 1·p = p — all
+    follow coefficient-wise from properties of real numbers. ✓
+    All 8 axioms hold, so Pₙ is a vector space.
+    In simple words: polynomials behave like vectors — coefficients act like coordinates.
+
+
+
+
+                                               Page 6
+Practice Doc by Prof. Saurabh, WILP          Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+
+  Section 2 — Linear Combination, Dependence and
+                   Independence
+
+        DEFINITION — Linear Combination
+        A vector v is a linear combination of v₁, v₂, …, vₖ if there exist scalars c₁, …, cₖ
+        ∈ ℝ with v = c₁v₁ + c₂v₂ + … + cₖvₖ.
+
+
+        DEFINITION — Linear Independence
+        Vectors v₁, …, vₖ are linearly independent if the only way to make c₁v₁ + … +
+        cₖvₖ = 0 is c₁ = c₂ = … = cₖ = 0 (the trivial solution). Otherwise they are
+        linearly dependent — at least one vector is redundant (it can be written using
+        the others).
+
+
+        INTUITION
+        Linear combination = a recipe. Vectors are the ingredients; scalars are how
+        much of each. Independence = no ingredient is wasted: you can't make any of
+        them from the others. Dependence = duplicate work — at least one vector lies
+        in the span of the others, so removing it doesn't shrink what you can build.
+
+
+    Dependent         y                            Independent ✓
+                                                               y
+    vectors point along same line                  different directions
+                                                                v
+                                      2u
+                             u                                               u
+
+                                      x                                          x
+
+
+
+
+        STRATEGY
+        Independence test (the standard recipe):
+        1. Set c₁v₁ + c₂v₂ + … + cₖvₖ = 0.
+        2. Translate into a homogeneous linear system (one equation per coordinate).
+        3. Solve. If only c₁ = … = cₖ = 0 works → independent. If a non-trivial solution
+        exists → dependent.
+        Shortcut for n vectors in ℝⁿ: form the n×n matrix and check det ≠ 0 ⇔
+        independent.
+
+
+
+
+                                              Page 7
+Practice Doc by Prof. Saurabh, WILP          Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+
+        WATCH OUT
+        Two vectors are dependent ⇔ one is a scalar multiple of the other. But for three
+        or more vectors, dependence does NOT mean two of them are parallel — it just
+        means one is in the span of the others. Always set up the equation and solve.
+
+
+        THE REF METHOD
+        Row Echelon Form (REF) is the unified workhorse for these problems. Form a
+        matrix from the vectors (as rows or columns), reduce to REF, and read off the
+        answer:
+           • Linear combination — augment with the target vector, reduce,
+        back-substitute.
+          • Independence — count the non-zero rows; if it equals the number of
+        vectors, they are independent (rank = number of vectors).
+         • Span / basis — the non-zero rows of REF give a basis for the row space.
+
+
+   ★    Easy
+
+ Q1 (Easy): Express v = (3, 7) as a linear combination of u₁ = (1, 1) and u₂ = (1, 2).
+ Solution:
+   Strategy: set v = a·u₁ + b·u₂ and solve for a, b coordinate-wise.
+   System: a + b = 3, a + 2b = 7.
+   Step 1: Subtract row 1 from row 2: b = 4.
+   Step 2: Plug back: a + 4 = 3 ⇒ a = −1.
+   Answer: v = −1·u₁ + 4·u₂. Check: −1(1,1) + 4(1,2) = (3, 7). ✓
+
+ Q2 (Easy): Are the vectors (1, 2) and (2, 4) linearly independent in ℝ²?
+ Solution:
+   Strategy: two vectors — check if one is a scalar multiple of the other.
+   Notice (2, 4) = 2·(1, 2). So 2·(1,2) + (−1)·(2,4) = (0,0) with non-zero scalars.
+   A non-trivial combination yields zero, so the vectors are linearly dependent.
+    Picture: both arrows point along the same line, so they encode the same direction.
+
+   ★★     Medium
+
+ Q3 (Medium): Express v = (1, −2, 5) as a linear combination of u₁ = (1, 1, 1), u₂ = (1, 2,
+ 3), u₃ = (2, −1, 1).
+ Solution:
+   Strategy: set up a 3×3 system from a·u₁ + b·u₂ + c·u₃ = v and solve.
+   (i) a + b + 2c = 1
+   (ii) a + 2b − c = −2
+   (iii) a + 3b + c = 5
+   Step 1: (ii) − (i): b − 3c = −3 …(iv)
+   Step 2: (iii) − (i): 2b − c = 4 …(v)
+
+                                              Page 8
+Practice Doc by Prof. Saurabh, WILP        Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+    Step 3: From (iv): b = 3c − 3. Sub into (v): 2(3c − 3) − c = 4 ⇒ 5c = 10 ⇒ c = 2.
+    Step 4: b = 3(2) − 3 = 3. From (i): a = 1 − 3 − 4 = −6.
+    Answer: v = −6·u₁ + 3·u₂ + 2·u₃.
+    Check: −6(1,1,1) + 3(1,2,3) + 2(2,−1,1) = (−6,−6,−6) + (3,6,9) + (4,−2,2) = (1,−2,5). ✓
+ Alternate Solution — Augmented Matrix → REF:
+   Place u₁, u₂, u₃ as columns and v on the right to form the augmented matrix [u₁ | u₂ | u₃ |
+   v]:
+    [ 1   1    2    |    1 ]
+    [ 1   2   -1    |   -2 ]
+    [ 1   3    1    |    5 ]
+    R₂ → R₂ − R₁, R₃ → R₃ − R₁:
+    [ 1 1     2 |    1 ]
+    [ 0 1 -3 | -3 ]
+    [ 0 2 -1 |       4 ]
+    R₃ → R₃ − 2R₂:
+    [ 1 1     2 |        1 ]
+    [ 0 1 -3 |          -3 ]
+    [ 0 0     5 |       10 ]
+    Back-substitute: 5c = 10 ⇒ c = 2; b − 3c = −3 ⇒ b = 3; a + b + 2c = 1 ⇒ a = −6. Same
+    answer. ✓
+
+ Q4 (Medium): Are the vectors (1, 0, 1), (0, 1, 1), (1, 1, 0) linearly independent in ℝ³?
+ Solution:
+   Strategy: set a·v₁ + b·v₂ + c·v₃ = 0 and solve the homogeneous system.
+   a+c=0
+   b+c=0
+   a+b=0
+   Step 1: From row 1, a = −c. From row 2, b = −c.
+   Step 2: Plug into row 3: −c + (−c) = 0 ⇒ −2c = 0 ⇒ c = 0. Then a = b = 0.
+   Only the trivial solution works, so the vectors are linearly independent. ✓
+ Alternate Solution — Row Reduce to REF:
+   Form the matrix with the vectors as rows and reduce:
+    [ 1   0   1 ]
+    [ 0   1   1 ]
+    [ 1   1   0 ]
+    R₃ → R₃ − R₁:
+    [ 1 0     1 ]
+    [ 0 1     1 ]
+    [ 0 1 -1 ]
+    R₃ → R₃ − R₂:
+    [ 1 0     1 ]
+    [ 0 1     1 ]
+    [ 0 0 -2 ]
+
+
+
+                                            Page 9
+Practice Doc by Prof. Saurabh, WILP          Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+    Three non-zero rows ⇒ rank = 3. Since rank equals the number of vectors, they are
+    linearly independent. ✓
+    Determinant shortcut: det of the matrix with these rows is −2 ≠ 0, confirming independence.
+
+   ★★★        Difficult
+
+ Q5 (Difficult): Are the polynomials p₁(x) = 1 + x, p₂(x) = x + x², p₃(x) = 1 + x² linearly
+ independent in P₂?
+ Solution:
+   Strategy: equate a linear combination to the zero polynomial; coefficients of every power
+   of x must vanish.
+   a(1+x) + b(x+x²) + c(1+x²) = (a+c) + (a+b)x + (b+c)x² = 0.
+   Coefficient equations:
+   (i) a + c = 0 (ii) a + b = 0 (iii) b + c = 0
+   Step 1: From (i), c = −a. From (ii), b = −a.
+   Step 2: Sub into (iii): −a + (−a) = 0 ⇒ −2a = 0 ⇒ a = 0. Then b = c = 0.
+   Only trivial solution → p₁, p₂, p₃ are linearly independent.
+    In simple words: none of these polynomials can be built from the other two by adding or
+    scaling alone.
+
+ Q6 (Difficult): Determine whether {(1, 2, 3), (4, 5, 6), (7, 8, 9)} is linearly independent
+ in ℝ³.
+ Solution:
+   Strategy: reduce the augmented matrix; if a row vanishes, you'll get a free parameter
+   and dependence.
+   System: a + 4b + 7c = 0, 2a + 5b + 8c = 0, 3a + 6b + 9c = 0.
+   Step 1: R₂ → R₂ − 2R₁: −3b − 6c = 0 ⇒ b + 2c = 0.
+   Step 2: R₃ → R₃ − 3R₁: −6b − 12c = 0 ⇒ b + 2c = 0 (same equation).
+   Step 3: Only two independent equations remain. Let c = t (free); then b = −2t and a =
+   −4(−2t) − 7t = t. Pick t = 1: (a, b, c) = (1, −2, 1).
+   Verify: 1·(1,2,3) − 2·(4,5,6) + 1·(7,8,9) = (1,2,3) − (8,10,12) + (7,8,9) = (0,0,0). ✓
+   A non-trivial combination gives zero, so the vectors are linearly dependent.
+ Alternate Solution — Row Reduce to REF:
+   Form the matrix with the vectors as rows and reduce to row echelon form:
+    [ 1   2    3 ]
+    [ 4   5    6 ]
+    [ 7   8    9 ]
+    R₂ → R₂ − 4R₁, R₃ → R₃ − 7R₁:
+    [ 1   2     3 ]
+    [ 0 -3     -6 ]
+    [ 0 -6 -12 ]
+    R₃ → R₃ − 2R₂:
+
+
+
+
+                                             Page 10
+Practice Doc by Prof. Saurabh, WILP         Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+    [ 1    2     3 ]
+    [ 0   -3    -6 ]
+    [ 0    0     0 ]
+    This is REF. There are only 2 non-zero rows, so rank = 2 < 3 (the number of vectors).
+    Hence the vectors are linearly dependent.
+    Bonus — extracting the relation from REF: track the operations on R₃. We did R₃ → R₃
+    − 7R₁ then R₃ → R₃ − 2R₂′ (where R₂′ = R₂ − 4R₁). Combining: final R₃ = (v₃ − 7v₁) − 2(v₂ −
+    4v₁) = v₃ + v₁ − 2v₂. Setting this = 0 gives v₁ − 2v₂ + v₃ = 0, the same dependency
+    relation we found by direct solving.
+    Quick determinant check: det = 0, instantly confirming dependence.
+
+
+
+
+                                            Page 11
+Practice Doc by Prof. Saurabh, WILP                Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+
+                      Section 3 — Basis and Dimension
+
+         DEFINITION — Span
+         The span of vectors v₁, …, vₖ is the set of all their linear combinations:
+         Span(v₁,…,vₖ) = {c₁v₁ + … + cₖvₖ : cᵢ ∈ ℝ}. It is automatically a subspace of V.
+
+
+         DEFINITION — Basis
+         A basis of a vector space V is an ordered set B = {v₁, …, vₙ} that is (1) linearly
+         independent and (2) spans V. Every vector in V then has a unique expression as
+         c₁v₁ + … + cₙvₙ.
+
+
+         DEFINITION — Dimension
+         The dimension of V is the number of vectors in any basis (this number is the
+         same for every basis). dim(ℝⁿ) = n, dim(Pₙ) = n+1, dim(Mₘₓₙ(ℝ)) = m·n.
+
+
+         INTUITION
+         Basis = minimum complete recipe. Just enough ingredients to make every
+         vector — no extras (independence) and nothing missing (spanning). Dimension
+         = degrees of freedom — how many independent knobs you can tune. ℝ² has
+         2 knobs (x and y); the plane x + y + z = 0 in ℝ³ lets you choose y and z freely,
+         then x is forced — that's 2 degrees of freedom, dim = 2.
+
+
+              Dimension ladder — how much room is in there?
+
+         {0}               Line               Plane              Space                  ℝⁿ
+       dim = 0           dim = 1            dim = 2             dim = 3             dim = n
+       just a point    1 free direction   2 free directions   3 free directions   n free directions
+
+
+
+
+                                                    Page 12
+Practice Doc by Prof. Saurabh, WILP              Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+                                                 y
+    Basis = recipe ingredients
+    Every vector is a unique combo of basis vectors.                  v = 3e₁ + 2e₂
+
+
+                                                 e₂
+
+
+                                                                  x
+                                                          e₁
+
+
+
+
+        STRATEGY
+        Finding a basis of a subspace defined by equations:
+        1. Solve the constraints — express the dependent variables in terms of the free
+        ones.
+        2. Write a typical element as a sum: (free₁)·v₁ + (free₂)·v₂ + ….
+        3. The vectors v₁, v₂, … so produced span the subspace and are automatically
+        independent.
+        4. The number of free variables = dimension.
+
+
+        HANDY SHORTCUT
+        Counting trick: in an n-dimensional space, any n linearly independent vectors
+        form a basis automatically — you don't have to re-prove spanning. Likewise,
+        any spanning set of size n is automatically independent. This saves a lot of
+        work.
+
+
+   ★    Easy
+
+ Q1 (Easy): Find the dimension of ℝ³ and give a basis.
+ Solution:
+   Strategy: use the standard basis e₁, e₂, e₃.
+   Let e₁ = (1,0,0), e₂ = (0,1,0), e₃ = (0,0,1).
+   Spanning: any (x,y,z) = x·e₁ + y·e₂ + z·e₃.
+   Independence: a·e₁ + b·e₂ + c·e₃ = (a,b,c) = 0 forces a = b = c = 0.
+   So {e₁, e₂, e₃} is a basis and dim(ℝ³) = 3.
+
+ Q2 (Easy): Show that B = {(1, 0), (0, 1)} is a basis of ℝ².
+ Solution:
+   Spanning: (x, y) = x(1,0) + y(0,1).
+   Independence: a(1,0) + b(0,1) = (a, b) = 0 ⇒ a = b = 0.
+
+
+                                                     Page 13
+Practice Doc by Prof. Saurabh, WILP          Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+    Both conditions hold, so B is a basis and dim(ℝ²) = 2.
+
+   ★★     Medium
+
+ Q3 (Medium): Show that B = {(1,1,0), (1,0,1), (0,1,1)} is a basis of ℝ³.
+ Solution:
+   Strategy: dim(ℝ³) = 3 and B has 3 vectors — it suffices to prove independence.
+   a(1,1,0) + b(1,0,1) + c(0,1,1) = 0 gives:
+   a + b = 0, a + c = 0, b + c = 0.
+   Step 1: b = −a, c = −a. Sub into b + c = 0: −2a = 0 ⇒ a = 0. Then b = c = 0.
+   Independent + size 3 in ℝ³ ⇒ B is a basis of ℝ³.
+ Alternate Solution — Row Reduce to REF:
+   Form the matrix with the three vectors as rows and reduce:
+    [ 1   1    0 ]
+    [ 1   0    1 ]
+    [ 0   1    1 ]
+    R₂ → R₂ − R₁:
+    [ 1   1 0 ]
+    [ 0 -1 1 ]
+    [ 0   1 1 ]
+    R₃ → R₃ + R₂:
+    [ 1   1 0 ]
+    [ 0 -1 1 ]
+    [ 0   0 2 ]
+    Three non-zero rows ⇒ rank = 3. Combined with 3 vectors in a 3-dim space, B is a basis
+    of ℝ³. ✓
+    Equivalent shortcut: det of the matrix with these rows is −2 ≠ 0.
+
+ Q4 (Medium): Find a basis and the dimension of W = {(x, y, z) ∈ ℝ³ : x + y + z = 0}.
+ Solution:
+   Strategy: express x in terms of free variables y and z.
+   From x + y + z = 0: x = −y − z. So a generic element is (x, y, z) = (−y − z, y, z) = y·(−1,
+   1, 0) + z·(−1, 0, 1).
+   Let v₁ = (−1, 1, 0), v₂ = (−1, 0, 1). They span W.
+   Independence: a·v₁ + b·v₂ = (−a−b, a, b) = (0,0,0) ⇒ a = 0, b = 0.
+   So {v₁, v₂} is a basis and dim(W) = 2. (W is a plane through the origin.)
+
+   ★★★        Difficult
+
+ Q5 (Difficult): Find a basis and the dimension of W = {(x, y, z, w) ∈ ℝ⁴ : x + y = 0 and z
+ − w = 0}.
+ Solution:
+   Strategy: two independent constraints in ℝ⁴ should leave 4 − 2 = 2 free directions.
+   From x + y = 0: x = −y. From z − w = 0: z = w. Pick y and w as parameters.
+
+
+                                              Page 14
+Practice Doc by Prof. Saurabh, WILP              Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+    Generic element: (x, y, z, w) = (−y, y, w, w) = y·(−1, 1, 0, 0) + w·(0, 0, 1, 1).
+    Let v₁ = (−1, 1, 0, 0), v₂ = (0, 0, 1, 1).
+    Independence: a·v₁ + b·v₂ = (−a, a, b, b) = 0 forces a = b = 0.
+    Hence {v₁, v₂} is a basis and dim(W) = 2.
+
+ Q6 (Difficult): Find the dimension and a basis of the vector space S of all 2×2
+ symmetric matrices.
+ Solution:
+   Strategy: count free entries. A symmetric 2×2 matrix has the diagonal entries and one
+   off-diagonal — three free numbers.
+   General form: A = [[a, b], [b, c]] with a, b, c ∈ ℝ. Decompose:
+   A = a·E₁ + b·E₂ + c·E₃, where E₁ = [[1,0],[0,0]], E₂ = [[0,1],[1,0]], E₃ = [[0,0],[0,1]].
+   Spanning: every symmetric A is built from {E₁, E₂, E₃}.
+   Independence: α·E₁ + β·E₂ + γ·E₃ = [[α, β],[β, γ]] = 0 forces α = β = γ = 0.
+   Hence {E₁, E₂, E₃} is a basis and dim(S) = 3.
+    Compare with all 2×2 matrices: dim = 4. Symmetry kills one degree of freedom.
+
+
+
+
+ Review at a Glance
+
+     Concept                          Quick test
+
+     Subspace W ⊆ V                   0 ∈ W; closed under + and scalar ·
+
+     v is a linear combination        Solve c₁v₁ + … + cₖvₖ = v for scalars
+
+     v₁, …, vₖ independent            c₁v₁ + … + cₖvₖ = 0 ⇒ all cᵢ = 0
+
+     Basis                            Independent AND spans the space
+
+     Dimension                        Number of vectors in any basis
+
+
+
+
+ Tips for Students
+    ✓    Start with the picture. Before any algebra, ask: is this a line, a plane, all of ℝⁿ,
+         or a curved/shifted set? Linear means flat; subspaces always include the origin.
+
+    ✓    Always verify the zero vector first. If 0 isn't in your set, you're done — it can't
+         be a subspace. This 5-second check often kills the problem instantly.
+
+    ✓    Translate words into a system. Independence and span questions become
+         homogeneous systems. The shape of the solution set tells you the answer: only
+         zero ⇒ independent / spanning fails; free variables ⇒ dependent / extra room.
+
+
+
+
+                                                   Page 15
+Practice Doc by Prof. Saurabh, WILP          Vector Spaces • Linear Combinations • Basis & Dimension
+
+
+
+
+    ✓    Use the size shortcut. In ℝⁿ, any n linearly independent vectors automatically
+         form a basis — no need to recheck spanning. Likewise, any n vectors that span ℝⁿ
+         are automatically independent.
+
+    ✓    Sanity-check with determinants. For n vectors in ℝⁿ, det = 0 ⇔ dependent. It's
+         the fastest test once you're comfortable.
+
+    ✓    Count free variables for dimension. Dimension of a subspace defined by k
+         independent linear equations in ℝⁿ is n − k (the Rank-Nullity intuition). Use this to
+         predict your answer before solving.
+
+ End of worksheet. Encourage students to attempt each problem first, then read the solution to
+  identify gaps. Concept boxes (definition, intuition, strategy, watch-out) are designed to be read
+                         repeatedly — they distill the heart of each topic.
+
+
+
+
+                                              Page 16
+

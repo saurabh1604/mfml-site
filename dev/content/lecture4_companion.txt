@@ -1,0 +1,831 @@
+             ZC416 • MATHEMATICAL FOUNDATIONS FOR ML / DS
+
+                            BITS Pilani • WILPD–CSIS
+
+
+
+
+   Unveiling the Matrix
+             Determinants, Eigenvalues, Eigenvectors
+                    and the Spectral Theorem
+
+
+
+
+This companion is the in-depth, visual partner to Lecture 4. We begin with the
+two single-number “fingerprints” of a matrix — the determinant (how much a
+transformation scales space, and whether it is reversible) and the trace — then use
+the characteristic equation to hunt down eigenvalues and the eigenvectors they
+belong to. The journey peaks at the Spectral Theorem and the decomposition A =
+QΛQ⊤ , before reaching out to Hermitian matrices and the Cholesky factorisation
+— the tools that quietly power PCA, SVD, simulation, and quantum mechanics.
+
+
+
+
+                 A connected story — every idea here feeds the next.
+Lecture 4 • Unveiling the Matrix                                                           MFML / MFDS
+
+
+
+Contents
+
+1   Determinants: the measure of a transformation’s power                                              2
+    1.1 Defining determinants: minors and cofactors . . . . . . . . . . . . . . . . . . . . .          2
+    1.2 The geometric meaning of the determinant . . . . . . . . . . . . . . . . . . . . . .           3
+
+2 The trace: a matrix’s hidden sum                                                                     4
+
+3 The essence of a matrix: eigenvalues and eigenvectors                                                5
+
+4   How to find eigenvalues and eigenvectors                                                           7
+    4.1 The characteristic equation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
+    4.2 A shortcut for triangular matrices . . . . . . . . . . . . . . . . . . . . . . . . . . . .     9
+
+5 Trace, determinant and the eigenvalues                                                               9
+
+6 The Spectral Theorem: the crown jewel for symmetric matrices                                        10
+  6.1 Eigendecomposition: A = QΛQ⊤ . . . . . . . . . . . . . . . . . . . . . . . . . . . .            11
+  6.2 The big picture: why eigendecomposition matters . . . . . . . . . . . . . . . . . .             11
+
+7   Complex vectors and Hermitian matrices                                                            12
+
+8 The Cholesky decomposition                                                                          13
+
+9 A look beyond: further properties and considerations                                                15
+  9.1 Diagonalisability . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     15
+  9.2 Complex eigenvalues from real matrices . . . . . . . . . . . . . . . . . . . . . . . .          15
+
+Concluding thoughts                                                                                   15
+
+
+
+
+                                                   1
+Lecture 4 • Unveiling the Matrix                                                       MFML / MFDS
+
+
+
+ 1     Determinants: the measure of a transformation’s power
+Before we hunt for the special directions of a matrix, we need a way to quantify what a transfor-
+mation does to space as a whole. How much does it stretch or shrink? Does it flatten space into a
+lower dimension? That single, powerful number is the determinant.
+      What does a determinant tell us?
+   Imagine a matrix A acting on a unit square (in 2D) or a unit cube (in 3D).
+     • The absolute value | det( A)| is the factor by which area (2D) or volume (3D) is scaled.
+       det( A) = 2 doubles the area; det( A) = 0.5 halves it.
+     • det( A) = 0 is the alarm bell: the transformation squashes space into a lower dimension
+       (a square flattened to a line, a cube to a plane). The matrix is then singular — non-
+       invertible — because information has been destroyed.
+     • The sign of det( A) records orientation: positive preserves it; negative flips space, like
+       looking in a mirror.
+  In plain words. Think of rolling out pizza dough. If you press and stretch it so it covers
+  twice the area, that “×2” is the determinant. If you flatten the dough completely into a thin
+  crease, its area becomes zero — and you can never roll it back into the original shape. That
+  flattening is exactly what det( A) = 0 means. In one number, the determinant captures the
+  “oomph” of a matrix.
+
+
+
+1.1 Defining determinants: minors and cofactors
+The geometric picture is the intuition; the formula below is how we actually compute. For an
+n × n matrix A the determinant is built recursively from smaller determinants.
+     Definition 1.1: Minor and cofactor
+   Let A be an n × n matrix.
+     • The minor Mij of the entry aij is the determinant of the (n − 1) × (n − 1) submatrix left
+       after deleting row i and column j.
+     • The cofactor is Cij = (−1)i+ j Mij . The factor (−1)i+ j creates a checkerboard pattern of
+       signs.
+
+
+     Definition 1.2: Determinant by cofactor expansion
+
+   For an n × n matrix A, expanding along any row i or any column j gives the same value:
+                                               n              n
+                                   det( A) = ∑ aij Cij = ∑ aij Cij .
+                                              j =1           i =1
+
+                                                                   
+                                                       a b
+   Base cases. det[ a] = a, and for a 2 × 2 matrix det                  = ad − bc.
+                                                       c d
+
+
+
+
+                                                     2
+Lecture 4 • Unveiling the Matrix                                                                    MFML / MFDS
+
+
+
+    Example 1.1: Expanding a 3 × 3 determinant
+                    
+             3 1   0
+   Let A = −2 −4 3  and expand along the first row, det( A) = a11 C11 + a12 C12 +
+             5 4 −2
+   a13 C13 :                            
+                                   −4 3
+                  C11 = (+1) det           = (8 − 12) = −4,
+                                   4 −2
+                                        
+                                   −2 3
+                  C12 = (−1) det           = −(4 − 15) = 11,
+                                   5 −2
+                                        
+                                   −2 −4
+                  C13 = (+1) det           = (−8 + 20) = 12.
+                                   5  4
+
+   Therefore det( A) = 3(−4) + 1(11) + 0(12) = −12 + 11 + 0 = −1 .
+
+
+     Choose the lazy row or column
+
+   Expand along the row or column with the most zeros. The a13 = 0 term above cost us
+   nothing — every zero entry removes an entire cofactor from the work.
+
+
+
+1.2 The geometric meaning of the determinant
+
+     det(A) = +2 : area doubles, orientation kept               det(A) = 0 : singular, space squashed
+
+
+
+
+                                                                               area = 0
+                          Ae 2                                           (collapsed to a line)
+                         area = 2                                                            Ae 2
+                                     Ae 1
+                  1                                                              Ae 1
+
+
+
+  The determinant as an area-scaling factor. Left: the columns of A = 21 1.51
+                                                                               
+                                                                                 are the images Ae1 , Ae2 of the
+    standard basis; the unit square (dashed) becomes a parallelogram of area | det( A)| = 2. Right: when the
+  columns become linearly dependent the parallelogram collapses to a line, det = 0, and the matrix is singular.
+
+
+The columns of A are precisely the images of the standard basis vectors, Ae j . So the parallelogram
+(2D) or parallelepiped (3D) they span has signed volume equal to det( A). This single picture
+explains a remarkable amount:
+• Linear dependence ⇔ zero determinant. If the columns are linearly dependent they cannot
+  span the full space; the parallelepiped is “flat” with zero volume, i.e. det( A) = 0.
+• Invertibility. A is invertible if and only if det( A) ̸= 0. If the transformation collapses space,
+  there is no way to uniquely undo it.
+
+
+                                                        3
+Lecture 4 • Unveiling the Matrix                                                        MFML / MFDS
+
+
+
+     The properties we will lean on
+
+       det( AB) = det( A) det( B)           scaling factors of composed maps multiply
+       det( A⊤ ) = det( A)                  transposing does not change the volume scaling
+       det( A−1 ) = 1/ det( A)              the inverse scales volume by the reciprocal
+       A triangular ⇒ det( A) = ∏i aii      a huge computational shortcut
+
+
+     Theorem 1.1: Full rank ⇔ non-zero determinant
+
+   An n × n matrix A has rank n (full rank) if and only if det( A) ̸= 0.
+
+Why. Gaussian elimination reduces A to an upper-triangular U using s row interchanges, and
+det( A) = (−1)s det(U ) = (−1)s ∏i Uii . The matrix has full rank exactly when all pivots Uii are
+non-zero, which is exactly when this product — and hence det( A) — is non-zero. Hold on to
+this: an eigenvalue is born precisely where a shifted matrix A − λI loses full rank.
+
+
+ 2     The trace: a matrix’s hidden sum
+The determinant’s understated sibling is the trace. It looks almost too simple to be useful — you
+just add up the diagonal — yet it secretly equals the sum of the eigenvalues, a fact we will cash in
+shortly. Think of it as a doctor taking a quick pulse: one easy number that already tells you a lot
+about the patient.
+     Definition 2.1: Trace
+   The trace of an n × n matrix A is the sum of its diagonal entries,
+                                                       n
+                                           tr( A) = ∑ aii .
+                                                      i =1
+
+
+
+     Properties (all short to prove)
+
+                          tr( A + B) = tr( A) + tr( B)       tr(αA) = α tr( A)
+                          tr( In ) = n                       tr( AB) = tr( BA)
+
+   The last, “cyclic” identity tr( AB) = tr( BA) is the workhorse behind countless machine-
+   learning derivations (for instance gradients of tr( X⊤ AX )).
+
+
+     A teaser we prove in Section 5
+
+   When the characteristic polynomial is expanded, the trace and determinant fall out as its
+   first and last coefficients:
+
+             p A (λ) = det( A − λI ) = (−1)n λn + (−1)n−1 tr( A) λ n−1 + · · · + det( A).
+
+   Equivalently, tr( A) = ∑i λi and det( A) = ∏i λi : two of the simplest possible summaries
+   of the eigenvalues, readable straight off the matrix.
+
+
+
+
+                                                  4
+Lecture 4 • Unveiling the Matrix                                                     MFML / MFDS
+
+
+
+ 3     The essence of a matrix: eigenvalues and eigenvectors
+Every square matrix A describes a transformation: it takes a vector x to a new vector Ax,
+stretching, rotating, shearing or reflecting space. Within that motion, are there any vectors whose
+direction survives untouched — vectors that are merely scaled? Yes: these are the eigenvectors,
+the “grain” or natural axes of the matrix, and the scale factors are the eigenvalues.
+     Finding the grain of a transformation
+
+     • Spinning globe. The rotation axis (through the poles) does not move — an eigenvector
+       with eigenvalue 1. Every other point swings around it.
+     • Stretching dough. Pulling along one direction and squeezing another: the pull direction
+       is an eigenvector with λ > 1, the squeeze direction one with 0 < λ < 1.
+     • Shearing a deck of cards. Push the top sideways: horizontal vectors stay horizontal
+       (λ = 1), while everything else tilts.
+
+
+     Definition 3.1: Eigenvector and eigenvalue
+
+   A nonzero vector x is an eigenvector of A if, for some scalar λ,
+
+                                             Ax = λx.
+
+   The scalar λ is the corresponding eigenvalue. A positive λ scales in the same direction; a
+   negative λ flips the direction (a reflection plus scaling).
+
+Note. The zero vector satisfies A0 = λ0 for every λ, but it points nowhere, so it is explicitly
+excluded from being an eigenvector.
+
+
+
+
+                                                  5
+Lecture 4 • Unveiling the Matrix                                                                        MFML / MFDS
+
+
+
+
+                              A shear has just one eigen-direction
+
+
+
+
+                             v                          Av (tilted: not an eigenvector)
+
+
+
+
+                                                    u = Au (eigenvector, λ = 1)
+
+  A shear A = 10 11 . The red vector u along the x-axis is fixed (Au = u, so λ = 1): it is an eigenvector. The
+                     
+
+    blue vector v is tilted by the shear, so it is not an eigenvector. A shear has only this one eigen-direction.
+
+
+
+    Example 3.1: Verifying eigenvectors by hand
+                                
+                 1 6        6       3
+   Let A =             ,u=     ,v=     .
+                 5 2        −5      −2
+                                                                                     
+                                     1(6) + 6(−5)               −24                  6
+                       Au =                             =                 = −4                = −4 u.
+                                     5(6) + 2(−5)               20                   −5
+                                                                
+                                                   −9
+   So u is an eigenvector with λ = −4. But Av =          , which is not a scalar multiple of v
+                                                    11
+   (it would need λ = −3 and λ = − 11
+                                    2 at once). So v is not an eigenvector.
+
+
+
+
+                                                            6
+Lecture 4 • Unveiling the Matrix                                                                MFML / MFDS
+
+
+
+
+                        Eigenvectors keep direction; everything else turns
+
+
+                                                                            Aq 1 = 3q 1
+                                                                           Ax turns
+
+                                                       q1
+
+                                                                 x
+
+
+
+
+                                                                     unit circle of inputs
+                                                                                     © ª
+                                                                     image ellipse Av
+                                                                     eigen-directions
+
+    The action of the symmetric matrix A = 21 12 . The unit circle of inputs (dashed) is mapped to an ellipse
+                                                  
+
+  (navy). Along the eigen-directions (red dashed) a vector is only scaled — here Aq1 = 3q1 — while a generic
+                                        vector x has its direction changed.
+
+
+
+
+ 4    How to find eigenvalues and eigenvectors
+Dragging vectors around builds intuition, but we need a systematic method. The trick is to turn
+the geometric question into an algebra problem: finding the roots of a polynomial.
+    A helpful picture. An eigenvalue is like the exact musical note that makes a wine glass ring.
+Most frequencies do nothing; but at one special pitch the glass resonates and can even shatter. In
+the same way, most values of λ leave A − λI perfectly solid and invertible — but at the special
+eigenvalues it “goes limp” and collapses space. Our job is to find exactly those values.
+
+4.1 The characteristic equation
+Starting from the definition and collecting terms on one side,
+
+                         Ax = λx =⇒ Ax − λIx = 0 =⇒ ( A − λI )x = 0.
+
+We need a nonzero solution x. A square matrix maps a nonzero vector to 0 only when it collapses
+space — that is, only when it is singular — and we learned in Section 1 that this happens exactly
+when its determinant vanishes.
+     Why the determinant must be zero
+
+   Write M = A − λI. If M is invertible (det M ̸= 0) the only solution of Mx = 0 is the
+   trivial x = 0, which we reject. For a genuine eigenvector to exist, M must collapse space —
+   mapping a whole line or plane to 0 — and that requires det( A − λI ) = 0.
+
+
+
+
+                                                      7
+Lecture 4 • Unveiling the Matrix                                                                        MFML / MFDS
+
+
+
+    Definition 4.1: The characteristic equation
+
+   The eigenvalues of A are the solutions λ of
+
+                                                  det( A − λI ) = 0.
+
+   The left-hand side is a degree-n polynomial in λ, the characteristic polynomial p A (λ); its
+   roots are the eigenvalues. For each eigenvalue, the nonzero solutions of ( A − λI )x = 0
+   form the eigenspace Eλ .
+
+
+
+What the coefficients are. Expanding det( A − λI ) for a general n × n matrix, the only term
+producing the highest powers of λ is the diagonal product ∏i ( aii − λ). Reading off its top two
+coefficients (and noting every other cofactor contributes a lower power) gives
+
+                           p A (λ) = (−1)n λn + (−1)n−1 tr( A) λ n−1 + · · · + det( A),
+
+where the constant term is p A (0) = det( A). So the trace and determinant are literally the top
+and bottom coefficients of the characteristic polynomial.
+
+
+                                          pA (λ) = λ 2 − tr(A)λ + det(A) = λ 2 − 3λ − 28
+                      40
+                      30
+                      20
+                      10
+             pA (λ)
+
+
+
+
+                      0
+                                     λ = −4                                         λ=7
+                      10
+                      20
+                      30
+                           7.5      5.0        2.5       0.0        2.5      5.0           7.5   10.0
+                                                                λ
+  The characteristic polynomial of A = 15 62 is p A (λ) = λ2 − tr( A)λ + det( A) = λ2 − 3λ − 28. Its roots,
+                                             
+
+                     where the parabola crosses zero, are the eigenvalues λ = 7 and λ = −4.
+
+
+
+
+                                                            8
+Lecture 4 • Unveiling the Matrix                                                                        MFML / MFDS
+
+
+
+     Example 4.1: Finding eigenvalues and eigenspaces
+                    
+                 1 6
+   For A =             :
+                 5 2
+                                              
+                       1−λ  6
+   det( A − λI ) = det                             = (1 − λ)(2 − λ) − 30 = λ2 − 3λ − 28 = (λ − 7)(λ + 4).
+                        5  2−λ
+
+   So λ1 = 7, λ2 = −4. For each, solve ( A − λI )x = 0:
+                                                                                
+                                       −6 6                                        1
+                     λ1 = 7 :                 x = 0 ⇒ x1 = x2 ,        E7 = span       ;
+                                       5 −5                                        1
+                                                                                           
+                                   5 6                                                    6
+                 λ2 = −4 :               x = 0 ⇒ 5x1 + 6x2 = 0,         E−4 = span                  .
+                                   5 6                                                    −5
+
+
+
+4.2 A shortcut for triangular matrices
+
+     Theorem 4.1: Eigenvalues of a triangular matrix
+
+   The eigenvalues of a triangular matrix (upper or lower) are exactly its diagonal entries.
+
+Why. If A is triangular then so is A − λI, and the determinant of a triangular matrix is the product
+of its diagonal. Thus det( A − λI ) = ( a11 − λ)( a22 − λ) · · · ( ann − λ) = 0, whose solutions are
+simply λ = a11 , a22 , . . . , ann . No computation required — a clean consequence of the determinant
+properties.
+
+
+ 5     Trace, determinant and the eigenvalues
+We promised that the trace and determinant summarise the eigenvalues. Here is the precise
+statement.
+     Theorem 5.1: Sum and product of eigenvalues
+
+   For any n × n matrix A with eigenvalues λ1 , . . . , λn (counted with multiplicity),
+                                         n                      n
+                                        ∑ λi = tr( A),         ∏ λi = det( A).
+                                        i =1                   i =1
+
+
+Why. Because the λi are the roots of the characteristic polynomial, we may factor it as p A (λ) =
+∏in=1 (λi − λ). Expanding, the coefficient of λ n−1 is (−1)n−1 ∑i λi ; comparing with the direct
+expansion from Section 4, where that coefficient is (−1)n−1 tr( A), gives ∑i λi = tr( A). Setting
+λ = 0 in the factored form gives ∏i λi = p A (0) = det( A).
+     A free sanity check
+
+   For A = 15 62 we found λ = 7, −4. Indeed 7 + (−4) = 3 = tr( A) and 7 · (−4) = −28 =
+                
+
+   det( A). Whenever you compute eigenvalues, this pair of checks catches arithmetic slips
+   instantly.
+
+
+
+
+                                                           9
+Lecture 4 • Unveiling the Matrix                                                                  MFML / MFDS
+
+
+
+ 6     The Spectral Theorem: the crown jewel for symmetric matrices
+We now reach one of the most useful results in all of linear algebra, and one that is especially
+dear to data science: nearly every matrix we build from data — a covariance matrix, or a Gram
+matrix A⊤ A — is symmetric.
+    Think of wood grain. A plank of wood splits cleanly along its grain and resists across it. A
+symmetric matrix behaves the same way: it has a natural “grain” — a set of perpendicular
+directions — along which it only stretches or shrinks, never twisting the wood. The Spectral
+Theorem is the precise statement that this clean grain always exists.
+     Definition 6.1: Symmetric matrix
+
+   A square matrix is symmetric if A = A⊤ , i.e. aij = a ji . It is mirrored across its main diagonal,
+                      
+             2 −1 0
+   e.g. S = −1 5 3 .
+                0   3 −4
+
+
+     Theorem 6.1: Spectral Theorem for real symmetric matrices
+
+   If A ∈ Rn×n is symmetric, then:
+     1. all eigenvalues are real;
+     2. eigenvectors of distinct eigenvalues are orthogonal;
+     3. there is an orthonormal basis of Rn consisting of eigenvectors of A — so A is always
+        diagonalisable, and beautifully so, by an orthogonal matrix.
+
+
+
+                                    A circle maps to an ellipse whose axes
+                                     are the perpendicular eigenvectors
+
+
+                                                                                λ1 q 1
+
+
+                                                  λ2 q 2
+
+
+
+
+                                          eigen-axes are        : q1 · q2 = 0
+
+  A symmetric matrix has perpendicular eigen-axes. The unit circle maps to an ellipse whose principal axes lie
+              exactly along the orthogonal eigenvectors q1 , q2 , each stretched by its eigenvalue.
+
+
+Why real. Let Ax = λx and premultiply by the conjugate-transpose x H : then x H Ax = λ x H x.
+The left side equals its own conjugate (because A is symmetric/Hermitian), so it is real; and
+x H x = ∥x∥2 > 0 is real and positive. Hence λ is real.
+
+
+                                                           10
+Lecture 4 • Unveiling the Matrix                                                                                          MFML / MFDS
+
+
+
+Why orthogonal. For Ax = λx and Ay = µy with λ ̸= µ,
+
+                              λ y H x = y H Ax = ( Ay) H x = µ y H x =⇒ (λ − µ)y H x = 0,
+
+and since λ ̸= µ we must have y H x = 0: the eigenvectors are perpendicular.
+
+6.1 Eigendecomposition: A = QΛQ⊤
+Because a symmetric matrix has a full orthonormal set of eigenvectors, we can factor it:
+
+                                                                A = Q Λ Q⊤ ,
+
+where Q has the orthonormal eigenvectors as columns (so Q−1 = Q⊤ ) and Λ = diag(λ1 , . . . , λn ).
+    In plain words. Imagine a crooked photo on the wall that you want to enlarge. You first turn it
+straight (that is Q⊤ ), then stretch it neatly along its now-horizontal and vertical edges (that is Λ),
+then turn it back to its original tilt (that is Q). A messy-looking transformation is really just turn,
+stretch, turn back.
+    Example 6.1: Eigendecomposition of a symmetric matrix
+                 
+             2 1
+   Let A =          . From det( A − λI ) = (2 − λ)2 − 1 = (λ − 1)(λ − 3) we get λ1 = 3, λ2 = 1.
+             1 2
+   Solving for eigenvectors and normalising:
+                                                                                                                 
+                                 1                             −1                      1 −1                         3 0
+              q1 = √1               ,     q2 = √1                   ,    Q = √1               ,            Λ=             .
+                     2           1               2             1               2       1 1                          0 1
+
+   A quick check confirms q1 · q2 = 0 and
+                                                                                                
+                                   ⊤              1 −1           3 0         1 1                 2 1
+                              QΛQ      = 12                                             =                  = A.✓
+                                                  1 1            0 1         −1 1                1 2
+
+
+
+         1. Original x                        2. Rotate Q > x                  3. Scale ΛQ > x                  4. Rotate back Ax
+                                                      q2                                q2
+                                                                                                                                    Ax
+        q2               q1
+
+                    x                                                                                                         x
+                                                                   q1                              q1
+
+
+
+
+    Reading A = QΛQ⊤ from right to left turns one “complicated” transformation into three simple moves
+  applied to x = (1, 0.5). (1) Q⊤ rotates into the eigenbasis. (2) Λ scales along those axes by the eigenvalues (×3
+                               and ×1). (3) Q rotates back, yielding Ax = (2.5, 2.0).
+
+
+
+6.2 The big picture: why eigendecomposition matters
+Eigenvalues, eigenvectors, and the decomposition of symmetric matrices are not curiosities —
+they are the engine room of modern data analysis.
+
+
+
+
+                                                                        11
+Lecture 4 • Unveiling the Matrix                                                                MFML / MFDS
+
+
+
+
+                             PCA: principal components are eigenvectors
+                                      of the covariance matrix
+
+
+
+
+                                                           PC2
+
+                               PC1
+
+
+
+  Principal Component Analysis. The principal components are the eigenvectors of the (symmetric) covariance
+  matrix; their eigenvalues measure the variance captured along each. Keeping the largest few compresses data
+                                              with minimal loss.
+
+
+• Principal Component Analysis (PCA). The eigenvectors of the covariance matrix point
+  along directions of maximum variance; their eigenvalues say how much variance each
+  carries. Keeping the top eigenvectors gives optimal low-dimensional projections. The Spectral
+  Theorem guarantees these directions are orthogonal and the eigenvalues real.
+• Singular Value Decomposition (SVD). Built from the eigenvectors of the symmetric Gram
+  matrices A⊤ A and AA⊤ (always positive semidefinite), SVD generalises eigendecomposition
+  to any matrix — the backbone of recommender systems, latent semantic analysis, and low-rank
+  compression.
+                                                 dy
+• Differential equations. Solutions of dt = Ay are combinations of eλt v; the signs of the
+  eigenvalues decide whether the system decays, oscillates, or blows up.
+• Quadratic forms and ellipsoids. For symmetric A, x⊤ Ax = c defines an ellipsoid whose axes
+                                                                √
+  are the eigenvectors and whose semi-axis lengths scale with 1/ λi — central to optimisation,
+  inertia tensors, and confidence regions.
+
+
+ 7    Complex vectors and Hermitian matrices
+The eigenvector picture said a matrix only rescales an eigenvector along its own line. So what
+about a pure rotation, which turns every real direction? The resolution is to let the eigenvalues
+be complex.
+    Picture a merry-go-round. As it spins, not a single horse keeps pointing the same way — every
+direction is carried around. So there is no real eigenvector to find. Complex numbers come to
+the rescue because they are built to describe rotation: the eigenvalue eiθ literally encodes “turn
+by the angle θ”.
+
+
+
+                                                      12
+Lecture 4 • Unveiling the Matrix                                                                       MFML / MFDS
+
+
+
+
+                                Rotation eigenvalues sit on the unit circle: λ = e ±iθ
+                                                          Im
+
+                                                                        e +iθ
+
+
+                                                                   θ
+                                                                                    Re
+
+
+
+                                                                        e −iθ
+
+
+
+
+  The eigenvalues of a rotation matrix Rθ live on the unit circle of the complex plane at e±iθ , always arriving as a
+                               conjugate pair. They encode “rotate by θ, scale by 1”.
+
+
+
+The rotation Rθ = cos       θ − sin θ has characteristic polynomial λ2 − 2 cos θ λ + 1, with roots
+                                     
+                       sin θ cos θ
+λ = cos θ ± i sin θ = e±iθ . Unless θ = 0 or π, these are genuinely complex and occur in conjugate
+pairs. A complex eigenvalue re±iθ encodes a rotation by θ together with scaling by r.
+     Definition 7.1: Conjugate transpose and length
+
+   For complex vectors the real recipe x⊤ x is no longer a sensible length (for x = (1 + i, 2 + i )⊤
+   it gives 6 + 3i, not even real). The repair is the conjugate-transpose x H = x⊤ , giving
+
+                       x H x = x1 x1 + · · · + xn xn = | x1 |2 + · · · + | xn |2 = ∥x∥2 ≥ 0.
+
+
+     Hermitian: symmetric, upgraded
+
+   A matrix is Hermitian if A H = A — the complex generalisation of A⊤ = A. For example
+           1 3− i
+                    satisfies A H = A. The Spectral Theorem extends perfectly: Hermitian
+                  
+   A = 3+    i 4
+   matrices have real eigenvalues and orthogonal eigenvectors. This is exactly why quantum
+   mechanics represents every physical observable (energy, momentum, spin) by a Hermitian
+   operator: measured values must be real.
+
+
+
+
+ 8     The Cholesky decomposition
+Our last factorisation specialises to symmetric, positive-definite matrices (all eigenvalues
+                                                                                           √ posi-
+tive). Such a matrix has a particularly tidy “square root”. Just as 9 = 3 × 3 lets us write 9 = 3,
+the Cholesky factor L is a kind of square root of a matrix: multiply it by its own mirror image
+and you get A back. And just like ordinary square roots, it only works for “positive” inputs —
+here, positive-definite matrices.
+
+
+
+
+                                                          13
+Lecture 4 • Unveiling the Matrix                                                                          MFML / MFDS
+
+
+
+    Theorem 8.1: Cholesky factorisation
+
+   A symmetric positive-definite matrix A can be written
+
+                                                   A = L L⊤ ,
+
+   where L is lower-triangular with positive diagonal entries.
+
+The entries of L are found one at a time, top-left to bottom-right:
+                              √              a
+                                                           q
+                        ℓ11 = a11 , ℓ21 = 21 , ℓ22 = a22 − ℓ221 , . . .
+                                             ℓ11
+Each diagonal entry is a genuine square root, which stays real only when the matrix is positive-
+definite — so Cholesky doubles as a positive-definiteness test.
+    Example 8.1: A 2 × 2 Cholesky
+
+                              √                           √       √
+                    
+                 4 2
+   For A =             : ℓ11 = 4 = 2, ℓ21 = 2/2 = 1, ℓ22 = 3 − 1 = 2. Thus
+                 2 3
+                                                                                       
+                           2 √0              ⊤         2 √0         2 √1                4 2
+                  L=               ,        LL =                                =                 = A.✓
+                           1   2                       1   2        0   2               2 3
+
+
+     The killer application: sampling a Gaussian
+
+   A multivariate Gaussian is governed by a symmetric, positive-definite covariance matrix
+   Σ. To draw a correlated sample: (1) factor Σ = LL⊤ ; (2) draw an easy uncorrelated standard-
+   normal vector z; (3) set x = Lz — now x has exactly covariance Σ. The factor L is the lens
+   that bends a featureless round cloud into the correlated ellipse the data actually has.
+
+
+
+                  round cloud z ∼ N(0, I)                             shaped sample x = Lz ∼ N(0, Σ)
+
+
+
+
+  Sampling with Cholesky. Left: an uncorrelated standard-normal cloud z ∼ N (0, I ). Right: after x = Lz the
+   cloud is stretched and tilted into N (0, Σ); the navy curves are the 1- and 2-standard-deviation covariance
+                                                      ellipses.
+
+
+
+
+                                                         14
+Lecture 4 • Unveiling the Matrix                                                      MFML / MFDS
+
+
+
+ 9    A look beyond: further properties and considerations
+
+9.1 Diagonalisability
+The factorisation A = PDP−1 (with D diagonal) is called diagonalisation, and requires n linearly
+independent eigenvectors to fill the columns of P.
+• The Spectral Theorem guarantees every real symmetric matrix is diagonalisable, and orthogo-
+  nally so (P = Q, P−1 = Q⊤ ).
+• A matrix with n distinct eigenvalues is always diagonalisable, since eigenvectors of distinct
+  eigenvalues are independent.
+• With repeated eigenvalues it might fail. The shear A = 10 11 has the single eigenvalue λ = 1
+                                                              
+
+  (algebraic multiplicity 2) but only a one-dimensional eigenspace span{(1, 0)⊤ } — too few
+  independent eigenvectors to diagonalise.
+
+9.2 Complex eigenvalues from real matrices
+A real but non-symmetric matrix can have complex eigenvalues, and they always appear in
+conjugate pairs λ = a ± bi. Geometrically (as with the rotation above) a complex pair re±iθ
+signals a rotation-and-scaling acting within an invariant plane — a motion with no fixed real
+direction.
+     The power of abstraction
+
+   Eigenvalues and eigenvectors reach far beyond matrices of numbers. They reappear as the
+   eigenfunctions of differential operators, as quantum states of Hermitian operators, and
+   throughout functional analysis. The idea never changes: find the special directions or states
+   that a transformation leaves invariant up to scaling.
+
+
+
+
+Concluding thoughts
+This journey traced a single thread. A matrix transforms space; the determinant measures
+how much it scales volume and whether it can be undone, while the trace sums the diagonal.
+Together they are the sum and product of the eigenvalues, which the characteristic equation
+det( A − λI ) = 0 hunts down — and the eigenvectors are the directions a transformation cannot
+turn. For symmetric matrices the Spectral Theorem hands us a perfect set of perpendicular
+eigen-axes and the decomposition A = QΛQ⊤ , generalised through Hermitian matrices and
+made constructive by Cholesky. These are not arrays of numbers; they are operators with a
+hidden skeleton — and seeing that skeleton is what powers PCA, SVD, simulation, dynamics,
+and quantum theory.
+
+
+
+
+                                                15
+

@@ -1,0 +1,805 @@
+     Lecture 1
+
+Math Foundations Team
+What is linear algebra?
+
+
+
+    ▶ Linear algebra is the study of vectors and rules to manipulate
+      vectors.
+    ▶ Vectors are not only the familiar geometric vectors from high
+      school (points in 2D/3D space) but any special objects which
+      can be added together and multiplied by scalar values to
+      produce another object of the same kind. For example,
+      polynomials can also be treated as vectors.
+    ▶ We shall deal with vectors in the space R n
+Idea of closure
+
+
+
+
+    ▶ Let’s say we have a bunch of mathematical objects and we
+      perform some operations on them. Do we get back similar
+      objects?
+    ▶ This leads to the idea of a vector space which underlies much
+      of machine learning.
+Systems of linear equations
+
+
+
+
+    ▶ Systems of linear equations form a central part of linear
+      algebra.
+    ▶ Many problems can be formulated as systems of linear
+      equations.
+    ▶ Tools of linear algebra can be used to solve such problems.
+Scenario: Manufacturing Problem
+
+
+
+   A furniture company produces three types of kits: Basic Chair
+   Kits, Table Kits, and Cabinet Kits. Each of these kits requires
+   specific amounts of resources, including wood, labor hours,
+   machine time, and shipping effort. The production of each kit
+   consumes different amounts of these resources. The company has
+   a limited supply of each resource. All these constraints must be
+   met exactly. The objective is to determine how many units of each
+   furniture kit—Basic Chair, Table, and Cabinet—should be
+   produced to fully utilize the available resources while satisfying all
+   the given limitations.
+Interpretation of the Matrix; Available Resources &
+Constraints
+
+
+    Resource          Basic Chair Kit (x1 )   Table Kit (x2 )   Cabinet Kit (x3 )   Total Available
+    Wood                      1 unit              2 units             1 unit            9 units
+    Labor Hours              2 hours              1 hour             1 hour             8 hours
+    Machine Time             1 hour               1 hour             2 hours            7 hours
+    Shipping Effort       3 effort units       1 effort unit      2 effort units     11 effort units
+
+
+   Objective: Determine how many units of each furniture kit to
+   produce.
+   Products:
+     ▶ x1 : Basic Chair Kit
+     ▶ x2 : Table Kit
+     ▶ x3 : Cabinet Kit
+Solving the System of Equations
+
+   Resources and Constraints:
+    ▶ Wood used: x1 + 2x2 + x3 = 9
+    ▶ Labor hours: 2x1 + x2 + x3 = 8
+    ▶ Machine time: x1 + x2 + 2x3 = 7
+    ▶ Shipping effort: 3x1 + x2 + 2x3 = 11
+   Solution:
+                     x1 = 2,   x2 = 3,   x3 = 1
+   Interpretation:
+     ▶ Produce 2 Chair Kits
+    ▶ Produce 3 Table Kits
+    ▶ Produce 1 Cabinet Kit
+Does a linear system always have solutions?
+
+
+
+
+    ▶ A linear system has zero, one or infinitely many solutions
+    ▶ Linear regression, a Machine Learning technique, provides an
+      approximate solution to an overconstrained linear system, i.e
+      one with no solution
+Example
+
+
+
+  Consider the folllowing system of linear equations
+
+                          x1 + x2 + x3 = 3
+                         x1 − x2 + 2x3 = 2
+                             2x1 + 3x3 = 1
+
+  Adding the first and second equations gives 2x1 + 3x3 = 5 which
+  contradicts the third equation. Thus there is no set of values for
+  the variables x1 , x2 , x3 such that the equations above are
+  simultaneously satisfied.
+Modified example
+
+
+   Consider a slightly modified example
+
+                           x1 + x2 + x3 = 3
+                          x1 − x2 + 2x3 = 2
+                                x2 + x3 = 2
+
+   In this case we can see from the first and third equations that
+   x1 = 1. Substituting this value of x1 into equation (2), we get
+   −x2 + 2x3 = 1. Adding this equation to equation (3), we get
+   3x3 = 3 which means x3 = 1. Substituting x3 = 1 into equation
+   (3) shows x2 = 1, so the overall solution is x1 = x2 = x3 = 1. This
+   is the unique solution to the problem
+Infinite solutions
+
+
+   Now consider another modification to the original set of equations
+
+                            x1 + x2 + x3 = 3
+                           x1 − x2 + 2x3 = 2
+                               2x1 + 3x3 = 5
+
+   Adding the first and second equations gives 2x1 + 3x3 = 5 which is
+   the same as the third equation. Thus the solution to the three
+   equations is any tuple x1 , x2 , x3 which satisfies 2x1 + 3x3 = 5, and
+   there are infinite solutions. We now express these solutions in a
+   way whose motivation will become clear later: adding equations
+   (1) and (2) above we get 2x1 = 5 − 3x3 .
+Infinite solutions
+
+     ▶ Subtracting equation (2) from (1) we get 2x2 − x3 = 1, so we
+       can write
+                                       5 3
+                              x1 =       − x3
+                                       2 2
+                                       1 x3
+                              x2 =       +
+                                       2   2
+     ▶ For the previous problem we can express the set of infinite
+       solutions in terms of the free variable x3 .
+     ▶ Once x3 is fixed, the other two variables have to take on
+       specific values - they are known as pivot variables.
+     ▶ We will show later how to identify pivot and free variables
+       using Gaussian Elimination
+Geometrical interpretation
+
+
+
+
+   The solution to linear equations can be given a geometrical
+   interpretation. When equations are given in terms of two variables,
+   the solution to two equations in two variables could be a point
+   (unique solution), a line (infinite solutions) or no solution (parallel
+   lines). The first case is shown in the next slide.
+Geometrical Interpretation
+Geometrical interpretation
+
+
+   In the second case both constraints are the same, so there are an
+   infinite number of solutions:
+Geometrical interpretation
+
+   In the third case the constraints are mutually incompatible, so
+   there is no assignment to x1 , x2 which satisfies both constraints.
+   The graph of both constraints shows a pair of parallel lines:
+Higher dimensions
+
+
+    ▶ In 3D each constraint is a plane.
+    ▶ The intersection of two planes is a line.
+    ▶ The intersection of the third plane with the first two planes
+      will be a point on the line in case of a unique solution, or it
+      may lead to pars of parallel lines (constraint 1 intersection
+      constraint 2 gives one line, constraint 1 intersection constraint
+      3 gives parallel line, constraint 2 intersection constraint gives
+      parallel line) which means there is no solution.
+    ▶ All three constraints or planes may intersect in the same line
+      which means infinite solutions.
+Matrices
+
+
+   An (m, n) matrix A is a mn tuple of elements aij arranged in m
+   rows and n columns as below:
+                                               
+                             a11 a12 . . . a1n
+                            a21 a22 . . . a2n 
+                     A= .
+                                               
+                            ..                 
+                                                
+                            am1 am2 . . . amn
+
+   Note that row and column vectors are also matrices - a row vector
+   is a (1, n) matrix and a column vector is a (m, 1) matrix. R m×n is
+   the set of all (m, n) matrices consisting of real numbers as elements
+Matrix addition and multiplication
+
+
+
+   The sum of two matrices A ∈ R m×n , B ∈ R m×n is defined as an
+   element-wise sum of the elements of the two matrices:
+                                                           
+                     a11 + b11 a12 + b12 . . . a1n + b1n
+                   a21 + b21 a22 + b22 . . . a2n + b2n 
+         A+B =
+                                                           
+                         ..                                 
+                         .                                 
+                    am1 + bm1 am2 + bm2 . . . amn + bmn
+Matrix addition and multiplication
+
+
+
+
+    ▶ The product of two matrices A ∈ R m×k , B ∈ R k×n is defined
+      as the m × n matrix C = AB where the elements cij are
+      calculated as follows: cij = l=k
+                                   P
+                                     l=1 ail blj
+    ▶ Essentially we are mutliplying the elements of the ith row of A
+      with the jth column of B.
+    ▶ The product BA is not defined if n ̸= m
+Matrix properties
+
+
+
+
+    ▶ Associativity:
+      ∀A ∈ R m×n , B ∈ R n×p , C ∈ R p×k (AB)C = A(BC )
+    ▶ Distributivity: ∀A, B ∈ R m×n ,
+      ∀C , D ∈ R n×p , (A + B)C = AC + BC , A(C + D) = AC + AD
+    ▶ Multiplication with the identity matrix: ∀A ∈ R m×n ,
+      Im A = AIn = A where Im is the m × m identity matrix and In
+      is the n × n matrix.
+Inverse and transpose
+
+
+
+
+   Consider a square matrix A ∈ R n×n . Let matrix B ∈ R n×n exist
+   such that AB = In . Does every matrix A ∈ R n×n possess an
+   inverse?
+   Let us take a simple 2 × 2 example → under what circumstances
+   does it possess an inverse?
+2 × 2 case
+
+   Define a 2 × 2 matrix A as follows:
+                                          
+                                   a   a
+                            A = 11 12
+                                   a21 a22
+
+   Define matrix B to be
+                                                
+                                 a22 −a12
+                              B=
+                                 −a21 a11
+
+   The product AB is
+                                                                 
+                           a11 a22 − a12 a21 a12 a11 − a11 a12
+             AB =
+                           a21 a22 − a22 a21 −a21 a12 + a11 a22
+2 × 2 case
+
+
+
+                                            
+         a11 a22 − a12 a21         0
+   AB =                                        = (a11 a22 − a12 a21 )I2
+                 0         a11 a22 − a12 a21
+
+   AB = (a11 a22 − a12 a21 )I2 . We can define
+                                                     
+                  −1              1          a22 −a12
+                 A =
+                         a11 a22 − a12 a21 −a21 a11
+
+   whenever a11 a22 − a12 a21 ̸= 0.
+   Bottomline is that the inverse of a square matrix exists if and only
+   of its determinant is non-zero.
+Inverse and Transpose Properties
+
+
+  For A ∈ R m×n , the matrix B ∈ R n×m with bij = aji is called the
+  transpose of A. We say B = AT . Transposition means writing the
+  rows of one matrix as the columns of the other. The following
+  properties can be shown:
+
+                          AA−1 = A−1 A = I
+                          (AB)−1 = B −1 A−1
+                    (A + B)−1 ̸= B −1 + A−1
+                                 (AT )T = A
+                       (A + B)T = AT + B T
+                            (AB)T = B T AT
+Proof of (AB)T = B T AT
+
+
+    ▶ How do we show these properties? Let us look at the last one
+      for example ...
+    ▶ The (i, j)th entry of AB is obtained by taking the inner
+      product of the ith row of A with the jth column of B.
+    ▶ But the ith row of A is the ith column of AT , and the jth
+      column of B is the jth row of B T .
+    ▶ Thus we can take the inner product of the jth row of B T with
+      the ith column of AT to get the same value for the (i, j)th
+      entry of AB. Thus when when we compute C = B T AT , we
+      find that Cji = (AB)ij , so C = (AB)T .
+Multiplication by a scalar
+
+
+
+    ▶ Let A ∈ R m×n and λ be a scalar. The λA = B such that
+      Bij = λAij , i.e every element in A is scaled by λ to get the
+      corresponding element in the scaled matrix B.
+    ▶ For λ, ψ ∈ R we have
+         ▶ associativity: (λψ)A = λ(ψA), A ∈ R m×n and
+           λ(AB) = (λA)B = A(λB) where A ∈ R m×n and B ∈ R n×k .
+    ▶ distributivity:
+         ▶ (λA)T = AT λT = AT λ = λAT since λ = λT for all λ ∈ R.
+         ▶ (λ + ψ)A = λA + ψA
+         ▶ λ(A + B) = λA + λB
+Compact representations of systems of equations
+
+
+   Consider the following system of equations:
+
+                         2x1 + 3x2 + 5x3 = 1
+                         4x1 − 2x2 − 7x3 = 8
+                         9x1 + 5x2 − 3x3 = 2
+
+   In matrix terms we can write this set of equations as
+                                     
+                       2 3       5     x1       1
+                      4 −2 −7 x2  = 8
+                       9 5 −3          x3       2
+Solving a system of equations
+
+
+
+
+    ▶ From the previous slide we see that a system of equations can
+      be expressed as Ax = b where A ∈ R m×n , x is a n × 1 matrix
+      and b is a m × 1 matrix.
+    ▶ We now look at how to obtain a particular and general
+      solution for a system of equations
+    ▶ Let us first look at an example.
+Example of system of equations
+
+
+                                   
+                                 x1     
+                         1 0 8 −4 
+                                  x2  = 42
+                                      
+                         0 1 2 12 x3    8
+                                   x4
+
+    ▶ This system has two equations and four unknowns, so it is
+      underconstrained. We expect an infinity of solutions.
+    ▶ Is there a special way in which to express the solutions to this
+      system?
+    ▶ Let us examine the structure of the given problem matrix.
+Structure of the solution
+
+
+
+    ▶ Looking at the previous slide we can see that a linear
+      combination of columns of the matrix will give the right hand
+      side.
+    ▶ The ith column vector in the matrix appears in the linear
+      combination, scaled by the corresponding xi as below.
+                                        
+                1        0         8        −4       42
+            x1     + x2     + x3      + x4       =
+                0        1         2        12        8
+Particular solution to the example
+
+
+    ▶ A closer look at the linear combination to give the right hand
+      side shows that we can take x1 = 42, x2 = 8, x3 = 0, x4 = 0
+      since the first two columns are (1, 0)T and (0, 1)T respectively.
+    ▶ Therefore a solution is
+                                  
+                                 x1       42
+                               x2   8 
+                                = 
+                               x3   0 
+                                 x4        0
+
+    ▶ This solution is called the particular solution
+Any other solutions possible?
+
+
+
+    ▶ We can generate other solutions than the particular solution,
+      by adding the vector 0 to the particular solution
+    ▶ But isn’t this the same as the particular solution as any vector
+      + 0 is that vector itself?
+    ▶ The trick is to express 0 in terms of the linear combination of
+      some vectors.
+    ▶ Describing c1 , c2 , c3 , c4 as the four column vectors associated
+      with the given matrix in the example we can see that 8c1 +
+      2c2 - 1c3 + 0c4 = 0.
+Any other solutions possible?
+
+
+
+    ▶ Writing the linear combination in terms of a matrix-vector
+      product we have
+                                        
+                                     8         
+                         1 0 8 −4      2 = 0
+                                           
+                         0 1 2 12 −1           0
+                                         0
+
+    ▶ Any vector λ(8, 2, −1, 0)T , λ ∈ R will also produce the 0
+      vector
+Any other solutions possible?
+
+
+
+
+    ▶ We can add the vector (8, 2, −1, 0)T to the original particular
+      solution          T
+           (42,
+                8, 0,
+                     0) to get another solution since
+          42      8            
+         8  2          42       0      42
+      A(  +  ) =
+                            +      =
+           0      −1        8       0      8
+           0      0
+Any other solutions possible?
+
+    ▶ Following the same line of reasoning as before, we can create
+      the 0 vector by expressing the fourth column of the matrix A
+      in terms of the first two columns - note that the first two
+      columns appear capable of generating any two-dimensional
+      vector!
+    ▶ We can see that −4c1 + 12c2 + 0c3 - 1c4 = 0.
+    ▶ Thus we have
+                                      
+                                    −4     
+                      1 0 8 −4        12   0
+                                 (λ2  ) =
+                                         
+                      0 1 2 12         0     0
+                                      −1
+Putting things together
+
+
+    ▶ We obtain the following general solution as the sum of the
+      particular solution and a linear combination of solutions to the
+      equation Ax =0 as   follows:
+                                            
+                       42            8         −4
+                       8  + λ1   + λ2  12 }
+                                   2          
+      {x ∈ R4 : x = 0          −1       0
+                        0            0         −1
+    ▶ The general approach consisted of finding a particular solution
+      to Ax = b, finding all solutions to Ax = 0 and combining the
+      particular and general solutions.
+    ▶ Neither the particular nor general solutions are unique → why?
+Algorithmic way of solving equations
+
+
+
+
+    ▶ The system of equations in our example was easy to solve
+      because of the special structure of the matrix - we could guess
+      the solution without much difficulty.
+    ▶ Can we develop an algorithmic way of solving a general
+      system of equations?
+    ▶ The answer is yes → we call the procedure Gaussian
+      elimination
+Elementary transformations
+
+
+
+    ▶ The key idea is to take a complex looking matrix and
+      transform it using elementary row operations to a simple
+      looking matrix like the one we just handled, for which
+      solutions could be obtained essentially by inspection.
+    ▶ To make this work we need to preserve solutions of the
+      original system of equations, i.e ensure that elementary
+      transformations of the original matrix do not change its
+      solutions.
+    ▶ Do such elementary transformations exist?
+What are the elementary operations?
+
+
+
+
+    ▶ Exchange of rows
+    ▶ Multiplying a row by a constant λ ∈ R\{0}
+    ▶ Adding a a row to another row
+    ▶ Question → why must any multiplier to a row be non-zero?
+Example to illustrate elementary operations
+
+
+
+   Consider the folliowing system where we seek all solutions for some
+   a ∈ R.
+
+                 −2x1 + 4x2 − 2x3 − x4 + 4x5 = −3
+                   4x1 − 8x2 + 3x3 − 3x4 + x5 = 2
+                      x1 − 2x2 + x3 − x4 + x5 = 0
+                         x1 − 2x2 − 3x4 + 4x5 = a
+Compact representation
+
+
+
+   Let us take the preceding equations and express them compactly in
+   matrix form:                                  
+                       −2 4 −2 −1 4| −3
+                      4 −8 3 −3 1| 2 
+                                                 
+                      1 −2 1 −1 1| 0 
+                       1 −2 0 −3 4| a
+   This matrix is called the augmented matrix. It is on this matrix
+   that we will perform the elementary row operations.
+Swap rows
+
+
+
+  Now swap rows 1 and 3 (R1 ↔ R3 ) in the augmented matrix to get
+                                             
+                    1 −2 1 −1 1| 0
+                   4 −8 3 −3 1| 2 
+                                             
+                  −2 4 −2 −1 4| −3
+                    1 −2 0 −3 4| a
+
+  Does this change the system of equations? No, because we are
+  swapping both left and right hand sides of the equality sign,
+  so we are still dealing with the same set of equations.
+Subtract rows
+
+
+
+                                        
+            1 −2 1 −1            1   | 0
+           4 −8 3 −3                | 2
+                                1        R2 ← R2 − 4R1
+          −2 4 −2 −1            4   | −3 R3 ← R3 + 2R1
+            1 −2 0 −3            4   | a   R4 ← R4 − R1
+   The notation above is used to convey that we could like to add
+   −4× first row to the second row, 2× the first row to the third row,
+   and 1× the first row to the fourth row to get a new augmented
+   matrix.
+New Augmented Matrix
+
+
+
+                       
+        1 −2 1 −1 1 | 0
+       0 0 −1 1 −3 | 2 
+                       
+       0 0  0 −3 6 | −3
+        0 0 −1 −2 3 | a   R4 ← R4 − R2 − R3
+  Note that the augmented matrix shown is obtained by performing
+  the operations shown on the previous slide. To get the next
+  augmented matrix we subtract the second and third rows of this
+  augmented matrix from the last row.
+New Augmented Matrix
+
+
+
+                        
+        1 −2 1 −1 1 |  0
+       0 0 −1 1 −3 |
+                         R2 ← −1 ∗ R2
+                       2 
+       0 0  0 −3 6 | −3  R3 ← −1/3 ∗ R3
+        0 0  0  0 0 | a+1
+  Now multiply the second row by -1 and the third row by −13 to get
+  the augmented matrix in its final form, known as the row-echelon
+  form.
+Row-echelon form
+
+                                    
+                    1 −2 1 −1 1 |  0
+                   0 0 1 −1 3 | −2 
+                                    
+                   0 0 0 1 −2 |   1 
+                    0 0 0 0   0 | a+1
+   We can revert to the set of equations represented by the
+   augmented matrix as follows. These equations are equivalent to
+   the original set of equations:
+
+                  x1 − 2x2 + x3 − x4 + x5 = 0
+                            x3 − x4 + 3x5 = −2
+                                 x4 − 2x5 = 1
+                                        0 = a+1
+Existence of solution and particular solution
+
+
+    ▶ The preceding set of equations cannot be solved when
+      a ̸= −1.
+    ▶ The last equation is consistent only for a = −1.
+    ▶ A particular solution is
+                                    
+                                  x1      2
+                                 x2   0 
+                                    
+                                 x3  = −1
+                                    
+                                 x4   1 
+                                  x5      0
+General Solution
+
+
+
+
+                                      
+                       2         2        2
+                     0        1      0
+        x ∈ R5 : x = 
+                                      
+                      −1
+                      
+                          + λ1 0 + λ2 −1 , λ1 , λ2 ∈ R
+                                        
+                     1        0      2
+                       0         0        1
+Row-echelon form definition
+
+    ▶ All rows that contain only zeros are at the bottom of the
+      matrix.
+    ▶ All rows that contain at least one nonzero element are on top
+      of rows that contain only zeros.
+    ▶ Considering only the non-zero rows, the first non-zero element
+      in a given row is called the pivot and is always to the right of
+      the pivot in the row above it.
+    ▶ The positions of the pivots in the non-zero rows give rise to a
+      staircase pattern.
+    ▶ The variables corresponding to the pivot variables are called
+      basic variables and those corresponding to the non-pivot
+      positions correspond to the free variables.
+Finding the particular solution
+
+    ▶ The row echelon form makes finding a particular solution easy
+    ▶ Remember that the idea is that a linear combination of the
+      pivot columns must give the right hand side.
+    ▶ In the example above this means that
+                                        
+                        1        1        −1       0
+                       0      1      −1 −2
+                    λ1 
+                       0 + λ2 0 + λ3  1  =  1 
+                                         
+
+                        0        0         0       0
+
+    ▶ This looks like any regular linear combination for which we
+      need to find the coefficients λ1 , λ2 , λ3 , so how is this really
+      different from the original problem Ax = b?
+Finding a particular solution
+
+
+
+    ▶ The linear combination from the previous slide is easily solved.
+    ▶ Start with finding the value of λ3 . We can see that the third
+      equation establishes λ3 = 1.
+    ▶ The second equation involves only λ2 and λ3 . Plugging the
+      just discovered value of λ3 into the second equation, we can
+      find λ2 = −1.
+    ▶ Now we can plug the values of λ2 , λ3 into the first equation
+      to get λ1 = 2
+Reduced row-echelon form
+
+
+
+
+    ▶ We can convert the row-echelon form into a simpler form
+      called the reduced row-echelon form.
+    ▶ In reduced row-echelon form, every pivot is equal to 1.
+    ▶ The pivot is the only non-zero entry in its column
+    ▶ Therefore the pivot columns look like canonical basis vectors
+      of R m where the original given matrix A is a R m×n matrix.
+Example
+
+
+   ▶ Consider the following matrix in reduced row-echelon form.
+                                       
+                             1 3 0 0 3
+                        A = 0 0 1 0 9 
+                             0 0 0 1 −4
+
+   ▶ To find solutions for Ax = 0 we need to look at non-pivot
+     columns and note that the pivot columns are ”strong enough”
+     to generate the non-pivot columns.
+   ▶ Our strategy to find solutions to Ax = 0 is to find linear
+     combinations of the pivot columns to the left of a non-pivot
+     column to cancel out the non-pivot column, while setting all
+     other coefficients to zero.
+Example continued
+
+
+    ▶ Thus we note that the second column is a non-pivot column
+      which can be expressed as a multiple of the first column such
+      that 3 times the first column + -1 * second column is equal
+      to zero. This gives us our first solution.
+                                    
+                                      3
+                                   −1
+                                    
+                                   0
+                                    
+                                   0
+                                      0
+Example continued
+
+
+
+    ▶ Similarly we note that 3 × the first column + 9 × the third
+      column + -4 × the fourth column + − 1× the fifth column is
+      equal to zero. This gives us our second solution:
+                                   
+                                     3
+                                  0
+                                   
+                                  9
+                                   
+                                  −4
+                                    −1
+General solution
+
+
+
+    ▶ If x1 and x2 are solutions to Ax = 0, then any linear
+      combination λ1 x1 + λ2 x2 , λ1 , λ2 ∈ R is also a solution
+    ▶ Thus the general solution to the problem is
+                                          
+                                  3          3
+                                −1       0
+               x ∈ R 5 : x = λ1 
+                                          
+                                 0  + λ2  9  , λ1 , λ2 ∈ R
+                                           
+                                0        −4
+                                  0         −1
+Gaussian elimination
+
+
+
+    ▶ Consider the system of equations Ax = b where A is a n × n
+      matrix.
+    ▶ If A is invertible, it means that A−1 exists such that
+      AA−1 = A−1 A = In
+    ▶ In such a case the row-reduced echelon form of A is In , i.e
+      every column is a pivot column where the pivot is 1.
+    ▶ The process of converting A to In that we have discussed
+      above is called Gaussian Elimination
+Gaussian elimination
+
+
+    ▶ In Gaussian Elimination we use multiples of the first row to
+      eliminate the entries in the first column below the first row.
+    ▶ Then we use multiples of the second row to eliminate entries
+      in the second column below the second row and so on until we
+      get an upper-triangular matrix.
+    ▶ This process is shown diagramatically in the next slide.
+    ▶ Then we take multiples of the last row to eliminate non-zero
+      entries in the last column above the last entry, followed by
+      multiples of the last but one row to eliminate non-zero entries
+      in the last but one column and so on. This gives us a diagonal
+      matrix.
+Gaussian elimination diagram
+Calculating inverse
+
+
+    ▶ Can the Gaussian elimination procedure calculate the inverse
+      of a matrix?
+    ▶ For example, let A be a n × n matrix whose inverse A−1
+      exists. We would like to compute its inverse using Gaussian
+      elimination. Is this possible?
+    ▶ Yes we can compute the inverse in the following way: we
+      simply set up n linear systems of the form Ax = ei , 1 ≤ i ≤ n
+      where ei is the ith canonical basis vector and find their
+      solutions x. Each solution vector constitutes a column in A−1 .
+      Why is this true?
+Calculating Inverse
+
+
+    ▶ Consider the linear system Ax = ei .
+    ▶ Gaussian elimination will convert this sytem to the equivalent
+      system In x = ci whose solution is x = ci .
+    ▶ On the other hand, the solution to Ax = ei is x = A−1 ei .
+    ▶ Since the two systems are equivalent they have the same
+      solution, so x = ci = A−1 ei which means ci is the ith column
+      of A−1 .
+    ▶ Thus when we create the augmented matrix [Aei ], Gaussian
+      elimination will convert it into [In ci ].
+    ▶ We can solve n linear systems at once by letting the
+      augmented matrix be [ A          In ] which will become [In A−1 ].
+

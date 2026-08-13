@@ -1,0 +1,1669 @@
+MFML · ZC416                                                            Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+    WILP, BITS Pilani
+     MATHEMATICAL FOUNDATIONS FOR MACHINE LEARNING · PRACTICE SET
+
+
+
+     Linear Systems by REF, RREF
+     and Rank
+    Ten solved problems, with the concepts you need first
+
+     Prof. Saurabh
+
+
+     Module 1 · Concepts, then 7 core problems, then 3 hard ones · Every step shown, nothing skipped
+
+
+
+
+Prepared for the Work Integrated Learning Programmes (WILP), BITS Pilani.
+
+How to use this set. Part I builds the ideas from scratch. Read it once, slowly. Part II has seven
+problems at easy and medium level. Part III has three harder ones. Every problem is stated in
+a navy box. Cover the page below it and try the problem yourself. Then read the green box,
+which works it out step by step with no gaps. The red boxes hold the mistake most students
+actually make. The purple box is the one line to remember.
+
+
+1 Solve one right now
+You already know how to do this. The matrix work is only bookkeeping.
+
+Here are two equations:
+
+                                                     x + 2y = 8                                                  (1)
+                                                     3x − y = 3                                                  (2)
+
+Multiply (1) by 3 and subtract it from (2). The x term dies:
+
+                (3x − y) − 3( x + 2y) = 3 − 3(8)            =⇒      −7y = −21          =⇒       y = 3.
+
+Put y = 3 back into (1): x + 6 = 8, so x = 2.
+That is the whole method. You killed one unknown, solved for the other, then walked backwards.
+Everything in this document is that same move, written in a tidier way so it never gets confusing
+with five unknowns and four equations.
+
+      ✓ Key takeaway
+   Gaussian elimination is one idea: use an equation to delete an unknown from the equations
+   below it. Repeat. Then walk back up.
+
+
+
+
+WILP, BITS Pilani                                          1
+MFML · ZC416                                                Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+2 Drop the letters: the augmented matrix
+The names x, y, z carry no information. Only the numbers matter, so keep only the
+numbers.
+
+Take a system of m equations in n unknowns. Write it as Ax = b, where A is the m × n
+coefficient matrix, x is the column of unknowns, and b is the column of right-hand sides. For
+the warm-up above:                                           
+                                   1 2            x              8
+                           A=             ,  x=      ,     b=       .
+                                   3 −1           y              3
+
+Now glue b onto the right of A as one extra column. That is the augmented matrix, written
+[ A | b ]:                                           
+                                              1 2 8
+                                 [ A | b] =             .
+                                              3 −1 3
+
+The vertical bar is only a reminder. It says: columns left of the bar belong to unknowns, the
+column right of the bar is the answer side. Row i of the augmented matrix is equation i.
+
+      ⋆ Everyday picture
+   Think of a recipe card. “2 cups flour, 3 eggs, 1 cup milk → 12 pancakes” carries the
+   same content as “2 f + 3e + 1m = 12”. The words “flour”, “eggs”, “milk” are just column
+   headings. Once everyone agrees on the column order, you can throw the headings away
+   and keep the row of numbers.
+
+
+      ✗ Watch out
+   Line up your columns before you write the matrix. If an equation is 2y + x = 5, the row is
+   [ 1 2 | 5 ], not [ 2 1 | 5 ]. And a missing unknown is a zero, not a blank: x + z = 4 in three
+   unknowns is [ 1 0 1 | 4 ].
+
+
+
+
+WILP, BITS Pilani                                2
+ MFML · ZC416                                             Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+ 3 Three legal moves
+ Only three operations are allowed on rows, and each one can be undone. That is why
+ the answer never changes.
+
+ An elementary row operation is one of these three:
+
+(R1) Swap. Exchange row i and row j. Written Ri ↔ R j .
+
+(R2) Scale. Multiply a whole row by a nonzero number c. Written Ri → cRi .
+
+(R3) Add a multiple. Replace row i by row i plus c times row j, where i ̸= j. Written Ri →
+     Ri + cR j .
+
+ Each move matches a safe move on the equations themselves. Swapping is writing the equations
+ in a different order. Scaling is multiplying both sides of one equation by the same nonzero
+ number. Adding a multiple is adding one true equation to another true equation.
+ Why does the solution set survive? Because every move is reversible. A swap is undone by the
+ same swap. Scaling by c is undone by scaling by 1/c, which needs c ̸= 0. Adding cR j is undone
+ by adding −cR j . So the new system and the old system have exactly the same solutions. Two
+ systems related this way are called row equivalent.
+
+       ✗ Watch out
+    Two traps. First, c = 0 is banned in (R2): multiplying a row by zero destroys an equation
+    and cannot be undone. Second, in (R3) you may not use row i to change itself; R2 →
+    R2 − R2 is not a legal move, it just erases a row.
+
+
+       ✓ Key takeaway
+    Row operations never create or destroy solutions. They only change how the same solution
+    set is written.
+
+
+
+
+ WILP, BITS Pilani                              3
+MFML · ZC416                                                 Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+4 REF: build the staircase
+Push zeros into the bottom-left corner until the leading entries form a descending
+staircase.
+
+In any nonzero row, the pivot (also called the leading entry) is the first nonzero number as you
+read left to right.
+A matrix is in row echelon form, or REF, when all three hold:
+
+E1. Every all-zero row sits at the bottom.
+
+E2. The pivot of each row is strictly to the right of the pivot of the row above it.
+
+E3. Everything below a pivot, in that pivot’s own column, is zero.
+
+Condition E2 is what makes the staircase. Each step down moves you at least one column right,
+and sometimes more than one.
+Here is a matrix in REF, with pivots shown in bold:
+                                                         
+                                        2    1 −3    4 5
+                                       0
+                                            0 1     2 −1 
+                                                          
+                                       0    0 0     5 3 
+                                        0    0 0     0 0
+
+The pivots sit in columns 1, 3, 4. Column 2 was skipped, which is allowed. The zero row is at
+the bottom, which is required.
+A column of A that contains a pivot is a pivot column. A column of A with no pivot is a free
+column. This split is the single most useful thing REF gives you, and Section 7 explains why.
+
+      ☞ The intuition
+   REF is a triangle of zeros in the bottom-left corner. Once you have it, the last nonzero
+   equation involves the fewest unknowns, so you can solve it first and climb upward. That
+   climb is called back substitution.
+
+
+      ✗ Watch out
+   REF is not unique. Different people doing different legal moves land on different REF
+   matrices from the same start. That is fine. What is the same for everyone is which columns
+   hold the pivots, and so how many pivots there are.
+
+
+
+
+WILP, BITS Pilani                                4
+MFML · ZC416                                                Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+5 RREF: clean above the pivots too
+Make every pivot equal to 1, then clear its column above and below. Now the answer
+can be read straight off the page.
+
+A matrix is in reduced row echelon form, or RREF, when it is in REF and also:
+
+E4. Every pivot equals 1.
+
+E5. In a pivot’s column, every other entry is 0 — above it as well as below it.
+
+Reducing the REF matrix above to RREF gives:
+
+                                    1 12 0 0 2
+                                                
+                                             5
+                                   0 0 1 0 − 11 
+                                              5 
+                                  
+                                   0 0 0 1  3   
+                                             5
+                                                 
+                                    0 0 0 0  0
+
+The extra work buys you something real. In RREF each pivot variable appears in exactly one
+equation, with coefficient 1. So there is no back substitution left to do. You just read the answer.
+Going all the way to RREF is called Gauss–Jordan elimination. Stopping at REF and climbing
+back up is called Gaussian elimination.
+
+      ✽ Wait — really?
+   REF is not unique, but RREF is. Every matrix has exactly one RREF, no matter which legal
+   moves you use or in which order. So two people who both reduce fully must end up with
+   identical matrices. If your RREF differs from a friend’s, one of you made an arithmetic
+   slip.
+
+
+
+
+Figure 1: Left: REF. The gold line is the staircase, and each pivot starts a new step further right.
+Right: RREF, where every pivot is 1 and its column is otherwise empty. Column 2 holds no
+pivot, so x2 is free.
+
+      ✗ Watch out
+   Do not chase RREF when the question only asks for rank or for consistency. Rank is
+   visible as soon as you reach REF. Reducing further costs time and adds chances to make a
+
+
+
+WILP, BITS Pilani                                5
+MFML · ZC416                                           Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   mistake. Go to RREF when you actually want the solution written out.
+
+
+
+
+WILP, BITS Pilani                            6
+MFML · ZC416                                              Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+6 Rank: just count the pivots
+The rank of a matrix is the number of pivots in its echelon form. Nothing more.
+
+The rank of a matrix A, written rank( A), is the number of pivots in any REF of A. Equivalently,
+it is the number of nonzero rows once you finish eliminating.
+Three facts you will use constantly:
+
+ • rank( A) counts the genuinely independent equations. Rows that are combinations of other
+   rows collapse to zero and contribute nothing.
+
+ • For an m × n matrix, rank( A) ≤ min(m, n). You cannot have more pivots than rows, and
+   you cannot have more than one pivot per column.
+
+ • rank([ A | b]) ≥ rank( A), always. Adding a column can only keep the pivot count the same
+   or push it up by one.
+
+That last point matters more than it looks. The extra column b can supply at most one new pivot.
+So there are only two possibilities: rank([ A | b]) = rank( A), or rank([ A | b]) = rank( A) + 1.
+The whole theory of Section 7 hangs on which of these two happens.
+
+      ☞ The intuition
+   Rank is the amount of real information in the system. Five equations of rank 3 means two
+   of them were repeats in disguise, and you truly have only three constraints.
+
+
+      ✗ Watch out
+                                                                                       1 2
+   Count pivots, not nonzero entries, and count them in echelon form. The matrix         24    has
+   four nonzero entries but rank 1, because R2 − 2R1 wipes the second row out.
+
+
+
+
+WILP, BITS Pilani                              7
+MFML · ZC416                                                 Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+7 The two-switch test: 0, 1, or infinitely many
+Compare rank( A) with rank([ A | b]), then compare it with n. Those two comparisons
+decide everything.
+
+A system is consistent if it has at least one solution, and inconsistent if it has none. Let A be
+m × n, so n is the number of unknowns, and write r = rank( A).
+
+   The rank criterion (Rouché–Capelli theorem)
+    • If rank( A) < rank([ A | b]), the system has no solution.
+    • If rank( A) = rank([ A | b]) = n, the system has exactly one solution.
+    • If rank( A) = rank([ A | b]) = r < n, the system has infinitely many solutions,
+      described by n − r free parameters.
+
+Read it as two switches, checked in order.
+Switch 1: is it consistent? During elimination, watch for a row that reads [ 0 0 · · · 0 | c ] with
+c ̸= 0. As an equation that says 0 = c, which is false. One such row and the system is dead. In
+rank language, that row is a pivot in the b column, so rank([ A | b]) exceeds rank( A).
+Switch 2: how many answers? Given consistency, compare r with n. If every unknown owns a
+pivot, each one is pinned down and the answer is unique. If some unknown has no pivot, it is
+free to be anything, and each choice gives a different solution. So the count of free unknowns is
+n − r, and any n − r > 0 means infinitely many solutions.
+
+
+
+
+Figure 2: Two unknowns, so each equation is a line. The three cases of the rank criterion are the
+only three ways two lines can sit. Notice there is no picture for “exactly two solutions” — that
+case cannot exist.
+
+      ✽ Wait — really?
+   A linear system can never have exactly 2, or 7, or 100 solutions. It has 0, or 1, or infinitely
+   many. The reason is short: if u andv both solve Ax = b, then so does u + t(v − u) for
+   every real t, because A u + t(v − u) = b + t(b − b) = b. Two answers force a whole line
+   of them.
+
+
+
+
+WILP, BITS Pilani                                8
+MFML · ZC416                                             Session 1 · Linear Systems: REF, RREF & Rank
+
+
+      ✗ Watch out
+   Never compute rank( A) from one elimination and rank([ A | b]) from a fresh, separate
+   elimination. Row-reduce the augmented matrix once. Then rank( A) is the pivot count in
+   the first n columns, and rank([ A | b]) is the pivot count across all n + 1 columns. Same
+   picture, two readings.
+
+
+
+
+WILP, BITS Pilani                              9
+MFML · ZC416                                                        Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+8 Free variables and the shape of the answer
+Every solution is one fixed answer plus anything the free variables are allowed to add.
+
+Suppose the system is consistent with r pivots and n unknowns, and r < n. Here is the
+procedure that turns RREF into a written answer.
+
+1. Mark the pivot columns. Their variables are basic variables.
+
+2. Every remaining variable is a free variable. There are n − r of them.
+
+3. Give each free variable its own parameter: xfree = s, t, and so on.
+
+4. Each row of the RREF now reads “one basic variable = number − (stuff involving the free
+   variables)”. Write it out.
+
+5. Collect the whole thing into vector form.
+
+The vector form always looks like this:
+                              x =          xp             + s v1 + t v2 + · · ·
+                                          |{z}              |      {z        }
+                                    particular solution        null space part
+
+where x p is what you get by setting every free variable to zero, and the vectors v1 , v2 , . . . solve
+the matching homogeneous system Ax = 0. The set of all solutions of Ax = 0 is called the
+null space of A, and its dimension is n − r. That statement, rank( A) + nullity( A) = n, is the
+rank–nullity theorem.
+
+
+
+
+Figure 3: Left: the solutions of Ax = b from Problem 4 form a line that does not pass through
+the origin. Right: the solutions of Ax = 0 form the parallel line through the origin. The two are
+the same direction; x p just shifts one onto the other.
+
+      ⋆ Everyday picture
+   A bus route and a bus timetable. The null space is the route: the set of directions you are
+   allowed to move. The particular solution is where the bus starts. Every valid position is
+   start point plus some distance along the route.
+
+
+
+WILP, BITS Pilani                                    10
+MFML · ZC416                                           Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+      ✓ Key takeaway
+   Number of free variables = n − r. That single number tells you whether the answer is a
+   point (0 free), a line (1 free), a plane (2 free), and so on.
+
+
+
+
+WILP, BITS Pilani                            11
+MFML · ZC416                                              Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+9 Homogeneous systems get a free pass
+When b = 0, the system always has an answer. The only question is whether it has more
+than the boring one.
+
+A system is homogeneous when b = 0, that is Ax = 0. Setting every unknown to zero always
+works, so x = 0 is always a solution. It is called the trivial solution.
+This means Switch 1 can never fail. The last column of [ A | 0] is all zeros, and row operations
+keep it all zeros, so rank([ A | 0]) = rank( A) automatically. A homogeneous system is never
+inconsistent.
+So only Switch 2 is live:
+
+        r = n =⇒ only x = 0;       r < n =⇒ infinitely many, with n − r free variables.
+
+One consequence is worth memorising. If a homogeneous system has more unknowns than
+equations, then r ≤ m < n, so r < n is forced. A homogeneous system with more unknowns
+than equations always has a nonzero solution.
+
+      ✓ Key takeaway
+   Homogeneous: never inconsistent. Either the trivial solution alone, or a whole subspace
+   of solutions of dimension n − r.
+
+
+
+
+WILP, BITS Pilani                              12
+MFML · ZC416                                                  Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+10 The recipe, and the four mistakes
+One checklist covers every problem in this set.
+
+
+   Standard attack
+    1. Write [ A | b], columns lined up, missing terms as 0.
+    2. Row-reduce to REF. Work left to right, one pivot column at a time, clearing everything
+       below each pivot before moving on.
+    3. Read rank( A) (pivots in the first n columns) and rank([ A | b]) (pivots overall).
+    4. Switch 1: if rank( A) < rank([ A | b]), stop and write “no solution”.
+    5. Switch 2: if rank = n, unique. If rank = r < n, infinitely many with n − r parameters.
+    6. If a solution is wanted, continue to RREF, name the free variables, and write the vector
+       form.
+    7. Substitute your answer back into the original equations.
+
+
+      ✗ Watch out
+   The four mistakes that cost the most marks:
+ M1. Dividing by a parameter. If a pivot is k − 3, you may not divide by it until you have
+     said k ̸= 3, and you must handle k = 3 as its own case.
+ M2. Two operations that share a source row in one step. Doing R2 → R2 − 2R1 and
+     R1 → R1 + R2 “simultaneously” is ambiguous. One at a time, and write down what
+     you did.
+ M3. Calling [ 0 0 0 | 0 ] inconsistent. That row is harmless. Only [ 0 0 0 | c ] with c ̸= 0 kills
+     the system.
+ M4. Counting free variables as n − m. It is n − r. Equations that collapse to zero rows do
+     not count.
+
+
+
+
+WILP, BITS Pilani                                13
+MFML · ZC416                        Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+    PART II · PRACTICE SET A
+
+
+    The core seven: easy and medium
+
+
+
+
+WILP, BITS Pilani              14
+MFML · ZC416                                                    Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+11 Problem 1 — A 2 × 2 system, done twice
+
+      ✍ Problem 1 · Easy
+   Solve the system below. Do it first by reducing to REF and back substituting, then again
+   by going all the way to RREF. State rank( A), rank([ A | b]) and the number of unknowns,
+   and use them to justify the number of solutions.
+
+                                             x + 2y = 8
+                                             3x − y = 3
+
+
+What this tests. The mechanics of one elimination step, and the difference between stopping at
+REF and pushing on to RREF.
+
+      ✎ Worked example: Problem 1, method 1 — REF and back substitution
+   Step 1.      Write the augmented matrix. Two unknowns, so n = 2.
+                                                            
+                                                      1 2 8
+                                         [ A | b] =
+                                                      3 −1 3
+
+   Step 2.      Clear below the first pivot. The pivot is the 1 in position (1, 1). To kill the 3
+                under it, use R2 → R2 − 3R1 . Compute the new row entry by entry:
+
+                           3 − 3(1) = 0,  −1 − 3(2) = −7,      3 − 3(8) = −21.
+                                                                     
+                                   1 2 8     R2 → R2 −3R1   1 2     8
+                                            −−−−−−−→
+                                   3 −1 3                   0 −7 −21
+                This is REF. Pivots are 1 (column 1) and −7 (column 2).
+   Step 3.      Read the ranks. Two pivots inside the first two columns, so rank( A) = 2. No
+                pivot appears in the b column, so rank([ A | b]) = 2 as well. And n = 2.
+   Step 4.      Classify. Since rank( A) = rank([ A | b]) = 2 = n, the system has exactly one
+                solution.
+   Step 5.      Back substitute. The last row says −7y = −21, so y = 3. The first row says
+                x + 2y = 8, so x = 8 − 2(3) = 2.
+   Step 6.      Check in the originals. 2 + 2(3) = 8 ✓ and 3(2) − 3 = 3 ✓.
+
+    Answer. x = 2, y = 3. Unique, because rank( A) = rank([ A | b]) = 2 = n.
+
+
+      ✎ Worked example: Problem 1, method 2 — all the way to RREF
+   Step 1.      Start from the REF above.
+                                                                   
+                                                   1 2   8
+                                                   0 −7 −21
+
+   Step 2.      Make the second pivot equal to 1. Scale with R2 → − 17 R2 :
+                                                               
+                                                        1 2 8
+                                                        0 1 3
+
+
+WILP, BITS Pilani                                  15
+MFML · ZC416                                                 Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 3.      Clear above that pivot. Column 2 still has a 2 sitting above the pivot. Use
+                R1 → R1 − 2R2 :
+
+                                1 − 0 = 1,     2 − 2(1) = 0,      8 − 2(3) = 2.
+                                                           
+                                                   1 0 2
+                                                   0 1 3
+                This is the RREF.
+   Step 4.      Read the answer. The rows now say x = 2 and y = 3 directly. No back
+                substitution was needed.
+
+    Answer. Same solution, x = 2, y = 3. The RREF of [ A | b] is [ I | (2, 3)⊤ ].
+
+
+      ✓ Key takeaway
+   When the left block of the RREF turns out to be the identity matrix, the right column is the
+   solution. That only happens when rank( A) = n = m.
+
+
+
+
+WILP, BITS Pilani                                16
+MFML · ZC416                                                 Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+12 Problem 2 — Three unknowns, one answer
+
+      ✍ Problem 2 · Easy
+   Use Gauss–Jordan elimination to solve
+
+                                             x+y+z = 6
+                                            2x − y + z = 3
+                                            x + 2y − z = 2
+
+   Confirm your classification with the rank criterion.
+
+
+What this tests. Handling three rows without losing track, and using a row swap to dodge
+fractions.
+
+      ✎ Worked example: Problem 2 — full Gauss–Jordan
+   Step 1.      Augmented matrix. Here n = 3.
+                                                    
+                                            1 1  1 6
+                                           2 −1 1 3 
+                                            1 2 −1 2
+
+   Step 2.      Clear column 1 below the pivot. Two operations, both using R1 . For R2 →
+                R2 − 2R1 :
+
+                           2 − 2 = 0,     −1 − 2 = −3,   1 − 2 = −1,    3 − 12 = −9.
+
+                For R3 → R3 − R1 :
+
+                             1 − 1 = 0,    2 − 1 = 1, −1 − 1 = −2,      2 − 6 = −4.
+                                                              
+                                                 1 1    1    6
+                                               0 −3 −1 −9 
+                                                 0 1 −2 −4
+   Step 3.      Swap to get a friendly pivot. The next pivot should sit in column 2. Taking −3
+                would force fractions immediately, so swap: R2 ↔ R3 .
+                                                               
+                                               1 1      1     6
+                                             0 1 −2 −4 
+                                               0 −3 −1 −9
+
+   Step 4.      Clear below the second pivot. Use R3 → R3 + 3R2 :
+
+                          −3 + 3(1) = 0,     −1 + 3(−2) = −7, −9 + 3(−4) = −21.
+                                                             
+                                                1 1 1      6
+                                               0 1 −2 −4 
+                                                0 0 −7 −21
+                This is REF, with three pivots.
+   Step 5.      Classify before finishing. rank( A) = 3, rank([ A | b]) = 3, n = 3. All equal, so
+                exactly one solution exists.
+
+
+
+WILP, BITS Pilani                                 17
+MFML · ZC416                                                  Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 6.      Normalise the third pivot. R3 → − 17 R3 gives [ 0 0 1 | 3 ].
+                                                         
+                                                1 1 1  6
+                                               0 1 −2 −4 
+                                                0 0 1  3
+
+   Step 7.      Clear column 3 above the pivot. Two operations: R2 → R2 + 2R3 gives −4 +
+                2(3) = 2 in the last slot and −2 + 2 = 0 in column 3. Then R1 → R1 − R3 gives
+                6 − 3 = 3 and 1 − 1 = 0.                      
+                                                   1 1 0 3
+                                                  0 1 0 2 
+                                                   0 0 1 3
+   Step 8.      Clear column 2 above the pivot. R1 → R1 − R2 gives 3 − 2 = 1.
+                                                         
+                                                1 0 0 1
+                                              0 1 0 2 
+                                                0 0 1 3
+
+                This is the RREF.
+   Step 9.      Check in the originals. 1 + 2 + 3 = 6 ✓; 2(1) − 2 + 3 = 3 ✓; 1 + 2(2) − 3 = 2
+                ✓.
+
+    Answer. x = 1, y = 2, z = 3. Unique, since rank( A) = rank([ A | b]) = 3 = n.
+
+
+      ✗ Watch out
+   Clear column 3 before column 2 when going upward. If you clean column 2 first, the later
+   column-3 operation puts new junk back into column 2 and you loop forever. Going right
+   to left on the way up is the rule.
+
+
+
+
+WILP, BITS Pilani                                 18
+MFML · ZC416                                                     Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+13 Problem 3 — When the numbers refuse
+
+      ✍ Problem 3 · Easy
+   Show that the following system has no solution, and identify the exact row of the reduced
+   matrix that proves it.
+                                         x+y+z = 3
+                                            2x + 3y + z = 5
+                                           3x + 4y + 2z = 10
+
+
+What this tests. Spotting inconsistency, and saying why in rank language rather than by feel.
+
+      ✎ Worked example: Problem 3 — detecting inconsistency
+   Step 1.      Augmented matrix.                         
+                                                  1 1 1 3
+                                                 2 3 1 5 
+                                                  3 4 2 10
+   Step 2.      Clear column 1. With R2 → R2 − 2R1 :
+                              2 − 2 = 0,   3 − 2 = 1,     1 − 2 = −1,      5 − 6 = −1.
+                With R3 → R3 − 3R1 :
+                              3 − 3 = 0,    4 − 3 = 1, 2 − 3 = −1,         10 − 9 = 1.
+                                                              
+                                                  1 1 1      3
+                                                0 1 −1 −1 
+                                                  0 1 −1 1
+                Rows 2 and 3 now agree on the left of the bar but disagree on the right. That is
+                the whole story, and the next step makes it official.
+   Step 3.      Clear below the second pivot. R3 → R3 − R2 :
+                           0 − 0 = 0,   1 − 1 = 0, −1 − (−1) = 0,           1 − (−1) = 2.
+                                                            
+                                                1 1 1     3
+                                               0 1 −1 −1 
+                                                0 0 0     2
+   Step 4.      Read the fatal row. Row 3 is [ 0 0 0 | 2 ]. As an equation it says
+                                    0 · x + 0 · y + 0 · z = 2,   that is   0 = 2,
+                which no choice of x, y, z can make true.
+   Step 5.      Say it with ranks. Inside the first three columns there are two pivots, so
+                rank( A) = 2. Across all four columns there are three pivots, because row 3
+                has its pivot in the b column, so rank([ A | b]) = 3. Since rank( A) = 2 < 3 =
+                rank([ A | b]), the system is inconsistent.
+   Step 6.      Where it came from. Notice R1 + R2 = [ 3 4 2 ] on the left, matching row
+                3 exactly. So the left sides satisfy eq1 + eq2 = eq3 , but the right sides give
+                3 + 5 = 8 ̸= 10. The equations contradict each other.
+
+    Answer. No solution. The row [ 0 0 0 | 2 ] proves it, and in rank terms rank( A) = 2 <
+    rank([ A | b]) = 3.
+
+
+
+WILP, BITS Pilani                                   19
+MFML · ZC416                                                Session 1 · Linear Systems: REF, RREF & Rank
+
+
+      ✗ Watch out
+   Once you hit a row [ 0 · · · 0 | c ] with c ̸= 0, stop. Do not carry on to RREF and do not try
+   to write a solution. There is nothing further to compute.
+
+
+
+
+WILP, BITS Pilani                               20
+MFML · ZC416                                                  Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+14 Problem 4 — A whole line of answers
+
+      ✍ Problem 4 · Medium
+   Solve
+                                              x+y+z = 3
+                                            2x + 3y + z = 5
+                                           3x + 4y + 2z = 8
+   Give the general solution in parametric form and in vector form, and state how many free
+   variables there are and why.
+
+
+What this tests. The same matrix A as Problem 3 with a different b. One number changed and
+the answer went from “none” to “infinitely many”.
+
+      ✎ Worked example: Problem 4 — the general solution
+   Step 1.      Augmented matrix.                        
+                                                  1 1 1 3
+                                                 2 3 1 5 
+                                                  3 4 2 8
+   Step 2.      Clear column 1. R2 → R2 − 2R1 gives [ 0 1 −1 | −1 ] exactly as before.
+                R3 → R3 − 3R1 now gives
+
+                             3 − 3 = 0,    4 − 3 = 1, 2 − 3 = −1,       8 − 9 = −1.
+                                                             
+                                                 1 1 1      3
+                                               0 1 −1 −1 
+                                                 0 1 −1 −1
+   Step 3.      Clear below the second pivot. R3 → R3 − R2 wipes row 3 out completely:
+                                                           
+                                              1 1 1      3
+                                            0 1 −1 −1 
+                                              0 0 0      0
+
+                This is REF. The zero row is harmless: it says 0 = 0.
+   Step 4.      Classify. Two pivots in the first three columns, so rank( A) = 2. No pivot in the
+                b column, so rank([ A | b]) = 2 too. They match, so the system is consistent. But
+                r = 2 < 3 = n, so there are infinitely many solutions, with
+
+                                        n−r = 3−2 = 1       free variable.
+
+   Step 5.      Go to RREF. Both pivots are already 1. Only column 2 needs cleaning above,
+                using R1 → R1 − R2 :
+
+                           1 − 0 = 1,     1 − 1 = 0, 1 − (−1) = 2,      3 − (−1) = 4.
+                                                              
+                                                 1 0 2      4
+                                                0 1 −1 −1 
+                                                 0 0 0      0
+   Step 6.      Name the variables. Pivots sit in columns 1 and 2, so x and y are basic. Column
+                3 has no pivot, so z is free. Set z = t, where t is any real number.
+
+
+
+WILP, BITS Pilani                                   21
+MFML · ZC416                                                  Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 7.      Read the rows. Row 1 says x + 2z = 4, so x = 4 − 2t. Row 2 says y − z = −1,
+                so y = −1 + t.
+   Step 8.      Parametric form.
+
+                                 x = 4 − 2t,   y = −1 + t,       z = t,      t ∈ R.
+
+   Step 9.      Vector form. Split the constant part from the t part:
+                                                           
+                                              x        4        −2
+                                             y  =  −1 + t  1 
+                                              z        0         1
+
+                The first vector is a particular solution, found by setting t = 0. The second
+                vector solves Ax = 0, and it spans the null space.
+   Step 10. Check in the originals, keeping t symbolic.
+
+                         eq1 : (4 − 2t) + (−1 + t) + t = 3 + (−2t + t + t) = 3 ✓
+                         eq2 : 2(4 − 2t) + 3(−1 + t) + t = 5 + (−4t + 3t + t) = 5 ✓
+                         eq3 : 3(4 − 2t) + 4(−1 + t) + 2t = 8 + (−6t + 4t + 2t) = 8 ✓
+
+                Every t term cancels, which is exactly what “the direction lies in the null space”
+                means.
+
+    Answer. Infinitely many solutions: ( x, y, z) = (4, −1, 0) + t(−2, 1, 1) for t ∈ R. One free
+    variable, since n − r = 3 − 2 = 1.
+
+
+      ✽ Wait — really?
+   Problems 3 and 4 share the identical matrix A. Only b3 moved, from 10 to 8. So rank( A) =
+   2 in both. Changing b can flip a system between “no solution” and “infinitely many”,
+   but it can never change rank( A), and it can never produce a unique solution here. With
+   r = 2 < n = 3, a unique solution was impossible from the start.
+
+
+
+
+WILP, BITS Pilani                                 22
+MFML · ZC416                                                        Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+15 Problem 5 — A homogeneous system
+
+      ✍ Problem 5 · Medium
+   Determine whether the system below has a solution other than x = y = z = 0. If it does,
+   find every solution and give a basis for the null space of the coefficient matrix.
+
+                                            x + 2y + 3z = 0
+                                           2x + 5y + 7z = 0
+                                          3x + 7y + 10z = 0
+
+
+What this tests. Whether you realise consistency is automatic here, so the only real question is r
+versus n.
+
+      ✎ Worked example: Problem 5 — non-trivial solutions and a null-space basis
+   Step 1.      Augmented matrix, with a zero column on the right.
+                                                         
+                                               1 2 3 0
+                                             2 5 7 0 
+                                               3 7 10 0
+
+                That last column will stay zero through every row operation, since every opera-
+                tion combines zeros. So we may track only A and remember the 0.
+   Step 2.      Clear column 1. R2 → R2 − 2R1 :
+
+                                      2 − 2 = 0,       5 − 4 = 1,     7 − 6 = 1.
+
+                R3 → R3 − 3R1 :
+                                     3 − 3 = 0,       7 − 6 = 1,     10 − 9 = 1.
+                                                                    
+                                                    1 2 3 0
+                                                   0 1 1 0 
+                                                    0 1 1 0
+   Step 3.      Clear below the second pivot. R3 → R3 − R2 gives a zero row:
+                                                         
+                                                1 2 3 0
+                                               0 1 1 0 
+                                                0 0 0 0
+
+   Step 4.      Classify. rank( A) = 2 and rank([ A | 0]) = 2; they are equal automatically, so
+                the system is consistent. Since r = 2 < 3 = n, there are 3 − 2 = 1 free variables,
+                so there are infinitely many solutions. So non-trivial solutions do exist.
+   Step 5.      Reduce to RREF. Clear column 2 above the pivot with R1 → R1 − 2R2 :
+
+                                      1 − 0 = 1, 2 − 2 = 0, 3 − 2 = 1.
+                                                           
+                                                 1 0 1 0
+                                                0 1 1 0 
+                                                 0 0 0 0
+   Step 6.      Solve. Pivots in columns 1 and 2, so x and y are basic and z is free. Set z = t.
+                Row 1 gives x + z = 0, so x = −t. Row 2 gives y + z = 0, so y = −t.
+
+
+
+WILP, BITS Pilani                                     23
+MFML · ZC416                                                 Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 7.      Vector form.                      
+                                           x         −1
+                                          y  = t  −1 ,     t ∈ R.
+                                           z         1
+                There is no constant vector out front. A homogeneous system always has x p = 0,
+                so the answer is pure null space.
+   Step 8.      Check. Take t = 1, giving (−1, −1, 1):
+
+                    −1 + 2(−1) + 3(1) = 0 ✓,      − 2 − 5 + 7 = 0 ✓,     −3 − 7 + 10 = 0 ✓
+
+   Step 9.      Rank–nullity check. rank( A) = 2, nullity( A) = 1, and 2 + 1 = 3 = n ✓.
+
+    Answer. Non-trivial
+                       solutions exist. Every solution is t(−1, −1, 1), and a basis for the
+    null space is (−1, −1, 1) .
+
+
+      ✗ Watch out
+   Writing the null space as “(−1, −1, 1)” alone is incomplete. The null space is the whole set
+   {t(−1, −1, 1) : t ∈ R}. The single vector is a basis for it. Also note the trivial solution is
+   still in there: it is the case t = 0.
+
+
+
+
+WILP, BITS Pilani                                24
+MFML · ZC416                                                         Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+16 Problem 6 — Rank of a matrix on its own
+
+      ✍ Problem 6 · Medium
+   For the matrix                                               
+                                            1           2   3 4
+                                          2            4   6 8
+                                        A=
+                                          1
+                                                                 
+                                                        3   5 7
+                                            2           5   8 11
+   find rank( A). Then decide whether Ax = 0 has a non-trivial solution, and if so, find a
+   basis for the null space. Verify the rank–nullity theorem.
+
+
+What this tests. Rank as a property of a matrix, without any b attached, plus the link from rank
+straight to the null space.
+
+      ✎ Worked example: Problem 6 — rank, null space, rank–nullity
+   Step 1.      Look before you compute. Row 2 is exactly 2× row 1. Also row 1 plus row 3 is
+                [ 2 5 8 11 ], which is row 4. So two of the four rows are combinations of the
+                others, and the rank should come out as 2. The elimination below confirms it.
+   Step 2.      Clear column 1. Three operations, all using R1 :
+
+                         R2 → R2 − 2R1 : [ 2 − 2, 4 − 4, 6 − 6, 8 − 8 ] = [ 0 0 0 0 ]
+                          R3 → R3 − R1 : [ 1 − 1, 3 − 2, 5 − 3, 7 − 4 ] = [ 0 1 2 3 ]
+                         R4 → R4 − 2R1 : [ 2 − 2, 5 − 4, 8 − 6, 11 − 8 ] = [ 0 1 2 3 ]
+                                                                     
+                                                      1     2   3   4
+                                                    0      0   0   0
+                                                                     
+                                                    0      1   2   3
+                                                      0     1   2   3
+   Step 3.      Move the zero row down. REF requires zero rows at the bottom, so swap
+                R2 ↔ R3 :                            
+                                            1 2 3 4
+                                          0 1 2 3
+                                                     
+                                          0 0 0 0
+                                            0 1 2 3
+   Step 4.      Clear the last row. R4 → R4 − R2 gives another zero row:
+                                                                     
+                                                      1     2   3   4
+                                                    0      1   2   3
+                                                                     
+                                                    0      0   0   0
+                                                      0     0   0   0
+
+                This is REF. Two nonzero rows, so two pivots, in columns 1 and 2.
+   Step 5.      State the rank. rank( A) = 2.
+   Step 6.      Decide on non-trivial solutions. Here n = 4 and r = 2, so n − r = 2 > 0. A
+                homogeneous system with a rank below the number of unknowns always has
+                non-trivial solutions. So yes.
+
+
+
+
+WILP, BITS Pilani                                    25
+MFML · ZC416                                                  Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 7.      Reduce to RREF. Both pivots are already 1. Clear column 2 above with R1 →
+                R1 − 2R2 :
+
+                              1 − 0 = 1,     2 − 2 = 0, 3 − 4 = −1,     4 − 6 = −2.
+                                                               
+                                                   1 0 −1 −2
+                                                 0 1 2       3 
+                                                               
+                                                 0 0 0       0 
+                                                   0 0 0      0
+   Step 8.      Write the equations. Pivot columns 1 and 2, so x1 and x2 are basic; columns 3
+                and 4 have no pivots, so x3 and x4 are free.
+
+                                  x1 − x3 − 2x4 = 0,      x2 + 2x3 + 3x4 = 0.
+
+   Step 9.      Introduce parameters. Put x3 = s and x4 = t. Then
+
+                                           x1 = s + 2t,   x2 = −2s − 3t.
+
+   Step 10. Split into two vectors. Group the s terms and the t terms:
+                                                       
+                                               x1     1     2
+                                              x2   −2  −3
+                                               = s +t 
+                                              x3   1   0 
+                                               x4     0     1
+
+                Each vector comes from setting one free variable to 1 and the other to 0. That is
+                why the pattern of 1 and 0 appears in the bottom two slots, and it also proves
+                the two vectors are independent.
+   Step 11. Check both against a row of the original. Use row 4, [ 2 5 8 11 ]:
+
+                               2(1) + 5(−2) + 8(1) + 11(0) = 2 − 10 + 8 = 0 ✓
+                               2(2) + 5(−3) + 8(0) + 11(1) = 4 − 15 + 11 = 0 ✓
+
+   Step 12. Rank–nullity. nullity( A) = 2 because the basis has two vectors, and
+
+                                   rank( A) + nullity( A) = 2 + 2 = 4 = n ✓
+
+    Answer.
+               rank( A) = 2. Non-trivial solutions exist, and a null-space basis is
+      (1, −2, 1, 0), (2, −3, 0, 1) , so nullity( A) = 2 and 2 + 2 = 4.
+
+
+      ✓ Key takeaway
+   Free variables and null-space basis vectors are the same thing counted twice. Set one free
+   variable to 1 and the rest to 0, and you have read off one basis vector. Repeat for each free
+   variable.
+
+
+
+
+WILP, BITS Pilani                                   26
+MFML · ZC416                                                        Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+17 Problem 7 — More unknowns than equations
+
+      ✍ Problem 7 · Medium
+   Solve the system
+                                        x1 + 2x2 − x3 + x4 = 1
+                                       2x1 + 4x2 + x3 − x4 = 5
+   Identify the pivot and free variables, and write the complete solution in vector form.
+
+
+What this tests. That the free variables are decided by the pivot positions, not by which letters
+look convenient.
+
+      ✎ Worked example: Problem 7 — two equations, four unknowns
+   Step 1.      Augmented matrix. Here m = 2 and n = 4.
+                                                       
+                                          1 2 −1 1 1
+                                          2 4 1 −1 5
+
+   Step 2.      Predict the outcome first. Rank cannot exceed the number of rows, so r ≤ 2 <
+                4 = n. A unique solution is impossible. The only two options are “no solution”
+                or “infinitely many”.
+   Step 3.      Clear column 1. R2 → R2 − 2R1 :
+
+                     2 − 2 = 0,    4 − 4 = 0,       1 − (−2) = 3,
+                                                           −1 − 2 = −3,                   5 − 2 = 3.
+                                                            
+                                                  1 2 −1 1 1
+                                                  0 0 3 −3 3
+                Column 2 came out entirely zero below the first row. So the second pivot is not
+                in column 2, it is in column 3.
+   Step 4.      Scale the second row. R2 → 31 R2 :
+                                                                        
+                                                    1 2 −1 1 1
+                                                    0 0 1 −1 1
+
+                This is REF, with pivots in columns 1 and 3.
+   Step 5.      Classify. rank( A) = 2 = rank([ A | b]), so the system is consistent. And
+                n − r = 4 − 2 = 2, so there are two free variables and infinitely many solutions.
+   Step 6.      Reduce to RREF. Clear column 3 above the second pivot with R1 → R1 + R2 :
+
+                      1 + 0 = 1,   2 + 0 = 2,       −1 + 1 = 0,
+                                                           1 + (−1) = 0,                 1 + 1 = 2.
+                                                            
+                                                  1 2 0 0 2
+                                                  0 0 1 −1 1
+   Step 7.      Name the variables. Pivots are in columns 1 and 3, so x1 and x3 are basic.
+                Columns 2 and 4 have no pivot, so x2 and x4 are free. Put x2 = s and x4 = t.
+   Step 8.      Read the rows. Row 1 says x1 + 2x2 = 2, so x1 = 2 − 2s. Row 2 says x3 − x4 = 1,
+                so x3 = 1 + t.
+
+
+
+
+WILP, BITS Pilani                                     27
+MFML · ZC416                                                  Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 9.      Vector form. Collect constants, then the s part, then the t part:
+                                                    
+                                          x1    2   −2    0
+                                         x2  0  1  0
+                                          =  +s +t 
+                                         x3  1  0  1
+                                          x4    0    0    1
+
+   Step 10. Check with symbols kept in.
+
+                           eq1 : (2 − 2s) + 2s − (1 + t) + t = 2 − 1 = 1 ✓
+                           eq2 : 2(2 − 2s) + 4s + (1 + t) − t = 4 − 4s + 4s + 1 = 5 ✓
+
+
+    Answer. Infinitely many solutions with two free variables: x = (2, 0, 1, 0) + s(−2, 1, 0, 0) +
+    t(0, 0, 1, 1).
+
+
+      ✗ Watch out
+   The tempting mistake is to declare x3 and x4 free “because they are the last two”. Look
+   at the RREF. The pivots landed in columns 1 and 3, so the free ones are x2 and x4 . Free
+   variables are the columns without pivots, full stop.
+
+
+
+
+WILP, BITS Pilani                                 28
+MFML · ZC416                         Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+    PART III · PRACTICE SET B
+
+
+    The tough three
+
+
+
+
+WILP, BITS Pilani               29
+MFML · ZC416                                                     Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+18 Problem 8 — A system with two dials
+
+      ✍ Problem 8 · Hard
+   Consider the system
+                                                x+y+z = 6
+                                              x + 2y + 3z = 14
+                                              x + 2y + az = b
+   where a and b are real constants. Find all values of a and b for which the system has (i) a
+   unique solution, (ii) no solution, (iii) infinitely many solutions. In case (i) give the solution
+   in terms of a and b. In case (iii) give the general solution.
+
+
+What this tests. Eliminating while a pivot might secretly be zero. This is the classic exam
+problem, and the classic way to lose marks is to divide by a − 3 without checking whether it is
+zero.
+
+      ✎ Worked example: Problem 8 — the three cases
+   Step 1.      Augmented matrix. Here n = 3.
+                                                            
+                                                    1 1 1 6
+                                                   1 2 3 14 
+                                                    1 2 a b
+
+   Step 2.      Clear column 1. The pivot is a plain 1, and it does not depend on a or b, so this
+                step is always safe. R2 → R2 − R1 :
+
+                                 1 − 1 = 0,    2 − 1 = 1,   3 − 1 = 2,    14 − 6 = 8.
+
+                R3 → R3 − R1 :
+                                     1 − 1 = 0,     2 − 1 = 1,
+                                                          a − 1, b − 6.
+                                                              
+                                                 1 1  1    6
+                                                0 1  2    8 
+                                                 0 1 a−1 b−6
+   Step 3.      Clear below the second pivot. The second pivot is 1, again free of a and b, so
+                R3 → R3 − R2 is safe:
+
+                           1 − 1 = 0,     ( a − 1) − 2 = a − 3, (b − 6) − 8 = b − 14.
+                                                                   
+                                                1 1     1       6
+                                               0 1     2       8   
+                                                0 0 a − 3 b − 14
+   Step 4.      Stop and look at row 3. Everything now depends on the single row
+
+                                                [ 0 0 a − 3 | b − 14 ],
+
+                which as an equation reads ( a − 3)z = b − 14. Whether this row carries a pivot,
+                carries a contradiction, or vanishes decides the whole problem. Do not divide
+                by a − 3 yet.
+
+
+
+
+WILP, BITS Pilani                                    30
+MFML · ZC416                                                  Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 5.      Case (i): a ̸= 3. Then a − 3 ̸= 0, so row 3 has a pivot in column 3. There are
+                three pivots in the first three columns, giving rank( A) = 3, and none in the b
+                column, so rank([ A | b]) = 3 as well. With 3 = 3 = n, the solution is unique,
+                whatever b is. Now division is legal:
+                                                       b − 14
+                                                  z=          .
+                                                        a−3
+                Back substitute into row 2, y + 2z = 8:
+
+                                                             2(b − 14)
+                                         y = 8 − 2z = 8 −              .
+                                                               a−3
+                Back substitute into row 1, x + y + z = 6:
+
+                                      x = 6−y−z
+                                                   2(b − 14)     b − 14
+                                                            
+                                        = 6− 8−                −
+                                                     a−3          a−3
+                                               2(b − 14) b − 14
+                                        = −2 +           −
+                                                 a−3         a−3
+                                               b − 14
+                                        = −2 +        .
+                                                a−3
+   Step 6.      Spot-check case (i) with numbers. Take a = 4, b = 15. Then z = 1/1 = 1,
+                y = 8 − 2 = 6, x = −2 + 1 = −1. Test all three originals:
+
+                       − 1 + 6 + 1 = 6 ✓,   −1 + 12 + 3 = 14 ✓,       −1 + 12 + 4 = 15 ✓
+
+   Step 7.      Case (ii): a = 3 and b ̸= 14. Row 3 becomes [ 0 0 0 | b − 14 ] with b − 14 ̸= 0.
+                That is the equation 0 = b − 14, which is false. Column 3 has lost its pivot, so
+                rank( A) = 2, while the b column has gained one, so rank([ A | b]) = 3. Since
+                2 < 3, there is no solution.
+   Step 8.      Case (iii): a = 3 and b = 14. Row 3 becomes [ 0 0 0 | 0 ], which is harmless.
+                Now rank( A) = rank([ A | b]) = 2, and 2 < 3 = n, so there are infinitely many
+                solutions with 3 − 2 = 1 free variable.
+   Step 9.      Solve case (iii). The matrix is
+                                                                        
+                                   1 1 1 6                       1 0 −1 −2
+                                                  R1 → R1 − R2
+                                 0 1 2 8  −−−−−−−          → 0 1 2   8 
+                                   0 0 0 0                       0 0 0  0
+
+                Pivots in columns 1 and 2, so z is free. Put z = t. Row 1 gives x − z = −2, so
+                x = −2 + t. Row 2 gives y + 2z = 8, so y = 8 − 2t.
+                                                           
+                                            x        −2         1
+                                           y  =  8  + t  −2
+                                            z         0         1
+
+   Step 10. Check case (iii) symbolically. With a = 3, b = 14 the third equation is identical
+            to the second, so only two need checking:
+
+                              (−2 + t) + (8 − 2t) + t = 6 + (t − 2t + t) = 6 ✓
+                            (−2 + t) + 2(8 − 2t) + 3t = 14 + (t − 4t + 3t) = 14 ✓
+
+
+WILP, BITS Pilani                                31
+MFML · ZC416                                               Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+                                                                   2(b−14)
+    Answer. Unique when a ̸= 3 (any b), with z = ba−−14                         b−14
+                                                     3 , y = 8 − a−3 , x = −2 + a−3 . No
+    solution when a = 3, b ̸= 14. Infinitely many when a = 3, b = 14, namely (−2, 8, 0) +
+    t(1, −2, 1).
+
+
+      ✗ Watch out
+   Note which parameter controls which switch. Here a alone decides rank( A), because a
+   lives on the left of the bar. Then b decides, only in the knife-edge case a = 3, whether the
+   system is consistent. That division of labour is typical: parameters inside A control the
+   rank, and parameters inside b control consistency.
+
+
+      ✽ Wait — really?
+   At a = 3 the answer does not change gradually, it changes character. For a = 3.001 you
+   get one point. At a = 3 exactly you get either nothing at all or an entire line, depending
+   on b. And look at the unique solution as a → 3 with b ̸= 14: the fraction ba−−143 blows up.
+   The point runs off to infinity, and in the limit there is nowhere for it to be.
+
+
+
+
+WILP, BITS Pilani                               32
+MFML · ZC416                                                      Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+19 Problem 9 — Four equations, five unknowns
+
+      ✍ Problem 9 · Hard
+   Solve
+                                         x1 + 2x2 − x3 + 3x4 + x5 = 3
+                                       2x1 + 4x2 − x3 + 4x4 + 3x5 = 5
+                                      3x1 + 6x2 − 2x3 + 7x4 + 4x5 = 8
+                                        x1 + 2x2 + x3          + 5x5 = 2
+   Give rank( A), rank([ A | b]), the number of free variables, the general solution in vector
+   form, and a basis for the null space of A.
+
+
+What this tests. A full-size elimination where one equation is redundant, the pivots skip
+columns, and the answer is a two-parameter family. Note the missing x4 term in the last
+equation: it enters the matrix as a zero.
+
+      ✎ Worked example: Problem 9, part 1 — reduce to REF
+   Step 1.      Augmented matrix. Here m = 4 and n = 5.
+                                                                      
+                                          1 2 −1 3 1                 3
+                                        2 4 −1 4 3                  5 
+                                                                      
+                                        3 6 −2 7 4                  8 
+                                          1 2 1 0 5                  2
+   Step 2.      Clear column 1. Three operations, all against R1 :
+                    R2 → R2 − 2R1 : [ 0, 0, −1 + 2, 4 − 6, 3 − 2 | 5 − 6 ] = [ 0, 0, 1, −2, 1 | −1 ]
+                    R3 → R3 − 3R1 : [ 0, 0, −2 + 3, 7 − 9, 4 − 3 | 8 − 9 ] = [ 0, 0, 1, −2, 1 | −1 ]
+                     R4 → R4 − R1 : [ 0, 0, 1 + 1, 0 − 3, 5 − 1 | 2 − 3 ] = [ 0, 0, 2, −3, 4 | −1 ]
+                                                                        
+                                               1 2 −1 3 1 3
+                                              0 0 1 −2 1 −1 
+                                                                        
+                                              0 0 1 −2 1 −1 
+                                               0 0 2 −3 4 −1
+                Column 2 is now entirely zero below row 1. So no pivot can sit in column 2, and
+                the next pivot is in column 3.
+   Step 3.      Clear below the second pivot, in column 3. Two operations against R2 :
+                        R3 → R3 − R2 : [ 0, 0, 0, 0, 0 | 0 ]
+                       R4 → R4 − 2R2 : [ 0, 0, 0, −3 + 4, 4 − 2 | −1 + 2 ] = [ 0, 0, 0, 1, 2 | 1 ]
+                                                                      
+                                               1 2 −1 3 1 3
+                                             0 0 1 −2 1 −1 
+                                                                      
+                                             0 0 0        0 0 0 
+                                               0 0 0       1 2 1
+   Step 4.      Move the zero row to the bottom. REF demands it, so R3 ↔ R4 :
+                                                               
+                                          1 2 −1 3 1 3
+                                        0 0 1 −2 1 −1 
+                                                               
+                                        0 0 0       1 2 1 
+                                          0 0 0      0 0 0
+
+
+
+WILP, BITS Pilani                                     33
+MFML · ZC416                                                     Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+                This is REF. Pivots sit in columns 1, 3, 4.
+   Step 5.      Read the ranks and classify. Three pivots inside the first five columns, so
+                rank( A) = 3. No pivot in the b column, so rank([ A | b]) = 3 too. They match,
+                so the system is consistent. And
+
+                                                  n − r = 5 − 3 = 2,
+
+                so there are two free variables and infinitely many solutions.
+   Step 6.      Where the redundancy was. Row 3 of the original equals row 1 plus row 2, on
+                both sides: 3 + 5 = 8 matches. So the third equation carried no new information,
+                which is why a zero row appeared.
+
+
+      ✎ Worked example: Problem 9, part 2 — RREF and the general solution
+   Step 1.      Clear column 4, the rightmost pivot column, first. The pivot is the 1 in row 3.
+                Rows 1 and 2 have entries 3 and −2 above it.
+
+                    R2 → R2 + 2R3 : [ 0, 0, 1, −2 + 2, 1 + 4 | −1 + 2 ] = [ 0, 0, 1, 0, 5 | 1 ]
+                    R1 → R1 − 3R3 : [ 1, 2, −1, 3 − 3, 1 − 6 | 3 − 3 ] = [ 1, 2, −1, 0, −5 | 0 ]
+                                                                        
+                                              1    2 −1       0 −5     0
+                                             0    0 1        0 5      1 
+                                                                        
+                                             0    0 0        1 2      1 
+                                              0    0 0        0 0      0
+   Step 2.      Now clear column 3. Row 1 has −1 above that pivot, so R1 → R1 + R2 :
+
+                              [ 1, 2, −1 + 1, 0, −5 + 5 | 0 + 1 ] = [ 1, 2, 0, 0, 0 | 1 ]
+                                                                   
+                                                 1 2 0 0 0 1
+                                               0 0 1 0 5 1 
+                                                                   
+                                               0 0 0 1 2 1 
+                                                 0 0 0 0 0 0
+                This is the RREF. Column 1 needs nothing, since its pivot already sits alone.
+   Step 3.      Name the variables. Pivot columns are 1, 3, 4, so x1 , x3 , x4 are basic. Columns 2
+                and 5 have no pivot, so x2 and x5 are free. Put x2 = s and x5 = t.
+   Step 4.      Read one row at a time.
+
+                             Row 1:     x1 + 2x2 = 1                 =⇒      x1 = 1 − 2s
+                             Row 2:     x3 + 5x5 = 1                 =⇒      x3 = 1 − 5t
+                             Row 3:     x4 + 2x5 = 1                 =⇒      x4 = 1 − 2t
+
+   Step 5.      Assemble the vector form.
+
+                                                       −2
+                                                           
+                                       x1      1                  0
+                                      x2  0        1       0 
+                                                           
+                                      x3  = 1 + s  0  + t  −5
+                                                           
+                                      x4  1        0       −2
+                                       x5      0        0         1
+
+
+
+WILP, BITS Pilani                                    34
+MFML · ZC416                                                  Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 6.      Identify the three pieces. Setting s = t = 0 gives the particular solution
+                x p = (1, 0, 1, 1, 0). The two vectors multiplying s and t solve Ax = 0, so they
+                form a basis of the null space.
+   Step 7.      Check the particular solution in all four originals.
+
+                          1+0−1+3+0 = 3✓                      2+0−1+4+0 = 5✓
+                          3+0−2+7+0 = 8✓                      1+0+1+0+0 = 2✓
+
+   Step 8.      Check a general point. Take s = t = 1, giving x = (−1, 1, −4, −1, 1):
+
+                                       eq1 : − 1 + 2 + 4 − 3 + 1 = 3 ✓
+                                       eq2 : − 2 + 4 + 4 − 4 + 3 = 5 ✓
+                                       eq3 : − 3 + 6 + 8 − 7 + 4 = 8 ✓
+                                       eq4 : − 1 + 2 − 4 + 0 + 5 = 2 ✓
+
+   Step 9.      Rank–nullity. rank( A) + nullity( A) = 3 + 2 = 5 = n ✓.
+
+    Answer. rank( A) = rank([ A | b]) = 3, two free variables, and x = (1, 0, 1, 1, 0) +
+    s(−2, 1, 0, 0, 0) + t(0, 0, −5, −2, 1). Null-space basis: (−2, 1, 0, 0, 0), (0, 0, −5, −2, 1) .
+
+
+      ✗ Watch out
+   Four equations did not give four pivots. Do not assume rank( A) = m. Here one equation
+   was the sum of two others, so the rank was 3, not 4. Equally, do not assume the free
+   variables are the last ones: they are x2 and x5 .
+
+
+
+
+WILP, BITS Pilani                                 35
+MFML · ZC416                                                   Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+20 Problem 10 — Which right-hand sides are allowed?
+
+      ✍ Problem 10 · Hard
+   Let                                                        
+                                        1 2 3                   b1
+                                   A = 2 5 8 ,           b = b2  .
+                                        1 3 5                   b3
+   Find rank( A). Then find the exact condition on b1 , b2 , b3 under which Ax = b is consistent.
+   When the condition holds, give the general solution in terms of b1 , b2 , b3 . Finally, verify
+   your condition on b = (1, 3, 2).
+
+
+What this tests. Running the elimination with unknown symbols on the right-hand side. This
+is the reverse of Problem 8: there the left side carried the parameters, here the right side does.
+
+      ✎ Worked example: Problem 10 — the consistency condition
+   Step 1.      Augmented matrix, with symbols on the right.
+                                                         
+                                             1 2 3 b1
+                                           2 5 8 b2 
+                                             1 3 5 b3
+
+                Treat b1 , b2 , b3 as ordinary numbers whose values you do not know. Every row
+                operation acts on them just like on any other entry.
+   Step 2.      Clear column 1. R2 → R2 − 2R1 :
+
+                                 2 − 2 = 0,   5 − 4 = 1,    8 − 6 = 2,    b2 − 2b1 .
+
+                R3 → R3 − R1 :
+
+                                 1 − 1 = 0,    3 − 2 = 1, 5 − 3 = 2,      b3 − b1 .
+                                                                
+                                                1 2 3      b1
+                                               0 1 2 b2 − 2b1 
+                                                0 1 2 b3 − b1
+   Step 3.      Clear below the second pivot. R3 → R3 − R2 . The left side vanishes completely,
+                and the right side becomes
+
+                          (b3 − b1 ) − (b2 − 2b1 ) = b3 − b1 − b2 + 2b1 = b1 − b2 + b3 .
+                                                                    
+                                              1 2 3          b1
+                                            0 1 2        b2 − 2b1 
+                                              0 0 0 b1 − b2 + b3
+   Step 4.      Read the rank of A. Only two pivots survive on the left, in columns 1 and 2, so
+                rank( A) = 2, whatever b is. Column 3 has no pivot, so z will be free.
+   Step 5.      Impose consistency. Row 3 reads 0 = b1 − b2 + b3 . If the right side is nonzero,
+                that row carries a pivot in the b column, making rank([ A | b]) = 3 > 2 =
+                rank( A), and the system is dead. So the system is consistent exactly when
+
+                                                 b1 − b2 + b3 = 0
+
+
+
+WILP, BITS Pilani                                  36
+MFML · ZC416                                                       Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+   Step 6.      Note there is no third case. When the condition holds, rank( A) = rank([ A |
+                b]) = 2 < 3 = n, so the answer is infinitely many solutions with one free
+                variable. A unique solution can never occur, for any b, because rank( A) = 2 is
+                fixed at 2 and can never reach n = 3.
+   Step 7.      Reduce to RREF, assuming the condition holds. R1 → R1 − 2R2 :
+
+                          1,    2 − 2 = 0,    3 − 4 = −1, b1 − 2(b2 − 2b1 ) = 5b1 − 2b2 .
+                                                                   
+                                                 1 0 −1 5b1 − 2b2
+                                               0 1 2     b2 − 2b1 
+                                                 0 0 0        0
+   Step 8.      Write the general solution. Set z = t. Row 1 gives x − z = 5b1 − 2b2 , and row 2
+                gives y + 2z = b2 − 2b1 :
+                                                                
+                                            x      5b1 − 2b2        1
+                                           y  =  b2 − 2b1  + t −2
+                                            z          0            1
+
+                The direction vector (1, −2, 1) carries no b at all. That is expected: the null space
+                belongs to A alone, so changing b slides the solution line around, but never
+                turns it.
+   Step 9.      Verify with b = (1, 3, 2). Check the condition first: 1 − 3 + 2 = 0 ✓, so it should
+                be consistent. The formula gives
+
+                    x = 5(1) − 2(3) + t = −1 + t,            y = 3 − 2(1) − 2t = 1 − 2t,         z = t.
+
+                Test at t = 0, so ( x, y, z) = (−1, 1, 0):
+
+                           − 1 + 2 + 0 = 1 ✓,      − 2 + 5 + 0 = 3 ✓,      −1 + 3 + 0 = 2 ✓
+
+                Test at t = 1, so ( x, y, z) = (0, −1, 1):
+
+                               0 − 2 + 3 = 1 ✓,     0 − 5 + 8 = 3 ✓,      0−3+5 = 2✓
+
+   Step 10. Verify a failing case too. Take b = (1, 3, 5), where 1 − 3 + 5 = 3 ̸= 0. Row 3
+            becomes [ 0 0 0 | 3 ], so the system has no solution, as the condition predicted.
+
+    Answer. rank( A) = 2. Consistent exactly when b1 − b2 + b3 = 0, and then ( x, y, z) =
+    (5b1 − 2b2 , b2 − 2b1 , 0) + t(1, −2, 1). Never unique, for any b.
+
+
+      ☞ The intuition
+   The condition b1 − b2 + b3 = 0 has a clean picture behind it. Since rank( A) = 2, the three
+   columns of A span only a plane inside R3 , not the whole space. And Ax is a combination
+   of those columns, so Ax can only ever land on that plane. The system is solvable exactly
+   when b already lies there. The vector (1, −1, 1) is the normal to the plane, which is why
+   the condition reads b1 − b2 + b3 = 0. You can see it directly: each column of A dotted with
+   (1, −1, 1) gives 1 − 2 + 1 = 0, 2 − 5 + 3 = 0 and 3 − 8 + 5 = 0.
+
+
+
+
+WILP, BITS Pilani                                     37
+MFML · ZC416                                           Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+      ✓ Key takeaway
+   A parameter on the left of the bar controls rank( A) and so the number of solutions. A
+   parameter on the right of the bar controls only whether any solution exists.
+
+
+
+
+WILP, BITS Pilani                            38
+MFML · ZC416                    Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+
+    PART IV
+
+
+    Self-test and pocket card
+
+
+
+
+WILP, BITS Pilani          39
+                                                     40                                       WILP, BITS Pilani
+        Ax = b has exactly one solution for every b, and Ax = 0 has only x = 0. Here r = n = 4, so
+        no free variables and A is invertible.
+           Q8. A is 4 × 4 with rank( A) = 4. What can you say about Ax = b and about Ax = 0?
+        That b is a combination of the columns of A, that is, b lies in the column space of A. Adding
+        it as a column brings no new pivot.
+                                    Q7. If rank( A) = rank([ A | b]), what does that tell you about b?
+        Not necessarily. REF is not unique. But the pivot positions, and so the rank, must agree.
+        Their RREF matrices must be identical.
+Q6. Two students reduce the same matrix and get different REF matrices. Is one of them wrong?
+        No. That row just says 0 = 0 and can be ignored. Only a row [ 0 · · · 0 | c ] with c ̸= 0 kills
+        the system.
+                 Q5. The RREF of [ A | b] contains the row [ 0 0 0 | 0 ]. Is the system inconsistent?
+        Yes. r ≤ m = 3 < 5 = n, so n − r ≥ 2 free variables exist. More unknowns than equations
+        always forces non-trivial solutions.
+Q4. A homogeneous system has 3 equations and 5 unknowns. Must it have a nonzero solution?
+        Zero or one only. If consistent then r = 3 = n, so unique. If rank([ A | b]) = 4, none. Infinitely
+        many is impossible.
+             Q3. A is 5 × 3 with rank( A) = 3. What are the possible solution counts for Ax = b?
+        No. If u and v both work, so does u + t(v − u) for every real t. Two answers force infinitely
+        many. Only 0, 1 or infinity are possible.
+                                                Q2. Can a linear system have exactly three solutions?
+        Consistent, since the ranks match. Free variables = n − r = 6 − 4 = 2, so infinitely many
+        solutions.
+    how many free variables?
+Q1. A system has 6 unknowns, rank( A) = 4 and rank([ A | b]) = 4. How many solutions, and
+                            Answer each one in a sentence, then turn the page upside down.
+                                                            21 Self-test: eight quick checks
+Session 1 · Linear Systems: REF, RREF & Rank                                                    MFML · ZC416
+MFML · ZC416                                                 Session 1 · Linear Systems: REF, RREF & Rank
+
+
+
+22 Pocket card
+Everything in this document, on one page.
+
+
+    The classification table
+
+    What you see                           Meaning                         Answer
+
+    rank( A) < rank([ A | b])              a row [ 0 · · · 0 | c ], c ̸=   no solution
+                                           0
+    rank( A) = rank([ A | b]) = n          every unknown has a             exactly one
+                                           pivot
+    rank( A) = rank([ A | b]) = r < n      n − r columns lack piv- infinitely many
+                                           ots
+
+    The facts
+    • Pivot = first nonzero entry in a row. Rank = number of pivots.
+    • REF: staircase, zeros below each pivot, zero rows last. Not unique.
+    • RREF: also pivots = 1 with zeros above them. Unique.
+    • Free variables = n − r. Pivot columns give basic variables.
+    • General solution = particular solution + null space.
+    • Rank–nullity: rank( A) + nullity( A) = n.
+    • Homogeneous Ax = 0 is never inconsistent. Only x = 0 if r = n, otherwise a subspace
+      of dimension n − r.
+    • More unknowns than equations, and homogeneous: non-trivial solutions guaranteed.
+    • rank( A) ≤ min(m, n), and rank([ A | b]) is either rank( A) or rank( A) + 1.
+    • Square A: rank( A) = n is the same as det( A) ̸= 0, the same as A invertible.
+
+    The order of work
+    Augment → REF → read both ranks → switch 1 (consistent?) → switch 2 (unique or
+    many?) → RREF if a solution is wanted → substitute back into the originals.
+
+
+
+      ✓ Key takeaway
+   Two comparisons settle every linear system you will ever meet. Compare rank( A) with
+   rank([ A | b]) to learn whether an answer exists. Compare rank( A) with n to learn how
+   many.
+
+
+
+
+WILP, BITS Pilani                              41
+

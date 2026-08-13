@@ -1,0 +1,398 @@
+Practice Problems — Lecture 3                                        Inner Products · Positive-Definite Matrices
+
+
+
+                 Analytic Geometry — Practice Problem Set
+
+
+Q1.                                                                                                (4 marks)
+   On R3 with the standard (Euclidean) inner product, let u = (1, 1, 0)⊤ and v = (0, 1, 1)⊤ .
+(a) Find all vectors w ∈ R3 orthogonal to both u and v, and write down the unit vectors of this
+    form.                                                                                [2 M]
+(b) Compute the angle ω between u and v.                                                                 [1 M]
+(c) Show that {u, v, w} is a basis of R3 , and explain geometrically why w is perpendicular to the
+    plane spanned by u and v.                                                                [1 M]
+
+  Solution
+
+  (a) Idea: “orthogonal to both” means two dot-product equations. Write w = (w1 , w2 , w3 )⊤ :
+
+                            w⊤ u = w1 + w2 = 0,          w⊤ v = w2 + w3 = 0.
+
+  From these, w1 = −w2 and w3 = −w2 . Letting the free variable be w2 = t,
+
+                                     w = t (−1, 1, −1)⊤ ,         t ∈ R.
+                                                                      √
+  To get unit vectors, divide by the length (−1, 1, −1)⊤ =                3:
+
+                                           w = ± √13 (−1, 1, −1)⊤ .
+
+
+                       u⊤ v                                             √
+  (b) Use cos ω =            . Here u⊤ v = 0 + 1 + 0 = 1 and ∥u∥ = ∥v∥ = 2, so
+                     ∥u∥ ∥v∥
+
+                                          1   1
+                                cos ω = √ √ =              =⇒       ω = 60◦ .
+                                         2· 2 2
+
+  (c) Basis test: three vectors in R3 form a basis exactly when their determinant is nonzero.
+  With w = (−1, 1, −1)⊤ ,
+
+                                                1 0 −1
+                                 det[ u v w ] = 1 1 1 = −3 ̸= 0,
+                                                0 1 −1
+
+  so {u, v, w} is a basis. Geometrically, u and v span a plane; since w was constructed to be
+  orthogonal to both u and v, it is orthogonal to every vector in that plane, i.e. w is the normal
+  direction to the plane.
+
+
+
+Q2.                                                                                                (4 marks)
+   (Similarity vs. dissimilarity of data objects.) Three data points live in R3 :
+                       p1 = (2, 1, 0)⊤ ,      p2 = (0, 1, 2)⊤ ,      p3 = (2, 1, 1)⊤ .
+(a) Build the 3 × 3 dissimilarity matrix D using Euclidean distance.                                     [2 M]
+
+                                                     1
+Practice Problems — Lecture 3                                         Inner Products · Positive-Definite Matrices
+
+
+
+(b) Which two points are the most similar ?                                                               [1 M]
+(c) Compute the cosine similarity between p1 and p3 .                                                     [1 M]
+
+  Solution
+
+  (a) Dissimilarity between two points is just the distance d(pi , pj ) = ∥pi − pj ∥. Compute each
+  pair:
+                                       √        √
+            d(p1 , p2 ) = (2, 0, −2)⊤ = 8 = 2 2,        d(p1 , p3 ) = (0, 0, −1)⊤ = 1,
+                                                                      √
+                                    d(p2 , p3 ) = (−2, 0, 1)⊤ =           5.
+
+  Place these in a symmetric matrix with zeros on the diagonal (a point’s distance to itself is 0):
+                                               √     
+                                            0  2 2 1
+                                           √      √ 
+                                        D=
+                                          2 2 √0     .
+                                                     5
+                                            1    5  0
+
+  (b) “Most similar” = smallest dissimilarity. The smallest off-diagonal entry is d(p1 , p3 ) = 1,
+  so p1 and p3 are the most similar.
+
+                                        p⊤1 p3
+  (c) Cosine similarity is cos θ =                :
+                                      ∥p1 ∥ ∥p3 ∥
+                                                                      √                  √
+                   p⊤
+                    1 p3 = 2 · 2 + 1 · 1 + 0 · 1 = 5,       ∥p1 ∥ =       5,   ∥p3 ∥ =       6,
+                                                              √
+                                          5    5               30
+                                cos θ = √ √ = √ =                 ≈ 0.913.
+                                         5 6   30              6
+  (Close to 1, confirming p1 and p3 point in nearly the same direction.)
+
+
+
+Q3.                                                                                                 (4 marks)
+                  
+             2 1
+   Let A =        and define a new inner product on R2 by ⟨x, y⟩A = x⊤ Ay.
+             1 2
+(a) Show A is symmetric positive definite, so ⟨·, ·⟩A is a genuine inner product.                         [1 M]
+(b) The vectors x = (1, 0)⊤ and y = (0, 1)⊤ are orthogonal in the dot product. Are they still
+    orthogonal under ⟨·, ·⟩A ? Find the angle between them in this new inner product.  [2 M]
+(c) Find a vector y ′ = (a, 1)⊤ that is orthogonal to x with respect to ⟨·, ·⟩A .                         [1 M]
+
+  Solution
+
+  (a) A is symmetric since A⊤ = A. Sylvester’s criterion (all leading minors positive):
+
+                         D1 = 2 > 0,         D2 = det A = 2 · 2 − 1 · 1 = 3 > 0.
+
+  So A is positive definite. A symmetric, positive-definite matrix always makes x⊤ Ay a valid
+  inner product (it is bilinear, symmetric, and x⊤ Ax > 0 for x ̸= 0).
+
+
+
+
+                                                        2
+Practice Problems — Lecture 3                                          Inner Products · Positive-Definite Matrices
+
+
+
+  (b) Test orthogonality by computing ⟨x, y⟩A = x⊤ Ay. First Ay = A(0, 1)⊤ = (1, 2)⊤ , hence
+
+                                ⟨x, y⟩A = x⊤ (Ay) = (1, 0) · (1, 2) = 1 ̸= 0.
+
+  They are not orthogonal here. To get the angle, we also need the A-norms:
+                                 √              p     √                     p     √
+                      ∥x∥A =         x⊤ Ax =     A11 = 2,         ∥y∥A =     A22 = 2.
+
+  Therefore
+                                      ⟨x, y⟩A     1   1
+                         cos θ =               =√ √ =                 =⇒      θ = 60◦ .
+                                     ∥x∥A ∥y∥A   2· 2 2
+  Takeaway: orthogonality depends on which inner product you use.
+  (c) We need ⟨x, y ′ ⟩A = 0. Note x⊤ A = (1, 0)A = (2, 1), so
+
+                         x, y ′ A = (2, 1) · (a, 1) = 2a + 1 = 0        =⇒     a = − 12 .
+
+  Thus y ′ = (− 21 , 1)⊤ .
+
+
+
+Q4.                                                                       (5 marks)
+                                                                      
+                                                                  2 1 0
+   On R3 use the weighted inner product ⟨x, y⟩A = x⊤ Ay with A = 1 2 0 (SPD). Let
+                                                                  0 0 1
+              ⊤                 ⊤
+a = (1, −1, 0) and b = (1, 0, 2) .
+(a) Compute ⟨b, a⟩A , ∥a∥A , and ∥b∥A .                                                                    [2 M]
+(b) Find the orthogonal projection p of b onto the line spanned by a, in this inner product. [2 M]
+(c) Verify that the residual b − p is A-orthogonal to a (this is what makes p the orthogonal
+    projection).                                                                       [1 M]
+
+   Solution
+
+  (a) Trick: compute the matrix–vector product once, then take dot products. With Aa =
+  A(1, −1, 0)⊤ = (1, −1, 0)⊤ :
+
+    ⟨b, a⟩A = b⊤ (Aa) = (1, 0, 2) · (1, −1, 0) = 1,         ∥a∥2A = a⊤ (Aa) = (1, −1, 0) · (1, −1, 0) = 2.
+
+   For ∥b∥A , use Ab = A(1, 0, 2)⊤ = (2, 1, 2)⊤ :
+
+                                    ∥b∥2A = b⊤ (Ab) = (1, 0, 2) · (2, 1, 2) = 6.
+                                √               √
+   So ⟨b, a⟩A = 1, ∥a∥A =           2, ∥b∥A =    6.
+  (b) Projection formula (same as usual, but every inner product is the A-one):
+
+                                     ⟨b, a⟩A    1                          ⊤
+                                p=           a = (1, −1, 0)⊤ = 12 , − 21 , 0 .
+                                     ⟨a, a⟩A    2
+
+
+
+
+                                                        3
+Practice Problems — Lecture 3                                              Inner Products · Positive-Definite Matrices
+
+
+
+  (c) The residual is
+                                                                      ⊤               ⊤
+                           r = b − p = (1, 0, 2)⊤ −          1   1            1 1
+                                                                                    
+                                                             2, −2, 0   =     2, 2, 2   .
+
+  Check A-orthogonality using the same Aa = (1, −1, 0)⊤ :
+
+                     ⟨r, a⟩A = r⊤ (Aa) =   1 1
+                                                         · (1, −1, 0) = 12 − 12 + 0 = 0. ✓
+                                                     
+                                           2, 2, 2
+
+   Since r ⊥A a, p is indeed the orthogonal projection of b onto the line through a.
+
+
+Q5.                                                                                    (5 marks)
+                                               
+                                            t 3
+    Consider the symmetric matrix A(t) =          , t ∈ R.
+                                            3 t
+(a) Classify A(t) for all real t as positive definite, positive semidefinite, indefinite, negative
+    semidefinite, or negative definite.                                                      [3 M]
+(b) For which t does ⟨x, y⟩ = x⊤ A(t) y define a valid inner product? At the borderline value t = 3,
+    exhibit a nonzero vector v with ⟨v, v⟩ = 0.                                               [2 M]
+
+   Solution
+                                                                                               #          "
+                                                                                           t 3
+  (a) Method: a symmetric matrix is classified by the signs of its eigenvalues. For A(t) =       ,
+                                                                                           3 t
+  solve det(A − λI) = 0:
+
+                  (t − λ)2 − 9 = 0 =⇒ t − λ = ±3 =⇒ λ = t − 3 or λ = t + 3.
+
+   Now just read off the signs of the two eigenvalues t − 3 and t + 3:
+
+                        t>3:           both positive ⇒ positive definite
+                        t=3:           λ = 6, 0 ⇒ positive semidefinite
+                        −3 < t < 3 : one+, one− ⇒ indefinite
+                        t = −3 :       λ = 0, −6 ⇒ negative semidefinite
+                        t < −3 :       both negative ⇒ negative definite
+
+
+  (b) An inner product needs a positive-definite matrix, so we need t > 3 . At t = 3 the matrix
+                                                                                                ⊤
+                      # which fails the rule ⟨v, v⟩ > 0 for v ̸= 0. Concretely, take v = (1, −1) .
+  is only semi definite,
+                "
+                  3 3
+  With A(3) =            ,
+                  3 3
+                                                 "           #        !
+                                ⊤             3 3                 1
+                  ⟨v, v⟩ = v A(3) v = (1, −1)                             = (1, −1) · (0, 0) = 0,
+                                              3 3                −1
+
+   even though v ̸= 0. So t = 3 does not give an inner product.
+
+
+
+Q6.                                                                                                      (5 marks)
+
+
+
+                                                         4
+Practice Problems — Lecture 3                                           Inner Products · Positive-Definite Matrices
+
+
+
+    (Positive definiteness over C.) For a real parameter k, consider
+                                                         
+                                                 k   1+i
+                                      A(k) =                .
+                                                1−i    2
+
+For u, v ∈ C2 , let u∗ denote the conjugate transpose and set ⟨u, v⟩ = u∗ A(k) v.
+(a) Show A(k) is Hermitian for every real k.                                                                [1 M]
+(b) Find all real k for which A(k) is positive definite — equivalently, for which ⟨u, v⟩ = u∗ A(k) v is
+    a valid inner product on C2 .                                                                [2 M]
+(c) At the borderline value k = 1 the matrix is only positive semi definite. Find a nonzero vector
+    z ∈ C2 with z ∗ A(1) z = 0, showing the form degenerates there.                          [2 M]
+
+   Solution
+
+  (a) A matrix is Hermitian when A∗ = A, i.e. the diagonal entries are real and the two
+  off-diagonal entries are complex conjugates of each other. Here the diagonal is k, 2 (real,
+  because k is real) and the off-diagonals satisfy 1 + i = 1 − i. Hence A(k)∗ = A(k) for every
+  real k.
+  (b) Sylvester’s criterion also works for Hermitian matrices: positive definite ⇐⇒ all leading
+  principal minors are positive (they come out real automatically). The minors are
+
+                          D1 = k,        D2 = det A(k) = 2k − (1 + i)(1 − i).
+
+   The crucial step is the complex product, which is a squared modulus:
+
+           (1 + i)(1 − i) = 1 − i2 = 2      = |1 + i|2 ,
+                                                      
+                                                                   so     D2 = 2k − 2 = 2(k − 1).
+
+   Requiring D1 > 0 and D2 > 0 gives k > 0 and k > 1, so
+
+                                 A(k) is positive definite ⇐⇒ k > 1.
+
+                                                  "            #
+                                                     1    1+i
+  (c) At k = 1 we have D2 = 0, so A(1) =                          is singular (D1 = 1 > 0, D2 = 0:
+                                                   1−i      2
+  positive semidefinite). Idea: any nonzero null-space vector works, since A(1)z = 0 ⇒
+  z ∗ A(1)z = z ∗ 0 = 0. From the first row, z1 + (1 + i)z2 = 0; choosing z2 = 1 gives z1 = −(1 + i),
+  so                                                       !
+                                                  −(1 + i)
+                                           z=                .
+                                                      1
+   Verify it is a null vector (using (1 − i)(1 + i) = 2):
+                                                               !                 !         !
+                                1 · (−(1 + i)) + (1 + i) · 1               0             0
+                    A(1)z =                                        =                 =       .
+                                (1 − i) · (−(1 + i)) + 2 · 1            −2 + 2           0
+
+   Hence z ∗ A(1)z = 0 with z =
+                              ̸ 0: at k = 1 the form is not positive definite, so it is not an inner
+   product.
+
+
+
+Q7.                                                                                                   (6 marks)
+
+                                                      5
+Practice Problems — Lecture 3                                                   Inner Products · Positive-Definite Matrices
+
+
+
+   For each matrix M below, decide whether ⟨x, y⟩ = x⊤ M y defines a valid inner product on R2 .
+Justify using the three requirements (bilinear, symmetric, positive-definite); when it fails, exhibit a
+witness.                                                                   
+                                1 2                  2 1                    1 1
+                     (a) M =              (b) M =              (c) M =
+                                2 1                  1 3                    0 1
+                                                                                                              [2 M each]
+
+   Solution
+      Every x⊤ M y is automatically bilinear, so only symmetry and positive-definiteness can fail.
+  (a) M is symmetric, so symmetry holds. Check positive-definiteness by Sylvester: D1 = 1 > 0
+  but D2 = det M = 1 − 4 = −3 < 0. Fails. A witness: x = (1, −1)⊤ gives
+                                      "    #    !
+                                       1 2    1
+                     x⊤ M x = (1, −1)             = (1, −1) · (−1, 1) = −2 < 0.
+                                       2 1   −1
+
+   So ⟨x, x⟩ < 0 is possible — not an inner product.
+  (b) M is symmetric. Sylvester: D1 = 2 > 0 and D2 = det M = 6 − 1 = 5 > 0, so M is positive
+  definite. All three requirements hold — this is a valid inner product.
+  (c) M is not symmetric, and that breaks the symmetry requirement directly. Test on the basis
+  vectors:
+                ⟨e1 , e2 ⟩ = e⊤
+                              1 M e2 = M12 = 1,  ⟨e2 , e1 ⟩ = e⊤
+                                                               2 M e1 = M21 = 0.
+
+   Since ⟨e1 , e2 ⟩ =
+                    ̸ ⟨e2 , e1 ⟩, symmetry fails — not an inner product (even though the quadratic
+          ⊤
+   form x M x = x21 + x1 x2 + x22 happens to be positive; symmetry alone already rules it out).
+
+
+
+Q8.                                                                                                           (5 marks)
+                                                       
+                                                    3 1
+   On R2 use ⟨x, y⟩A = x⊤ Ay with A =                   (SPD), and let x = (1, 1)⊤ , y = (1, −1)⊤ .
+                                                    1 2
+(a) Compute ∥x∥A , ∥y∥A , and ⟨x, y⟩A .                                                                             [2 M]
+(b) Verify the Cauchy–Schwarz inequality | ⟨x, y⟩A | ≤ ∥x∥A ∥y∥A .                                                  [1 M]
+(c) Compute the distance d(x, y) = ∥x − y∥A and verify the triangle inequality ∥x − y∥A ≤
+    ∥x∥A + ∥y∥A .                                                                    [2 M]
+
+   Solution
+
+  (a) Compute Ax and Ay once. Ax = A(1, 1)⊤ = (4, 3)⊤ and Ay = A(1, −1)⊤ = (2, −1)⊤ .
+  Then
+
+          ∥x∥2A = x⊤ (Ax) = (1, 1) · (4, 3) = 7,                ∥y∥2A = y ⊤ (Ay) = (1, −1) · (2, −1) = 3,
+
+                                    ⟨x, y⟩A = x⊤ (Ay) = (1, 1) · (2, −1) = 1.
+               √                √
+   So ∥x∥A =       7, ∥y∥A =        3, ⟨x, y⟩A = 1.
+  (b) Cauchy–Schwarz:
+                                                                  √        √        √
+                       | ⟨x, y⟩A | = 1 ≤ ∥x∥A ∥y∥A =                  7·       3=       21 ≈ 4.58. ✓
+
+
+                                                            6
+Practice Problems — Lecture 3                                     Inner Products · Positive-Definite Matrices
+
+
+
+  (c) Distance uses the same norm on the difference. With x−y = (0, 2)⊤ and A(0, 2)⊤ = (2, 4)⊤ :
+                                                                   √        √
+                   ∥x − y∥2A = (0, 2) · (2, 4) = 8 =⇒ d(x, y) =        8 = 2 2 ≈ 2.83.
+
+  Triangle inequality:
+                               √                        √   √
+                   ∥x − y∥A = 2 2 ≈ 2.83 ≤ ∥x∥A + ∥y∥A = 7 + 3 ≈ 4.38. ✓
+
+
+
+                   End of practice set — 8 questions, each with a full worked solution.
+
+
+
+
+                                                    7
+

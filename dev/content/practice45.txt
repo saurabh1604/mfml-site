@@ -1,0 +1,931 @@
+MFML / MFDS · Decompositions                                                                        Practice Set
+
+
+
+                   Matrix Decompositions
+                           17 Fully-Solved Practice Problems
+                      MFML / MFDS (AIMLCZC416 / DSECL ZC416)
+   Lecture 4 — Eigenvalues & Eigenvectors               • Lecture 5 — Singular Value Decomposition
+
+
+
+  How to use this set. This set builds fluency in matrix decompositions: eigenvalues
+  & eigenvectors, algebraic/geometric multiplicity, diagonalization, the eigendecomposition
+  A = P DP −1 , the spectral (orthogonal) decomposition of symmetric matrices, the Singular
+  Value Decomposition, low-rank approximation and the spectral norm. Read the two concept
+  boxes below first — they explain the ideas the problems rely on. Then attempt each problem
+  yourself before reading the step-by-step solution; every final result is in a green box.
+
+  Concept 1  Algebraic vs. geometric multiplicity
+
+  Let λ be an eigenvalue of an n × n matrix A.
+  Algebraic multiplicity am(λ) — how many times λ occurs as a root of the characteristic
+  polynomial det(A − λI). (E.g. a factor (λ − 3)2 means am(3) = 2.)
+  Geometric multiplicity gm(λ) — the number of independent eigenvectors for λ, i.e. the
+  dimension of the eigenspace:
+
+                          gm(λ) = dim ker(A − λI) = n − rank(A − λI).
+
+ The key facts. (i) 1 ≤ gm(λ) ≤ am(λ) for every eigenvalue. (ii) A is diagonalizable
+ ⇐⇒ gm(λ) = am(λ) for every eigenvalue (enough eigenvectors to fill a basis). (iii) If an
+ eigenvalue has gm < am, the matrix is defective and cannot be diagonalized.
+                               
+                            5 1                                                
+ One-line illustration.           has λ = 5 with am = 2 but gm = 2 − rank 00 10 = 2 − 1 = 1
+                            0 5
+                              
+                           5 0
+ — defective. By contrast         = 5I has am = gm = 2 — diagonalizable (already diagonal).
+                           0 5
+
+  Concept 2  The eigenvalue toolkit (used in several problems)
+
+  If Av = λv (with v ̸= 0), then the eigenvalues transform predictably — the eigenvector stays
+  the same:
+
+              Powers:          Ak v = λ k v         ⇒       λk is an eigenvalue of Ak .
+              Polynomials: if p(t) = c0 + c1 t + · · · + cm tm , then p(A)v = p(λ)v.
+              Inverse:         if A is invertible (λ ̸= 0), A−1 v = λ1 v.
+              Transpose:       AT has the same eigenvalues as A.
+
+  Two consequences let you avoid brute-force matrix multiplication. Writing the eigenvalues as
+  λ1 , . . . , λn :
+                                      X                    Y
+                             tr(A) =      λi ,   det(A) =      λi
+                                            i                           i
+                                        X                                      k       Y
+                   =⇒       tr(Ak ) =       λik ,           det(Ak ) = det A        =       λik .
+                                        i                                               i
+  So to handle a high power, first find the eigenvalues, then work entirely with the scalars λi .
+
+
+                                                        1
+MFML / MFDS · Decompositions                                                                     Practice Set
+
+
+
+
+# Problem theme                                    Core skill
+1    Algebraic & geometric multiplicity (warm-up) read off am, gm; decide diagonalizability
+2    Eigen-analysis of a 3 × 3 (repeated λ)        char. polynomial; am vs. gm
+3    Complex eigenvalues & eigenvectors            complex roots of a real 2 × 2
+4    Parametric eigen-analysis                     eigenpairs in symbols; when diagonalizable?
+5    Is the matrix diagonalizable? (3 × 3)         multiplicity test; defective vs. not
+                                                   det(Ak ) = (det A)k , tr(Ak ) = λki
+                                                                                   P
+6    Powers without brute force: det, tr
+7    Eigenvalues of a matrix polynomial p(A)       spectral mapping λ 7→ p(λ)
+                                    −1
+8    Eigendecomposition A = P DP                   build P, D for a non-symmetric matrix; verify
+9    Spectral decomposition A = P DP T (3 × 3)     symmetric matrix, orthonormal eigenbasis (irrational λ)
+10 Matrix powers via diagonalization               An = P D n P T
+11 Full SVD of a 3 × 2 matrix                      U ΣV T ; orthogonal completion of U
+12 Full SVD of a 2 × 3 matrix                      3 × 3 AT A with a zero eigenvalue
+13 SVD with a zero singular value                  rank-deficient; SVD vs. diagonalizability
+14 Best rank-1 approximation                       σ1 u1 v1T from a computed SVD
+                                                             σi ui viT ; truncation
+                                                         P
+15 SVD as a sum of rank-1 matrices                 A=
+16 Spectral norm of a matrix                       ∥A∥2 = σmax
+17 Capstone: EVD vs. SVD of one matrix             how the two decompositions relate
+
+
+
+
+    Problem 1  Algebraic & geometric multiplicity (warm-up) [3 marks]
+
+    For each matrix, state the eigenvalue(s), their algebraic multiplicity am and geometric multi-
+    plicity gm, and decide whether the matrix is diagonalizable.
+                                                                            
+                                  !                   !              3 1 0
+                             3 1                 3 0                        
+                       A=           ,     B=            ,     C=  0 3 1  .
+                                                                             
+                             0 3                 0 3
+                                                                     0 0 3
+
+
+     Solution
+
+Matrix A.  Triangular, so the only eigenvalue is λ = 3 with am = 2. gm = 2 − rank(A − 3I) =
+2 − rank 00 10 = 2 − 1 = 1. Since gm = 1 < 2 = am, A is not diagonalizable.
+
+Matrix B.    B = 3I: eigenvalue λ = 3 with am = 2, and A − 3I = 0 so gm = 2 − 0 = 2. Here
+gm = am, so B is diagonalizable (already diagonal).
+                                                                                      0 1 0
+Matrix C.      Triangular, eigenvalue λ = 3 with am = 3. C − 3I =                     0 0 1 has rank 2, so
+                                                                                      000
+gm = 3 − 2 = 1 < 3. Not diagonalizable (a single Jordan block).
+
+Take-away: same eigenvalue, same am — but the number of independent eigenvectors (gm) is what
+decides diagonalizability.
+
+    Answer. A: λ = 3, am = 2, gm = 1 — not diagonalizable. B: λ = 3, am = gm = 2 —
+    diagonalizable. C: λ = 3, am = 3, gm = 1 — not diagonalizable.
+
+
+
+
+                                                    2
+MFML / MFDS · Decompositions                                                               Practice Set
+
+
+
+   Problem 2  Eigen-analysis of a 3 × 3 matrix [6 marks]
+
+   Consider                                                
+                                                    4 1 1
+                                                  
+                                          A=
+                                            1 4 1  .
+                                                   
+
+                                                    1 1 4
+  (a) Find the characteristic polynomial and all eigenvalues with their algebraic multiplicities.
+  (b) For every eigenvalue find a basis of its eigenspace and state the geometric multiplicity. (c)
+  Hence decide, with reason, whether A is diagonalizable.
+
+
+    Solution
+
+(a) Characteristic polynomial. Note A = 3I + J, where J is the all-ones matrix. Expanding
+det(A − λI) (subtract row 1 from rows 2 and 3, then expand) gives
+
+                                   det(A − λI) = −(λ − 6)(λ − 3)2 .
+
+So λ = 6 (algebraic multiplicity 1) and λ = 3 (algebraic multiplicity 2).
+
+(b) Eigenspaces. For λ = 6: (A − 6I)v = 0 reads −2x + y + z = 0, x − 2y + z = 0, x + y − 2z = 0,
+whose solution is x = y = z. Basis {(1, 1, 1)T }, geometric multiplicity 1.
+For λ = 3: (A − 3I)v = 0 collapses to the single equation x + y + z = 0 (all three rows become
+identical). With two free variables,
+                                
+                               −1     −1
+                                
+                        v =  1 ,  0 
+                                   
+                                         ,     geometric multiplicity 2.
+                               0          1
+
+
+(c) Diagonalizable? For each eigenvalue, geometric multiplicity = algebraic multiplicity (1=1
+and 2=2), so the three eigenvectors form a basis of R3 and A is diagonalizable. (In fact, A is
+symmetric, so the spectral theorem already guarantees this.)
+
+  Answer. det(A − λI) = −(λ − 6)(λ − 3)2 . λ = 6: mult. 1, eigenvector (1, 1, 1)T ; λ = 3: mult.
+  2, eigenspace {x + y + z = 0}, basis (−1, 1, 0)T , (−1, 0, 1)T . A is diagonalizable.
+
+   Problem 3  Complex eigenvalues of a real matrix [4 marks]
+
+   Find all eigenvalues and corresponding eigenvectors of
+                                                      !
+                                                3 −2
+                                         A=             ,
+                                                4 −1
+
+   and explain geometrically why no real eigenvector exists.
+
+
+    Solution
+
+Step 1 — Characteristic polynomial.
+                                                !
+                              3−λ        −2
+          det(A − λI) = det                         = (3 − λ)(−1 − λ) + 8 = λ2 − 2λ + 5 = 0.
+                                4      −1 − λ
+
+                                                     3
+MFML / MFDS · Decompositions                                                          Practice Set
+
+                                              √
+                                         2±    4 − 20
+                                    λ=                = 1 ± 2i.
+                                               2
+
+Step 2 — Eigenvectors. For λ = 1 + 2i, the first row of (A − λI)v = 0 gives (3 − λ)x − 2y = 0,
+i.e. (2 − 2i)x − 2y = 0 ⇒ y = (1 − i)x. Taking x = 1,
+                                                      !
+                                                   1
+                                          v1 =          .
+                                                 1−i
+
+Its conjugate v2 = (1, 1 + i)T belongs to λ = 1 − 2i.
+
+Step 3 — Geometric reason. The discriminant is negative, so the eigenvalues form a complex-
+conjugate pair. Such a real 2 × 2 matrix acts as a rotation combined with scaling; a rotation maps
+no nonzero real vector onto a multiple of itself, hence there is no real eigenvector.
+
+  Answer. λ = 1 ± 2i with eigenvectors v = (1, 1 ∓ i)T . No real eigenvector exists because the
+  eigenvalues are non-real (the map rotates the plane).
+
+   Problem 4  Parametric eigen-analysis [4 marks]
+
+   Let a, b, c ∈ R with b ̸= 0 and consider the upper-triangular matrix
+                                                       !
+                                                   a b
+                                             A=           .
+                                                   0 c
+
+  (a) Find the eigenvalues and an eigenvector for each (in terms of a, b, c). (b) State, with
+  justification, exactly when A is diagonalizable.
+
+
+    Solution
+
+(a) Eigenvalues and eigenvectors. For a triangular matrix the eigenvalues are the diagonal
+entries: λ1 = a, λ2 = c.
+                                 !
+                        0     b
+λ1 = a: (A − aI) =                . The equations are by = 0 and (c − a)y = 0; since b =
+                                                                                       ̸ 0 we get
+                        0 c−a
+y = 0, x free, so v1 = (1, 0)T .
+                                                !
+                                       a−c b                                        b
+λ2 = c (assume c ̸= a): (A − cI) =                gives (a − c)x + by = 0 ⇒ x = −       y. Taking
+                                         0    0                                   a − c
+y = a − c, v2 = (−b, a − c)T .
+
+(b) When is A diagonalizable?           Case a ̸= c: two distinct eigenvalues ⇒ two independent
+eigenvectors ⇒ diagonalizable.
+                                                                                !
+                                                                          0 b
+Case a = c: then λ = a has algebraic multiplicity 2, but (A − aI) =           has rank 1 (because
+                                                                        0 0
+b ̸= 0), so the eigenspace is only 1-dimensional. Geometric mult. 1 < 2 ⇒ not diagonalizable.
+
+  Answer. λ1 = a with v1 = (1, 0)T ; λ2 = c with v2 = (−b, a − c)T . A is diagonalizable
+  ⇐⇒ a ̸= c (when a = c and b ̸= 0 it is defective).
+
+
+
+
+                                                  4
+MFML / MFDS · Decompositions                                                               Practice Set
+
+
+
+   Problem 5  Is the 3 × 3 matrix diagonalizable? [4 marks]
+
+   Decide whether                                            
+                                                      2 1 0
+                                                     
+                                             A=
+                                               0 2 0 
+                                                      
+
+                                                      0 0 3
+   is diagonalizable. Justify using eigenvalues, algebraic and geometric multiplicities.
+
+
+    Solution
+
+Step 1 — Eigenvalues. A is upper-triangular, so the eigenvalues are the diagonal entries: λ = 2
+(algebraic multiplicity 2) and λ = 3 (algebraic multiplicity 1).
+
+Step 2 — Eigenspace of the repeated eigenvalue.
+                                                
+                                         0 1 0
+                                                
+                               A − 2I = 
+                                        0  0   0.
+                                                 
+                                         0 0 1
+
+This has rank 2, so its null space has dimension 3 − 2 = 1: solving gives y = 0, z = 0, x free, i.e.
+eigenspace span{(1, 0, 0)T }. Geometric multiplicity 1.
+
+Step 3 — Compare.            For λ = 2 the geometric multiplicity (1) is less than the algebraic
+multiplicity (2). Therefore A cannot have a basis of eigenvectors.
+
+  Answer. A is not diagonalizable: for λ = 2, geometric mult. 1 < algebraic mult. 2 (only
+  one independent eigenvector (1, 0, 0)T ). The block [ 20 12 ] is a defective Jordan block.
+
+   Problem 6  Powers without brute force: determinant and trace [4 marks]
+
+   Consider
+                  
+            2 −1 1
+                  
+         A=
+           1  0 3,             whose characteristic polynomial is (λ − 1)(λ − 2)(λ − 3).
+            1 −1 4
+
+  Without forming any matrix power explicitly, compute (a) det(A8 ), (b) tr(A6 ), and (c)
+      6     2
+              
+  tr A − 7A .
+
+
+    Solution
+
+Step 0 — Read off the eigenvalues. The characteristic polynomial factors as (λ−1)(λ−2)(λ−3),
+so the eigenvalues are
+                                λ1 = 1, λ2 = 2, λ3 = 3.
+(Quick sanity check: tr A = 2 + 0 + 4 = 6 = 1 + 2 + 3 and det A = 1 · 2 · 3 = 6.)
+
+(a) Determinant of a power. Since Ak has eigenvalues λki , its determinant is the product, i.e.
+det(Ak ) = (det A)k :
+                          det(A8 ) = (det A)8 = 68 = 1 679 616.
+
+                            tr(A6 ) =          6    6   6   6
+                                        P
+(b) Trace of a power.                       i λi = 1 + 2 + 3 = 1 + 64 + 729 = 794.
+
+
+                                                      5
+MFML / MFDS · Decompositions                                                                 Practice Set
+
+
+(c) Trace of a polynomial in A. Trace is linear, and A6 , A2 have eigenvalues λ6i , λ2i , so
+                         X 6
+             tr A6 − 7A2 =     λi − 7λ2i = 794 − 7 (1 + 4 + 9) = 794 − 98 = 696.
+                                        
+
+                               i
+
+Every answer used only the three scalars λi — no 3 × 3 multiplication.
+
+  Answer. det(A8 ) = 68 = 1 679 616;      tr(A6 ) = 794; tr(A6 − 7A2 ) = 696.
+
+   Problem 7  Eigenvalues of a matrix polynomial p(A) [4 marks]
+
+   Let A be a 3 × 3 matrix whose eigenvalues are 1, 2, 4, and define
+
+                                        B = A2 − 5A + 6I.
+
+  (a) Show that if λ is an eigenvalue of A (with eigenvector v), then λ2 − 5λ + 6 is an eigenvalue
+  of B (with the same eigenvector). (b) Hence find the eigenvalues of B, then det(B) and tr(B),
+  and state whether B is invertible. (c) For which eigenvalues of A would B fail to be invertible?
+
+
+    Solution
+
+(a) Spectral mapping.       Suppose Av = λv. Then A2 v = A(λv) = λ2 v, and so
+
+                   Bv = (A2 − 5A + 6I)v = λ2 v − 5λv + 6v = (λ2 − 5λ + 6)v.
+
+Thus v is still an eigenvector, now with eigenvalue p(λ) = λ2 − 5λ + 6.
+
+(b) Eigenvalues of B and consequences.             Apply p(λ) = λ2 − 5λ + 6 to each eigenvalue of A:
+
+           p(1) = 1 − 5 + 6 = 2,      p(2) = 4 − 10 + 6 = 0,       p(4) = 16 − 20 + 6 = 2.
+
+So B has eigenvalues {2, 0, 2}. Therefore
+
+                         det(B) = 2 · 0 · 2 = 0,       tr(B) = 2 + 0 + 2 = 4.
+
+Because 0 is an eigenvalue (equivalently det B = 0), B is not invertible — even though A itself is
+(none of its eigenvalues is 0).
+
+(c) When is B singular? B is singular exactly when p(λ) = 0 for some eigenvalue λ of A. Since
+p(λ) = (λ − 2)(λ − 3), this happens iff A has 2 or 3 as an eigenvalue. Here λ = 2 occurs, which is
+why B is singular.
+
+Remark (Cayley–Hamilton).  If A’s characteristic polynomial were equal to p(λ) = λ2 − 5λ + 6 — e.g.
+for A = −4 5 with eigenvalues 1, 4 and char. poly λ2 − 5λ + 4 — then p(A) collapses to a multiple
+           0 1
+               
+
+of I: indeed A2 − 5A + 4I = 0 gives A2 − 5A + 6I = 2I.
+
+  Answer. p(λ) = λ2 − 5λ + 6 maps each λ; eigenvalues of B are 2, 0, 2. det(B) = 0, tr(B) = 4,
+  so B is not invertible. B is singular iff A has eigenvalue 2 or 3 (the roots of p).
+
+   Problem 8  Eigendecomposition A = P DP −1 [4 marks]
+
+   Find an eigendecomposition A = P DP −1 of the non-symmetric matrix
+                                                   !
+                                              5 −1
+                                      A=             ,
+                                              2   2
+
+
+
+                                                   6
+MFML / MFDS · Decompositions                                                                                        Practice Set
+
+
+
+
+  giving P, D, P −1 explicitly, and verify the factorization.
+
+
+    Solution
+
+Step 1 — Eigenvalues.
+
+               det(A − λI) = (5 − λ)(2 − λ) + 2 = λ2 − 7λ + 12 = (λ − 3)(λ − 4) = 0,
+
+so λ1 = 3, λ2 = 4.
+                                                                       !
+                                                                2 −1
+Step 2 — Eigenvectors.            λ1 = 3: (A − 3I) =                       ⇒ 2x = y, so p1 = (1, 2)T .
+                                                                2 −1
+                              !
+                       1 −1
+λ2 = 4: (A − 4I) =                ⇒ x = y, so p2 = (1, 1)T .
+                       2 −2
+
+Step 3 — Assemble and verify.
+                     !                          !                                                           !
+                 1 1                      3 0                                      −1         −1        1
+            P =        , D=                         ,   det P = −1,            P        =                       .
+                 2 1                      0 4                                                     2 −1
+                       !                            !                 !            !
+                 3 4                         3 4         −1       1            5 −1
+Check: P D =           , and P DP −1 =                                     =                  = A. ✓
+                 6 4                         6 4            2    −1            2        2
+                                                !                      !                                !
+                                          1 1                    3 0                         −1    1
+  Answer. A = P DP −1 with P =                      , D=                   , P −1 =                         .
+                                          2 1                    0 4                         2     −1
+
+   Problem 9  Spectral decomposition A = P DP T of a symmetric 3 × 3 [6 marks]
+  For the symmetric tridiagonal matrix
+                                                                 
+                                                        2 1 0
+                                                     
+                                            A=
+                                               1 2 1 ,
+                                                      
+                                                0 1 2
+
+  find its eigenvalues, an orthonormal set of eigenvectors, and hence write A = P DP T with P
+  orthogonal.
+
+
+    Solution
+
+Step 1 — Eigenvalues.       Expanding det(A − λI) along the first row,
+
+          det(A − λI) = (2 − λ) (2 − λ)2 − 1 − 1 · (2 − λ) = (2 − λ) (2 − λ)2 − 2 = 0.
+                                                                              
+
+                                              √
+Hence λ = 2, and (2 − λ)2 = 2 ⇒ λ = 2 ±           2. The eigenvalues are
+                                   √                                                √
+                           λ1 = 2 + 2,              λ2 = 2,           λ3 = 2 −          2.
+
+
+Step 2 — Eigenvectors.            λ = 2: (A − 2I)v = 0 gives y = 0 and x + z = 0, so v2 = (1, 0, −1)T .
+
+
+                                                        7
+MFML / MFDS · Decompositions                                                                                                   Practice Set
+
+
+        √                 √                    √                       √
+             √ firstTrow − 2 x + y = 0 ⇒ y = 2 x, and the third row y − 2 z = 0 ⇒ x = z.
+λ = 2 + 2: the
+Thus v1 = (1, 2, 1) .
+        √                 √                                √
+λ = 2 − 2: similarly y = − 2 x and x = z, giving v3 = (1, − 2, 1)T .
+The three eigenvectors are mutually orthogonal (guaranteed by the spectral theorem).
+                                                  √
+Step 3 — Normalise and assemble. ∥v2 ∥ = 2 and ∥v1 ∥ = ∥v3 ∥ = 2, so
+
+                                                    √
+                                
+                  1    √1     1                                  
+               √ 2      2    2
+                              √ 
+                                                2 +   2 0     0
+          P =  22          − 22  ,                                      A = P DP T .
+                                                                 
+                        0                D=       0    2     0   ,
+                                
+                                                            √ 
+                  1
+                      − √12   1                    0    0 2− 2
+                  2           2
+
+
+Since the columns are orthonormal, P T P = I, i.e. P −1 = P T .
+                                      √           √
+  Answer.
+        √       Eigenvalues 2 + √2, 2, 2 −          2 with orthonormal eigenvectors
+  1            √1 (1, 0, −1)T , 1
+  2 (1,   2, 1)T ,                           T
+                                2 (1, − 2, 1) ; A = P DP T with P orthogonal and
+              √2          √
+  D = diag(2 + 2, 2, 2 − 2).
+
+   Problem 10  Matrix powers via diagonalization [4 marks]
+
+  Using diagonalization, derive a closed form for An and evaluate A4 , where
+                                                      !
+                                                2 −1
+                                        A=              .
+                                               −1 2
+
+
+    Solution
+
+Step 1 — Diagonalize (orthogonally). det(A − λI) = (2 − λ)2 − 1 = (λ − 1)(λ − 3) = 0 ⇒
+λ1 = 1, λ2 = 3. Orthonormal eigenvectors √12 (1, 1)T and √12 (1, −1)T give
+                                                !                                    !
+                                 1     1   1                                1 0
+                              P =√                      ,           D=                   ,          A = P DP T .
+                                   2   1 −1                                 0 3
+
+
+Step 2 — Power formula.                 Since A = P DP T with P orthogonal, An = P Dn P T and only the
+diagonal is raised:
+                                           !                    !               !                                  !
+                          n  1     1   1        1           0       1       1          1          1 + 3n 1 − 3n
+                         A =                                                         =                                 .
+                             2     1 −1         0 3n                1 −1               2          1 − 3n 1 + 3 n
+
+                                                                                            !                       !
+                                                        1                       82       −80               41    −40
+Step 3 — Evaluate n = 4.               34 = 81, so A4 =                                                =                   .
+                                                                        2       −80          82            −40     41
+                                                !                                        !
+              1      n
+                               1 + 3 n 1 − 3n                                   41    −40
+  Answer. A =                                       ,           A4 =                               .
+              2                1 − 3n 1 + 3n                                −40          41
+
+
+
+
+                                                                     8
+MFML / MFDS · Decompositions                                                                                Practice Set
+
+
+
+   Problem 11  Full SVD of a 3 × 2 matrix [6 marks]
+
+  Find a full singular value decomposition A = U ΣV T of
+                                                  
+                                               1 1
+                                                  
+                                         A= 1 0 ,
+                                                   
+
+                                               0 1
+
+  including the third column of U obtained by orthogonal completion.
+
+
+    Solution
+
+Step 1 — AT A, singular values, right singular vectors.
+                                                
+                                         ! 1 1              !
+                                  1  1  0               2 1
+                         AT A =
+                                                
+                                           1 0 =            .
+                                  1 0 1               1 2
+                                             0 1
+                                                                √
+Eigenvalues: det 2−λ 1           2
+                       
+                  1 2−λ = (2 − λ) − 1 = 0 ⇒ λ = 3, 1. Thus σ1 =   3, σ2 = 1, with
+
+                        v1 = √12 (1, 1)T (λ = 3),         v2 = √12 (1, −1)T (λ = 1).
+
+
+Step 2 — Left singular vectors ui = σ1i Avi .
+                                                                                             
+                                 !           2                               !              0
+                    1       1           1                    1       1            1  
+               u1 = √ A √12                               u2 = A √12
+                                              
+                                     = √ 1
+                                           
+                                              ,                                 =√  1 .
+                     3      1            6                    1      −1             2 
+                                             1                                        −1
+
+
+Step 3 — Orthogonal completion u3 .           We need a unit vector with u3 ⊥ u1 and u3 ⊥ u2 .
+Writing u3 = (p, q, r)T : from u2 , q − r = 0 ⇒ q = r; from u1 , 2p + q + r = 0 ⇒ p = −q. So
+u3 = √13 (−1, 1, 1)T .
+
+Step 4 — Assemble.
+              √            √                          √     
+              2/ 6   0   −1/ 3                             3 0                                      !
+              √     √     √                                              T    1     1       1
+         U = 1/ 6 1/ 2
+                        1/ 3  ,                   Σ =  0 1
+                                                        
+                                                               ,        V       =√                     .
+                √     √    √                                                       2   1 −1
+              1/ 6 −1/ 2 1/ 3                             0 0
+
+                    √
+  Answer. σ1 =         3, σ2 = 1; v1 = √12 (1, 1)T , v2 = √12 (1, −1)T ; u1 = √16 (2, 1, 1)T , u2 =
+                                             h√ i
+                                               30
+  √1 (0, 1, −1)T , u3 = √1 (−1, 1, 1)T ; Σ =  0 1 .
+    2                     3                     0 0
+
+
+   Problem 12  Full SVD of a 2 × 3 matrix [6 marks]
+
+  Find the SVD of                                             !
+                                                    1 1 0
+                                           A=                     .
+                                                    0 1 1
+
+
+
+                                                      9
+MFML / MFDS · Decompositions                                                                                       Practice Set
+
+
+
+
+  (Hint: it is quicker to get U and the singular values from the 2 × 2 matrix AAT , then recover
+  V from vi = σ1i AT ui ; the missing right vector spans ker(AT A).)
+
+
+    Solution
+
+Step 1 — AAT , singular values, left singular vectors.
+                                  
+                           ! 1 0               !
+              T     1 1 0               2  1                                                  √
+          AA =               1 1  =            ⇒ λ = 3, 1,                            σ1 =        3, σ2 = 1.
+                    0 1 1               1 2
+                               0 1
+
+                          u1 = √12 (1, 1)T (λ = 3),                  u2 = √12 (1, −1)T (λ = 1).
+
+Step 2 — Right singular vectors vi = σ1i AT ui .
+                                                                                                            
+                                         !           1                                      !              1
+                  1        1                    1                       1        1              1  
+             v1 = √ AT √12                                           v2 = AT √12
+                                                      
+                                             = √ 2
+                                                   
+                                                      ,                                        =√   0 .
+                   3       1                     6                       1       −1               2 
+                                                     1                                               −1
+
+
+Step 3 — Third right vector from the null space. A is 2×3, so Σ needs a third right vector v3
+with singular value 0, spanning ker(A) (equivalently ker AT A). Solving Av = 0: x + y = 0, y + z = 0
+gives v3 = √13 (1, −1, 1)T .
+
+Step 4 — Assemble.
+                                                                                     √   √     √ 
+                                 !                √              !                 1/ 6 1/ 2  1/ 3
+            1         1      1                           3 0 0                    √              √ 
+          U=√                        ,   Σ=                          ,        V = 2/
+                                                                                  √    6 0   −1/  3 .
+              2       1 −1                           0     1 0                             √    √ 
+                                                                                   1/ 6 −1/ 2 1/ 3
+
+The single zero column of Σ reflects that A has rank 2 but 3 columns.
+                                                                     !
+                     √                                      1    1                h√        i
+  Answer. σ1 =           3, σ2 = 1; U = √12                              , Σ =        300
+                                                                                     0 10
+                                                                                             , v1 = √16 (1, 2, 1)T , v2 =
+                                                            1 −1
+  √1 (1, 0, −1)T , v3 = √1 (1, −1, 1)T .
+    2                     3
+
+
+   Problem 13  SVD with a zero singular value; SVD vs. diagonalizability [6 marks]
+                                                     !
+                                             1   1
+  (a) Find the SVD of A =                                . (b) Show that A is not diagonalizable, yet its SVD
+                                         −1 −1
+  still exists, and explain why.
+
+
+    Solution
+
+(a) Step 1 — Singular values.
+                        !         !                                   !
+            T     1 −1       1  1                               2 2
+           A A=                     =                                     ,      λ = 4, 0 ⇒ σ1 = 2, σ2 = 0.
+                  1 −1      −1 −1                               2 2
+
+                                                                10
+MFML / MFDS · Decompositions                                                                                   Practice Set
+
+
+The single nonzero singular value shows rank A = 1.
+
+Step 2 — Right and left vectors. Eigenvectors of AT A: v1 = √12 (1, 1)T (for 4), v2 = √12 (1, −1)T
+(for 0).                           !           !                                  !
+                1        1 1     2     1     1                              1 1
+          u1 =    Av1 = · √          =√           ,    u2 ⊥ u1 : u2 = √             .
+               σ1        2   2 −2       2 −1                                 2 1
+                                !               !                        !
+                       1    1 1            2 0             1 1 1
+                  U=√              , Σ=            , V =√                  .
+                        2 −1 1             0 0              2 1 −1
+
+(b) Not diagonalizable, but SVD exists. The eigenvalues of A itself satisfy det(A−λI) = λ2 =
+0, so λ = 0 has algebraic multiplicity 2, while Av = 0 has the single solution direction (1, −1)T —
+geometric multiplicity 1. Since 1 < 2, A has no eigenbasis and is not diagonalizable. Nevertheless
+the SVD is built from the symmetric matrices AT A and AAT , which are always orthogonally
+diagonalizable. This is exactly why an SVD exists for every matrix, diagonalizable or not.
+                                                      !                  !                                !
+                                             1    1              2 0                         1        1
+  Answer. σ1 = 2, σ2 = 0;         U = √12        , Σ=           , V                  = √12                    . A is not
+                                          −1 1            0 0                                1 −1
+  diagonalizable (λ = 0: algebraic mult. 2, geometric mult. 1).
+
+   Problem 14  Best rank-1 approximation [4 marks]
+                        !
+                  2 2
+   For A =              , find the singular values and the best rank-1 approximation A1 = σ1 u1 v1T .
+                −1 1
+
+
+    Solution
+
+Step 1 — Singular values and top right vector.
+                  !        !        !                  !
+       T    2 −1      2 2       5 3            5−λ  3
+     A A=                    =        ,    det           = (λ − 8)(λ − 2) = 0.
+            2 1      −1 1       3 5             3  5−λ
+          √        √       √
+So σ1 =       8 = 2 2, σ2 = 2, with v1 = √12 (1, 1)T for λ = 8.
+
+Step 2 — Top left vector.
+                                                              !              !
+                                     1        1    1         4           1
+                                u1 =    Av1 = √ · √                  =           .
+                                     σ1      2 2    2        0           0
+
+
+Step 3 — Rank-1 approximation.
+                                           !                   !                              !
+                                       √  1              1 1                          2 2
+                     A1 = σ1 u1 v1T = 2 2    · √12 1 1 = 2       =                                .
+                                          0                0 0                          0 0
+
+By the Eckart–Young theorem this is√the closest rank-1 matrix to A; the discarded part corresponds
+to the dropped singular value σ2 = 2.
+                                                                 !
+                √       √                                  2 2
+  Answer. σ1 = 2 2, σ2 = 2; A1 = σ1 u1 v1T =                         with u1 = (1, 0)T , v1 = √12 (1, 1)T .
+                                                           0 0
+
+
+                                                      11
+MFML / MFDS · Decompositions                                                                                            Practice Set
+
+
+
+   Problem 15  SVD as a sum of rank-1 matrices [4 marks]
+
+  A matrix has the SVD data
+
+       σ1 = 3, u1 = √12 (1, 1)T , v1 = √12 (1, 1)T ;             σ2 = 1, u2 = √12 (1, −1)T , v2 = √12 (1, −1)T .
+
+  (a) Reconstruct A = σ1 u1 v1T + σ2 u2 v2T . (b) Write down the best rank-1 approximation and
+  the relative weight it keeps.
+
+
+    Solution
+
+(a) Two rank-1 layers.
+                                       !                              !                                              !
+                                      1 1           3         1 1                                1          1    −1
+            σ1 u1 v1T = 3 · √12            √
+                                            2
+                                                1 1 =                     ,        σ2 u2 v2T = 1 ·                       .
+                                      1               2         1 1                                      2   −1     1
+Adding,                                               !                       !               !
+                                         1      3 3         1    1    −1              2 1
+                                      A=                  +                       =               .
+                                         2      3 3         2   −1        1           1 2
+
+(b) Best rank-1 approximation.                     Keep the largest singular value only:
+                                                                         !
+                                                                 3 1   1
+                                                A1 = σ1 u1 v1T =           .
+                                                                 2 1 1
+
+                                                                                                                      σ12     9
+                                   = ki=1 σi ui viT with k = 1. The energy kept is
+                                    P
+This is the rank-k truncation A(k)
+                              b
+                                                                                                                    2     2 =    =
+                                                                                                                   σ1 + σ2    10
+90%.
+                              !                                                                   !
+                        2 1                                                            1 1
+  Answer. A =                     ;   best rank-1 approximation A1 = 32                               , keeping σ12 /(σ12 + σ22 ) =
+                   1 2                                                                 1 1
+  90% of the energy.
+
+   Problem 16  Spectral norm of a matrix [4 marks]
+
+  Compute the spectral norm ∥A∥2 of
+                                                                      !
+                                                                4 3
+                                                        A=                ,
+                                                                0 5
+
+  and state the corresponding right singular vector.
+
+
+    Solution
+                                            p
+Step 1 — Use ∥A∥2 = σmax =                    λmax (AT A).
+                                                       !       !                          !
+                                                   4 0     4 3                    16 12
+                                          AT A =                 =                            .
+                                                   3 5     0 5                    12 34
+
+Step 2 — Largest eigenvalue of AT A.        det(AT A − λI) = λ2 − 50λ + 400 = 0 (trace 50,
+                        2
+determinant 16 · 34 − 12 = 400), so
+                                   √
+                             50 ± 2500 − 1600   50 ± 30
+                          λ=                  =         = 40 or 10.
+                                     2              2
+
+                                                                12
+MFML / MFDS · Decompositions                                                                                      Practice Set
+
+
+                 √         √             √
+Hence σmax =         40 = 2 10 and σmin = 10.
+                                                                                                    !
+                                                                                      −24      12
+Step 3 — Right singular vector for σmax .                  (AT A − 40I)v =                                 v = 0 ⇒ 2x = y, so
+                                                                                      12       −6
+v1 = √15 (1, 2)T .
+                                                         √
+                                                 ∥A∥2 = 2 10 ≈ 6.32.
+
+                         √
+  Answer. ∥A∥2 = σmax = 2 10 ≈ 6.32, attained along v1 = √15 (1, 2)T (the other singular
+          √
+  value is 10).
+
+    Problem 17  Capstone — eigendecomposition vs. SVD of one matrix [6 marks]
+                      !
+               1 2
+   For A =         : (a) find its eigendecomposition (note the negative eigenvalue); (b) find its
+             2 1
+   SVD; (c) explain precisely how the two are related.
+
+
+     Solution
+
+(a) Eigendecomposition. det(A − λI) = (1 − λ)2 − 4 = (λ − 3)(λ + 1) = 0 ⇒ λ1 = 3, λ2 = −1.
+Orthonormal eigenvectors q1 = √12 (1, 1)T (for 3) and q2 = √12 (1, −1)T (for −1). With Q =
+          !
+     1  1
+ √1         ,
+   2 1 −1
+                                                   !
+                                             3 0
+                                    A=Q              QT .
+                                             0 −1
+
+                                 !
+                           5 4
+(b) SVD.       AT A =        has eigenvalues 9 and 1, so σ1 = 3, σ2 = 1 — note σi = |λi |. The right
+                       4 5
+singular vectors are the same eigenvectors v1 = √12 (1, 1)T , v2 = √12 (1, −1)T , and
+                                              !                                          !
+                         1       1           1                  1       1              −1
+                     u1 = Av1 = √                 = v1 ,    u2 = Av2 = √                           = −v2 .
+                         3        2          1                  1        2                 1
+                                             !                   !                                 !
+                            1        1 −1                  3 0                   1     1       1
+                          U=√                     ,   Σ=             ,       V =√                      .
+                              2      1   1                 0 1                    2    1 −1
+
+(c) The relationship.         For a symmetric matrix the singular values are the absolute values of
+the eigenvalues, σi = |λi |, and the right singular vectors are the eigenvectors. Where an eigenvalue
+is positive, ui = vi ; where it is negative (here λ2 = −1), the minus sign is absorbed into the left
+vector, ui = −vi . Thus EVD and SVD coincide exactly when every eigenvalue is non-negative (a
+positive-semidefinite matrix); otherwise they differ only by these sign flips between U and V .
+                                                                             !
+                                                                1        1
+  Answer. EVD: A = Q diag(3, −1)QT , Q = √12            . SVD: Σ = diag(3, 1) = diag(|λi |),
+                                               1 −1
+                     !
+                 1 −1
+  V = Q, U = √12       (the negative eigenvalue flips the sign of u2 relative to v2 ).
+                 1 1
+
+
+                                                           13
+MFML / MFDS · Decompositions                                                                Practice Set
+
+
+      End of practice set  17 problems  all topics from Lecture 4 & Lecture 5 (decompositions)
+
+
+
+
+                                                 14
+

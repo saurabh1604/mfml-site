@@ -1,0 +1,508 @@
+              MFML AND MFDS
+                       MFML and MFDS Team
+BITS Pilani                   WILPD - CSIS
+                                          BITS Pilani
+
+
+
+
+         ZC416 Mathematical Foundations for
+          Machine Learning / Data Science
+            Topic: #3 Analytic Geometry
+1 / 28
+    A NALYTIC GEOMETRY
+
+
+
+         We have studied vector spaces in the previous lecture.
+         Now we would like to provide some geometric
+         interpretation to these concepts.
+         We shall take a close look at geometric vectors and the
+         concepts of lengths of vectors and angles between vectors.
+         But first we need to add the concept of an inner product to
+         our vector space.
+
+
+
+
+1 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    N ORMS
+
+         A norm on a vector space is a function ∥.∥ : V → R,
+         x → ∥x ∥ which assigns to each vector x a length ∥x ∥ such
+         that for all λ ∈ R and x , y ∈ V the following properties
+         hold:
+            ▶ Absolutely homogeneous: ∥λx ∥ = |λ|∥x ∥
+
+            ▶ Triangle inequality: ∥x + y ∥ ≤ ∥x ∥ + ∥y ∥
+
+            ▶ Positive definite: ∥x ∥ ≥ 0 and ∥x ∥ = 0 =⇒ x = 0
+
+                                    i =n
+                                    X
+         Manhattan norm : ∥x ∥1 =          |xi |
+                                    i =1
+                                 v
+                                 u i =n
+                                 uX
+         Euclidean norm : ∥x ∥ = t
+                              2         x 2.     i
+                                        i =1
+
+
+
+2 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    I NNER PRODUCTS
+                                                      i =n
+                                                      X
+                         n                 T
+         Dot product in R is given by x y =                   xi yi
+                                                       i =1
+         A bilinear mapping Ω is a mapping with two arguments and
+         is linear in both arguments: Let V be a vector space such
+         that x , y , z ∈ V , and let λ, ψ ∈ R. Then we have
+         Ω(λx + ψ y , z ) = λΩ(x , z ) + ψΩ(y , z ), and
+         Ω(x , λy + ψ z ) = λΩ(x , y ) + ψΩ(x , z ).
+         Let V be a vector space and Ω : V × V → R be a bilinear
+         mapping that takes two vectors as arguments and returns a
+         real number. Then Ω is called symmetric if
+         Ω(x , y ) = Ω(y , x ). Also Ω is called positive-definite if
+         ∀x ∈ V \ {0}, Ω(x , x ) > 0 and Ω(0, 0) = 0.
+
+3 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    I NNER PRODUCTS
+
+
+         A positive-definite, symmetric bilinear mapping
+         Ω : V × V → R is called an inner product. To denote an
+         inner product on V we generally write ⟨x , y ⟩.
+         The pair (V , ⟨., .⟩) is called an inner product space.
+         Next we introduce the concept of symmetric,
+         positive-definite matrices and show we can express an
+         inner product using such matrices.
+         We recall that in a vector space V any vector x can be
+         written as linear combination of the basis vectors. We use
+         this to express an inner product in terms of a matrix.
+
+
+
+4 / 28                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S YMMETRIC, POSITIVE - DEFINITE MATRICES
+
+
+
+
+         Theorem: For a real-valued, finite-dimensional vector space V
+         and an ordered basis B of V , it holds that ⟨., .⟩ : V × V → R is
+         an inner product if and only if there exists a symmetric, positive
+         definite matrix A ∈ Rn×n with ⟨x , y ⟩ = x̂ T Aŷ.
+
+
+
+
+5 / 28                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S YMMETRIC, POSITIVE DEFINITE MATRICES
+
+
+
+         Can a symmetric, positive-definite matrix have less than full
+         rank? We have x T Ax > 0 for all non-zero x. Thus x = 0 is
+         the only vector allowed in the nullspace. The nullspace is
+         0-dimensional so A has full rank.
+         What can be said about the diagonal elements of a
+         positive-definite matrix? From (ei )T Aei > 0 where ei is the
+         ith canonical basis vector, we see that Aii > 0. Thus the
+         diagonal entries are all strictly positive.
+
+
+
+
+6 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    L ENGTHS AND DISTANCES
+
+
+
+         Inner products and norms are closely related inp
+                                                        the sense
+         that any inner product induces a norm: ∥x ∥ = ⟨x , x ⟩
+         Not every norm is induced by an inner product, for example
+         the Manhattan norm.
+         For an inner product vector space (V , ⟨., .⟩), the induced
+         norm ∥.∥ satisfies the Cauchy-Schwarz inequality:
+         |⟨x , y ⟩| ≤ ∥x ∥∥y ∥. Why is this true?
+
+
+
+
+7 / 28                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    C AUCHY-S CHWARZ INEQUALITY
+
+         Let u and v be two vectors and let us consider the length of
+         the vector u − αv where α is a constant.
+         The length of the vector u − αv is greater than or equal to
+         zero. The length of the vector u − αv is
+         ∥u − αv ∥2 = ⟨u − αv , u − αv ⟩ = (u − αv )T (u − αv ).
+         We can expand the dot product
+         (u − αv )T (u − αv ) = u T u − αu T v − αv T u + α2 v T v ≥ 0
+                         T                     (u T v )2
+         Now set α = uv T vv to get u T u − v T v ≥ 0 which leads us to
+         (u T u )(v T v ) ≥ (u T v )2 which is Cauchy-Schwarz inequality.
+         Note that although this proof was developed using
+         ⟨u , v ⟩ = u T v, it works for any definition of the inner
+         product.
+
+8 / 28                                 BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    M ETRIC SPACE
+
+
+
+         Consider an inner product space (V , ⟨., .⟩). Define d (x , y )
+                                p vectors x and y to be
+         the distance between two
+         d (x , y ) = ∥x − y ∥ = ⟨x − y , x − y ⟩.
+         If we use the dot product as the inner product, then the
+         distance is called the Euclidean distance.
+         The mapping d : V × V → R is called a metric.
+
+
+
+
+9 / 28                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    P ROPERTIES OF A METRIC SPACE
+
+          A metric d has the following properties:
+               d is positive-definite which means d (x , y ) ≥ 0 ∀x , y ∈ V .
+               d (x , y ) = 0 =⇒ x = y.
+               d is symmetric which means d (x , y ) = d (y , x ) ∀x , y ∈ V .
+               d obeys the triangle inequality as follows:
+               d (x , z ) ≤ d (x , y ) + d (y , z ) ∀x , y , z ∈ V
+          Inner products and metrics seem to be very similar in terms of
+          their properties - however there is one important difference. When
+          x and y are close to each other the inner product is large but the
+          distance metric is small. On the other hand when x and y are far
+          apart, then the inner product is small but the distance metric is
+          large.
+
+10 / 28                                        BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    A NGLES AND ORTHOGONALITY
+
+          In addition to being able to capture the lengths of vectors
+          and the distance between vectors, inner products can also
+          capture the angle ω between two vectors and can thus
+          capture the geometry of a vector space.
+          The key to using the inner product to characterize the angle
+          between two vectors is the Cauchy-Schwarz inequality.
+          Assume that x and y are not the 0 vector. Then the
+          Cauchy-Schwarz inequality tells us that
+
+                                        xT y
+                              −1 ≤                   ≤1                                     (1)
+                                     ∥x ∥∥y ∥
+
+
+
+11 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    A NGLES AND ORTHOGONALITY
+
+          Since the Cauchy-Schwarz ratio lies between -1 and 1 we
+          can set it equal to the cosine of a unique angle ω ∈ [0, π]
+          such that
+                                            ⟨x , y ⟩
+                                cos(ω) =                            (2)
+                                          ∥x ∥∥y ∥
+          The angle ω is the angle between two vectors. What does it
+          capture?
+          The notion of angle captures similarity of orientation
+          between two vectors. When the dot product is close to
+          zero, the vectors are more or less pointing in orthogonal
+          directions and ω ≈ π/2.
+
+
+
+12 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    A NGLES AND ORTHOGONALITY
+
+
+          Food for thought: Suppose we choose vectors x and y
+          uniformly at random in high dimensions. What happens to
+          the dot product between the vectors and hence the angle
+          between them?
+          To choose a vector uniformly at random over a sphere let
+          every component in the vector be an independent
+          Gaussian random variable of mean 0 and unit variance.
+          Write a small program to see what happens ...
+
+
+
+
+13 / 28                             BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    A NGLES AND ORTHOGONALITY
+
+
+          A key feature of the inner product is that we can use it to
+          characterize vectors that are orthogonal.
+          Two vectors x and y are orthogonal if and only if the inner
+          product between them is 0. For an orthogonal pair of
+          vectors x, y we can write x ⊥ y.
+          By the above definition the 0-vector is orthogonal to all
+          vectors.
+          Vectors which are orthogonal with respect to one inner
+          product need not be orthogonal with respect to another
+          inner product.
+
+
+
+14 / 28                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    E XAMPLE - ANGLES AND ORTHOGONALITY
+
+
+          Consider the vectors x = [1, 1]T and y = [−1, 1]T
+          With respect to the inner product defined as a dot product
+          we see that ⟨x , y ⟩ = x T y = 1 ∗ −1 + 1 ∗ 1 = 0.
+                                                                
+                                              2 0  T
+          With respect to the inner product x     y , the angle
+                                              0 1
+          between the two vectors x and y becomes
+
+                                               ⟨x , y ⟩
+                             cos(ω) =
+                                              ∥x ∥∥y ∥
+
+
+
+
+15 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    E XAMPLE - ANGLES AND ORTHOGONALITY
+
+          Continuing with our example we have
+
+                                              x T Ay
+                     cos(ω) = √                    p
+                                      x T Ax     y T Ay
+                                           2x1 y1 + x2 y2
+                                = p 2
+                                   (2x1 + x22 )(2y12 + y22 )
+                                  −1
+                                =
+                                     3
+                           
+                    2 0
+          where A =     .
+                    0 1
+          Thus, with respect to the new definition of inner product the
+          vectors x and y are no longer orthogonal.
+
+16 / 28                                  BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    O RTHONORMAL MATRIX
+
+          A square matrix A ∈ Rn×n is an orthogonal matrix if and
+          only if its columns are orthonormal:
+
+                             AT A = I = AAT
+                                   AT = A−1
+
+          If the columns of a matrix are orthonormal, why are its rows
+          orthonormal too? This follows from the fact that the
+          left-inverse of a square matrix is the same as the
+          right-inverse. Let A be a square matrix with B and C the
+          left and right inverses of A: BA = I = AC =⇒ B = C.
+          Why is this true?
+
+
+17 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    O RTHONORMAL MATRIX
+
+
+
+          Transformations by an orthonormal matrix preserve
+          lengths. This can be seen as follows, using the dot product
+          as the definition of the inner product:
+          ∥Ax ∥2 = (Ax )T Ax = x T AT Ax = x T Ix = x T x.
+          An example of an orthonormal matrix
+                                            is the 2D-rotation
+                                                         
+                                            cos θ −sinθ
+          matrix which can be expressed as                 where θ
+                                            sinθ cosθ
+          is the angle of rotation.
+
+
+
+
+18 / 28                             BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    O RTHONORMAL MATRIX
+
+
+          Also the angle between two vectors x and y does not
+          change after transformation by an orthonormal matrix. This
+          can be seen as follows:
+
+                                           (Ax )T Ay
+                          cos(ω) =
+                                          ∥Ax ∥ ∥Ay ∥
+                                          x T AT Ay
+                                   =
+                                          ∥x ∥ ∥y ∥
+                                              xT y
+                                   =
+                                          ∥x ∥ ∥y ∥
+
+
+
+19 / 28                             BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    O RTHONORMAL BASIS
+
+          We already looked at the concept of a basis of a vector
+          space, and found that for the vector space Rn we need n
+          basis vectors.
+          Our basis vectors needed only to be linearly independent -
+          we can ensure linear independence by ensuring that our
+          basis vectors point in different directions, so that a linear
+          combination of n − 1 basis vectors cannot cancel out the
+          nth basis vector.
+          Now we will look at a special case of a basis where the
+          vectors are all mutually orthogonal in the sense of the inner
+          product, and each vector is of unit length. We call such a
+          basis an orthonormal basis.
+
+
+20 / 28                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    O RTHONORMAL BASIS
+
+
+          Question: Can you immediately think of an orthonormal
+          basis for Rn ? Is an orthonormal basis for a vector space
+          unique?
+          Formal definition of an orthonormal basis: Consider an
+          n-dimensional vector space V and n basis vectors
+          {b1 , b2 , . . . bn }. If it is true that
+          ∀i , j = 1, . . . n, i ̸= j ⟨bi , bj ⟩ = 0 and ⟨bi , bi ⟩ = 1, then the
+          basis is called an orthonormal basis.
+          If the basis vectors are only mutually orthogonal but not of
+          length unity, then we have an orthogonal basis.
+
+
+
+21 / 28                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    G RAM -S CHMIDT PROCESS
+
+          Given a set of basis vectors for a vector space, can we
+          convert the given basis into an orthogonal basis? Yes, we
+          shall use Gaussian elimination to construct such a basis.
+          Let us start with an example: Consider R2 and two basis
+          vectors v1 = (3, 1)T and v2 = (2, 2)T . Putthese vectors
+                                                      3 2
+          into columns of a matrix A such that A =          .
+                                                      1 2
+          The next step is to perform Gaussian elimination
+                                                          on the 
+                                                     10 8| 3 1
+          following augmented matrix: [AT A|AT ] =
+                                                     8 8| 2 2
+          On performing Gaussian elimination of this augmented
+                                                         
+                                 1 0.8|     0.3      0.1
+          matrix we end up with
+                                 0 1| −0.25 0.75
+
+22 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    G RAM -S CHMIDT PROCESS
+          Note that after the completion of Gaussian elimination the
+          two rows on the right hand side are orthogonal. They form
+          a basis for R2 . We can normalize the vectors to get an
+          orthonormal basis. Let us justify this technique.
+          First we see that when the m × n matrix A has full column
+          rank, then the matrix AT A is positive definite. To see this
+          note that any solution x to Ax = 0 is also a solution to
+          AT Ax = 0 and vice-versa. Why is this the case?
+          When A has linearly independent columns, there are no
+          non-trivial solutions to Ax = 0. Thus the fact that there are
+          no non-trivial solutions to Ax = 0 means that
+          ∀x ∈ Rn , x ̸= 0, x T AT Ax > 0. Note that since AT A is
+          positive-definite, Gaussian elimination can be carried out
+          on AT A without row exchanges.
+23 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    E LEMENTARY TRANSFORMATIONS
+
+          One of the steps of Gaussian elimination is the the
+          subtraction of a multiple of a given row from a row below it.
+          This step can be achieved by pre-multiplication of the given
+          matrix by an elementary matrix. An elementary matrix is
+          like an identity matrix except that one of the entries below
+          the diagonal is allowed to be non-zero.
+          To show how the process of elimination works using an
+          elementary
+                     matrix consider
+                                      the matrix
+                 a11 a12 a13
+          A = a21 a22 a23  and assume that we want to subtract
+                 a31 a32 a33
+          two times the first row from the second row.
+
+
+24 / 28                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    E LEMENTARY TRANSFORMATIONS
+
+          This 
+               can be accomplished
+                                  by the following elementary matrix
+                 1 0 0
+          E = −2 1 0 so that the product
+                 0 0 1
+                                                              
+                        1 0 0   a11 a12 a13
+                 EA = −2 1 0 a21 a22 a23 
+                              
+                        0 0 1   a31 a32 a33
+                                                                                
+                             a11        a12        a13
+                      = a21 − 2a11 a22 − 2a12 a23 − 2a13 
+                             a31        a32        a33
+
+
+
+25 / 28                                BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    P RODUCT OF ELEMENTARY TRANSFORMATIONS
+
+          A series of Gaussian elimination steps can be represented
+          as a product of elementary transformations acting on A:
+          Em Em−1 . . . E1 A.
+          The product of lower triangular matrices can be seen to be
+          lower triangular, and the inverse of a lower triangular matrix
+          can also be seen as a lower triangular matrix.
+          Thus the action of Gaussian elimination operations can be
+          seen in the following terms L−1 A = U where the product of
+          the elementary transformations is represented as the
+          inverse of a lower triangular matrix for notational
+          convenience, and the right hand side U is an upper
+          triangular matrix. Thus we have A = LU.
+
+
+26 / 28                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    F INAL ARGUMENT
+
+          Returning to our problem we are performing Gaussian
+          elimination on the matrix AT A where A contains the basis
+          vectors as its columns. Upon Gaussian elimination on the
+          augmented matrix we reduce [AT A|AT ] to get [U |L−1 AT
+          where AT A = LU.
+          Now we shall show that Q T = L−1 AT is an orthogonal
+          matrix whose rows are orthogonal.
+          Consider Q T Q = L−1 AT A(L−1 )T = U (L−1 )T = some
+          upper triangular matrix
+          But Q T Q is a symmetric matrix and can only be upper
+          triangular if it is diagonal. Therefore Q is an orthogonal
+          matrix whose columns are orthogonal. They can be
+          normalized to obtain an orthonormal basis.
+
+27 / 28                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+                      BITS Pilani
+
+
+
+
+          Thank you
+
+28 / 28
+

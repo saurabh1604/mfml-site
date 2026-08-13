@@ -1,0 +1,599 @@
+              MFML AND MFDS
+                       MFML and MFDS Team
+BITS Pilani                   WILPD - CSIS
+                                         BITS Pilani
+
+
+
+
+         *ZC416 Mathematical Foundations for
+           Machine Learning / Data Science
+         Topic: #4 Eigenvalues & Eigenvectors
+1 / 32
+    M ATRIX DECOMPOSITIONS
+
+
+         We studied vectors and how to manipulate them in
+         preceding lectures.
+         Mappings and transformations of vectors can be
+         conveniently described in terms of operations performed by
+         matrices.
+         In this lecture we shall study three aspects of matrices:
+         how to summarize matrices, how matrices can be
+         decomposed, and how the decompositions can be used for
+         matrix approximations.
+
+
+
+
+1 / 32                             BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    D ETERMINANT AND TRACE
+
+         A determinant of order n × n is a scalar associated with a n × n
+                                                     a11 a12 . . . a1n
+                                                     a21 a22 . . . a2n
+         matrix and is denoted as follows: det (A) = .      ..        ..
+                                                      ..     .         .
+                                                      an1 an2 . . . ann
+         We have a cofactor formula to calculate a determinant of order n:
+         for n = 1, we have det (A) = a11 . For n ≥ 2 we have
+
+                D = det (A) = aj1 Cj1 + aj2 Cj2 + . . . + ajn Cjn
+                              = a1k C1k + a2k C2k + . . . + ank Cnk
+
+         The first line above represents expansion along the jth row, while
+         the second line represents expansion along the k th column.
+
+2 / 32                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    C OFACTOR FORMULA
+
+         In the preceding slide, the Cjk = (−1)j +k Mjk where Mjk
+         represents the n − 1 order determinant of the submatrix of
+         A obtained by removing the jth row and k th column.
+         Mjk is called the minor of ajk in D and Cjk is called the
+         cofactor of ajk in D.
+         Our definition for the determinant in the previous slide
+         shows that the n × n determinant is defined in terms of
+         (n − 1) × (n − 1) determinants which in turn are defined in
+         terms of (n − 2) × (n − 2) determinants recursively.
+         Let us examine the computation for a simple 3 × 3
+         determinant.
+
+
+3 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    E XAMPLE
+
+                            a11 a12 a13
+         Let us compute D = a21 a22 a23
+                            a31 a32 a33
+                                                                                   a12 a13
+         For the entries in the second row the minors are M21 =                            ,
+                                                                                   a32 a33
+                  a11 a13            a11 a12
+         M22 =               , M23 =         . The cofactors are C21 =
+                  a31 a33            a31 a32
+         (−1)1+2 M21 = −M21 , C22 = (−1)2+2 M22 = M22 , C23 = (−1)2+3 M23 =
+         −M23 .
+         Expanding along the second row we can write D = a21 C21 +
+         a22 C22 + a23 C23 .
+
+
+
+4 / 32                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    B EHAVIOUR OF DETERMINANT
+
+         Theorem: We can state the following for a nth order determinant
+         under elementary row operations:(a) interchanging two rows mul-
+         tiplies the value of the determinant by −1, and (b) adding a mul-
+         tiple of a row to another row does not change the value of the
+         determinant.
+         Proof Sketch Let us look at how to prove (a). The proof is by
+                                                           a b
+         induction. The statement holds for n = 2 since          = ad − bc
+                                                           c d
+                    c d
+         whereas           = bc −ad = −(ad −bc ). We make the induction
+                    a b
+         hypothesis that the statement is true for all determinants of order
+         (n − 1). Let D represent the original determinant and E represent
+         the determinant with rows interchanged.
+
+5 / 32                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    P ROOF SKETCH CONTINUED
+
+         Let us expand D and E along a row that is not interchanged.
+         We have
+                                k =n
+                                X
+                            D =      (−1)j +k ajk Mjk
+                                    k =1
+                                    k =n
+                                    X
+                            E   =          ajk (−1)j +k Njk
+                                    k =1
+
+
+         where Njk in E is obtained by exchanging ttwo rows of the minor
+         Mjk in D. Mjk and Njk are determinants of order n − 1 where one
+         of the determinants has a pair of rows interchanged as compared
+         to the other determinant. Therefore Mjk = −Njk , and D = −E.
+
+
+6 / 32                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    P ROOF SKETCH CONTINUED
+         Let us now look at adding multiples of a row to another row.
+             Add c times row i to row j. Then we get a new determinant
+             D ′ whose entries in the jth row has ajk + caik . Expanding
+             the determinant D ′ we have
+                      k =n
+                      X
+             D′ =            (ajk + caik )(−1)j +k Mjk =
+                      k =1
+             k =n                         k =n
+             X                            X
+                         j +k
+                     (−1)       ajk Mjk +      (−1)j +k caik Mjk .
+              k =1                         k =1
+             The summation can be written as D ′ = D1 + cD2 where
+             D1 = D and D2 represents the determinant of a matrix
+             similar to the one we started out with except that rows j and
+             i both have coefficients aik in them. Thus two rows of D2
+             are equal - this makes D2 = 0 → why is this?
+7 / 32                                            BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    P ROOF SKETCH CONTINUED
+
+
+         In part (a) we showed that interchanging two rows will
+         negate the determinant. If we interchange rows i and j we
+         will get the same determinant since the two rows are
+         identical. But one of the determinants must be the negative
+         of the other. This is only possible when both determinants
+         are zero. Thus D2 = 0 and D ′ = D.
+         Bottom line → Adding a multiple of one row to another
+         row does not change the determinant.
+         This will lead us to our next result.
+
+
+
+
+8 / 32                                BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    A NOTHER RESULT
+
+         Theorem An n × n matrix A has rank n if and only if its determi-
+         nant is not equal to zero.
+         Proof sketch: A has full rank =⇒ det(A) ̸= 0: Gaussian elim-
+         ination reduces A to upper triangular matrix U = (Uij ) whose
+         determinant is the product of all the elements Uii . But we know
+         that det(A) = (−1)s det(U ) where s is the number of row inter-
+         changes performed during Gaussian elimination. Since A has full
+         rank, the columns of A are linearly independent and the only so-
+         lution to Ax = 0 is x = 0. The system Ax = 0 has the same set
+         of solutions as Ux = 0, so this means U has only pivot columns.
+         The pivots are all the elements Uii . The product of all pivots is
+         non-zero, and hence det(U ) = det(A) ̸= 0.
+
+
+9 / 32                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    A NOTHER RESULT
+
+
+
+          det(A) ̸= 0 =⇒ A has full rank: Q
+                                          If the determinant of A is non-
+                             s               i =n
+          zero, det(A) = (−1) det(U ) = i =1 Uii means that all the Uii
+          are non-zero. Therefore all the columns of U are pivot columns
+          with the pivots being the Uii . The pivot columns are all linearly
+          independent, so the only solution to Ux = 0 is x = 0. This is
+          also the only solution to Ax = 0 which means A has full rank.
+
+
+
+
+10 / 32                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    T RACE
+
+
+
+          The trace of a n × n square matrix A is defined as
+                  Pi =n
+          tr (A) = i =1 aii , i.e the sum of the diagonal elements of A.
+          The trace has the following properties:
+            ▶ tr (A + B ) = tr (A) + tr (B ), for A, B ∈ Rn×n
+
+            ▶ tr (αA) = αtr (A), α ∈ R
+
+            ▶ tr (I ) = n
+                   n
+            ▶ tr (AB ) = tr (BA) for A ∈ Rn×k , B ∈ Rk ×n .
+
+
+          The proofs of these properties are not difficult.
+
+
+
+
+11 / 32                                 BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    C HARACTERISTIC POLYNOMIAL
+
+          For λ ∈ R and A ∈ Rn×n we can define
+          pA (λ) = det(A − λI ) and show that it can be written as
+          c0 + c1 λ + . . . cn−1 λn−1 + (−1)n λn where
+          c0 , c1 . . . cn−1 ∈ R.
+          We can show that c0 = det(A) and cn−1 = (−1)n−1 tr (A)
+          To see that c0 = det(A), set λ = 0 in det(A − λI ) to get
+          pA (0) = det(A) = c0
+          The formula for cn−1 takes a little bit of work - let us expand
+          a 3 × 3 determinant
+                          a11 − λ     a12          a13
+          det(A − λI ) =    a21     a22 − λ        a23
+                            a31       a32        a33 − λ
+
+
+12 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    C HARACTERISTIC POLYNOMIAL
+          Expanding the determinant along the first row we see that
+                                                     i =3
+                                                     Y
+          the (a11 − λ)C11 term contains the product      (aii − λ)
+                                                                     i =1
+          which contains the powers λ3 and λ2 . The other
+          contributors to the determinant i.e a12 C12 and a12 C13
+          expand into terms where the maximum power of λ = 1.
+          Carrying this analogy over to the general case of n > 3 we
+          see that expanding along the first row the first contributor to
+                                             i =n
+                                             Y
+          the determinant will have the term      (aii − λ) and
+                                                    i =1
+          subsequent contributors will have a maximum power of
+          λn−2 as the minors for each such contributor will kill off a
+          term containing λ in a given row and column.
+13 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    C HARACTERISTIC POLYNOMIAL
+
+          Thus in the determinant expansion to obtain the
+          characteristic polynomial we see that coefficient to λn−1
+                                              i =n
+                                              Y
+          can only come from the expansion of      (aii − λ) and can
+                                                           i =1
+                                                   i =n
+                                                   X
+          be seen to be seen to be (−1)n−1                 aii = (−1)n−1 tr (A).
+                                                    i =1
+          As a corollary to this argument we can see that the
+          coefficient to λn in the characteristic polynomial is (−1)n
+          We will use the characteristic polynomial to compute
+          eigenvalues and eigenvectors.
+
+
+
+14 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    E IGENVALUES AND EIGENVECTORS
+
+          LetA ∈ Rn×n be a square matrix. Then λ ∈ R is an
+          eigenvalue of A and x ∈ Rn \ 0 is the corresponding
+          eigenvector of λ if Ax = λx. This equation is called the
+          eigenvalue equation.
+          The following statements are equivalent:
+            ▶ λ is an eigenvalue of A ∈ Rn×n .
+
+            ▶ There exists an x ∈ Rn \ 0 with Ax = λx, or equivalently,
+
+               (A − λIn )x = 0 can be solved non-trivially, i.e., x ̸= 0.
+            ▶ rank(A − λI ) < n.
+                            n
+            ▶ det(A − λI ) = 0.
+                          n
+
+          If x is an eigenvector corresponding to a particular
+          eigenvalue λ, cx , c ∈ R \ 0 is also an eigenvector.
+
+
+15 / 32                                BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    E IGENVALUES AND EIGENVECTORS - EXAMPLE
+                                             
+                                      1 1
+          Consider the matrix A =          . The characteristic
+                                      1 1
+          polynomial det(A − λI ) = (1 − λ)2 − 1 and setting it to
+          zero gives us the roots of the characetristic polynomial:
+          (1 − λ)2 − 1 = 0 has roots λ = 2, 0.
+          What are the eigenvectors? For λ = 0 we solve for
+          Ax = 0x, so we find the nullspace of the matrix A. Using
+          Gaussian
+                elimination
+                               we convert Ax = 0 to Ux =  0 where
+                                                               
+                1 1                                         1
+          U=           . Thus we discover the eigenvector        for
+                0 0                                        −1
+          λ = 0.                                 
+                                                 1
+          Similarly we discover the eigenvector     for λ = 2.
+                                                 1
+
+
+16 / 32                                BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    E IGENVALUES AND EIGENVECTORS - EXAMPLE
+
+          The general procedure to find eigenvalues and
+          eigenvectors is to first find the roots of the characteristic
+          polynomials and then find the nullspaces of the matrices
+          A − λI for the different roots λ.
+          Does every n × n matrix have a full set of eigenvectors, i.e
+          n eigenvectors?
+                        
+                   0 1
+          Look at       . What are its eigenvalues and
+                   0 0
+          eigenvectors?
+          Point to ponder Looking at the equation Ax = λx it seems
+          that the action of A on x is to preserve the direction of x but
+          scale it up or down according to λ. Does this mean that a
+          rotation matrix has no eigenvalues and eigenvectors?
+
+17 / 32                                BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S OME ADDITIONAL PROPERTIES
+
+          λ is an eigenvalue of A if and only if λ is a root of the
+          characteristic polynomial pA (λ) of A. This can be easily
+          seen as a consequence of the definition of pA (λ).
+          For A ∈ Rn×n , the set of eigenvectors corresponding to an
+          eigenvalue λ spans a subspace of Rn called the
+          Eigenspace of A with respect to λ and is denoted by Eλ .
+          The set of all eigenvalues of A is called the spectrum of A.
+          Look at the eigenvalues and eigenspace of the n × n
+          identity matrix In . It has one eigenvalue λ = 1 and the
+          eigenspace is Rn . Every canonical vector is a basis vector
+          for the eigenspace.
+
+
+18 / 32                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S OME ADDITIONAL PROPERTIES
+
+          A matrix and its transpose have the same eigenvalues. To
+          see this, first note that det(A) = det(AT ). Then
+          det(A − λI ) = det((A − λI )T ) = det(AT − λI T ) =
+          det(AT − λI ). The last expression in the chain of equalities
+          is the characteristic polynomial for pAT (λ). Thus we have
+          pA (λ) = pAT (λ) which means the characteristic
+          polynomials are equal and so the roots of the polynomials
+          or the eigenvalues must be equal.
+          The eigenspace Eλ is the nullspace of A − λI.
+          Symmetric, positive-definite matrices always have positive,
+          real eigenvalues.
+
+
+19 / 32                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S OME THEOREMS
+
+          The eigenvectors x1 , x2 . . . xn of a n × n matrix A with n
+          distinct eigenvalues are linearly independent → why?
+          Given a matrix A ∈ Rm×n we can show that AT A ∈ Rn×n is
+          a symmetric, positive-definite matrix when the rank of
+          A = n. Why is this true? Clearly AT A is a symmetric matrix
+          and it is positive definite since
+          x T AT Ax = ∥Ax ∥2 > 0 ∀x ∈ Rn \ 0 since the nullspaces
+          of AT A and A are the same, and A is a full column rank
+          matrix.
+          The matrix AT A is important in machine learning since it
+          figures in the least-squares solution to a data matrix
+          represented as A where n represents the number of
+          features and m is the number of data vectors.
+
+20 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S PECTRAL THEOREM
+
+
+
+          Theorem: If A ∈ Rn×n is symmetric there exists an orthonor-
+          mal basis of the corresponding vector space V consisting of the
+          eigenvectors of A, and each eigenvalue is real.
+          Proof: We will not attempt a full proof of this theorem but provide
+          some intuitions about why it is true. The theorem relies on the
+          following three statements, shown in the next slide.
+
+
+
+
+21 / 32                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S PECTRAL THEOREM
+
+          All roots of the characteristic polynomial pA (λ) are real.
+          For each eigenvalue λ we can compute an orthonormal
+          basis for its eigenspace. We can string together the
+          orthonormal bases for the different eigenvalues of A to
+          come up with the vectors v1 , v2 ...
+          The dimension of the eigenspace Eλ , called its geometric
+          multiplicity, is the same as the algebraic multiplicity of λ
+          which is the number of times λ appears as a root of the
+          characteristic polynomial.
+          All the basis vectors from the different Eigenspaces
+          combine to provide an orthonormal basis for Rn .
+
+
+22 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    C OMPLEX VECTORS
+
+          In the old formulation with real vectors, length-squared
+          according to the Euclidean norm was x12 + x22 + . . . xn2 . If
+          the xi are complex we should take length-squared to be
+          |x1 |2 + |x2 |2 + . . . |xn |2 where |.| denotes modulus. For the
+          complex
+          p          number a + bi,     √ the modulus is
+             (a + bi )(a − bi ) = a2 + b2
+          For complex vectors we would like to preserve the idea as
+          possible that ∥x ∥2 = x T x. If we keep the old definition of
+          inner product for complex vectors we will not get a real
+          number as length as shown in the next bullet.
+                          
+                     1+i
+          Let x =            . We have
+                     2+i
+          x T x = (1 + i )2 + (2 + i )2 = 1 + 2i + i 2 + 4 + 4i + i 2 = 6i + 3.
+
+23 / 32                                  BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    H ERMITIAN MATRICES
+          We modify the inner product between two complex vectors
+          x and y to x H y, where x H = x T .
+          Now x H x = x1 x1 + . . . xn xn = ∥x ∥2 according to the new
+          definition of length.
+          A Hermitian matrix is a generalization of a symmetric
+          matrix.
+          Instead of requiring AT = A, we say a matrix is Hermitian if
+          it is equal to its conjugate-transpose, ie A is a Hermitian
+                                  T
+          matrix if AH = A or A = A                               
+                                                         1    3−i
+          As an example consider the matrix A =                      . It
+                                                      3+i
+                                                             4
+                                                 1     3−i
+          is a Hermitian matrix since AH =                    = A.
+                                                3+i      4
+
+24 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S PECTRAL THEOREM
+
+
+
+          We shall now show that all eigenvalues for a symmetric matrix
+          are real. Let Ax = λx. Then premultiplying with x H on both
+          sides we have x H Ax = λx H x
+          Now x H Ax is a 1 × 1 matrix. Taking the Hermitian of this matrix
+          we have (x H Ax )H = x H AH x = x H Ax, so the Hermitian of the
+          matrix is itself which means that the matrix is real.
+          On the right hand side we note that x H x is real, so this means
+          that λ must be real.
+
+
+
+
+25 / 32                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S PECTRAL THEOREM
+
+
+          Let us show that eigenvectors belonging to different eigenvalues
+          are orthogonal. Let Ax = λx and Ay = µy. Then we have
+
+                                 y H Ax = λy H x
+                                 x H Ay = µx H y
+
+          But x H Ay = (y H AH x )H = (y H Ax )H = λx H y. We already know
+          that x H Ay = µx H y. This means λx H y = µx H y. Since λ ̸= µ,
+          this must mean x H y = 0.
+          This shows that eigenvectors corresponding to different eigenval-
+          ues are orthogonal.
+
+
+
+26 / 32                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S PECTRAL THEOREM
+
+          So we see that the eigenvalues of a symmetric matrix are
+          real and eigenvectors belonging to different eigenvalues
+          are orthogonal.
+          This suggests that one can string together all the
+          orthonormal bases for the different eigenvalues and get an
+          orthonormal basis for Rn .
+          But who is to say that when we string together the basis
+          vectors for all the eigenvalues, we will have enough vectors
+          to describe Rn ? We need n basis vectors and might end up
+          having fewer than n vectors.
+          If the eigenvalues are all different, we can see that we will
+          indeed have enough basis vectors. But what about when
+          there are repeating eignevalues?
+
+27 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S PECTRAL THEOREM
+
+          We need one more piece to complete the puzzle and show
+          that we will have enough eigenvectors to complete the
+          orthonormal basis - this part we shall not prove!
+          As a consequence of the spectral theorem we can write a
+          real symmetric matrix A as A = Q ΛQ T where Q is an
+          orthonormal basis (think orthonormal basis vectors for
+          example), and Λ is a diagonal matrix consisting of non-zero
+          entries only along the diagonal.
+          The spectral theorem can be used in a machine learning
+          context since we can take the data matrix A and create a
+          symmetric matrix out of it - AT A and AAT which are both
+          used in Singular-Value Decomposition and PCA.
+
+
+28 / 32                             BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    T RACE AND EIGENVALUES
+
+          We can show that the sum of the eigenvalues of a matrix is
+                                               Pi =n       Pi =n
+          equal to the trace of the matrix, i.e i =1 λi = i =1 aii . To
+          see why this is true, note that the characteristic polynomial
+                                    Qi =n
+          pA (λ) can be written as i =1 (λi − λ). The coefficient to
+          λn−1 in this expansion is (−1)n−1 ii =
+                                               P n
+                                                 =1 λi . Early on in this
+          lecture we showed from a direct expansion of the
+                                                                Pi =n
+          determinant that the coefficient of λn−1 is (−1)n−1 i =1 aii .
+          Thus we have our result.
+          The product of all eigenvalues is the determinant of the
+                                Qi =n
+          matrix, i.e det(A) = i =1 λi . To see why this is true, let us
+          once again look at the factorisation of pA (λ) as
+          det(A − λI ) = pA (λ) = ii =
+                                    Q n
+                                      =1 (λi − λ). Setting λ = 0 in this
+          equation gives the result.
+
+29 / 32                               BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    C HOLESKY DECOMPOSITION
+
+          Theorem A symmetric, positive-definite matrix A can be factor-
+          ized into a product A = LLT where L is a lower-triangular matrix
+          with positive elements.
+          For an example 3 × 3 matrix we can write
+                                                                                      
+                      a11 a12 a13      l11 0 0      l11 l21 l31
+                     a21 a22 a23  = l21 l22 0   0 l22 l32 
+                      a31 a32 a33      l31 l32 l33   0 0 l33
+
+          We can solve for thepelements of the lower
+                                                 p triangular matrix to
+                    √                   2                 2      2
+          get l11 = a11 , l22 = a22 − l21 , l33 = a33 − (l31 + l32 ).
+          For the elements below the diagonal we have l21 = l11 , l31 = al1131
+                                                             a21
+
+          and l32 = a32 −l22l31 l21 .
+
+
+30 / 32                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    A N APPLICATION OF C HOLESKY DECOMPOSITION
+
+          In the Data Science / Machine Learning context,
+          distributions on data are frequently multivariate Gaussian.
+          Multivariate Gaussian distributions are governed by a
+          covariance matrix which is symmetric, positive-definite.
+          We may need to draw samples from such distributions
+          which is where the Cholesky decomposition finds an
+          important application.
+          To generate a sample from a multivariate Gaussian
+          distribution, we factor the covariance matrix into its
+          Cholesky factor L, generate a Gaussian random vector x
+          on independent variables which is easy to do, and compute
+          Lx which will be a sample according to the required
+          distribution.
+
+31 / 32                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+                      BITS Pilani
+
+
+
+
+          Thank you
+
+32 / 32
+

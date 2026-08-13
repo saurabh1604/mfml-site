@@ -1,0 +1,873 @@
+     ZC416  MATHEMATICAL FOUNDATIONS FOR ML / DATA SCIENCE  LECTURE 5 COMPAN-
+     ION
+
+     The Visual Guide to
+     Matrix Decompositions
+     Take one complicated matrix apart into a few simple, honest pieces — and finally
+     see what eigenvalues, eigenvectors and singular values are really doing. We climb a
+     ladder: from the cleanest case (spectral) to the most general (SVD).
+
+     Flow: Decomposition → Spectral → Eigen → SVD → Low-Rank                       Style: intuition first, full rigor
+     second        every formula fully solved
+
+
+
+
+Contents:     1. Decomposition explained easily  2. Spectral decomposition  3. Eigen decomposition  4. SVD
+ 5. Low-rank approximation & spectral norm  6. The unifying picture
+
+
+
+
+Part 0 | Decomposition, Explained Easily
+THE BIG PICTURE — WHY TAKE A PERFECTLY GOOD MATRIX APART
+
+You already know how to decompose things. The number 12 is hard to reason about until you
+ √ it as 2 × 2 × 3. Suddenly everything is obvious: it is even, divisible by 3, its square root is
+write
+2 3. You did not change the number — you revealed what it was made of.
+Matrix decomposition is exactly this idea, applied to transformations. A matrix is not
+just a grid of numbers — it is a verb. It takes vectors and rotates, stretches, squishes, or shears
+them. A raw matrix mixes all those actions into one tangled bundle. Decomposition factors that
+bundle into a short sequence of pure, simple moves you can actually picture.
+
+
+
+                                                                            indivisible prime
+                                12           =      2        2     3
+                                                                            building blocks
+
+
+
+
+                           A (tangled)       =      rotate   · stretch   · rotate
+
+
+  Same trick, two worlds. Factoring a number exposes its primes; factoring a matrix exposes the handful of pure
+                                        rotations and stretches hiding inside it.
+
+
+
+   KEY IDEA
+
+   The one sentence to remember. A matrix decomposition rewrites A as a product of
+   matrices that each do one easy thing — usually rotate, scale along axes, and rotate
+   back. The product still equals A; it is just written in a language you can read.
+
+
+
+
+                                                             1
+A matrix is a transformation — watch it move
+
+Feed a matrix the same little square grid and a unit circle, and look at what comes out. That
+output is the matrix’s personality.
+
+
+
+                  input               pure stretch           pure rotation           shear (mix)
+
+
+
+
+  Three pure moves and one mixed one. Decomposition’s whole job is to take that messy shear and rewrite it as
+                      a rotation, then a clean stretch, then a rotation — moves you can see.
+
+
+
+
+The ladder of generality — our roadmap
+
+Here is the punchline of the entire lecture in one image. The three decompositions are not three
+unrelated tricks; they are the same idea applied to progressively harder matrices. Each
+rung relaxes a restriction the previous one needed.
+
+
+
+                             SVD — any matrix at all (rectangular, any rank)
+
+
+                           Eigen — any square matrix with enough eigenvectors
+
+                                                   Spectral
+                                             symmetric matrices only
+                                   A = Q Λ QT (the cleanest, most perfect case)
+
+
+                                                     A = P DP −1
+
+                                                     A = U ΣV T
+
+  We start in the small teal box — the perfect, symmetric world where everything is orthogonal — and earn our
+  way outward. Spectral is a special case of eigen; eigen’s idea, generalized to handle every matrix, becomes SVD.
+
+
+
+Why climb in this order? Because each step teaches one new lesson:
+
+ 1. Spectral shows the dream scenario: perpendicular axes, real scalings, no distortion — a matrix
+    that is pure stretch in disguise.
+ 2. Eigen asks: what if the natural axes are not perpendicular? We keep the “scale along special
+    directions” idea but pay a price (the inverse P −1 instead of a clean transpose).
+ 3. SVD asks the boldest question: what if the matrix is not even square, so “eigenvectors” do
+    not exist? The fix is elegant — use two sets of perpendicular axes, one for input and one for
+    output. That single idea works for every matrix in existence.
+
+
+
+
+                                                         2
+   WHY IT MATTERS
+
+   This is not abstract bookkeeping. Spectral decomposition is the engine of PCA and quadratic
+   optimization; SVD powers image & data compression, recommender systems, latent
+   semantic analysis, noise removal, and the pseudo-inverse behind least-squares regres-
+   sion. Master the geometry here and those applications stop being magic.
+
+
+
+
+Part 1 | Spectral Decomposition
+THE PERFECT CASE — SYMMETRIC MATRICES, FLAWLESS GEOMETRY, EVERYTHING
+PERPENDICULAR
+
+We begin at the top of the food chain: the matrices that behave perfectly. A symmetric matrix
+(one where A = AT ) is secretly nothing but a pure stretch along a set of perpendicular axes. No
+twist, no shear, no surprises. Understand this case and the rest of the lecture is just “what breaks
+when we lose this perfection?”
+
+   INTUITION
+
+   The trampoline. Picture a circular trampoline. Grab it at two perpendicular points and
+   stretch: one axis grows by a factor λ1 , the perpendicular axis by λ2 . The circle becomes an
+   ellipse whose axes line up perfectly with the directions you pulled. That is exactly what a
+   symmetric matrix does. The pull-directions are its eigenvectors (they stay perpendicular
+   and never rotate); the stretch-factors are its eigenvalues λi .
+
+
+
+The defining equation: a direction the matrix cannot rotate
+
+An eigenvector q is a stubborn direction: when the matrix acts on it, it is not knocked off its line
+— it only gets longer or shorter (or flipped):
+
+            Aq = λq      ⇐⇒     “A acts on q as plain multiplication by the number λ.”
+
+Every other vector gets rotated and stretched in a tangled way. Eigenvectors are the rare directions
+where the tangle disappears. They are the natural axes of the transformation.
+
+
+Stacking the eigenvectors: A = QΛQT
+
+For a symmetric matrix the Spectral Theorem guarantees a full set of eigenvectors that are
+orthonormal (perpendicular, unit length). Stack them as columns of Q and put the eigenvalues
+on the diagonal of Λ:
+                                    A = Q Λ QT        QT Q = I.
+
+Read right-to-left: QT rotates into the eigen-axes, Λ scales each axis by its eigenvalue, Q rotates
+back. Because Q is orthogonal, “undo the rotation” is just the transpose QT — no inverse needed.
+This clean transpose is the luxury only symmetric matrices enjoy.
+
+
+
+
+                                                 3
+                    input: unit circle                                        output: ellipse
+                                                                                                    3q1
+               q2                        q1
+
+                                                                             1q2
+                                                 apply A
+
+                                               q1 × 3, q2 × 1
+
+
+
+
+                two ⊥ eigen-directions                                    axes still ⊥ — no twist
+
+       The signature of a symmetric matrix: the eigen-directions stay perfectly perpendicular through the
+                     transformation. Shown for A = [ 21 12 ]: stretch ×3 along q1 , ×1 along q2 .
+
+
+
+
+The most beautiful reading: a sum of projections
+
+Multiply QΛQT out and it unpacks into a weighted sum of simple rank-1 pieces:
+
+                             A = QΛQT = λ1 q1 q1T + λ2 q2 q2T + · · · + λn qn qnT .
+
+Each block qi qiT is a projector — “flatten everything onto the line through qi .” So a symmetric
+matrix is literally “project onto axis 1 and amplify by λ1 , plus project onto axis 2 and amplify by
+λ2 , . . . ” The eigenvalues are an honest importance ranking. (Hold onto this — it is the seed of
+SVD and compression in Part 4.)
+
+
+   Lecture Example | Spectral decomposition of a 3 × 3 symmetric matrixProblem.
+                                             
+                                  2 −1 0
+   Find A = QΛQT for A = −1 2 −1. It is symmetric, so the Spectral Theorem
+                                  0 −1 2
+   promises real eigenvalues and orthonormal eigenvectors.
+   Step 1 — Eigenvalues from det(A − λI) = 0.
+   Expanding along the first row and factoring the shared (2 − λ):
+
+                   (2 − λ) (2 − λ)2 − 2 = 0 =⇒ (2 − λ)(λ2 − 4λ + 2) = 0.
+                                      
+
+                                                                      √             √
+   The first factor gives λ = 2; the quadratic gives λ = 4±2 8 = 2 ±                    2. Ordered:
+                                     √                                         √
+                         λ1 = 2 +        2 ≈ 3.414,       λ2 = 2,   λ3 = 2 −       2 ≈ 0.586.
+
+   All real and positive — the hallmark of a symmetric (positive-definite) matrix.
+   Step 2 — Eigenvectors (a basis for each null space).
+   Solve (A − λI)v = 0 for each eigenvalue, then normalize to unit length:
+
+                     λ2 = 2 :                   −y = 0, x = −z ⇒ q2 = √12 (1, 0, −1)T ,
+                             √                     √                          √
+                     λ1 = 2 +  2:             y = − 2 x, x = z ⇒ q1 = 21 (1, − 2, 1)T ,
+                             √                     √                         √
+                     λ3 = 2 − 2 :               y = 2 x, x = z ⇒ q3 = 21 (1, 2, 1)T .
+
+
+
+                                                                4
+   KEY IDEA
+
+                                                        1
+   Sanity check — orthogonality is automatic. q1 ·q2 = 2√ 2
+                                                            (1 − 0 − 1) = 0 and
+  q1 ·q3 = 41 (1 − 2 + 1) = 0. The eigenvectors came out perpendicular without us asking
+  — the Spectral Theorem working for free.
+
+
+Step 3 — Assemble A = QΛQT .
+                              1     √1         1
+                                                   
+                                                                   √        
+                               2
+                               √       2        2
+                                                √               2+ 2 0   0
+                        2                        2
+                    
+                    − 2
+                  Q=                 0         2 ,          Λ= 0   2   0√  .
+                               1
+                                    − √12       1                  0  0 2− 2
+                               2                2
+
+Because Q is orthogonal, Q−1 = QT — you never invert anything.
+Step 4 — The same answer as a sum of projections.
+                                           √                                 √
+                               A = (2 +        2) q1 q1T + 2 q2 q2T + (2 −       2) q3 q3T .
+The dominant layer (λ1 ≈ 3.414) does most of the work; the λ3 ≈ 0.586 layer is a gentle
+finishing touch.
+
+
+
+
+Extra Practice
+                  | A 2 × 2 you can verify by handProblem. Spectrally decompose
+       2 1
+A=            and write it as a projection sum.
+       1 2
+Step 1 — Eigenvalues.
+det 2−λ  1              2
+           
+      1 2−λ = (2 − λ) − 1 = 0 ⇒ λ = 3, 1.
+Step 2 — Eigenvectors (perpendicular).
+λ1 = 3 : x = y ⇒ q1 = √12 (1, 1)T ;            λ2 = 1 : x = −y ⇒ q2 = √12 (1, −1)T .
+Step 3 — Decomposition and projection sum.
+                                                      
+               1 1          1 −1     1.5 1.5    0.5 −0.5   2 1
+       A = 3 12         1
+                     +1 2          =         +           =       .✓
+               1 1         −1 1      1.5 1.5   −0.5 0.5    1 2
+             | {z }     |    {z  }
+                  q1 q1T             q2 q2T
+
+This is the matrix in the circle→ellipse figure above: stretch ×3 along the 45◦ line, leave the
+135◦ line untouched.
+
+
+WATCH OUT
+
+The “perpendicular eigenvectors, clean transpose” guarantee is special to symmetric matrices.
+The moment A ̸= AT , eigenvectors can tilt away from 90◦ and the tidy QT must be replaced
+by a genuine inverse P −1 . That is precisely the next rung of the ladder.
+
+
+
+
+                                                          5
+   WHY IT MATTERS
+
+   Every covariance matrix is symmetric, so PCA is spectral decomposition: the top eigen-
+   vector is the direction of maximum variance. Quadratic forms xT Ax (optimization, physics
+   energy, statistics) become trivial in eigen-coordinates because the cross-terms vanish.
+
+
+
+
+Part 2 | Eigen Decomposition
+ANY SQUARE MATRIX — PERPENDICULARITY GONE, THE IDEA SURVIVES
+
+Now we leave the perfect symmetric world. A general square matrix still has eigenvectors — stub-
+born directions it only scales — but they are no longer perpendicular. The “stretch along special
+axes” story is intact; we just lose the orthogonal luxury and pay with an honest matrix inverse.
+
+   INTUITION
+
+   Speak the matrix’s native language. A general matrix looks chaotic in the standard x, y
+   grid because it both rotates and stretches. But it has its own private coordinate system —
+   its eigenvectors — in which it does nothing but scale. The trick A = P DP −1 is a translator:
+   P −1 translates your vector into the matrix’s native eigen-language, D does the embarrassingly
+   simple scaling there, and P translates back.
+
+
+
+The decomposition: A = P DP −1
+
+Collect the (non-orthogonal) eigenvectors as columns of P and the eigenvalues on D. From AP =
+P D with P invertible:
+
+                   A = P D P −1              P = [ p1 p2 · · · pn ],     D = diag(λ1 , . . . , λn ).
+
+   KEY IDEA
+
+   The crucial difference from Part 1. Spectral gave A = QΛQT — the transpose, because
+   orthonormal columns satisfy Q−1 = QT . Here the columns of P are not orthonormal, so
+   P −1 ̸= P T and we must compute a real inverse. Spectral decomposition is just the lucky case
+   of eigen decomposition where P happens to be orthogonal. Same machine, one restriction
+   removed.
+
+
+
+
+                   your vector     P −1    eigen-coords     D     scale axes        P   result Ax
+                   standard x, y          native language       ×λ1 , ×λ2 , . . .       back to x, y
+
+
+  Eigen decomposition = a change of language. The hard transformation A becomes the trivial diagonal D once
+                 you speak the matrix’s own eigen-coordinates. Read A = P DP −1 right-to-left.
+
+
+
+
+                                                            6
+                Symmetric (Part 1)                                General square (Part 2)
+
+                                                                                       p1
+                        90◦                                     p2       ̸= 90◦
+
+
+
+
+            eigenvectors ⊥ → clean QT                        eigenvectors tilt → need real P −1
+
+ The single visual separating Part 1 from Part 2. Symmetric matrices keep their eigen-axes perpendicular;
+      general matrices let them lean — which is exactly why the clean transpose becomes an inverse.
+
+
+
+
+ Lecture Example | A       non-symmetric
+                                            2 × 2 — eigenvectors that leanProblem.
+                             1 4
+Find A = P DP −1 for A =           (note A ̸= AT ).
+                             2 3
+Step 1 — Eigenvalues.
+det 1−λ   4        2
+            
+       2 3−λ = λ − 4λ − 5 = (λ − 5)(λ + 1) = 0 ⇒ λ1 = 5, λ2 = −1. A negative eigenvalue
+is allowed (“flip + scale”) — something a positive-definite symmetric matrix never shows.
+Step 2 — Eigenvectors.
+λ1 = 5 : x = y ⇒ p1 = (1, 1)T ; λ2 = −1 : x = −2y ⇒ p2 = (−2, 1)T . Angle check:
+p1 ·p2 = −1 ̸= 0 — not perpendicular, as the figure warned.
+Step 3 — Build P , D, and the genuine inverse.
+                                                            
+                    1 −2                 −1 1   1 2          5 0
+               P =         , det P = 3, P = 3         , D=         .
+                    1 1                        −1 1          0 −1
+Verify P DP −1 = [ 12 43 ] = A. ✓
+Step 4 — The payoff: matrix powers become trivial.
+Computing A3 directly is tedious; with the decomposition the middle collapses since P −1 P =
+I:                                                                   
+                 3        3 −1       3     125 0           3    41 84
+               A = PD P , D =                        ⇒ A =                .
+                                            0 −1                42 83
+Cubing a diagonal matrix is just cubing three numbers — the trick behind matrix exponen-
+tials, Markov steady states, and systems of ODEs.
+
+
+
+
+Extra
+    Practice
+             | A triangular matrix — eigenvalues for freeProblem. Diagonalize
+     2 1
+A=        .
+     0 3
+Step 1 — Eigenvalues (shortcut).
+For any triangular matrix the eigenvalues are the diagonal entries: det(A − λI) = (2 − λ)(3 −
+λ) ⇒ λ1 = 2, λ2 = 3 — no quadratic needed.
+
+
+
+
+                                                    7
+    Step 2 — Eigenvectors.
+    λ1 = 2 : y = 0 ⇒ p1 = (1, 0)T ;   λ2 = 3 : x = y ⇒ p2 = (1, 1)T .
+    Step 3 — Assemble.
+    P = [ 10 11 ] , P −1 = 10 −1                         −1 . Again p ·p = 1 ̸= 0: a true eigen (not
+                                      20
+                              1 , D = [ 0 3 ] , A = P DP             1 2
+    spectral) decomposition.
+
+
+   WATCH OUT
+
+   When eigen decomposition refuses to exist. (1) Defective matrices like [ 20 12 ] have
+   a repeated eigenvalue but
+                            0too  few independent eigenvectors — P cannot be formed. (2)
+                               −1
+   Rotation matrices like 1 0 rotate every direction, so no real vector stays on its line;
+   eigenvalues are complex. Both failures vanish in Part 3: SVD always exists, for every
+   matrix.
+
+
+
+
+Part 3 | Singular Value Decomposition
+EVERY MATRIX — SQUARE OR RECTANGULAR, ANY RANK — FACTORS INTO ROTATE
+· STRETCH · ROTATE
+
+The boldest question in the lecture. Eigen decomposition needed a square matrix so input and
+output lived in the same space. But a 3 × 2 matrix eats 2-D vectors and outputs 3-D ones —
+“eigenvector” is meaningless, since Av cannot even be parallel to v. SVD’s answer is one of the most
+elegant ideas in all of linear algebra.
+
+   INTUITION
+
+   The sphere always becomes an ellipsoid. Feed any matrix the unit sphere of inputs;
+   the output is always a perfect ellipsoid. SVD finds the perpendicular input directions (vi )
+   mapped to the perpendicular axes of that ellipsoid (ui ), and the axis lengths are the singular
+   values σi . Eigen asked “which directions don’t rotate?” — too much for a rectangular
+   matrix. SVD asks the always-answerable question: “which perpendicular input frame lands
+   on a perpendicular output frame?”
+
+
+
+The cleverness: use two orthonormal frames, not one
+
+Eigen reused a single set of axes for input and output (hence “square”). SVD uses two separate
+orthonormal frames — input V and output U — with a pure diagonal stretch Σ bridging them:
+
+                            V (n × n, orthonormal) : input axes (right-singular vectors)
+                       T
+           A = U ΣV         Σ (m × n, diagonal ≥ 0) : stretch factors σi
+                            U (m × m, orthonormal) : output axes (left-singular vectors)
+
+Right-to-left: V T rotates the input so special directions align with the axes, Σ stretches each axis
+by σi (and pads dimensions with zeros), U rotates into the final pose.
+
+
+
+
+                                                   8
+                                                                                          σ2 u2
+                                                                    σ2
+                             VT                    Σ                       σ1   U
+                                                                                                     σ1 u1
+
+              input circle        axis-aligned                 stretched            output ellipse
+
+
+   The definitive SVD picture. A circle is rotated by V T until special directions sit on the axes, stretched by Σ
+     into an ellipse, then rotated by U into its final orientation. The singular values σ1 ≥ σ2 are the ellipse’s
+                                                   semi-axis lengths.
+
+
+
+
+How to find U, Σ, V — the symmetric-matrix bridge
+
+We reduce SVD to Part 1. Although A may be rectangular, both AT A and AAT are square and
+symmetric:
+
+              AT A = V ΣT Σ V T ⇒ V = eigenvectors of AT A, σi2 = its eigenvalues
+
+                             AAT = U ΣΣT U T ⇒ U = eigenvectors of AAT
+And once you have V and the σi , each output axis is the normalized image of an input axis (from
+AV = U Σ):
+                                                       ui = σ1i A vi .
+
+   KEY IDEA
+                                                                                   √
+  Recipe. (1) Spectrally decompose the smaller of AT A or AAT . (2) σi = λi (drop zeros).
+  (3) Its eigenvectors give V (or U ). (4) Get the other family free via ui = σ1i Avi . (5) Assemble
+  A = U ΣV T , padding Σ with zeros to match A’s shape.
+
+
+
+   Lecture / Companion Example | SVD of a tall 3 × 2 matrixProblem. Find the
+                     
+                  1 1
+   SVD of B = 0 1. Smart move: B is 3 × 2, so B T B is only 2 × 2 — decompose the
+                  1 0
+   smaller one.
+   Step 1 — Build B T B and notice an old friend.
+                                                              
+                                                        1 1
+                                                                   
+                                                 1 0 1          2 1
+                                  BT B =                 0 1 =
+                                                                      .
+                                                 1 1 0           1 2
+                                                         1 0
+   This is exactly the matrix from Part 1! Eigenvalues 3, 1; eigenvectors √12 (1, 1) and √12 (1, −1).
+   Step 2 — Singular values and V .
+       √
+   σ1 = 3, σ2 = 1; v1 = √12 (1, 1)T , v2 = √12 (1, −1)T .
+
+
+
+
+                                                               9
+   Step 3 — Get U for free via ui = σ1i Bvi .
+                                                                               
+                                                                                 
+                                        2                                      0
+                             1       1  
+                        u1 = 3 Bv1 = 6 1 ,
+                            √       √                      u2 = 11 Bv2 = √12 −1 .
+                                        1                                      1
+   These are automatically orthonormal (u1 · u2 = 0). A third column u3 = √13 (1, −1, −1)T
+   completes U but rides on σ3 = 0.
+   Step 4 — Assemble B = U ΣV T .
+                  √           √                           √   
+                 2/√6   0√   1/ √3                           3 0                                  
+                                                                                 T            1 1
+            U = 1/√6 −1/√ 2 −1/√3 ,                 Σ =  0 1 ,           V       = √12           .
+                                                                                              1 −1
+                 1/ 6 1/ 2 −1/ 3                            0 0
+   Σ is 3 × 2 — the same shape as B — with a zero row of padding, because B maps 2-D
+   into 3-D and the third output dimension gets nothing.
+
+
+
+Why Σ has that odd zero-padding
+
+Σ is always the same shape as A. It carries a diagonal block of singular values then pads with zeros:
+tall matrices pad with zero rows (output dimensions they cannot reach); wide matrices pad with
+zero columns (input directions they annihilate).
+
+
+
+               Tall A (m > n): Σ is m × n                          Wide A (m < n): Σ is m × n
+
+
+                       σ1
+                                                                 σ1
+
+                              σ2                                                     zero columns
+                                                                        σ2
+
+                       zero rows
+
+
+
+                Σ inherits the shape of A: a diagonal block of singular values plus zero padding.
+
+
+
+
+   Lecture Example
+                 | SVD of a wide 2 × 3 matrixProblem. Find the SVD of A =
+     1 0 1
+             .
+    −2 1 0
+   Step 1 — AT A and its eigenvalues.
+                                                  
+                                            5 −2 1
+                                   AT A = −2 1 0 ,              λ = 6, 1, 0.
+                                            1 0 1
+   The single zero eigenvalue is expected: a 2 × 3 matrix has rank ≤ 2, so one input direction
+   is crushed.
+
+
+
+
+                                                      10
+Step 2 — Singular values and V .
+                                                                     
+                 √                          5              0             −1
+             σ1 = 6, σ2 = 1;       v1 = √1 −2 , v2 = √1 1 , v3 = √1 −2 .
+                                             30                      5           6
+                                                      1                  2           1
+(v3 is the λ = 0 eigenvector — the direction A annihilates.)
+Step 3 — Left vectors via ui = σ1i Avi .
+u1 = √15 (1, −2)T ,   u2 = √15 (2, 1)T .
+Step 4 — Assemble A = U ΣV T .
+                                                                        √      √       √ 
+                                     √
+                                                                    
+                                                                   5/ 30 −2/√ 30 1/ √30
+                    1 2                 6 0 0
+      U = √15            ,      Σ=            ,                V T =  0√    1/ √5   2/√5  .
+                    −2 1               0 1 0
+                                                                      −1/ 6 −2/ 6 1/ 6
+This time Σ is 2 × 3 with a zero column — the wide-matrix padding.
+
+
+
+
+Extra
+    Practice
+               | A square but non-symmetric 2 × 2Problem. Find the SVD of
+     3 0
+A=         (square, but A ̸= AT ).
+     4 5
+Step 1 — AT A and eigenvalues.
+AT A = [ 25 20
+         20 25 ] ⇒ λ = 45, 5.
+Step 2 — Singular values and V .
+    √      √       √
+σ1 = 45 = 3 5, σ2 = 5; v1 = √12 (1, 1)T , v2 = √12 (1, −1)T .
+Step 3 — U via ui = σ1i Avi .
+u1 = √110 (1, 3)T ,   u2 = √110 (3, −1)T .
+
+   KEY IDEA
+
+   Myth-buster.
+    √            The eigenvalues of this A are 3 and 5, but its singular values are
+                 √
+   3 5 ≈ 6.7 and 5 ≈ 2.2. For non-symmetric matrices, singular values ̸=
+   eigenvalues. They coincide only when A is symmetric positive-definite — the Part
+   1 case.
+
+
+
+
+                                                          11
+SVD vs. Eigen — the family resemblance
+
+                       Eigen / Spectral                                SVD
+
+  Form                 A = P DP −1 (or QΛQT if symmetric)              A = U ΣV T
+  Works on             Square matrices with enough                     Every matrix, any shape, always
+                       eigenvectors
+  Frames               One set of axes (in = out)                      Two sets: input V , output U
+  Orthogonality        P generally not orthogonal                      U, V always orthonormal
+  Diagonal entries     Eigenvalues — can be ± or complex               Singular values — always real ≥ 0
+                                 −1
+  Outer factors        P and P        are inverses                     U and V generally unrelated
+
+                                                                                    p
+The link: U = eigenvectors of AAT , V = eigenvectors of AT A, σi =                   λi (AT A).
+
+
+
+Part 4 | Low-Rank Approximation & the Spectral Norm
+THE PAYOFF — WHY SVD IS THE MATHEMATICS BEHIND COMPRESSION
+
+Remember how a symmetric matrix split into importance-ranked projection layers? SVD does the
+same for every matrix — and this is where it earns its place as arguably the most useful factorization
+in applied mathematics.
+
+
+A matrix is a stack of rank-1 layers
+
+Multiplying U ΣV T out, Σ pairs each ui with its vi and scales by σi . The matrix becomes a sum of
+r (= rank) rank-1 layers, sorted loudest first:
+                             r
+                             X
+                        A=         σi ui viT = σ1 u1 v1T + σ2 u2 v2T + · · · + σr ur vrT .
+                                               | {z } | {z }                   | {z }
+                             i=1
+                                                loudest      quieter            faintest
+
+Because σ1 ≥ σ2 ≥ · · · , the first few layers carry almost all the energy. Truncate at k terms for
+                                   = ki=1 σi ui viT .
+                                      P
+the best rank-k summary: A(k)b
+
+   KEY IDEA
+
+   Eckart–Young theorem. Of all rank-k matrices, this truncated SVD is provably the closest
+   to A (in both spectral and Frobenius norms). You cannot do better with rank k, and the
+   error is dictated exactly by the singular values you discarded.
+
+
+
+
+                                                       12
+                              Singular-value “energy” — keep the tall bars, discard the stubs
+
+
+
+
+                                     σ1       σ2       σ3        σ4         σ5      σ6
+
+                                      keep (rank-3 ≈ A)               discard ≈ noise
+
+
+   The compression idea in one glance. Most of a real matrix’s content lives in its first few singular values; the
+  long tail is faint detail or noise. Keeping the loud layers and dropping the quiet ones is exactly how SVD-based
+                        image compression, denoising, and dimensionality reduction work.
+
+
+
+
+   Companion Example | Best rank-1 approximation of BProblem. Compress B =
+        
+     1 1
+   0 1 to rank 1 using its SVD (from Part 3).
+     1 0
+   Step 1 — Take only the loudest layer.
+            √
+   Keep σ1 = 3 with u1 = √16 (2, 1, 1)T and v1T = √12 (1, 1).
+                 b1 = σ1 u1 v T .
+   Step 2 — Form B           1
+
+                                                                        
+                             √            2                   2 2      1   1
+                                 3 · √16 1 · √12 1 1 = 12 1 1 = 0.5 0.5 .
+                                                      
+                      B
+                      b1 =
+                                          1                   1 1     0.5 0.5
+
+   Step 3 — How good is it? The error is the discarded singular value.
+                                                             p
+   We dropped σ2 = 1, so ∥B − B                       b1 ∥F = σ 2 = 1. The rank-1 layer
+                              b1 ∥2 = σ2 = 1 and ∥B − B
+                                                                                          2
+   already captures the dominant structure of B.
+
+
+
+The spectral norm: a matrix’s maximum stretch
+
+How “big” is a matrix — the most it can ever amplify a vector? That single number is the spectral
+norm, and SVD answers it instantly:
+
+                                                            ∥Ax∥2
+                                            ∥A∥2 = max            = σ1 .
+                                                       x̸=0 ∥x∥2
+
+It is just the longest axis of the output ellipsoid. The input achieving it is v1 ; the output points
+along u1 .
+
+
+
+
+                                                            13
+                                        σ2 (min stretch)
+
+
+
+
+                                                                   σ1 = ∥A∥2 (max stretch)
+
+
+
+   The spectral norm is the ellipsoid’s longest semi-axis σ1 — the worst-case amplification, central to stability,
+                                          conditioning, and error bounds.
+
+
+
+
+                                                                                      
+                                                                                   1 2
+   Extra Practice | Spectral norm of a 2 × 2Problem. Find ∥A∥2 for A =                   .
+                                                                                   3 4
+   The spectral norm is the√top singular value. From AT A = [ 10 14                        2
+                                                              14 20 ], eigenvalues solve λ −
+   30λ + 4 = 0 ⇒ λ = 15 ± 221. Then
+                                √        √
+                         q
+                   σ1 = 15 + 221 ≈ 29.87 ≈ 5.465,          ∥A∥2 ≈ 5.465.
+
+   (The smaller singular value is σ2 ≈ 0.366, so this matrix stretches its best direction ∼ 15×
+   more than its worst — fairly ill-conditioned.)
+
+
+   WHY IT MATTERS
+
+   A 1000 × 1000 image is a million numbers. If its singular values decay fast (they usually
+   do), keeping the top 50 layers reconstructs it almost perfectly using only ∼ 10% of the
+   storage. The same truncation removes noise (noise hides in tiny singular values), drives
+   PCA dimensionality reduction, and builds the latent factors in recommender systems.
+
+
+
+
+Part 5 | The Unifying Picture
+ONE PAGE TO RULE THEM ALL
+
+All three decompositions answer one question — “what simple moves is this matrix made of ?” —
+under progressively weaker assumptions.
+
+
+
+
+                                                           14
+           1 · Spectral                          A = QΛQT
+                                                                          ⊥ axes · clean transpose
+           symmetric A only
+
+                                                                                                        drop ⊥
+
+           2 · Eigen                            A = P DP −1
+                                                                           tilted axes · real inverse
+           any square (diagonalizable)
+
+                                                                                                        drop square
+
+           3 · SVD                               A = U ΣV T
+                                                                        two ⊥ frames · always exists
+           ANY matrix, any shape
+
+
+   Each step down the ladder removes one requirement and gains one power. Spectral is the special case; SVD is
+                                     the universal generalization that never fails.
+
+
+
+
+Which one should I reach for?
+
+   If your matrix is. . .                Use. . .                Because
+
+   Symmetric (covariance, Gram,          Spectral QΛQT           Orthonormal eigenvectors, real eigenvalues,
+   Laplacian)                                                    the cleanest decomposition — and it is PCA.
+   Square; you need powers / eA /        Eigen P DP −1           Ak = P Dk P −1 turns repeated multiplication
+   dynamics                                                      into scalar powers.
+   Rectangular, low-rank, or you         SVD U ΣV T              Always exists; gives the best rank-k
+   want compression                                              approximation and the spectral norm.
+   Non-diagonalizable / complex          SVD                     Real, non-negative σ’s sidestep eigen
+   eigenvalues                                                   decomposition’s failure modes.
+
+
+   KEY IDEA
+
+   The thirty-second recap. A matrix is a transformation. Decomposition rewrites it as ro-
+   tate → stretch → rotate. When the matrix is symmetric, the two rotations are transposes
+   of each other and the axes are perpendicular (spectral). For a general square matrix the
+   axes tilt, so we swap the transpose for an inverse (eigen). For any matrix at all, we use two
+   independent perpendicular frames joined by a non-negative stretch (SVD) — and sorting
+   that stretch by size hands us compression, denoising, and the spectral norm for free.
+
+
+
+Companion to ZC416 — Mathematical Foundations for ML / Data Science · Lecture 5: Matrix Decompositions. Built
+as an intuition-first study guide; all worked examples verified numerically.
+
+
+
+
+                                                          15
+
