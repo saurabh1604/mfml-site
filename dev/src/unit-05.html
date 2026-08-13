@@ -1,0 +1,1505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 5 · Matrix Decompositions &amp; SVD — The Math Behind the Machine</title>
+<meta name="description" content="Take a matrix apart: spectral A=QΛQᵀ, eigendecomposition A=PDP⁻¹, and the universal SVD A=UΣVᵀ — with live image compression, a 3D rectangular map, and the rotate–stretch–rotate machine.">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%232a78d6"/><text x="32" y="44" font-family="Georgia,serif" font-size="36" fill="white" text-anchor="middle">Σ</text></svg>'>
+<meta property="og:site_name" content="The Math Behind the Machine">
+<meta property="og:title" content="Unit 5 · Matrix Decompositions &amp; SVD — The Math Behind the Machine">
+<meta property="og:description" content="Take a matrix apart: spectral A=QΛQᵀ, eigendecomposition A=PDP⁻¹, and the universal SVD A=UΣVᵀ — with live image compression, a 3D rectangular map, and the rotate–stretch–rotate machine.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://linearalgebra.info/unit-05.html">
+<meta property="og:image" content="https://linearalgebra.info/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f9f9f7">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+<style>
+/* ============ design tokens (dataviz reference palette) ============ */
+:root{
+  color-scheme: light;
+  --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --ink-muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s7:#4a3aa7;
+  --good:#0ca30c; --good-text:#006300; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --wash-1:rgba(42,120,214,.12); --wash-2:rgba(235,104,52,.14); --wash-good:rgba(12,163,12,.10); --wash-crit:rgba(208,59,59,.09);
+  --serif:"Charter","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --maxw:76rem; --prose:44rem;
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s7:#9085e9;
+  --good-text:#0ca30c;
+  --wash-1:rgba(57,135,229,.18); --wash-2:rgba(217,89,38,.20); --wash-good:rgba(12,163,12,.14); --wash-crit:rgba(230,103,103,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s7:#9085e9;
+    --good-text:#0ca30c;
+    --wash-1:rgba(57,135,229,.18); --wash-2:rgba(217,89,38,.20); --wash-good:rgba(12,163,12,.14); --wash-crit:rgba(230,103,103,.12);
+  }
+}
+/* ============ base ============ */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--serif);font-size:1.075rem;line-height:1.72;-webkit-font-smoothing:antialiased}
+main{max-width:var(--maxw);margin:0 auto;padding:0 1.25rem 6rem}
+h1,h2,h3,h4{font-family:var(--sans);line-height:1.22;letter-spacing:-.015em}
+h1{font-size:clamp(1.9rem,4.5vw,3rem);margin:.4rem 0 .6rem;font-weight:750}
+h2{font-size:clamp(1.35rem,2.6vw,1.8rem);margin:0 0 .9rem;font-weight:700}
+h3{font-size:1.08rem;margin:1.6rem 0 .5rem;font-weight:700}
+p{margin:.85rem 0}
+a{color:var(--s1);text-decoration:none}
+a:hover{text-decoration:underline}
+strong{font-weight:650}
+.prose{max-width:var(--prose);margin-inline:auto}
+.katex{font-size:1.04em}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:.25rem 0}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface);border:1px solid var(--ring);border-radius:6px;padding:.1em .38em}
+/* ============ topbar ============ */
+.topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--page) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--ring)}
+.topbar-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;gap:.9rem;padding:.55rem 1.25rem;font-family:var(--sans);font-size:.86rem}
+.topbar a.home{color:var(--ink-2);font-weight:600}
+.topbar .crumb{color:var(--ink-muted)}
+.topbar .spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--ring);background:var(--surface);border-radius:999px;padding:.24rem .7rem;font-family:var(--sans);font-size:.8rem;color:var(--ink-2);white-space:nowrap}
+.chip b{color:var(--ink);font-weight:650}
+button.ghost{font-family:var(--sans);font-size:.8rem;background:var(--surface);border:1px solid var(--ring);color:var(--ink-2);border-radius:999px;padding:.28rem .75rem;cursor:pointer}
+button.ghost:hover{color:var(--ink)}
+.progress-rail{position:absolute;left:0;bottom:-1px;height:2px;width:100%;background:transparent}
+.progress-rail i{display:block;height:100%;width:0;background:var(--s1)}
+/* ============ hero ============ */
+.hero{padding:3.6rem 0 1rem;max-width:var(--prose);margin-inline:auto}
+.kicker{font-family:var(--sans);font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--s1)}
+.hero .lede{font-size:1.16rem;color:var(--ink-2)}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+/* ============ sections ============ */
+section.unit{margin-top:3.6rem;scroll-margin-top:4.5rem}
+.sec-head{display:flex;align-items:baseline;gap:.9rem;max-width:var(--prose);margin-inline:auto}
+.sec-num{font-family:var(--sans);font-weight:750;font-size:.9rem;color:var(--ink-muted);border:1px solid var(--ring);border-radius:8px;padding:.15rem .5rem;background:var(--surface);flex:none}
+/* ============ callouts (companion voice) ============ */
+.callout{max-width:var(--prose);border:1px solid var(--ring);border-left-width:3px;border-radius:12px;background:var(--surface);padding:.9rem 1.1rem;margin:1.3rem auto}
+.callout .tag{display:block;font-family:var(--sans);font-size:.72rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.35rem}
+.callout p{margin:.5rem 0}
+.callout.scenario{border-left-color:var(--s1)} .callout.scenario .tag{color:var(--s1)}
+.callout.intuition{border-left-color:var(--s3)} .callout.intuition .tag{color:var(--s3)}
+.callout.aha{border-left-color:var(--s7)} .callout.aha .tag{color:var(--s7)}
+.callout.try{border-left-color:var(--s2)} .callout.try .tag{color:var(--s2)}
+.callout.watch{border-left-color:var(--serious)} .callout.watch .tag{color:var(--serious)}
+.callout.remember{border-left-color:var(--ink)} .callout.remember .tag{color:var(--ink-2)}
+details{max-width:var(--prose);border:1px solid var(--ring);border-radius:12px;background:var(--surface);padding:.65rem 1.1rem;margin:1rem auto}
+details summary{cursor:pointer;font-family:var(--sans);font-size:.9rem;font-weight:650;color:var(--ink-2)}
+details[open] summary{margin-bottom:.4rem}
+/* ============ widgets ============ */
+.widget{border:1px solid var(--ring);border-radius:16px;background:var(--surface);padding:1.1rem 1.2rem 1.2rem;margin:1.6rem auto;max-width:66rem;font-family:var(--sans);box-shadow:0 1px 2px rgba(11,11,11,.05),0 16px 38px -28px rgba(11,11,11,.4)}
+.widget-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.6rem;margin-bottom:.6rem}
+.widget-head .w-title{font-weight:700;font-size:.98rem}
+.widget-head .w-sub{color:var(--ink-muted);font-size:.82rem}
+.widget svg{display:block;width:100%;height:auto}
+.wrow{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start}
+.wcol{flex:1 1 300px;min-width:270px}
+.controls{display:flex;flex-direction:column;gap:.55rem;font-size:.85rem}
+.controls .ctl{display:grid;grid-template-columns:6.2rem 1fr 3.4rem;align-items:center;gap:.6rem}
+.controls label{color:var(--ink-2);font-weight:600}
+.controls output{font-family:var(--mono);font-size:.8rem;text-align:right;color:var(--ink)}
+input[type=range]{accent-color:var(--s1);width:100%;margin:0}
+.presets{display:flex;flex-wrap:wrap;gap:.45rem;margin:.5rem 0}
+button.preset{font-family:var(--sans);font-size:.8rem;font-weight:600;border:1px solid var(--ring);background:var(--page);color:var(--ink-2);border-radius:999px;padding:.3rem .8rem;cursor:pointer}
+button.preset:hover{border-color:var(--s1);color:var(--s1)}
+button.preset[aria-pressed="true"]{background:var(--wash-1);border-color:var(--s1);color:var(--s1)}
+.verdict{display:inline-flex;align-items:center;gap:.5rem;font-weight:650;font-size:.9rem;border-radius:10px;padding:.45rem .8rem;border:1px solid var(--ring)}
+.verdict.good{color:var(--good-text);background:var(--wash-good)}
+.verdict.bad{color:var(--critical);background:var(--wash-crit)}
+.verdict.info{color:var(--s1);background:var(--wash-1)}
+.readout{font-family:var(--mono);font-size:.82rem;color:var(--ink-2)}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
+.tabs button{font-family:var(--sans);font-size:.85rem;font-weight:650;border:1px solid var(--ring);background:var(--page);color:var(--ink-2);border-radius:10px;padding:.42rem .9rem;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--wash-1);border-color:var(--s1);color:var(--s1)}
+.pane{display:none}.pane.on{display:block}
+.note{font-size:.83rem;color:var(--ink-muted);margin-top:.55rem}
+/* matrices */
+.mx{display:inline-grid;gap:2px;padding:.45rem .55rem;position:relative;font-family:var(--mono);font-size:.9rem}
+.mx::before,.mx::after{content:"";position:absolute;top:0;bottom:0;width:8px;border:2px solid var(--ink-2);border-radius:3px}
+.mx::before{left:0;border-right:none}.mx::after{right:0;border-left:none}
+.mx span{padding:.22rem .5rem;border-radius:6px;text-align:center;min-width:2.1rem;transition:background .15s}
+.mx span.hl-r{background:var(--wash-1)} .mx span.hl-c{background:var(--wash-2)}
+.mx span.pivot{background:var(--wash-1);font-weight:700;color:var(--s1)}
+.mx span.rowchg{background:var(--wash-2)}
+.mx span.dead{opacity:.22;text-decoration:line-through}
+.mxwrap{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;justify-content:flex-start;overflow-x:auto;padding:.3rem 0}
+.opnote{font-family:var(--mono);font-size:.8rem;color:var(--s2);white-space:nowrap}
+/* checks */
+.check{max-width:var(--prose);border:1px solid var(--ring);border-radius:14px;background:var(--surface);padding:1rem 1.15rem;margin:1.5rem auto;font-family:var(--sans)}
+.check .tag{font-size:.72rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--s2)}
+.check .q{font-family:var(--serif);font-size:1.02rem;margin:.45rem 0 .75rem}
+.check .opts{display:flex;flex-direction:column;gap:.5rem}
+.check .opts button{text-align:left;font-family:var(--sans);font-size:.9rem;line-height:1.45;border:1px solid var(--ring);background:var(--page);color:var(--ink);border-radius:10px;padding:.55rem .8rem;cursor:pointer}
+.check .opts button:hover{border-color:var(--s1)}
+.check .opts button.picked-good{border-color:var(--good);background:var(--wash-good)}
+.check .opts button.picked-bad{border-color:var(--critical);background:var(--wash-crit)}
+.check .why{display:none;margin-top:.7rem;font-size:.9rem;border-radius:10px;padding:.6rem .8rem}
+.check .why.on{display:block}
+.check .why.good{background:var(--wash-good);color:var(--ink)}
+.check .why.bad{background:var(--wash-crit);color:var(--ink)}
+.check .why b.st-good{color:var(--good-text)}
+.check .why b.st-bad{color:var(--critical)}
+/* matrix editors & 3D */
+.mx-edit{display:inline-grid;gap:4px;padding:.5rem .6rem;position:relative}
+.mx-edit::before,.mx-edit::after{content:"";position:absolute;top:0;bottom:0;width:8px;border:2px solid var(--ink-2);border-radius:3px}
+.mx-edit::before{left:0;border-right:none}.mx-edit::after{right:0;border-left:none}
+.mx-edit input{width:3.4rem;border:1px solid var(--ring);background:var(--page);color:var(--ink);border-radius:7px;padding:.24rem .2rem;font-family:var(--mono);font-size:.85rem;text-align:center;-moz-appearance:textfield}
+.mx-edit input::-webkit-outer-spin-button,.mx-edit input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.mx-edit input:focus{outline:2px solid var(--s1);border-color:var(--s1)}
+.drag-hint{display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--ink-muted);font-family:var(--sans)}
+svg.grabbable{cursor:grab;touch-action:none}
+svg.grabbable:active{cursor:grabbing}
+/* toc rail + aura */
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(64rem 30rem at 88% -6%,var(--wash-1),transparent 62%);pointer-events:none;z-index:-1}
+.toc{position:fixed;top:5.4rem;right:.9rem;width:11rem;font-family:var(--sans);font-size:.74rem;display:none;z-index:30;max-height:calc(100vh - 8rem);overflow-y:auto}
+@media (min-width:1420px){.toc{display:block}}
+.toc .toc-t{font-weight:750;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);margin:0 0 .45rem .65rem}
+.toc a{display:block;padding:.27rem .65rem;color:var(--ink-muted);border-left:2px solid var(--grid);text-decoration:none;line-height:1.35}
+.toc a:hover{color:var(--ink);text-decoration:none}
+.toc a.on{color:var(--s1);border-left-color:var(--s1);font-weight:650;background:var(--wash-1);border-radius:0 8px 8px 0}
+/* misc */
+table.plain{border-collapse:collapse;font-family:var(--sans);font-size:.88rem;margin:.8rem 0}
+table.plain th,table.plain td{border:1px solid var(--grid);padding:.4rem .7rem;text-align:left}
+table.plain th{background:var(--surface);font-weight:650}
+.next-card{max-width:var(--prose);border:1px solid var(--ring);border-radius:16px;background:var(--surface);padding:1.2rem 1.3rem;margin:3rem auto 0;font-family:var(--sans)}
+.svg-lab text{font-family:var(--sans)}
+/* unit-4 extras */
+.term-cards{display:flex;flex-wrap:wrap;gap:.6rem;margin:.7rem 0}
+.term-card{border:1px solid var(--ring);border-radius:10px;background:var(--page);padding:.5rem .7rem;font-family:var(--mono);font-size:.85rem;cursor:default}
+.term-card:hover{border-color:var(--s1);background:var(--wash-1)}
+.term-card b{font-weight:700}
+.stagebar{display:flex;gap:.4rem;flex-wrap:wrap;margin:.6rem 0}
+.stagebar button{font-family:var(--sans);font-size:.82rem;font-weight:650;border:1px solid var(--ring);background:var(--page);color:var(--ink-2);border-radius:10px;padding:.4rem .8rem;cursor:pointer}
+.stagebar button[aria-selected="true"]{background:var(--wash-1);border-color:var(--s1);color:var(--s1)}
+@media (max-width:640px){ .controls .ctl{grid-template-columns:5rem 1fr 2.8rem} }
+/* unit-5 extras */
+.ladder{max-width:var(--prose);margin:1.4rem auto;font-family:var(--sans)}
+.rung{border:1px solid var(--ring);border-left-width:3px;border-radius:12px;background:var(--surface);padding:.7rem 1rem;margin:.5rem auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:.7rem}
+.rung b{font-size:.95rem}
+.rung .form{font-family:var(--mono);font-size:.9rem;color:var(--s1)}
+.rung .who{font-size:.8rem;color:var(--ink-muted);margin-left:auto}
+.rung.r1{border-left-color:var(--s3)} .rung.r2{border-left-color:var(--s2)} .rung.r3{border-left-color:var(--s1)}
+.rung-arrow{text-align:center;font-size:.78rem;color:var(--ink-muted);margin:.1rem 0}
+/* practice arena */
+.prob{max-width:var(--prose);border:1px solid var(--ring);border-radius:14px;background:var(--surface);padding:1rem 1.2rem;margin:1.4rem auto;font-family:var(--serif)}
+.prob-head{display:flex;align-items:center;gap:.6rem;font-family:var(--sans);margin-bottom:.4rem}
+.ptag{font-size:.72rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--s1)}
+.pdiff{font-size:.72rem;font-weight:700;border-radius:999px;padding:.14rem .6rem;font-family:var(--sans)}
+.pdiff.easy{color:var(--good-text);background:var(--wash-good)}
+.pdiff.medium{color:var(--s1);background:var(--wash-1)}
+.pdiff.hard{color:var(--s2);background:var(--wash-2)}
+.pq{margin:.3rem 0 .5rem}
+.ptest{font-size:.9rem;color:var(--ink-2);font-family:var(--sans);margin:.4rem 0}
+details.sol{border:none;background:var(--page);border:1px solid var(--ring);margin:.6rem 0 0;max-width:none}
+details.sol summary{color:var(--s1);font-weight:650}
+.pstep{margin:.7rem 0;padding-left:.9rem;border-left:2px solid var(--grid)}
+.pstep b{font-family:var(--sans);font-size:.9rem}
+.pans{margin-top:.9rem;font-weight:650;border-radius:10px;padding:.55rem .8rem;background:var(--wash-good);color:var(--ink);font-family:var(--sans);font-size:.92rem}
+
+/* ================= MBM-UX-V2 · navigation, resume, revision, a11y, print ================= */
+a.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--s1);color:#fff;padding:.55rem 1rem;border-radius:0 0 10px 0;font-family:var(--sans);font-size:.85rem;font-weight:650;text-decoration:none}
+a.skip:focus{left:0}
+:focus-visible{outline:2px solid var(--s1);outline-offset:2px;border-radius:4px}
+main:focus{outline:none}
+/* --- topbar fits every screen --- */
+.topbar-in{flex-wrap:nowrap}
+.topbar a.home{white-space:nowrap;text-decoration:none}
+.topbar .crumb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#score-chip.done{border-color:var(--good);background:var(--wash-good);color:var(--good-text)}
+#score-chip.done b{color:var(--good-text)}
+.hero .meta .chip{white-space:normal}
+/* long display equations scroll inside their own box instead of stretching the page */
+.katex-display{overflow-x:auto;overflow-y:hidden;padding-top:2px;padding-bottom:2px}
+.katex-display::-webkit-scrollbar{height:5px}
+.katex-display::-webkit-scrollbar-thumb{background:var(--grid);border-radius:999px}
+/* wide comparison tables scroll in place rather than stretching the page */
+@media (max-width:760px){
+  table.plain{display:block;max-width:100%;overflow-x:auto}
+}
+#toc-btn{display:none;align-items:center;gap:.35rem;white-space:nowrap}
+@media (max-width:1419px){#toc-btn{display:inline-flex}}
+@media (max-width:899px){
+  .topbar .crumb{display:none}
+  .topbar-in{gap:.55rem;padding:.5rem .95rem}
+}
+@media (max-width:599px){
+  .tw{display:none}
+  button.ghost{padding:.28rem .6rem}
+}
+@media (max-width:430px){
+  .txs{display:none}
+  .topbar-in{gap:.4rem;padding:.5rem .75rem}
+}
+/* --- table of contents: fixed rail wide, slide-in drawer narrow --- */
+.toc-close{display:none;position:absolute;top:.55rem;right:.6rem;width:1.9rem;height:1.9rem;line-height:1;border-radius:9px;border:1px solid var(--ring);background:var(--page);color:var(--ink-2);font-size:1.15rem;cursor:pointer;font-family:var(--sans)}
+.toc-nav{display:flex;align-items:center;justify-content:space-between;gap:.4rem;margin-top:.9rem;padding-top:.7rem;border-top:1px solid var(--ring)}
+.toc-nav a{border-left:none;padding:.3rem .35rem;color:var(--ink-2);font-weight:650;font-size:.74rem}
+.toc-nav a:hover{color:var(--s1)}
+.toc-nav a.hub{color:var(--ink-muted);font-weight:600}
+.toc-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:60}
+.toc-backdrop.on{opacity:1;pointer-events:auto}
+@media (max-width:1419px){
+  /* off-canvas: visibility keeps the closed drawer out of the page's scroll width */
+  .toc{display:block;position:fixed;top:0;right:0;bottom:0;left:auto;width:min(21rem,86vw);max-height:none;
+       background:var(--surface);border-left:1px solid var(--ring);box-shadow:-24px 0 60px -34px rgba(0,0,0,.65);
+       padding:1.15rem .75rem 2rem;font-size:.82rem;overflow-y:auto;overscroll-behavior:contain;
+       visibility:hidden;transform:translateX(103%);transition:transform .24s ease,visibility 0s linear .24s;z-index:70}
+  .toc.open{visibility:visible;transform:none;transition:transform .24s ease}
+  .toc .toc-t{margin-bottom:.7rem}
+  .toc a{padding:.42rem .7rem}
+  .toc-close{display:block}
+}
+@media (min-width:1420px){.toc-backdrop{display:none}}
+/* --- resume pill --- */
+.resume{position:fixed;left:50%;bottom:1.1rem;transform:translate(-50%,140%);z-index:65;display:flex;align-items:center;gap:.6rem;
+        background:var(--surface);border:1px solid var(--ring);border-radius:999px;padding:.4rem .5rem .4rem 1rem;
+        box-shadow:0 18px 44px -22px rgba(11,11,11,.55);font-family:var(--sans);font-size:.82rem;max-width:min(34rem,92vw);
+        transition:transform .3s cubic-bezier(.2,.8,.3,1),opacity .3s;opacity:0}
+.resume.on{transform:translate(-50%,0);opacity:1}
+.resume .rl{color:var(--ink-muted);white-space:nowrap}
+.resume .rgo{font-family:var(--sans);font-size:.82rem;font-weight:650;border:1px solid var(--s1);background:var(--wash-1);color:var(--s1);
+             border-radius:999px;padding:.26rem .8rem;cursor:pointer;max-width:16rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.resume .rx{border:none;background:transparent;color:var(--ink-muted);font-size:1.1rem;line-height:1;cursor:pointer;padding:.1rem .35rem}
+@media (max-width:600px){.resume .rl{display:none}}
+/* --- practice arena: bulk reveal --- */
+.sol-bulk{max-width:var(--prose);margin:.9rem auto 0;display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;
+          font-family:var(--sans);font-size:.8rem;color:var(--ink-muted)}
+.sol-bulk .sb-l{flex:1;min-width:12rem}
+.sol-bulk .sb-b{display:flex;gap:.4rem}
+/* --- motion & print --- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media print{
+  .topbar,.toc,.toc-backdrop,.resume,.sol-bulk,a.skip,.progress-rail,.drag-hint{display:none!important}
+  .controls,.tabs,.stepper,.preset,.mx-edit input{display:none!important}
+  body::before{display:none}
+  body{background:#fff;color:#000;font-size:10.5pt;line-height:1.5}
+  main{max-width:none;padding:0}
+  .prose,.callout,.check,.prob,.sec-head,.next-card{max-width:none}
+  .widget{box-shadow:none;border-color:#ccc}
+  .widget,.prob,.check,.callout,figure,table,svg{break-inside:avoid}
+  h1,h2,h3{break-after:avoid}
+  section.unit{break-before:auto}
+  a{color:#000;text-decoration:none}
+  details.sol{border-color:#bbb}
+  .pans{background:#eee;color:#000}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main-content">Skip to content</a>
+<div class="topbar"><div class="topbar-in">
+  <a class="home" href="index.html">The Math<span class="txs"> Behind the Machine</span></a><span class="crumb">/ Unit 5 · Decompositions &amp; SVD</span>
+  <span class="spacer"></span>
+  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">12</span></span>
+  <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
+  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
+</div><div class="progress-rail"><i id="read-progress"></i></div></div>
+<nav class="toc" id="toc" aria-label="On this page"><div class="toc-t">On this page</div></nav>
+<div class="toc-backdrop" id="toc-backdrop"></div>
+
+<main id="main-content" tabindex="-1">
+<header class="hero">
+  <div class="kicker">Unit 5 of 16 · by Prof. Saurabh</div>
+  <h1>Matrix Decompositions &amp; SVD</h1>
+  <p class="lede">You can't tell much about 12 until you write it as \(2\times2\times3\) — then everything about it is obvious. This unit does the same to matrices: <strong>take the tangled transformation apart into a few pure moves</strong> — rotate, stretch, rotate back. We climb a three-rung ladder: the flawless symmetric case, the general square case, and then the boldest factorization in linear algebra — the <strong>SVD</strong>, which works on <em>every</em> matrix ever written, and whose truncation is the mathematics inside image compression, recommender systems, and PCA.</p>
+  <div class="meta">
+    <span class="chip">≈ 55 min read + play</span>
+    <span class="chip">5 interactive widgets · live image compression</span>
+    <span class="chip">12 inline checks</span>
+    <span class="chip">✍ 12 solved practice problems</span>
+  </div>
+</header>
+
+<!-- ================= 1 · TAKING THINGS APART ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head"><span class="sec-num">1</span><h2>Taking things apart — the oldest trick in mathematics</h2></div>
+  <div class="callout scenario"><span class="tag">Imagine this</span>
+    <p>Someone hands you the number 5040 and asks: is it divisible by 48? Ugly question — until you factor it: \(5040 = 2^4\cdot3^2\cdot5\cdot7\), and \(48=2^4\cdot 3\). Read the exponents: yes, instantly. You didn't change the number; you <strong>revealed what it was made of</strong>. Now recall from Unit 1 that a matrix isn't a grid of numbers — it's a <em>verb</em>, a machine that moves space. A raw matrix tangles rotation, stretching, and shearing into one bundle of entries. <strong>Matrix decomposition is prime factorization for transformations:</strong> rewrite \(A\) as a short sequence of pure moves you can actually picture.</p>
+  </div>
+  <div class="prose">
+    <p>The punchline of the whole unit, up front: almost every matrix you'll meet can be written as <em>rotate → stretch along axes → rotate</em>. The three famous decompositions are not three unrelated tricks — they are one idea applied to progressively harder matrices, each rung dropping one requirement and gaining one power:</p>
+  </div>
+  <div class="ladder">
+    <div class="rung r1"><b>Rung 1 · Spectral</b><span class="form">A = QΛQᵀ</span><span class="who">symmetric A only — ⊥ axes, clean transpose (Unit 4's crown jewel)</span></div>
+    <div class="rung-arrow">↓ drop the requirement that eigen-axes be perpendicular</div>
+    <div class="rung r2"><b>Rung 2 · Eigendecomposition</b><span class="form">A = PDP⁻¹</span><span class="who">any square, diagonalizable A — tilted axes, honest inverse</span></div>
+    <div class="rung-arrow">↓ drop the requirement that A be square at all</div>
+    <div class="rung r3"><b>Rung 3 · SVD</b><span class="form">A = UΣVᵀ</span><span class="who">EVERY matrix, any shape, any rank — two ⊥ frames, always exists</span></div>
+  </div>
+  <div class="prose">
+    <p>Why climb in this order? Because each rung teaches one lesson. Spectral shows the <em>dream scenario</em>: perpendicular axes, real scalings, no distortion. Eigendecomposition asks <em>what if the natural axes lean?</em> — the idea survives, but the tidy transpose becomes a real inverse. And SVD asks the boldest question — <em>what if the matrix isn't even square, so "eigenvector" is meaningless?</em> — and answers it with one elegant move that works for every matrix in existence.</p>
+  </div>
+  <div class="check" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">When we factor \(12 = 2\times2\times3\), the number doesn't change. What's the analogue for \(A=U\Sigma V^{\top}\)?</p>
+    <div class="opts">
+      <button data-why="Nothing is approximated yet — the factored product multiplies back to exactly A. (Approximation enters later, when we deliberately drop small pieces.)">The product is approximately A, close enough for ML</button>
+      <button data-correct data-why="Exactly — the product UΣVᵀ IS A, entry for entry. Decomposition changes the description, not the object: same transformation, now written as moves you can read. The power comes from the reading, and later from choosing to drop the quiet parts.">The product equals A exactly — only the description changed</button>
+      <button data-why="No information is lost in a decomposition — that's the point. Compression (deliberately losing the small stuff) is a choice we make afterwards, in Section 10.">Some information is lost, like JPEG compression</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 2 · DIAGONAL DREAM ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head"><span class="sec-num">2</span><h2>The shape we're chasing — diagonal matrices are trivial</h2></div>
+  <div class="prose">
+    <p>Every decomposition in this unit is a scheme for smuggling a <strong>diagonal matrix</strong> into the middle of the product. Why the obsession? Because for a diagonal</p>
+    \[D=\begin{bmatrix}d_1&&\\&\ddots&\\&&d_n\end{bmatrix}\]
+    <p>every hard matrix question collapses into arithmetic on \(n\) separate numbers. The determinant is just the product \(\prod_i d_i\) (Unit 4's volume dial, read off directly). The \(k\)-th power \(D^k\) is each entry raised to the \(k\) — no matrix multiplication at all. The inverse is each non-zero entry flipped to \(1/d_i\). Solving \(D\mathbf{x}=\mathbf{b}\) is \(n\) one-line divisions. A diagonal matrix is \(n\) independent one-dimensional problems wearing a trench coat — nothing interacts, nothing tangles.</p>
+    <p>So the game is: given a general \(A\), find a change of viewpoint in which \(A\) <em>becomes</em> diagonal. That's it. That's the unit.</p>
+  </div>
+  <div class="check" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(D=\operatorname{diag}(5,-1)\). What is \(D^{3}\), and how long did it take you?</p>
+    <div class="opts">
+      <button data-correct data-why="diag(125, −1), computed in your head: 5³ = 125 and (−1)³ = −1. That speed is the entire motivation for diagonalization — and in Section 5 it turns computing A³ for a messy matrix into exactly this two-number task.">\(\operatorname{diag}(125,\,-1)\) — about two seconds</button>
+      <button data-why="No matrix multiplication needed: for diagonal matrices, powers act entry by entry. D³ = diag(5³, (−1)³).">Need to multiply three matrices out — a few minutes</button>
+      <button data-why="(−1)³ = −1, not +1 — odd powers keep the sign. The flip direction keeps flipping.">\(\operatorname{diag}(125,\,1)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 3 · DIAGONALIZABLE ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head"><span class="sec-num">3</span><h2>Diagonalizable — same machine, better glasses</h2></div>
+  <div class="prose">
+    <p>Formally: \(A\in\mathbb{R}^{n\times n}\) is <strong>diagonalizable</strong> if there is an invertible \(P\) and a diagonal \(D\) with</p>
+    \[D=P^{-1}AP\qquad\Longleftrightarrow\qquad A=PDP^{-1}\]
+    <p>Where do \(P\) and \(D\) come from? Multiply the definition out. \(AP=PD\), and because \(D\) is diagonal, the product \(PD\) just scales each column of \(P\) by its own diagonal entry. Column by column, \(AP=PD\) says:</p>
+    \[A\mathbf{p}_i=\lambda_i\,\mathbf{p}_i\]
+    <p>— which you have seen before. <strong>The columns of \(P\) must be eigenvectors of \(A\), and the diagonal of \(D\) must be their eigenvalues.</strong> Diagonalization isn't a new technique; it is Unit 4's eigen-hunt, repackaged as a factorization. The lecture's opening example: \(A=\begin{bmatrix}1&4\\2&3\end{bmatrix}\) with \(P=\begin{bmatrix}-2&1\\1&1\end{bmatrix}\) gives \(P^{-1}AP=\begin{bmatrix}-1&0\\0&5\end{bmatrix}\) — and sure enough, the columns \((-2,1)\) and \((1,1)\) are exactly the eigenvectors of \(A\) for \(\lambda=-1\) and \(\lambda=5\) (check: \(A\binom{-2}{1}=\binom{2}{-1}=-1\binom{-2}{1}\) ✓).</p>
+    <p>One catch, straight from Unit 4's fine print: this needs <em>n independent eigenvectors</em> to fill \(P\)'s columns — and \(P\) must be genuinely invertible. Matrices with enough eigenvectors get the luxury; defective ones (the shear!) are turned away at the door. Hold that thought for Section 6.</p>
+  </div>
+</section>
+
+<!-- ================= 4 · RUNG 1: SPECTRAL ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head"><span class="sec-num">4</span><h2>Rung 1 · Spectral — the flawless case, plus a reading you haven't seen</h2></div>
+  <div class="callout intuition"><span class="tag">In plain words</span>
+    <p><strong>The trampoline.</strong> Grab a circular trampoline at two perpendicular points and pull: one axis stretches by \(\lambda_1\), the perpendicular one by \(\lambda_2\), and the circle becomes an ellipse whose axes line up exactly with your hands. That is a symmetric matrix: <em>pure stretch along perpendicular directions, no twist</em>. Unit 4's Spectral Theorem is the guarantee: symmetric \(A\) has orthonormal eigenvectors and real eigenvalues, so</p>
+    <p style="text-align:center">\(A=Q\Lambda Q^{\top}\), &nbsp; with \(Q^{-1}=Q^{\top}\) free of charge.</p>
+    <p>In the language of this unit: spectral decomposition is diagonalization where \(P\) happens to be orthonormal — the lucky rung where the inverse costs nothing.</p>
+  </div>
+  <div class="prose">
+    <p>Now the new reading, and it's the most important formula of the unit. Multiply \(Q\Lambda Q^{\top}\) out column-against-row instead of the usual row-against-column, and the product unpacks into a <strong>sum of rank-1 layers</strong>:</p>
+    \[A=Q\Lambda Q^{\top}=\lambda_1\,\mathbf{q}_1\mathbf{q}_1^{\top}+\lambda_2\,\mathbf{q}_2\mathbf{q}_2^{\top}+\cdots+\lambda_n\,\mathbf{q}_n\mathbf{q}_n^{\top}\]
+    <p>Each block \(\mathbf{q}_i\mathbf{q}_i^{\top}\) is a <strong>projector</strong> — Unit 3's shadow machine, boxed up as a matrix: it flattens any input onto the line through \(\mathbf{q}_i\). So a symmetric matrix literally reads: <em>"project onto axis 1 and amplify by \(\lambda_1\), plus project onto axis 2 and amplify by \(\lambda_2\), …"</em> The eigenvalues become an honest <strong>importance ranking</strong> of the axes. Toggle the layers yourself:</p>
+  </div>
+
+  <div class="widget" id="w-proj">
+    <div class="widget-head"><span class="w-title">The layer view</span><span class="w-sub">A = 3·q₁q₁ᵀ + 1·q₂q₂ᵀ — watch a matrix assemble from projections</span></div>
+    <div class="tabs" id="proj-tabs">
+      <button data-t="0" aria-selected="true">λ₁ layer only</button>
+      <button data-t="1">λ₂ layer only</button>
+      <button data-t="2">both layers = A</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.6 1 300px"><svg id="proj-svg" viewBox="0 0 560 400" class="svg-lab" role="img" aria-label="Unit circle mapped by the selected projection layers of a symmetric matrix"></svg></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="readout" id="proj-mx" style="line-height:1.9"></div>
+        <div id="proj-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The example is Unit 4's friend \(A=\begin{bmatrix}2&1\\1&2\end{bmatrix}\): \(\lambda_1=3\) on \(\mathbf{q}_1=\tfrac{1}{\sqrt2}(1,1)\), \(\lambda_2=1\) on \(\mathbf{q}_2=\tfrac{1}{\sqrt2}(-1,1)\). Each layer alone crushes the circle onto a line (rank 1!). Their weighted sum rebuilds the full ellipse — and the matrix. <strong>Hold this picture:</strong> in Section 10 it becomes image compression.</p>
+      </div>
+    </div>
+  </div>
+
+  <details><summary>The lecture's 3 × 3 spectral workout — every step</summary>
+    <p>Decompose \(A=\begin{bmatrix}2&-1&0\\-1&2&-1\\0&-1&2\end{bmatrix}\) (symmetric, so the theorem applies). <strong>Eigenvalues:</strong> \(\det(A-\lambda I)=(2-\lambda)\big[(2-\lambda)^2-2\big]=0\) gives \(\lambda_1=2+\sqrt2\approx3.414\), \(\lambda_2=2\), \(\lambda_3=2-\sqrt2\approx0.586\) — all real, as promised. <strong>Eigenvectors:</strong> solving each \((A-\lambda I)\mathbf{v}=\mathbf{0}\) by Unit 1 elimination: \(\mathbf{q}_1=\tfrac12(1,-\sqrt2,1)\), \(\mathbf{q}_2=\tfrac{1}{\sqrt2}(1,0,-1)\), \(\mathbf{q}_3=\tfrac12(1,\sqrt2,1)\). <strong>Sanity check for free:</strong> \(\mathbf{q}_1\cdot\mathbf{q}_2=0\), \(\mathbf{q}_1\cdot\mathbf{q}_3=\tfrac14(1-2+1)=0\) — orthogonality arrived without being asked, the Spectral Theorem working in the wild. <strong>Assembled:</strong> \(A=Q\Lambda Q^{\top}\) with \(\Lambda=\operatorname{diag}(2+\sqrt2,\,2,\,2-\sqrt2)\), or as layers: \(A=(2{+}\sqrt2)\,\mathbf{q}_1\mathbf{q}_1^{\top}+2\,\mathbf{q}_2\mathbf{q}_2^{\top}+(2{-}\sqrt2)\,\mathbf{q}_3\mathbf{q}_3^{\top}\) — the first layer does most of the work, the \(0.586\) layer is a finishing touch.</p>
+  </details>
+
+  <div class="check" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In \(A=Q\Lambda Q^{\top}\), undoing the rotation costs a transpose. In \(A=PDP^{-1}\), it costs a genuine matrix inverse. What buys symmetric matrices the discount?</p>
+    <div class="opts">
+      <button data-correct data-why="The Spectral Theorem hands symmetric matrices orthonormal eigenvectors, and for an orthonormal Q the identity QᵀQ = I means Q⁻¹ = Qᵀ — Unit 3's honest motions. General matrices have leaning eigenvectors, P is merely invertible, and the discount is revoked.">Their eigenvectors are orthonormal, so \(Q^{\top}Q=I\)</button>
+      <button data-why="Symmetric matrices are generally NOT orthogonal themselves (A = [[2,1],[1,2]] isn't). The orthogonality lives in the eigenvector matrix Q, not in A.">Symmetric matrices are their own inverses</button>
+      <button data-why="Λ being diagonal is true on every rung — D is diagonal in PDP⁻¹ too. The discount is about the OUTER factors, and it comes from their orthonormal columns.">Because Λ is diagonal</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+<!-- ================= 5 · RUNG 2: EIGEN ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head"><span class="sec-num">5</span><h2>Rung 2 · Eigendecomposition — speak the matrix's native language</h2></div>
+  <div class="callout intuition"><span class="tag">In plain words</span>
+    <p>A general square matrix looks chaotic in your standard \(x,y\) grid because it rotates <em>and</em> stretches at once. But the matrix has a private coordinate system — its eigenvectors — in which it does nothing but scale numbers. \(A=PDP^{-1}\) is a <strong>translator</strong>: read right-to-left, \(P^{-1}\) translates your vector into the matrix's native eigen-language, \(D\) does the embarrassingly simple scaling there, and \(P\) translates back to your language. The transformation was never complicated — you were just listening in the wrong language.</p>
+  </div>
+  <div class="prose">
+    <p>The price of leaving the symmetric world: the eigenvectors <strong>lean</strong>. For the lecture's \(A=\begin{bmatrix}1&4\\2&3\end{bmatrix}\): eigenvalues from \(\lambda^2-4\lambda-5=(\lambda-5)(\lambda+1)=0\), so \(\lambda_1=5,\ \lambda_2=-1\) (a negative eigenvalue — flip-and-scale — something a positive-definite symmetric matrix never shows). Eigenvectors: \(\mathbf{p}_1=(1,1)\) and \(\mathbf{p}_2=(-2,1)\). Check the angle: \(\mathbf{p}_1\cdot\mathbf{p}_2=-1\neq0\) — <em>not perpendicular</em>. So \(P=\begin{bmatrix}1&-2\\1&1\end{bmatrix}\) is invertible but not orthonormal, and the clean transpose is gone: \(P^{-1}=\tfrac13\begin{bmatrix}1&2\\-1&1\end{bmatrix}\), computed honestly.</p>
+    <p>Why bother? The payoff is <strong>matrix powers for free</strong>. Sandwiched between \(P\) and \(P^{-1}\), repeated multiplication telescopes — every interior \(P^{-1}P\) collapses to \(I\):</p>
+    \[A^{k}=(PDP^{-1})(PDP^{-1})\cdots(PDP^{-1})=P\,D^{k}\,P^{-1}\]
+    <p>Computing \(A^3\) by brute force is nine dot products, twice. With the decomposition: cube two numbers (\(5^3=125\), \((-1)^3=-1\)) and translate once — \(A^3=\begin{bmatrix}41&84\\42&83\end{bmatrix}\), done. The same telescope drives matrix exponentials, Markov-chain steady states, and the long-run behaviour of recurrent networks. Watch the translator and the telescope run:</p>
+  </div>
+
+  <div class="widget" id="w-diag">
+    <div class="widget-head"><span class="w-title">The translator</span><span class="w-sub">A = PDP⁻¹ on tilted axes · then raise it to a power for free</span></div>
+    <div class="stagebar" id="dg-stages">
+      <button data-s="0" aria-selected="true">1 · your x</button>
+      <button data-s="1">2 · translate: P⁻¹x</button>
+      <button data-s="2">3 · scale: DP⁻¹x</button>
+      <button data-s="3">4 · translate back: Ax</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 320px"><svg id="dg-svg" viewBox="0 0 560 440" class="svg-lab grabbable" role="img" aria-label="Four-stage eigendecomposition pipeline acting on a draggable vector, with tilted eigen-axes"></svg>
+      <span class="drag-hint">✋ drag the gold arrowhead to choose x · note the leaning dashed eigen-axes</span></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="readout" id="dg-co" style="line-height:2"></div>
+        <div class="controls" style="margin-top:.6rem"><div class="ctl"><label>power k</label><input type="range" id="dg-k" min="1" max="5" step="1" value="1"><output id="dg-ko">1</output></div></div>
+        <div class="readout" id="dg-pow" style="margin-top:.4rem"></div>
+        <div id="dg-verdict" class="verdict good" style="margin-top:.6rem">—</div>
+        <p class="note">The dashed axes are \(\mathbf{p}_1=(1,1)\) (λ=5) and \(\mathbf{p}_2=(-2,1)\) (λ=−1) — visibly <em>not</em> perpendicular. Slide \(k\): the chips compute \(A^k=PD^kP^{-1}\) live; \(D^k\) is just \((5^k,(-1)^k)\). At k=3 you get the lecture's \(\begin{bmatrix}41&84\\42&83\end{bmatrix}\).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Using \(A^k=PD^kP^{-1}\) with \(D=\operatorname{diag}(5,-1)\): what happens to \(A^{k}\mathbf{x}\) for large even \(k\)?</p>
+    <div class="opts">
+      <button data-correct data-why="D^k = diag(5^k, 1) for even k — the λ=5 axis explodes while the λ=−1 axis just blinks between ±1. For large k, A^k x is utterly dominated by the p₁ = (1,1) component: almost every starting vector gets dragged onto the dominant eigen-direction. That's the power method, PageRank's engine, and why Markov chains forget their start.">It lines up with \(\mathbf{p}_1=(1,1)\) — the λ=5 axis swallows everything</button>
+      <button data-why="The −1 axis doesn't grow at all — (−1)^k just alternates sign with magnitude 1. Growth belongs entirely to the |λ| > 1 directions.">Both components grow equally</button>
+      <button data-why="Only |λ| < 1 directions decay. Here |−1| = 1 (blinks forever) and |5| > 1 (explodes) — nothing shrinks to zero.">It shrinks to the zero vector</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  <div class="check" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Diagonalize the triangular \(\begin{bmatrix}2&1\\0&3\end{bmatrix}\) in your head: eigenvalues, and is this spectral or merely eigen?</p>
+    <div class="opts">
+      <button data-why="Triangular ⇒ eigenvalues off the diagonal: 2 and 3 (Unit 4's shortcut). But check the eigenvectors before claiming the clean transpose: p₁ = (1,0), p₂ = (1,1) — their dot product is 1, not 0.">λ = 2, 3 — and it's spectral, since the eigenvalues are real</button>
+      <button data-correct data-why="λ = 2, 3 read off the diagonal (triangular shortcut). Eigenvectors p₁ = (1,0), p₂ = (1,1) lean (p₁·p₂ = 1 ≠ 0), so P is not orthonormal: a true eigendecomposition with a real P⁻¹, NOT spectral. Real eigenvalues alone don't buy the transpose — orthonormal eigenvectors do, and those are the privilege of symmetric matrices.">λ = 2, 3 — eigen only: the eigenvectors lean, so no clean transpose</button>
+      <button data-why="It does have two distinct eigenvalues (2 ≠ 3), so two independent eigenvectors exist and P is invertible — diagonalization goes through fine. The question is which RUNG, and that hangs on orthogonality.">It can't be diagonalized — it's not symmetric</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 6 · WHEN EIGEN FAILS ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head"><span class="sec-num">6</span><h2>Where the ladder breaks — and why we need one more rung</h2></div>
+  <div class="prose">
+    <p>Eigendecomposition is powerful, but it has a door policy, and Unit 4 already showed you both bouncers. <strong>Defective matrices:</strong> the shear \(\begin{bmatrix}1&1\\0&1\end{bmatrix}\) owns a single eigen-direction — algebraic multiplicity 2, geometric multiplicity 1 — so there aren't enough independent columns to build an invertible \(P\). No decomposition. <strong>Rotations:</strong> \(\begin{bmatrix}0&-1\\1&0\end{bmatrix}\) turns <em>every</em> real direction, its eigenvalues fled to \(\pm i\) — no real \(P\) exists at all. And beyond both: a \(3\times2\) data matrix isn't even square, so \(A\mathbf{v}=\lambda\mathbf{v}\) is <em>meaningless</em> — the input is 2-D, the output 3-D; they can't be parallel because they don't live in the same space.</p>
+    <p>Three failures, one root cause: eigendecomposition insists on using <strong>a single set of axes for both input and output</strong>. The fix — dropping that insistence — is the SVD, and it repairs all three failures at once.</p>
+  </div>
+</section>
+
+<!-- ================= 7 · RUNG 3: SVD ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head"><span class="sec-num">7</span><h2>Rung 3 · SVD — two frames, every matrix, no exceptions</h2></div>
+  <div class="callout aha"><span class="tag">The idea, in one question</span>
+    <p>Eigendecomposition asked: <em>"which directions does the matrix not rotate?"</em> — too demanding; rotations and rectangles refuse. SVD asks the question that <strong>always</strong> has an answer: <em>"which perpendicular frame of input directions lands on a perpendicular frame of output directions?"</em> Feed any matrix the unit circle (or sphere) and the output is always a perfect ellipse (or ellipsoid). SVD names the perpendicular input directions \(\mathbf{v}_i\) that map onto the ellipse's perpendicular axes \(\sigma_i\mathbf{u}_i\). Two frames instead of one — that single generosity makes it universal.</p>
+  </div>
+  <div class="prose">
+    <p>The theorem, in full dress. Every \(A\in\mathbb{R}^{m\times n}\) of rank \(r\) factors as</p>
+    \[A=U\,\Sigma\,V^{\top}\]
+    <p>where \(V\in\mathbb{R}^{n\times n}\) is orthonormal (the <strong>right-singular vectors</strong> — input axes), \(U\in\mathbb{R}^{m\times m}\) is orthonormal (the <strong>left-singular vectors</strong> — output axes), and \(\Sigma\in\mathbb{R}^{m\times n}\) is "diagonal" with the <strong>singular values</strong> \(\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_r&gt;0\) on its diagonal, sorted loudest-first by convention, padded with zeros to match \(A\)'s shape. Read right-to-left, it is the unit's mantra in its final form: \(V^{\top}\) <strong>rotates</strong> the input so the special directions sit on the axes, \(\Sigma\) <strong>stretches</strong> each axis by \(\sigma_i\), \(U\) <strong>rotates</strong> into the final pose. Rotate · stretch · rotate — now for <em>any</em> matrix, including the ones eigendecomposition rejected:</p>
+  </div>
+
+  <div class="widget" id="w-svd">
+    <div class="widget-head"><span class="w-title">The universal machine</span><span class="w-sub">A = UΣVᵀ acted out — including the matrices eigen turned away</span></div>
+    <div class="tabs" id="sv-tabs">
+      <button data-t="lec" aria-selected="true">[[3,0],[4,5]]</button>
+      <button data-t="rot">rotation 90°</button>
+      <button data-t="shear">the shear</button>
+      <button data-t="sym">symmetric [[2,1],[1,2]]</button>
+    </div>
+    <div class="stagebar" id="sv-stages">
+      <button data-s="0" aria-selected="true">1 · input + V frame</button>
+      <button data-s="1">2 · rotate: Vᵀ</button>
+      <button data-s="2">3 · stretch: ΣVᵀ</button>
+      <button data-s="3">4 · rotate: UΣVᵀ = A</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 320px"><svg id="sv-svg" viewBox="0 0 560 440" class="svg-lab" role="img" aria-label="Four-stage SVD pipeline: circle with V frame, axis-aligned, stretched, rotated into the output ellipse with U frame"></svg></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <span class="chip">σ₁ = <b id="sv-s1">—</b></span>
+          <span class="chip">σ₂ = <b id="sv-s2">—</b></span>
+          <span class="chip">σ₁/σ₂ = <b id="sv-cond">—</b></span>
+        </div>
+        <div class="readout" id="sv-eig" style="margin-top:.5rem"></div>
+        <div id="sv-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note" id="sv-note">Both frames stay perpendicular at every stage — the input frame \(\mathbf{v}_1,\mathbf{v}_2\) (orange) and the output frame \(\mathbf{u}_1,\mathbf{u}_2\) (blue). The σ chips are the ellipse's semi-axes; their ratio is the condition number — how much more the matrix amplifies its favourite direction than its least favourite.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The rotation \(\begin{bmatrix}0&-1\\1&0\end{bmatrix}\) had no real eigendecomposition. Its SVD?</p>
+    <div class="opts">
+      <button data-why="Switch to the rotation preset and look: the SVD exists — the theorem says EVERY matrix, and it means it. A rotation maps the unit circle to the unit circle.">Also fails — a rotation defeats every decomposition</button>
+      <button data-correct data-why="σ₁ = σ₂ = 1: a rotation stretches nothing, so the 'ellipse' is the circle itself, and UΣVᵀ = U·I·Vᵀ absorbs the whole turn into the two rotation factors. The failure that killed eigendecomposition is a shrug for SVD — real, non-negative σ's always exist.">Exists, with \(\sigma_1=\sigma_2=1\) — the turn hides in U and Vᵀ</button>
+      <button data-why="Singular values are never negative by construction — they're lengths of ellipse axes (square roots of AᵀA's eigenvalues). Complex/negative drama is an eigenvalue thing; σ's are immune.">Exists, but with complex singular values \(\pm i\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  <div class="check" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(A=\begin{bmatrix}3&0\\4&5\end{bmatrix}\) has eigenvalues \(3\) and \(5\) (triangular shortcut). Are its singular values also 3 and 5?</p>
+    <div class="opts">
+      <button data-why="Check the widget: σ₁ ≈ 6.71, σ₂ ≈ 2.24 — neither is 3 or 5. Eigenvalues live on the diagonal story (Av = λv); singular values are the output ellipse's axes, computed from AᵀA.">Yes — for square matrices they always coincide</button>
+      <button data-correct data-why="No: σ₁ = 3√5 ≈ 6.71 and σ₂ = √5 ≈ 2.24. Myth busted — for non-symmetric matrices, singular values ≠ eigenvalues. They coincide only for symmetric positive-definite matrices (try the symmetric preset: σ = 3, 1 = λ). Note the products agree though: σ₁σ₂ = 15 = |det A| = |λ₁λ₂| — volume is volume in every language.">No — \(\sigma=3\sqrt5,\ \sqrt5\); they match λ's only in the symmetric PD case</button>
+      <button data-why="They're not forced equal, but they're not unrelated either: both derive from A, and σ₁σ₂ = |λ₁λ₂| = |det A| always. The values differ; the volume they encode agrees.">No, and the two sets have nothing to do with each other</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+<!-- ================= 8 · BUILDING THE SVD ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head"><span class="sec-num">8</span><h2>Building U, Σ, V — the symmetric-matrix bridge</h2></div>
+  <div class="prose">
+    <p>Where do the three factors come from? From the rung we already own. \(A\) may be rectangular, but \(A^{\top}A\) (size \(n\times n\)) and \(AA^{\top}\) (size \(m\times m\)) are both square, symmetric — Unit 4's Gram matrices — so Rung 1 applies to <em>them</em>. Substitute the SVD and watch the structure fall out:</p>
+    \[A^{\top}A=(U\Sigma V^{\top})^{\top}(U\Sigma V^{\top})=V\,\Sigma^{\top}\Sigma\,V^{\top}\]
+    <p>That is a spectral decomposition of \(A^{\top}A\) — so \(V\) is its eigenvector matrix, and the eigenvalues sitting in \(\Sigma^{\top}\Sigma\) are \(\sigma_i^2\): <strong>the singular values are the square roots of \(A^{\top}A\)'s eigenvalues</strong> (which the spectral theorem guarantees are real and \(\ge0\) — this is why σ's never go negative or complex). Symmetrically, \(AA^{\top}=U\Sigma\Sigma^{\top}U^{\top}\) hands \(U\) to us as the eigenvectors of \(AA^{\top}\). And in practice you never even compute the second one: post-multiplying \(A=U\Sigma V^{\top}\) by \(V\) gives \(AV=U\Sigma\), i.e. column by column</p>
+    \[\mathbf{u}_i=\frac{1}{\sigma_i}A\mathbf{v}_i\qquad(i=1,\dots,r)\]
+    <p>— each output axis is just the <em>normalized image of its input axis</em>. One eigendecomposition plus \(r\) matrix–vector products and you own the whole factorization.</p>
+  </div>
+  <div class="callout remember"><span class="tag">The recipe card</span>
+    <p>① Form the <em>smaller</em> of \(A^{\top}A\) or \(AA^{\top}\). ② Spectrally decompose it (Rung 1 / Unit 4 machinery). ③ \(\sigma_i=\sqrt{\lambda_i}\), sorted descending, zeros dropped. ④ Its eigenvectors are \(V\) (or \(U\)); the other family comes free via \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\). ⑤ Assemble \(A=U\Sigma V^{\top}\), padding \(\Sigma\) with zero rows/columns to match \(A\)'s shape.</p>
+  </div>
+  <div class="prose">
+    <p>The lecture's wide example, walked through. \(A=\begin{bmatrix}1&0&1\\-2&1&0\end{bmatrix}\) (2×3, rank 2). <strong>Step 1:</strong> \(A^{\top}A=\begin{bmatrix}5&-2&1\\-2&1&0\\1&0&1\end{bmatrix}\), symmetric as promised. <strong>Step 2:</strong> its eigenvalues are \(6,\ 1,\ 0\) — the zero is no accident: a 2×3 matrix has rank at most 2, so one input direction <em>must</em> be crushed. <strong>Step 3:</strong> \(\sigma_1=\sqrt6,\ \sigma_2=1\), so \(\Sigma=\begin{bmatrix}\sqrt6&0&0\\0&1&0\end{bmatrix}\) — 2×3 like \(A\), with a zero <em>column</em> of padding. <strong>Step 4:</strong> eigenvectors \(\mathbf{v}_1=\tfrac{1}{\sqrt{30}}(5,-2,1)\), \(\mathbf{v}_2=\tfrac{1}{\sqrt5}(0,1,2)\), \(\mathbf{v}_3=\tfrac{1}{\sqrt6}(-1,-2,1)\) — and \(\mathbf{v}_3\), riding the zero eigenvalue, is exactly the nullspace direction \(A\) annihilates. <strong>Step 5:</strong> \(\mathbf{u}_1=\tfrac{1}{\sigma_1}A\mathbf{v}_1=\tfrac{1}{\sqrt5}(1,-2)\), \(\mathbf{u}_2=\tfrac{1}{\sigma_2}A\mathbf{v}_2=\tfrac{1}{\sqrt5}(2,1)\) — automatically orthonormal. Assembled, \(A=U\Sigma V^{\top}\) exactly.</p>
+  </div>
+  <details><summary>The tall twin: SVD of B = [[1,1],[0,1],[1,0]] — featuring an old friend</summary>
+    <p>\(B\) is 3×2, so be smart and take the <em>smaller</em> Gram matrix: \(B^{\top}B=\begin{bmatrix}2&1\\1&2\end{bmatrix}\) — <strong>the very matrix this unit keeps meeting</strong>. Its spectral data is memorized by now: \(\lambda=3,1\) on \(\tfrac{1}{\sqrt2}(1,1)\), \(\tfrac{1}{\sqrt2}(1,-1)\). So \(\sigma_1=\sqrt3,\ \sigma_2=1\), \(\mathbf{v}_{1,2}\) as above, and \(\mathbf{u}_1=\tfrac{1}{\sqrt3}B\mathbf{v}_1=\tfrac{1}{\sqrt6}(2,1,1)\), \(\mathbf{u}_2=B\mathbf{v}_2=\tfrac{1}{\sqrt2}(0,-1,1)\). A third vector \(\mathbf{u}_3=\tfrac{1}{\sqrt3}(1,-1,-1)\) completes the 3×3 \(U\) but rides on \(\sigma_3=0\): \(\Sigma=\begin{bmatrix}\sqrt3&0\\0&1\\0&0\end{bmatrix}\) pads with a zero <em>row</em>, because \(B\) sends 2-D into 3-D and the third output dimension receives nothing. Tall matrices pad with zero rows (unreachable outputs); wide ones with zero columns (annihilated inputs). \(\Sigma\) always wears \(A\)'s shape.</p>
+  </details>
+
+  <div class="check" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You need the SVD of a 1000×3 dataset matrix. Which Gram matrix do you eigendecompose?</p>
+    <div class="opts">
+      <button data-why="AAᵀ is 1000×1000 — a million entries, for the same information. The two Gram matrices share their non-zero eigenvalues; always pick the small one.">\(AA^{\top}\) — it captures the 1000 data points directly</button>
+      <button data-correct data-why="AᵀA is a tiny 3×3: decompose it, get V and the σ's, then uᵢ = Avᵢ/σᵢ manufactures the (at most 3) meaningful columns of U. Same answer as fighting the 1000×1000 monster, at a millionth of the cost — precisely how PCA implementations choose sides.">\(A^{\top}A\) — it's 3×3; the other is 1000×1000</button>
+      <button data-why="They share non-zero eigenvalues, but their SIZES differ enormously (3×3 vs 1000×1000) — and cost follows size. Choosing the small one is the whole trick.">Either — they're the same amount of work</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the wide example, \(\mathbf{v}_3=\tfrac{1}{\sqrt6}(-1,-2,1)\) carries \(\sigma_3=0\). What is this direction, in Unit 1's vocabulary?</p>
+    <div class="opts">
+      <button data-correct data-why="It's the nullspace of A — the machine's blind spot. σ = 0 means 'stretched by zero': A(−1,−2,1) = (0,0). The SVD doesn't just find what a matrix does; it itemizes what the matrix destroys, one zero singular value per lost dimension. (Count of non-zero σ's = rank — the SVD computes Unit 1's rank as a by-product.)">The nullspace direction — the input \(A\) crushes to zero</button>
+      <button data-why="The dominant direction is v₁ (σ₁ = √6) — loudest, not silent. v₃ is at the other extreme: the direction the matrix cannot hear at all.">The direction A amplifies most</button>
+      <button data-why="Eigenvectors of A don't exist here — A is 2×3, not square. v₃ is an eigenvector of AᵀA, and its zero eigenvalue marks A's nullspace.">An eigenvector of A with λ = 0</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 9 · RECTANGULAR IN 3D ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head"><span class="sec-num">9</span><h2>Seeing a rectangular matrix — 2-D in, 3-D out</h2></div>
+  <div class="prose">
+    <p>This is the picture eigendecomposition could never draw: a matrix whose input and output live in <em>different spaces</em>. \(B=\begin{bmatrix}1&1\\0&1\\1&0\end{bmatrix}\) eats a flat 2-D vector and produces a point in 3-D. Feed it the whole unit circle and the output is an ellipse — but an ellipse <strong>floating on a tilted plane inside 3-D space</strong>, the plane spanned by \(\mathbf{u}_1\) and \(\mathbf{u}_2\). The third output direction \(\mathbf{u}_3\) sticks out of that plane and receives exactly nothing — it is the zero row of \(\Sigma\) made visible. Drag the probe around the input circle and watch its image travel the ellipse:</p>
+  </div>
+
+  <div class="widget" id="w-tall">
+    <div class="widget-head"><span class="w-title">Two spaces, one matrix</span><span class="w-sub">B is 3×2 · the input circle lives in 2-D, its image lives on a plane in 3-D</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1 1 240px"><svg id="tl-in" viewBox="0 0 300 300" class="svg-lab grabbable" role="img" aria-label="Input plane: unit circle with draggable probe and the two right-singular directions"></svg>
+      <span class="drag-hint">✋ input space ℝ² — drag the probe</span></div>
+      <div class="wcol" style="flex:1.5 1 300px"><svg id="tl-out" viewBox="0 0 560 420" class="svg-lab grabbable" role="img" aria-label="Output space in 3D: the image ellipse on its tilted plane, with the left-singular frame"></svg>
+      <span class="drag-hint">✋ output space ℝ³ — drag to orbit</span></div>
+      <div class="wcol" style="flex:1 1 220px">
+        <div class="readout" id="tl-co" style="line-height:2"></div>
+        <div id="tl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">When the probe sits on \(\mathbf{v}_1\) (orange), its image lands on \(\sigma_1\mathbf{u}_1\) — the ellipse's long axis, length \(\sqrt3\). On \(\mathbf{v}_2\), it lands on \(\mathbf{u}_2\), length 1. The grey arrow \(\mathbf{u}_3\) is the direction no input can ever reach: \(\Sigma\)'s zero row, standing upright out of the image plane.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 10 · LAYER CAKE ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head"><span class="sec-num">10</span><h2>The layer cake — low-rank approximation, live</h2></div>
+  <div class="prose">
+    <p>Now collect the unit's two best ideas and let them collide. Section 4 read a symmetric matrix as a sum of importance-ranked projection layers. The SVD does the same for <em>every</em> matrix: multiply \(U\Sigma V^{\top}\) out column-against-row and \(\Sigma\)'s diagonal pairs each \(\mathbf{u}_i\) with its \(\mathbf{v}_i\):</p>
+    \[A=\sum_{i=1}^{r}\sigma_i\,\mathbf{u}_i\mathbf{v}_i^{\top}=\underbrace{\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}}_{\text{loudest}}+\underbrace{\sigma_2\mathbf{u}_2\mathbf{v}_2^{\top}}_{\text{quieter}}+\cdots+\underbrace{\sigma_r\mathbf{u}_r\mathbf{v}_r^{\top}}_{\text{faintest}}\]
+    <p>— a stack of rank-1 layers, <strong>sorted loudest-first</strong> because the σ's are sorted. Since real-world matrices concentrate their energy in the first few singular values, truncating the sum at \(k\) terms gives the <strong>rank-\(k\) approximation</strong> \(\hat A(k)=\sum_{i=1}^{k}\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\), and the <strong>Eckart–Young theorem</strong> says this is not merely <em>a</em> compression — it is provably the <em>best possible</em> rank-\(k\) approximation of \(A\), with error exactly the loudest singular value you discarded: \(\|A-\hat A(k)\|_2=\sigma_{k+1}\).</p>
+    <p>The companion's tiny example, by hand: keep only the loudest layer of the tall \(B\). \(\hat B(1)=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\sqrt3\cdot\tfrac{1}{\sqrt6}(2,1,1)^{\top}\cdot\tfrac{1}{\sqrt2}(1,1)=\begin{bmatrix}1&1\\0.5&0.5\\0.5&0.5\end{bmatrix}\), and the error is the dropped \(\sigma_2=1\). Six numbers describing a matrix of six — no saving yet at this toy size. But scale it up: an image <em>is</em> a matrix, and now the layer cake becomes a compressor. Try it:</p>
+  </div>
+
+  <div class="widget" id="w-rank">
+    <div class="widget-head"><span class="w-title">The image squeezer</span><span class="w-sub">a picture is a matrix · keep k layers · watch it reassemble</span></div>
+    <div class="tabs" id="rk-tabs">
+      <button data-t="sigma" aria-selected="true">the letter Σ</button>
+      <button data-t="face">a face</button>
+      <button data-t="grad">smooth gradient</button>
+      <button data-t="noise">pure noise</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 320px"><svg id="rk-svg" viewBox="0 0 560 330" class="svg-lab" role="img" aria-label="Original image beside its rank-k reconstruction, as grayscale grids"></svg></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="controls"><div class="ctl"><label>keep k layers</label><input type="range" id="rk-k" min="1" max="16" step="1" value="3"><output id="rk-ko">3</output></div></div>
+        <svg id="rk-bars" viewBox="0 0 300 110" class="svg-lab" role="img" aria-label="Bar chart of singular values, kept versus discarded" style="margin-top:.5rem"></svg>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem">
+          <span class="chip">storage <b id="rk-store">—</b></span>
+          <span class="chip">error σ₍k₊₁₎ = <b id="rk-err">—</b></span>
+        </div>
+        <div id="rk-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout watch"><span class="tag">Watch out — the noise lesson</span>
+    <p>Switch the widget to <strong>pure noise</strong> and drag \(k\): the reconstruction barely improves, because noise spreads its energy <em>evenly</em> across all singular values — there are no quiet layers to discard for free. Structure compresses; noise doesn't. Flip that insight around and you get <strong>denoising</strong>: real signal hides in the loud early layers, noise in the faint tail, so truncating the SVD <em>removes noise</em>. One theorem, two superpowers.</p>
+  </div>
+
+  <div class="check" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You keep \(k=3\) layers of a matrix whose singular values are \(9,\,4,\,2,\,0.5,\,0.1\). What is \(\|A-\hat A(3)\|_2\)?</p>
+    <div class="opts">
+      <button data-why="0.6 is the SUM of the discarded σ's — the spectral-norm error is not a sum. Eckart–Young says the error equals exactly the loudest thing you threw away.">\(0.6\) — the sum of what was dropped</button>
+      <button data-correct data-why="σ₄ = 0.5, the largest discarded singular value — by Eckart–Young, the rank-3 truncation misses A by exactly that much (in spectral norm), and NO rank-3 matrix can do better. The σ's you kept don't appear in the error at all.">\(0.5\) — the loudest discarded singular value</button>
+      <button data-why="σ₃ = 2 was KEPT (k = 3 keeps the top three: 9, 4, 2). The error is governed by the first casualty: σ₄.">\(2\) — the smallest kept singular value</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A \(1000\times1000\) image, stored as rank-50 layers: roughly what fraction of the original million numbers?</p>
+    <div class="opts">
+      <button data-why="Count what a layer costs: one uᵢ (1000 numbers) + one vᵢ (1000) + one σᵢ ≈ 2001 numbers. Fifty layers ≈ 100,050.">About 50% — half the layers, half the storage</button>
+      <button data-correct data-why="Each layer costs u (1000) + v (1000) + σ (1) ≈ 2001 numbers; 50 layers ≈ 100,050 ≈ 10% of 1,000,000 — for a reconstruction that's usually visually near-perfect, since natural images concentrate energy in early layers. This arithmetic (m+n+1 per layer) is the business model of low-rank everything: compression, LoRA fine-tuning, recommender factorizations.">About 10% — each layer costs only \(m+n+1\) numbers</button>
+      <button data-why="Rank 50 out of 1000 is 5% of the RANK, but storage counts numbers: 50 × (1000 + 1000 + 1) ≈ 10% of the original million.">About 5% — rank 50 of 1000</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 11 · SPECTRAL NORM + FAMILY TABLE ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head"><span class="sec-num">11</span><h2>The spectral norm — and the family portrait</h2></div>
+  <div class="prose">
+    <p>One last gift from the SVD. Ask: what is the <em>most</em> a matrix can ever amplify a vector? That worst-case stretch is the <strong>spectral norm</strong>,</p>
+    \[\|A\|_2=\max_{\mathbf{x}\neq\mathbf{0}}\frac{\|A\mathbf{x}\|_2}{\|\mathbf{x}\|_2}=\sigma_1\]
+    <p>— simply the longest semi-axis of the output ellipsoid, achieved by feeding in \(\mathbf{v}_1\) (the output points along \(\mathbf{u}_1\)). The lecture's example: \(A=\begin{bmatrix}1&2\\3&4\end{bmatrix}\) has \(\Sigma=\operatorname{diag}(5.465,\,0.366)\), so \(\|A\|_2=5.465\) — and the ratio \(\sigma_1/\sigma_2\approx15\) says this matrix amplifies its favourite direction fifteen times more than its least favourite: fairly ill-conditioned, the kind of matrix that makes numerical software sweat. Spectral norms bound errors, govern the stability of deep networks (exploding/vanishing signals track products of σ's), and put the "spectral" in spectral normalization for GANs.</p>
+    <p>And the family portrait, one table to close the ladder:</p>
+  </div>
+  <div class="prose">
+  <table class="plain">
+    <tr><th></th><th>Eigen / Spectral</th><th>SVD</th></tr>
+    <tr><td>Form</td><td>\(A=PDP^{-1}\) (or \(Q\Lambda Q^{\top}\))</td><td>\(A=U\Sigma V^{\top}\)</td></tr>
+    <tr><td>Works on</td><td>square, with enough eigenvectors</td><td><strong>every matrix, any shape, always</strong></td></tr>
+    <tr><td>Frames</td><td>one set of axes (input = output)</td><td>two sets: input \(V\), output \(U\)</td></tr>
+    <tr><td>Orthogonality</td><td>\(P\) generally not orthogonal</td><td>\(U,V\) always orthonormal</td></tr>
+    <tr><td>Diagonal entries</td><td>eigenvalues — can be negative or complex</td><td>singular values — always real, \(\ge0\), sorted</td></tr>
+    <tr><td>Outer factors</td><td>\(P,\ P^{-1}\) are inverses</td><td>\(U,\ V\) generally unrelated</td></tr>
+    <tr><td>The link</td><td colspan="2">\(V\) = eigenvectors of \(A^{\top}A\) · \(U\) = eigenvectors of \(AA^{\top}\) · \(\sigma_i=\sqrt{\lambda_i(A^{\top}A)}\)</td></tr>
+  </table>
+  </div>
+  <div class="check" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(A=\begin{bmatrix}1&2\\3&4\end{bmatrix}\), which number is \(\|A\|_2\)?</p>
+    <div class="opts">
+      <button data-why="4 is just the largest ENTRY. Matrices amplify along directions, not cells — feed in v₁ and the output grows by more than any single entry suggests.">4 — its largest entry</button>
+      <button data-why="5.372 ≈ |λ₁| (the eigenvalues are ≈ 5.372, −0.372). Close, but eigenvalue magnitude measures stretch only along eigen-directions; the true worst case σ₁ = 5.465 is slightly bigger — and for very non-normal matrices the gap can be enormous.">≈ 5.372 — its largest eigenvalue magnitude</button>
+      <button data-correct data-why="σ₁ ≈ 5.465, the top singular value — the longest axis of the output ellipse, the genuine worst-case amplification over ALL inputs. Note it exceeds the eigenvalue magnitude 5.372: eigen-directions aren't necessarily the loudest directions unless the matrix is symmetric.">≈ 5.465 — its largest singular value</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 12 · SUMMARY ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head"><span class="sec-num">12</span><h2>The whole story, in five lines</h2></div>
+  <div class="prose">
+    <p>① A matrix is a transformation, and <strong>decomposition is prime factorization for transformations</strong>: rewrite \(A\) as rotate → stretch → rotate, without changing what it does. ② The chase is always for a <strong>diagonal middle</strong> — because diagonal matrices reduce every question to arithmetic on \(n\) separate numbers. ③ <strong>Spectral</strong> (\(A=Q\Lambda Q^{\top}\), symmetric only) is the flawless rung: perpendicular axes, free transpose, and the layer reading \(A=\sum\lambda_i\mathbf{q}_i\mathbf{q}_i^{\top}\). <strong>Eigen</strong> (\(A=PDP^{-1}\), square + enough eigenvectors) keeps the idea on tilted axes and pays with an inverse — earning \(A^k=PD^kP^{-1}\). ④ <strong>SVD</strong> (\(A=U\Sigma V^{\top}\)) drops every remaining requirement by using <em>two</em> orthonormal frames bridged by non-negative stretches — built from the spectral decomposition of \(A^{\top}A\), with \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\) for free. ⑤ Sorting the σ's turns every matrix into a <strong>loudest-first layer cake</strong>: truncate for the provably-best low-rank approximation (Eckart–Young), read \(\sigma_1\) as the worst-case amplification (spectral norm), and you hold the mathematics of compression, denoising, PCA, and recommenders in one formula.</p>
+  </div>
+  <div class="callout remember"><span class="tag">The one thing to remember</span>
+    <p><strong>Every matrix is rotate · stretch · rotate.</strong> The only questions are whether the two rotations are the same (symmetric), whether they're transposes or inverses (spectral vs eigen), and how fast the stretches fade (that's compressibility). Once you sort the stretches loudest-first, keeping the top few is the best summary a matrix can have — and half of applied ML is exactly that act.</p>
+  </div>
+    <h3 style="margin:.3rem 0 .4rem">Unit 6 · Differentiation</h3>
+    <p style="font-size:.92rem;color:var(--ink-2);margin:0">Linear algebra's board is complete. Now the pieces start to move: calculus enters, and with it the single most important question in machine learning — <em>if I nudge the input, how does the output change?</em> <em>(Being built next.)</em></p>
+  </div>
+</section>
+<section class="unit" id="spractice">
+  <div class="sec-head"><span class="sec-num">13</span><h2>Practice arena — the unit's problem set, solved in full</h2></div>
+  <div class="prose">
+    <p>These twelve problems are the decomposition half of Prof. Saurabh's practice set — his single "Matrix Decompositions" set spans this unit and the previous one, so we've split it: diagonalizability, \(A=PDP^{-1}\), matrix powers, the SVD, low-rank approximation and the spectral norm live here, while the pure eigen-analysis problems sit in Unit 4's arena. Attempt each one on paper first — the fold-out solution shows every step, nothing skipped.</p>
+  </div>
+
+  <!-- ===== Problem 1 (source #1) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">For each matrix, state the eigenvalue(s), their algebraic multiplicity \(\operatorname{am}\) and geometric multiplicity \(\operatorname{gm}\), and decide whether the matrix is diagonalizable:</p>
+    \[ A=\begin{bmatrix}3&1\\0&3\end{bmatrix},\qquad B=\begin{bmatrix}3&0\\0&3\end{bmatrix},\qquad C=\begin{bmatrix}3&1&0\\0&3&1\\0&0&3\end{bmatrix}. \]
+    <p class="ptest"><b>What this tests.</b> Reading off \(\operatorname{am}\) and \(\operatorname{gm}\) quickly, and using them to decide diagonalizability.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Matrix \(A\).</b> Triangular, so the only eigenvalue is \(\lambda=3\) with \(\operatorname{am}=2\). For the geometric multiplicity, \(\operatorname{gm}=2-\operatorname{rank}(A-3I)=2-\operatorname{rank}\begin{bmatrix}0&1\\0&0\end{bmatrix}=2-1=1\). Since \(\operatorname{gm}=1 &lt; 2=\operatorname{am}\), \(A\) is <em>not</em> diagonalizable.</div>
+      <div class="pstep"><b>Step 2 · Matrix \(B\).</b> \(B=3I\): eigenvalue \(\lambda=3\) with \(\operatorname{am}=2\), and \(B-3I=0\) has rank 0, so \(\operatorname{gm}=2-0=2\). Here \(\operatorname{gm}=\operatorname{am}\), so \(B\) is diagonalizable (it is already diagonal).</div>
+      <div class="pstep"><b>Step 3 · Matrix \(C\).</b> Triangular, eigenvalue \(\lambda=3\) with \(\operatorname{am}=3\). Now
+      \[ C-3I=\begin{bmatrix}0&1&0\\0&0&1\\0&0&0\end{bmatrix} \]
+      has rank 2 (two independent nonzero rows), so \(\operatorname{gm}=3-2=1 &lt; 3\). Not diagonalizable — a single \(3\times 3\) Jordan block.</div>
+      <div class="pans">Answer. \(A\): \(\lambda=3\), \(\operatorname{am}=2\), \(\operatorname{gm}=1\) — not diagonalizable. \(B\): \(\lambda=3\), \(\operatorname{am}=\operatorname{gm}=2\) — diagonalizable. \(C\): \(\lambda=3\), \(\operatorname{am}=3\), \(\operatorname{gm}=1\) — not diagonalizable.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\operatorname{am}\) counts how often \(\lambda\) is a root of \(\det(A-\lambda I)\); \(\operatorname{gm}\) counts independent eigenvectors, and the reliable formula is \(\operatorname{gm}(\lambda)=n-\operatorname{rank}(A-\lambda I)\). Never assume they match — compute the rank.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Same eigenvalue, same \(\operatorname{am}\) — but the number of independent eigenvectors (\(\operatorname{gm}\)) is what decides diagonalizability: \(A\) is diagonalizable \(\iff \operatorname{gm}(\lambda)=\operatorname{am}(\lambda)\) for every eigenvalue.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A\) and \(B\) have the <em>identical</em> characteristic polynomial \((\lambda-3)^2\), yet opposite verdicts. The characteristic polynomial alone can never tell you whether a matrix diagonalizes — that information lives in the eigenspaces, not in the spectrum.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 (source #4) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Let \(a,b,c\in\mathbb{R}\) with \(b\neq 0\) and consider the upper-triangular matrix</p>
+    \[ A=\begin{bmatrix}a&b\\0&c\end{bmatrix}. \]
+    <p class="pq">(a) Find the eigenvalues and an eigenvector for each (in terms of \(a,b,c\)). (b) State, with justification, exactly when \(A\) is diagonalizable.</p>
+    <p class="ptest"><b>What this tests.</b> Running the whole eigen-and-diagonalizability pipeline in symbols, and locating the exact parameter condition where it breaks.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a) · Eigenvalues.</b> For a triangular matrix the eigenvalues are the diagonal entries: \(\lambda_1=a\), \(\lambda_2=c\).</div>
+      <div class="pstep"><b>Part (a) · Eigenvector for \(\lambda_1=a\).</b>
+      \[ A-aI=\begin{bmatrix}0&b\\0&c-a\end{bmatrix}. \]
+      The equations are \(by=0\) and \((c-a)y=0\); since \(b\neq 0\) we get \(y=0\) with \(x\) free, so \(\mathbf{v}_1=(1,0)^{\top}\).</div>
+      <div class="pstep"><b>Part (a) · Eigenvector for \(\lambda_2=c\) (assume \(c\neq a\)).</b>
+      \[ A-cI=\begin{bmatrix}a-c&b\\0&0\end{bmatrix} \]
+      gives \((a-c)x+by=0\Rightarrow x=-\dfrac{b}{a-c}\,y\). Taking \(y=a-c\) clears the fraction: \(\mathbf{v}_2=(-b,\;a-c)^{\top}\). (Check: \(A\mathbf{v}_2=\big(-ab+b(a-c),\;c(a-c)\big)^{\top}=(-bc,\;c(a-c))^{\top}=c\,\mathbf{v}_2\). ✓)</div>
+      <div class="pstep"><b>Part (b) · When is \(A\) diagonalizable?</b> <em>Case \(a\neq c\):</em> two distinct eigenvalues \(\Rightarrow\) two independent eigenvectors \(\Rightarrow\) diagonalizable.
+      <em>Case \(a=c\):</em> then \(\lambda=a\) has \(\operatorname{am}=2\), but \(A-aI=\begin{bmatrix}0&b\\0&0\end{bmatrix}\) has rank 1 (because \(b\neq 0\)), so the eigenspace is only 1-dimensional: \(\operatorname{gm}=1 &lt; 2\) \(\Rightarrow\) not diagonalizable (defective).</div>
+      <div class="pans">Answer. \(\lambda_1=a\) with \(\mathbf{v}_1=(1,0)^{\top}\); \(\lambda_2=c\) with \(\mathbf{v}_2=(-b,\,a-c)^{\top}\). \(A\) is diagonalizable \(\iff a\neq c\) (when \(a=c\) and \(b\neq 0\) it is defective).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The hypothesis \(b\neq 0\) is what kills the \(a=c\) case — if \(b=0\) the matrix would already be diagonal. And avoid dividing by \(a-c\) blindly: scaling the eigenvector by \(y=a-c\) sidesteps the fraction and stays valid right up to the boundary.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Distinct eigenvalues \(\Rightarrow\) diagonalizable, no further checks. A repeated eigenvalue forces you to compute \(\operatorname{rank}(A-\lambda I)\) before you may conclude anything.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Diagonalizability here fails only on the razor-thin set \(a=c\): nudge \(a\) by any \(\varepsilon\neq 0\) and the matrix instantly diagonalizes again. Defective matrices live on a knife-edge — which is exactly why numerical libraries treat "nearly repeated" eigenvalues with such care.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 (source #5) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">Decide whether</p>
+    \[ A=\begin{bmatrix}2&1&0\\0&2&0\\0&0&3\end{bmatrix} \]
+    <p class="pq">is diagonalizable. Justify using eigenvalues, algebraic and geometric multiplicities.</p>
+    <p class="ptest"><b>What this tests.</b> The multiplicity test on a \(3\times 3\): spotting a defective eigenvalue hidden in a triangular matrix.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Eigenvalues.</b> \(A\) is upper-triangular, so the eigenvalues are the diagonal entries: \(\lambda=2\) (algebraic multiplicity 2) and \(\lambda=3\) (algebraic multiplicity 1).</div>
+      <div class="pstep"><b>Step 2 · Eigenspace of the repeated eigenvalue.</b>
+      \[ A-2I=\begin{bmatrix}0&1&0\\0&0&0\\0&0&1\end{bmatrix}. \]
+      This has rank 2, so its null space has dimension \(3-2=1\): the equations force \(y=0\) and \(z=0\) with \(x\) free, i.e. eigenspace \(\operatorname{span}\{(1,0,0)^{\top}\}\). Geometric multiplicity 1.</div>
+      <div class="pstep"><b>Step 3 · Compare.</b> For \(\lambda=2\) the geometric multiplicity (1) is less than the algebraic multiplicity (2). Only two independent eigenvectors exist in total — not enough for a basis of \(\mathbb{R}^3\), so \(A\) cannot be diagonalized.</div>
+      <div class="pans">Answer. \(A\) is not diagonalizable: for \(\lambda=2\), geometric multiplicity \(1 &lt;\) algebraic multiplicity \(2\) (only one independent eigenvector, \((1,0,0)^{\top}\)). The block \(\begin{bmatrix}2&1\\0&2\end{bmatrix}\) is a defective Jordan block.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>It is not the repeated eigenvalue itself that blocks diagonalization — it is the missing second eigenvector. Compute \(\operatorname{rank}(A-2I)\); do not guess from the diagonal.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>One defective eigenvalue sinks the whole matrix: if any \(\lambda\) has \(\operatorname{gm} &lt; \operatorname{am}\), no eigenbasis exists and no invertible \(P\) can ever diagonalize \(A\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The eigenvalue \(3\) is perfectly healthy, and \(A\) is just one entry away from diagonal — yet the tiny \(2\times2\) shear block \(\begin{bmatrix}2&1\\0&2\end{bmatrix}\) tucked in the corner is enough to make the entire \(3\times 3\) matrix undiagonalizable.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 (source #8) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Find an eigendecomposition \(A=PDP^{-1}\) of the non-symmetric matrix</p>
+    \[ A=\begin{bmatrix}5&-1\\2&2\end{bmatrix}, \]
+    <p class="pq">giving \(P,\,D,\,P^{-1}\) explicitly, and verify the factorization.</p>
+    <p class="ptest"><b>What this tests.</b> Building \(P\) and \(D\) for a non-symmetric matrix — where \(P^{-1}\) must be computed, not transposed — and verifying the product.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Eigenvalues.</b>
+      \[ \det(A-\lambda I)=(5-\lambda)(2-\lambda)+2=\lambda^{2}-7\lambda+12=(\lambda-3)(\lambda-4)=0, \]
+      so \(\lambda_1=3\), \(\lambda_2=4\).</div>
+      <div class="pstep"><b>Step 2 · Eigenvectors.</b> \(\lambda_1=3\): \(A-3I=\begin{bmatrix}2&-1\\2&-1\end{bmatrix}\Rightarrow 2x=y\), so \(\mathbf{p}_1=(1,2)^{\top}\).
+      \(\lambda_2=4\): \(A-4I=\begin{bmatrix}1&-1\\2&-2\end{bmatrix}\Rightarrow x=y\), so \(\mathbf{p}_2=(1,1)^{\top}\).</div>
+      <div class="pstep"><b>Step 3 · Assemble \(P\), \(D\), and invert \(P\).</b>
+      \[ P=\begin{bmatrix}1&1\\2&1\end{bmatrix},\qquad D=\begin{bmatrix}3&0\\0&4\end{bmatrix},\qquad \det P=1\cdot 1-1\cdot 2=-1,\qquad P^{-1}=\frac{1}{-1}\begin{bmatrix}1&-1\\-2&1\end{bmatrix}=\begin{bmatrix}-1&1\\2&-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 4 · Verify, entry by entry.</b> First \(PD=\begin{bmatrix}1\cdot 3&1\cdot 4\\2\cdot 3&1\cdot 4\end{bmatrix}=\begin{bmatrix}3&4\\6&4\end{bmatrix}\). Then
+      \[ PDP^{-1}=\begin{bmatrix}3&4\\6&4\end{bmatrix}\begin{bmatrix}-1&1\\2&-1\end{bmatrix}=\begin{bmatrix}3(-1)+4(2)&3(1)+4(-1)\\6(-1)+4(2)&6(1)+4(-1)\end{bmatrix}=\begin{bmatrix}5&-1\\2&2\end{bmatrix}=A.\ \checkmark \]</div>
+      <div class="pans">Answer. \(A=PDP^{-1}\) with \(P=\begin{bmatrix}1&1\\2&1\end{bmatrix}\), \(D=\begin{bmatrix}3&0\\0&4\end{bmatrix}\), \(P^{-1}=\begin{bmatrix}-1&1\\2&-1\end{bmatrix}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Column order must match: \(\mathbf{p}_1\) under \(\lambda_1\), \(\mathbf{p}_2\) under \(\lambda_2\) — swap one and not the other, and the "decomposition" silently produces a different matrix. And since \(A\) is not symmetric, \(P^{-1}\neq P^{\top}\): the eigenvectors \((1,2)^{\top},(1,1)^{\top}\) are not orthogonal, so the inverse must be computed honestly.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>The \(PDP^{-1}\) recipe: eigenvalues \(\to\) eigenvectors \(\to\) stack into \(P\), \(D\) \(\to\) invert \(P\) \(\to\) multiply back and check. The verification costs two small multiplications and catches nearly every bookkeeping error.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>A non-symmetric matrix can still diagonalize perfectly — but on a <em>slanted</em> basis. \(A\) acts as pure stretching (by 3 and by 4) along the directions \((1,2)\) and \((1,1)\), axes that are not perpendicular. Orthogonal eigenvectors are a luxury reserved for symmetric matrices.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 (source #10) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Using diagonalization, derive a closed form for \(A^{n}\) and evaluate \(A^{4}\), where</p>
+    \[ A=\begin{bmatrix}2&-1\\-1&2\end{bmatrix}. \]
+    <p class="ptest"><b>What this tests.</b> The workhorse pattern \(A^{n}=PD^{n}P^{\top}\): diagonalize once, then raise only the diagonal.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Diagonalize (orthogonally).</b> \(\det(A-\lambda I)=(2-\lambda)^{2}-1=(\lambda-1)(\lambda-3)=0\Rightarrow\lambda_1=1,\ \lambda_2=3\). Eigenvectors: for \(\lambda=1\), \(A\mathbf{v}=(2x-y,\,-x+2y)^{\top}=\mathbf{v}\) forces \(x=y\); for \(\lambda=3\), \(x=-y\). Orthonormal eigenvectors \(\tfrac{1}{\sqrt2}(1,1)^{\top}\) and \(\tfrac{1}{\sqrt2}(1,-1)^{\top}\) give
+      \[ P=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\qquad D=\begin{bmatrix}1&0\\0&3\end{bmatrix},\qquad A=PDP^{\top}. \]</div>
+      <div class="pstep"><b>Step 2 · Power formula.</b> Since \(A=PDP^{\top}\) with \(P\) orthogonal, \(A^{n}=PD^{n}P^{\top}\), and only the diagonal is raised:
+      \[ A^{n}=\frac12\begin{bmatrix}1&1\\1&-1\end{bmatrix}\begin{bmatrix}1&0\\0&3^{n}\end{bmatrix}\begin{bmatrix}1&1\\1&-1\end{bmatrix}=\frac12\begin{bmatrix}1+3^{n}&1-3^{n}\\1-3^{n}&1+3^{n}\end{bmatrix}. \]
+      (Middle step: \(PD^{n}=\tfrac{1}{\sqrt2}\begin{bmatrix}1&3^{n}\\1&-3^{n}\end{bmatrix}\), then multiply by \(P^{\top}\): the \((1,1)\) entry is \(\tfrac12(1+3^{n})\), the \((1,2)\) entry \(\tfrac12(1-3^{n})\), and symmetrically below.)</div>
+      <div class="pstep"><b>Step 3 · Evaluate \(n=4\).</b> \(3^{4}=81\), so
+      \[ A^{4}=\frac12\begin{bmatrix}1+81&1-81\\1-81&1+81\end{bmatrix}=\frac12\begin{bmatrix}82&-80\\-80&82\end{bmatrix}=\begin{bmatrix}41&-40\\-40&41\end{bmatrix}. \]</div>
+      <div class="pans">Answer. \(A^{n}=\dfrac12\begin{bmatrix}1+3^{n}&1-3^{n}\\1-3^{n}&1+3^{n}\end{bmatrix}\), and \(A^{4}=\begin{bmatrix}41&-40\\-40&41\end{bmatrix}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Only \(D\) gets raised to the \(n\): \(P\) and \(P^{\top}\) appear once each, at the ends. And \(1^{n}\) stays \(1\) — a surprisingly common slip is powering only the larger eigenvalue.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>\(A^{n}=PD^{n}P^{\top}\) turns \(n-1\) matrix multiplications into \(n\)-th powers of two scalars. Diagonalize once; reuse forever.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The closed form works for <em>every</em> \(n\) simultaneously — \(n=0\) gives \(I\), \(n=1\) gives \(A\) back, and since no eigenvalue is zero, \(n=-1\) even produces \(A^{-1}\). One formula quietly encodes the entire orbit of \(A\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 (source #11) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Find a full singular value decomposition \(A=U\Sigma V^{\top}\) of</p>
+    \[ A=\begin{bmatrix}1&1\\1&0\\0&1\end{bmatrix}, \]
+    <p class="pq">including the third column of \(U\) obtained by orthogonal completion.</p>
+    <p class="ptest"><b>What this tests.</b> The full SVD pipeline — \(A^{\top}A\), singular values, \(\mathbf{u}_i=\frac{1}{\sigma_i}A\mathbf{v}_i\) — plus completing \(U\) to a genuine \(3\times 3\) orthogonal matrix.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · \(A^{\top}A\), singular values, right singular vectors.</b>
+      \[ A^{\top}A=\begin{bmatrix}1&1&0\\1&0&1\end{bmatrix}\begin{bmatrix}1&1\\1&0\\0&1\end{bmatrix}=\begin{bmatrix}2&1\\1&2\end{bmatrix} \]
+      (entries: \((1,1)\!: 1^2+1^2+0^2=2\); \((1,2)\!: 1\cdot1+1\cdot0+0\cdot1=1\); \((2,2)\!: 1+0+1=2\)). Eigenvalues: \(\det\begin{bmatrix}2-\lambda&1\\1&2-\lambda\end{bmatrix}=(2-\lambda)^{2}-1=0\Rightarrow\lambda=3,\,1\). Thus \(\sigma_1=\sqrt3\), \(\sigma_2=1\), with
+      \[ \mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\ (\lambda=3),\qquad \mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\ (\lambda=1). \]</div>
+      <div class="pstep"><b>Step 2 · Left singular vectors \(\mathbf{u}_i=\frac{1}{\sigma_i}A\mathbf{v}_i\).</b> Entry by entry, \(A\mathbf{v}_1=\tfrac{1}{\sqrt2}(1{+}1,\,1{+}0,\,0{+}1)^{\top}=\tfrac{1}{\sqrt2}(2,1,1)^{\top}\), so
+      \[ \mathbf{u}_1=\frac{1}{\sqrt3}\cdot\frac{1}{\sqrt2}\begin{bmatrix}2\\1\\1\end{bmatrix}=\frac{1}{\sqrt6}\begin{bmatrix}2\\1\\1\end{bmatrix};\qquad \mathbf{u}_2=\frac{1}{1}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1-1\\1-0\\0-1\end{bmatrix}=\frac{1}{\sqrt2}\begin{bmatrix}0\\1\\-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 3 · Orthogonal completion \(\mathbf{u}_3\).</b> We need a unit vector with \(\mathbf{u}_3\perp\mathbf{u}_1\) and \(\mathbf{u}_3\perp\mathbf{u}_2\). Writing \(\mathbf{u}_3=(p,q,r)^{\top}\): from \(\mathbf{u}_2\), \(q-r=0\Rightarrow q=r\); from \(\mathbf{u}_1\), \(2p+q+r=0\Rightarrow 2p+2q=0\Rightarrow p=-q\). Normalising: \(\mathbf{u}_3=\tfrac{1}{\sqrt3}(-1,1,1)^{\top}\).</div>
+      <div class="pstep"><b>Step 4 · Assemble.</b>
+      \[ U=\begin{bmatrix}2/\sqrt6&0&-1/\sqrt3\\1/\sqrt6&1/\sqrt2&1/\sqrt3\\1/\sqrt6&-1/\sqrt2&1/\sqrt3\end{bmatrix},\qquad \Sigma=\begin{bmatrix}\sqrt3&0\\0&1\\0&0\end{bmatrix},\qquad V^{\top}=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}. \]
+      \(\Sigma\) has the same \(3\times 2\) shape as \(A\); its zero third row is what \(\mathbf{u}_3\) multiplies.</div>
+      <div class="pans">Answer. \(\sigma_1=\sqrt3\), \(\sigma_2=1\); \(\mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\), \(\mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\); \(\mathbf{u}_1=\tfrac{1}{\sqrt6}(2,1,1)^{\top}\), \(\mathbf{u}_2=\tfrac{1}{\sqrt2}(0,1,-1)^{\top}\), \(\mathbf{u}_3=\tfrac{1}{\sqrt3}(-1,1,1)^{\top}\); \(\Sigma=\begin{bmatrix}\sqrt3&0\\0&1\\0&0\end{bmatrix}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\Sigma\) must have the shape of \(A\) (\(3\times 2\)) — forgetting the zero row makes \(U\Sigma V^{\top}\) undefined. Keep the normalisations straight: \(\mathbf{u}_1\) picks up \(\frac{1}{\sqrt3}\cdot\frac{1}{\sqrt2}=\frac{1}{\sqrt6}\), not \(\frac{1}{\sqrt3}\).</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Full-SVD recipe: eigen-decompose \(A^{\top}A\) for \(V\) and the \(\sigma_i=\sqrt{\lambda_i}\), push through \(\mathbf{u}_i=\frac{1}{\sigma_i}A\mathbf{v}_i\), then complete \(U\) to an orthonormal basis of the output space.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The completed column \(\mathbf{u}_3=\tfrac{1}{\sqrt3}(-1,1,1)^{\top}\) satisfies \(A^{\top}\mathbf{u}_3=\mathbf{0}\): it spans the part of \(\mathbb{R}^3\) that \(A\)'s columns can never reach. The "filler" column is actually a precise description of what the matrix cannot do.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 (source #12) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Find the SVD of</p>
+    \[ A=\begin{bmatrix}1&1&0\\0&1&1\end{bmatrix}. \]
+    <p class="pq">(Hint: it is quicker to get \(U\) and the singular values from the \(2\times 2\) matrix \(AA^{\top}\), then recover \(V\) from \(\mathbf{v}_i=\frac{1}{\sigma_i}A^{\top}\mathbf{u}_i\); the missing right vector spans \(\ker(A^{\top}A)\).)</p>
+    <p class="ptest"><b>What this tests.</b> Choosing the smaller Gram matrix (\(AA^{\top}\) instead of a \(3\times 3\) \(A^{\top}A\) with a zero eigenvalue), and fetching the last right vector from the null space.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · \(AA^{\top}\), singular values, left singular vectors.</b>
+      \[ AA^{\top}=\begin{bmatrix}1&1&0\\0&1&1\end{bmatrix}\begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix}=\begin{bmatrix}2&1\\1&2\end{bmatrix} \]
+      (entries: row 1 · row 1 \(=1+1+0=2\); row 1 · row 2 \(=0+1+0=1\); row 2 · row 2 \(=0+1+1=2\)). Its eigenvalues are \(\lambda=3,\,1\), so \(\sigma_1=\sqrt3\), \(\sigma_2=1\), with
+      \[ \mathbf{u}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\ (\lambda=3),\qquad \mathbf{u}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\ (\lambda=1). \]</div>
+      <div class="pstep"><b>Step 2 · Right singular vectors \(\mathbf{v}_i=\frac{1}{\sigma_i}A^{\top}\mathbf{u}_i\).</b> With \(A^{\top}=\begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix}\): entry by entry, \(A^{\top}\mathbf{u}_1=\tfrac{1}{\sqrt2}(1,\,1{+}1,\,1)^{\top}=\tfrac{1}{\sqrt2}(1,2,1)^{\top}\), so
+      \[ \mathbf{v}_1=\frac{1}{\sqrt3}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1\\2\\1\end{bmatrix}=\frac{1}{\sqrt6}\begin{bmatrix}1\\2\\1\end{bmatrix};\qquad \mathbf{v}_2=\frac{1}{1}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1\\1-1\\-1\end{bmatrix}=\frac{1}{\sqrt2}\begin{bmatrix}1\\0\\-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 3 · Third right vector from the null space.</b> \(A\) is \(2\times 3\), so \(V\) needs a third column \(\mathbf{v}_3\) with singular value 0, spanning \(\ker(A)\) (equivalently \(\ker A^{\top}A\)). Solving \(A\mathbf{v}=\mathbf{0}\): \(x+y=0\) and \(y+z=0\) give \(y=-x,\ z=x\), so \(\mathbf{v}_3=\tfrac{1}{\sqrt3}(1,-1,1)^{\top}\).</div>
+      <div class="pstep"><b>Step 4 · Assemble.</b>
+      \[ U=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\qquad \Sigma=\begin{bmatrix}\sqrt3&0&0\\0&1&0\end{bmatrix},\qquad V=\begin{bmatrix}1/\sqrt6&1/\sqrt2&1/\sqrt3\\2/\sqrt6&0&-1/\sqrt3\\1/\sqrt6&-1/\sqrt2&1/\sqrt3\end{bmatrix}. \]
+      The single zero column of \(\Sigma\) reflects that \(A\) has rank 2 but 3 columns.</div>
+      <div class="pans">Answer. \(\sigma_1=\sqrt3\), \(\sigma_2=1\); \(U=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}\), \(\Sigma=\begin{bmatrix}\sqrt3&0&0\\0&1&0\end{bmatrix}\), \(\mathbf{v}_1=\tfrac{1}{\sqrt6}(1,2,1)^{\top}\), \(\mathbf{v}_2=\tfrac{1}{\sqrt2}(1,0,-1)^{\top}\), \(\mathbf{v}_3=\tfrac{1}{\sqrt3}(1,-1,1)^{\top}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\mathbf{v}_3\) cannot come from \(\mathbf{v}_3=\frac{1}{\sigma_3}A^{\top}\mathbf{u}_3\) — that would divide by \(\sigma_3=0\). Vectors paired with zero singular values must be fetched from the null space directly.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Always eigen-decompose the <em>smaller</em> of \(A^{\top}A\) and \(AA^{\top}\) — they share their nonzero eigenvalues — then transfer across with \(\frac{1}{\sigma_i}A\mathbf{v}_i\) or \(\frac{1}{\sigma_i}A^{\top}\mathbf{u}_i\). For a wide matrix, that is \(AA^{\top}\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>An entire line of inputs — every multiple of \((1,-1,1)^{\top}\) — is crushed to zero: check \(A\mathbf{v}_3 = (1-1+0,\;0-1+1)^{\top}=\mathbf{0}\). "Rank 2 out of 3 columns" is not an abstraction; it is a concrete direction the matrix simply deletes.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 (source #13) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">(a) Find the SVD of \(\;A=\begin{bmatrix}1&1\\-1&-1\end{bmatrix}\). (b) Show that \(A\) is not diagonalizable, yet its SVD still exists, and explain why.</p>
+    <p class="ptest"><b>What this tests.</b> A rank-deficient SVD (zero singular value), and the sharp contrast between diagonalizability and the always-available SVD.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a), Step 1 · Singular values.</b>
+      \[ A^{\top}A=\begin{bmatrix}1&-1\\1&-1\end{bmatrix}\begin{bmatrix}1&1\\-1&-1\end{bmatrix}=\begin{bmatrix}2&2\\2&2\end{bmatrix} \]
+      (entries: \((1,1)\!: 1^2+(-1)^2=2\); \((1,2)\!: 1\cdot 1+(-1)(-1)=2\); \((2,2)\!: 1+1=2\)). Eigenvalues: \((2-\lambda)^2-4=0\Rightarrow\lambda=4,\,0\), so \(\sigma_1=2,\ \sigma_2=0\). The single nonzero singular value shows \(\operatorname{rank}A=1\).</div>
+      <div class="pstep"><b>Part (a), Step 2 · Right and left vectors.</b> Eigenvectors of \(A^{\top}A\): \(\mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\) (for 4), \(\mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\) (for 0). Then
+      \[ \mathbf{u}_1=\frac{1}{\sigma_1}A\mathbf{v}_1=\frac12\cdot\frac{1}{\sqrt2}\begin{bmatrix}2\\-2\end{bmatrix}=\frac{1}{\sqrt2}\begin{bmatrix}1\\-1\end{bmatrix},\qquad \mathbf{u}_2\perp\mathbf{u}_1:\ \mathbf{u}_2=\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix}. \]
+      \[ U=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\-1&1\end{bmatrix},\qquad \Sigma=\begin{bmatrix}2&0\\0&0\end{bmatrix},\qquad V=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Part (b) · Not diagonalizable, but the SVD exists.</b> The eigenvalues of \(A\) itself satisfy \(\det(A-\lambda I)=(1-\lambda)(-1-\lambda)+1=\lambda^{2}=0\), so \(\lambda=0\) has algebraic multiplicity 2 — while \(A\mathbf{v}=\mathbf{0}\) has the single solution direction \((1,-1)^{\top}\), geometric multiplicity 1. Since \(1 &lt; 2\), \(A\) has no eigenbasis and is not diagonalizable. Nevertheless the SVD is built from the symmetric matrices \(A^{\top}A\) and \(AA^{\top}\), which are <em>always</em> orthogonally diagonalizable — this is exactly why an SVD exists for every matrix, diagonalizable or not.</div>
+      <div class="pans">Answer. \(\sigma_1=2\), \(\sigma_2=0\); \(U=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\-1&1\end{bmatrix}\), \(\Sigma=\begin{bmatrix}2&0\\0&0\end{bmatrix}\), \(V=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}\). \(A\) is not diagonalizable (\(\lambda=0\): algebraic multiplicity 2, geometric multiplicity 1).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Do not read rank off the eigenvalues: here both eigenvalues are 0, yet \(A\neq 0\) and \(\operatorname{rank}A=1\). It is the count of <em>nonzero singular values</em> that equals the rank — eigenvalues of a non-symmetric matrix can lie about size and rank.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Diagonalization can fail (defective matrices); the SVD cannot. It inherits its existence from the spectral theorem applied to \(A^{\top}A\) and \(AA^{\top}\), which are symmetric no matter what \(A\) is.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>A matrix with <em>no</em> eigen-decomposition has a perfectly clean SVD. The trick is freedom: diagonalization must use one basis for input and output, while the SVD is allowed two different orthonormal frames (\(U\neq V\)) — and that extra freedom never runs out.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 (source #14) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">For \(\;A=\begin{bmatrix}2&2\\-1&1\end{bmatrix}\), find the singular values and the best rank-1 approximation \(A_1=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}\).</p>
+    <p class="ptest"><b>What this tests.</b> Extracting \(\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}\) from a computed SVD and knowing (Eckart–Young) that it is the closest rank-1 matrix.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Singular values and top right vector.</b>
+      \[ A^{\top}A=\begin{bmatrix}2&-1\\2&1\end{bmatrix}\begin{bmatrix}2&2\\-1&1\end{bmatrix}=\begin{bmatrix}5&3\\3&5\end{bmatrix} \]
+      (entries: \((1,1)\!: 4+1=5\); \((1,2)\!: 4-1=3\); \((2,2)\!: 4+1=5\)). Then \(\det\begin{bmatrix}5-\lambda&3\\3&5-\lambda\end{bmatrix}=(5-\lambda)^2-9=(\lambda-8)(\lambda-2)=0\), so
+      \[ \sigma_1=\sqrt8=2\sqrt2,\qquad \sigma_2=\sqrt2,\qquad \mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\ \text{(for }\lambda=8\text{)}. \]</div>
+      <div class="pstep"><b>Step 2 · Top left vector.</b>
+      \[ \mathbf{u}_1=\frac{1}{\sigma_1}A\mathbf{v}_1=\frac{1}{2\sqrt2}\cdot\frac{1}{\sqrt2}\begin{bmatrix}2+2\\-1+1\end{bmatrix}=\frac{1}{4}\begin{bmatrix}4\\0\end{bmatrix}=\begin{bmatrix}1\\0\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 3 · Rank-1 approximation.</b>
+      \[ A_1=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=2\sqrt2\begin{bmatrix}1\\0\end{bmatrix}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1&1\end{bmatrix}=2\begin{bmatrix}1&1\\0&0\end{bmatrix}=\begin{bmatrix}2&2\\0&0\end{bmatrix}. \]
+      By the Eckart–Young theorem this is the closest rank-1 matrix to \(A\); the discarded part corresponds to the dropped singular value \(\sigma_2=\sqrt2\), and indeed \(\lVert A-A_1\rVert_2=\sigma_2=\sqrt2\).</div>
+      <div class="pans">Answer. \(\sigma_1=2\sqrt2\), \(\sigma_2=\sqrt2\); \(A_1=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\begin{bmatrix}2&2\\0&0\end{bmatrix}\) with \(\mathbf{u}_1=(1,0)^{\top}\), \(\mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(A_1\) needs all three ingredients — \(\sigma_1\) out front and <em>unit</em> vectors \(\mathbf{u}_1,\mathbf{v}_1\). Forgetting a normalisation rescales the whole approximation and silently breaks Eckart–Young optimality.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Truncating the SVD after \(k\) terms gives the best rank-\(k\) approximation, and the error is exactly the first dropped singular value: \(\lVert A-A_k\rVert_2=\sigma_{k+1}\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The best rank-1 stand-in keeps the top row \((2,2)\) <em>exactly</em> and zeroes the bottom row — the SVD judged the row of size \(2\sqrt2\) worth keeping and the orthogonal remainder of size \(\sqrt2\) expendable. Approximation by importance, not by position.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 (source #15) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">A matrix has the SVD data</p>
+    \[ \sigma_1=3,\ \mathbf{u}_1=\tfrac{1}{\sqrt2}(1,1)^{\top},\ \mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top};\qquad \sigma_2=1,\ \mathbf{u}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top},\ \mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}. \]
+    <p class="pq">(a) Reconstruct \(A=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}+\sigma_2\mathbf{u}_2\mathbf{v}_2^{\top}\). (b) Write down the best rank-1 approximation and the relative weight it keeps.</p>
+    <p class="ptest"><b>What this tests.</b> Reading the SVD as \(A=\sum_i\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\) — a weighted stack of rank-1 layers — and measuring a truncation's kept energy.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a) · Two rank-1 layers.</b>
+      \[ \sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=3\cdot\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1&1\end{bmatrix}=\frac32\begin{bmatrix}1&1\\1&1\end{bmatrix},\qquad \sigma_2\mathbf{u}_2\mathbf{v}_2^{\top}=\frac12\begin{bmatrix}1&-1\\-1&1\end{bmatrix}. \]
+      Adding, entry by entry: \((1,1)\!:\tfrac32+\tfrac12=2\); \((1,2)\!:\tfrac32-\tfrac12=1\); \((2,1)\!:1\); \((2,2)\!:2\):
+      \[ A=\frac12\begin{bmatrix}3&3\\3&3\end{bmatrix}+\frac12\begin{bmatrix}1&-1\\-1&1\end{bmatrix}=\begin{bmatrix}2&1\\1&2\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Part (b) · Best rank-1 approximation and its weight.</b> Keep the largest singular value only:
+      \[ A_1=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\frac32\begin{bmatrix}1&1\\1&1\end{bmatrix}. \]
+      This is the rank-\(k\) truncation \(\hat A^{(k)}=\sum_{i=1}^{k}\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\) with \(k=1\). The energy kept is
+      \[ \frac{\sigma_1^{2}}{\sigma_1^{2}+\sigma_2^{2}}=\frac{9}{10}=90\%. \]</div>
+      <div class="pans">Answer. \(A=\begin{bmatrix}2&1\\1&2\end{bmatrix}\); best rank-1 approximation \(A_1=\frac32\begin{bmatrix}1&1\\1&1\end{bmatrix}\), keeping \(\sigma_1^{2}/(\sigma_1^{2}+\sigma_2^{2})=90\%\) of the energy.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Energy is measured in \(\sigma^{2}\), not \(\sigma\): the weights here are \(9\!:\!1\), not \(3\!:\!1\). Squaring is what makes truncation so effective — and forgetting it understates how much the top layer carries.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>The SVD writes any matrix as a sum of rank-1 layers \(\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\), sorted by importance. Compression = keep the top \(k\) layers, drop the rest.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Half the singular values carry 90% of the energy. This lopsidedness is the entire business model of image compression and PCA: real-world matrices almost always hide a steep \(\sigma\)-decay, and the squares make it steeper.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 (source #16) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Compute the spectral norm \(\lVert A\rVert_2\) of</p>
+    \[ A=\begin{bmatrix}4&3\\0&5\end{bmatrix}, \]
+    <p class="pq">and state the corresponding right singular vector.</p>
+    <p class="ptest"><b>What this tests.</b> The definition \(\lVert A\rVert_2=\sigma_{\max}=\sqrt{\lambda_{\max}(A^{\top}A)}\) — the largest stretch factor of the matrix.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Form \(A^{\top}A\).</b>
+      \[ A^{\top}A=\begin{bmatrix}4&0\\3&5\end{bmatrix}\begin{bmatrix}4&3\\0&5\end{bmatrix}=\begin{bmatrix}16&12\\12&34\end{bmatrix} \]
+      (entries: \((1,1)\!: 16+0=16\); \((1,2)\!: 4\cdot 3+0\cdot 5=12\); \((2,2)\!: 9+25=34\)).</div>
+      <div class="pstep"><b>Step 2 · Largest eigenvalue of \(A^{\top}A\).</b> Trace \(=50\) and determinant \(=16\cdot 34-12^{2}=544-144=400\), so \(\det(A^{\top}A-\lambda I)=\lambda^{2}-50\lambda+400=0\) and
+      \[ \lambda=\frac{50\pm\sqrt{2500-1600}}{2}=\frac{50\pm 30}{2}=40\ \text{or}\ 10. \]
+      Hence \(\sigma_{\max}=\sqrt{40}=2\sqrt{10}\) and \(\sigma_{\min}=\sqrt{10}\).</div>
+      <div class="pstep"><b>Step 3 · Right singular vector for \(\sigma_{\max}\).</b>
+      \[ (A^{\top}A-40I)\mathbf{v}=\begin{bmatrix}-24&12\\12&-6\end{bmatrix}\mathbf{v}=\mathbf{0}\ \Rightarrow\ 2x=y, \]
+      so \(\mathbf{v}_1=\tfrac{1}{\sqrt5}(1,2)^{\top}\), and
+      \[ \lVert A\rVert_2=2\sqrt{10}\approx 6.32. \]
+      (Consistency check: \(\sigma_1\sigma_2=\sqrt{40}\sqrt{10}=\sqrt{400}=20=\lvert\det A\rvert\). ✓)</div>
+      <div class="pans">Answer. \(\lVert A\rVert_2=\sigma_{\max}=2\sqrt{10}\approx 6.32\), attained along \(\mathbf{v}_1=\tfrac{1}{\sqrt5}(1,2)^{\top}\) (the other singular value is \(\sqrt{10}\)).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Do <em>not</em> take the largest \(\lvert\text{eigenvalue of }A\rvert\) — that would give 5 here, and it is wrong. The spectral norm always comes from \(A^{\top}A\): \(\lVert A\rVert_2=\sqrt{\lambda_{\max}(A^{\top}A)}\). Eigenvalues equal singular values only for symmetric matrices (up to sign).</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>\(\lVert A\rVert_2=\sigma_{\max}\) is the largest factor by which \(A\) can stretch any vector, and the top right singular vector is the direction that achieves it.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A\)'s eigenvalues are 4 and 5, yet \(A\) stretches the direction \((1,2)/\sqrt5\) by \(2\sqrt{10}\approx 6.32\) — more than any eigenvalue suggests. Non-symmetric matrices can out-stretch their own spectrum; that hidden extra gain is exactly what the spectral norm measures.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 (source #17) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Capstone. For \(\;A=\begin{bmatrix}1&2\\2&1\end{bmatrix}\): (a) find its eigendecomposition (note the negative eigenvalue); (b) find its SVD; (c) explain precisely how the two are related.</p>
+    <p class="ptest"><b>What this tests.</b> How the eigendecomposition and the SVD of one symmetric matrix line up — and exactly where a negative eigenvalue forces them apart.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a) · Eigendecomposition.</b> \(\det(A-\lambda I)=(1-\lambda)^{2}-4=(\lambda-3)(\lambda+1)=0\Rightarrow\lambda_1=3,\ \lambda_2=-1\). Orthonormal eigenvectors \(\mathbf{q}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\) (for 3) and \(\mathbf{q}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\) (for \(-1\)). With \(Q=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}\),
+      \[ A=Q\begin{bmatrix}3&0\\0&-1\end{bmatrix}Q^{\top}. \]</div>
+      <div class="pstep"><b>Part (b) · SVD.</b> \(A^{\top}A=A^{2}=\begin{bmatrix}5&4\\4&5\end{bmatrix}\) has eigenvalues \(9\) and \(1\), so \(\sigma_1=3,\ \sigma_2=1\) — note \(\sigma_i=\lvert\lambda_i\rvert\). The right singular vectors are the same eigenvectors \(\mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\), \(\mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\), and
+      \[ \mathbf{u}_1=\frac{1}{3}A\mathbf{v}_1=\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix}=\mathbf{v}_1,\qquad \mathbf{u}_2=\frac{1}{1}A\mathbf{v}_2=\frac{1}{\sqrt2}\begin{bmatrix}-1\\1\end{bmatrix}=-\mathbf{v}_2. \]
+      \[ U=\frac{1}{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix},\qquad \Sigma=\begin{bmatrix}3&0\\0&1\end{bmatrix},\qquad V=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Part (c) · The relationship.</b> For a symmetric matrix the singular values are the absolute values of the eigenvalues, \(\sigma_i=\lvert\lambda_i\rvert\), and the right singular vectors are the eigenvectors. Where an eigenvalue is positive, \(\mathbf{u}_i=\mathbf{v}_i\); where it is negative (here \(\lambda_2=-1\)), the minus sign is absorbed into the left vector, \(\mathbf{u}_i=-\mathbf{v}_i\). Thus EVD and SVD coincide exactly when every eigenvalue is non-negative (a positive-semidefinite matrix); otherwise they differ only by these sign flips between \(U\) and \(V\).</div>
+      <div class="pans">Answer. EVD: \(A=Q\operatorname{diag}(3,-1)Q^{\top}\) with \(Q=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}\). SVD: \(\Sigma=\operatorname{diag}(3,1)=\operatorname{diag}(\lvert\lambda_i\rvert)\), \(V=Q\), \(U=\tfrac{1}{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix}\) (the negative eigenvalue flips the sign of \(\mathbf{u}_2\) relative to \(\mathbf{v}_2\)).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\sigma_i=\lvert\lambda_i\rvert\) holds <em>only</em> for symmetric matrices — Problem 11 just showed a triangular matrix where no singular value matches any eigenvalue. And even here, symmetric or not, \(U\neq V\): the sign bookkeeping is part of the decomposition.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Symmetric \(A\): singular values \(=\lvert\text{eigenvalues}\rvert\), \(V=\) eigenvectors, and EVD \(=\) SVD precisely when \(A\) is positive semidefinite. The SVD is the eigendecomposition with all stretches forced non-negative.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Compare \(D=\operatorname{diag}(3,-1)\) with \(\Sigma=\operatorname{diag}(3,1)\): the SVD refuses negative stretches. It rewrites "stretch by \(-1\)" as "stretch by \(1\), then flip", and hides the flip inside \(U\). Same matrix, same action — two bookkeeping conventions for a reflection.</p></div>
+    </details>
+  </div>
+  <div class="next-card">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+/* ---------- shared helpers (house runtime) ---------- */
+const store={mem:{},get(k){try{return localStorage.getItem(k)??this.mem[k]??null}catch(e){return this.mem[k]??null}},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}}};
+const themeBtn=document.getElementById('theme-btn');const modes=['auto','light','dark'];let mode=store.get('mfml-theme')||'auto';
+function applyTheme(){if(mode==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',mode);themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;}
+themeBtn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%3];store.set('mfml-theme',mode);applyTheme();});applyTheme();
+const rail=document.getElementById('read-progress');
+addEventListener('scroll',()=>{const h=document.documentElement;rail.style.width=((h.scrollTop/(h.scrollHeight-h.clientHeight))*100).toFixed(2)+'%';},{passive:true});
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const n=document.createElementNS(NS,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(parent)parent.appendChild(n);return n;}
+function txt(parent,x,y,s,style,anchor){const t=el('text',{x,y,'text-anchor':anchor||'start'},parent);t.setAttribute('style',style||'font:600 11px system-ui;fill:var(--ink-muted)');t.textContent=s;return t;}
+function plane(svg,X0,X1,Y0,Y1,opts){opts=opts||{};svg.innerHTML='';
+  const W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height,pad=opts.pad||26;
+  const s=Math.min((W-2*pad)/(X1-X0),(H-2*pad)/(Y1-Y0));
+  const cx=pad+((W-2*pad)-s*(X1-X0))/2,cy=pad+((H-2*pad)-s*(Y1-Y0))/2;
+  const px=x=>cx+(x-X0)*s,py=y=>H-cy-(y-Y0)*s,g=el('g',{},svg),step=opts.step||1;
+  for(let x=Math.ceil(X0);x<=X1;x+=step)el('line',{x1:px(x),y1:py(Y0),x2:px(x),y2:py(Y1),stroke:'var(--grid)','stroke-width':x===0?0:1},g);
+  for(let y=Math.ceil(Y0);y<=Y1;y+=step)el('line',{x1:px(X0),y1:py(y),x2:px(X1),y2:py(y),stroke:'var(--grid)','stroke-width':y===0?0:1},g);
+  el('line',{x1:px(X0),y1:py(0),x2:px(X1),y2:py(0),stroke:'var(--axis)','stroke-width':1.5},g);
+  el('line',{x1:px(0),y1:py(Y0),x2:px(0),y2:py(Y1),stroke:'var(--axis)','stroke-width':1.5},g);
+  if(!opts.noticks){const te=opts.tickEvery||1;
+    for(let x=Math.ceil(X0);x<=X1;x+=step)if(x!==0&&Math.abs(x)%te===0)txt(svg,px(x),py(0)+15,x,'font:500 10px system-ui;fill:var(--ink-muted)','middle');
+    for(let y=Math.ceil(Y0);y<=Y1;y+=step)if(y!==0&&Math.abs(y)%te===0)txt(svg,px(0)-7,py(y)+3.5,y,'font:500 10px system-ui;fill:var(--ink-muted)','end');}
+  return {px,py,svg};}
+function arrow(p,x0,y0,x1,y1,color,w,label,lblStyle){const g=el('g',{},p.svg);
+  const X0=p.px(x0),Y0=p.py(y0),X1=p.px(x1),Y1=p.py(y1),dx=X1-X0,dy=Y1-Y0,L=Math.hypot(dx,dy)||1;
+  const hx=X1-dx/L*10,hy=Y1-dy/L*10;
+  el('line',{x1:X0,y1:Y0,x2:hx,y2:hy,stroke:color,'stroke-width':w||2.5,'stroke-linecap':'round'},g);
+  const nx=-dy/L*4.5,ny=dx/L*4.5;
+  el('polygon',{points:`${X1},${Y1} ${hx+nx},${hy+ny} ${hx-nx},${hy-ny}`,fill:color},g);
+  if(label)txt(p.svg,X1+dx/L*8+(dx>=0?2:-2),Y1+dy/L*8,label,lblStyle||`font:700 12px system-ui;fill:${color}`,dx>=0?'start':'end');
+  return g;}
+const fmt=(v,d=2)=>(+v).toFixed(d).replace(/\.?0+$/,'').replace(/^-0$/,'0');
+function engine3d(svg,opts){opts=opts||{};
+  const W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
+  let yaw=opts.yaw??-0.62,pitch=opts.pitch??0.40,scale=opts.scale||70;
+  const cx=W/2+(opts.cx||0),cy=H/2+(opts.cy||0),origin=opts.origin||[0,0,0];
+  function proj(v){const x=v[0]-origin[0],y=v[1]-origin[1],z=v[2]-origin[2];
+    const c=Math.cos(yaw),s=Math.sin(yaw),X=x*c+y*s,Y=-x*s+y*c;
+    const cp=Math.cos(pitch),sp=Math.sin(pitch);
+    return {x:cx+X*scale,y:cy-(Y*sp+z*cp)*scale,d:Y*cp-z*sp};}
+  function drag(redraw){let last=null;
+    svg.addEventListener('pointerdown',e=>{last=[e.clientX,e.clientY];try{svg.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();});
+    svg.addEventListener('pointermove',e=>{if(!last)return;yaw+=(e.clientX-last[0])*0.008;pitch=Math.max(-1.45,Math.min(1.45,pitch+(e.clientY-last[1])*0.008));last=[e.clientX,e.clientY];redraw();});
+    ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>last=null));}
+  return {proj,drag};}
+function planePt(svg,p,e){const r=svg.getBoundingClientRect(),W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
+  const sx=(e.clientX-r.left)/r.width*W,sy=(e.clientY-r.top)/r.height*H;
+  const x0=p.px(0),y0=p.py(0),ux=p.px(1)-x0,uy=p.py(1)-y0;
+  return [(sx-x0)/ux,(sy-y0)/uy];}
+/* ---------- small SVD engine (one-sided Jacobi; verified against lecture examples) ---------- */
+function svdSmall(A){
+  const m=A.length,n=A[0].length;
+  let U=A.map(r=>r.slice());
+  let V=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+  for(let sweep=0;sweep<60;sweep++){
+    let off=0;
+    for(let p=0;p<n-1;p++)for(let q=p+1;q<n;q++){
+      let app=0,aqq=0,apq=0;
+      for(let k=0;k<m;k++){app+=U[k][p]*U[k][p];aqq+=U[k][q]*U[k][q];apq+=U[k][p]*U[k][q];}
+      off+=apq*apq;
+      if(Math.abs(apq)<1e-13)continue;
+      const tau=(aqq-app)/(2*apq),sg=tau>=0?1:-1,t=sg/(Math.abs(tau)+Math.sqrt(1+tau*tau)),c=1/Math.sqrt(1+t*t),s=c*t;
+      for(let k=0;k<m;k++){const a=U[k][p],b=U[k][q];U[k][p]=c*a-s*b;U[k][q]=s*a+c*b;}
+      for(let k=0;k<n;k++){const a=V[k][p],b=V[k][q];V[k][p]=c*a-s*b;V[k][q]=s*a+c*b;}
+    }
+    if(off<1e-20)break;
+  }
+  const sig=[];
+  for(let j=0;j<n;j++){let s2=0;for(let k=0;k<m;k++)s2+=U[k][j]*U[k][j];sig.push(Math.sqrt(s2));}
+  const idx=sig.map((s,i)=>i).sort((a,b)=>sig[b]-sig[a]);
+  return {S:idx.map(i=>sig[i]),
+          Ucols:idx.map(i=>U.map(r=>r[i]/(sig[i]>1e-10?sig[i]:1))),
+          Vcols:idx.map(i=>V.map(r=>r[i]))};
+}
+/* ---------- checks ---------- */
+const solved=new Set((store.get('mfml-u5-checks')||'').split(',').filter(Boolean));
+const scoreEl=document.getElementById('score');
+function updScore(){ scoreEl.textContent=solved.size;
+  var _c=document.getElementById('score-chip');
+  if(_c) _c.classList.toggle('done', solved.size >= document.querySelectorAll('.check').length); }
+document.querySelectorAll('.check').forEach(chk=>{
+  const id=chk.dataset.check,why=chk.querySelector('.why');
+  chk.querySelectorAll('.opts button').forEach(btn=>btn.addEventListener('click',()=>{
+    chk.querySelectorAll('.opts button').forEach(b=>b.classList.remove('picked-good','picked-bad'));
+    const ok=btn.hasAttribute('data-correct');
+    btn.classList.add(ok?'picked-good':'picked-bad');
+    why.className='why on '+(ok?'good':'bad');
+    why.innerHTML=(ok?'<b class="st-good">✓ Correct.</b> ':'<b class="st-bad">✗ Not quite.</b> ')+btn.dataset.why;
+    if(ok){solved.add(id);store.set('mfml-u5-checks',[...solved].join(','));updScore();}
+  }));});
+updScore();
+/* ---------- toc ---------- */
+(function(){
+  const toc=document.getElementById('toc');if(!toc)return;
+  const secs=[...document.querySelectorAll('section.unit')];
+  secs.forEach(s=>{const h=s.querySelector('h2'),n=s.querySelector('.sec-num');if(!h)return;
+    const a=document.createElement('a');a.href='#'+s.id;
+    let t=h.textContent.replace(/\s+—.*$/,'');if(t.length>36)t=t.slice(0,35)+'…';
+    a.textContent=(n?n.textContent+' · ':'')+t;toc.appendChild(a);});
+  const links=[...toc.querySelectorAll('a')];
+  function spy(){let i=0;secs.forEach((s,j)=>{if(s.getBoundingClientRect().top<150)i=j;});
+    links.forEach((l,j)=>l.classList.toggle('on',j===i));}
+  addEventListener('scroll',spy,{passive:true});spy();
+})();
+const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
+/* ================= W-PROJ · LAYER VIEW ================= */
+(function(){
+  const svg=document.getElementById('proj-svg');if(!svg)return;
+  const R=Math.SQRT1_2,q1=[R,R],q2=[-R,R];
+  const L1=[[1.5,1.5],[1.5,1.5]],L2=[[0.5,-0.5],[-0.5,0.5]];
+  const SUM=[[2,1],[1,2]];
+  let modeI=2;
+  function mstr(M){return `[[${fmt(M[0][0])}, ${fmt(M[0][1])}], [${fmt(M[1][0])}, ${fmt(M[1][1])}]]`;}
+  function draw(){
+    const p=plane(svg,-3.4,3.4,-2.6,2.6,{});
+    const M=modeI===0?L1:(modeI===1?L2:SUM);
+    el('circle',{cx:p.px(0),cy:p.py(0),r:p.px(1)-p.px(0),fill:'none',stroke:'var(--ink-muted)','stroke-width':1.4,'stroke-dasharray':'5 4',opacity:.7},svg);
+    [[q1,'q₁'],[q2,'q₂']].forEach(([q,lb])=>{
+      el('line',{x1:p.px(-q[0]*4.4),y1:p.py(-q[1]*4.4),x2:p.px(q[0]*4.4),y2:p.py(q[1]*4.4),stroke:'var(--s7)','stroke-width':1.3,'stroke-dasharray':'7 5',opacity:.55},svg);
+      txt(svg,p.px(q[0]*2.25)+4,p.py(q[1]*2.25)-4,lb,'font:700 11px system-ui;fill:var(--s7)');});
+    let d='';for(let i=0;i<=140;i++){const t=i/140*2*Math.PI,v=mul2(M,[Math.cos(t),Math.sin(t)]);
+      d+=(i?'L':'M')+p.px(v[0]).toFixed(1)+','+p.py(v[1]).toFixed(1);}
+    el('path',{d:d+'Z',fill:'var(--s1)','fill-opacity':modeI===2?.08:0,stroke:'var(--s1)','stroke-width':2.2},svg);
+    // sample dots to show crushing
+    for(let i=0;i<12;i++){const t=i/12*2*Math.PI,x=[Math.cos(t),Math.sin(t)],v=mul2(M,x);
+      el('circle',{cx:p.px(x[0]),cy:p.py(x[1]),r:2.5,fill:'var(--ink-muted)',opacity:.5},svg);
+      el('circle',{cx:p.px(v[0]),cy:p.py(v[1]),r:3,fill:'var(--s2)',opacity:.85},svg);}
+    const mx=document.getElementById('proj-mx');
+    mx.innerHTML=`3·q₁q₁ᵀ = ${modeI!==1?'<b>':''}${mstr(L1)}${modeI!==1?'</b>':''}<br>1·q₂q₂ᵀ = ${modeI!==0?'<b>':''}${mstr(L2)}${modeI!==0?'</b>':''}<br>sum = ${mstr(modeI===2?SUM:(modeI===0?L1:L2))}${modeI===2?' = A ✓':''}`;
+    const v=document.getElementById('proj-verdict');
+    if(modeI===0){v.className='verdict info';v.textContent='Rank 1: the whole plane is crushed onto the q₁ line, amplified ×3. One layer = one direction of information.';}
+    else if(modeI===1){v.className='verdict info';v.textContent='Rank 1: everything flattens onto the q₂ line, scale ×1 — the quiet layer.';}
+    else{v.className='verdict good';v.textContent='✓ Layers added: 3·q₁q₁ᵀ + 1·q₂q₂ᵀ = [[2,1],[1,2]] — the full ellipse, the full matrix.';}
+  }
+  document.querySelectorAll('#proj-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#proj-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');modeI=+b.dataset.t;draw();}));
+  draw();
+})();
+/* ================= W-DIAG · TRANSLATOR ================= */
+(function(){
+  const svg=document.getElementById('dg-svg');if(!svg)return;
+  const A=[[1,4],[2,3]],p1=[1,1],p2=[-2,1];
+  const Pinv=v=>[(v[0]+2*v[1])/3,(-v[0]+v[1])/3]; // (1/3)[[1,2],[-1,1]]
+  const Pm=v=>[v[0]*1+v[1]*(-2),v[0]*1+v[1]*1];
+  const D=v=>[5*v[0],-1*v[1]];
+  let x=[1,0.5],stage=0,p;
+  function chainOf(x){const c0=x,c1=Pinv(x),c2=D(c1),c3=Pm(c2);return [c0,c1,c2,c3];}
+  function powA(k){let M=[[1,0],[0,1]];for(let i=0;i<k;i++)M=[[A[0][0]*M[0][0]+A[0][1]*M[1][0],A[0][0]*M[0][1]+A[0][1]*M[1][1]],[A[1][0]*M[0][0]+A[1][1]*M[1][0],A[1][0]*M[0][1]+A[1][1]*M[1][1]]];return M;}
+  function draw(){
+    p=plane(svg,-4.6,4.6,-3.7,3.7,{});
+    [[p1,'p₁ (λ=5)'],[p2,'p₂ (λ=−1)']].forEach(([q,lb])=>{const L=Math.hypot(q[0],q[1]),u=[q[0]/L,q[1]/L];
+      el('line',{x1:p.px(-u[0]*6),y1:p.py(-u[1]*6),x2:p.px(u[0]*6),y2:p.py(u[1]*6),stroke:'var(--s7)','stroke-width':1.3,'stroke-dasharray':'7 5',opacity:.55},svg);
+      txt(svg,p.px(u[0]*3.1)+4,p.py(u[1]*3.1)-4,lb,'font:700 11px system-ui;fill:var(--s7)');});
+    const chain=chainOf(x),names=['x','P⁻¹x','DP⁻¹x','PDP⁻¹x = Ax'];
+    for(let s=0;s<stage;s++){const g=chain[s];
+      el('line',{x1:p.px(0),y1:p.py(0),x2:p.px(g[0]),y2:p.py(g[1]),stroke:'var(--ink-muted)','stroke-width':2,opacity:.28,'stroke-linecap':'round'},svg);}
+    const cv=chain[stage];
+    arrow(p,0,0,cv[0],cv[1],'var(--warning)',3.6,names[stage]);
+    document.getElementById('dg-co').innerHTML=chain.map((v,i)=>{
+      const b=i===stage;return `${b?'<b style="color:var(--s1)">':''}${['x','P⁻¹x','DP⁻¹x','PDP⁻¹x'][i]} = (${fmt(v[0])}, ${fmt(v[1])})${i===3?' = Ax ✓':''}${b?'</b>':''}`;}).join('<br>');
+    const k=+document.getElementById('dg-k').value;
+    document.getElementById('dg-ko').textContent=k;
+    const Mk=powA(k),dk1=Math.pow(5,k),dk2=Math.pow(-1,k);
+    document.getElementById('dg-pow').innerHTML=`D<sup>${k}</sup> = diag(${dk1}, ${dk2})<br>A<sup>${k}</sup> = PD<sup>${k}</sup>P⁻¹ = [[${Mk[0][0]}, ${Mk[0][1]}], [${Mk[1][0]}, ${Mk[1][1]}]]`;
+    const v=document.getElementById('dg-verdict');
+    v.className='verdict good';
+    v.textContent=k===3?'✓ A³ = [[41,84],[42,83]] — the lecture\'s answer, via two scalar cubes (5³ and (−1)³).':'✓ Matches multiplying A out '+k+' time'+(k>1?'s':'')+' — but here the middle cost two scalar powers.';
+  }
+  let drag=false;
+  function move(e){const q=planePt(svg,p,e),n=Math.hypot(q[0],q[1]);
+    let nx=q;if(n>2)nx=[q[0]/n*2,q[1]/n*2];
+    x=[Math.round(nx[0]*20)/20,Math.round(nx[1]*20)/20];draw();}
+  svg.addEventListener('pointerdown',e=>{drag=true;try{svg.setPointerCapture(e.pointerId)}catch(_){}move(e);e.preventDefault();});
+  svg.addEventListener('pointermove',e=>{if(drag)move(e);});
+  ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>drag=false));
+  document.querySelectorAll('#dg-stages button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#dg-stages button').forEach(s=>s.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');stage=+b.dataset.s;draw();}));
+  document.getElementById('dg-k').addEventListener('input',draw);
+  draw();
+})();
+/* ================= W-SVD · UNIVERSAL MACHINE ================= */
+(function(){
+  const svg=document.getElementById('sv-svg');if(!svg)return;
+  const MATS={lec:{A:[[3,0],[4,5]],eig:'eigenvalues: 3 and 5 (triangular) — note σ ≠ λ'},
+              rot:{A:[[0,-1],[1,0]],eig:'eigenvalues: ±i — fled to ℂ; the SVD shrugs'},
+              shear:{A:[[1,1],[0,1]],eig:'defective for eigendecomposition — SVD exists happily'},
+              sym:{A:[[2,1],[1,2]],eig:'λ = 3, 1 = σ — symmetric PD: the rungs coincide'}};
+  let cur='lec',stage=3;
+  function draw(){
+    const A=MATS[cur].A,{S,Ucols,Vcols}=svdSmall(A);
+    const s1=S[0],s2=S[1],r=Math.max(2.3,s1*1.12);
+    const p=plane(svg,-r,r,-r*0.79,r*0.79,{tickEvery:r>4?2:1,step:r>4?2:1});
+    const v1=Vcols[0],v2=Vcols[1],u1=Ucols[0],u2=Ucols[1];
+    const Vt=x=>[v1[0]*x[0]+v1[1]*x[1],v2[0]*x[0]+v2[1]*x[1]];
+    const Sg=x=>[s1*x[0],s2*x[1]];
+    const Um=x=>[u1[0]*x[0]+u2[0]*x[1],u1[1]*x[0]+u2[1]*x[1]];
+    const F=[x=>x,Vt,x=>Sg(Vt(x)),x=>Um(Sg(Vt(x)))][stage];
+    let d='';for(let i=0;i<=140;i++){const t=i/140*2*Math.PI,v=F([Math.cos(t),Math.sin(t)]);
+      d+=(i?'L':'M')+p.px(v[0]).toFixed(1)+','+p.py(v[1]).toFixed(1);}
+    el('path',{d:d+'Z',fill:'var(--s1)','fill-opacity':.08,stroke:'var(--s1)','stroke-width':2.2},svg);
+    // input frame (follows the pipeline)
+    const fv1=F(v1),fv2=F(v2);
+    arrow(p,0,0,fv1[0],fv1[1],'var(--s2)',3,'v₁→');
+    arrow(p,0,0,fv2[0],fv2[1],'var(--s2)',2.2,'v₂→','font:700 11px system-ui;fill:var(--s2)');
+    // output frame shown at final stage
+    if(stage===3){arrow(p,0,0,u1[0]*s1,u1[1]*s1,'var(--s1)',2.6,'σ₁u₁');
+      arrow(p,0,0,u2[0]*s2,u2[1]*s2,'var(--s1)',2,'σ₂u₂','font:700 11px system-ui;fill:var(--s1)');}
+    document.getElementById('sv-s1').textContent=fmt(s1,3);
+    document.getElementById('sv-s2').textContent=fmt(s2,3);
+    document.getElementById('sv-cond').textContent=s2>1e-9?fmt(s1/s2,2):'∞';
+    document.getElementById('sv-eig').textContent=MATS[cur].eig;
+    const v=document.getElementById('sv-verdict');
+    const stageTxt=['Input: the unit circle, with the special directions v₁, v₂ marked — an orthonormal frame.',
+      'Vᵀ applied: still a perfect circle (rotations are honest motions) — but v₁, v₂ now sit on the axes.',
+      'Σ applied: stretch ×'+fmt(s1,2)+' and ×'+fmt(s2,2)+' along the axes — the only stage that changes shape.',
+      '✓ U applied: rotated into final pose. Ellipse axes = σᵢuᵢ, and both frames stayed perpendicular throughout.'][stage];
+    v.className=stage===3?'verdict good':'verdict info';v.textContent=stageTxt;
+  }
+  document.querySelectorAll('#sv-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#sv-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');cur=b.dataset.t;draw();}));
+  document.querySelectorAll('#sv-stages button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#sv-stages button').forEach(s=>s.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');stage=+b.dataset.s;draw();}));
+  document.querySelector('#sv-stages [data-s="0"]').setAttribute('aria-selected','false');
+  document.querySelector('#sv-stages [data-s="3"]').setAttribute('aria-selected','true');
+  draw();
+})();
+/* ================= W-TALL · TWO SPACES ================= */
+(function(){
+  const svgIn=document.getElementById('tl-in'),svgOut=document.getElementById('tl-out');if(!svgIn)return;
+  const B=[[1,1],[0,1],[1,0]];
+  const R2=Math.SQRT1_2,v1=[R2,R2],v2=[R2,-R2],s1=Math.sqrt(3),s2=1;
+  const u1=[2/Math.sqrt(6),1/Math.sqrt(6),1/Math.sqrt(6)],u2=[0,-R2,R2],u3=[1/Math.sqrt(3),-1/Math.sqrt(3),-1/Math.sqrt(3)];
+  const Bx=x=>[B[0][0]*x[0]+B[0][1]*x[1],B[1][0]*x[0]+B[1][1]*x[1],B[2][0]*x[0]+B[2][1]*x[1]];
+  let th=0.5,pIn;
+  const eng=engine3d(svgOut,{scale:96,yaw:0.62,pitch:-0.45});
+  function poly3(pts,stroke,w,op,dash){let d='';pts.forEach((v,i)=>{const P=eng.proj(v);d+=(i?'L':'M')+P.x.toFixed(1)+','+P.y.toFixed(1);});
+    el('path',{d,fill:'none',stroke,'stroke-width':w,opacity:op,'stroke-dasharray':dash||'none','stroke-linejoin':'round'},svgOut);}
+  function arr3(vec,color,w,label){const P0=eng.proj([0,0,0]),P1=eng.proj(vec);
+    el('line',{x1:P0.x,y1:P0.y,x2:P1.x,y2:P1.y,stroke:color,'stroke-width':w,'stroke-linecap':'round'},svgOut);
+    el('circle',{cx:P1.x,cy:P1.y,r:4,fill:color},svgOut);
+    if(label)txt(svgOut,P1.x+7,P1.y-5,label,`font:700 11px system-ui;fill:${color}`);}
+  function draw(){
+    // input pane
+    pIn=plane(svgIn,-1.7,1.7,-1.7,1.7,{noticks:true,pad:18});
+    el('circle',{cx:pIn.px(0),cy:pIn.py(0),r:pIn.px(1)-pIn.px(0),fill:'none',stroke:'var(--ink-muted)','stroke-width':1.5,'stroke-dasharray':'5 4',opacity:.8},svgIn);
+    arrow(pIn,0,0,v1[0],v1[1],'var(--s2)',2.6,'v₁');
+    arrow(pIn,0,0,v2[0],v2[1],'var(--s2)',2,'v₂','font:700 10.5px system-ui;fill:var(--s2)');
+    const x=[Math.cos(th),Math.sin(th)];
+    arrow(pIn,0,0,x[0],x[1],'var(--warning)',3,'x');
+    // output pane
+    svgOut.innerHTML='';
+    [[1.9,0,0],[0,1.9,0],[0,0,1.9]].forEach(a=>{const P0=eng.proj([-a[0],-a[1],-a[2]]),P1=eng.proj(a);
+      el('line',{x1:P0.x,y1:P0.y,x2:P1.x,y2:P1.y,stroke:'var(--grid)','stroke-width':1},svgOut);});
+    // image plane patch (spanned by u1,u2)
+    const c=[[1.25*s1,1.15],[1.25*s1,-1.15],[-1.25*s1,-1.15],[-1.25*s1,1.15]].map(([a,b])=>[a*u1[0]+b*u2[0],a*u1[1]+b*u2[1],a*u1[2]+b*u2[2]]);
+    poly3([...c,c[0]],'var(--axis)',1.2,.7,'6 5');
+    // image ellipse
+    const ell=[];for(let i=0;i<=100;i++){const t=i/100*2*Math.PI;ell.push(Bx([Math.cos(t),Math.sin(t)]));}
+    poly3(ell,'var(--s1)',2.4,.95);
+    arr3([u1[0]*s1,u1[1]*s1,u1[2]*s1],'var(--s1)',2.6,'σ₁u₁');
+    arr3([u2[0]*s2,u2[1]*s2,u2[2]*s2],'var(--s1)',2,'u₂');
+    arr3([u3[0]*1.1,u3[1]*1.1,u3[2]*1.1],'var(--ink-muted)',2,'u₃ (unreached)');
+    const y=Bx(x),P=eng.proj(y);
+    const P0=eng.proj([0,0,0]);
+    el('line',{x1:P0.x,y1:P0.y,x2:P.x,y2:P.y,stroke:'var(--warning)','stroke-width':3,'stroke-linecap':'round'},svgOut);
+    el('circle',{cx:P.x,cy:P.y,r:5.5,fill:'var(--warning)'},svgOut);
+    txt(svgOut,P.x+8,P.y-6,'Bx','font:700 12px system-ui;fill:var(--warning)');
+    // readout: coordinates in u-frame
+    const a1=y[0]*u1[0]+y[1]*u1[1]+y[2]*u1[2],a2=y[0]*u2[0]+y[1]*u2[1]+y[2]*u2[2],a3=y[0]*u3[0]+y[1]*u3[1]+y[2]*u3[2];
+    document.getElementById('tl-co').innerHTML=`x = (${fmt(x[0])}, ${fmt(x[1])})<br>Bx = (${fmt(y[0])}, ${fmt(y[1])}, ${fmt(y[2])})<br>u₁ share: ${fmt(a1)} · u₂ share: ${fmt(a2)}<br><b>u₃ share: ${fmt(Math.abs(a3))} — always 0</b>`;
+    const cos1=Math.abs(x[0]*v1[0]+x[1]*v1[1]),cos2=Math.abs(x[0]*v2[0]+x[1]*v2[1]);
+    const v=document.getElementById('tl-verdict');
+    if(cos1>0.998){v.className='verdict good';v.textContent='✓ Probe on v₁ → image on the long axis σ₁u₁, length √3 ≈ 1.73.';}
+    else if(cos2>0.998){v.className='verdict good';v.textContent='✓ Probe on v₂ → image on the short axis u₂, length 1.';}
+    else{v.className='verdict info';v.textContent='The image rides the tilted ellipse — never leaving the u₁u₂ plane. 2-D in, 3-D out, but only a 2-D slice of 3-D is reachable.';}
+  }
+  let drag=false;
+  function move(e){const q=planePt(svgIn,pIn,e);let t=Math.atan2(q[1],q[0]);
+    for(const vv of [v1,v2]){const et=Math.atan2(vv[1],vv[0]);
+      for(const cand of [et,et+Math.PI,et-Math.PI])if(Math.abs(t-cand)<0.05){t=cand;break;}}
+    th=t;draw();}
+  svgIn.addEventListener('pointerdown',e=>{drag=true;try{svgIn.setPointerCapture(e.pointerId)}catch(_){}move(e);e.preventDefault();});
+  svgIn.addEventListener('pointermove',e=>{if(drag)move(e);});
+  ['pointerup','pointercancel'].forEach(ev=>svgIn.addEventListener(ev,()=>drag=false));
+  eng.drag(draw);
+  draw();
+})();
+/* ================= W-RANK · IMAGE SQUEEZER ================= */
+(function(){
+  const svg=document.getElementById('rk-svg');if(!svg)return;
+  const N=16;
+  function fromPattern(rows){return rows.map(r=>[...r].map(ch=>ch==='#'?1:(ch==='+'?0.55:0)));}
+  const IMGS={};
+  IMGS.sigma=fromPattern([
+    '................','.##############.','.##############.','.###..........#.',
+    '..###...........','...###..........','....###.........','.....###........',
+    '.....###........','....###.........','...###..........','..###...........',
+    '.###..........#.','.##############.','.##############.','................']);
+  (function(){const M=[];for(let i=0;i<N;i++){const row=[];for(let j=0;j<N;j++){
+    const dx=i-7.5,dy=j-7.5,d=Math.hypot(dx,dy);
+    let v=0;
+    if(d<7.4&&d>6.2)v=1;                              // head
+    if(Math.hypot(dx+2.6,dy+2.6)<1.25)v=1;            // eye
+    if(Math.hypot(dx+2.6,dy-2.6)<1.25)v=1;            // eye
+    if(d>3.6&&d<5&&dx>1.2)v=1;                        // smile
+    row.push(v);}M.push(row);}IMGS.face=M;})();
+  (function(){const M=[];for(let i=0;i<N;i++){const row=[];for(let j=0;j<N;j++)row.push((i+j)/(2*N-2));M.push(row);}IMGS.grad=M;})();
+  (function(){let seed=7;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return (seed>>>8)/16777216;};
+    const M=[];for(let i=0;i<N;i++){const row=[];for(let j=0;j<N;j++)row.push(rnd());M.push(row);}IMGS.noise=M;})();
+  let cur='sigma',cache={};
+  function svdOf(name){if(!cache[name])cache[name]=svdSmall(IMGS[name]);return cache[name];}
+  function draw(){
+    const A=IMGS[cur],{S,Ucols,Vcols}=svdOf(cur);
+    const k=+document.getElementById('rk-k').value;
+    document.getElementById('rk-ko').textContent=k;
+    // reconstruction
+    const R=Array.from({length:N},()=>Array(N).fill(0));
+    for(let l=0;l<k;l++){if(S[l]<1e-10)break;
+      for(let i=0;i<N;i++)for(let j=0;j<N;j++)R[i][j]+=S[l]*Ucols[l][i]*Vcols[l][j];}
+    svg.innerHTML='';
+    const cell=15.5,gx0=18,gx1=308,gy=38;
+    txt(svg,gx0+N*cell/2,20,'original (256 numbers)','font:650 12px system-ui;fill:var(--ink-2)','middle');
+    txt(svg,gx1+N*cell/2,20,`rank-${k} rebuild (${k}×33 = ${k*33} numbers)`,'font:650 12px system-ui;fill:var(--ink-2)','middle');
+    function grid(M,x0){for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+      const g=Math.max(0,Math.min(1,M[i][j])),c=Math.round(245-g*215);
+      el('rect',{x:x0+j*cell,y:gy+i*cell,width:cell-1,height:cell-1,fill:`rgb(${c},${c},${c})`,rx:1.5},svg);}}
+    grid(A,gx0);grid(R,gx1);
+    // singular value bars
+    const bars=document.getElementById('rk-bars');bars.innerHTML='';
+    const bw=300/N,smax=S[0]||1;
+    S.forEach((s,i)=>{const h=Math.max(1.5,s/smax*86);
+      el('rect',{x:i*bw+2,y:104-h,width:bw-4,height:h,rx:2,fill:i<k?'var(--s1)':'var(--grid)'},bars);});
+    txt(bars,2,10,'singular values — kept vs discarded','font:600 9.5px system-ui;fill:var(--ink-muted)');
+    const err=k<N?S[k]:0;
+    document.getElementById('rk-err').textContent=fmt(err,2);
+    document.getElementById('rk-store').textContent=Math.round(k*33/256*100)+'%';
+    const v=document.getElementById('rk-verdict');
+    const energy=S.slice(0,k).reduce((a,b)=>a+b*b,0)/S.reduce((a,b)=>a+b*b,0);
+    if(cur==='grad'&&k>=2){v.className='verdict good';v.textContent='✓ Perfect at k = 2 — this image was secretly rank 2 all along (it\'s built from i + j).';}
+    else if(cur==='noise'){v.className='verdict bad';v.textContent='✗ Noise refuses to compress: its σ\'s barely decay, so every layer matters equally. Structure compresses; randomness doesn\'t.';}
+    else if(energy>0.985){v.className='verdict good';v.textContent=`✓ ${(energy*100).toFixed(1)}% of the energy in ${k} layers — visually done, at ${Math.round(k*33/256*100)}% storage.`;}
+    else{v.className='verdict info';v.textContent=`${(energy*100).toFixed(1)}% of the matrix energy captured — Eckart–Young says no rank-${k} matrix does better.`;}
+  }
+  document.getElementById('rk-k').addEventListener('input',draw);
+  document.querySelectorAll('#rk-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#rk-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');cur=b.dataset.t;draw();}));
+  draw();
+})();
+})();
+
+/* ================= MBM-UX-V2 · navigation, resume, revision, print ================= */
+(function(){
+  var U = 5;
+  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"}];
+  var st = {get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+            set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  var secs = [].slice.call(document.querySelectorAll('section.unit'));
+
+  /* publish this unit's real check total so the hub never hardcodes a denominator */
+  st.set('mfml-u'+U+'-total', document.querySelectorAll('.check').length);
+
+  /* ---- contents drawer (below 1420px) + unit switcher ---- */
+  var toc = document.getElementById('toc'),
+      btn = document.getElementById('toc-btn'),
+      back = document.getElementById('toc-backdrop');
+  if (toc && btn && back) {
+    var prev = UNITS.filter(function(u){return u.n===U-1})[0],
+        next = UNITS.filter(function(u){return u.n===U+1})[0];
+    var nav = document.createElement('div');
+    nav.className = 'toc-nav';
+    nav.innerHTML = (prev ? '<a href="unit-0'+prev.n+'.html" title="'+prev.t+'">\u2190 Unit '+prev.n+'</a>' : '<span></span>')
+                  + '<a class="hub" href="index.html">All units</a>'
+                  + (next ? '<a href="unit-0'+next.n+'.html" title="'+next.t+'">Unit '+next.n+' \u2192</a>' : '<span></span>');
+    toc.appendChild(nav);
+
+    var close = document.createElement('button');
+    close.className = 'toc-close'; close.type = 'button';
+    close.setAttribute('aria-label','Close contents'); close.innerHTML = '\u00d7';
+    toc.insertBefore(close, toc.firstChild);
+
+    var open = false;
+    function setOpen(v){
+      open = v;
+      toc.classList.toggle('open', v);
+      back.classList.toggle('on', v);
+      btn.setAttribute('aria-expanded', v ? 'true' : 'false');
+      document.body.style.overflow = (v && innerWidth < 1420) ? 'hidden' : '';
+      try { (v ? close : btn).focus(); } catch(e){}
+    }
+    btn.addEventListener('click', function(){ setOpen(!open); });
+    close.addEventListener('click', function(){ setOpen(false); });
+    back.addEventListener('click', function(){ setOpen(false); });
+    addEventListener('keydown', function(e){ if (e.key === 'Escape' && open) setOpen(false); });
+    toc.addEventListener('click', function(e){
+      if (e.target.tagName === 'A' && innerWidth < 1420) setOpen(false);
+    });
+    addEventListener('resize', function(){ if (open && innerWidth >= 1420) setOpen(false); });
+  }
+
+  /* ---- remember the reading position (this unit + across the site) ---- */
+  function currentIndex(){
+    var i = 0;
+    secs.forEach(function(s,j){ if (s.getBoundingClientRect().top < 150) i = j; });
+    return i;
+  }
+  var tick = null;
+  addEventListener('scroll', function(){
+    if (tick) return;
+    tick = setTimeout(function(){
+      tick = null;
+      var s = secs[currentIndex()];
+      if (!s) return;
+      st.set('mfml-u'+U+'-pos', s.id);
+      st.set('mfml-last', U + '|' + s.id);
+    }, 700);
+  }, {passive:true});
+
+  /* ---- offer to resume (never jump without asking) ---- */
+  var savedId = st.get('mfml-u'+U+'-pos');
+  if (!location.hash && savedId && secs.length && savedId !== secs[0].id) {
+    var target = document.getElementById(savedId);
+    if (target && scrollY < 200) {
+      var h2 = target.querySelector('h2'), num = target.querySelector('.sec-num');
+      var label = (h2 ? h2.textContent.replace(/\s+\u2014.*$/,'') : 'where you left off');
+      if (label.length > 34) label = label.slice(0,33) + '\u2026';
+      var pill = document.createElement('div');
+      pill.className = 'resume';
+      pill.innerHTML = '<span class="rl">Pick up where you left off</span>'
+        + '<button class="rgo" type="button">' + (num ? '\u00a7' + num.textContent + ' ' : '') + label + ' \u2192</button>'
+        + '<button class="rx" type="button" aria-label="Dismiss">\u00d7</button>';
+      document.body.appendChild(pill);
+      requestAnimationFrame(function(){ pill.classList.add('on'); });
+      var hide = function(){ pill.classList.remove('on'); setTimeout(function(){ pill.remove(); }, 320); };
+      pill.querySelector('.rgo').addEventListener('click', function(){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        hide();
+      });
+      pill.querySelector('.rx').addEventListener('click', hide);
+      setTimeout(hide, 14000);
+    }
+  }
+
+  /* ---- practice arena: open / close every solution at once ---- */
+  var arena = document.getElementById('spractice');
+  if (arena) {
+    var sols = [].slice.call(arena.querySelectorAll('details.sol'));
+    var prose = arena.querySelector('.prose');
+    if (sols.length && prose) {
+      var bar = document.createElement('div');
+      bar.className = 'sol-bulk';
+      bar.innerHTML = '<span class="sb-l">' + sols.length + ' problems \u00b7 solutions stay hidden until you ask</span>'
+        + '<span class="sb-b"><button class="ghost" type="button" data-a="open">Open all solutions</button>'
+        + '<button class="ghost" type="button" data-a="close">Close all</button></span>';
+      prose.parentNode.insertBefore(bar, prose.nextSibling);
+      bar.addEventListener('click', function(e){
+        var b = e.target.closest('button');
+        if (!b) return;
+        var want = b.dataset.a === 'open';
+        sols.forEach(function(d){ d.open = want; });
+      });
+    }
+  }
+
+  /* ---- screen readers hear the verdict ---- */
+  document.querySelectorAll('.check .why').forEach(function(w){
+    w.setAttribute('role','status'); w.setAttribute('aria-live','polite');
+  });
+
+  /* ---- printing a unit prints the solutions too ---- */
+  var reopened = [];
+  addEventListener('beforeprint', function(){
+    reopened = [].slice.call(document.querySelectorAll('details:not([open])'));
+    reopened.forEach(function(d){ d.open = true; });
+  });
+  addEventListener('afterprint', function(){
+    reopened.forEach(function(d){ d.open = false; });
+    reopened = [];
+  });
+})();
+</script>
+</body>
+</html>
+<!-- BRAND-V1 -->

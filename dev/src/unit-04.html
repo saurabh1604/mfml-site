@@ -1,0 +1,1590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 4 · Determinants, Eigenvalues &amp; the Spectral Theorem — The Math Behind the Machine</title>
+<meta name="description" content="The determinant as a volume dial, eigenvectors as the directions a matrix cannot turn, A = QΛQᵀ, complex rotations, and Cholesky — the fingerprints that power PCA and SVD.">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%232a78d6"/><text x="32" y="44" font-family="Georgia,serif" font-size="36" fill="white" text-anchor="middle">Σ</text></svg>'>
+<meta property="og:site_name" content="The Math Behind the Machine">
+<meta property="og:title" content="Unit 4 · Determinants, Eigenvalues &amp; the Spectral Theorem — The Math Behind the Machine">
+<meta property="og:description" content="The determinant as a volume dial, eigenvectors as the directions a matrix cannot turn, A = QΛQᵀ, complex rotations, and Cholesky — the fingerprints that power PCA and SVD.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://linearalgebra.info/unit-04.html">
+<meta property="og:image" content="https://linearalgebra.info/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f9f9f7">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+<style>
+/* ============ design tokens (dataviz reference palette) ============ */
+:root{
+  color-scheme: light;
+  --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --ink-muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s7:#4a3aa7;
+  --good:#0ca30c; --good-text:#006300; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --wash-1:rgba(42,120,214,.12); --wash-2:rgba(235,104,52,.14); --wash-good:rgba(12,163,12,.10); --wash-crit:rgba(208,59,59,.09);
+  --serif:"Charter","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --maxw:76rem; --prose:44rem;
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s7:#9085e9;
+  --good-text:#0ca30c;
+  --wash-1:rgba(57,135,229,.18); --wash-2:rgba(217,89,38,.20); --wash-good:rgba(12,163,12,.14); --wash-crit:rgba(230,103,103,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s7:#9085e9;
+    --good-text:#0ca30c;
+    --wash-1:rgba(57,135,229,.18); --wash-2:rgba(217,89,38,.20); --wash-good:rgba(12,163,12,.14); --wash-crit:rgba(230,103,103,.12);
+  }
+}
+/* ============ base ============ */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--serif);font-size:1.075rem;line-height:1.72;-webkit-font-smoothing:antialiased}
+main{max-width:var(--maxw);margin:0 auto;padding:0 1.25rem 6rem}
+h1,h2,h3,h4{font-family:var(--sans);line-height:1.22;letter-spacing:-.015em}
+h1{font-size:clamp(1.9rem,4.5vw,3rem);margin:.4rem 0 .6rem;font-weight:750}
+h2{font-size:clamp(1.35rem,2.6vw,1.8rem);margin:0 0 .9rem;font-weight:700}
+h3{font-size:1.08rem;margin:1.6rem 0 .5rem;font-weight:700}
+p{margin:.85rem 0}
+a{color:var(--s1);text-decoration:none}
+a:hover{text-decoration:underline}
+strong{font-weight:650}
+.prose{max-width:var(--prose);margin-inline:auto}
+.katex{font-size:1.04em}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:.25rem 0}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface);border:1px solid var(--ring);border-radius:6px;padding:.1em .38em}
+/* ============ topbar ============ */
+.topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--page) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--ring)}
+.topbar-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;gap:.9rem;padding:.55rem 1.25rem;font-family:var(--sans);font-size:.86rem}
+.topbar a.home{color:var(--ink-2);font-weight:600}
+.topbar .crumb{color:var(--ink-muted)}
+.topbar .spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--ring);background:var(--surface);border-radius:999px;padding:.24rem .7rem;font-family:var(--sans);font-size:.8rem;color:var(--ink-2);white-space:nowrap}
+.chip b{color:var(--ink);font-weight:650}
+button.ghost{font-family:var(--sans);font-size:.8rem;background:var(--surface);border:1px solid var(--ring);color:var(--ink-2);border-radius:999px;padding:.28rem .75rem;cursor:pointer}
+button.ghost:hover{color:var(--ink)}
+.progress-rail{position:absolute;left:0;bottom:-1px;height:2px;width:100%;background:transparent}
+.progress-rail i{display:block;height:100%;width:0;background:var(--s1)}
+/* ============ hero ============ */
+.hero{padding:3.6rem 0 1rem;max-width:var(--prose);margin-inline:auto}
+.kicker{font-family:var(--sans);font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--s1)}
+.hero .lede{font-size:1.16rem;color:var(--ink-2)}
+.hero .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+/* ============ sections ============ */
+section.unit{margin-top:3.6rem;scroll-margin-top:4.5rem}
+.sec-head{display:flex;align-items:baseline;gap:.9rem;max-width:var(--prose);margin-inline:auto}
+.sec-num{font-family:var(--sans);font-weight:750;font-size:.9rem;color:var(--ink-muted);border:1px solid var(--ring);border-radius:8px;padding:.15rem .5rem;background:var(--surface);flex:none}
+/* ============ callouts (companion voice) ============ */
+.callout{max-width:var(--prose);border:1px solid var(--ring);border-left-width:3px;border-radius:12px;background:var(--surface);padding:.9rem 1.1rem;margin:1.3rem auto}
+.callout .tag{display:block;font-family:var(--sans);font-size:.72rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.35rem}
+.callout p{margin:.5rem 0}
+.callout.scenario{border-left-color:var(--s1)} .callout.scenario .tag{color:var(--s1)}
+.callout.intuition{border-left-color:var(--s3)} .callout.intuition .tag{color:var(--s3)}
+.callout.aha{border-left-color:var(--s7)} .callout.aha .tag{color:var(--s7)}
+.callout.try{border-left-color:var(--s2)} .callout.try .tag{color:var(--s2)}
+.callout.watch{border-left-color:var(--serious)} .callout.watch .tag{color:var(--serious)}
+.callout.remember{border-left-color:var(--ink)} .callout.remember .tag{color:var(--ink-2)}
+details{max-width:var(--prose);border:1px solid var(--ring);border-radius:12px;background:var(--surface);padding:.65rem 1.1rem;margin:1rem auto}
+details summary{cursor:pointer;font-family:var(--sans);font-size:.9rem;font-weight:650;color:var(--ink-2)}
+details[open] summary{margin-bottom:.4rem}
+/* ============ widgets ============ */
+.widget{border:1px solid var(--ring);border-radius:16px;background:var(--surface);padding:1.1rem 1.2rem 1.2rem;margin:1.6rem auto;max-width:66rem;font-family:var(--sans);box-shadow:0 1px 2px rgba(11,11,11,.05),0 16px 38px -28px rgba(11,11,11,.4)}
+.widget-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.6rem;margin-bottom:.6rem}
+.widget-head .w-title{font-weight:700;font-size:.98rem}
+.widget-head .w-sub{color:var(--ink-muted);font-size:.82rem}
+.widget svg{display:block;width:100%;height:auto}
+.wrow{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start}
+.wcol{flex:1 1 300px;min-width:270px}
+.controls{display:flex;flex-direction:column;gap:.55rem;font-size:.85rem}
+.controls .ctl{display:grid;grid-template-columns:6.2rem 1fr 3.4rem;align-items:center;gap:.6rem}
+.controls label{color:var(--ink-2);font-weight:600}
+.controls output{font-family:var(--mono);font-size:.8rem;text-align:right;color:var(--ink)}
+input[type=range]{accent-color:var(--s1);width:100%;margin:0}
+.presets{display:flex;flex-wrap:wrap;gap:.45rem;margin:.5rem 0}
+button.preset{font-family:var(--sans);font-size:.8rem;font-weight:600;border:1px solid var(--ring);background:var(--page);color:var(--ink-2);border-radius:999px;padding:.3rem .8rem;cursor:pointer}
+button.preset:hover{border-color:var(--s1);color:var(--s1)}
+button.preset[aria-pressed="true"]{background:var(--wash-1);border-color:var(--s1);color:var(--s1)}
+.verdict{display:inline-flex;align-items:center;gap:.5rem;font-weight:650;font-size:.9rem;border-radius:10px;padding:.45rem .8rem;border:1px solid var(--ring)}
+.verdict.good{color:var(--good-text);background:var(--wash-good)}
+.verdict.bad{color:var(--critical);background:var(--wash-crit)}
+.verdict.info{color:var(--s1);background:var(--wash-1)}
+.readout{font-family:var(--mono);font-size:.82rem;color:var(--ink-2)}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
+.tabs button{font-family:var(--sans);font-size:.85rem;font-weight:650;border:1px solid var(--ring);background:var(--page);color:var(--ink-2);border-radius:10px;padding:.42rem .9rem;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--wash-1);border-color:var(--s1);color:var(--s1)}
+.pane{display:none}.pane.on{display:block}
+.note{font-size:.83rem;color:var(--ink-muted);margin-top:.55rem}
+/* matrices */
+.mx{display:inline-grid;gap:2px;padding:.45rem .55rem;position:relative;font-family:var(--mono);font-size:.9rem}
+.mx::before,.mx::after{content:"";position:absolute;top:0;bottom:0;width:8px;border:2px solid var(--ink-2);border-radius:3px}
+.mx::before{left:0;border-right:none}.mx::after{right:0;border-left:none}
+.mx span{padding:.22rem .5rem;border-radius:6px;text-align:center;min-width:2.1rem;transition:background .15s}
+.mx span.hl-r{background:var(--wash-1)} .mx span.hl-c{background:var(--wash-2)}
+.mx span.pivot{background:var(--wash-1);font-weight:700;color:var(--s1)}
+.mx span.rowchg{background:var(--wash-2)}
+.mx span.dead{opacity:.22;text-decoration:line-through}
+.mxwrap{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;justify-content:flex-start;overflow-x:auto;padding:.3rem 0}
+.opnote{font-family:var(--mono);font-size:.8rem;color:var(--s2);white-space:nowrap}
+/* checks */
+.check{max-width:var(--prose);border:1px solid var(--ring);border-radius:14px;background:var(--surface);padding:1rem 1.15rem;margin:1.5rem auto;font-family:var(--sans)}
+.check .tag{font-size:.72rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--s2)}
+.check .q{font-family:var(--serif);font-size:1.02rem;margin:.45rem 0 .75rem}
+.check .opts{display:flex;flex-direction:column;gap:.5rem}
+.check .opts button{text-align:left;font-family:var(--sans);font-size:.9rem;line-height:1.45;border:1px solid var(--ring);background:var(--page);color:var(--ink);border-radius:10px;padding:.55rem .8rem;cursor:pointer}
+.check .opts button:hover{border-color:var(--s1)}
+.check .opts button.picked-good{border-color:var(--good);background:var(--wash-good)}
+.check .opts button.picked-bad{border-color:var(--critical);background:var(--wash-crit)}
+.check .why{display:none;margin-top:.7rem;font-size:.9rem;border-radius:10px;padding:.6rem .8rem}
+.check .why.on{display:block}
+.check .why.good{background:var(--wash-good);color:var(--ink)}
+.check .why.bad{background:var(--wash-crit);color:var(--ink)}
+.check .why b.st-good{color:var(--good-text)}
+.check .why b.st-bad{color:var(--critical)}
+/* matrix editors & 3D */
+.mx-edit{display:inline-grid;gap:4px;padding:.5rem .6rem;position:relative}
+.mx-edit::before,.mx-edit::after{content:"";position:absolute;top:0;bottom:0;width:8px;border:2px solid var(--ink-2);border-radius:3px}
+.mx-edit::before{left:0;border-right:none}.mx-edit::after{right:0;border-left:none}
+.mx-edit input{width:3.4rem;border:1px solid var(--ring);background:var(--page);color:var(--ink);border-radius:7px;padding:.24rem .2rem;font-family:var(--mono);font-size:.85rem;text-align:center;-moz-appearance:textfield}
+.mx-edit input::-webkit-outer-spin-button,.mx-edit input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.mx-edit input:focus{outline:2px solid var(--s1);border-color:var(--s1)}
+.drag-hint{display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--ink-muted);font-family:var(--sans)}
+svg.grabbable{cursor:grab;touch-action:none}
+svg.grabbable:active{cursor:grabbing}
+/* toc rail + aura */
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(64rem 30rem at 88% -6%,var(--wash-1),transparent 62%);pointer-events:none;z-index:-1}
+.toc{position:fixed;top:5.4rem;right:.9rem;width:11rem;font-family:var(--sans);font-size:.74rem;display:none;z-index:30;max-height:calc(100vh - 8rem);overflow-y:auto}
+@media (min-width:1420px){.toc{display:block}}
+.toc .toc-t{font-weight:750;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);margin:0 0 .45rem .65rem}
+.toc a{display:block;padding:.27rem .65rem;color:var(--ink-muted);border-left:2px solid var(--grid);text-decoration:none;line-height:1.35}
+.toc a:hover{color:var(--ink);text-decoration:none}
+.toc a.on{color:var(--s1);border-left-color:var(--s1);font-weight:650;background:var(--wash-1);border-radius:0 8px 8px 0}
+/* misc */
+table.plain{border-collapse:collapse;font-family:var(--sans);font-size:.88rem;margin:.8rem 0}
+table.plain th,table.plain td{border:1px solid var(--grid);padding:.4rem .7rem;text-align:left}
+table.plain th{background:var(--surface);font-weight:650}
+.next-card{max-width:var(--prose);border:1px solid var(--ring);border-radius:16px;background:var(--surface);padding:1.2rem 1.3rem;margin:3rem auto 0;font-family:var(--sans)}
+.svg-lab text{font-family:var(--sans)}
+/* unit-4 extras */
+.term-cards{display:flex;flex-wrap:wrap;gap:.6rem;margin:.7rem 0}
+.term-card{border:1px solid var(--ring);border-radius:10px;background:var(--page);padding:.5rem .7rem;font-family:var(--mono);font-size:.85rem;cursor:default}
+.term-card:hover{border-color:var(--s1);background:var(--wash-1)}
+.term-card b{font-weight:700}
+.stagebar{display:flex;gap:.4rem;flex-wrap:wrap;margin:.6rem 0}
+.stagebar button{font-family:var(--sans);font-size:.82rem;font-weight:650;border:1px solid var(--ring);background:var(--page);color:var(--ink-2);border-radius:10px;padding:.4rem .8rem;cursor:pointer}
+.stagebar button[aria-selected="true"]{background:var(--wash-1);border-color:var(--s1);color:var(--s1)}
+@media (max-width:640px){ .controls .ctl{grid-template-columns:5rem 1fr 2.8rem} }
+/* practice arena */
+.prob{max-width:var(--prose);border:1px solid var(--ring);border-radius:14px;background:var(--surface);padding:1rem 1.2rem;margin:1.4rem auto;font-family:var(--serif)}
+.prob-head{display:flex;align-items:center;gap:.6rem;font-family:var(--sans);margin-bottom:.4rem}
+.ptag{font-size:.72rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--s1)}
+.pdiff{font-size:.72rem;font-weight:700;border-radius:999px;padding:.14rem .6rem;font-family:var(--sans)}
+.pdiff.easy{color:var(--good-text);background:var(--wash-good)}
+.pdiff.medium{color:var(--s1);background:var(--wash-1)}
+.pdiff.hard{color:var(--s2);background:var(--wash-2)}
+.pq{margin:.3rem 0 .5rem}
+.ptest{font-size:.9rem;color:var(--ink-2);font-family:var(--sans);margin:.4rem 0}
+details.sol{border:none;background:var(--page);border:1px solid var(--ring);margin:.6rem 0 0;max-width:none}
+details.sol summary{color:var(--s1);font-weight:650}
+.pstep{margin:.7rem 0;padding-left:.9rem;border-left:2px solid var(--grid)}
+.pstep b{font-family:var(--sans);font-size:.9rem}
+.pans{margin-top:.9rem;font-weight:650;border-radius:10px;padding:.55rem .8rem;background:var(--wash-good);color:var(--ink);font-family:var(--sans);font-size:.92rem}
+
+/* ================= MBM-UX-V2 · navigation, resume, revision, a11y, print ================= */
+a.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--s1);color:#fff;padding:.55rem 1rem;border-radius:0 0 10px 0;font-family:var(--sans);font-size:.85rem;font-weight:650;text-decoration:none}
+a.skip:focus{left:0}
+:focus-visible{outline:2px solid var(--s1);outline-offset:2px;border-radius:4px}
+main:focus{outline:none}
+/* --- topbar fits every screen --- */
+.topbar-in{flex-wrap:nowrap}
+.topbar a.home{white-space:nowrap;text-decoration:none}
+.topbar .crumb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#score-chip.done{border-color:var(--good);background:var(--wash-good);color:var(--good-text)}
+#score-chip.done b{color:var(--good-text)}
+.hero .meta .chip{white-space:normal}
+/* long display equations scroll inside their own box instead of stretching the page */
+.katex-display{overflow-x:auto;overflow-y:hidden;padding-top:2px;padding-bottom:2px}
+.katex-display::-webkit-scrollbar{height:5px}
+.katex-display::-webkit-scrollbar-thumb{background:var(--grid);border-radius:999px}
+/* wide comparison tables scroll in place rather than stretching the page */
+@media (max-width:760px){
+  table.plain{display:block;max-width:100%;overflow-x:auto}
+}
+#toc-btn{display:none;align-items:center;gap:.35rem;white-space:nowrap}
+@media (max-width:1419px){#toc-btn{display:inline-flex}}
+@media (max-width:899px){
+  .topbar .crumb{display:none}
+  .topbar-in{gap:.55rem;padding:.5rem .95rem}
+}
+@media (max-width:599px){
+  .tw{display:none}
+  button.ghost{padding:.28rem .6rem}
+}
+@media (max-width:430px){
+  .txs{display:none}
+  .topbar-in{gap:.4rem;padding:.5rem .75rem}
+}
+/* --- table of contents: fixed rail wide, slide-in drawer narrow --- */
+.toc-close{display:none;position:absolute;top:.55rem;right:.6rem;width:1.9rem;height:1.9rem;line-height:1;border-radius:9px;border:1px solid var(--ring);background:var(--page);color:var(--ink-2);font-size:1.15rem;cursor:pointer;font-family:var(--sans)}
+.toc-nav{display:flex;align-items:center;justify-content:space-between;gap:.4rem;margin-top:.9rem;padding-top:.7rem;border-top:1px solid var(--ring)}
+.toc-nav a{border-left:none;padding:.3rem .35rem;color:var(--ink-2);font-weight:650;font-size:.74rem}
+.toc-nav a:hover{color:var(--s1)}
+.toc-nav a.hub{color:var(--ink-muted);font-weight:600}
+.toc-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:60}
+.toc-backdrop.on{opacity:1;pointer-events:auto}
+@media (max-width:1419px){
+  /* off-canvas: visibility keeps the closed drawer out of the page's scroll width */
+  .toc{display:block;position:fixed;top:0;right:0;bottom:0;left:auto;width:min(21rem,86vw);max-height:none;
+       background:var(--surface);border-left:1px solid var(--ring);box-shadow:-24px 0 60px -34px rgba(0,0,0,.65);
+       padding:1.15rem .75rem 2rem;font-size:.82rem;overflow-y:auto;overscroll-behavior:contain;
+       visibility:hidden;transform:translateX(103%);transition:transform .24s ease,visibility 0s linear .24s;z-index:70}
+  .toc.open{visibility:visible;transform:none;transition:transform .24s ease}
+  .toc .toc-t{margin-bottom:.7rem}
+  .toc a{padding:.42rem .7rem}
+  .toc-close{display:block}
+}
+@media (min-width:1420px){.toc-backdrop{display:none}}
+/* --- resume pill --- */
+.resume{position:fixed;left:50%;bottom:1.1rem;transform:translate(-50%,140%);z-index:65;display:flex;align-items:center;gap:.6rem;
+        background:var(--surface);border:1px solid var(--ring);border-radius:999px;padding:.4rem .5rem .4rem 1rem;
+        box-shadow:0 18px 44px -22px rgba(11,11,11,.55);font-family:var(--sans);font-size:.82rem;max-width:min(34rem,92vw);
+        transition:transform .3s cubic-bezier(.2,.8,.3,1),opacity .3s;opacity:0}
+.resume.on{transform:translate(-50%,0);opacity:1}
+.resume .rl{color:var(--ink-muted);white-space:nowrap}
+.resume .rgo{font-family:var(--sans);font-size:.82rem;font-weight:650;border:1px solid var(--s1);background:var(--wash-1);color:var(--s1);
+             border-radius:999px;padding:.26rem .8rem;cursor:pointer;max-width:16rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.resume .rx{border:none;background:transparent;color:var(--ink-muted);font-size:1.1rem;line-height:1;cursor:pointer;padding:.1rem .35rem}
+@media (max-width:600px){.resume .rl{display:none}}
+/* --- practice arena: bulk reveal --- */
+.sol-bulk{max-width:var(--prose);margin:.9rem auto 0;display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;
+          font-family:var(--sans);font-size:.8rem;color:var(--ink-muted)}
+.sol-bulk .sb-l{flex:1;min-width:12rem}
+.sol-bulk .sb-b{display:flex;gap:.4rem}
+/* --- motion & print --- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media print{
+  .topbar,.toc,.toc-backdrop,.resume,.sol-bulk,a.skip,.progress-rail,.drag-hint{display:none!important}
+  .controls,.tabs,.stepper,.preset,.mx-edit input{display:none!important}
+  body::before{display:none}
+  body{background:#fff;color:#000;font-size:10.5pt;line-height:1.5}
+  main{max-width:none;padding:0}
+  .prose,.callout,.check,.prob,.sec-head,.next-card{max-width:none}
+  .widget{box-shadow:none;border-color:#ccc}
+  .widget,.prob,.check,.callout,figure,table,svg{break-inside:avoid}
+  h1,h2,h3{break-after:avoid}
+  section.unit{break-before:auto}
+  a{color:#000;text-decoration:none}
+  details.sol{border-color:#bbb}
+  .pans{background:#eee;color:#000}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main-content">Skip to content</a>
+<div class="topbar"><div class="topbar-in">
+  <a class="home" href="index.html">The Math<span class="txs"> Behind the Machine</span></a><span class="crumb">/ Unit 4 · Determinants &amp; Eigenvalues</span>
+  <span class="spacer"></span>
+  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">12</span></span>
+  <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
+  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
+</div><div class="progress-rail"><i id="read-progress"></i></div></div>
+<nav class="toc" id="toc" aria-label="On this page"><div class="toc-t">On this page</div></nav>
+<div class="toc-backdrop" id="toc-backdrop"></div>
+
+<main id="main-content" tabindex="-1">
+<header class="hero">
+  <div class="kicker">Unit 4 of 16 · by Prof. Saurabh</div>
+  <h1>Determinants, Eigenvalues &amp; the Spectral Theorem</h1>
+  <p class="lede">Every matrix is a motion — it stretches, squashes, turns. This unit finds what the motion <strong>cannot change</strong>: one number that says how much space is scaled (the <strong>determinant</strong>), and the special directions the matrix can only stretch, never turn (the <strong>eigenvectors</strong>). Find those, and the messiest matrix falls apart into <em>turn · stretch · turn back</em> — the fact that quietly runs PCA, SVD, and half of machine learning.</p>
+  <div class="meta">
+    <span class="chip">≈ 55 min read + play</span>
+    <span class="chip">8 interactive widgets · a 3D ellipsoid</span>
+    <span class="chip">12 inline checks</span>
+    <span class="chip">✍ 5 solved practice problems</span>
+  </div>
+</header>
+
+<!-- ================= 1 · FINGERPRINTS ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head"><span class="sec-num">1</span><h2>What survives the machine?</h2></div>
+  <div class="callout scenario"><span class="tag">Imagine this</span>
+    <p>Your dataset has a thousand columns. Somewhere inside it, a handful of directions carry almost all the signal — customer taste, disease risk, market mood — and the rest is noise. PCA finds those directions by asking a strange-sounding question about a matrix: <strong>which directions does it refuse to turn, and how hard does it stretch along each one?</strong> By the end of this unit, that question — and its answer, \(A=Q\Lambda Q^{\top}\) — will feel inevitable.</p>
+  </div>
+  <div class="prose">
+    <p>Units 1–3 gave us the machinery: matrices as machines that move space (Unit 1), the spaces they act on (Unit 2), and rulers to measure with (Unit 3). Now we interrogate the machine itself. If a matrix is a motion, what are its <strong>invariants</strong> — its fingerprints? We'll find exactly two kinds: <em>numbers</em> that summarize the whole motion (determinant, trace) and <em>directions</em> that pass through it unturned (eigenvectors, each wearing its own scale factor \(\lambda\)).</p>
+    <p>The route: ① the <strong>determinant</strong> — a volume dial with an alarm bell at zero; ② how to actually compute it (minors, cofactors, and the lazy-row trick); ③ the <strong>trace</strong>, an absurdly easy number with a hidden double life; ④ <strong>eigenvectors</strong> — hunting the directions a matrix cannot bend, first by dragging, then by algebra (the <strong>characteristic equation</strong>); ⑤ the <strong>Spectral Theorem</strong> — for symmetric matrices the fingerprints organize into a perfect perpendicular grain, \(A=Q\Lambda Q^{\top}\); ⑥ two encores that ML uses daily: complex eigenvalues (rotations) and the <strong>Cholesky</strong> square root of a covariance matrix.</p>
+  </div>
+</section>
+
+<!-- ================= 2 · DETERMINANT ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head"><span class="sec-num">2</span><h2>The determinant — a volume dial with an alarm bell</h2></div>
+  <div class="prose">
+    <p>Before hunting special directions, we need one number for what a matrix does to space <em>as a whole</em>. Take the unit square, feed its corners through \(A\), and watch it land as a parallelogram — remember from Unit 1 that the columns of \(A\) are exactly where the basis arrows \(\mathbf{e}_1,\mathbf{e}_2\) go. The <strong>determinant</strong> is the signed area of that parallelogram:</p>
+    \[\det\begin{bmatrix}a&b\\c&d\end{bmatrix}=ad-bc\]
+    <p>Compute one to see how cheap it is: the widget's opening matrix \(A=\begin{bmatrix}2&1\\1&1.5\end{bmatrix}\) has \(\det A=(2)(1.5)-(1)(1)=2\) — this machine doubles every area it touches. Now the three readings of the number. <strong>Magnitude:</strong> \(|\det A|\) is the scaling factor for area (volume in 3D) — \(\det=2\) doubles every area, \(\det=\tfrac12\) halves it. <strong>Sign:</strong> negative means the motion <em>flips</em> space over, like a mirror — orientation reverses. <strong>Zero:</strong> the alarm bell. The parallelogram has collapsed to a line segment: the columns are linearly dependent, space has been squashed flat, information is destroyed, and no inverse can ever rebuild it. \(\det A=0\;\Leftrightarrow\;A\) singular \(\Leftrightarrow\;\operatorname{rank}A&lt;n\) — Unit 1's "machine that squashes" now has a one-number detector.</p>
+  </div>
+  <div class="callout intuition"><span class="tag">In plain words</span>
+    <p>Think of rolling out pizza dough. Press it so it covers twice the area — that "×2" is the determinant. Flatten it into a paper-thin crease and its area hits zero — and no amount of un-pressing recovers the original ball. That irreversible flattening <em>is</em> \(\det A=0\). The determinant is the oomph of a matrix, with its sign remembering whether you flipped the dough over.</p>
+  </div>
+
+  <div class="widget" id="w-det">
+    <div class="widget-head"><span class="w-title">The area machine</span><span class="w-sub">drag the two columns of A · watch the unit square land</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 320px"><svg id="det-svg" viewBox="0 0 560 430" class="svg-lab grabbable" role="img" aria-label="Unit square mapped to a parallelogram spanned by the columns of A; determinant shown as signed area"></svg>
+      <span class="drag-hint">✋ drag the arrowheads a₁, a₂ — they are the columns of A</span></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="mxwrap"><span class="readout">A =</span><span class="mx" id="det-mx" style="grid-template-columns:auto auto"><span id="det-m11">2</span><span id="det-m12">1</span><span id="det-m21">1</span><span id="det-m22">1.5</span></span></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem">
+          <span class="chip">det A = <b id="det-val">2</b></span>
+          <span class="chip">area × <b id="det-area">2</b></span>
+        </div>
+        <div id="det-verdict" class="verdict info" style="margin-top:.7rem">—</div>
+        <div class="presets" id="det-presets">
+          <button class="preset" data-p="id">identity</button>
+          <button class="preset" data-p="double" aria-pressed="true">double the dough</button>
+          <button class="preset" data-p="mirror">mirror (flip)</button>
+          <button class="preset" data-p="ones">the ones matrix</button>
+        </div>
+        <p class="note">The parallelogram is <em>blue</em> while orientation is preserved and turns <em>orange</em> when the motion flips space (det &lt; 0). Try dragging a₂ across a₁ and watch the sign change the instant the square passes through flatness.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A transformation has \(\det A=-3\). What does it do to a shape of area 5?</p>
+    <div class="opts">
+      <button data-why="Careful with the sign — it doesn't shrink anything. The magnitude |−3| = 3 scales the area, and the minus sign records something else entirely.">Shrinks it to area 5/3</button>
+      <button data-correct data-why="Area becomes |−3| · 5 = 15, and the negative sign means the shape comes out mirror-flipped — orientation reversed. Magnitude scales, sign flips.">Makes it area 15, flipped like a mirror image</button>
+      <button data-why="A negative determinant is perfectly legal — it just means orientation flips. Only det = 0 signals collapse.">Impossible — determinants can't be negative</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  <div class="check" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the widget, the <em>ones</em> preset sets both columns to \((1,1)\). What is \(\det A\), and what does that mean?</p>
+    <div class="opts">
+      <button data-why="Compute it: 1·1 − 1·1. The two columns point the same way — what shape do they span?">2 — the square doubles</button>
+      <button data-correct data-why="det = 1·1 − 1·1 = 0. Both columns lie on one line, the parallelogram is flat, and A squashes the whole plane onto that line — singular, non-invertible. This is the same matrix whose eigenvalues (2 and 0) the lecture slides compute — the 0 is this very collapse.">0 — the square collapses onto a line; A is singular</button>
+      <button data-why="The columns being equal is exactly the failure case: they span a line, not the plane. The 'volume' of a line segment in 2D is zero.">1 — nothing changes</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 3 · COMPUTING DET ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head"><span class="sec-num">3</span><h2>Computing it — minors, cofactors, and the lazy row</h2></div>
+  <div class="prose">
+    <p>Geometry says what the determinant <em>means</em>; the <strong>cofactor expansion</strong> is how we compute it. The idea is recursive: an \(n\times n\) determinant is a weighted sum of \((n-1)\times(n-1)\) determinants. Delete row \(i\) and column \(j\) and the small determinant that remains is the <strong>minor</strong> \(M_{ij}\); dress it with a checkerboard sign and it becomes the <strong>cofactor</strong> \(C_{ij}=(-1)^{i+j}M_{ij}\). Then, expanding along <em>any</em> row \(i\) — or any column \(j\) — gives the same number:</p>
+    \[\det A=\sum_{j=1}^{n}a_{ij}\,C_{ij}\;=\;\sum_{i=1}^{n}a_{ij}\,C_{ij}\]
+    <p>That "any row, any column, same answer" is not obvious — it is a small miracle you can test below on the lecture's \(3\times3\) example. And it hands you a strategy for free: <strong>expand along the line with the most zeros</strong>, because every zero entry deletes an entire cofactor's worth of work.</p>
+  </div>
+
+  <div class="widget" id="w-cof">
+    <div class="widget-head"><span class="w-title">One determinant, six roads</span><span class="w-sub">expand along any row or column — hover a term to see its minor</span></div>
+    <div class="tabs" id="cof-tabs">
+      <button data-t="r1" aria-selected="true">row 1</button><button data-t="r2">row 2</button><button data-t="r3">row 3</button>
+      <button data-t="c1">col 1</button><button data-t="c2">col 2</button><button data-t="c3">col 3</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol">
+        <div class="mxwrap"><span class="readout">A =</span><span class="mx" id="cof-mx"></span></div>
+        <p class="note" id="cof-note">Hovering a term dims the deleted row and column — what stays bright is the minor.</p>
+      </div>
+      <div class="wcol">
+        <div class="term-cards" id="cof-terms"></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+          <span class="chip">det A = <b id="cof-sum">−1</b></span>
+          <span id="cof-verdict" class="verdict good">every road gives −1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>Two behaviours make determinants elimination-friendly, and the lecture proves both by induction: <strong>swapping two rows multiplies \(\det\) by \(-1\)</strong> (one more mirror), and <strong>adding a multiple of one row to another changes nothing</strong>. So you can run Unit 1's Gaussian elimination, reduce \(A\) to a triangle \(U\), and read the answer off the diagonal — because for triangular matrices the determinant is just the product of the diagonal entries:</p>
+    \[\det A=(-1)^{s}\det U=(-1)^{s}\,\prod_i U_{ii}\qquad(s=\text{row swaps})\]
+  </div>
+  <details><summary>Why does adding a row to another leave det unchanged? (the two-line induction)</summary>
+    <p>Expand the altered determinant: each term splits into the original \(\det A\) plus \(c\) times a determinant whose rows \(i\) and \(j\) are <em>identical</em>. Swap those equal rows: the determinant must flip sign, yet it is unchanged — so it equals its own negative, which forces it to be \(0\). The extra piece vanishes, and \(\det\) survives elimination untouched. The same equal-rows trick powers half the determinant identities you'll ever meet.</p>
+  </details>
+  <details><summary>The bridge theorem: full rank ⟺ det ≠ 0 (this is where eigenvalues will come from)</summary>
+    <p>Eliminate \(A\) down to \(U\). Full rank means every column has a pivot, so every diagonal entry \(U_{ii}\) is non-zero, so \(\det A=\pm\prod U_{ii}\ne0\). Conversely, \(\det A\ne0\) forces every \(U_{ii}\ne0\): all pivots present, columns independent, only \(\mathbf{x}=\mathbf{0}\) solves \(A\mathbf{x}=\mathbf{0}\). <strong>Hold this thought:</strong> in Section 6 an eigenvalue will be born at exactly the values \(\lambda\) where the shifted matrix \(A-\lambda I\) <em>loses</em> full rank — and \(\det(A-\lambda I)=0\) is the tripwire that detects it.</p>
+  </details>
+  <div class="callout try"><span class="tag">Useful properties, one line each</span>
+    <p>\(\det(AB)=\det A\cdot\det B\) (scaling factors of chained machines multiply) · \(\det A^{\top}=\det A\) (transposing preserves volume) · \(\det A^{-1}=1/\det A\) (the undo machine un-scales) · \(A\) triangular \(\Rightarrow\det A=\prod_i a_{ii}\) (the shortcut elimination cashes in).</p>
+  </div>
+
+  <div class="check" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For the widget's matrix — with its single zero at \(a_{13}\) — which expansions cost the least hand-work?</p>
+    <div class="opts">
+      <button data-why="Row 2 has no zeros, so all three of its cofactors must be computed in full. Look for the lines that pass through the 0.">Row 2, because its entries are large</button>
+      <button data-correct data-why="The zero lives in row 1 and column 3, so either of those lines kills one whole cofactor (0 · C = 0, no matter what C is). Both still give det = −1 — the widget's whole point: six roads, one destination, some roads shorter.">Row 1 or column 3 — the two lines through the zero</button>
+      <button data-why="They all give the same value, yes — but not the same effort. A zero entry means its entire cofactor never needs computing.">It makes no difference at all</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 4 · TRACE ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head"><span class="sec-num">4</span><h2>The trace — a pulse reading</h2></div>
+  <div class="prose">
+    <p>The determinant's understated sibling costs almost nothing: the <strong>trace</strong> is the sum of the diagonal,</p>
+    \[\operatorname{tr}(A)=\sum_{i=1}^{n}a_{ii}\]
+    <p>and it behaves beautifully: \(\operatorname{tr}(A+B)=\operatorname{tr}A+\operatorname{tr}B\), \(\operatorname{tr}(\alpha A)=\alpha\operatorname{tr}A\), \(\operatorname{tr}(I_n)=n\), and — the workhorse — the <strong>cyclic property</strong> \(\operatorname{tr}(AB)=\operatorname{tr}(BA)\), which holds even when \(AB\ne BA\), even when the two products have different sizes. Countless ML derivations (gradients of \(\operatorname{tr}(X^{\top}AX)\), for one) lean on that single identity.</p>
+    <p>Why should a doctor's quick pulse-check deserve a section? Because of a secret we'll prove in Section 6: <strong>the trace is the sum of the eigenvalues, and the determinant is their product.</strong> Two numbers you can read straight off the matrix silently summarize the spectrum you haven't computed yet.</p>
+  </div>
+  <div class="check" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(A\) is \(2\times 5\) and \(B\) is \(5\times 2\). \(AB\) is \(2\times2\) but \(BA\) is \(5\times5\) — they aren't even the same size. What about their traces?</p>
+    <div class="opts">
+      <button data-why="Different sizes, yes — but write tr(AB) = ΣᵢΣₖ aᵢₖbₖᵢ and tr(BA) = ΣₖΣᵢ bₖᵢaᵢₖ. Same terms, summed in a different order.">tr(AB) ≠ tr(BA) in general — different sizes, different sums</button>
+      <button data-correct data-why="Equal, always: both traces expand to the same double sum ΣᵢΣₖ aᵢₖ bₖᵢ. A 2×2 and a 5×5 matrix agreeing on their diagonal sums — the cyclic property doesn't care about shape, which is exactly why it's such a powerful shuffle in derivations.">They're equal — the cyclic property survives the size mismatch</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+<!-- ================= 5 · EIGENVECTORS ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head"><span class="sec-num">5</span><h2>Eigenvectors — the directions a matrix cannot turn</h2></div>
+  <div class="prose">
+    <p>Now the star of the unit. A matrix moves every vector — but a few special vectors it can only <em>stretch or flip along their own line</em>, never knock off it. Those unbendable directions are the <strong>eigenvectors</strong>, and each one carries a personal stretch factor, its <strong>eigenvalue</strong>:</p>
+    \[A\mathbf{x}=\lambda\mathbf{x}\qquad(\mathbf{x}\ne\mathbf{0})\]
+    <p>Positive \(\lambda\) stretches (\(\lambda&gt;1\)) or squeezes (\(0&lt;\lambda&lt;1\)) along the direction; negative \(\lambda\) flips it end-over-end and then scales. The zero vector is banned from the club — \(A\mathbf{0}=\lambda\mathbf{0}\) holds for every \(\lambda\), so it points at nothing. But if \(\mathbf{x}\) qualifies, so does every non-zero multiple \(c\mathbf{x}\): eigenvectors are really eigen-<em>directions</em>, whole lines the matrix owns.</p>
+  </div>
+  <div class="callout intuition"><span class="tag">Three pictures to keep</span>
+    <p><strong>A spinning globe:</strong> every city moves, but the axis through the poles stays put — an eigenvector with \(\lambda=1\). <strong>Stretching dough:</strong> pull it one way, it thins the other — the pull direction has \(\lambda&gt;1\), the thinning direction \(0&lt;\lambda&lt;1\). <strong>A sheared deck of cards:</strong> push the top sideways and every card slides <em>horizontally</em> — horizontal vectors keep their direction (\(\lambda=1\)) while every other vector tilts. The "grain" of a transformation, made visible.</p>
+  </div>
+  <div class="prose">
+    <p>You can <em>verify</em> a claimed eigenvector with one multiplication. The lecture's example: for \(A=\begin{bmatrix}1&6\\5&2\end{bmatrix}\) and \(\mathbf{u}=\begin{bmatrix}6\\-5\end{bmatrix}\),</p>
+    \[A\mathbf{u}=\begin{bmatrix}1(6)+6(-5)\\5(6)+2(-5)\end{bmatrix}=\begin{bmatrix}-24\\20\end{bmatrix}=-4\begin{bmatrix}6\\-5\end{bmatrix}=-4\,\mathbf{u}\]
+    <p>— so \(\mathbf{u}\) is an eigenvector with \(\lambda=-4\): \(A\) flips it and stretches it by 4, but the <em>line</em> through \(\mathbf{u}\) is untouched. Try \(\mathbf{v}=(3,-2)\) instead: \(A\mathbf{v}=(-9,11)\), which is on nobody's line through \(\mathbf{v}\) — not an eigenvector. Below, hunt eigen-directions by hand: drag the probe around the circle and feel for the angles where \(A\mathbf{x}\) snaps into alignment.</p>
+  </div>
+
+  <div class="widget" id="w-eig">
+    <div class="widget-head"><span class="w-title">The resonance finder</span><span class="w-sub">drag the probe x · when Ax lines up with x, you've found an eigen-direction</span></div>
+    <div class="tabs" id="eig-tabs">
+      <button data-t="sym" aria-selected="true">symmetric [[2,1],[1,2]]</button>
+      <button data-t="data">the lecture's [[1,6],[5,2]]</button>
+      <button data-t="shear">shear [[1,1],[0,1]]</button>
+      <button data-t="rot">rotation 35°</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 320px"><svg id="eig-svg" viewBox="0 0 560 470" class="svg-lab grabbable" role="img" aria-label="Unit circle of probe directions, the image ellipse, the probe x, its image Ax, and dashed eigen-direction lines"></svg>
+      <span class="drag-hint">✋ drag anywhere — the probe follows your pointer around the circle</span></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <span class="chip">alignment = <b id="eig-align">—</b></span>
+          <span class="chip" id="eig-lam-chip" style="display:none">λ ≈ <b id="eig-lam">—</b></span>
+        </div>
+        <div id="eig-verdict" class="verdict info" style="margin-top:.7rem">—</div>
+        <p class="note" id="eig-note">The dashed grey circle is every direction you can probe; the navy oval is where \(A\) sends it. Alignment reads 100% when \(A\mathbf{x}\) is parallel (or anti-parallel) to \(\mathbf{x}\) — the wine-glass hum that says an eigen-direction is under your finger.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout aha"><span class="tag">The aha</span>
+    <p>Switch the widget to the <strong>symmetric</strong> matrix and find both eigen-directions. They're perpendicular — and they sit exactly on the axes of the image ellipse. Now recall Unit 3's geometry lens, where an SPD matrix bent the unit circle into an ellipse: <strong>you were staring at eigenvectors all along.</strong> The axes of any symmetric matrix's ellipse <em>are</em> its eigen-directions — a coincidence that Section 7 upgrades into a theorem. Then switch to <strong>rotation</strong> and feel the opposite: nothing ever aligns. A merry-go-round has no direction it leaves alone — hold that mystery for Section 9.</p>
+  </div>
+
+  <div class="check" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(A=\begin{bmatrix}1&6\\5&2\end{bmatrix}\), one multiplication gives \(A\begin{bmatrix}1\\1\end{bmatrix}=\begin{bmatrix}7\\7\end{bmatrix}\). What did we just learn?</p>
+    <div class="opts">
+      <button data-correct data-why="(7,7) = 7·(1,1): the output sits exactly on the input's line, so (1,1) is an eigenvector with λ = 7. Together with u = (6,−5), λ = −4 from above, you now hold this matrix's complete spectrum {7, −4} — verified with nothing but arithmetic.">\((1,1)\) is an eigenvector with \(\lambda=7\)</button>
+      <button data-why="Look again at (7,7): it's exactly 7 times (1,1). The direction is preserved — that's the defining property.">\((1,1)\) is not an eigenvector because it moved</button>
+      <button data-why="λ must scale the whole vector: (7,7) = 7·(1,1), not 49·(1,1). The eigenvalue is the common factor, 7.">\((1,1)\) is an eigenvector with \(\lambda=49\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  <div class="check" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the widget, the <strong>shear</strong> \(\begin{bmatrix}1&1\\0&1\end{bmatrix}\) resonates along exactly one line — the x-axis. How many independent eigen-directions does it have?</p>
+    <div class="opts">
+      <button data-why="Probe the whole circle: only the horizontal direction hums. Every other vector gets tilted by the shear — no second direction survives.">Two, like every 2×2 matrix</button>
+      <button data-correct data-why="Just one: span{(1,0)}, with λ = 1. A 2×2 matrix 'should' have two — the shear is defective, one eigen-direction short. Section 11 makes this precise (algebraic multiplicity 2, geometric multiplicity 1), and it's why shears refuse to be diagonalised.">One — the shear is a matrix with a missing direction</button>
+      <button data-why="It does have one: horizontal vectors are genuinely fixed (λ = 1). The deficit is the second one, not the first.">None — shears turn everything</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 6 · CHARACTERISTIC EQUATION ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head"><span class="sec-num">6</span><h2>Hunting eigenvalues — the characteristic equation</h2></div>
+  <div class="callout intuition"><span class="tag">In plain words</span>
+    <p>An eigenvalue is like the one musical note that makes a wine glass ring. Sweep a dial through every frequency: mostly the glass sits inert — then at one special pitch it resonates. Our dial is \(\lambda\), and "resonance" means the shifted matrix \(A-\lambda I\) suddenly <strong>goes limp and collapses space</strong>. Section 3 built the exact tripwire for that collapse: the determinant hitting zero.</p>
+  </div>
+  <div class="prose">
+    <p>The algebra takes three lines. Rearrange the eigen-equation:</p>
+    \[A\mathbf{x}=\lambda\mathbf{x}\;\Longrightarrow\;(A-\lambda I)\,\mathbf{x}=\mathbf{0},\qquad \mathbf{x}\ne\mathbf{0}\]
+    <p>A <em>non-zero</em> vector mapped to zero means \(A-\lambda I\) is singular — full rank lost — and by the bridge theorem that happens precisely when</p>
+    \[\boxed{\;\det(A-\lambda I)=0\;}\]
+    <p>This is the <strong>characteristic equation</strong>. Its left side is a degree-\(n\) polynomial in \(\lambda\) — the <strong>characteristic polynomial</strong> \(p_A(\lambda)\) — and its roots are the complete list of eigenvalues. For each root, the eigenvectors are the non-zero solutions of \((A-\lambda I)\mathbf{x}=\mathbf{0}\): Unit 1's elimination, pointed at the nullspace of the collapsed matrix. That nullspace is the <strong>eigenspace</strong> \(E_\lambda\), and the set of all eigenvalues is the matrix's <strong>spectrum</strong>.</p>
+    <p>For \(2\times2\) matrices the polynomial wears its meaning openly:</p>
+    \[p_A(\lambda)=\lambda^2-\operatorname{tr}(A)\,\lambda+\det(A)\]
+    <p>— trace and determinant are literally its coefficients. (In general \(p_A(\lambda)=(-1)^n\lambda^n+(-1)^{n-1}\operatorname{tr}(A)\lambda^{n-1}+\cdots+\det A\): the top coefficients can only come from the diagonal product \(\prod(a_{ii}-\lambda)\), and setting \(\lambda=0\) gives the constant term \(p_A(0)=\det A\).)</p>
+  </div>
+
+  <div class="widget" id="w-char">
+    <div class="widget-head"><span class="w-title">The eigenvalue dial</span><span class="w-sub">edit A · the parabola is p(λ) · eigenvalues live where it crosses zero</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 320px"><svg id="char-svg" viewBox="0 0 560 380" class="svg-lab" role="img" aria-label="Graph of the characteristic polynomial with its real roots marked"></svg></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="mxwrap"><span class="readout">A =</span><span class="mx-edit" style="grid-template-columns:auto auto">
+          <input type="number" id="ch-a" value="1" step="1"><input type="number" id="ch-b" value="6" step="1">
+          <input type="number" id="ch-c" value="5" step="1"><input type="number" id="ch-d" value="2" step="1">
+        </span></div>
+        <div class="presets" id="ch-presets">
+          <button class="preset" data-p="data" aria-pressed="true">[[1,6],[5,2]]</button>
+          <button class="preset" data-p="sym">[[2,1],[1,2]]</button>
+          <button class="preset" data-p="shear">shear</button>
+          <button class="preset" data-p="rot">rotate 90°</button>
+          <button class="preset" data-p="ones">ones</button>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem">
+          <span class="chip">tr = <b id="ch-tr">3</b></span>
+          <span class="chip">det = <b id="ch-det">−28</b></span>
+          <span class="chip">Σλ <b id="ch-sum">✓</b> · Πλ <b id="ch-prod">✓</b></span>
+        </div>
+        <div id="ch-verdict" class="verdict info" style="margin-top:.7rem">—</div>
+        <p class="note">The chips run the free sanity check of Section 6.1 live: the roots must add to the trace and multiply to the determinant. If the parabola floats clear of the axis, the roots have gone complex — that story is Section 9.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>Run the lecture's example by hand once — it's the template for every eigen-computation you'll ever do. For \(A=\begin{bmatrix}1&6\\5&2\end{bmatrix}\):</p>
+    \[\det\!\begin{bmatrix}1-\lambda&6\\5&2-\lambda\end{bmatrix}=(1-\lambda)(2-\lambda)-30=\lambda^{2}-3\lambda-28=(\lambda-7)(\lambda+4)\]
+    <p>Roots: \(\lambda_1=7,\ \lambda_2=-4\). Then two small eliminations find the directions. For \(\lambda_1=7\): \((A-7I)\mathbf{x}=\begin{bmatrix}-6&6\\5&-5\end{bmatrix}\mathbf{x}=\mathbf{0}\) forces \(x_1=x_2\), so \(E_{7}=\operatorname{span}\{(1,1)\}\). For \(\lambda_2=-4\): \(\begin{bmatrix}5&6\\5&6\end{bmatrix}\mathbf{x}=\mathbf{0}\) gives \(5x_1+6x_2=0\), so \(E_{-4}=\operatorname{span}\{(6,-5)\}\) — exactly the \(\mathbf{u}\) we verified in Section 5. Notice both collapsed matrices visibly lost rank: their rows became parallel. That's no accident — it's the <em>definition</em> of being at an eigenvalue.</p>
+  </div>
+  <div class="callout remember"><span class="tag">The recipe card — every eigen-computation, ever</span>
+    <p>① Write \(A-\lambda I\) (subtract \(\lambda\) down the diagonal, touch nothing else). ② Set \(\det(A-\lambda I)=0\) and solve — the roots are all the eigenvalues. ③ For each root \(\lambda_i\), run Unit 1's elimination on \((A-\lambda_i I)\mathbf{x}=\mathbf{0}\) and describe the nullspace — that's the eigenspace \(E_{\lambda_i}\). ④ Free audit: the roots must sum to \(\operatorname{tr}A\) and multiply to \(\det A\). Four steps, no exceptions — exam questions, PCA libraries, and Google's PageRank all walk this exact staircase.</p>
+  </div>
+  <div class="callout try"><span class="tag">Shortcut worth stealing</span>
+    <p><strong>Triangular matrices hand you their eigenvalues for free.</strong> If \(A\) is triangular, so is \(A-\lambda I\), and a triangle's determinant is its diagonal product: \(p_A(\lambda)=(a_{11}-\lambda)(a_{22}-\lambda)\cdots(a_{nn}-\lambda)\). The eigenvalues are the diagonal entries, no computation at all. Two more freebies in the same spirit: \(A\) and \(A^{\top}\) share a spectrum (because \(\det M=\det M^{\top}\) makes their characteristic polynomials identical), and the eigenvalues of \(I_n\) are all 1 with eigenspace the whole of \(\mathbb{R}^n\).</p>
+  </div>
+  <div class="callout aha"><span class="tag">The free sanity check</span>
+    <p>Factor the polynomial through its roots, \(p_A(\lambda)=\prod_i(\lambda_i-\lambda)\), expand, and compare coefficients with the direct expansion. Two identities fall out:</p>
+    <p style="text-align:center">\(\displaystyle\sum_i\lambda_i=\operatorname{tr}(A)\qquad\qquad\prod_i\lambda_i=\det(A)\)</p>
+    <p>Every time you compute eigenvalues, spend five seconds checking both. For the example: \(7+(-4)=3=\operatorname{tr}A\) ✓ and \(7\times(-4)=-28=\det A\) ✓. This pair catches arithmetic slips <em>instantly</em> — and it explains the determinant's alarm bell one level deeper: \(\det A=0\) if and only if some eigenvalue is zero, i.e. some direction gets crushed to nothing.</p>
+  </div>
+
+  <div class="check" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Without touching a pencil: the eigenvalues of \(\begin{bmatrix}5&7\\0&3\end{bmatrix}\)?</p>
+    <div class="opts">
+      <button data-why="No expansion needed — the matrix is upper triangular. Where do a triangle's eigenvalues sit?">Need the quadratic formula for this one</button>
+      <button data-correct data-why="5 and 3, read straight off the diagonal — the matrix is triangular. Sanity check for free: 5 + 3 = 8 = tr ✓, 5 · 3 = 15 = det ✓. The 7 in the corner is a red herring; it tilts the eigenvectors but can't move the eigenvalues.">\(\lambda=5\) and \(\lambda=3\), read off the diagonal</button>
+      <button data-why="The off-diagonal 7 affects the eigenvectors, but for a triangular matrix p(λ) = (5−λ)(3−λ) — the 7 never enters.">\(\lambda=5\) and \(\lambda=7\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  <div class="check" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A classmate computes the eigenvalues of our \(\begin{bmatrix}1&6\\5&2\end{bmatrix}\) (tr = 3, det = −28) and reports \(\lambda=6,-3\). Ten-second verdict?</p>
+    <div class="opts">
+      <button data-why="Run both checks, not just the sum: 6 + (−3) = 3 matches the trace, but what about the product?">Plausible — they sum to the trace, so it checks out</button>
+      <button data-correct data-why="The sum passes (6 − 3 = 3 ✓) but the product fails: 6 × (−3) = −18 ≠ −28 ✗. At least one root is wrong — no further computation needed. This is exactly why you run both checks: each one alone can be fooled, together they're a fine net. (True answer: 7 and −4.)">Wrong — the product test fails: \(6\times(-3)=-18\ne-28\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+<!-- ================= 7 · SPECTRAL THEOREM ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head"><span class="sec-num">7</span><h2>The Spectral Theorem — symmetric matrices come apart cleanly</h2></div>
+  <div class="callout scenario"><span class="tag">Why you should care</span>
+    <p>Nearly every matrix machine learning builds <em>from data</em> is symmetric: covariance matrices, Gram matrices \(A^{\top}A\), kernel matrices, graph Laplacians. A theorem about symmetric matrices is not a special case — it's a theorem about the matrices you'll actually meet.</p>
+  </div>
+  <div class="prose">
+    <p>Think of wood grain. A plank splits cleanly <em>along</em> its grain and resists <em>across</em> it: a hidden set of perpendicular directions built into the material. The <strong>Spectral Theorem</strong> says every symmetric matrix (\(A=A^{\top}\)) has exactly that structure:</p>
+  </div>
+  <div class="callout remember"><span class="tag">Spectral theorem (real symmetric A)</span>
+    <p>① every eigenvalue is <strong>real</strong>; ② eigenvectors of distinct eigenvalues are <strong>orthogonal</strong>; ③ there are enough of them to form an <strong>orthonormal basis</strong> of \(\mathbb{R}^n\) — so \(A\) is always diagonalisable, and by an orthonormal matrix at that:</p>
+    <p style="text-align:center">\(A=Q\Lambda Q^{\top}\), &nbsp; \(Q\) = eigenvectors as columns (\(Q^{-1}=Q^{\top}\), Unit 3's honest motions), &nbsp; \(\Lambda=\operatorname{diag}(\lambda_1,\dots,\lambda_n)\).</p>
+  </div>
+  <div class="prose">
+    <p>Read \(A=Q\Lambda Q^{\top}\) right-to-left and a "complicated" matrix becomes three innocent moves: <strong>turn</strong> into the eigenbasis (\(Q^{\top}\) — a pure rotation, lengths untouched), <strong>stretch</strong> along the now-straight axes (\(\Lambda\) — just numbers on a diagonal), <strong>turn back</strong> (\(Q\)). Like straightening a crooked picture frame before enlarging it, then hanging it back at its angle. Every symmetric matrix is a rotation away from being diagonal.</p>
+    <p>The worked example, start to finish: \(A=\begin{bmatrix}2&1\\1&2\end{bmatrix}\) has \(p_A(\lambda)=(2-\lambda)^2-1=(\lambda-1)(\lambda-3)\), so \(\lambda_1=3,\lambda_2=1\). Eigenvectors \((1,1)\) and \((-1,1)\) — orthogonal, as promised — normalise to</p>
+    \[\mathbf{q}_1=\tfrac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix},\quad \mathbf{q}_2=\tfrac{1}{\sqrt2}\begin{bmatrix}-1\\1\end{bmatrix},\qquad Q=\tfrac{1}{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix},\quad \Lambda=\begin{bmatrix}3&0\\0&1\end{bmatrix}\]
+    <p>and multiplying back: \(Q\Lambda Q^{\top}=\begin{bmatrix}2&1\\1&2\end{bmatrix}\) ✓. Watch the three moves happen to a vector you control:</p>
+  </div>
+
+  <div class="widget" id="w-spec">
+    <div class="widget-head"><span class="w-title">Turn · stretch · turn back</span><span class="w-sub">A = QΛQᵀ acted out in four stages — drag the gold vector</span></div>
+    <div class="stagebar" id="spec-stages">
+      <button data-s="0" aria-selected="true">1 · original x</button>
+      <button data-s="1">2 · rotate: Qᵀx</button>
+      <button data-s="2">3 · stretch: ΛQᵀx</button>
+      <button data-s="3">4 · rotate back: Ax</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 320px"><svg id="spec-svg" viewBox="0 0 560 440" class="svg-lab grabbable" role="img" aria-label="Four-stage animation of the eigendecomposition acting on a draggable vector"></svg>
+      <span class="drag-hint">✋ drag the gold arrowhead in stage 1 to choose your x</span></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="readout" id="spec-co" style="line-height:2"></div>
+        <div id="spec-verdict" class="verdict good" style="margin-top:.6rem">QΛQᵀx = Ax ✓ — three simple moves, same answer</div>
+        <p class="note">The faint circle rides along to show what each stage does to <em>all</em> directions: the rotations leave it a circle (honest motions), only the stretch bends it into the ellipse — and the ellipse's axes are \(\mathbf{q}_1,\mathbf{q}_2\) scaled by \(\lambda_1,\lambda_2\). The grain, made visible.</p>
+      </div>
+    </div>
+  </div>
+
+  <details><summary>Proof that symmetric ⇒ real eigenvalues (four lines, one clever conjugate)</summary>
+    <p>Allow \(\lambda\) and \(\mathbf{x}\) to be complex for a moment and let \(A\mathbf{x}=\lambda\mathbf{x}\). Hit both sides with the conjugate-transpose \(\mathbf{x}^{H}=\overline{\mathbf{x}}^{\top}\) (Section 9 explains this operator): \(\mathbf{x}^{H}A\mathbf{x}=\lambda\,\mathbf{x}^{H}\mathbf{x}\). The left side is a \(1\times1\) matrix equal to its own conjugate-transpose — \((\mathbf{x}^{H}A\mathbf{x})^{H}=\mathbf{x}^{H}A^{H}\mathbf{x}=\mathbf{x}^{H}A\mathbf{x}\) since \(A\) is real symmetric — so it is a <em>real</em> number. And \(\mathbf{x}^{H}\mathbf{x}=\|\mathbf{x}\|^2&gt;0\) is real too. A real number divided by a positive real number: \(\lambda\) is real. ∎</p>
+  </details>
+  <details><summary>Proof that distinct eigenvalues ⇒ perpendicular eigenvectors</summary>
+    <p>Let \(A\mathbf{x}=\lambda\mathbf{x}\) and \(A\mathbf{y}=\mu\mathbf{y}\) with \(\lambda\ne\mu\). Then \(\lambda\,\mathbf{y}^{\top}\mathbf{x}=\mathbf{y}^{\top}A\mathbf{x}=(A\mathbf{y})^{\top}\mathbf{x}=\mu\,\mathbf{y}^{\top}\mathbf{x}\) — the middle step is symmetry, \(\mathbf{y}^{\top}A=(A\mathbf{y})^{\top}\). So \((\lambda-\mu)\,\mathbf{y}^{\top}\mathbf{x}=0\), and since \(\lambda\ne\mu\), \(\mathbf{y}^{\top}\mathbf{x}=0\): perpendicular. With repeated eigenvalues the eigenspace has extra dimensions, and Gram–Schmidt (Unit 3!) manufactures an orthonormal basis inside it — that's how the full orthonormal set gets assembled. The one genuinely hard fact, which we take on faith, is that the dimensions always add up to \(n\): geometric multiplicity equals algebraic multiplicity for symmetric matrices, so no direction goes missing.</p>
+  </details>
+  <div class="callout watch"><span class="tag">Where it powers ML</span>
+    <p><strong>PCA:</strong> the principal components <em>are</em> the eigenvectors of the (symmetric) covariance matrix; each eigenvalue is the variance captured along its component. Keep the top few and you've compressed the data with least loss — Units 12–13 build this in full. <strong>SVD:</strong> apply the spectral theorem to \(A^{\top}A\) and \(AA^{\top}\) and you get the singular value decomposition of <em>any</em> matrix — Unit 5's headline. <strong>Quadratic forms:</strong> \(\mathbf{x}^{\top}A\mathbf{x}=c\) draws an ellipsoid whose axes are the eigenvectors with semi-axes \(\propto1/\sqrt{\lambda_i}\) — the geometry behind confidence regions and Unit 3's unit balls. <strong>Dynamics:</strong> solutions of \(\dot{\mathbf y}=A\mathbf{y}\) are mixtures of \(e^{\lambda t}\mathbf{v}\) — the signs of eigenvalues decide decay, oscillation, or blow-up.</p>
+  </div>
+
+  <div class="check" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In \(A=Q\Lambda Q^{\top}\), we wrote \(Q^{\top}\) where diagonalisation in general demands \(P^{-1}\). What makes \(Q^{-1}=Q^{\top}\) legitimate here?</p>
+    <div class="opts">
+      <button data-why="Symmetry of A is why the eigenvectors are orthogonal — but the inverse-equals-transpose property belongs to Q, and it needs one more grooming step beyond orthogonality.">Because A is symmetric, any eigenvector matrix satisfies it</button>
+      <button data-correct data-why="Q's columns are orthonormal — orthogonal (spectral theorem) and then normalised to length 1. For such matrices QᵀQ = I entry-by-entry (each entry is qᵢ·qⱼ), which is exactly Q⁻¹ = Qᵀ — Unit 3's honest motions. Inverting a matrix by merely flipping it is the luxury the spectral theorem buys.">Q's columns are orthonormal, so \(Q^{\top}Q=I\)</button>
+      <button data-why="Diagonal matrices satisfy Λᵀ = Λ, but the claim is about Q. The right question: what is QᵀQ when the columns are orthonormal?">Because Λ is diagonal</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 8 · 3D ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head"><span class="sec-num">8</span><h2>The theorem in 3D — a sphere becomes an ellipsoid</h2></div>
+  <div class="prose">
+    <p>Everything scales up. A symmetric \(3\times3\) matrix has three real eigenvalues on three mutually perpendicular eigen-directions; feed it the unit sphere and out comes an <strong>ellipsoid</strong> whose axes lie exactly along that grain, stretched by \(|\lambda_1|,|\lambda_2|,|\lambda_3|\). And the fingerprints multiply: the ellipsoid's volume is \(|\det A|=|\lambda_1\lambda_2\lambda_3|\) times the sphere's — Section 2's volume dial, now factored into per-direction stretches. Drag a \(\lambda\) to zero and watch dimension die: the ellipsoid pancakes flat, \(\det\to0\), the matrix goes singular in front of you.</p>
+  </div>
+
+  <div class="widget" id="w-e3">
+    <div class="widget-head"><span class="w-title">The eigen-ellipsoid</span><span class="w-sub">drag to orbit · slide the three eigenvalues of a symmetric A</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 320px"><svg id="e3-svg" viewBox="0 0 560 460" class="svg-lab grabbable" role="img" aria-label="Unit sphere mapped to an ellipsoid whose axes are the eigen-directions scaled by the eigenvalues"></svg>
+      <span class="drag-hint">✋ drag to orbit the scene</span></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label>λ₁ (blue)</label><input type="range" id="e3-l1" min="-2" max="3" step="0.1" value="3"><output id="e3-l1o">3</output></div>
+          <div class="ctl"><label>λ₂ (orange)</label><input type="range" id="e3-l2" min="-2" max="3" step="0.1" value="1.5"><output id="e3-l2o">1.5</output></div>
+          <div class="ctl"><label>λ₃ (green)</label><input type="range" id="e3-l3" min="-2" max="3" step="0.1" value="0.6"><output id="e3-l3o">0.6</output></div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem">
+          <span class="chip">det = λ₁λ₂λ₃ = <b id="e3-det">2.7</b></span>
+          <span class="chip">volume × <b id="e3-vol">2.7</b></span>
+        </div>
+        <div id="e3-verdict" class="verdict info" style="margin-top:.7rem">—</div>
+        <p class="note">The grain here is deliberately <em>not</em> the coordinate axes — the three eigen-directions are a tilted orthonormal frame, to make the point that a symmetric matrix carries its own private set of perpendicular axes, wherever they happen to point.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 9 · COMPLEX ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head"><span class="sec-num">9</span><h2>When nothing aligns — rotations and complex eigenvalues</h2></div>
+  <div class="prose">
+    <p>Section 5 left a mystery: the rotation matrix resonated <em>nowhere</em>. Picture a merry-go-round — as it spins, not a single horse keeps pointing the same way. No real direction survives, so there is no real eigenvector to find. Does the theory just fail?</p>
+    <p>It doesn't — it <em>expands</em>. Run the machinery honestly for \(R_\theta=\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}\):</p>
+    \[p(\lambda)=\lambda^{2}-2\cos\theta\,\lambda+1\qquad\Longrightarrow\qquad \lambda=\cos\theta\pm i\sin\theta=e^{\pm i\theta}\]
+    <p>The roots exist — they've just stepped off the real line into the complex plane, landing on the unit circle as a conjugate pair. And they're not nonsense: \(e^{\pm i\theta}\) is precisely the complex number that <em>means</em> "turn by \(\theta\)". A complex eigenvalue \(re^{\pm i\theta}\) from any real matrix always arrives with its conjugate twin and encodes rotation-by-\(\theta\)-while-scaling-by-\(r\) inside some invariant plane. The eigenvalues didn't fail to describe the motion — they described it perfectly, in a language built for turning.</p>
+  </div>
+
+  <div class="widget" id="w-rot">
+    <div class="widget-head"><span class="w-title">Eigenvalues on the unit circle</span><span class="w-sub">spin the dial · watch the conjugate pair e^{±iθ}</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 300px"><svg id="rot-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="Complex plane with the two eigenvalues of a rotation matrix on the unit circle"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls"><div class="ctl"><label>θ</label><input type="range" id="rot-th" min="0" max="180" step="1" value="35"><output id="rot-tho">35°</output></div></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem">
+          <span class="chip">p(λ) = λ² − <b id="rot-tr">1.64</b>λ + 1</span>
+          <span class="chip">λ = <b id="rot-lam">0.82 ± 0.57i</b></span>
+        </div>
+        <div id="rot-verdict" class="verdict info" style="margin-top:.7rem">—</div>
+        <p class="note">Trace and determinant stay stubbornly real (tr = 2cos θ, det = 1 — the pair still sums and multiplies correctly!). At θ = 0° and 180° the twins collide on the real axis: λ = 1,1 or −1,−1, the only rotations with real eigen-directions.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>Complex vectors force one honest repair. The old squared length \(\mathbf{x}^{\top}\mathbf{x}\) breaks: for \(\mathbf{x}=(1+i,\,2+i)\) it gives \((1+i)^2+(2+i)^2=3+6i\) — a "length" that isn't even real. The fix is to conjugate one side: define \(\mathbf{x}^{H}=\overline{\mathbf{x}}^{\top}\) (the <strong>conjugate-transpose</strong>, or Hermitian transpose), and then</p>
+    \[\mathbf{x}^{H}\mathbf{x}=|x_1|^2+\cdots+|x_n|^2=\|\mathbf{x}\|^2\ge0\]
+    <p>behaves like a length again. With \(H\) replacing \(\top\), the whole symmetric story generalises: a matrix is <strong>Hermitian</strong> if \(A^{H}=A\) — e.g. \(\begin{bmatrix}1&3-i\\3+i&4\end{bmatrix}\) — and Hermitian matrices have real eigenvalues and orthogonal eigenvectors, by the very proofs in Section 7 (which, you may notice, were written with \(H\) all along). This is why quantum mechanics writes every observable — energy, momentum, spin — as a Hermitian operator: measured values must come out real, and Hermitian spectra are the mathematical guarantee that they do.</p>
+  </div>
+
+  <div class="check" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Set the widget to θ = 90° — the quarter-turn \(\begin{bmatrix}0&-1\\1&0\end{bmatrix}\). Its eigenvalues?</p>
+    <div class="opts">
+      <button data-why="Try the characteristic polynomial: λ² − (0)λ + 1 = λ² + 1. Which numbers square to −1?">\(\lambda=1,-1\) — a quarter turn flips some directions</button>
+      <button data-correct data-why="p(λ) = λ² + 1 = 0 gives λ = ±i: a pure conjugate-imaginary pair on the unit circle, at the very top and bottom. Sanity checks still hold in ℂ: i + (−i) = 0 = tr ✓, i · (−i) = 1 = det ✓. 'Multiply by i' and 'rotate 90°' are the same act — the eigenvalue literally is the rotation.">\(\lambda=\pm i\)</button>
+      <button data-why="A rotation never collapses space — det R = 1 ≠ 0 — so 0 can never be an eigenvalue of any rotation.">\(\lambda=0\), twice</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+<!-- ================= 10 · CHOLESKY ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head"><span class="sec-num">10</span><h2>Cholesky — the square root of a matrix</h2></div>
+  <div class="prose">
+    <p>One more factorisation, for the friendliest matrices of all: symmetric <strong>and positive-definite</strong> (all eigenvalues \(&gt;0\) — Unit 3's engine-room matrices, wearing this unit's vocabulary). Just as \(9=3\times3\) gives the number 9 a square root, an SPD matrix has a tidy "square root" of its own:</p>
+    \[A=LL^{\top}\]
+    <p>with \(L\) lower-triangular and positive on its diagonal. And like ordinary square roots, it only works for "positive" inputs. The entries of \(L\) fall out one at a time, top-left to bottom-right — for \(2\times2\):</p>
+    \[\ell_{11}=\sqrt{a_{11}},\qquad \ell_{21}=\frac{a_{21}}{\ell_{11}},\qquad \ell_{22}=\sqrt{a_{22}-\ell_{21}^{2}}\]
+    <p>The lecture's example: \(A=\begin{bmatrix}4&2\\2&3\end{bmatrix}\) gives \(\ell_{11}=2\), \(\ell_{21}=1\), \(\ell_{22}=\sqrt{3-1}=\sqrt2\), and indeed \(\begin{bmatrix}2&0\\1&\sqrt2\end{bmatrix}\begin{bmatrix}2&1\\0&\sqrt2\end{bmatrix}=\begin{bmatrix}4&2\\2&3\end{bmatrix}\) ✓. Notice every diagonal step takes a real square root — if the matrix isn't positive-definite, some radicand goes negative and the algorithm <em>halts</em>. Cholesky doubles as the cheapest positive-definiteness test in practice: don't check eigenvalues, just try to factor.</p>
+  </div>
+  <div class="callout scenario"><span class="tag">The killer application</span>
+    <p>A multivariate Gaussian is governed by a covariance matrix \(\Sigma\) — symmetric positive-definite, as data-built matrices are. To <em>sample</em> from that distribution: factor \(\Sigma=LL^{\top}\), draw an easy uncorrelated standard-normal vector \(\mathbf{z}\) (each coordinate independently), and output \(\mathbf{x}=L\mathbf{z}\). The covariance of \(L\mathbf{z}\) is \(L\,I\,L^{\top}=\Sigma\) — exactly right. \(L\) is the lens that bends a featureless round cloud into the tilted ellipse your data actually lives on. Every simulation library you'll ever call does precisely this.</p>
+  </div>
+
+  <div class="widget" id="w-chol">
+    <div class="widget-head"><span class="w-title">The Gaussian lens</span><span class="w-sub">edit Σ · factor it · watch L bend a round cloud into your data</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2 1 320px"><svg id="chol-svg" viewBox="0 0 560 430" class="svg-lab" role="img" aria-label="Scatter of standard normal points before and after multiplication by the Cholesky factor, with covariance ellipses"></svg></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="mxwrap"><span class="readout">Σ =</span><span class="mx-edit" style="grid-template-columns:auto auto">
+          <input type="number" id="chl-a" value="4" step="0.5"><input type="number" id="chl-b" value="2" step="0.5">
+          <input type="number" id="chl-b2" value="2" step="0.5" disabled><input type="number" id="chl-c" value="3" step="0.5">
+        </span></div>
+        <div class="tabs" id="chl-mode" style="margin-top:.6rem">
+          <button data-m="z">round cloud z</button>
+          <button data-m="x" aria-selected="true">shaped cloud Lz</button>
+        </div>
+        <div class="readout" id="chl-l" style="margin:.4rem 0"></div>
+        <div id="chl-verdict" class="verdict good" style="margin-top:.4rem">—</div>
+        <div class="presets" id="chl-presets">
+          <button class="preset" data-p="lec" aria-pressed="true">lecture's [[4,2],[2,3]]</button>
+          <button class="preset" data-p="id">identity</button>
+          <button class="preset" data-p="tight">strong correlation</button>
+          <button class="preset" data-p="broken">not PD (try it)</button>
+        </div>
+        <p class="note">The navy curves are the 1σ and 2σ ellipses of Σ — and their axes are Σ's eigenvectors, straight from Section 7. Same 300 points in both views; L is the only thing that changes. When Σ isn't positive-definite the square root fails mid-computation — the verdict shows exactly where.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Factor \(\Sigma=\begin{bmatrix}9&3\\3&5\end{bmatrix}\) in your head: \(\ell_{11}=3\), \(\ell_{21}=1\), and \(\ell_{22}=\)?</p>
+    <div class="opts">
+      <button data-why="ℓ₂₂ isn't √a₂₂ — the recipe first subtracts what row 2 already 'spent' through ℓ₂₁: the radicand is a₂₂ − ℓ₂₁².">\(\sqrt5\)</button>
+      <button data-correct data-why="ℓ₂₂ = √(a₂₂ − ℓ₂₁²) = √(5 − 1) = 2. Check: LLᵀ rebuilds [[9,3],[3,5]] ✓. And since every radicand stayed positive, the factorisation itself just certified Σ as positive-definite — test and factorisation in one pass.">\(2\)</button>
+      <button data-why="Almost — that's the radicand before the square root: 5 − 1 = 4. The entry is its square root.">\(4\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 11 · FINE PRINT ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head"><span class="sec-num">11</span><h2>The fine print — defective matrices and the ML bridge</h2></div>
+  <div class="prose">
+    <p><strong>Diagonalisability.</strong> The general recipe \(A=PDP^{-1}\) needs \(n\) independent eigenvectors to fill \(P\)'s columns. When do you get them? Always, if the \(n\) eigenvalues are distinct — eigenvectors of different eigenvalues are automatically independent (a chain of them collapsing would force two \(\lambda\)'s to coincide). Always, if \(A\) is symmetric — that's the spectral theorem, with the bonus \(P^{-1}=Q^{\top}\). But with <em>repeated</em> eigenvalues and no symmetry, it can fail: the shear \(\begin{bmatrix}1&1\\0&1\end{bmatrix}\) has \(\lambda=1\) counted twice by the polynomial (<strong>algebraic multiplicity</strong> 2) yet only the single eigen-line \(\operatorname{span}\{(1,0)\}\) (<strong>geometric multiplicity</strong> 1). One direction short of a basis: the shear is <strong>defective</strong>, and no change of basis will ever make it diagonal. You met this in the widget — the missing second resonance was this fact, felt through your fingertips.</p>
+    <p><strong>The bridge into the next units.</strong> Take any data matrix \(A\in\mathbb{R}^{m\times n}\) with independent columns (rank \(n\)) and form the Gram matrix \(A^{\top}A\). It is symmetric — \((A^{\top}A)^{\top}=A^{\top}A\) — and positive-definite: \(\mathbf{x}^{\top}A^{\top}A\mathbf{x}=\|A\mathbf{x}\|^{2}&gt;0\) for \(\mathbf{x}\ne\mathbf{0}\), because full column rank means \(A\mathbf{x}\ne\mathbf{0}\). So <em>everything in this unit applies to it</em>: real positive eigenvalues, orthonormal eigenbasis, Cholesky factor. That one observation is the engine of least squares (Unit 9's normal equations solve \(A^{\top}A\hat{\mathbf x}=A^{\top}\mathbf{b}\)), of SVD (Unit 5 strings together the eigen-structure of \(A^{\top}A\) and \(AA^{\top}\)), and of PCA (Units 12–13 eigendecompose the covariance matrix, which <em>is</em> a scaled Gram matrix of centred data). The chapter you just finished is the load-bearing wall.</p>
+  </div>
+  <div class="check" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Your data matrix \(A\) (100 rows of examples, 8 columns of features, all columns independent). Which toolbox applies to \(A^{\top}A\)?</p>
+    <div class="opts">
+      <button data-why="It's 8×8 and equals its own transpose — check (AᵀA)ᵀ. And xᵀ(AᵀA)x = ‖Ax‖² can't go negative. That buys more than you've claimed.">Only the determinant — it's not necessarily symmetric</button>
+      <button data-correct data-why="The whole unit: AᵀA is symmetric and (with full column rank) positive-definite, so the spectral theorem gives it real positive eigenvalues on an orthonormal eigenbasis, and Cholesky factors it. Least squares, SVD, and PCA all cash in this exact cheque.">Everything — spectral theorem, positive real eigenvalues, Cholesky</button>
+      <button data-why="It has full rank n = 8 (nullspaces of A and AᵀA coincide), so its determinant is non-zero — but the interesting part is what symmetry plus positive-definiteness unlocks.">Nothing — an 8×8 summary of 100 points must be singular</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 12 · SUMMARY ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head"><span class="sec-num">12</span><h2>The whole story, in five lines</h2></div>
+  <div class="prose">
+    <p>① The <strong>determinant</strong> is the volume dial — \(|\det|\) scales area/volume, the sign records a mirror flip, and \(\det=0\) is the alarm bell of collapse: singular, rank-deficient, irreversible. Compute it by cofactors along the laziest line, or by elimination to a triangle. ② The <strong>trace</strong> adds the diagonal in a heartbeat and moonlights as the sum of the eigenvalues, while the determinant is their product — the free pair of sanity checks. ③ <strong>Eigenvectors</strong> are the directions a matrix cannot turn, \(A\mathbf{x}=\lambda\mathbf{x}\); the <strong>characteristic equation</strong> \(\det(A-\lambda I)=0\) hunts every \(\lambda\), and elimination on the collapsed matrix recovers each eigenspace. ④ For <strong>symmetric</strong> matrices the fingerprints organise perfectly: real eigenvalues on perpendicular directions, \(A=Q\Lambda Q^{\top}\) — every symmetric matrix is just <em>turn, stretch, turn back</em>. Rotations opt out into the complex plane (\(e^{\pm i\theta}\)), where Hermitian matrices carry the theorem onward. ⑤ <strong>Cholesky</strong> \(A=LL^{\top}\) is the SPD square root — the working end of covariance matrices, Gaussian sampling, and the fastest positive-definiteness test there is.</p>
+  </div>
+  <div class="callout remember"><span class="tag">The one thing to remember</span>
+    <p><strong>A matrix is its spectrum, wearing a coordinate system.</strong> Find the directions it cannot turn and the numbers it stretches them by, and you have seen through the array of entries to the skeleton underneath — which is exactly what PCA, SVD, spectral clustering, and stability analysis do for a living.</p>
+  </div>
+    <h3 style="margin:.3rem 0 .4rem">Unit 5 · Matrix Decompositions &amp; SVD</h3>
+    <p style="font-size:.92rem;color:var(--ink-2);margin:0">The spectral theorem only serves symmetric matrices. Next we buy the same power for <em>every</em> matrix: the singular value decomposition — built, exactly as promised, from the eigen-structure of \(A^{\top}A\) and \(AA^{\top}\). <a href="unit-05.html" style="font-weight:650">Open Unit 5 →</a></p>
+  </div>
+</section>
+<section class="unit" id="spractice">
+  <div class="sec-head"><span class="sec-num">13</span><h2>Practice arena — the unit's problem set, solved in full</h2></div>
+  <div class="prose">
+    <p>These five problems are the eigen-analysis half of Prof. Saurabh's practice set — his single "Matrix Decompositions" set spans this unit and the next, so we've split it: characteristic polynomials, eigenvalues and eigenvectors, determinant-and-trace tricks, and the spectral theorem live here, while the diagonalization and SVD problems wait in Unit 5's arena. Attempt each one on paper first — the fold-out solution shows every step, nothing skipped.</p>
+  </div>
+
+  <!-- ===== Problem 1 (source #2) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Consider</p>
+    \[ A=\begin{bmatrix}4&1&1\\1&4&1\\1&1&4\end{bmatrix}. \]
+    <p class="pq">(a) Find the characteristic polynomial and all eigenvalues with their algebraic multiplicities. (b) For every eigenvalue find a basis of its eigenspace and state the geometric multiplicity. (c) Hence decide, with reason, whether \(A\) has a full basis of eigenvectors.</p>
+    <p class="ptest"><b>What this tests.</b> Computing a \(3\times 3\) characteristic polynomial cleanly, then comparing algebraic and geometric multiplicity eigenvalue by eigenvalue.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Spot the structure.</b> \(A=3I+J\), where \(J\) is the all-ones matrix — every row sums to 6, a strong hint that \((1,1,1)^{\top}\) will be an eigenvector with eigenvalue 6.</div>
+      <div class="pstep"><b>Step 2 · Characteristic polynomial by row reduction.</b> Start from
+      \[ \det(A-\lambda I)=\det\begin{bmatrix}4-\lambda&1&1\\1&4-\lambda&1\\1&1&4-\lambda\end{bmatrix}. \]
+      Subtract row 1 from rows 2 and 3 (determinant unchanged). Entry by entry, the new row 2 is \(\big(1-(4-\lambda),\,(4-\lambda)-1,\,1-1\big)=(\lambda-3,\;3-\lambda,\;0)\) and the new row 3 is \((\lambda-3,\;0,\;3-\lambda)\). Factor \((\lambda-3)\) out of each of those rows:
+      \[ \det(A-\lambda I)=(\lambda-3)^2\det\begin{bmatrix}4-\lambda&1&1\\1&-1&0\\1&0&-1\end{bmatrix}. \]
+      Expand the remaining determinant along row 3: \(1\cdot\det\begin{bmatrix}1&1\\-1&0\end{bmatrix}+(-1)\cdot\det\begin{bmatrix}4-\lambda&1\\1&-1\end{bmatrix} = 1\cdot(0+1)+(-1)\big(-(4-\lambda)-1\big)=1+(5-\lambda)=6-\lambda.\) Hence
+      \[ \det(A-\lambda I)=(\lambda-3)^2(6-\lambda)=-(\lambda-6)(\lambda-3)^2. \]
+      So \(\lambda=6\) with algebraic multiplicity \(\operatorname{am}(6)=1\), and \(\lambda=3\) with \(\operatorname{am}(3)=2\).</div>
+      <div class="pstep"><b>Step 3 · Eigenspace of \(\lambda=6\).</b> \((A-6I)\mathbf{v}=\mathbf{0}\) reads \(-2x+y+z=0,\; x-2y+z=0,\; x+y-2z=0\). Subtracting the second equation from the first gives \(-3x+3y=0\Rightarrow x=y\); subtracting the third from the second gives \(-3y+3z=0\Rightarrow y=z\). So \(x=y=z\): basis \(\{(1,1,1)^{\top}\}\), geometric multiplicity \(\operatorname{gm}(6)=1\).</div>
+      <div class="pstep"><b>Step 4 · Eigenspace of \(\lambda=3\).</b> \(A-3I=J\) (all ones), so all three equations collapse to the single condition \(x+y+z=0\). Two free variables give
+      \[ \mathbf{v}=\begin{bmatrix}-1\\1\\0\end{bmatrix},\quad\begin{bmatrix}-1\\0\\1\end{bmatrix}, \qquad \operatorname{gm}(3)=2. \]</div>
+      <div class="pstep"><b>Step 5 · Compare multiplicities.</b> \(\operatorname{gm}(6)=1=\operatorname{am}(6)\) and \(\operatorname{gm}(3)=2=\operatorname{am}(3)\): the three eigenvectors together form a basis of \(\mathbb{R}^3\). (In fact \(A\) is symmetric, so the spectral theorem already guaranteed a full — even orthogonal — eigenbasis.)</div>
+      <div class="pans">Answer. \(\det(A-\lambda I)=-(\lambda-6)(\lambda-3)^2\). \(\lambda=6\): multiplicity 1, eigenvector \((1,1,1)^{\top}\); \(\lambda=3\): multiplicity 2, eigenspace \(\{x+y+z=0\}\) with basis \((-1,1,0)^{\top},(-1,0,1)^{\top}\). \(A\) has a full eigenbasis.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>A repeated eigenvalue is a question, not a verdict: you must actually solve \((A-3I)\mathbf{v}=\mathbf{0}\) and count independent solutions. And keep the leading minus sign — for a \(3\times 3\), \(\det(A-\lambda I)\) starts with \(-\lambda^3\), which is why the factorization reads \(-(\lambda-6)(\lambda-3)^2\).</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Sanity-check eigenvalues instantly: \(\operatorname{tr}(A)=4+4+4=12=6+3+3\) and the row-sum trick hands you \((1,1,1)^{\top}\!\mapsto 6\) for free. For symmetric matrices, \(\operatorname{gm}=\operatorname{am}\) always holds — the spectral theorem forbids "missing" eigenvectors.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>All three rows of \(A-3I\) collapse into the single equation \(x+y+z=0\) — a whole <em>plane</em> of eigenvectors. And the \(\lambda=6\) eigenvector \((1,1,1)^{\top}\) is exactly the normal of that plane: orthogonality between eigenspaces showed up before anyone asked for it.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 (source #3) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Find all eigenvalues and corresponding eigenvectors of</p>
+    \[ A=\begin{bmatrix}3&-2\\4&-1\end{bmatrix}, \]
+    <p class="pq">and explain geometrically why no real eigenvector exists.</p>
+    <p class="ptest"><b>What this tests.</b> Handling complex roots of the characteristic polynomial of a real \(2\times 2\) — and reading the geometry behind them.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Characteristic polynomial.</b>
+      \[ \det(A-\lambda I)=\det\begin{bmatrix}3-\lambda&-2\\4&-1-\lambda\end{bmatrix}=(3-\lambda)(-1-\lambda)+8. \]
+      Expand the product: \((3-\lambda)(-1-\lambda)=-3-3\lambda+\lambda+\lambda^{2}=\lambda^{2}-2\lambda-3\); adding 8 gives
+      \[ \lambda^{2}-2\lambda+5=0. \]</div>
+      <div class="pstep"><b>Step 2 · Solve the quadratic.</b>
+      \[ \lambda=\frac{2\pm\sqrt{4-20}}{2}=\frac{2\pm\sqrt{-16}}{2}=1\pm 2i. \]
+      The discriminant is negative, so the eigenvalues are a complex-conjugate pair.</div>
+      <div class="pstep"><b>Step 3 · Eigenvectors.</b> For \(\lambda=1+2i\), the first row of \((A-\lambda I)\mathbf{v}=\mathbf{0}\) gives \((3-\lambda)x-2y=0\), i.e. \((2-2i)x-2y=0\Rightarrow y=(1-i)x\). Taking \(x=1\),
+      \[ \mathbf{v}_1=\begin{bmatrix}1\\1-i\end{bmatrix}. \]
+      Its conjugate \(\mathbf{v}_2=(1,\,1+i)^{\top}\) belongs to the conjugate eigenvalue \(\lambda=1-2i\).</div>
+      <div class="pstep"><b>Step 4 · Verify the pair.</b> Entry by entry: \(A\mathbf{v}_1=\big(3\cdot 1-2(1-i),\; 4\cdot 1-(1-i)\big)^{\top}=(1+2i,\;3+i)^{\top}\), while \(\lambda_1\mathbf{v}_1=(1+2i)\,(1,\,1-i)^{\top}=\big(1+2i,\;(1+2i)(1-i)\big)^{\top}\) and \((1+2i)(1-i)=1-i+2i-2i^{2}=3+i\). Both sides match. ✓</div>
+      <div class="pstep"><b>Step 5 · Geometric reason.</b> A real \(2\times 2\) matrix with complex eigenvalues acts as a rotation combined with a scaling. A genuine rotation maps no nonzero real vector onto a multiple of itself — so no real eigenvector can exist.</div>
+      <div class="pans">Answer. \(\lambda=1\pm 2i\) with eigenvectors \(\mathbf{v}=(1,\,1\mp i)^{\top}\). No real eigenvector exists because the eigenvalues are non-real: the map rotates the plane.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The classic slip is expanding \((3-\lambda)(-1-\lambda)\) into \(\lambda^{2}-2\lambda-3\) and then forgetting the \(-(-2)(4)=+8\) from the off-diagonal — the constant term must be \(\det A=-3+8=5\). Also: use <em>one</em> row of \(A-\lambda I\) to find the eigenvector; the other row is automatically dependent, and checking that it is doubles as a free error check.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>For real matrices, complex eigenvalues always arrive in conjugate pairs, and so do their eigenvectors: compute one eigenvector, conjugate every entry to get the other. One computation, two eigenpairs.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(|\lambda|=\sqrt{1^{2}+2^{2}}=\sqrt{5}\) and \(\det A=5=|\lambda|^{2}\): this matrix is secretly "rotate, then stretch by \(\sqrt5\)". The determinant knew the stretch factor all along — even though no direction in the real plane is left pointing where it started.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 (source #6) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">Consider</p>
+    \[ A=\begin{bmatrix}2&-1&1\\1&0&3\\1&-1&4\end{bmatrix}, \qquad\text{whose characteristic polynomial is } (\lambda-1)(\lambda-2)(\lambda-3). \]
+    <p class="pq">Without forming any matrix power explicitly, compute (a) \(\det(A^{8})\), (b) \(\operatorname{tr}(A^{6})\), and (c) \(\operatorname{tr}\!\left(A^{6}-7A^{2}\right)\).</p>
+    <p class="ptest"><b>What this tests.</b> The scalar shortcuts \(\det(A^{k})=(\det A)^{k}\) and \(\operatorname{tr}(A^{k})=\sum_i\lambda_i^{k}\) — handling huge powers with three numbers.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 0 · Read off the eigenvalues.</b> The characteristic polynomial factors as \((\lambda-1)(\lambda-2)(\lambda-3)\), so the eigenvalues are \(\lambda_1=1,\ \lambda_2=2,\ \lambda_3=3\). Quick sanity check against the matrix: \(\operatorname{tr}A=2+0+4=6=1+2+3\) and \(\det A=6=1\cdot 2\cdot 3\). ✓</div>
+      <div class="pstep"><b>Part (a) · Determinant of a power.</b> \(A^{k}\) has eigenvalues \(\lambda_i^{k}\), and the determinant is their product — which is \((\det A)^{k}\):
+      \[ \det(A^{8})=(\det A)^{8}=6^{8}. \]
+      Compute it in two squarings: \(6^{2}=36,\ 6^{4}=36^{2}=1296,\ 6^{8}=1296^{2}=1\,679\,616\).</div>
+      <div class="pstep"><b>Part (b) · Trace of a power.</b> Trace is the <em>sum</em> of eigenvalues, taken after powering:
+      \[ \operatorname{tr}(A^{6})=\sum_i \lambda_i^{6}=1^{6}+2^{6}+3^{6}=1+64+729=794. \]</div>
+      <div class="pstep"><b>Part (c) · Trace of a polynomial in \(A\).</b> Trace is linear, and \(A^{6},A^{2}\) have eigenvalues \(\lambda_i^{6},\lambda_i^{2}\), so
+      \[ \operatorname{tr}\!\left(A^{6}-7A^{2}\right)=\sum_i\big(\lambda_i^{6}-7\lambda_i^{2}\big)=794-7\,(1+4+9)=794-98=696. \]
+      Every answer used only the three scalars \(\lambda_i\) — not a single \(3\times 3\) multiplication.</div>
+      <div class="pans">Answer. \(\det(A^{8})=6^{8}=1\,679\,616\); \(\operatorname{tr}(A^{6})=794\); \(\operatorname{tr}(A^{6}-7A^{2})=696\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\operatorname{tr}(A^{6})\neq(\operatorname{tr}A)^{6}\) — the trace of a power is the sum of <em>powered</em> eigenvalues, \(\sum\lambda_i^{6}\), not the power of the sum. The determinant is the multiplicative one: \(\det(A^{k})=(\det A)^{k}\) really does hold.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>\(\operatorname{tr}(A)=\sum_i\lambda_i\) and \(\det(A)=\prod_i\lambda_i\), and powers or polynomials of \(A\) simply apply themselves to each \(\lambda_i\). To handle a high power, find the eigenvalues first — then work entirely with scalars.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A^{8}\) is a \(3\times 3\) matrix of six-to-seven-digit entries that we never wrote down — yet its determinant, \(1\,679\,616\), came from the single number \(\det A=6\). The eigenvalues compress everything the power will ever do to volume and trace.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 (source #7) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Let \(A\) be a \(3\times 3\) matrix whose eigenvalues are \(1,\,2,\,4\), and define</p>
+    \[ B=A^{2}-5A+6I. \]
+    <p class="pq">(a) Show that if \(\lambda\) is an eigenvalue of \(A\) (with eigenvector \(\mathbf{v}\)), then \(\lambda^{2}-5\lambda+6\) is an eigenvalue of \(B\) (with the same eigenvector). (b) Hence find the eigenvalues of \(B\), then \(\det(B)\) and \(\operatorname{tr}(B)\), and state whether \(B\) is invertible. (c) For which eigenvalues of \(A\) would \(B\) fail to be invertible?</p>
+    <p class="ptest"><b>What this tests.</b> The spectral mapping idea \(\lambda\mapsto p(\lambda)\): polynomials in \(A\) keep the eigenvectors and transform only the eigenvalues.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a) · Spectral mapping.</b> Suppose \(A\mathbf{v}=\lambda\mathbf{v}\). Then \(A^{2}\mathbf{v}=A(\lambda\mathbf{v})=\lambda^{2}\mathbf{v}\), and so
+      \[ B\mathbf{v}=(A^{2}-5A+6I)\mathbf{v}=\lambda^{2}\mathbf{v}-5\lambda\mathbf{v}+6\mathbf{v}=(\lambda^{2}-5\lambda+6)\,\mathbf{v}. \]
+      Thus \(\mathbf{v}\) is still an eigenvector — now with eigenvalue \(p(\lambda)=\lambda^{2}-5\lambda+6\).</div>
+      <div class="pstep"><b>Part (b) · Apply \(p\) to each eigenvalue.</b>
+      \[ p(1)=1-5+6=2,\qquad p(2)=4-10+6=0,\qquad p(4)=16-20+6=2. \]
+      So \(B\) has eigenvalues \(\{2,\,0,\,2\}\), and therefore
+      \[ \det(B)=2\cdot 0\cdot 2=0,\qquad \operatorname{tr}(B)=2+0+2=4. \]
+      Because \(0\) is an eigenvalue (equivalently \(\det B=0\)), \(B\) is <em>not</em> invertible — even though \(A\) itself is (none of \(1,2,4\) is zero).</div>
+      <div class="pstep"><b>Part (c) · When is \(B\) singular?</b> \(B\) is singular exactly when \(p(\lambda)=0\) for some eigenvalue \(\lambda\) of \(A\). Factoring, \(p(\lambda)=(\lambda-2)(\lambda-3)\): this vanishes iff \(A\) has \(2\) or \(3\) as an eigenvalue. Here \(\lambda=2\) occurs — which is precisely why \(B\) is singular.</div>
+      <div class="pstep"><b>Remark · Cayley–Hamilton.</b> If \(A\)'s characteristic polynomial were itself \(\lambda^{2}-5\lambda+\text{const}\), then \(p(A)\) collapses to a multiple of \(I\). E.g. \(A=\begin{bmatrix}4&5\\0&1\end{bmatrix}\) has eigenvalues \(4,1\) and characteristic polynomial \(\lambda^{2}-5\lambda+4\); Cayley–Hamilton gives \(A^{2}-5A+4I=0\), hence \(A^{2}-5A+6I=2I\).</div>
+      <div class="pans">Answer. \(p(\lambda)=\lambda^{2}-5\lambda+6\) maps each eigenvalue; \(B\) has eigenvalues \(2,\,0,\,2\). \(\det(B)=0\), \(\operatorname{tr}(B)=4\), so \(B\) is not invertible. \(B\) is singular iff \(A\) has eigenvalue \(2\) or \(3\) (the roots of \(p\)).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The eigen<em>vectors</em> do not change — only the eigenvalues pass through \(p\). And invertibility does not transfer: an invertible \(A\) can easily produce a singular \(p(A)\), as it just did.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Eigenvalues of \(p(A)\) are \(p(\text{eigenvalues of }A)\), with the same eigenvectors. So \(p(A)\) is singular \(\iff\) some eigenvalue of \(A\) is a root of \(p\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A\) is perfectly invertible, yet the innocent-looking combination \(A^{2}-5A+6I\) is singular — because \(p(t)=(t-2)(t-3)\) happens to have a root sitting exactly on one of \(A\)'s eigenvalues. Matrix polynomials can create zero out of nonzero ingredients.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 (source #9) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">For the symmetric tridiagonal matrix</p>
+    \[ A=\begin{bmatrix}2&1&0\\1&2&1\\0&1&2\end{bmatrix}, \]
+    <p class="pq">find its eigenvalues, an orthonormal set of eigenvectors, and hence write \(A=PDP^{\top}\) with \(P\) orthogonal.</p>
+    <p class="ptest"><b>What this tests.</b> The spectral theorem in action: a symmetric matrix with irrational eigenvalues still yields an exact orthonormal eigenbasis and \(A=PDP^{\top}\).</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Eigenvalues.</b> Expanding \(\det(A-\lambda I)\) along the first row:
+      \[ \det(A-\lambda I)=(2-\lambda)\big[(2-\lambda)^{2}-1\big]-1\cdot(2-\lambda)=(2-\lambda)\big[(2-\lambda)^{2}-2\big]=0. \]
+      Hence \(\lambda=2\), or \((2-\lambda)^{2}=2\Rightarrow\lambda=2\pm\sqrt{2}\). The eigenvalues are
+      \[ \lambda_1=2+\sqrt{2},\qquad \lambda_2=2,\qquad \lambda_3=2-\sqrt{2}. \]</div>
+      <div class="pstep"><b>Step 2 · Eigenvector for \(\lambda=2\).</b> \((A-2I)\mathbf{v}=\mathbf{0}\) reads \(y=0\) (rows 1 and 3) and \(x+z=0\) (row 2), so \(\mathbf{v}_2=(1,0,-1)^{\top}\).</div>
+      <div class="pstep"><b>Step 3 · Eigenvectors for \(\lambda=2\pm\sqrt{2}\).</b> For \(\lambda=2+\sqrt{2}\): row 1 gives \(-\sqrt{2}\,x+y=0\Rightarrow y=\sqrt{2}\,x\), and row 3 gives \(y-\sqrt{2}\,z=0\Rightarrow y=\sqrt{2}\,z\), so \(x=z\). (Row 2 checks out: \(x-\sqrt{2}\,y+z=x-2x+x=0\). ✓) Thus \(\mathbf{v}_1=(1,\sqrt{2},1)^{\top}\).
+      For \(\lambda=2-\sqrt{2}\): the same computation with \(-\sqrt2\) gives \(y=-\sqrt{2}\,x\) and \(x=z\), so \(\mathbf{v}_3=(1,-\sqrt{2},1)^{\top}\).</div>
+      <div class="pstep"><b>Step 4 · Orthogonality check.</b> \(\mathbf{v}_1\cdot\mathbf{v}_2=1+0-1=0\), \(\mathbf{v}_1\cdot\mathbf{v}_3=1-2+1=0\), \(\mathbf{v}_2\cdot\mathbf{v}_3=1-0-1=0\) — mutually orthogonal, exactly as the spectral theorem guarantees for distinct eigenvalues of a symmetric matrix.</div>
+      <div class="pstep"><b>Step 5 · Normalise and assemble.</b> \(\lVert\mathbf{v}_2\rVert=\sqrt{2}\) and \(\lVert\mathbf{v}_1\rVert=\lVert\mathbf{v}_3\rVert=\sqrt{1+2+1}=2\), so
+      \[ P=\begin{bmatrix}\tfrac12&\tfrac{1}{\sqrt2}&\tfrac12\\[2pt] \tfrac{\sqrt2}{2}&0&-\tfrac{\sqrt2}{2}\\[2pt] \tfrac12&-\tfrac{1}{\sqrt2}&\tfrac12\end{bmatrix},\qquad D=\begin{bmatrix}2+\sqrt2&0&0\\0&2&0\\0&0&2-\sqrt2\end{bmatrix},\qquad A=PDP^{\top}. \]
+      Since the columns are orthonormal, \(P^{\top}P=I\), i.e. \(P^{-1}=P^{\top}\) — no matrix inversion needed.</div>
+      <div class="pans">Answer. Eigenvalues \(2+\sqrt2,\ 2,\ 2-\sqrt2\) with orthonormal eigenvectors \(\tfrac12(1,\sqrt2,1)^{\top}\), \(\tfrac{1}{\sqrt2}(1,0,-1)^{\top}\), \(\tfrac12(1,-\sqrt2,1)^{\top}\); \(A=PDP^{\top}\) with \(P\) orthogonal and \(D=\operatorname{diag}(2+\sqrt2,\,2,\,2-\sqrt2)\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Normalise each eigenvector by its <em>own</em> length: here \(\lVert\mathbf{v}_2\rVert=\sqrt2\) but \(\lVert\mathbf{v}_1\rVert=\lVert\mathbf{v}_3\rVert=2\) — one common scale factor will not do. Orthogonality comes free from symmetry; orthonormality is your job.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Symmetric matrix \(\Rightarrow\) real eigenvalues, orthogonal eigenvectors, and \(A=PDP^{\top}\) with \(P^{-1}=P^{\top}\). The transpose replaces the inverse — the single biggest computational gift of the spectral theorem.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>An integer matrix produced irrational eigenvalues \(2\pm\sqrt2\) — and the eigenvector \((1,\sqrt2,1)^{\top}\) carries its own eigenvalue's \(\sqrt2\) inside its entries. Yet the factorization \(PDP^{\top}\) reproduces every integer entry of \(A\) exactly: the irrationals conspire and cancel.</p></div>
+    </details>
+  </div>
+  <div class="next-card">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+/* ---------- shared helpers ---------- */
+const store={mem:{},get(k){try{return localStorage.getItem(k)??this.mem[k]??null}catch(e){return this.mem[k]??null}},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}}};
+const themeBtn=document.getElementById('theme-btn');const modes=['auto','light','dark'];let mode=store.get('mfml-theme')||'auto';
+function applyTheme(){if(mode==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',mode);themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;}
+themeBtn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%3];store.set('mfml-theme',mode);applyTheme();});applyTheme();
+const rail=document.getElementById('read-progress');
+addEventListener('scroll',()=>{const h=document.documentElement;rail.style.width=((h.scrollTop/(h.scrollHeight-h.clientHeight))*100).toFixed(2)+'%';},{passive:true});
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const n=document.createElementNS(NS,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(parent)parent.appendChild(n);return n;}
+function txt(parent,x,y,s,style,anchor){const t=el('text',{x,y,'text-anchor':anchor||'start'},parent);t.setAttribute('style',style||'font:600 11px system-ui;fill:var(--ink-muted)');t.textContent=s;return t;}
+function plane(svg,X0,X1,Y0,Y1,opts){opts=opts||{};svg.innerHTML='';
+  const W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height,pad=opts.pad||26;
+  const s=Math.min((W-2*pad)/(X1-X0),(H-2*pad)/(Y1-Y0));
+  const cx=pad+((W-2*pad)-s*(X1-X0))/2,cy=pad+((H-2*pad)-s*(Y1-Y0))/2;
+  const px=x=>cx+(x-X0)*s,py=y=>H-cy-(y-Y0)*s,g=el('g',{},svg),step=opts.step||1;
+  for(let x=Math.ceil(X0);x<=X1;x+=step)el('line',{x1:px(x),y1:py(Y0),x2:px(x),y2:py(Y1),stroke:'var(--grid)','stroke-width':x===0?0:1},g);
+  for(let y=Math.ceil(Y0);y<=Y1;y+=step)el('line',{x1:px(X0),y1:py(y),x2:px(X1),y2:py(y),stroke:'var(--grid)','stroke-width':y===0?0:1},g);
+  el('line',{x1:px(X0),y1:py(0),x2:px(X1),y2:py(0),stroke:'var(--axis)','stroke-width':1.5},g);
+  el('line',{x1:px(0),y1:py(Y0),x2:px(0),y2:py(Y1),stroke:'var(--axis)','stroke-width':1.5},g);
+  if(!opts.noticks){const te=opts.tickEvery||1;
+    for(let x=Math.ceil(X0);x<=X1;x+=step)if(x!==0&&Math.abs(x)%te===0)txt(svg,px(x),py(0)+15,x,'font:500 10px system-ui;fill:var(--ink-muted)','middle');
+    for(let y=Math.ceil(Y0);y<=Y1;y+=step)if(y!==0&&Math.abs(y)%te===0)txt(svg,px(0)-7,py(y)+3.5,y,'font:500 10px system-ui;fill:var(--ink-muted)','end');}
+  return {px,py,svg};}
+function arrow(p,x0,y0,x1,y1,color,w,label,lblStyle){const g=el('g',{},p.svg);
+  const X0=p.px(x0),Y0=p.py(y0),X1=p.px(x1),Y1=p.py(y1),dx=X1-X0,dy=Y1-Y0,L=Math.hypot(dx,dy)||1;
+  const hx=X1-dx/L*10,hy=Y1-dy/L*10;
+  el('line',{x1:X0,y1:Y0,x2:hx,y2:hy,stroke:color,'stroke-width':w||2.5,'stroke-linecap':'round'},g);
+  const nx=-dy/L*4.5,ny=dx/L*4.5;
+  el('polygon',{points:`${X1},${Y1} ${hx+nx},${hy+ny} ${hx-nx},${hy-ny}`,fill:color},g);
+  if(label)txt(p.svg,X1+dx/L*8+(dx>=0?2:-2),Y1+dy/L*8,label,lblStyle||`font:700 12px system-ui;fill:${color}`,dx>=0?'start':'end');
+  return g;}
+const fmt=(v,d=2)=>(+v).toFixed(d).replace(/\.?0+$/,'').replace(/^-0$/,'0');
+function engine3d(svg,opts){opts=opts||{};
+  const W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
+  let yaw=opts.yaw??-0.62,pitch=opts.pitch??0.40,scale=opts.scale||70;
+  const cx=W/2+(opts.cx||0),cy=H/2+(opts.cy||0),origin=opts.origin||[0,0,0];
+  function proj(v){const x=v[0]-origin[0],y=v[1]-origin[1],z=v[2]-origin[2];
+    const c=Math.cos(yaw),s=Math.sin(yaw),X=x*c+y*s,Y=-x*s+y*c;
+    const cp=Math.cos(pitch),sp=Math.sin(pitch);
+    return {x:cx+X*scale,y:cy-(Y*sp+z*cp)*scale,d:Y*cp-z*sp};}
+  function drag(redraw){let last=null;
+    svg.addEventListener('pointerdown',e=>{last=[e.clientX,e.clientY];try{svg.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();});
+    svg.addEventListener('pointermove',e=>{if(!last)return;yaw+=(e.clientX-last[0])*0.008;pitch=Math.max(-1.45,Math.min(1.45,pitch+(e.clientY-last[1])*0.008));last=[e.clientX,e.clientY];redraw();});
+    ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>last=null));}
+  return {proj,drag,setScale:s=>scale=s,rot:d=>{yaw+=d}};}
+/* pointer→plane coords helper */
+function planePt(svg,p,e){const r=svg.getBoundingClientRect(),W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
+  const sx=(e.clientX-r.left)/r.width*W,sy=(e.clientY-r.top)/r.height*H;
+  const x0=p.px(0),y0=p.py(0),ux=p.px(1)-x0,uy=p.py(1)-y0;
+  return [(sx-x0)/ux,(sy-y0)/uy];}
+/* ---------- checks ---------- */
+const solved=new Set((store.get('mfml-u4-checks')||'').split(',').filter(Boolean));
+const scoreEl=document.getElementById('score');
+function updScore(){ scoreEl.textContent=solved.size;
+  var _c=document.getElementById('score-chip');
+  if(_c) _c.classList.toggle('done', solved.size >= document.querySelectorAll('.check').length); }
+document.querySelectorAll('.check').forEach(chk=>{
+  const id=chk.dataset.check,why=chk.querySelector('.why');
+  chk.querySelectorAll('.opts button').forEach(btn=>btn.addEventListener('click',()=>{
+    chk.querySelectorAll('.opts button').forEach(b=>b.classList.remove('picked-good','picked-bad'));
+    const ok=btn.hasAttribute('data-correct');
+    btn.classList.add(ok?'picked-good':'picked-bad');
+    why.className='why on '+(ok?'good':'bad');
+    why.innerHTML=(ok?'<b class="st-good">✓ Correct.</b> ':'<b class="st-bad">✗ Not quite.</b> ')+btn.dataset.why;
+    if(ok){solved.add(id);store.set('mfml-u4-checks',[...solved].join(','));updScore();}
+  }));});
+updScore();
+/* ---------- toc ---------- */
+(function(){
+  const toc=document.getElementById('toc');if(!toc)return;
+  const secs=[...document.querySelectorAll('section.unit')];
+  secs.forEach(s=>{const h=s.querySelector('h2'),n=s.querySelector('.sec-num');if(!h)return;
+    const a=document.createElement('a');a.href='#'+s.id;
+    let t=h.textContent.replace(/\s+—.*$/,'');if(t.length>36)t=t.slice(0,35)+'…';
+    a.textContent=(n?n.textContent+' · ':'')+t;toc.appendChild(a);});
+  const links=[...toc.querySelectorAll('a')];
+  function spy(){let i=0;secs.forEach((s,j)=>{if(s.getBoundingClientRect().top<150)i=j;});
+    links.forEach((l,j)=>l.classList.toggle('on',j===i));}
+  addEventListener('scroll',spy,{passive:true});spy();
+})();
+/* ================= W-DET · AREA MACHINE ================= */
+(function(){
+  const svg=document.getElementById('det-svg');if(!svg)return;
+  let a1=[2,1],a2=[1,1.5],dragging=null;
+  const P={id:[[1,0],[0,1]],double:[[2,1],[1,1.5]],mirror:[[0,1],[1,0]],ones:[[1,1],[1,1]]};
+  let p;
+  function draw(){
+    p=plane(svg,-3.3,3.3,-3.3,3.3,{});
+    const det=a1[0]*a2[1]-a1[1]*a2[0];
+    // unit square (dashed)
+    el('path',{d:`M${p.px(0)},${p.py(0)}L${p.px(1)},${p.py(0)}L${p.px(1)},${p.py(1)}L${p.px(0)},${p.py(1)}Z`,fill:'none',stroke:'var(--ink-muted)','stroke-width':1.4,'stroke-dasharray':'5 4',opacity:.8},svg);
+    txt(svg,p.px(0.5),p.py(0.5)+4,'1','font:600 10.5px system-ui;fill:var(--ink-muted)','middle');
+    // image parallelogram
+    const flip=det<-1e-9,sing=Math.abs(det)<0.05;
+    el('path',{d:`M${p.px(0)},${p.py(0)}L${p.px(a1[0])},${p.py(a1[1])}L${p.px(a1[0]+a2[0])},${p.py(a1[1]+a2[1])}L${p.px(a2[0])},${p.py(a2[1])}Z`,
+      fill:sing?'var(--critical)':(flip?'var(--s2)':'var(--s1)'),'fill-opacity':.16,
+      stroke:sing?'var(--critical)':(flip?'var(--s2)':'var(--s1)'),'stroke-width':2},svg);
+    arrow(p,0,0,a1[0],a1[1],'var(--s1)',3,'a₁');
+    arrow(p,0,0,a2[0],a2[1],'var(--s2)',3,'a₂');
+    ['det-m11','det-m12','det-m21','det-m22'].forEach((id,i)=>{
+      document.getElementById(id).textContent=fmt([a1[0],a2[0],a1[1],a2[1]][i],1);});
+    document.getElementById('det-val').textContent=fmt(det);
+    document.getElementById('det-area').textContent=fmt(Math.abs(det));
+    const v=document.getElementById('det-verdict');
+    if(sing){v.className='verdict bad';v.textContent='✗ det ≈ 0 — collapsed to a line. Singular: no inverse can undo this.';}
+    else if(flip){v.className='verdict info';v.textContent=`Orientation flipped (mirror) — area still ×${fmt(Math.abs(det))}.`;}
+    else{v.className='verdict good';v.textContent=`✓ Orientation kept — every area gets ×${fmt(det)}.`;}
+  }
+  svg.addEventListener('pointerdown',e=>{
+    const q=planePt(svg,p,e);
+    const d1=Math.hypot(q[0]-a1[0],q[1]-a1[1]),d2=Math.hypot(q[0]-a2[0],q[1]-a2[1]);
+    dragging=d1<d2?'a1':'a2';try{svg.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();
+    document.querySelectorAll('#det-presets .preset').forEach(b=>b.setAttribute('aria-pressed','false'));
+  });
+  svg.addEventListener('pointermove',e=>{if(!dragging)return;
+    const q=planePt(svg,p,e),cl=v=>Math.max(-3,Math.min(3,Math.round(v*10)/10));
+    if(dragging==='a1')a1=[cl(q[0]),cl(q[1])];else a2=[cl(q[0]),cl(q[1])];draw();});
+  ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>dragging=null));
+  document.querySelectorAll('#det-presets .preset').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#det-presets .preset').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+    const M=P[b.dataset.p];a1=[M[0][0],M[1][0]];a2=[M[0][1],M[1][1]];draw();}));
+  draw();
+})();
+/* ================= W-COF · SIX ROADS ================= */
+(function(){
+  const mx=document.getElementById('cof-mx');if(!mx)return;
+  const A=[[3,1,0],[-2,-4,3],[5,4,-2]];
+  const det2=m=>m[0][0]*m[1][1]-m[0][1]*m[1][0];
+  const minor=(i,j)=>{const m=[];for(let r=0;r<3;r++){if(r===i)continue;const row=[];
+    for(let c=0;c<3;c++){if(c===j)continue;row.push(A[r][c]);}m.push(row);}return m;};
+  mx.style.gridTemplateColumns='repeat(3,auto)';
+  const cells=[];
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){const s=document.createElement('span');
+    s.textContent=A[i][j];s.id=`cof-${i}${j}`;mx.appendChild(s);cells.push(s);}
+  const termsEl=document.getElementById('cof-terms');
+  function clearHl(){cells.forEach(c=>c.classList.remove('dead','pivot'));}
+  function render(mode){
+    termsEl.innerHTML='';let sum=0;
+    const isRow=mode[0]==='r',idx=+mode[1]-1;
+    for(let k=0;k<3;k++){
+      const i=isRow?idx:k,j=isRow?k:idx;
+      const a=A[i][j],sign=((i+j)%2===0)?1:-1,M=det2(minor(i,j)),C=sign*M,t=a*C;sum+=t;
+      const card=document.createElement('div');card.className='term-card';
+      card.innerHTML=`a<sub>${i+1}${j+1}</sub>·C<sub>${i+1}${j+1}</sub> = ${a} · (${sign>0?'+':'−'}${Math.abs(M)}) = <b>${t}</b>`;
+      card.addEventListener('mouseenter',()=>{clearHl();
+        cells.forEach((c,n)=>{const ci=Math.floor(n/3),cj=n%3;
+          if(ci===i&&cj===j)c.classList.add('pivot');
+          else if(ci===i||cj===j)c.classList.add('dead');});});
+      card.addEventListener('mouseleave',clearHl);
+      termsEl.appendChild(card);}
+    document.getElementById('cof-sum').textContent=fmt(sum);
+    const zeros=(isRow?A[idx]:A.map(r=>r[idx])).filter(v=>v===0).length;
+    document.getElementById('cof-verdict').textContent=zeros?`every road gives −1 — and this one skipped ${zeros} cofactor for free`:'every road gives −1';
+  }
+  document.querySelectorAll('#cof-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#cof-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');render(b.dataset.t);}));
+  render('r1');
+})();
+/* ================= W-EIG · RESONANCE FINDER ================= */
+(function(){
+  const svg=document.getElementById('eig-svg');if(!svg)return;
+  const MATS={
+    sym:{A:[[2,1],[1,2]],r:3.6,eigs:[{d:[1,1],l:3},{d:[-1,1],l:1}]},
+    data:{A:[[1,6],[5,2]],r:7.8,eigs:[{d:[1,1],l:7},{d:[6,-5],l:-4}]},
+    shear:{A:[[1,1],[0,1]],r:2.4,eigs:[{d:[1,0],l:1}]},
+    rot:{A:[[Math.cos(35*Math.PI/180),-Math.sin(35*Math.PI/180)],[Math.sin(35*Math.PI/180),Math.cos(35*Math.PI/180)]],r:2.0,eigs:[]}
+  };
+  let cur='sym',th=0.35,p;
+  function draw(){
+    const m=MATS[cur],A=m.A;
+    p=plane(svg,-m.r,m.r,-m.r*0.86,m.r*0.86,{tickEvery:m.r>4?2:1,step:m.r>4?2:1});
+    // image ellipse of the unit circle
+    let d='';for(let i=0;i<=144;i++){const t=i/144*2*Math.PI,c=Math.cos(t),s=Math.sin(t);
+      const X=A[0][0]*c+A[0][1]*s,Y=A[1][0]*c+A[1][1]*s;
+      d+=(i?'L':'M')+p.px(X).toFixed(1)+','+p.py(Y).toFixed(1);}
+    el('path',{d:d+'Z',fill:'var(--s1)','fill-opacity':.07,stroke:'var(--s1)','stroke-width':1.8,opacity:.85},svg);
+    // probe circle
+    el('circle',{cx:p.px(0),cy:p.py(0),r:p.px(1)-p.px(0),fill:'none',stroke:'var(--ink-muted)','stroke-width':1.4,'stroke-dasharray':'5 4',opacity:.7},svg);
+    // eigen-direction lines
+    m.eigs.forEach(eg=>{const L=Math.hypot(eg.d[0],eg.d[1]),ux=eg.d[0]/L,uy=eg.d[1]/L,R=m.r*1.35;
+      el('line',{x1:p.px(-ux*R),y1:p.py(-uy*R),x2:p.px(ux*R),y2:p.py(uy*R),stroke:'var(--s7)','stroke-width':1.5,'stroke-dasharray':'7 5',opacity:.65},svg);
+      txt(svg,p.px(ux*m.r*0.74)+5,p.py(uy*m.r*0.74)-5,'λ='+eg.l,'font:700 11px system-ui;fill:var(--s7)');});
+    // probe & image
+    const x=[Math.cos(th),Math.sin(th)];
+    const Ax=[A[0][0]*x[0]+A[0][1]*x[1],A[1][0]*x[0]+A[1][1]*x[1]];
+    const nAx=Math.hypot(Ax[0],Ax[1]);
+    arrow(p,0,0,Ax[0],Ax[1],'var(--s1)',3.6,'Ax');
+    arrow(p,0,0,x[0],x[1],'var(--warning)',3,'x');
+    el('circle',{cx:p.px(x[0]),cy:p.py(x[1]),r:7,fill:'none',stroke:'var(--warning)','stroke-width':2,opacity:.6},svg);
+    // alignment
+    const v=document.getElementById('eig-verdict'),lamChip=document.getElementById('eig-lam-chip');
+    if(nAx<1e-6){document.getElementById('eig-align').textContent='—';
+      lamChip.style.display='inline-flex';document.getElementById('eig-lam').textContent='0';
+      v.className='verdict bad';v.textContent='Ax = 0 — this direction is crushed entirely: an eigenvector with λ = 0.';return;}
+    const cos=(x[0]*Ax[0]+x[1]*Ax[1])/nAx,al=Math.abs(cos);
+    document.getElementById('eig-align').textContent=(al*100).toFixed(1)+'%';
+    if(al>0.9995){const lam=cos>0?nAx:-nAx;
+      lamChip.style.display='inline-flex';document.getElementById('eig-lam').textContent=fmt(lam,2);
+      v.className='verdict good';v.textContent=`✓ RESONANCE — eigen-direction found! Ax = ${fmt(lam,2)}·x${lam<0?' (flipped: negative λ)':''}.`;}
+    else{lamChip.style.display='none';
+      if(cur==='rot'){v.className='verdict info';v.textContent='Alignment is stuck at '+(al*100).toFixed(0)+'% everywhere — a rotation turns every real direction. Its eigenvalues went complex (§9).';}
+      else{v.className='verdict info';v.textContent='Keep hunting — rotate the probe until Ax snaps onto the line of x.';}}
+  }
+  function setTh(q){let t=Math.atan2(q[1],q[0]);
+    const m=MATS[cur];
+    for(const eg of m.eigs){let et=Math.atan2(eg.d[1],eg.d[0]);
+      for(const cand of [et,et+Math.PI,et-Math.PI]){if(Math.abs(t-cand)<0.045){t=cand;break;}}}
+    th=t;}
+  let drag=false;
+  svg.addEventListener('pointerdown',e=>{drag=true;try{svg.setPointerCapture(e.pointerId)}catch(_){}setTh(planePt(svg,p,e));draw();e.preventDefault();});
+  svg.addEventListener('pointermove',e=>{if(!drag)return;setTh(planePt(svg,p,e));draw();});
+  ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>drag=false));
+  document.querySelectorAll('#eig-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#eig-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');cur=b.dataset.t;th=0.35;draw();}));
+  draw();
+})();
+/* ================= W-CHAR · EIGENVALUE DIAL ================= */
+(function(){
+  const svg=document.getElementById('char-svg');if(!svg)return;
+  const I={a:document.getElementById('ch-a'),b:document.getElementById('ch-b'),c:document.getElementById('ch-c'),d:document.getElementById('ch-d')};
+  const P={data:[1,6,5,2],sym:[2,1,1,2],shear:[1,1,0,1],rot:[0,-1,1,0],ones:[1,1,1,1]};
+  function draw(){
+    const a=+I.a.value||0,b=+I.b.value||0,c=+I.c.value||0,d=+I.d.value||0;
+    const tr=a+d,det=a*d-b*c,disc=tr*tr-4*det;
+    document.getElementById('ch-tr').textContent=fmt(tr);
+    document.getElementById('ch-det').textContent=fmt(det);
+    const p0=tr/2;let r1,r2,ims=0;
+    if(disc>=0){const s=Math.sqrt(disc)/2;r1=p0+s;r2=p0-s;}else{r1=r2=p0;ims=Math.sqrt(-disc)/2;}
+    // plot range
+    const spread=Math.max(4,Math.abs(r1-p0)*1.6,Math.abs(r2-p0)*1.6,ims*1.8);
+    const L0=p0-spread,L1=p0+spread;
+    const f=l=>l*l-tr*l+det;
+    let ymin=Infinity,ymax=-Infinity;
+    for(let i=0;i<=100;i++){const y=f(L0+(L1-L0)*i/100);ymin=Math.min(ymin,y);ymax=Math.max(ymax,y);}
+    ymax=Math.max(ymax,1);ymin=Math.min(ymin,-1);const yp=(ymax-ymin)*0.1;
+    const W=560,H=380,pad=34;
+    svg.innerHTML='';
+    const px=l=>pad+(l-L0)/(L1-L0)*(W-2*pad),py=y=>H-pad-(y-(ymin-yp))/((ymax+yp)-(ymin-yp))*(H-2*pad);
+    // axes
+    el('line',{x1:pad,y1:py(0),x2:W-pad,y2:py(0),stroke:'var(--axis)','stroke-width':1.6},svg);
+    txt(svg,W-pad+4,py(0)+4,'λ','font:700 12px system-ui;fill:var(--ink-2)');
+    for(let l=Math.ceil(L0);l<=L1;l++){if(Math.abs(l-Math.round(l))>1e-9)continue;
+      const step=spread>8?2:1;if(Math.round(l)%step!==0)continue;
+      el('line',{x1:px(l),y1:py(0)-4,x2:px(l),y2:py(0)+4,stroke:'var(--ink-muted)','stroke-width':1},svg);
+      txt(svg,px(l),py(0)+17,Math.round(l),'font:500 10px system-ui;fill:var(--ink-muted)','middle');}
+    // curve
+    let dd='';for(let i=0;i<=160;i++){const l=L0+(L1-L0)*i/160;dd+=(i?'L':'M')+px(l).toFixed(1)+','+py(f(l)).toFixed(1);}
+    el('path',{d:dd,fill:'none',stroke:'var(--s1)','stroke-width':2.6},svg);
+    txt(svg,px(L0)+6,py(f(L0))+16,'p(λ)','font:700 12px system-ui;fill:var(--s1)');
+    const v=document.getElementById('ch-verdict');
+    let sum,prod;
+    if(disc>1e-9){
+      [r1,r2].forEach(r=>{el('circle',{cx:px(r),cy:py(0),r:6,fill:'var(--s2)'},svg);
+        txt(svg,px(r),py(0)-12,'λ='+fmt(r),'font:700 11.5px system-ui;fill:var(--s2)','middle');});
+      v.className='verdict good';v.textContent=`✓ Two real eigenvalues: λ = ${fmt(r1)} and ${fmt(r2)}.`;
+      sum=r1+r2;prod=r1*r2;
+    }else if(disc>-1e-9){
+      el('circle',{cx:px(r1),cy:py(0),r:6,fill:'var(--s2)'},svg);
+      txt(svg,px(r1),py(0)-12,'λ='+fmt(r1)+' (twice)','font:700 11.5px system-ui;fill:var(--s2)','middle');
+      v.className='verdict info';v.textContent=`Repeated eigenvalue λ = ${fmt(r1)} — the parabola kisses the axis. Watch for a missing eigenvector (§11).`;
+      sum=2*r1;prod=r1*r1;
+    }else{
+      el('circle',{cx:px(p0),cy:py(f(p0)),r:5,fill:'var(--s7)'},svg);
+      txt(svg,px(p0),py(f(p0))-12,`λ = ${fmt(p0)} ± ${fmt(ims)}i`,'font:700 12px system-ui;fill:var(--s7)','middle');
+      v.className='verdict info';v.textContent=`No real crossing — complex pair λ = ${fmt(p0)} ± ${fmt(ims)}i. A rotation is hiding inside this matrix (§9).`;
+      sum=2*p0;prod=p0*p0+ims*ims;
+    }
+    document.getElementById('ch-sum').textContent=Math.abs(sum-tr)<1e-6?'✓':'✗';
+    document.getElementById('ch-prod').textContent=Math.abs(prod-det)<1e-6?'✓':'✗';
+  }
+  Object.values(I).forEach(inp=>inp.addEventListener('input',()=>{
+    document.querySelectorAll('#ch-presets .preset').forEach(b=>b.setAttribute('aria-pressed','false'));draw();}));
+  document.querySelectorAll('#ch-presets .preset').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#ch-presets .preset').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+    const[a,bb,c,d]=P[b.dataset.p];I.a.value=a;I.b.value=bb;I.c.value=c;I.d.value=d;draw();}));
+  draw();
+})();
+/* ================= W-SPEC · TURN STRETCH TURN ================= */
+(function(){
+  const svg=document.getElementById('spec-svg');if(!svg)return;
+  const R2=Math.SQRT1_2,q1=[R2,R2],q2=[-R2,R2],lam=[3,1];
+  let x=[1,0.5],stage=3,p;
+  const Qt=v=>[q1[0]*v[0]+q1[1]*v[1],q2[0]*v[0]+q2[1]*v[1]];
+  const Q=v=>[q1[0]*v[0]+q2[0]*v[1],q1[1]*v[0]+q2[1]*v[1]];
+  const L=v=>[lam[0]*v[0],lam[1]*v[1]];
+  const Ax=v=>[2*v[0]+1*v[1],1*v[0]+2*v[1]];
+  function circle(fn,stroke,op){let d='';for(let i=0;i<=120;i++){const t=i/120*2*Math.PI,pt=fn([Math.cos(t),Math.sin(t)]);
+    d+=(i?'L':'M')+p.px(pt[0]).toFixed(1)+','+p.py(pt[1]).toFixed(1);}
+    el('path',{d:d+'Z',fill:'none',stroke,'stroke-width':1.6,'stroke-dasharray':'5 4',opacity:op},svg);}
+  function draw(){
+    p=plane(svg,-4.3,4.3,-3.4,3.4,{});
+    const chain=[x,Qt(x),L(Qt(x)),Q(L(Qt(x)))];
+    const id=v=>v;
+    // grain lines: stages 0,3 → q-directions; stages 1,2 → axes
+    const grain=(stage===0||stage===3)?[q1,q2]:[[1,0],[0,1]];
+    grain.forEach(g=>{el('line',{x1:p.px(-g[0]*5.6),y1:p.py(-g[1]*5.6),x2:p.px(g[0]*5.6),y2:p.py(g[1]*5.6),stroke:'var(--s7)','stroke-width':1.3,'stroke-dasharray':'7 5',opacity:.5},svg);});
+    // circle ghost per stage
+    if(stage<=1)circle(id,'var(--ink-muted)',.6);
+    else if(stage===2)circle(v=>L(v),'var(--s1)',.6);
+    else circle(v=>Ax(v),'var(--s1)',.6);
+    // ghosts of previous stages
+    for(let s=0;s<stage;s++){const g=chain[s];
+      el('line',{x1:p.px(0),y1:p.py(0),x2:p.px(g[0]),y2:p.py(g[1]),stroke:'var(--ink-muted)','stroke-width':2,opacity:.28,'stroke-linecap':'round'},svg);
+      el('circle',{cx:p.px(g[0]),cy:p.py(g[1]),r:3,fill:'var(--ink-muted)',opacity:.35},svg);}
+    // eigen frame arrows (small)
+    arrow(p,0,0,q1[0],q1[1],'var(--s1)',2,'q₁');
+    arrow(p,0,0,q2[0],q2[1],'var(--s2)',2,'q₂');
+    // current vector
+    const cv=chain[stage],names=['x','Qᵀx','ΛQᵀx','QΛQᵀx = Ax'];
+    arrow(p,0,0,cv[0],cv[1],'var(--warning)',3.6,names[stage]);
+    // readout
+    const co=document.getElementById('spec-co');
+    co.innerHTML=chain.map((v,i)=>{
+      const b=i===stage;return `${b?'<b style="color:var(--s1)">':''}${['x','Qᵀx','ΛQᵀx','QΛQᵀx'][i]} = (${fmt(v[0])}, ${fmt(v[1])})${i===3?' &nbsp;=&nbsp; Ax ✓':''}${b?'</b>':''}`;
+    }).join('<br>');
+    const direct=Ax(x),got=chain[3];
+    const ok=Math.abs(direct[0]-got[0])<1e-9&&Math.abs(direct[1]-got[1])<1e-9;
+    const v=document.getElementById('spec-verdict');
+    v.className='verdict '+(ok?'good':'bad');
+    v.textContent=ok?'QΛQᵀx = Ax ✓ — three simple moves, same answer':'mismatch?!';
+  }
+  let drag=false;
+  svg.addEventListener('pointerdown',e=>{drag=true;try{svg.setPointerCapture(e.pointerId)}catch(_){}move(e);e.preventDefault();});
+  function move(e){const q=planePt(svg,p,e),n=Math.hypot(q[0],q[1]);
+    let nx=q;if(n>2.2)nx=[q[0]/n*2.2,q[1]/n*2.2];
+    x=[Math.round(nx[0]*20)/20,Math.round(nx[1]*20)/20];draw();}
+  svg.addEventListener('pointermove',e=>{if(drag)move(e);});
+  ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>drag=false));
+  document.querySelectorAll('#spec-stages button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#spec-stages button').forEach(s=>s.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');stage=+b.dataset.s;draw();}));
+  document.querySelector('#spec-stages [data-s="0"]').setAttribute('aria-selected','true');
+  document.querySelector('#spec-stages [data-s="3"]').setAttribute('aria-selected','false');
+  stage=0;draw();
+})();
+/* ================= W-E3 · EIGEN-ELLIPSOID ================= */
+(function(){
+  const svg=document.getElementById('e3-svg');if(!svg)return;
+  const S={l1:document.getElementById('e3-l1'),l2:document.getElementById('e3-l2'),l3:document.getElementById('e3-l3')};
+  // tilted orthonormal eigen-frame: Rz(30°) then Rx(25°)
+  const cz=Math.cos(Math.PI/6),sz=Math.sin(Math.PI/6),cx=Math.cos(25*Math.PI/180),sx=Math.sin(25*Math.PI/180);
+  const rot=v=>{const x=v[0]*cz-v[1]*sz,y=v[0]*sz+v[1]*cz,z=v[2];
+    return [x,y*cx-z*sx,y*sx+z*cx];};
+  const q=[rot([1,0,0]),rot([0,1,0]),rot([0,0,1])];
+  const eng=engine3d(svg,{scale:86,yaw:-0.55,pitch:0.34});
+  function map(s,l){ // s on unit sphere → Q diag(l) Qᵀ s
+    const co=[q[0][0]*s[0]+q[0][1]*s[1]+q[0][2]*s[2],
+              q[1][0]*s[0]+q[1][1]*s[1]+q[1][2]*s[2],
+              q[2][0]*s[0]+q[2][1]*s[1]+q[2][2]*s[2]];
+    const sc=[co[0]*l[0],co[1]*l[1],co[2]*l[2]];
+    return [q[0][0]*sc[0]+q[1][0]*sc[1]+q[2][0]*sc[2],
+            q[0][1]*sc[0]+q[1][1]*sc[1]+q[2][1]*sc[2],
+            q[0][2]*sc[0]+q[1][2]*sc[1]+q[2][2]*sc[2]];}
+  function poly(pts,stroke,w,op){let d='';pts.forEach((v,i)=>{const P=eng.proj(v);d+=(i?'L':'M')+P.x.toFixed(1)+','+P.y.toFixed(1);});
+    el('path',{d,fill:'none',stroke,'stroke-width':w,opacity:op,'stroke-linejoin':'round'},svg);}
+  function ring(fn,n){const out=[];for(let i=0;i<=n;i++)out.push(fn(i/n*2*Math.PI));return out;}
+  function draw(){
+    svg.innerHTML='';
+    const l=[+S.l1.value,+S.l2.value,+S.l3.value];
+    ['l1','l2','l3'].forEach((k,i)=>document.getElementById('e3-'+k+'o').textContent=fmt(l[i],1));
+    // faint axes
+    [[1.6,0,0],[0,1.6,0],[0,0,1.6]].forEach(a=>{const P0=eng.proj([-a[0],-a[1],-a[2]]),P1=eng.proj(a);
+      el('line',{x1:P0.x,y1:P0.y,x2:P1.x,y2:P1.y,stroke:'var(--grid)','stroke-width':1},svg);});
+    // unit sphere ghost
+    for(let lat=-60;lat<=60;lat+=30){const cl=Math.cos(lat*Math.PI/180),sl=Math.sin(lat*Math.PI/180);
+      poly(ring(t=>[cl*Math.cos(t),cl*Math.sin(t),sl],48),'var(--ink-muted)',0.7,.28);}
+    for(let lon=0;lon<180;lon+=45){const cl=Math.cos(lon*Math.PI/180),sl=Math.sin(lon*Math.PI/180);
+      poly(ring(t=>[Math.cos(t)*cl,Math.cos(t)*sl,Math.sin(t)],48),'var(--ink-muted)',0.7,.28);}
+    // ellipsoid wireframe
+    for(let lat=-75;lat<=75;lat+=25){const cl=Math.cos(lat*Math.PI/180),sl=Math.sin(lat*Math.PI/180);
+      poly(ring(t=>map([cl*Math.cos(t),cl*Math.sin(t),sl],l),56),'var(--s1)',1.4,.75);}
+    for(let lon=0;lon<180;lon+=30){const cl=Math.cos(lon*Math.PI/180),sl=Math.sin(lon*Math.PI/180);
+      poly(ring(t=>map([Math.cos(t)*cl,Math.cos(t)*sl,Math.sin(t)],l),56),'var(--s1)',1.4,.55);}
+    // eigen axes
+    const cols=['var(--s1)','var(--s2)','var(--s3)'];
+    q.forEach((qi,i)=>{const tip=[qi[0]*l[i],qi[1]*l[i],qi[2]*l[i]];
+      const P0=eng.proj([0,0,0]),P1=eng.proj(tip);
+      el('line',{x1:P0.x,y1:P0.y,x2:P1.x,y2:P1.y,stroke:cols[i],'stroke-width':3,'stroke-linecap':'round'},svg);
+      el('circle',{cx:P1.x,cy:P1.y,r:4.5,fill:cols[i]},svg);
+      txt(svg,P1.x+7,P1.y-6,'λ'+(i+1)+'q'+(i+1),`font:700 11.5px system-ui;fill:${cols[i]}`);});
+    const det=l[0]*l[1]*l[2];
+    document.getElementById('e3-det').textContent=fmt(det,2);
+    document.getElementById('e3-vol').textContent=fmt(Math.abs(det),2);
+    const v=document.getElementById('e3-verdict');
+    if(Math.abs(l[0])<0.05||Math.abs(l[1])<0.05||Math.abs(l[2])<0.05){v.className='verdict bad';v.textContent='✗ An eigenvalue hit 0 — the ellipsoid pancakes flat: det = 0, singular, a dimension destroyed.';}
+    else if(det<0){v.className='verdict info';v.textContent='det < 0: an odd number of flips — space comes out mirror-imaged (volume still ×'+fmt(Math.abs(det),2)+').';}
+    else{v.className='verdict good';v.textContent='✓ Sphere → ellipsoid along the tilted grain; every volume gets ×'+fmt(det,2)+'.';}
+  }
+  Object.values(S).forEach(s=>s.addEventListener('input',draw));
+  eng.drag(draw);draw();
+})();
+/* ================= W-ROT · UNIT CIRCLE ================= */
+(function(){
+  const svg=document.getElementById('rot-svg');if(!svg)return;
+  const sl=document.getElementById('rot-th');
+  function draw(){
+    const deg=+sl.value,th=deg*Math.PI/180,c=Math.cos(th),s=Math.sin(th);
+    document.getElementById('rot-tho').textContent=deg+'°';
+    const p=plane(svg,-1.85,1.85,-1.28,1.28,{noticks:true,step:1});
+    txt(svg,p.px(1.62),p.py(0)-8,'Re','font:700 11px system-ui;fill:var(--ink-2)');
+    txt(svg,p.px(0)+8,p.py(1.14),'Im','font:700 11px system-ui;fill:var(--ink-2)');
+    el('circle',{cx:p.px(0),cy:p.py(0),r:p.px(1)-p.px(0),fill:'none',stroke:'var(--axis)','stroke-width':1.8},svg);
+    [[1,'1'],[-1,'−1']].forEach(([v,lb])=>{el('circle',{cx:p.px(v),cy:p.py(0),r:2.5,fill:'var(--ink-muted)'},svg);
+      txt(svg,p.px(v),p.py(0)+16,lb,'font:600 10px system-ui;fill:var(--ink-muted)','middle');});
+    // angle arc
+    let d='';for(let i=0;i<=30;i++){const t=th*i/30;d+=(i?'L':'M')+p.px(0.4*Math.cos(t)).toFixed(1)+','+p.py(0.4*Math.sin(t)).toFixed(1);}
+    el('path',{d,fill:'none',stroke:'var(--ink-muted)','stroke-width':1.5},svg);
+    txt(svg,p.px(0.55*Math.cos(th/2))-4,p.py(0.55*Math.sin(th/2))+4,'θ','font:700 12px system-ui;fill:var(--ink-2)');
+    // conjugate pair
+    el('line',{x1:p.px(c),y1:p.py(s),x2:p.px(c),y2:p.py(-s),stroke:'var(--s7)','stroke-width':1.3,'stroke-dasharray':'4 4',opacity:.7},svg);
+    [[s,'e^{+iθ}'],[-s,'e^{−iθ}']].forEach(([im,lb],i)=>{
+      el('circle',{cx:p.px(c),cy:p.py(im),r:7,fill:'var(--s7)'},svg);
+      txt(svg,p.px(c)+12,p.py(im)+4,(i===0?'λ₁ = ':'λ₂ = ')+fmt(c)+(im>=0?' + ':' − ')+fmt(Math.abs(im))+'i','font:700 11.5px system-ui;fill:var(--s7)');});
+    document.getElementById('rot-tr').textContent=fmt(2*c);
+    document.getElementById('rot-lam').textContent=`${fmt(c)} ± ${fmt(Math.abs(s))}i`;
+    const v=document.getElementById('rot-verdict');
+    if(deg===0){v.className='verdict good';v.textContent='θ = 0: the twins merge at λ = 1,1 — the identity leaves every direction eigen.';}
+    else if(deg===180){v.className='verdict good';v.textContent='θ = 180°: twins merge at λ = −1,−1 — the U-turn flips every direction, so every direction is eigen again.';}
+    else{v.className='verdict info';v.textContent='Genuinely complex pair — no real eigen-direction exists. The eigenvalue e^{±iθ} is the turn.';}
+  }
+  sl.addEventListener('input',draw);draw();
+})();
+/* ================= W-CHOL · GAUSSIAN LENS ================= */
+(function(){
+  const svg=document.getElementById('chol-svg');if(!svg)return;
+  const Ia=document.getElementById('chl-a'),Ib=document.getElementById('chl-b'),Ib2=document.getElementById('chl-b2'),Ic=document.getElementById('chl-c');
+  let mode='x';
+  // deterministic standard-normal cloud (LCG + Box–Muller)
+  let seed=42;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return (seed>>>8)/16777216;};
+  const Z=[];for(let i=0;i<300;i++){const u1=Math.max(rnd(),1e-9),u2=rnd();
+    const r=Math.sqrt(-2*Math.log(u1));Z.push([r*Math.cos(2*Math.PI*u2),r*Math.sin(2*Math.PI*u2)]);}
+  const P={lec:[4,2,3],id:[1,0,1],tight:[4,3.8,4],broken:[1,2,1]};
+  function chol(a,b,c){if(a<=0)return {fail:'ℓ₁₁ = √'+fmt(a)+' — negative under the root'};
+    const l11=Math.sqrt(a),l21=b/l11,rad=c-l21*l21;
+    if(rad<=0)return {fail:'ℓ₂₂ = √('+fmt(c)+' − '+fmt(l21*l21)+') = √'+fmt(rad)+' — negative under the root'};
+    return {l11,l21,l22:Math.sqrt(rad)};}
+  function eigSym(a,b,c){const m=(a+c)/2,d=Math.sqrt(((a-c)/2)**2+b*b);
+    return {l1:m+d,l2:m-d,phi:0.5*Math.atan2(2*b,a-c)};}
+  function draw(){
+    const a=+Ia.value||0,b=+Ib.value||0,c=+Ic.value||0;Ib2.value=Ib.value;
+    const L=chol(a,b,c),eg=eigSym(a,b,c);
+    const shaped=mode==='x'&&!L.fail;
+    const r=shaped?Math.max(3.4,2.7*Math.sqrt(Math.max(eg.l1,1))):3.4;
+    const p=plane(svg,-r,r,-r*0.77,r*0.77,{tickEvery:r>5?2:1,step:r>5?2:1});
+    const lr=document.getElementById('chl-l'),v=document.getElementById('chl-verdict');
+    if(L.fail){lr.innerHTML='L = <span style="color:var(--critical)">✗ halted: '+L.fail+'</span>';
+      v.className='verdict bad';v.textContent='✗ Σ is not positive-definite (an eigenvalue ≤ 0: λ = '+fmt(eg.l1)+', '+fmt(eg.l2)+'). No real square root exists — Cholesky is the test.';}
+    else{lr.innerHTML=`L = [[${fmt(L.l11)}, 0], [${fmt(L.l21)}, ${fmt(L.l22)}]]`;
+      v.className='verdict good';v.textContent='✓ Σ = LLᵀ — '+(mode==='x'?'the cloud below now has covariance exactly Σ.':'this round cloud is the raw material z.');}
+    // points
+    const pts=shaped?Z.map(z=>[L.l11*z[0],L.l21*z[0]+L.l22*z[1]]):Z;
+    pts.forEach(q=>{if(Math.abs(q[0])<=r&&Math.abs(q[1])<=r*0.77)
+      el('circle',{cx:p.px(q[0]),cy:p.py(q[1]),r:2.2,fill:shaped?'var(--s1)':'var(--ink-muted)',opacity:.55},svg);});
+    // 1σ/2σ ellipses
+    function sigEll(k,dash){let d='';
+      for(let i=0;i<=90;i++){const t=i/90*2*Math.PI;
+        let X,Y;
+        if(shaped){const u=Math.sqrt(Math.max(eg.l1,0))*k*Math.cos(t),w=Math.sqrt(Math.max(eg.l2,0))*k*Math.sin(t);
+          X=u*Math.cos(eg.phi)-w*Math.sin(eg.phi);Y=u*Math.sin(eg.phi)+w*Math.cos(eg.phi);}
+        else{X=k*Math.cos(t);Y=k*Math.sin(t);}
+        d+=(i?'L':'M')+p.px(X).toFixed(1)+','+p.py(Y).toFixed(1);}
+      el('path',{d:d+'Z',fill:'none',stroke:'var(--s1)','stroke-width':k===1?2.2:1.5,'stroke-dasharray':dash?'6 5':'none',opacity:.9},svg);}
+    if(!L.fail||mode==='z'){sigEll(1,false);sigEll(2,true);
+      txt(svg,p.px(0)+6,p.py(0)-6,shaped?'1σ & 2σ of Σ':'1σ & 2σ of I','font:600 10.5px system-ui;fill:var(--s1)');}
+    if(shaped){ // eigen axes of Σ on the ellipse
+      [[eg.l1,eg.phi,'var(--s2)'],[eg.l2,eg.phi+Math.PI/2,'var(--s3)']].forEach(([lv,ang,col])=>{
+        if(lv<=0)return;const R1=Math.sqrt(lv);
+        el('line',{x1:p.px(-R1*Math.cos(ang)),y1:p.py(-R1*Math.sin(ang)),x2:p.px(R1*Math.cos(ang)),y2:p.py(R1*Math.sin(ang)),stroke:col,'stroke-width':2.4,opacity:.9},svg);});}
+  }
+  [Ia,Ib,Ic].forEach(i=>i.addEventListener('input',()=>{
+    document.querySelectorAll('#chl-presets .preset').forEach(b=>b.setAttribute('aria-pressed','false'));draw();}));
+  document.querySelectorAll('#chl-mode button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#chl-mode button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');mode=b.dataset.m;draw();}));
+  document.querySelectorAll('#chl-presets .preset').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#chl-presets .preset').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+    const[a,bb,c]=P[b.dataset.p];Ia.value=a;Ib.value=bb;Ic.value=c;draw();}));
+  draw();
+})();
+})();
+
+/* ================= MBM-UX-V2 · navigation, resume, revision, print ================= */
+(function(){
+  var U = 4;
+  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"}];
+  var st = {get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+            set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  var secs = [].slice.call(document.querySelectorAll('section.unit'));
+
+  /* publish this unit's real check total so the hub never hardcodes a denominator */
+  st.set('mfml-u'+U+'-total', document.querySelectorAll('.check').length);
+
+  /* ---- contents drawer (below 1420px) + unit switcher ---- */
+  var toc = document.getElementById('toc'),
+      btn = document.getElementById('toc-btn'),
+      back = document.getElementById('toc-backdrop');
+  if (toc && btn && back) {
+    var prev = UNITS.filter(function(u){return u.n===U-1})[0],
+        next = UNITS.filter(function(u){return u.n===U+1})[0];
+    var nav = document.createElement('div');
+    nav.className = 'toc-nav';
+    nav.innerHTML = (prev ? '<a href="unit-0'+prev.n+'.html" title="'+prev.t+'">\u2190 Unit '+prev.n+'</a>' : '<span></span>')
+                  + '<a class="hub" href="index.html">All units</a>'
+                  + (next ? '<a href="unit-0'+next.n+'.html" title="'+next.t+'">Unit '+next.n+' \u2192</a>' : '<span></span>');
+    toc.appendChild(nav);
+
+    var close = document.createElement('button');
+    close.className = 'toc-close'; close.type = 'button';
+    close.setAttribute('aria-label','Close contents'); close.innerHTML = '\u00d7';
+    toc.insertBefore(close, toc.firstChild);
+
+    var open = false;
+    function setOpen(v){
+      open = v;
+      toc.classList.toggle('open', v);
+      back.classList.toggle('on', v);
+      btn.setAttribute('aria-expanded', v ? 'true' : 'false');
+      document.body.style.overflow = (v && innerWidth < 1420) ? 'hidden' : '';
+      try { (v ? close : btn).focus(); } catch(e){}
+    }
+    btn.addEventListener('click', function(){ setOpen(!open); });
+    close.addEventListener('click', function(){ setOpen(false); });
+    back.addEventListener('click', function(){ setOpen(false); });
+    addEventListener('keydown', function(e){ if (e.key === 'Escape' && open) setOpen(false); });
+    toc.addEventListener('click', function(e){
+      if (e.target.tagName === 'A' && innerWidth < 1420) setOpen(false);
+    });
+    addEventListener('resize', function(){ if (open && innerWidth >= 1420) setOpen(false); });
+  }
+
+  /* ---- remember the reading position (this unit + across the site) ---- */
+  function currentIndex(){
+    var i = 0;
+    secs.forEach(function(s,j){ if (s.getBoundingClientRect().top < 150) i = j; });
+    return i;
+  }
+  var tick = null;
+  addEventListener('scroll', function(){
+    if (tick) return;
+    tick = setTimeout(function(){
+      tick = null;
+      var s = secs[currentIndex()];
+      if (!s) return;
+      st.set('mfml-u'+U+'-pos', s.id);
+      st.set('mfml-last', U + '|' + s.id);
+    }, 700);
+  }, {passive:true});
+
+  /* ---- offer to resume (never jump without asking) ---- */
+  var savedId = st.get('mfml-u'+U+'-pos');
+  if (!location.hash && savedId && secs.length && savedId !== secs[0].id) {
+    var target = document.getElementById(savedId);
+    if (target && scrollY < 200) {
+      var h2 = target.querySelector('h2'), num = target.querySelector('.sec-num');
+      var label = (h2 ? h2.textContent.replace(/\s+\u2014.*$/,'') : 'where you left off');
+      if (label.length > 34) label = label.slice(0,33) + '\u2026';
+      var pill = document.createElement('div');
+      pill.className = 'resume';
+      pill.innerHTML = '<span class="rl">Pick up where you left off</span>'
+        + '<button class="rgo" type="button">' + (num ? '\u00a7' + num.textContent + ' ' : '') + label + ' \u2192</button>'
+        + '<button class="rx" type="button" aria-label="Dismiss">\u00d7</button>';
+      document.body.appendChild(pill);
+      requestAnimationFrame(function(){ pill.classList.add('on'); });
+      var hide = function(){ pill.classList.remove('on'); setTimeout(function(){ pill.remove(); }, 320); };
+      pill.querySelector('.rgo').addEventListener('click', function(){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        hide();
+      });
+      pill.querySelector('.rx').addEventListener('click', hide);
+      setTimeout(hide, 14000);
+    }
+  }
+
+  /* ---- practice arena: open / close every solution at once ---- */
+  var arena = document.getElementById('spractice');
+  if (arena) {
+    var sols = [].slice.call(arena.querySelectorAll('details.sol'));
+    var prose = arena.querySelector('.prose');
+    if (sols.length && prose) {
+      var bar = document.createElement('div');
+      bar.className = 'sol-bulk';
+      bar.innerHTML = '<span class="sb-l">' + sols.length + ' problems \u00b7 solutions stay hidden until you ask</span>'
+        + '<span class="sb-b"><button class="ghost" type="button" data-a="open">Open all solutions</button>'
+        + '<button class="ghost" type="button" data-a="close">Close all</button></span>';
+      prose.parentNode.insertBefore(bar, prose.nextSibling);
+      bar.addEventListener('click', function(e){
+        var b = e.target.closest('button');
+        if (!b) return;
+        var want = b.dataset.a === 'open';
+        sols.forEach(function(d){ d.open = want; });
+      });
+    }
+  }
+
+  /* ---- screen readers hear the verdict ---- */
+  document.querySelectorAll('.check .why').forEach(function(w){
+    w.setAttribute('role','status'); w.setAttribute('aria-live','polite');
+  });
+
+  /* ---- printing a unit prints the solutions too ---- */
+  var reopened = [];
+  addEventListener('beforeprint', function(){
+    reopened = [].slice.call(document.querySelectorAll('details:not([open])'));
+    reopened.forEach(function(d){ d.open = true; });
+  });
+  addEventListener('afterprint', function(){
+    reopened.forEach(function(d){ d.open = false; });
+    reopened = [];
+  });
+})();
+</script>
+</body>
+</html>
+<!-- BRAND-V1 -->
