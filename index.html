@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MFML Interactive — Mathematical Foundations for Machine Learning</title>
-<meta name="description" content="Interactive lectures for the Mathematical Foundations of Machine Learning: 3D visualizations, story-first explanations, and inline checks. By Prof. Saurabh · ZC416 · BITS Pilani WILP.">
+<title>The Math Behind the Machine — interactive math for machine learning &amp; AI</title>
+<meta name="description" content="All the math you need to truly understand modern machine learning and AI — interactive lessons with 3D visualizations, story-first explanations, inline checks, and practice problems solved in full. By Prof. Saurabh.">
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%232a78d6"/><text x="32" y="44" font-family="Georgia,serif" font-size="36" fill="white" text-anchor="middle">Σ</text></svg>'>
-<meta property="og:site_name" content="MFML Interactive">
-<meta property="og:title" content="MFML Interactive — Learn the math under the machine">
-<meta property="og:description" content="Interactive lectures for the Mathematical Foundations of Machine Learning: 3D visualizations, story-first explanations, and inline checks. By Prof. Saurabh · ZC416 · BITS Pilani WILP.">
+<meta property="og:site_name" content="The Math Behind the Machine">
+<meta property="og:title" content="The Math Behind the Machine — learn the math under modern AI by touching it">
+<meta property="og:description" content="All the math you need to truly understand modern machine learning and AI — stories you can touch: 3D widgets, inline checks, and every practice problem solved step by step.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://linearalgebra.info/">
 <meta property="og:image" content="https://linearalgebra.info/social-card.png">
@@ -20,6 +20,7 @@
   --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --ink-muted:#898781;
   --grid:#e1e0d9; --ring:rgba(11,11,11,.10);
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --good-text:#006300;
+  --good:#0ca30c; --critical:#d03b3b;
   --wash-1:rgba(42,120,214,.12); --wash-good:rgba(12,163,12,.10);
   --serif:"Charter","Iowan Old Style",Georgia,"Times New Roman",serif;
   --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -69,62 +70,146 @@ a.card:hover{transform:translateY(-2px);border-color:var(--s1);box-shadow:0 14px
 .card.locked{opacity:.62}
 .card.locked h3{color:var(--ink-2)}
 footer{margin-top:3.5rem;font-family:var(--sans);font-size:.8rem;color:var(--ink-muted);border-top:1px solid var(--ring);padding-top:1rem}
+/* ================= BRAND-V1 · landing polish ================= */
+:root{--s7:#4a3aa7;--wash-2:rgba(235,104,52,.14)}
+:root[data-theme="dark"]{--s7:#9085e9;--wash-2:rgba(217,89,38,.20)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--s7:#9085e9;--wash-2:rgba(217,89,38,.20)}}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:3px;z-index:60;
+  background:linear-gradient(90deg,var(--s1),var(--s7) 34%,var(--s2) 67%,var(--s3));pointer-events:none}
+.hl{background:linear-gradient(transparent 58%,var(--wash-2) 0);border-radius:3px;padding:0 .06em}
+.wrap{position:relative}
+.hero-art{position:absolute;top:6.4rem;right:.5rem;width:min(24rem,26vw);display:none;pointer-events:none;user-select:none}
+@media (min-width:1150px){.hero-art{display:block}}
+h2.part{display:flex;align-items:center;gap:.55rem}
+h2.part::before{content:"";width:.62rem;height:.62rem;border-radius:4px;background:var(--pc,var(--ink-muted));flex:none}
+[data-p="1"]{--pc:var(--s1)} [data-p="2"]{--pc:var(--s3)} [data-p="3"]{--pc:var(--s2)} [data-p="4"]{--pc:var(--s7)}
+.grid .card .num{color:var(--pc,var(--ink-muted))}
+a.card:hover{border-color:var(--pc,var(--s1))}
+a.card::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;
+  background:var(--pc,var(--s1));opacity:0;transition:opacity .12s}
+a.card:hover::before{opacity:1}
+.status.ready{letter-spacing:.02em}
+footer a{color:var(--ink-2)}
+/* ================= MBM-UX-V2 · progress, resume, a11y, print ================= */
+a.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--s1);color:#fff;padding:.55rem 1rem;border-radius:0 0 10px 0;font-family:var(--sans);font-size:.85rem;font-weight:650;text-decoration:none}
+a.skip:focus{left:0}
+:focus-visible{outline:2px solid var(--s1);outline-offset:2px;border-radius:6px}
+.progress-row{display:none;flex-wrap:wrap;align-items:center;gap:.9rem;margin-top:1.5rem}
+.progress-row.on{display:flex}
+a.cta{display:inline-flex;align-items:center;gap:.45rem;background:var(--s1);color:#fff;border:1px solid var(--s1);border-radius:999px;
+      padding:.44rem 1.05rem;font-family:var(--sans);font-size:.86rem;font-weight:650;text-decoration:none;
+      box-shadow:0 12px 26px -16px rgba(42,120,214,.9)}
+a.cta:hover{filter:brightness(1.08)}
+.overall{display:flex;align-items:center;gap:.6rem;font-family:var(--sans);font-size:.8rem;color:var(--ink-2)}
+.obar{width:9rem;height:6px;border-radius:999px;background:var(--grid);overflow:hidden}
+.obar i{display:block;height:100%;width:0;background:var(--s3);transition:width .55s cubic-bezier(.2,.8,.3,1)}
+.pline{display:flex;align-items:center;gap:.55rem;margin-top:.5rem}
+.cprog{flex:1;height:5px;border-radius:999px;background:var(--grid);overflow:hidden;min-width:3rem}
+.cprog i{display:block;height:100%;background:var(--s3)}
+.cnum{font-size:.72rem;color:var(--ink-muted);white-space:nowrap;font-family:var(--sans)}
+.card.complete{border-color:var(--good)}
+.status.done{color:var(--good-text);background:var(--wash-good)}
+button.link{background:none;border:none;color:var(--ink-muted);font-family:var(--sans);font-size:.78rem;cursor:pointer;text-decoration:underline;padding:0}
+button.link:hover{color:var(--ink-2)}
+button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
+@media (max-width:620px){
+  .topbar{flex-wrap:wrap;gap:.5rem .75rem}
+  .topbar .org{flex-basis:100%;order:4}
+  header.hero{padding:2.4rem 0 1.6rem}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+@media print{
+  .topbar,a.skip,.progress-row{display:none!important}
+  body::before{display:none}
+  body{background:#fff;color:#000}
+  .card,a.card{break-inside:avoid;box-shadow:none;transform:none}
+  a{color:#000;text-decoration:none}
+}
 </style>
 </head>
 <body>
+<a class="skip" href="#units">Skip to the unit list</a>
 <div class="wrap">
   <div class="topbar">
-    <span class="brand">MFML Interactive</span>
-    <span style="color:var(--ink-muted)">ZC416 · Prof. Saurabh · BITS Pilani WILP</span>
+    <span class="brand">The Math Behind the Machine</span>
     <span class="spacer"></span>
     <button class="ghost" id="theme-btn">Theme: auto</button>
   </div>
 
+
+  <svg class="hero-art" viewBox="0 0 360 300" aria-hidden="true">
+    <g stroke="var(--grid)" stroke-width="1" fill="none" opacity=".9">
+      <path d="M30 42 C 120 30 240 30 330 54"/><path d="M26 92 C 120 78 244 80 334 104"/>
+      <path d="M22 142 C 120 128 248 132 336 152"/><path d="M24 192 C 124 180 248 184 334 198"/>
+      <path d="M30 242 C 128 234 244 236 330 240"/>
+      <path d="M60 24 C 52 100 50 190 58 268"/><path d="M124 18 C 118 100 116 194 122 272"/>
+      <path d="M188 16 C 184 102 184 196 188 274"/><path d="M252 18 C 250 102 252 196 256 270"/>
+      <path d="M316 26 C 318 104 322 192 318 264"/>
+    </g>
+    <ellipse cx="188" cy="146" rx="118" ry="64" transform="rotate(-18 188 146)" fill="none" stroke="var(--s3)" stroke-width="2" stroke-dasharray="5 6" opacity=".8"/>
+    <g stroke-linecap="round">
+      <line x1="188" y1="146" x2="262" y2="76" stroke="var(--s2)" stroke-width="3"/>
+      <path d="M262 76 l-13 2 6 12 z" fill="var(--s2)" stroke="none"/>
+      <line x1="188" y1="146" x2="298" y2="122" stroke="var(--s1)" stroke-width="3"/>
+      <path d="M298 122 l-12 -6 1 13 z" fill="var(--s1)" stroke="none"/>
+    </g>
+    <text x="268" y="64" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="var(--s2)">x</text>
+    <text x="304" y="118" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="var(--s1)">Ax</text>
+  </svg>
   <header class="hero">
-    <div class="kicker">Mathematical Foundations for Machine Learning</div>
-    <h1>Learn the math under the machine — by touching it.</h1>
-    <p style="font-family:var(--sans);font-weight:650;color:var(--ink-2);margin:.2rem 0 .6rem">by <strong>Prof. Saurabh</strong> · ZC416 · BITS Pilani WILP</p>
-    <p class="lede">All 16 sessions of MFML, rebuilt as interactive lessons: every idea told as a story first, every slide example worked in full, every concept something you can drag, zoom, and break. Read the intuition, play the widget, then pass the inline checks.</p>
+    <div class="kicker">The mathematics of machine learning &amp; AI</div>
+    <h1>Learn the math under the machine — by <span class="hl">touching</span> it.</h1>
+    <p style="font-family:var(--sans);font-weight:650;color:var(--ink-2);margin:.2rem 0 .6rem">by <strong>Prof. Saurabh</strong></p>
+    <p class="lede">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
     <div class="meta-chips">
-      <span class="chip">📐 15 topic units + finale</span>
-      <span class="chip">🎛 Interactive widgets in every unit</span>
-      <span class="chip">✅ Pause-and-predict checks</span>
-      <span class="chip">✍ 53 solved practice problems</span>
-      <span class="chip" id="prog-chip" style="display:none">Unit 1 checks: <b id="prog-val" style="margin-left:.2rem"></b></span>
+      <span class="chip">📐 16 units · 5 live so far</span>
+      <span class="chip">🎛 38 hands-on widgets</span>
+      <span class="chip">✅ 55 pause-and-predict checks</span>
+      <span class="chip">✍ 53 problems solved step by step</span>
+    </div>
+    <div class="progress-row" id="progress-row">
+      <a class="cta" id="continue-link" href="unit-01.html" hidden>Continue where you left off →</a>
+      <div class="overall" id="overall" hidden>
+        <div class="obar"><i id="obar-fill"></i></div>
+        <span id="overall-txt"></span>
+      </div>
     </div>
   </header>
 
-  <h2 class="part">Part I · Linear Algebra</h2>
-  <div class="grid">
-    <a class="card" href="unit-01.html">
+  <h2 class="part" id="units" data-p="1">Part I · Linear Algebra</h2>
+  <div class="grid" data-p="1">
+    <a class="card" href="unit-01.html" data-unit="1">
       <div class="top"><span class="num">01</span><h3>Systems of Linear Equations</h3></div>
       <p>A matrix is a machine that moves space. Three windows on Ax = b, the three fates, and elimination — the algorithm that never lies.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>10 widgets · 9 checks · 10 problems</span></div>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 10 checks · 10 problems</span></div>
     </a>
-    <a class="card" href="unit-02.html">
+    <a class="card" href="unit-02.html" data-unit="2">
       <div class="top"><span class="num">02</span><h3>Vector Spaces</h3></div>
       <p>The universe where vectors live: groups, subspaces, span, independence, basis, dimension — the architecture of ML math.</p>
       <div class="foot"><span class="status ready">✓ Ready</span><span>6 widgets · 10 checks · 18 problems</span></div>
     </a>
-    <a class="card" href="unit-03.html">
+    <a class="card" href="unit-03.html" data-unit="3">
       <div class="top"><span class="num">03</span><h3>Analytic Geometry</h3></div>
       <p>The board gets its ruler: norms, inner products, angles, orthogonality — and Gram–Schmidt, the cleanest grid a geometry can have.</p>
       <div class="foot"><span class="status ready">✓ Ready</span><span>8 widgets · 11 checks · 8 problems</span></div>
     </a>
-    <a class="card" href="unit-04.html">
+    <a class="card" href="unit-04.html" data-unit="4">
       <div class="top"><span class="num">04</span><h3>Determinants, Eigenvalues &amp; the Spectral Theorem</h3></div>
       <p>A matrix's fingerprints: the volume dial, the directions it cannot turn, A = QΛQᵀ — and Cholesky, the covariance square root.</p>
       <div class="foot"><span class="status ready">✓ Ready</span><span>8 widgets · 12 checks · 5 problems</span></div>
     </a>
-    <a class="card" href="unit-05.html">
+    <a class="card" href="unit-05.html" data-unit="5">
       <div class="top"><span class="num">05</span><h3>Matrix Decompositions &amp; SVD</h3></div>
       <p>Prime factorization for transformations: the ladder from spectral to eigen to SVD — ending in live image compression.</p>
       <div class="foot"><span class="status ready">✓ Ready</span><span>5 widgets · 12 checks · 12 problems</span></div>
     </a>
   </div>
 
-  <h2 class="part">Part II · Calculus &amp; Differentiation</h2>
-  <div class="grid">
+  <h2 class="part" data-p="2">Part II · Calculus &amp; Differentiation</h2>
+  <div class="grid" data-p="2">
     <div class="card locked">
       <div class="top"><span class="num">06</span><h3>Differentiation</h3></div>
       <p>Derivatives from scalars to tensors — the language of "which way is down?"</p>
@@ -142,8 +227,8 @@ footer{margin-top:3.5rem;font-family:var(--sans);font-size:.8rem;color:var(--ink
     </div>
   </div>
 
-  <h2 class="part">Part III · Optimization</h2>
-  <div class="grid">
+  <h2 class="part" data-p="3">Part III · Optimization</h2>
+  <div class="grid" data-p="3">
     <div class="card locked">
       <div class="top"><span class="num">09</span><h3>Gradient Descent</h3></div>
       <p>Walk downhill in thick fog: steps, step sizes, and why a little noise helps you scale.</p>
@@ -161,8 +246,8 @@ footer{margin-top:3.5rem;font-family:var(--sans);font-size:.8rem;color:var(--ink
     </div>
   </div>
 
-  <h2 class="part">Part IV · Applications</h2>
-  <div class="grid">
+  <h2 class="part" data-p="4">Part IV · Applications</h2>
+  <div class="grid" data-p="4">
     <div class="card locked">
       <div class="top"><span class="num">12</span><h3>PCA I — Foundations</h3></div>
       <p>Compress a thousand dimensions without losing the story: variance, projections, eigenvectors.</p>
@@ -184,13 +269,16 @@ footer{margin-top:3.5rem;font-family:var(--sans);font-size:.8rem;color:var(--ink
       <div class="foot"><span class="status soon">Coming soon</span></div>
     </div>
     <div class="card locked">
-      <div class="top"><span class="num">16</span><h3>Session 16 · Finale</h3></div>
-      <p>Awaiting slides — drop Lecture_16.pdf into the MFML folder and this unit joins the queue.</p>
-      <div class="foot"><span class="status soon">Awaiting slides</span></div>
+      <div class="top"><span class="num">16</span><h3>The Finale</h3></div>
+      <p>Where every thread ties together — the last stop on the route from lines to learning machines.</p>
+      <div class="foot"><span class="status soon">Coming soon</span></div>
     </div>
   </div>
 
-  <footer>Built from Prof. Saurabh's ZC416 lecture slides and companion readers · BITS Pilani Work Integrated Learning Programmes · Interactive edition</footer>
+  <footer>
+    <p style="margin:0 0 .5rem">Handcrafted by Prof. Saurabh · every idea a story, every example worked in full · free to learn from</p>
+    <p style="margin:0">Your progress is stored only in this browser, never sent anywhere. <button class="link" id="reset-btn" type="button" hidden>Reset my progress</button></p>
+  </footer>
 </div>
 <script>
 (function(){
@@ -200,9 +288,62 @@ footer{margin-top:3.5rem;font-family:var(--sans);font-size:.8rem;color:var(--ink
   function apply(){ if(mode==='auto')document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',mode); btn.textContent='Theme: '+mode; }
   btn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%3];store.set('mfml-theme',mode);apply();});
   apply();
-  const done=(store.get('mfml-u1-checks')||'').split(',').filter(Boolean).length;
-  if(done>0){ document.getElementById('prog-chip').style.display='inline-flex'; document.getElementById('prog-val').textContent=done+'/8'; }
+  /* ============ MBM-UX-V2 · real progress across every unit ============ */
+  /* Fallbacks are used only until a student opens the unit itself — each unit
+     page writes its true check count to mfml-uN-total when it loads. */
+  const FALLBACK={1:10,2:10,3:11,4:12,5:12};
+  const TITLE={1:'Systems of Linear Equations',2:'Vector Spaces',3:'Analytic Geometry',
+               4:'Determinants & Eigenvalues',5:'Decompositions & SVD'};
+  let done=0, total=0;
+
+  document.querySelectorAll('a.card[data-unit]').forEach(card=>{
+    const u=+card.dataset.unit;
+    const t=+(store.get('mfml-u'+u+'-total')||FALLBACK[u]||0);
+    const d=Math.min((store.get('mfml-u'+u+'-checks')||'').split(',').filter(Boolean).length, t);
+    done+=d; total+=t;
+    if(d<=0) return;
+    const line=document.createElement('div');
+    line.className='pline';
+    line.innerHTML='<div class="cprog"><i style="width:'+(t?(d/t*100).toFixed(1):0)+'%"></i></div>'
+                 + '<span class="cnum">'+d+'/'+t+' checks</span>';
+    card.appendChild(line);
+    if(t>0 && d>=t){
+      card.classList.add('complete');
+      const s=card.querySelector('.status');
+      if(s){ s.className='status done'; s.textContent='✓ Complete'; }
+    }
+  });
+
+  const row=document.getElementById('progress-row');
+  if(done>0 && total>0){
+    row.classList.add('on');
+    document.getElementById('overall').hidden=false;
+    document.getElementById('overall-txt').textContent=done+' of '+total+' checks passed';
+    requestAnimationFrame(()=>{ document.getElementById('obar-fill').style.width=(done/total*100).toFixed(1)+'%'; });
+    document.getElementById('reset-btn').hidden=false;
+  }
+
+  /* pick up exactly where the reading stopped */
+  const last=(store.get('mfml-last')||'').split('|');
+  if(last.length===2 && TITLE[+last[0]]){
+    const u=+last[0], link=document.getElementById('continue-link');
+    link.href='unit-0'+u+'.html#'+last[1];
+    link.textContent='Continue · Unit '+u+' — '+TITLE[u]+' →';
+    link.hidden=false;
+    row.classList.add('on');
+  }
+
+  /* reset — two taps, no browser dialog, theme survives */
+  const rb=document.getElementById('reset-btn');
+  let armed=false;
+  rb.addEventListener('click',()=>{
+    if(!armed){ armed=true; rb.classList.add('arm'); rb.textContent='Tap again to erase all progress';
+                setTimeout(()=>{armed=false;rb.classList.remove('arm');rb.textContent='Reset my progress';},5000); return; }
+    try{ Object.keys(localStorage).filter(k=>/^mfml-/.test(k)&&k!=='mfml-theme').forEach(k=>localStorage.removeItem(k)); }catch(e){}
+    location.reload();
+  });
 })();
 </script>
 </body>
 </html>
+<!-- BRAND-V1 -->
