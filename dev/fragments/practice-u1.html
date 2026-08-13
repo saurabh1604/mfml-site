@@ -1,0 +1,233 @@
+<section class="unit" id="spractice">
+  <div class="sec-head"><span class="sec-num">__N__</span><h2>Practice arena — the session's problem set, solved in full</h2></div>
+  <div class="prose">
+    <p>These are Prof. Saurabh's ten practice problems for Session 1 — seven core problems at easy and medium level, then three hard ones. Attempt each one on paper first, honestly, before unfolding the solution: every fold-out works the problem step by step, entry by entry, with nothing skipped.</p>
+  </div>
+
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">Solve the system below. Do it first by reducing to REF and back substituting, then again by going all the way to RREF. State \(\operatorname{rank}(A)\), \(\operatorname{rank}([A\,|\,\mathbf{b}])\) and the number of unknowns, and use them to justify the number of solutions.</p>
+    \[ \begin{aligned} x + 2y &= 8\\ 3x - y &= 3 \end{aligned} \]
+    <p class="ptest"><b>What this tests.</b> The mechanics of one elimination step, and the difference between stopping at REF and pushing on to RREF.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Method 1 · Step 1 · Write the augmented matrix.</b> Two unknowns, so \(n=2\). \[ [A\,|\,\mathbf{b}]=\left[\begin{array}{cc|c}1&2&8\\3&-1&3\end{array}\right] \]</div>
+      <div class="pstep"><b>Method 1 · Step 2 · Clear below the first pivot.</b> The pivot is the \(1\) in position \((1,1)\). To kill the \(3\) under it, use \(R_2\to R_2-3R_1\). Compute the new row entry by entry: \(3-3(1)=0\), \(-1-3(2)=-7\), \(3-3(8)=-21\). \[ \left[\begin{array}{cc|c}1&2&8\\3&-1&3\end{array}\right] \xrightarrow{\;R_2\to R_2-3R_1\;} \left[\begin{array}{cc|c}1&2&8\\0&-7&-21\end{array}\right] \] This is REF. Pivots are \(1\) (column 1) and \(-7\) (column 2).</div>
+      <div class="pstep"><b>Method 1 · Step 3 · Read the ranks.</b> Two pivots inside the first two columns, so \(\operatorname{rank}(A)=2\). No pivot appears in the \(\mathbf{b}\) column, so \(\operatorname{rank}([A\,|\,\mathbf{b}])=2\) as well. And \(n=2\).</div>
+      <div class="pstep"><b>Method 1 · Step 4 · Classify.</b> Since \(\operatorname{rank}(A)=\operatorname{rank}([A\,|\,\mathbf{b}])=2=n\), the system has exactly one solution.</div>
+      <div class="pstep"><b>Method 1 · Step 5 · Back substitute.</b> The last row says \(-7y=-21\), so \(y=3\). The first row says \(x+2y=8\), so \(x=8-2(3)=2\).</div>
+      <div class="pstep"><b>Method 1 · Step 6 · Check in the originals.</b> \(2+2(3)=8\ \checkmark\) and \(3(2)-3=3\ \checkmark\).</div>
+      <div class="pstep"><b>Method 2 · Step 1 · Start from the REF above.</b> \[ \left[\begin{array}{cc|c}1&2&8\\0&-7&-21\end{array}\right] \]</div>
+      <div class="pstep"><b>Method 2 · Step 2 · Make the second pivot equal to 1.</b> Scale with \(R_2\to -\tfrac{1}{7}R_2\): \[ \left[\begin{array}{cc|c}1&2&8\\0&1&3\end{array}\right] \]</div>
+      <div class="pstep"><b>Method 2 · Step 3 · Clear above that pivot.</b> Column 2 still has a \(2\) sitting above the pivot. Use \(R_1\to R_1-2R_2\): \(1-0=1\), \(2-2(1)=0\), \(8-2(3)=2\). \[ \left[\begin{array}{cc|c}1&0&2\\0&1&3\end{array}\right] \] This is the RREF.</div>
+      <div class="pstep"><b>Method 2 · Step 4 · Read the answer.</b> The rows now say \(x=2\) and \(y=3\) directly. No back substitution was needed.</div>
+      <div class="pans">Answer. \(x=2,\ y=3\) — unique, because \(\operatorname{rank}(A)=\operatorname{rank}([A\,|\,\mathbf{b}])=2=n\). Method 2 lands on the same solution; the RREF of \([A\,|\,\mathbf{b}]\) is \([\,I \,|\, (2,3)^{\top}\,]\).</div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>When the left block of the RREF turns out to be the identity matrix, the right column is the solution. That only happens when \(\operatorname{rank}(A)=n=m\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">Use Gauss–Jordan elimination to solve the system below. Confirm your classification with the rank criterion.</p>
+    \[ \begin{aligned} x + y + z &= 6\\ 2x - y + z &= 3\\ x + 2y - z &= 2 \end{aligned} \]
+    <p class="ptest"><b>What this tests.</b> Handling three rows without losing track, and using a row swap to dodge fractions.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Augmented matrix.</b> Here \(n=3\). \[ \left[\begin{array}{ccc|c}1&1&1&6\\2&-1&1&3\\1&2&-1&2\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 2 · Clear column 1 below the pivot.</b> Two operations, both using \(R_1\). For \(R_2\to R_2-2R_1\): \(2-2=0\), \(-1-2=-3\), \(1-2=-1\), \(3-12=-9\). For \(R_3\to R_3-R_1\): \(1-1=0\), \(2-1=1\), \(-1-1=-2\), \(2-6=-4\). \[ \left[\begin{array}{ccc|c}1&1&1&6\\0&-3&-1&-9\\0&1&-2&-4\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 3 · Swap to get a friendly pivot.</b> The next pivot should sit in column 2. Taking \(-3\) would force fractions immediately, so swap: \(R_2\leftrightarrow R_3\). \[ \left[\begin{array}{ccc|c}1&1&1&6\\0&1&-2&-4\\0&-3&-1&-9\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 4 · Clear below the second pivot.</b> Use \(R_3\to R_3+3R_2\): \(-3+3(1)=0\), \(-1+3(-2)=-7\), \(-9+3(-4)=-21\). \[ \left[\begin{array}{ccc|c}1&1&1&6\\0&1&-2&-4\\0&0&-7&-21\end{array}\right] \] This is REF, with three pivots.</div>
+      <div class="pstep"><b>Step 5 · Classify before finishing.</b> \(\operatorname{rank}(A)=3\), \(\operatorname{rank}([A\,|\,\mathbf{b}])=3\), \(n=3\). All equal, so exactly one solution exists.</div>
+      <div class="pstep"><b>Step 6 · Normalise the third pivot.</b> \(R_3\to -\tfrac{1}{7}R_3\) gives \([\,0\ 0\ 1\,|\,3\,]\). \[ \left[\begin{array}{ccc|c}1&1&1&6\\0&1&-2&-4\\0&0&1&3\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 7 · Clear column 3 above the pivot.</b> Two operations: \(R_2\to R_2+2R_3\) gives \(-4+2(3)=2\) in the last slot and \(-2+2=0\) in column 3. Then \(R_1\to R_1-R_3\) gives \(6-3=3\) and \(1-1=0\). \[ \left[\begin{array}{ccc|c}1&1&0&3\\0&1&0&2\\0&0&1&3\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 8 · Clear column 2 above the pivot.</b> \(R_1\to R_1-R_2\) gives \(3-2=1\). \[ \left[\begin{array}{ccc|c}1&0&0&1\\0&1&0&2\\0&0&1&3\end{array}\right] \] This is the RREF.</div>
+      <div class="pstep"><b>Step 9 · Check in the originals.</b> \(1+2+3=6\ \checkmark\); \(2(1)-2+3=3\ \checkmark\); \(1+2(2)-3=2\ \checkmark\).</div>
+      <div class="pans">Answer. \(x=1,\ y=2,\ z=3\). Unique, since \(\operatorname{rank}(A)=\operatorname{rank}([A\,|\,\mathbf{b}])=3=n\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Clear column 3 before column 2 when going upward. If you clean column 2 first, the later column-3 operation puts new junk back into column 2 and you loop forever. Going right to left on the way up is the rule.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">Show that the following system has no solution, and identify the exact row of the reduced matrix that proves it.</p>
+    \[ \begin{aligned} x + y + z &= 3\\ 2x + 3y + z &= 5\\ 3x + 4y + 2z &= 10 \end{aligned} \]
+    <p class="ptest"><b>What this tests.</b> Spotting inconsistency, and saying why in rank language rather than by feel.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Augmented matrix.</b> \[ \left[\begin{array}{ccc|c}1&1&1&3\\2&3&1&5\\3&4&2&10\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 2 · Clear column 1.</b> With \(R_2\to R_2-2R_1\): \(2-2=0\), \(3-2=1\), \(1-2=-1\), \(5-6=-1\). With \(R_3\to R_3-3R_1\): \(3-3=0\), \(4-3=1\), \(2-3=-1\), \(10-9=1\). \[ \left[\begin{array}{ccc|c}1&1&1&3\\0&1&-1&-1\\0&1&-1&1\end{array}\right] \] Rows 2 and 3 now agree on the left of the bar but disagree on the right. That is the whole story, and the next step makes it official.</div>
+      <div class="pstep"><b>Step 3 · Clear below the second pivot.</b> \(R_3\to R_3-R_2\): \(0-0=0\), \(1-1=0\), \(-1-(-1)=0\), \(1-(-1)=2\). \[ \left[\begin{array}{ccc|c}1&1&1&3\\0&1&-1&-1\\0&0&0&2\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 4 · Read the fatal row.</b> Row 3 is \([\,0\ 0\ 0\,|\,2\,]\). As an equation it says \[ 0\cdot x + 0\cdot y + 0\cdot z = 2, \quad\text{that is}\quad 0=2, \] which no choice of \(x,y,z\) can make true.</div>
+      <div class="pstep"><b>Step 5 · Say it with ranks.</b> Inside the first three columns there are two pivots, so \(\operatorname{rank}(A)=2\). Across all four columns there are three pivots, because row 3 has its pivot in the \(\mathbf{b}\) column, so \(\operatorname{rank}([A\,|\,\mathbf{b}])=3\). Since \(\operatorname{rank}(A)=2 &lt; 3=\operatorname{rank}([A\,|\,\mathbf{b}])\), the system is inconsistent.</div>
+      <div class="pstep"><b>Step 6 · Where it came from.</b> Notice \(R_1+R_2=[\,3\ 4\ 2\,]\) on the left, matching row 3 exactly. So the left sides satisfy \(\text{eq}_1+\text{eq}_2=\text{eq}_3\), but the right sides give \(3+5=8\neq 10\). The equations contradict each other.</div>
+      <div class="pans">Answer. No solution. The row \([\,0\ 0\ 0\,|\,2\,]\) proves it, and in rank terms \(\operatorname{rank}(A)=2 &lt; \operatorname{rank}([A\,|\,\mathbf{b}])=3\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Once you hit a row \([\,0\cdots 0\,|\,c\,]\) with \(c\neq 0\), stop. Do not carry on to RREF and do not try to write a solution. There is nothing further to compute.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Solve the system below. Give the general solution in parametric form and in vector form, and state how many free variables there are and why.</p>
+    \[ \begin{aligned} x + y + z &= 3\\ 2x + 3y + z &= 5\\ 3x + 4y + 2z &= 8 \end{aligned} \]
+    <p class="ptest"><b>What this tests.</b> The same matrix \(A\) as Problem 3 with a different \(\mathbf{b}\). One number changed and the answer went from "none" to "infinitely many".</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Augmented matrix.</b> \[ \left[\begin{array}{ccc|c}1&1&1&3\\2&3&1&5\\3&4&2&8\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 2 · Clear column 1.</b> \(R_2\to R_2-2R_1\) gives \([\,0\ 1\ {-1}\,|\,{-1}\,]\) exactly as before. \(R_3\to R_3-3R_1\) now gives \(3-3=0\), \(4-3=1\), \(2-3=-1\), \(8-9=-1\). \[ \left[\begin{array}{ccc|c}1&1&1&3\\0&1&-1&-1\\0&1&-1&-1\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 3 · Clear below the second pivot.</b> \(R_3\to R_3-R_2\) wipes row 3 out completely: \[ \left[\begin{array}{ccc|c}1&1&1&3\\0&1&-1&-1\\0&0&0&0\end{array}\right] \] This is REF. The zero row is harmless: it says \(0=0\).</div>
+      <div class="pstep"><b>Step 4 · Classify.</b> Two pivots in the first three columns, so \(\operatorname{rank}(A)=2\). No pivot in the \(\mathbf{b}\) column, so \(\operatorname{rank}([A\,|\,\mathbf{b}])=2\) too. They match, so the system is consistent. But \(r=2 &lt; 3=n\), so there are infinitely many solutions, with \[ n-r=3-2=1 \ \text{ free variable.} \]</div>
+      <div class="pstep"><b>Step 5 · Go to RREF.</b> Both pivots are already 1. Only column 2 needs cleaning above, using \(R_1\to R_1-R_2\): \(1-0=1\), \(1-1=0\), \(1-(-1)=2\), \(3-(-1)=4\). \[ \left[\begin{array}{ccc|c}1&0&2&4\\0&1&-1&-1\\0&0&0&0\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 6 · Name the variables.</b> Pivots sit in columns 1 and 2, so \(x\) and \(y\) are basic. Column 3 has no pivot, so \(z\) is free. Set \(z=t\), where \(t\) is any real number.</div>
+      <div class="pstep"><b>Step 7 · Read the rows.</b> Row 1 says \(x+2z=4\), so \(x=4-2t\). Row 2 says \(y-z=-1\), so \(y=-1+t\).</div>
+      <div class="pstep"><b>Step 8 · Parametric form.</b> \[ x=4-2t,\quad y=-1+t,\quad z=t,\qquad t\in\mathbb{R}. \]</div>
+      <div class="pstep"><b>Step 9 · Vector form.</b> Split the constant part from the \(t\) part: \[ \begin{bmatrix}x\\y\\z\end{bmatrix} = \begin{bmatrix}4\\-1\\0\end{bmatrix} + t\begin{bmatrix}-2\\1\\1\end{bmatrix} \] The first vector is a particular solution, found by setting \(t=0\). The second vector solves \(A\mathbf{x}=\mathbf{0}\), and it spans the null space.</div>
+      <div class="pstep"><b>Step 10 · Check in the originals, keeping \(t\) symbolic.</b> \[ \begin{aligned} \text{eq}_1&:\ (4-2t)+(-1+t)+t = 3+(-2t+t+t) = 3\ \checkmark\\ \text{eq}_2&:\ 2(4-2t)+3(-1+t)+t = 5+(-4t+3t+t) = 5\ \checkmark\\ \text{eq}_3&:\ 3(4-2t)+4(-1+t)+2t = 8+(-6t+4t+2t) = 8\ \checkmark \end{aligned} \] Every \(t\) term cancels, which is exactly what "the direction lies in the null space" means.</div>
+      <div class="pans">Answer. Infinitely many solutions: \((x,y,z)=(4,-1,0)+t(-2,1,1)\) for \(t\in\mathbb{R}\). One free variable, since \(n-r=3-2=1\).</div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Problems 3 and 4 share the identical matrix \(A\). Only \(b_3\) moved, from 10 to 8. So \(\operatorname{rank}(A)=2\) in both. Changing \(\mathbf{b}\) can flip a system between "no solution" and "infinitely many", but it can never change \(\operatorname{rank}(A)\), and it can never produce a unique solution here. With \(r=2 &lt; n=3\), a unique solution was impossible from the start.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Determine whether the system below has a solution other than \(x=y=z=0\). If it does, find every solution and give a basis for the null space of the coefficient matrix.</p>
+    \[ \begin{aligned} x + 2y + 3z &= 0\\ 2x + 5y + 7z &= 0\\ 3x + 7y + 10z &= 0 \end{aligned} \]
+    <p class="ptest"><b>What this tests.</b> Whether you realise consistency is automatic here, so the only real question is \(r\) versus \(n\).</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Augmented matrix, with a zero column on the right.</b> \[ \left[\begin{array}{ccc|c}1&2&3&0\\2&5&7&0\\3&7&10&0\end{array}\right] \] That last column will stay zero through every row operation, since every operation combines zeros. So we may track only \(A\) and remember the \(0\).</div>
+      <div class="pstep"><b>Step 2 · Clear column 1.</b> \(R_2\to R_2-2R_1\): \(2-2=0\), \(5-4=1\), \(7-6=1\). \(R_3\to R_3-3R_1\): \(3-3=0\), \(7-6=1\), \(10-9=1\). \[ \left[\begin{array}{ccc|c}1&2&3&0\\0&1&1&0\\0&1&1&0\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 3 · Clear below the second pivot.</b> \(R_3\to R_3-R_2\) gives a zero row: \[ \left[\begin{array}{ccc|c}1&2&3&0\\0&1&1&0\\0&0&0&0\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 4 · Classify.</b> \(\operatorname{rank}(A)=2\) and \(\operatorname{rank}([A\,|\,\mathbf{0}])=2\); they are equal automatically, so the system is consistent. Since \(r=2 &lt; 3=n\), there are \(3-2=1\) free variables, so there are infinitely many solutions. So non-trivial solutions do exist.</div>
+      <div class="pstep"><b>Step 5 · Reduce to RREF.</b> Clear column 2 above the pivot with \(R_1\to R_1-2R_2\): \(1-0=1\), \(2-2=0\), \(3-2=1\). \[ \left[\begin{array}{ccc|c}1&0&1&0\\0&1&1&0\\0&0&0&0\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 6 · Solve.</b> Pivots in columns 1 and 2, so \(x\) and \(y\) are basic and \(z\) is free. Set \(z=t\). Row 1 gives \(x+z=0\), so \(x=-t\). Row 2 gives \(y+z=0\), so \(y=-t\).</div>
+      <div class="pstep"><b>Step 7 · Vector form.</b> \[ \begin{bmatrix}x\\y\\z\end{bmatrix} = t\begin{bmatrix}-1\\-1\\1\end{bmatrix},\qquad t\in\mathbb{R}. \] There is no constant vector out front. A homogeneous system always has \(\mathbf{x}_p=\mathbf{0}\), so the answer is pure null space.</div>
+      <div class="pstep"><b>Step 8 · Check.</b> Take \(t=1\), giving \((-1,-1,1)\): \[ -1+2(-1)+3(1)=0\ \checkmark,\qquad -2-5+7=0\ \checkmark,\qquad -3-7+10=0\ \checkmark \]</div>
+      <div class="pstep"><b>Step 9 · Rank–nullity check.</b> \(\operatorname{rank}(A)=2\), \(\operatorname{nullity}(A)=1\), and \(2+1=3=n\ \checkmark\).</div>
+      <div class="pans">Answer. Non-trivial solutions exist. Every solution is \(t(-1,-1,1)\), and a basis for the null space is \(\{(-1,-1,1)\}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Writing the null space as "\((-1,-1,1)\)" alone is incomplete. The null space is the whole set \(\{\,t(-1,-1,1) : t\in\mathbb{R}\,\}\). The single vector is a basis for it. Also note the trivial solution is still in there: it is the case \(t=0\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">For the matrix</p>
+    \[ A=\begin{bmatrix}1&2&3&4\\2&4&6&8\\1&3&5&7\\2&5&8&11\end{bmatrix} \]
+    <p class="pq">find \(\operatorname{rank}(A)\). Then decide whether \(A\mathbf{x}=\mathbf{0}\) has a non-trivial solution, and if so, find a basis for the null space. Verify the rank–nullity theorem.</p>
+    <p class="ptest"><b>What this tests.</b> Rank as a property of a matrix, without any \(\mathbf{b}\) attached, plus the link from rank straight to the null space.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Look before you compute.</b> Row 2 is exactly \(2\times\) row 1. Also row 1 plus row 3 is \([\,2\ 5\ 8\ 11\,]\), which is row 4. So two of the four rows are combinations of the others, and the rank should come out as 2. The elimination below confirms it.</div>
+      <div class="pstep"><b>Step 2 · Clear column 1.</b> Three operations, all using \(R_1\): \[ \begin{aligned} R_2\to R_2-2R_1&:\ [\,2-2,\ 4-4,\ 6-6,\ 8-8\,]=[\,0\ 0\ 0\ 0\,]\\ R_3\to R_3-R_1&:\ [\,1-1,\ 3-2,\ 5-3,\ 7-4\,]=[\,0\ 1\ 2\ 3\,]\\ R_4\to R_4-2R_1&:\ [\,2-2,\ 5-4,\ 8-6,\ 11-8\,]=[\,0\ 1\ 2\ 3\,] \end{aligned} \] \[ \begin{bmatrix}1&2&3&4\\0&0&0&0\\0&1&2&3\\0&1&2&3\end{bmatrix} \]</div>
+      <div class="pstep"><b>Step 3 · Move the zero row down.</b> REF requires zero rows at the bottom, so swap \(R_2\leftrightarrow R_3\): \[ \begin{bmatrix}1&2&3&4\\0&1&2&3\\0&0&0&0\\0&1&2&3\end{bmatrix} \]</div>
+      <div class="pstep"><b>Step 4 · Clear the last row.</b> \(R_4\to R_4-R_2\) gives another zero row: \[ \begin{bmatrix}1&2&3&4\\0&1&2&3\\0&0&0&0\\0&0&0&0\end{bmatrix} \] This is REF. Two nonzero rows, so two pivots, in columns 1 and 2.</div>
+      <div class="pstep"><b>Step 5 · State the rank.</b> \(\operatorname{rank}(A)=2\).</div>
+      <div class="pstep"><b>Step 6 · Decide on non-trivial solutions.</b> Here \(n=4\) and \(r=2\), so \(n-r=2 &gt; 0\). A homogeneous system with a rank below the number of unknowns always has non-trivial solutions. So yes.</div>
+      <div class="pstep"><b>Step 7 · Reduce to RREF.</b> Both pivots are already 1. Clear column 2 above with \(R_1\to R_1-2R_2\): \(1-0=1\), \(2-2=0\), \(3-4=-1\), \(4-6=-2\). \[ \begin{bmatrix}1&0&-1&-2\\0&1&2&3\\0&0&0&0\\0&0&0&0\end{bmatrix} \]</div>
+      <div class="pstep"><b>Step 8 · Write the equations.</b> Pivot columns 1 and 2, so \(x_1\) and \(x_2\) are basic; columns 3 and 4 have no pivots, so \(x_3\) and \(x_4\) are free. \[ x_1 - x_3 - 2x_4 = 0,\qquad x_2 + 2x_3 + 3x_4 = 0. \]</div>
+      <div class="pstep"><b>Step 9 · Introduce parameters.</b> Put \(x_3=s\) and \(x_4=t\). Then \[ x_1 = s+2t,\qquad x_2 = -2s-3t. \]</div>
+      <div class="pstep"><b>Step 10 · Split into two vectors.</b> Group the \(s\) terms and the \(t\) terms: \[ \begin{bmatrix}x_1\\x_2\\x_3\\x_4\end{bmatrix} = s\begin{bmatrix}1\\-2\\1\\0\end{bmatrix} + t\begin{bmatrix}2\\-3\\0\\1\end{bmatrix} \] Each vector comes from setting one free variable to 1 and the other to 0. That is why the pattern of 1 and 0 appears in the bottom two slots, and it also proves the two vectors are independent.</div>
+      <div class="pstep"><b>Step 11 · Check both against a row of the original.</b> Use row 4, \([\,2\ 5\ 8\ 11\,]\): \[ \begin{aligned} 2(1)+5(-2)+8(1)+11(0) &= 2-10+8 = 0\ \checkmark\\ 2(2)+5(-3)+8(0)+11(1) &= 4-15+11 = 0\ \checkmark \end{aligned} \]</div>
+      <div class="pstep"><b>Step 12 · Rank–nullity.</b> \(\operatorname{nullity}(A)=2\) because the basis has two vectors, and \[ \operatorname{rank}(A)+\operatorname{nullity}(A)=2+2=4=n\ \checkmark \]</div>
+      <div class="pans">Answer. \(\operatorname{rank}(A)=2\). Non-trivial solutions exist, and a null-space basis is \(\{(1,-2,1,0),\ (2,-3,0,1)\}\), so \(\operatorname{nullity}(A)=2\) and \(2+2=4\).</div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Free variables and null-space basis vectors are the same thing counted twice. Set one free variable to 1 and the rest to 0, and you have read off one basis vector. Repeat for each free variable.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Solve the system below. Identify the pivot and free variables, and write the complete solution in vector form.</p>
+    \[ \begin{aligned} x_1 + 2x_2 - x_3 + x_4 &= 1\\ 2x_1 + 4x_2 + x_3 - x_4 &= 5 \end{aligned} \]
+    <p class="ptest"><b>What this tests.</b> That the free variables are decided by the pivot positions, not by which letters look convenient.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Augmented matrix.</b> Here \(m=2\) and \(n=4\). \[ \left[\begin{array}{cccc|c}1&2&-1&1&1\\2&4&1&-1&5\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 2 · Predict the outcome first.</b> Rank cannot exceed the number of rows, so \(r\le 2 &lt; 4=n\). A unique solution is impossible. The only two options are "no solution" or "infinitely many".</div>
+      <div class="pstep"><b>Step 3 · Clear column 1.</b> \(R_2\to R_2-2R_1\): \[ 2-2=0,\quad 4-4=0,\quad 1-(-2)=3,\quad -1-2=-3,\quad 5-2=3. \] \[ \left[\begin{array}{cccc|c}1&2&-1&1&1\\0&0&3&-3&3\end{array}\right] \] Column 2 came out entirely zero below the first row. So the second pivot is not in column 2, it is in column 3.</div>
+      <div class="pstep"><b>Step 4 · Scale the second row.</b> \(R_2\to \tfrac{1}{3}R_2\): \[ \left[\begin{array}{cccc|c}1&2&-1&1&1\\0&0&1&-1&1\end{array}\right] \] This is REF, with pivots in columns 1 and 3.</div>
+      <div class="pstep"><b>Step 5 · Classify.</b> \(\operatorname{rank}(A)=2=\operatorname{rank}([A\,|\,\mathbf{b}])\), so the system is consistent. And \(n-r=4-2=2\), so there are two free variables and infinitely many solutions.</div>
+      <div class="pstep"><b>Step 6 · Reduce to RREF.</b> Clear column 3 above the second pivot with \(R_1\to R_1+R_2\): \[ 1+0=1,\quad 2+0=2,\quad -1+1=0,\quad 1+(-1)=0,\quad 1+1=2. \] \[ \left[\begin{array}{cccc|c}1&2&0&0&2\\0&0&1&-1&1\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 7 · Name the variables.</b> Pivots are in columns 1 and 3, so \(x_1\) and \(x_3\) are basic. Columns 2 and 4 have no pivot, so \(x_2\) and \(x_4\) are free. Put \(x_2=s\) and \(x_4=t\).</div>
+      <div class="pstep"><b>Step 8 · Read the rows.</b> Row 1 says \(x_1+2x_2=2\), so \(x_1=2-2s\). Row 2 says \(x_3-x_4=1\), so \(x_3=1+t\).</div>
+      <div class="pstep"><b>Step 9 · Vector form.</b> Collect constants, then the \(s\) part, then the \(t\) part: \[ \begin{bmatrix}x_1\\x_2\\x_3\\x_4\end{bmatrix} = \begin{bmatrix}2\\0\\1\\0\end{bmatrix} + s\begin{bmatrix}-2\\1\\0\\0\end{bmatrix} + t\begin{bmatrix}0\\0\\1\\1\end{bmatrix} \]</div>
+      <div class="pstep"><b>Step 10 · Check with symbols kept in.</b> \[ \begin{aligned} \text{eq}_1&:\ (2-2s)+2s-(1+t)+t = 2-1 = 1\ \checkmark\\ \text{eq}_2&:\ 2(2-2s)+4s+(1+t)-t = 4-4s+4s+1 = 5\ \checkmark \end{aligned} \]</div>
+      <div class="pans">Answer. Infinitely many solutions with two free variables: \(\mathbf{x}=(2,0,1,0)+s(-2,1,0,0)+t(0,0,1,1)\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The tempting mistake is to declare \(x_3\) and \(x_4\) free "because they are the last two". Look at the RREF. The pivots landed in columns 1 and 3, so the free ones are \(x_2\) and \(x_4\). Free variables are the columns without pivots, full stop.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Consider the system</p>
+    \[ \begin{aligned} x + y + z &= 6\\ x + 2y + 3z &= 14\\ x + 2y + az &= b \end{aligned} \]
+    <p class="pq">where \(a\) and \(b\) are real constants. Find all values of \(a\) and \(b\) for which the system has (i) a unique solution, (ii) no solution, (iii) infinitely many solutions. In case (i) give the solution in terms of \(a\) and \(b\). In case (iii) give the general solution.</p>
+    <p class="ptest"><b>What this tests.</b> Eliminating while a pivot might secretly be zero. This is the classic exam problem, and the classic way to lose marks is to divide by \(a-3\) without checking whether it is zero.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Augmented matrix.</b> Here \(n=3\). \[ \left[\begin{array}{ccc|c}1&1&1&6\\1&2&3&14\\1&2&a&b\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 2 · Clear column 1.</b> The pivot is a plain \(1\), and it does not depend on \(a\) or \(b\), so this step is always safe. \(R_2\to R_2-R_1\): \[ 1-1=0,\quad 2-1=1,\quad 3-1=2,\quad 14-6=8. \] \(R_3\to R_3-R_1\): \[ 1-1=0,\quad 2-1=1,\quad a-1,\quad b-6. \] \[ \left[\begin{array}{ccc|c}1&1&1&6\\0&1&2&8\\0&1&a-1&b-6\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 3 · Clear below the second pivot.</b> The second pivot is \(1\), again free of \(a\) and \(b\), so \(R_3\to R_3-R_2\) is safe: \[ 1-1=0,\quad (a-1)-2=a-3,\quad (b-6)-8=b-14. \] \[ \left[\begin{array}{ccc|c}1&1&1&6\\0&1&2&8\\0&0&a-3&b-14\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 4 · Stop and look at row 3.</b> Everything now depends on the single row \[ [\,0\ \ 0\ \ a-3\,|\,b-14\,], \] which as an equation reads \((a-3)z=b-14\). Whether this row carries a pivot, carries a contradiction, or vanishes decides the whole problem. Do not divide by \(a-3\) yet.</div>
+      <div class="pstep"><b>Step 5 · Case (i): \(a\neq 3\).</b> Then \(a-3\neq 0\), so row 3 has a pivot in column 3. There are three pivots in the first three columns, giving \(\operatorname{rank}(A)=3\), and none in the \(\mathbf{b}\) column, so \(\operatorname{rank}([A\,|\,\mathbf{b}])=3\) as well. With \(3=3=n\), the solution is unique, whatever \(b\) is. Now division is legal: \[ z=\frac{b-14}{a-3}. \] Back substitute into row 2, \(y+2z=8\): \[ y = 8-2z = 8-\frac{2(b-14)}{a-3}. \] Back substitute into row 1, \(x+y+z=6\): \[ \begin{aligned} x &= 6-y-z\\ &= 6-\Bigl(8-\frac{2(b-14)}{a-3}\Bigr)-\frac{b-14}{a-3}\\ &= -2+\frac{2(b-14)}{a-3}-\frac{b-14}{a-3}\\ &= -2+\frac{b-14}{a-3}. \end{aligned} \]</div>
+      <div class="pstep"><b>Step 6 · Spot-check case (i) with numbers.</b> Take \(a=4\), \(b=15\). Then \(z=1/1=1\), \(y=8-2=6\), \(x=-2+1=-1\). Test all three originals: \[ -1+6+1=6\ \checkmark,\qquad -1+12+3=14\ \checkmark,\qquad -1+12+4=15\ \checkmark \]</div>
+      <div class="pstep"><b>Step 7 · Case (ii): \(a=3\) and \(b\neq 14\).</b> Row 3 becomes \([\,0\ 0\ 0\,|\,b-14\,]\) with \(b-14\neq 0\). That is the equation \(0=b-14\), which is false. Column 3 has lost its pivot, so \(\operatorname{rank}(A)=2\), while the \(\mathbf{b}\) column has gained one, so \(\operatorname{rank}([A\,|\,\mathbf{b}])=3\). Since \(2 &lt; 3\), there is no solution.</div>
+      <div class="pstep"><b>Step 8 · Case (iii): \(a=3\) and \(b=14\).</b> Row 3 becomes \([\,0\ 0\ 0\,|\,0\,]\), which is harmless. Now \(\operatorname{rank}(A)=\operatorname{rank}([A\,|\,\mathbf{b}])=2\), and \(2 &lt; 3=n\), so there are infinitely many solutions with \(3-2=1\) free variable.</div>
+      <div class="pstep"><b>Step 9 · Solve case (iii).</b> The matrix is \[ \left[\begin{array}{ccc|c}1&1&1&6\\0&1&2&8\\0&0&0&0\end{array}\right] \xrightarrow{\;R_1\to R_1-R_2\;} \left[\begin{array}{ccc|c}1&0&-1&-2\\0&1&2&8\\0&0&0&0\end{array}\right] \] Pivots in columns 1 and 2, so \(z\) is free. Put \(z=t\). Row 1 gives \(x-z=-2\), so \(x=-2+t\). Row 2 gives \(y+2z=8\), so \(y=8-2t\). \[ \begin{bmatrix}x\\y\\z\end{bmatrix} = \begin{bmatrix}-2\\8\\0\end{bmatrix} + t\begin{bmatrix}1\\-2\\1\end{bmatrix} \]</div>
+      <div class="pstep"><b>Step 10 · Check case (iii) symbolically.</b> With \(a=3\), \(b=14\) the third equation is identical to the second, so only two need checking: \[ \begin{aligned} (-2+t)+(8-2t)+t &= 6+(t-2t+t) = 6\ \checkmark\\ (-2+t)+2(8-2t)+3t &= 14+(t-4t+3t) = 14\ \checkmark \end{aligned} \]</div>
+      <div class="pans">Answer. Unique when \(a\neq 3\) (any \(b\)), with \(z=\dfrac{b-14}{a-3}\), \(y=8-\dfrac{2(b-14)}{a-3}\), \(x=-2+\dfrac{b-14}{a-3}\). No solution when \(a=3\), \(b\neq 14\). Infinitely many when \(a=3\), \(b=14\), namely \((x,y,z)=(-2,8,0)+t(1,-2,1)\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Note which parameter controls which switch. Here \(a\) alone decides \(\operatorname{rank}(A)\), because \(a\) lives on the left of the bar. Then \(b\) decides, only in the knife-edge case \(a=3\), whether the system is consistent. That division of labour is typical: parameters inside \(A\) control the rank, and parameters inside \(\mathbf{b}\) control consistency.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>At \(a=3\) the answer does not change gradually, it changes character. For \(a=3.001\) you get one point. At \(a=3\) exactly you get either nothing at all or an entire line, depending on \(b\). And look at the unique solution as \(a\to 3\) with \(b\neq 14\): the fraction \(\tfrac{b-14}{a-3}\) blows up. The point runs off to infinity, and in the limit there is nowhere for it to be.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Solve</p>
+    \[ \begin{aligned} x_1 + 2x_2 - x_3 + 3x_4 + x_5 &= 3\\ 2x_1 + 4x_2 - x_3 + 4x_4 + 3x_5 &= 5\\ 3x_1 + 6x_2 - 2x_3 + 7x_4 + 4x_5 &= 8\\ x_1 + 2x_2 + x_3 + 5x_5 &= 2 \end{aligned} \]
+    <p class="pq">Give \(\operatorname{rank}(A)\), \(\operatorname{rank}([A\,|\,\mathbf{b}])\), the number of free variables, the general solution in vector form, and a basis for the null space of \(A\).</p>
+    <p class="ptest"><b>What this tests.</b> A full-size elimination where one equation is redundant, the pivots skip columns, and the answer is a two-parameter family. Note the missing \(x_4\) term in the last equation: it enters the matrix as a zero.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part 1 · Step 1 · Augmented matrix.</b> Here \(m=4\) and \(n=5\). \[ \left[\begin{array}{ccccc|c}1&2&-1&3&1&3\\2&4&-1&4&3&5\\3&6&-2&7&4&8\\1&2&1&0&5&2\end{array}\right] \]</div>
+      <div class="pstep"><b>Part 1 · Step 2 · Clear column 1.</b> Three operations, all against \(R_1\): \[ \begin{aligned} R_2\to R_2-2R_1&:\ [\,0,\ 0,\ -1+2,\ 4-6,\ 3-2\,|\,5-6\,]=[\,0,\ 0,\ 1,\ -2,\ 1\,|\,-1\,]\\ R_3\to R_3-3R_1&:\ [\,0,\ 0,\ -2+3,\ 7-9,\ 4-3\,|\,8-9\,]=[\,0,\ 0,\ 1,\ -2,\ 1\,|\,-1\,]\\ R_4\to R_4-R_1&:\ [\,0,\ 0,\ 1+1,\ 0-3,\ 5-1\,|\,2-3\,]=[\,0,\ 0,\ 2,\ -3,\ 4\,|\,-1\,] \end{aligned} \] \[ \left[\begin{array}{ccccc|c}1&2&-1&3&1&3\\0&0&1&-2&1&-1\\0&0&1&-2&1&-1\\0&0&2&-3&4&-1\end{array}\right] \] Column 2 is now entirely zero below row 1. So no pivot can sit in column 2, and the next pivot is in column 3.</div>
+      <div class="pstep"><b>Part 1 · Step 3 · Clear below the second pivot, in column 3.</b> Two operations against \(R_2\): \[ \begin{aligned} R_3\to R_3-R_2&:\ [\,0,\ 0,\ 0,\ 0,\ 0\,|\,0\,]\\ R_4\to R_4-2R_2&:\ [\,0,\ 0,\ 0,\ -3+4,\ 4-2\,|\,-1+2\,]=[\,0,\ 0,\ 0,\ 1,\ 2\,|\,1\,] \end{aligned} \] \[ \left[\begin{array}{ccccc|c}1&2&-1&3&1&3\\0&0&1&-2&1&-1\\0&0&0&0&0&0\\0&0&0&1&2&1\end{array}\right] \]</div>
+      <div class="pstep"><b>Part 1 · Step 4 · Move the zero row to the bottom.</b> REF demands it, so \(R_3\leftrightarrow R_4\): \[ \left[\begin{array}{ccccc|c}1&2&-1&3&1&3\\0&0&1&-2&1&-1\\0&0&0&1&2&1\\0&0&0&0&0&0\end{array}\right] \] This is REF. Pivots sit in columns 1, 3, 4.</div>
+      <div class="pstep"><b>Part 1 · Step 5 · Read the ranks and classify.</b> Three pivots inside the first five columns, so \(\operatorname{rank}(A)=3\). No pivot in the \(\mathbf{b}\) column, so \(\operatorname{rank}([A\,|\,\mathbf{b}])=3\) too. They match, so the system is consistent. And \[ n-r=5-3=2, \] so there are two free variables and infinitely many solutions.</div>
+      <div class="pstep"><b>Part 1 · Step 6 · Where the redundancy was.</b> Row 3 of the original equals row 1 plus row 2, on both sides: \(3+5=8\) matches. So the third equation carried no new information, which is why a zero row appeared.</div>
+      <div class="pstep"><b>Part 2 · Step 1 · Clear column 4, the rightmost pivot column, first.</b> The pivot is the \(1\) in row 3. Rows 1 and 2 have entries \(3\) and \(-2\) above it. \[ \begin{aligned} R_2\to R_2+2R_3&:\ [\,0,\ 0,\ 1,\ -2+2,\ 1+4\,|\,-1+2\,]=[\,0,\ 0,\ 1,\ 0,\ 5\,|\,1\,]\\ R_1\to R_1-3R_3&:\ [\,1,\ 2,\ -1,\ 3-3,\ 1-6\,|\,3-3\,]=[\,1,\ 2,\ -1,\ 0,\ -5\,|\,0\,] \end{aligned} \] \[ \left[\begin{array}{ccccc|c}1&2&-1&0&-5&0\\0&0&1&0&5&1\\0&0&0&1&2&1\\0&0&0&0&0&0\end{array}\right] \]</div>
+      <div class="pstep"><b>Part 2 · Step 2 · Now clear column 3.</b> Row 1 has \(-1\) above that pivot, so \(R_1\to R_1+R_2\): \[ [\,1,\ 2,\ -1+1,\ 0,\ -5+5\,|\,0+1\,]=[\,1,\ 2,\ 0,\ 0,\ 0\,|\,1\,] \] \[ \left[\begin{array}{ccccc|c}1&2&0&0&0&1\\0&0&1&0&5&1\\0&0&0&1&2&1\\0&0&0&0&0&0\end{array}\right] \] This is the RREF. Column 1 needs nothing, since its pivot already sits alone.</div>
+      <div class="pstep"><b>Part 2 · Step 3 · Name the variables.</b> Pivot columns are 1, 3, 4, so \(x_1, x_3, x_4\) are basic. Columns 2 and 5 have no pivot, so \(x_2\) and \(x_5\) are free. Put \(x_2=s\) and \(x_5=t\).</div>
+      <div class="pstep"><b>Part 2 · Step 4 · Read one row at a time.</b> \[ \begin{aligned} \text{Row 1}&:\ x_1+2x_2=1 &\Rightarrow\quad x_1&=1-2s\\ \text{Row 2}&:\ x_3+5x_5=1 &\Rightarrow\quad x_3&=1-5t\\ \text{Row 3}&:\ x_4+2x_5=1 &\Rightarrow\quad x_4&=1-2t \end{aligned} \]</div>
+      <div class="pstep"><b>Part 2 · Step 5 · Assemble the vector form.</b> \[ \begin{bmatrix}x_1\\x_2\\x_3\\x_4\\x_5\end{bmatrix} = \begin{bmatrix}1\\0\\1\\1\\0\end{bmatrix} + s\begin{bmatrix}-2\\1\\0\\0\\0\end{bmatrix} + t\begin{bmatrix}0\\0\\-5\\-2\\1\end{bmatrix} \]</div>
+      <div class="pstep"><b>Part 2 · Step 6 · Identify the three pieces.</b> Setting \(s=t=0\) gives the particular solution \(\mathbf{x}_p=(1,0,1,1,0)\). The two vectors multiplying \(s\) and \(t\) solve \(A\mathbf{x}=\mathbf{0}\), so they form a basis of the null space.</div>
+      <div class="pstep"><b>Part 2 · Step 7 · Check the particular solution in all four originals.</b> \[ \begin{aligned} 1+0-1+3+0 &= 3\ \checkmark & 2+0-1+4+0 &= 5\ \checkmark\\ 3+0-2+7+0 &= 8\ \checkmark & 1+0+1+0+0 &= 2\ \checkmark \end{aligned} \]</div>
+      <div class="pstep"><b>Part 2 · Step 8 · Check a general point.</b> Take \(s=t=1\), giving \(\mathbf{x}=(-1,1,-4,-1,1)\): \[ \begin{aligned} \text{eq}_1&:\ -1+2+4-3+1 = 3\ \checkmark\\ \text{eq}_2&:\ -2+4+4-4+3 = 5\ \checkmark\\ \text{eq}_3&:\ -3+6+8-7+4 = 8\ \checkmark\\ \text{eq}_4&:\ -1+2-4+0+5 = 2\ \checkmark \end{aligned} \]</div>
+      <div class="pstep"><b>Part 2 · Step 9 · Rank–nullity.</b> \(\operatorname{rank}(A)+\operatorname{nullity}(A)=3+2=5=n\ \checkmark\).</div>
+      <div class="pans">Answer. \(\operatorname{rank}(A)=\operatorname{rank}([A\,|\,\mathbf{b}])=3\), two free variables, and \(\mathbf{x}=(1,0,1,1,0)+s(-2,1,0,0,0)+t(0,0,-5,-2,1)\). Null-space basis: \(\{(-2,1,0,0,0),\ (0,0,-5,-2,1)\}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Four equations did not give four pivots. Do not assume \(\operatorname{rank}(A)=m\). Here one equation was the sum of two others, so the rank was 3, not 4. Equally, do not assume the free variables are the last ones: they are \(x_2\) and \(x_5\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Let</p>
+    \[ A=\begin{bmatrix}1&2&3\\2&5&8\\1&3&5\end{bmatrix},\qquad \mathbf{b}=\begin{bmatrix}b_1\\b_2\\b_3\end{bmatrix}. \]
+    <p class="pq">Find \(\operatorname{rank}(A)\). Then find the exact condition on \(b_1, b_2, b_3\) under which \(A\mathbf{x}=\mathbf{b}\) is consistent. When the condition holds, give the general solution in terms of \(b_1, b_2, b_3\). Finally, verify your condition on \(\mathbf{b}=(1,3,2)\).</p>
+    <p class="ptest"><b>What this tests.</b> Running the elimination with unknown symbols on the right-hand side. This is the reverse of Problem 8: there the left side carried the parameters, here the right side does.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Augmented matrix, with symbols on the right.</b> \[ \left[\begin{array}{ccc|c}1&2&3&b_1\\2&5&8&b_2\\1&3&5&b_3\end{array}\right] \] Treat \(b_1, b_2, b_3\) as ordinary numbers whose values you do not know. Every row operation acts on them just like on any other entry.</div>
+      <div class="pstep"><b>Step 2 · Clear column 1.</b> \(R_2\to R_2-2R_1\): \[ 2-2=0,\quad 5-4=1,\quad 8-6=2,\quad b_2-2b_1. \] \(R_3\to R_3-R_1\): \[ 1-1=0,\quad 3-2=1,\quad 5-3=2,\quad b_3-b_1. \] \[ \left[\begin{array}{ccc|c}1&2&3&b_1\\0&1&2&b_2-2b_1\\0&1&2&b_3-b_1\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 3 · Clear below the second pivot.</b> \(R_3\to R_3-R_2\). The left side vanishes completely, and the right side becomes \[ (b_3-b_1)-(b_2-2b_1) = b_3-b_1-b_2+2b_1 = b_1-b_2+b_3. \] \[ \left[\begin{array}{ccc|c}1&2&3&b_1\\0&1&2&b_2-2b_1\\0&0&0&b_1-b_2+b_3\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 4 · Read the rank of \(A\).</b> Only two pivots survive on the left, in columns 1 and 2, so \(\operatorname{rank}(A)=2\), whatever \(\mathbf{b}\) is. Column 3 has no pivot, so \(z\) will be free.</div>
+      <div class="pstep"><b>Step 5 · Impose consistency.</b> Row 3 reads \(0=b_1-b_2+b_3\). If the right side is nonzero, that row carries a pivot in the \(\mathbf{b}\) column, making \(\operatorname{rank}([A\,|\,\mathbf{b}])=3 &gt; 2=\operatorname{rank}(A)\), and the system is dead. So the system is consistent exactly when \[ b_1-b_2+b_3=0 \]</div>
+      <div class="pstep"><b>Step 6 · Note there is no third case.</b> When the condition holds, \(\operatorname{rank}(A)=\operatorname{rank}([A\,|\,\mathbf{b}])=2 &lt; 3=n\), so the answer is infinitely many solutions with one free variable. A unique solution can never occur, for any \(\mathbf{b}\), because \(\operatorname{rank}(A)\) is fixed at 2 and can never reach \(n=3\).</div>
+      <div class="pstep"><b>Step 7 · Reduce to RREF, assuming the condition holds.</b> \(R_1\to R_1-2R_2\): \[ 1,\quad 2-2=0,\quad 3-4=-1,\quad b_1-2(b_2-2b_1)=5b_1-2b_2. \] \[ \left[\begin{array}{ccc|c}1&0&-1&5b_1-2b_2\\0&1&2&b_2-2b_1\\0&0&0&0\end{array}\right] \]</div>
+      <div class="pstep"><b>Step 8 · Write the general solution.</b> Set \(z=t\). Row 1 gives \(x-z=5b_1-2b_2\), and row 2 gives \(y+2z=b_2-2b_1\): \[ \begin{bmatrix}x\\y\\z\end{bmatrix} = \begin{bmatrix}5b_1-2b_2\\b_2-2b_1\\0\end{bmatrix} + t\begin{bmatrix}1\\-2\\1\end{bmatrix} \] The direction vector \((1,-2,1)\) carries no \(b\) at all. That is expected: the null space belongs to \(A\) alone, so changing \(\mathbf{b}\) slides the solution line around, but never turns it.</div>
+      <div class="pstep"><b>Step 9 · Verify with \(\mathbf{b}=(1,3,2)\).</b> Check the condition first: \(1-3+2=0\ \checkmark\), so it should be consistent. The formula gives \[ x=5(1)-2(3)+t=-1+t,\qquad y=3-2(1)-2t=1-2t,\qquad z=t. \] Test at \(t=0\), so \((x,y,z)=(-1,1,0)\): \[ -1+2+0=1\ \checkmark,\qquad -2+5+0=3\ \checkmark,\qquad -1+3+0=2\ \checkmark \] Test at \(t=1\), so \((x,y,z)=(0,-1,1)\): \[ 0-2+3=1\ \checkmark,\qquad 0-5+8=3\ \checkmark,\qquad 0-3+5=2\ \checkmark \]</div>
+      <div class="pstep"><b>Step 10 · Verify a failing case too.</b> Take \(\mathbf{b}=(1,3,5)\), where \(1-3+5=3\neq 0\). Row 3 becomes \([\,0\ 0\ 0\,|\,3\,]\), so the system has no solution, as the condition predicted.</div>
+      <div class="pstep"><b>The picture behind the condition.</b> Since \(\operatorname{rank}(A)=2\), the three columns of \(A\) span only a plane inside \(\mathbb{R}^3\), not the whole space. And \(A\mathbf{x}\) is a combination of those columns, so \(A\mathbf{x}\) can only ever land on that plane. The system is solvable exactly when \(\mathbf{b}\) already lies there. The vector \((1,-1,1)\) is the normal to the plane, which is why the condition reads \(b_1-b_2+b_3=0\). You can see it directly: each column of \(A\) dotted with \((1,-1,1)\) gives \(1-2+1=0\), \(2-5+3=0\) and \(3-8+5=0\).</div>
+      <div class="pans">Answer. \(\operatorname{rank}(A)=2\). Consistent exactly when \(b_1-b_2+b_3=0\), and then \((x,y,z)=(5b_1-2b_2,\ b_2-2b_1,\ 0)+t(1,-2,1)\). Never unique, for any \(\mathbf{b}\).</div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>A parameter on the left of the bar controls \(\operatorname{rank}(A)\) and so the number of solutions. A parameter on the right of the bar controls only whether any solution exists.</p></div>
+    </details>
+  </div>
+</section>

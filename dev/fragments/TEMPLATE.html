@@ -1,0 +1,34 @@
+<!-- PRACTICE ARENA FRAGMENT TEMPLATE — follow this structure EXACTLY.
+     One <section> per unit. __N__ is a placeholder the assembler fills.
+     House rules:
+     - ALL math in KaTeX delimiters: inline \( ... \), display \[ ... \]. Matrices: \begin{bmatrix}...\end{bmatrix}.
+     - Inside math AND prose, write < as &lt; and > as &gt; (the build unescapes before KaTeX).
+     - No <script>. Static HTML only. No id collisions: prefix all ids with "pr".
+     - Difficulty chip: Easy / Medium / Hard.
+     - Solutions hidden in <details class="sol"> — student tries first, then reveals.
+     - Preserve EVERY computational step from the source. Tighten filler prose only.
+     - "Watch out" / "Key takeaway" boxes from the source become the callout divs shown below, INSIDE the details (after the answer) or after it if they apply to the whole problem.
+-->
+<section class="unit" id="spractice">
+  <div class="sec-head"><span class="sec-num">__N__</span><h2>Practice arena — the session's problem set, solved in full</h2></div>
+  <div class="prose">
+    <p>INTRO SENTENCE HERE (1–2 sentences, reference "Prof. Saurabh's practice set"; tell students: attempt each problem on paper first — the fold-out solution shows every step, nothing skipped).</p>
+  </div>
+
+  <!-- ===== one card per problem ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">Full problem statement here, with display math as needed:</p>
+    \[ \begin{aligned} x + 2y &= 8\\ 3x - y &= 3 \end{aligned} \]
+    <p class="ptest"><b>What this tests.</b> One sentence from the source.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Write the augmented matrix.</b> Prose and math: \[ [A\,|\,\mathbf{b}]=\begin{bmatrix}1&2&8\\3&-1&3\end{bmatrix} \]</div>
+      <div class="pstep"><b>Step 2 · Clear below the pivot.</b> \(R_2\to R_2-3R_1\): compute entry by entry: \(3-3(1)=0\), ...</div>
+      <!-- ...as many steps as the source has... -->
+      <div class="pans">Answer. \(x=2,\ y=3\) — unique, because \(\operatorname{rank}(A)=\operatorname{rank}([A|\mathbf{b}])=2=n\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The mistake most students make, from the source.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>The one line to remember, from the source.</p></div>
+    </details>
+  </div>
+  <!-- ===== next card ... ===== -->
+</section>

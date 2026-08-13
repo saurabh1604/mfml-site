@@ -1,0 +1,274 @@
+<section class="unit" id="spractice">
+  <div class="sec-head"><span class="sec-num">__N__</span><h2>Practice arena — the session's problem set, solved in full</h2></div>
+  <div class="prose">
+    <p>These twelve problems are the decomposition half of Prof. Saurabh's practice set — his single "Matrix Decompositions" file covers Sessions 4 and 5 together, so we've split it: diagonalizability, \(A=PDP^{-1}\), matrix powers, the SVD, low-rank approximation and the spectral norm live here, while the pure eigen-analysis problems sit in Session 4's arena. Attempt each one on paper first — the fold-out solution shows every step, nothing skipped.</p>
+  </div>
+
+  <!-- ===== Problem 1 (source #1) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">For each matrix, state the eigenvalue(s), their algebraic multiplicity \(\operatorname{am}\) and geometric multiplicity \(\operatorname{gm}\), and decide whether the matrix is diagonalizable:</p>
+    \[ A=\begin{bmatrix}3&1\\0&3\end{bmatrix},\qquad B=\begin{bmatrix}3&0\\0&3\end{bmatrix},\qquad C=\begin{bmatrix}3&1&0\\0&3&1\\0&0&3\end{bmatrix}. \]
+    <p class="ptest"><b>What this tests.</b> Reading off \(\operatorname{am}\) and \(\operatorname{gm}\) quickly, and using them to decide diagonalizability.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Matrix \(A\).</b> Triangular, so the only eigenvalue is \(\lambda=3\) with \(\operatorname{am}=2\). For the geometric multiplicity, \(\operatorname{gm}=2-\operatorname{rank}(A-3I)=2-\operatorname{rank}\begin{bmatrix}0&1\\0&0\end{bmatrix}=2-1=1\). Since \(\operatorname{gm}=1 &lt; 2=\operatorname{am}\), \(A\) is <em>not</em> diagonalizable.</div>
+      <div class="pstep"><b>Step 2 · Matrix \(B\).</b> \(B=3I\): eigenvalue \(\lambda=3\) with \(\operatorname{am}=2\), and \(B-3I=0\) has rank 0, so \(\operatorname{gm}=2-0=2\). Here \(\operatorname{gm}=\operatorname{am}\), so \(B\) is diagonalizable (it is already diagonal).</div>
+      <div class="pstep"><b>Step 3 · Matrix \(C\).</b> Triangular, eigenvalue \(\lambda=3\) with \(\operatorname{am}=3\). Now
+      \[ C-3I=\begin{bmatrix}0&1&0\\0&0&1\\0&0&0\end{bmatrix} \]
+      has rank 2 (two independent nonzero rows), so \(\operatorname{gm}=3-2=1 &lt; 3\). Not diagonalizable — a single \(3\times 3\) Jordan block.</div>
+      <div class="pans">Answer. \(A\): \(\lambda=3\), \(\operatorname{am}=2\), \(\operatorname{gm}=1\) — not diagonalizable. \(B\): \(\lambda=3\), \(\operatorname{am}=\operatorname{gm}=2\) — diagonalizable. \(C\): \(\lambda=3\), \(\operatorname{am}=3\), \(\operatorname{gm}=1\) — not diagonalizable.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\operatorname{am}\) counts how often \(\lambda\) is a root of \(\det(A-\lambda I)\); \(\operatorname{gm}\) counts independent eigenvectors, and the reliable formula is \(\operatorname{gm}(\lambda)=n-\operatorname{rank}(A-\lambda I)\). Never assume they match — compute the rank.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Same eigenvalue, same \(\operatorname{am}\) — but the number of independent eigenvectors (\(\operatorname{gm}\)) is what decides diagonalizability: \(A\) is diagonalizable \(\iff \operatorname{gm}(\lambda)=\operatorname{am}(\lambda)\) for every eigenvalue.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A\) and \(B\) have the <em>identical</em> characteristic polynomial \((\lambda-3)^2\), yet opposite verdicts. The characteristic polynomial alone can never tell you whether a matrix diagonalizes — that information lives in the eigenspaces, not in the spectrum.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 (source #4) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Let \(a,b,c\in\mathbb{R}\) with \(b\neq 0\) and consider the upper-triangular matrix</p>
+    \[ A=\begin{bmatrix}a&b\\0&c\end{bmatrix}. \]
+    <p class="pq">(a) Find the eigenvalues and an eigenvector for each (in terms of \(a,b,c\)). (b) State, with justification, exactly when \(A\) is diagonalizable.</p>
+    <p class="ptest"><b>What this tests.</b> Running the whole eigen-and-diagonalizability pipeline in symbols, and locating the exact parameter condition where it breaks.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a) · Eigenvalues.</b> For a triangular matrix the eigenvalues are the diagonal entries: \(\lambda_1=a\), \(\lambda_2=c\).</div>
+      <div class="pstep"><b>Part (a) · Eigenvector for \(\lambda_1=a\).</b>
+      \[ A-aI=\begin{bmatrix}0&b\\0&c-a\end{bmatrix}. \]
+      The equations are \(by=0\) and \((c-a)y=0\); since \(b\neq 0\) we get \(y=0\) with \(x\) free, so \(\mathbf{v}_1=(1,0)^{\top}\).</div>
+      <div class="pstep"><b>Part (a) · Eigenvector for \(\lambda_2=c\) (assume \(c\neq a\)).</b>
+      \[ A-cI=\begin{bmatrix}a-c&b\\0&0\end{bmatrix} \]
+      gives \((a-c)x+by=0\Rightarrow x=-\dfrac{b}{a-c}\,y\). Taking \(y=a-c\) clears the fraction: \(\mathbf{v}_2=(-b,\;a-c)^{\top}\). (Check: \(A\mathbf{v}_2=\big(-ab+b(a-c),\;c(a-c)\big)^{\top}=(-bc,\;c(a-c))^{\top}=c\,\mathbf{v}_2\). ✓)</div>
+      <div class="pstep"><b>Part (b) · When is \(A\) diagonalizable?</b> <em>Case \(a\neq c\):</em> two distinct eigenvalues \(\Rightarrow\) two independent eigenvectors \(\Rightarrow\) diagonalizable.
+      <em>Case \(a=c\):</em> then \(\lambda=a\) has \(\operatorname{am}=2\), but \(A-aI=\begin{bmatrix}0&b\\0&0\end{bmatrix}\) has rank 1 (because \(b\neq 0\)), so the eigenspace is only 1-dimensional: \(\operatorname{gm}=1 &lt; 2\) \(\Rightarrow\) not diagonalizable (defective).</div>
+      <div class="pans">Answer. \(\lambda_1=a\) with \(\mathbf{v}_1=(1,0)^{\top}\); \(\lambda_2=c\) with \(\mathbf{v}_2=(-b,\,a-c)^{\top}\). \(A\) is diagonalizable \(\iff a\neq c\) (when \(a=c\) and \(b\neq 0\) it is defective).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The hypothesis \(b\neq 0\) is what kills the \(a=c\) case — if \(b=0\) the matrix would already be diagonal. And avoid dividing by \(a-c\) blindly: scaling the eigenvector by \(y=a-c\) sidesteps the fraction and stays valid right up to the boundary.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Distinct eigenvalues \(\Rightarrow\) diagonalizable, no further checks. A repeated eigenvalue forces you to compute \(\operatorname{rank}(A-\lambda I)\) before you may conclude anything.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Diagonalizability here fails only on the razor-thin set \(a=c\): nudge \(a\) by any \(\varepsilon\neq 0\) and the matrix instantly diagonalizes again. Defective matrices live on a knife-edge — which is exactly why numerical libraries treat "nearly repeated" eigenvalues with such care.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 (source #5) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">Decide whether</p>
+    \[ A=\begin{bmatrix}2&1&0\\0&2&0\\0&0&3\end{bmatrix} \]
+    <p class="pq">is diagonalizable. Justify using eigenvalues, algebraic and geometric multiplicities.</p>
+    <p class="ptest"><b>What this tests.</b> The multiplicity test on a \(3\times 3\): spotting a defective eigenvalue hidden in a triangular matrix.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Eigenvalues.</b> \(A\) is upper-triangular, so the eigenvalues are the diagonal entries: \(\lambda=2\) (algebraic multiplicity 2) and \(\lambda=3\) (algebraic multiplicity 1).</div>
+      <div class="pstep"><b>Step 2 · Eigenspace of the repeated eigenvalue.</b>
+      \[ A-2I=\begin{bmatrix}0&1&0\\0&0&0\\0&0&1\end{bmatrix}. \]
+      This has rank 2, so its null space has dimension \(3-2=1\): the equations force \(y=0\) and \(z=0\) with \(x\) free, i.e. eigenspace \(\operatorname{span}\{(1,0,0)^{\top}\}\). Geometric multiplicity 1.</div>
+      <div class="pstep"><b>Step 3 · Compare.</b> For \(\lambda=2\) the geometric multiplicity (1) is less than the algebraic multiplicity (2). Only two independent eigenvectors exist in total — not enough for a basis of \(\mathbb{R}^3\), so \(A\) cannot be diagonalized.</div>
+      <div class="pans">Answer. \(A\) is not diagonalizable: for \(\lambda=2\), geometric multiplicity \(1 &lt;\) algebraic multiplicity \(2\) (only one independent eigenvector, \((1,0,0)^{\top}\)). The block \(\begin{bmatrix}2&1\\0&2\end{bmatrix}\) is a defective Jordan block.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>It is not the repeated eigenvalue itself that blocks diagonalization — it is the missing second eigenvector. Compute \(\operatorname{rank}(A-2I)\); do not guess from the diagonal.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>One defective eigenvalue sinks the whole matrix: if any \(\lambda\) has \(\operatorname{gm} &lt; \operatorname{am}\), no eigenbasis exists and no invertible \(P\) can ever diagonalize \(A\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The eigenvalue \(3\) is perfectly healthy, and \(A\) is just one entry away from diagonal — yet the tiny \(2\times2\) shear block \(\begin{bmatrix}2&1\\0&2\end{bmatrix}\) tucked in the corner is enough to make the entire \(3\times 3\) matrix undiagonalizable.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 (source #8) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Find an eigendecomposition \(A=PDP^{-1}\) of the non-symmetric matrix</p>
+    \[ A=\begin{bmatrix}5&-1\\2&2\end{bmatrix}, \]
+    <p class="pq">giving \(P,\,D,\,P^{-1}\) explicitly, and verify the factorization.</p>
+    <p class="ptest"><b>What this tests.</b> Building \(P\) and \(D\) for a non-symmetric matrix — where \(P^{-1}\) must be computed, not transposed — and verifying the product.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Eigenvalues.</b>
+      \[ \det(A-\lambda I)=(5-\lambda)(2-\lambda)+2=\lambda^{2}-7\lambda+12=(\lambda-3)(\lambda-4)=0, \]
+      so \(\lambda_1=3\), \(\lambda_2=4\).</div>
+      <div class="pstep"><b>Step 2 · Eigenvectors.</b> \(\lambda_1=3\): \(A-3I=\begin{bmatrix}2&-1\\2&-1\end{bmatrix}\Rightarrow 2x=y\), so \(\mathbf{p}_1=(1,2)^{\top}\).
+      \(\lambda_2=4\): \(A-4I=\begin{bmatrix}1&-1\\2&-2\end{bmatrix}\Rightarrow x=y\), so \(\mathbf{p}_2=(1,1)^{\top}\).</div>
+      <div class="pstep"><b>Step 3 · Assemble \(P\), \(D\), and invert \(P\).</b>
+      \[ P=\begin{bmatrix}1&1\\2&1\end{bmatrix},\qquad D=\begin{bmatrix}3&0\\0&4\end{bmatrix},\qquad \det P=1\cdot 1-1\cdot 2=-1,\qquad P^{-1}=\frac{1}{-1}\begin{bmatrix}1&-1\\-2&1\end{bmatrix}=\begin{bmatrix}-1&1\\2&-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 4 · Verify, entry by entry.</b> First \(PD=\begin{bmatrix}1\cdot 3&1\cdot 4\\2\cdot 3&1\cdot 4\end{bmatrix}=\begin{bmatrix}3&4\\6&4\end{bmatrix}\). Then
+      \[ PDP^{-1}=\begin{bmatrix}3&4\\6&4\end{bmatrix}\begin{bmatrix}-1&1\\2&-1\end{bmatrix}=\begin{bmatrix}3(-1)+4(2)&3(1)+4(-1)\\6(-1)+4(2)&6(1)+4(-1)\end{bmatrix}=\begin{bmatrix}5&-1\\2&2\end{bmatrix}=A.\ \checkmark \]</div>
+      <div class="pans">Answer. \(A=PDP^{-1}\) with \(P=\begin{bmatrix}1&1\\2&1\end{bmatrix}\), \(D=\begin{bmatrix}3&0\\0&4\end{bmatrix}\), \(P^{-1}=\begin{bmatrix}-1&1\\2&-1\end{bmatrix}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Column order must match: \(\mathbf{p}_1\) under \(\lambda_1\), \(\mathbf{p}_2\) under \(\lambda_2\) — swap one and not the other, and the "decomposition" silently produces a different matrix. And since \(A\) is not symmetric, \(P^{-1}\neq P^{\top}\): the eigenvectors \((1,2)^{\top},(1,1)^{\top}\) are not orthogonal, so the inverse must be computed honestly.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>The \(PDP^{-1}\) recipe: eigenvalues \(\to\) eigenvectors \(\to\) stack into \(P\), \(D\) \(\to\) invert \(P\) \(\to\) multiply back and check. The verification costs two small multiplications and catches nearly every bookkeeping error.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>A non-symmetric matrix can still diagonalize perfectly — but on a <em>slanted</em> basis. \(A\) acts as pure stretching (by 3 and by 4) along the directions \((1,2)\) and \((1,1)\), axes that are not perpendicular. Orthogonal eigenvectors are a luxury reserved for symmetric matrices.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 (source #10) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Using diagonalization, derive a closed form for \(A^{n}\) and evaluate \(A^{4}\), where</p>
+    \[ A=\begin{bmatrix}2&-1\\-1&2\end{bmatrix}. \]
+    <p class="ptest"><b>What this tests.</b> The workhorse pattern \(A^{n}=PD^{n}P^{\top}\): diagonalize once, then raise only the diagonal.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Diagonalize (orthogonally).</b> \(\det(A-\lambda I)=(2-\lambda)^{2}-1=(\lambda-1)(\lambda-3)=0\Rightarrow\lambda_1=1,\ \lambda_2=3\). Eigenvectors: for \(\lambda=1\), \(A\mathbf{v}=(2x-y,\,-x+2y)^{\top}=\mathbf{v}\) forces \(x=y\); for \(\lambda=3\), \(x=-y\). Orthonormal eigenvectors \(\tfrac{1}{\sqrt2}(1,1)^{\top}\) and \(\tfrac{1}{\sqrt2}(1,-1)^{\top}\) give
+      \[ P=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\qquad D=\begin{bmatrix}1&0\\0&3\end{bmatrix},\qquad A=PDP^{\top}. \]</div>
+      <div class="pstep"><b>Step 2 · Power formula.</b> Since \(A=PDP^{\top}\) with \(P\) orthogonal, \(A^{n}=PD^{n}P^{\top}\), and only the diagonal is raised:
+      \[ A^{n}=\frac12\begin{bmatrix}1&1\\1&-1\end{bmatrix}\begin{bmatrix}1&0\\0&3^{n}\end{bmatrix}\begin{bmatrix}1&1\\1&-1\end{bmatrix}=\frac12\begin{bmatrix}1+3^{n}&1-3^{n}\\1-3^{n}&1+3^{n}\end{bmatrix}. \]
+      (Middle step: \(PD^{n}=\tfrac{1}{\sqrt2}\begin{bmatrix}1&3^{n}\\1&-3^{n}\end{bmatrix}\), then multiply by \(P^{\top}\): the \((1,1)\) entry is \(\tfrac12(1+3^{n})\), the \((1,2)\) entry \(\tfrac12(1-3^{n})\), and symmetrically below.)</div>
+      <div class="pstep"><b>Step 3 · Evaluate \(n=4\).</b> \(3^{4}=81\), so
+      \[ A^{4}=\frac12\begin{bmatrix}1+81&1-81\\1-81&1+81\end{bmatrix}=\frac12\begin{bmatrix}82&-80\\-80&82\end{bmatrix}=\begin{bmatrix}41&-40\\-40&41\end{bmatrix}. \]</div>
+      <div class="pans">Answer. \(A^{n}=\dfrac12\begin{bmatrix}1+3^{n}&1-3^{n}\\1-3^{n}&1+3^{n}\end{bmatrix}\), and \(A^{4}=\begin{bmatrix}41&-40\\-40&41\end{bmatrix}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Only \(D\) gets raised to the \(n\): \(P\) and \(P^{\top}\) appear once each, at the ends. And \(1^{n}\) stays \(1\) — a surprisingly common slip is powering only the larger eigenvalue.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>\(A^{n}=PD^{n}P^{\top}\) turns \(n-1\) matrix multiplications into \(n\)-th powers of two scalars. Diagonalize once; reuse forever.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The closed form works for <em>every</em> \(n\) simultaneously — \(n=0\) gives \(I\), \(n=1\) gives \(A\) back, and since no eigenvalue is zero, \(n=-1\) even produces \(A^{-1}\). One formula quietly encodes the entire orbit of \(A\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 (source #11) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Find a full singular value decomposition \(A=U\Sigma V^{\top}\) of</p>
+    \[ A=\begin{bmatrix}1&1\\1&0\\0&1\end{bmatrix}, \]
+    <p class="pq">including the third column of \(U\) obtained by orthogonal completion.</p>
+    <p class="ptest"><b>What this tests.</b> The full SVD pipeline — \(A^{\top}A\), singular values, \(\mathbf{u}_i=\frac{1}{\sigma_i}A\mathbf{v}_i\) — plus completing \(U\) to a genuine \(3\times 3\) orthogonal matrix.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · \(A^{\top}A\), singular values, right singular vectors.</b>
+      \[ A^{\top}A=\begin{bmatrix}1&1&0\\1&0&1\end{bmatrix}\begin{bmatrix}1&1\\1&0\\0&1\end{bmatrix}=\begin{bmatrix}2&1\\1&2\end{bmatrix} \]
+      (entries: \((1,1)\!: 1^2+1^2+0^2=2\); \((1,2)\!: 1\cdot1+1\cdot0+0\cdot1=1\); \((2,2)\!: 1+0+1=2\)). Eigenvalues: \(\det\begin{bmatrix}2-\lambda&1\\1&2-\lambda\end{bmatrix}=(2-\lambda)^{2}-1=0\Rightarrow\lambda=3,\,1\). Thus \(\sigma_1=\sqrt3\), \(\sigma_2=1\), with
+      \[ \mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\ (\lambda=3),\qquad \mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\ (\lambda=1). \]</div>
+      <div class="pstep"><b>Step 2 · Left singular vectors \(\mathbf{u}_i=\frac{1}{\sigma_i}A\mathbf{v}_i\).</b> Entry by entry, \(A\mathbf{v}_1=\tfrac{1}{\sqrt2}(1{+}1,\,1{+}0,\,0{+}1)^{\top}=\tfrac{1}{\sqrt2}(2,1,1)^{\top}\), so
+      \[ \mathbf{u}_1=\frac{1}{\sqrt3}\cdot\frac{1}{\sqrt2}\begin{bmatrix}2\\1\\1\end{bmatrix}=\frac{1}{\sqrt6}\begin{bmatrix}2\\1\\1\end{bmatrix};\qquad \mathbf{u}_2=\frac{1}{1}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1-1\\1-0\\0-1\end{bmatrix}=\frac{1}{\sqrt2}\begin{bmatrix}0\\1\\-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 3 · Orthogonal completion \(\mathbf{u}_3\).</b> We need a unit vector with \(\mathbf{u}_3\perp\mathbf{u}_1\) and \(\mathbf{u}_3\perp\mathbf{u}_2\). Writing \(\mathbf{u}_3=(p,q,r)^{\top}\): from \(\mathbf{u}_2\), \(q-r=0\Rightarrow q=r\); from \(\mathbf{u}_1\), \(2p+q+r=0\Rightarrow 2p+2q=0\Rightarrow p=-q\). Normalising: \(\mathbf{u}_3=\tfrac{1}{\sqrt3}(-1,1,1)^{\top}\).</div>
+      <div class="pstep"><b>Step 4 · Assemble.</b>
+      \[ U=\begin{bmatrix}2/\sqrt6&0&-1/\sqrt3\\1/\sqrt6&1/\sqrt2&1/\sqrt3\\1/\sqrt6&-1/\sqrt2&1/\sqrt3\end{bmatrix},\qquad \Sigma=\begin{bmatrix}\sqrt3&0\\0&1\\0&0\end{bmatrix},\qquad V^{\top}=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}. \]
+      \(\Sigma\) has the same \(3\times 2\) shape as \(A\); its zero third row is what \(\mathbf{u}_3\) multiplies.</div>
+      <div class="pans">Answer. \(\sigma_1=\sqrt3\), \(\sigma_2=1\); \(\mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\), \(\mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\); \(\mathbf{u}_1=\tfrac{1}{\sqrt6}(2,1,1)^{\top}\), \(\mathbf{u}_2=\tfrac{1}{\sqrt2}(0,1,-1)^{\top}\), \(\mathbf{u}_3=\tfrac{1}{\sqrt3}(-1,1,1)^{\top}\); \(\Sigma=\begin{bmatrix}\sqrt3&0\\0&1\\0&0\end{bmatrix}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\Sigma\) must have the shape of \(A\) (\(3\times 2\)) — forgetting the zero row makes \(U\Sigma V^{\top}\) undefined. Keep the normalisations straight: \(\mathbf{u}_1\) picks up \(\frac{1}{\sqrt3}\cdot\frac{1}{\sqrt2}=\frac{1}{\sqrt6}\), not \(\frac{1}{\sqrt3}\).</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Full-SVD recipe: eigen-decompose \(A^{\top}A\) for \(V\) and the \(\sigma_i=\sqrt{\lambda_i}\), push through \(\mathbf{u}_i=\frac{1}{\sigma_i}A\mathbf{v}_i\), then complete \(U\) to an orthonormal basis of the output space.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The completed column \(\mathbf{u}_3=\tfrac{1}{\sqrt3}(-1,1,1)^{\top}\) satisfies \(A^{\top}\mathbf{u}_3=\mathbf{0}\): it spans the part of \(\mathbb{R}^3\) that \(A\)'s columns can never reach. The "filler" column is actually a precise description of what the matrix cannot do.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 (source #12) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Find the SVD of</p>
+    \[ A=\begin{bmatrix}1&1&0\\0&1&1\end{bmatrix}. \]
+    <p class="pq">(Hint: it is quicker to get \(U\) and the singular values from the \(2\times 2\) matrix \(AA^{\top}\), then recover \(V\) from \(\mathbf{v}_i=\frac{1}{\sigma_i}A^{\top}\mathbf{u}_i\); the missing right vector spans \(\ker(A^{\top}A)\).)</p>
+    <p class="ptest"><b>What this tests.</b> Choosing the smaller Gram matrix (\(AA^{\top}\) instead of a \(3\times 3\) \(A^{\top}A\) with a zero eigenvalue), and fetching the last right vector from the null space.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · \(AA^{\top}\), singular values, left singular vectors.</b>
+      \[ AA^{\top}=\begin{bmatrix}1&1&0\\0&1&1\end{bmatrix}\begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix}=\begin{bmatrix}2&1\\1&2\end{bmatrix} \]
+      (entries: row 1 · row 1 \(=1+1+0=2\); row 1 · row 2 \(=0+1+0=1\); row 2 · row 2 \(=0+1+1=2\)). Its eigenvalues are \(\lambda=3,\,1\), so \(\sigma_1=\sqrt3\), \(\sigma_2=1\), with
+      \[ \mathbf{u}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\ (\lambda=3),\qquad \mathbf{u}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\ (\lambda=1). \]</div>
+      <div class="pstep"><b>Step 2 · Right singular vectors \(\mathbf{v}_i=\frac{1}{\sigma_i}A^{\top}\mathbf{u}_i\).</b> With \(A^{\top}=\begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix}\): entry by entry, \(A^{\top}\mathbf{u}_1=\tfrac{1}{\sqrt2}(1,\,1{+}1,\,1)^{\top}=\tfrac{1}{\sqrt2}(1,2,1)^{\top}\), so
+      \[ \mathbf{v}_1=\frac{1}{\sqrt3}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1\\2\\1\end{bmatrix}=\frac{1}{\sqrt6}\begin{bmatrix}1\\2\\1\end{bmatrix};\qquad \mathbf{v}_2=\frac{1}{1}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1\\1-1\\-1\end{bmatrix}=\frac{1}{\sqrt2}\begin{bmatrix}1\\0\\-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 3 · Third right vector from the null space.</b> \(A\) is \(2\times 3\), so \(V\) needs a third column \(\mathbf{v}_3\) with singular value 0, spanning \(\ker(A)\) (equivalently \(\ker A^{\top}A\)). Solving \(A\mathbf{v}=\mathbf{0}\): \(x+y=0\) and \(y+z=0\) give \(y=-x,\ z=x\), so \(\mathbf{v}_3=\tfrac{1}{\sqrt3}(1,-1,1)^{\top}\).</div>
+      <div class="pstep"><b>Step 4 · Assemble.</b>
+      \[ U=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\qquad \Sigma=\begin{bmatrix}\sqrt3&0&0\\0&1&0\end{bmatrix},\qquad V=\begin{bmatrix}1/\sqrt6&1/\sqrt2&1/\sqrt3\\2/\sqrt6&0&-1/\sqrt3\\1/\sqrt6&-1/\sqrt2&1/\sqrt3\end{bmatrix}. \]
+      The single zero column of \(\Sigma\) reflects that \(A\) has rank 2 but 3 columns.</div>
+      <div class="pans">Answer. \(\sigma_1=\sqrt3\), \(\sigma_2=1\); \(U=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}\), \(\Sigma=\begin{bmatrix}\sqrt3&0&0\\0&1&0\end{bmatrix}\), \(\mathbf{v}_1=\tfrac{1}{\sqrt6}(1,2,1)^{\top}\), \(\mathbf{v}_2=\tfrac{1}{\sqrt2}(1,0,-1)^{\top}\), \(\mathbf{v}_3=\tfrac{1}{\sqrt3}(1,-1,1)^{\top}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\mathbf{v}_3\) cannot come from \(\mathbf{v}_3=\frac{1}{\sigma_3}A^{\top}\mathbf{u}_3\) — that would divide by \(\sigma_3=0\). Vectors paired with zero singular values must be fetched from the null space directly.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Always eigen-decompose the <em>smaller</em> of \(A^{\top}A\) and \(AA^{\top}\) — they share their nonzero eigenvalues — then transfer across with \(\frac{1}{\sigma_i}A\mathbf{v}_i\) or \(\frac{1}{\sigma_i}A^{\top}\mathbf{u}_i\). For a wide matrix, that is \(AA^{\top}\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>An entire line of inputs — every multiple of \((1,-1,1)^{\top}\) — is crushed to zero: check \(A\mathbf{v}_3 = (1-1+0,\;0-1+1)^{\top}=\mathbf{0}\). "Rank 2 out of 3 columns" is not an abstraction; it is a concrete direction the matrix simply deletes.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 (source #13) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">(a) Find the SVD of \(\;A=\begin{bmatrix}1&1\\-1&-1\end{bmatrix}\). (b) Show that \(A\) is not diagonalizable, yet its SVD still exists, and explain why.</p>
+    <p class="ptest"><b>What this tests.</b> A rank-deficient SVD (zero singular value), and the sharp contrast between diagonalizability and the always-available SVD.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a), Step 1 · Singular values.</b>
+      \[ A^{\top}A=\begin{bmatrix}1&-1\\1&-1\end{bmatrix}\begin{bmatrix}1&1\\-1&-1\end{bmatrix}=\begin{bmatrix}2&2\\2&2\end{bmatrix} \]
+      (entries: \((1,1)\!: 1^2+(-1)^2=2\); \((1,2)\!: 1\cdot 1+(-1)(-1)=2\); \((2,2)\!: 1+1=2\)). Eigenvalues: \((2-\lambda)^2-4=0\Rightarrow\lambda=4,\,0\), so \(\sigma_1=2,\ \sigma_2=0\). The single nonzero singular value shows \(\operatorname{rank}A=1\).</div>
+      <div class="pstep"><b>Part (a), Step 2 · Right and left vectors.</b> Eigenvectors of \(A^{\top}A\): \(\mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\) (for 4), \(\mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\) (for 0). Then
+      \[ \mathbf{u}_1=\frac{1}{\sigma_1}A\mathbf{v}_1=\frac12\cdot\frac{1}{\sqrt2}\begin{bmatrix}2\\-2\end{bmatrix}=\frac{1}{\sqrt2}\begin{bmatrix}1\\-1\end{bmatrix},\qquad \mathbf{u}_2\perp\mathbf{u}_1:\ \mathbf{u}_2=\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix}. \]
+      \[ U=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\-1&1\end{bmatrix},\qquad \Sigma=\begin{bmatrix}2&0\\0&0\end{bmatrix},\qquad V=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Part (b) · Not diagonalizable, but the SVD exists.</b> The eigenvalues of \(A\) itself satisfy \(\det(A-\lambda I)=(1-\lambda)(-1-\lambda)+1=\lambda^{2}=0\), so \(\lambda=0\) has algebraic multiplicity 2 — while \(A\mathbf{v}=\mathbf{0}\) has the single solution direction \((1,-1)^{\top}\), geometric multiplicity 1. Since \(1 &lt; 2\), \(A\) has no eigenbasis and is not diagonalizable. Nevertheless the SVD is built from the symmetric matrices \(A^{\top}A\) and \(AA^{\top}\), which are <em>always</em> orthogonally diagonalizable — this is exactly why an SVD exists for every matrix, diagonalizable or not.</div>
+      <div class="pans">Answer. \(\sigma_1=2\), \(\sigma_2=0\); \(U=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\-1&1\end{bmatrix}\), \(\Sigma=\begin{bmatrix}2&0\\0&0\end{bmatrix}\), \(V=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}\). \(A\) is not diagonalizable (\(\lambda=0\): algebraic multiplicity 2, geometric multiplicity 1).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Do not read rank off the eigenvalues: here both eigenvalues are 0, yet \(A\neq 0\) and \(\operatorname{rank}A=1\). It is the count of <em>nonzero singular values</em> that equals the rank — eigenvalues of a non-symmetric matrix can lie about size and rank.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Diagonalization can fail (defective matrices); the SVD cannot. It inherits its existence from the spectral theorem applied to \(A^{\top}A\) and \(AA^{\top}\), which are symmetric no matter what \(A\) is.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>A matrix with <em>no</em> eigen-decomposition has a perfectly clean SVD. The trick is freedom: diagonalization must use one basis for input and output, while the SVD is allowed two different orthonormal frames (\(U\neq V\)) — and that extra freedom never runs out.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 (source #14) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">For \(\;A=\begin{bmatrix}2&2\\-1&1\end{bmatrix}\), find the singular values and the best rank-1 approximation \(A_1=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}\).</p>
+    <p class="ptest"><b>What this tests.</b> Extracting \(\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}\) from a computed SVD and knowing (Eckart–Young) that it is the closest rank-1 matrix.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Singular values and top right vector.</b>
+      \[ A^{\top}A=\begin{bmatrix}2&-1\\2&1\end{bmatrix}\begin{bmatrix}2&2\\-1&1\end{bmatrix}=\begin{bmatrix}5&3\\3&5\end{bmatrix} \]
+      (entries: \((1,1)\!: 4+1=5\); \((1,2)\!: 4-1=3\); \((2,2)\!: 4+1=5\)). Then \(\det\begin{bmatrix}5-\lambda&3\\3&5-\lambda\end{bmatrix}=(5-\lambda)^2-9=(\lambda-8)(\lambda-2)=0\), so
+      \[ \sigma_1=\sqrt8=2\sqrt2,\qquad \sigma_2=\sqrt2,\qquad \mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\ \text{(for }\lambda=8\text{)}. \]</div>
+      <div class="pstep"><b>Step 2 · Top left vector.</b>
+      \[ \mathbf{u}_1=\frac{1}{\sigma_1}A\mathbf{v}_1=\frac{1}{2\sqrt2}\cdot\frac{1}{\sqrt2}\begin{bmatrix}2+2\\-1+1\end{bmatrix}=\frac{1}{4}\begin{bmatrix}4\\0\end{bmatrix}=\begin{bmatrix}1\\0\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 3 · Rank-1 approximation.</b>
+      \[ A_1=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=2\sqrt2\begin{bmatrix}1\\0\end{bmatrix}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1&1\end{bmatrix}=2\begin{bmatrix}1&1\\0&0\end{bmatrix}=\begin{bmatrix}2&2\\0&0\end{bmatrix}. \]
+      By the Eckart–Young theorem this is the closest rank-1 matrix to \(A\); the discarded part corresponds to the dropped singular value \(\sigma_2=\sqrt2\), and indeed \(\lVert A-A_1\rVert_2=\sigma_2=\sqrt2\).</div>
+      <div class="pans">Answer. \(\sigma_1=2\sqrt2\), \(\sigma_2=\sqrt2\); \(A_1=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\begin{bmatrix}2&2\\0&0\end{bmatrix}\) with \(\mathbf{u}_1=(1,0)^{\top}\), \(\mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(A_1\) needs all three ingredients — \(\sigma_1\) out front and <em>unit</em> vectors \(\mathbf{u}_1,\mathbf{v}_1\). Forgetting a normalisation rescales the whole approximation and silently breaks Eckart–Young optimality.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Truncating the SVD after \(k\) terms gives the best rank-\(k\) approximation, and the error is exactly the first dropped singular value: \(\lVert A-A_k\rVert_2=\sigma_{k+1}\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The best rank-1 stand-in keeps the top row \((2,2)\) <em>exactly</em> and zeroes the bottom row — the SVD judged the row of size \(2\sqrt2\) worth keeping and the orthogonal remainder of size \(\sqrt2\) expendable. Approximation by importance, not by position.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 (source #15) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">A matrix has the SVD data</p>
+    \[ \sigma_1=3,\ \mathbf{u}_1=\tfrac{1}{\sqrt2}(1,1)^{\top},\ \mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top};\qquad \sigma_2=1,\ \mathbf{u}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top},\ \mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}. \]
+    <p class="pq">(a) Reconstruct \(A=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}+\sigma_2\mathbf{u}_2\mathbf{v}_2^{\top}\). (b) Write down the best rank-1 approximation and the relative weight it keeps.</p>
+    <p class="ptest"><b>What this tests.</b> Reading the SVD as \(A=\sum_i\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\) — a weighted stack of rank-1 layers — and measuring a truncation's kept energy.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a) · Two rank-1 layers.</b>
+      \[ \sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=3\cdot\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix}\cdot\frac{1}{\sqrt2}\begin{bmatrix}1&1\end{bmatrix}=\frac32\begin{bmatrix}1&1\\1&1\end{bmatrix},\qquad \sigma_2\mathbf{u}_2\mathbf{v}_2^{\top}=\frac12\begin{bmatrix}1&-1\\-1&1\end{bmatrix}. \]
+      Adding, entry by entry: \((1,1)\!:\tfrac32+\tfrac12=2\); \((1,2)\!:\tfrac32-\tfrac12=1\); \((2,1)\!:1\); \((2,2)\!:2\):
+      \[ A=\frac12\begin{bmatrix}3&3\\3&3\end{bmatrix}+\frac12\begin{bmatrix}1&-1\\-1&1\end{bmatrix}=\begin{bmatrix}2&1\\1&2\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Part (b) · Best rank-1 approximation and its weight.</b> Keep the largest singular value only:
+      \[ A_1=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\frac32\begin{bmatrix}1&1\\1&1\end{bmatrix}. \]
+      This is the rank-\(k\) truncation \(\hat A^{(k)}=\sum_{i=1}^{k}\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\) with \(k=1\). The energy kept is
+      \[ \frac{\sigma_1^{2}}{\sigma_1^{2}+\sigma_2^{2}}=\frac{9}{10}=90\%. \]</div>
+      <div class="pans">Answer. \(A=\begin{bmatrix}2&1\\1&2\end{bmatrix}\); best rank-1 approximation \(A_1=\frac32\begin{bmatrix}1&1\\1&1\end{bmatrix}\), keeping \(\sigma_1^{2}/(\sigma_1^{2}+\sigma_2^{2})=90\%\) of the energy.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Energy is measured in \(\sigma^{2}\), not \(\sigma\): the weights here are \(9\!:\!1\), not \(3\!:\!1\). Squaring is what makes truncation so effective — and forgetting it understates how much the top layer carries.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>The SVD writes any matrix as a sum of rank-1 layers \(\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\), sorted by importance. Compression = keep the top \(k\) layers, drop the rest.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Half the singular values carry 90% of the energy. This lopsidedness is the entire business model of image compression and PCA: real-world matrices almost always hide a steep \(\sigma\)-decay, and the squares make it steeper.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 (source #16) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Compute the spectral norm \(\lVert A\rVert_2\) of</p>
+    \[ A=\begin{bmatrix}4&3\\0&5\end{bmatrix}, \]
+    <p class="pq">and state the corresponding right singular vector.</p>
+    <p class="ptest"><b>What this tests.</b> The definition \(\lVert A\rVert_2=\sigma_{\max}=\sqrt{\lambda_{\max}(A^{\top}A)}\) — the largest stretch factor of the matrix.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Form \(A^{\top}A\).</b>
+      \[ A^{\top}A=\begin{bmatrix}4&0\\3&5\end{bmatrix}\begin{bmatrix}4&3\\0&5\end{bmatrix}=\begin{bmatrix}16&12\\12&34\end{bmatrix} \]
+      (entries: \((1,1)\!: 16+0=16\); \((1,2)\!: 4\cdot 3+0\cdot 5=12\); \((2,2)\!: 9+25=34\)).</div>
+      <div class="pstep"><b>Step 2 · Largest eigenvalue of \(A^{\top}A\).</b> Trace \(=50\) and determinant \(=16\cdot 34-12^{2}=544-144=400\), so \(\det(A^{\top}A-\lambda I)=\lambda^{2}-50\lambda+400=0\) and
+      \[ \lambda=\frac{50\pm\sqrt{2500-1600}}{2}=\frac{50\pm 30}{2}=40\ \text{or}\ 10. \]
+      Hence \(\sigma_{\max}=\sqrt{40}=2\sqrt{10}\) and \(\sigma_{\min}=\sqrt{10}\).</div>
+      <div class="pstep"><b>Step 3 · Right singular vector for \(\sigma_{\max}\).</b>
+      \[ (A^{\top}A-40I)\mathbf{v}=\begin{bmatrix}-24&12\\12&-6\end{bmatrix}\mathbf{v}=\mathbf{0}\ \Rightarrow\ 2x=y, \]
+      so \(\mathbf{v}_1=\tfrac{1}{\sqrt5}(1,2)^{\top}\), and
+      \[ \lVert A\rVert_2=2\sqrt{10}\approx 6.32. \]
+      (Consistency check: \(\sigma_1\sigma_2=\sqrt{40}\sqrt{10}=\sqrt{400}=20=\lvert\det A\rvert\). ✓)</div>
+      <div class="pans">Answer. \(\lVert A\rVert_2=\sigma_{\max}=2\sqrt{10}\approx 6.32\), attained along \(\mathbf{v}_1=\tfrac{1}{\sqrt5}(1,2)^{\top}\) (the other singular value is \(\sqrt{10}\)).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Do <em>not</em> take the largest \(\lvert\text{eigenvalue of }A\rvert\) — that would give 5 here, and it is wrong. The spectral norm always comes from \(A^{\top}A\): \(\lVert A\rVert_2=\sqrt{\lambda_{\max}(A^{\top}A)}\). Eigenvalues equal singular values only for symmetric matrices (up to sign).</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>\(\lVert A\rVert_2=\sigma_{\max}\) is the largest factor by which \(A\) can stretch any vector, and the top right singular vector is the direction that achieves it.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A\)'s eigenvalues are 4 and 5, yet \(A\) stretches the direction \((1,2)/\sqrt5\) by \(2\sqrt{10}\approx 6.32\) — more than any eigenvalue suggests. Non-symmetric matrices can out-stretch their own spectrum; that hidden extra gain is exactly what the spectral norm measures.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 (source #17) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">Capstone. For \(\;A=\begin{bmatrix}1&2\\2&1\end{bmatrix}\): (a) find its eigendecomposition (note the negative eigenvalue); (b) find its SVD; (c) explain precisely how the two are related.</p>
+    <p class="ptest"><b>What this tests.</b> How the eigendecomposition and the SVD of one symmetric matrix line up — and exactly where a negative eigenvalue forces them apart.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a) · Eigendecomposition.</b> \(\det(A-\lambda I)=(1-\lambda)^{2}-4=(\lambda-3)(\lambda+1)=0\Rightarrow\lambda_1=3,\ \lambda_2=-1\). Orthonormal eigenvectors \(\mathbf{q}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\) (for 3) and \(\mathbf{q}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\) (for \(-1\)). With \(Q=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}\),
+      \[ A=Q\begin{bmatrix}3&0\\0&-1\end{bmatrix}Q^{\top}. \]</div>
+      <div class="pstep"><b>Part (b) · SVD.</b> \(A^{\top}A=A^{2}=\begin{bmatrix}5&4\\4&5\end{bmatrix}\) has eigenvalues \(9\) and \(1\), so \(\sigma_1=3,\ \sigma_2=1\) — note \(\sigma_i=\lvert\lambda_i\rvert\). The right singular vectors are the same eigenvectors \(\mathbf{v}_1=\tfrac{1}{\sqrt2}(1,1)^{\top}\), \(\mathbf{v}_2=\tfrac{1}{\sqrt2}(1,-1)^{\top}\), and
+      \[ \mathbf{u}_1=\frac{1}{3}A\mathbf{v}_1=\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix}=\mathbf{v}_1,\qquad \mathbf{u}_2=\frac{1}{1}A\mathbf{v}_2=\frac{1}{\sqrt2}\begin{bmatrix}-1\\1\end{bmatrix}=-\mathbf{v}_2. \]
+      \[ U=\frac{1}{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix},\qquad \Sigma=\begin{bmatrix}3&0\\0&1\end{bmatrix},\qquad V=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}. \]</div>
+      <div class="pstep"><b>Part (c) · The relationship.</b> For a symmetric matrix the singular values are the absolute values of the eigenvalues, \(\sigma_i=\lvert\lambda_i\rvert\), and the right singular vectors are the eigenvectors. Where an eigenvalue is positive, \(\mathbf{u}_i=\mathbf{v}_i\); where it is negative (here \(\lambda_2=-1\)), the minus sign is absorbed into the left vector, \(\mathbf{u}_i=-\mathbf{v}_i\). Thus EVD and SVD coincide exactly when every eigenvalue is non-negative (a positive-semidefinite matrix); otherwise they differ only by these sign flips between \(U\) and \(V\).</div>
+      <div class="pans">Answer. EVD: \(A=Q\operatorname{diag}(3,-1)Q^{\top}\) with \(Q=\tfrac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix}\). SVD: \(\Sigma=\operatorname{diag}(3,1)=\operatorname{diag}(\lvert\lambda_i\rvert)\), \(V=Q\), \(U=\tfrac{1}{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix}\) (the negative eigenvalue flips the sign of \(\mathbf{u}_2\) relative to \(\mathbf{v}_2\)).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\sigma_i=\lvert\lambda_i\rvert\) holds <em>only</em> for symmetric matrices — Problem 11 just showed a triangular matrix where no singular value matches any eigenvalue. And even here, symmetric or not, \(U\neq V\): the sign bookkeeping is part of the decomposition.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Symmetric \(A\): singular values \(=\lvert\text{eigenvalues}\rvert\), \(V=\) eigenvectors, and EVD \(=\) SVD precisely when \(A\) is positive semidefinite. The SVD is the eigendecomposition with all stretches forced non-negative.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Compare \(D=\operatorname{diag}(3,-1)\) with \(\Sigma=\operatorname{diag}(3,1)\): the SVD refuses negative stretches. It rewrites "stretch by \(-1\)" as "stretch by \(1\), then flip", and hides the flip inside \(U\). Same matrix, same action — two bookkeeping conventions for a reflection.</p></div>
+    </details>
+  </div>
+</section>

@@ -1,0 +1,135 @@
+<section class="unit" id="spractice">
+  <div class="sec-head"><span class="sec-num">__N__</span><h2>Practice arena — the session's problem set, solved in full</h2></div>
+  <div class="prose">
+    <p>These five problems are the eigen-analysis half of Prof. Saurabh's practice set — his single "Matrix Decompositions" file covers Sessions 4 and 5 together, so we've split it: characteristic polynomials, eigenvalues and eigenvectors, determinant-and-trace tricks, and the spectral theorem live here, while the diagonalization and SVD problems wait in Session 5's arena. Attempt each one on paper first — the fold-out solution shows every step, nothing skipped.</p>
+  </div>
+
+  <!-- ===== Problem 1 (source #2) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Consider</p>
+    \[ A=\begin{bmatrix}4&1&1\\1&4&1\\1&1&4\end{bmatrix}. \]
+    <p class="pq">(a) Find the characteristic polynomial and all eigenvalues with their algebraic multiplicities. (b) For every eigenvalue find a basis of its eigenspace and state the geometric multiplicity. (c) Hence decide, with reason, whether \(A\) has a full basis of eigenvectors.</p>
+    <p class="ptest"><b>What this tests.</b> Computing a \(3\times 3\) characteristic polynomial cleanly, then comparing algebraic and geometric multiplicity eigenvalue by eigenvalue.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Spot the structure.</b> \(A=3I+J\), where \(J\) is the all-ones matrix — every row sums to 6, a strong hint that \((1,1,1)^{\top}\) will be an eigenvector with eigenvalue 6.</div>
+      <div class="pstep"><b>Step 2 · Characteristic polynomial by row reduction.</b> Start from
+      \[ \det(A-\lambda I)=\det\begin{bmatrix}4-\lambda&1&1\\1&4-\lambda&1\\1&1&4-\lambda\end{bmatrix}. \]
+      Subtract row 1 from rows 2 and 3 (determinant unchanged). Entry by entry, the new row 2 is \(\big(1-(4-\lambda),\,(4-\lambda)-1,\,1-1\big)=(\lambda-3,\;3-\lambda,\;0)\) and the new row 3 is \((\lambda-3,\;0,\;3-\lambda)\). Factor \((\lambda-3)\) out of each of those rows:
+      \[ \det(A-\lambda I)=(\lambda-3)^2\det\begin{bmatrix}4-\lambda&1&1\\1&-1&0\\1&0&-1\end{bmatrix}. \]
+      Expand the remaining determinant along row 3: \(1\cdot\det\begin{bmatrix}1&1\\-1&0\end{bmatrix}+(-1)\cdot\det\begin{bmatrix}4-\lambda&1\\1&-1\end{bmatrix} = 1\cdot(0+1)+(-1)\big(-(4-\lambda)-1\big)=1+(5-\lambda)=6-\lambda.\) Hence
+      \[ \det(A-\lambda I)=(\lambda-3)^2(6-\lambda)=-(\lambda-6)(\lambda-3)^2. \]
+      So \(\lambda=6\) with algebraic multiplicity \(\operatorname{am}(6)=1\), and \(\lambda=3\) with \(\operatorname{am}(3)=2\).</div>
+      <div class="pstep"><b>Step 3 · Eigenspace of \(\lambda=6\).</b> \((A-6I)\mathbf{v}=\mathbf{0}\) reads \(-2x+y+z=0,\; x-2y+z=0,\; x+y-2z=0\). Subtracting the second equation from the first gives \(-3x+3y=0\Rightarrow x=y\); subtracting the third from the second gives \(-3y+3z=0\Rightarrow y=z\). So \(x=y=z\): basis \(\{(1,1,1)^{\top}\}\), geometric multiplicity \(\operatorname{gm}(6)=1\).</div>
+      <div class="pstep"><b>Step 4 · Eigenspace of \(\lambda=3\).</b> \(A-3I=J\) (all ones), so all three equations collapse to the single condition \(x+y+z=0\). Two free variables give
+      \[ \mathbf{v}=\begin{bmatrix}-1\\1\\0\end{bmatrix},\quad\begin{bmatrix}-1\\0\\1\end{bmatrix}, \qquad \operatorname{gm}(3)=2. \]</div>
+      <div class="pstep"><b>Step 5 · Compare multiplicities.</b> \(\operatorname{gm}(6)=1=\operatorname{am}(6)\) and \(\operatorname{gm}(3)=2=\operatorname{am}(3)\): the three eigenvectors together form a basis of \(\mathbb{R}^3\). (In fact \(A\) is symmetric, so the spectral theorem already guaranteed a full — even orthogonal — eigenbasis.)</div>
+      <div class="pans">Answer. \(\det(A-\lambda I)=-(\lambda-6)(\lambda-3)^2\). \(\lambda=6\): multiplicity 1, eigenvector \((1,1,1)^{\top}\); \(\lambda=3\): multiplicity 2, eigenspace \(\{x+y+z=0\}\) with basis \((-1,1,0)^{\top},(-1,0,1)^{\top}\). \(A\) has a full eigenbasis.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>A repeated eigenvalue is a question, not a verdict: you must actually solve \((A-3I)\mathbf{v}=\mathbf{0}\) and count independent solutions. And keep the leading minus sign — for a \(3\times 3\), \(\det(A-\lambda I)\) starts with \(-\lambda^3\), which is why the factorization reads \(-(\lambda-6)(\lambda-3)^2\).</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Sanity-check eigenvalues instantly: \(\operatorname{tr}(A)=4+4+4=12=6+3+3\) and the row-sum trick hands you \((1,1,1)^{\top}\!\mapsto 6\) for free. For symmetric matrices, \(\operatorname{gm}=\operatorname{am}\) always holds — the spectral theorem forbids "missing" eigenvectors.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>All three rows of \(A-3I\) collapse into the single equation \(x+y+z=0\) — a whole <em>plane</em> of eigenvectors. And the \(\lambda=6\) eigenvector \((1,1,1)^{\top}\) is exactly the normal of that plane: orthogonality between eigenspaces showed up before anyone asked for it.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 (source #3) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Find all eigenvalues and corresponding eigenvectors of</p>
+    \[ A=\begin{bmatrix}3&-2\\4&-1\end{bmatrix}, \]
+    <p class="pq">and explain geometrically why no real eigenvector exists.</p>
+    <p class="ptest"><b>What this tests.</b> Handling complex roots of the characteristic polynomial of a real \(2\times 2\) — and reading the geometry behind them.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Characteristic polynomial.</b>
+      \[ \det(A-\lambda I)=\det\begin{bmatrix}3-\lambda&-2\\4&-1-\lambda\end{bmatrix}=(3-\lambda)(-1-\lambda)+8. \]
+      Expand the product: \((3-\lambda)(-1-\lambda)=-3-3\lambda+\lambda+\lambda^{2}=\lambda^{2}-2\lambda-3\); adding 8 gives
+      \[ \lambda^{2}-2\lambda+5=0. \]</div>
+      <div class="pstep"><b>Step 2 · Solve the quadratic.</b>
+      \[ \lambda=\frac{2\pm\sqrt{4-20}}{2}=\frac{2\pm\sqrt{-16}}{2}=1\pm 2i. \]
+      The discriminant is negative, so the eigenvalues are a complex-conjugate pair.</div>
+      <div class="pstep"><b>Step 3 · Eigenvectors.</b> For \(\lambda=1+2i\), the first row of \((A-\lambda I)\mathbf{v}=\mathbf{0}\) gives \((3-\lambda)x-2y=0\), i.e. \((2-2i)x-2y=0\Rightarrow y=(1-i)x\). Taking \(x=1\),
+      \[ \mathbf{v}_1=\begin{bmatrix}1\\1-i\end{bmatrix}. \]
+      Its conjugate \(\mathbf{v}_2=(1,\,1+i)^{\top}\) belongs to the conjugate eigenvalue \(\lambda=1-2i\).</div>
+      <div class="pstep"><b>Step 4 · Verify the pair.</b> Entry by entry: \(A\mathbf{v}_1=\big(3\cdot 1-2(1-i),\; 4\cdot 1-(1-i)\big)^{\top}=(1+2i,\;3+i)^{\top}\), while \(\lambda_1\mathbf{v}_1=(1+2i)\,(1,\,1-i)^{\top}=\big(1+2i,\;(1+2i)(1-i)\big)^{\top}\) and \((1+2i)(1-i)=1-i+2i-2i^{2}=3+i\). Both sides match. ✓</div>
+      <div class="pstep"><b>Step 5 · Geometric reason.</b> A real \(2\times 2\) matrix with complex eigenvalues acts as a rotation combined with a scaling. A genuine rotation maps no nonzero real vector onto a multiple of itself — so no real eigenvector can exist.</div>
+      <div class="pans">Answer. \(\lambda=1\pm 2i\) with eigenvectors \(\mathbf{v}=(1,\,1\mp i)^{\top}\). No real eigenvector exists because the eigenvalues are non-real: the map rotates the plane.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The classic slip is expanding \((3-\lambda)(-1-\lambda)\) into \(\lambda^{2}-2\lambda-3\) and then forgetting the \(-(-2)(4)=+8\) from the off-diagonal — the constant term must be \(\det A=-3+8=5\). Also: use <em>one</em> row of \(A-\lambda I\) to find the eigenvector; the other row is automatically dependent, and checking that it is doubles as a free error check.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>For real matrices, complex eigenvalues always arrive in conjugate pairs, and so do their eigenvectors: compute one eigenvector, conjugate every entry to get the other. One computation, two eigenpairs.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(|\lambda|=\sqrt{1^{2}+2^{2}}=\sqrt{5}\) and \(\det A=5=|\lambda|^{2}\): this matrix is secretly "rotate, then stretch by \(\sqrt5\)". The determinant knew the stretch factor all along — even though no direction in the real plane is left pointing where it started.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 (source #6) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">Consider</p>
+    \[ A=\begin{bmatrix}2&-1&1\\1&0&3\\1&-1&4\end{bmatrix}, \qquad\text{whose characteristic polynomial is } (\lambda-1)(\lambda-2)(\lambda-3). \]
+    <p class="pq">Without forming any matrix power explicitly, compute (a) \(\det(A^{8})\), (b) \(\operatorname{tr}(A^{6})\), and (c) \(\operatorname{tr}\!\left(A^{6}-7A^{2}\right)\).</p>
+    <p class="ptest"><b>What this tests.</b> The scalar shortcuts \(\det(A^{k})=(\det A)^{k}\) and \(\operatorname{tr}(A^{k})=\sum_i\lambda_i^{k}\) — handling huge powers with three numbers.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 0 · Read off the eigenvalues.</b> The characteristic polynomial factors as \((\lambda-1)(\lambda-2)(\lambda-3)\), so the eigenvalues are \(\lambda_1=1,\ \lambda_2=2,\ \lambda_3=3\). Quick sanity check against the matrix: \(\operatorname{tr}A=2+0+4=6=1+2+3\) and \(\det A=6=1\cdot 2\cdot 3\). ✓</div>
+      <div class="pstep"><b>Part (a) · Determinant of a power.</b> \(A^{k}\) has eigenvalues \(\lambda_i^{k}\), and the determinant is their product — which is \((\det A)^{k}\):
+      \[ \det(A^{8})=(\det A)^{8}=6^{8}. \]
+      Compute it in two squarings: \(6^{2}=36,\ 6^{4}=36^{2}=1296,\ 6^{8}=1296^{2}=1\,679\,616\).</div>
+      <div class="pstep"><b>Part (b) · Trace of a power.</b> Trace is the <em>sum</em> of eigenvalues, taken after powering:
+      \[ \operatorname{tr}(A^{6})=\sum_i \lambda_i^{6}=1^{6}+2^{6}+3^{6}=1+64+729=794. \]</div>
+      <div class="pstep"><b>Part (c) · Trace of a polynomial in \(A\).</b> Trace is linear, and \(A^{6},A^{2}\) have eigenvalues \(\lambda_i^{6},\lambda_i^{2}\), so
+      \[ \operatorname{tr}\!\left(A^{6}-7A^{2}\right)=\sum_i\big(\lambda_i^{6}-7\lambda_i^{2}\big)=794-7\,(1+4+9)=794-98=696. \]
+      Every answer used only the three scalars \(\lambda_i\) — not a single \(3\times 3\) multiplication.</div>
+      <div class="pans">Answer. \(\det(A^{8})=6^{8}=1\,679\,616\); \(\operatorname{tr}(A^{6})=794\); \(\operatorname{tr}(A^{6}-7A^{2})=696\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(\operatorname{tr}(A^{6})\neq(\operatorname{tr}A)^{6}\) — the trace of a power is the sum of <em>powered</em> eigenvalues, \(\sum\lambda_i^{6}\), not the power of the sum. The determinant is the multiplicative one: \(\det(A^{k})=(\det A)^{k}\) really does hold.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>\(\operatorname{tr}(A)=\sum_i\lambda_i\) and \(\det(A)=\prod_i\lambda_i\), and powers or polynomials of \(A\) simply apply themselves to each \(\lambda_i\). To handle a high power, find the eigenvalues first — then work entirely with scalars.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A^{8}\) is a \(3\times 3\) matrix of six-to-seven-digit entries that we never wrote down — yet its determinant, \(1\,679\,616\), came from the single number \(\det A=6\). The eigenvalues compress everything the power will ever do to volume and trace.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 (source #7) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Let \(A\) be a \(3\times 3\) matrix whose eigenvalues are \(1,\,2,\,4\), and define</p>
+    \[ B=A^{2}-5A+6I. \]
+    <p class="pq">(a) Show that if \(\lambda\) is an eigenvalue of \(A\) (with eigenvector \(\mathbf{v}\)), then \(\lambda^{2}-5\lambda+6\) is an eigenvalue of \(B\) (with the same eigenvector). (b) Hence find the eigenvalues of \(B\), then \(\det(B)\) and \(\operatorname{tr}(B)\), and state whether \(B\) is invertible. (c) For which eigenvalues of \(A\) would \(B\) fail to be invertible?</p>
+    <p class="ptest"><b>What this tests.</b> The spectral mapping idea \(\lambda\mapsto p(\lambda)\): polynomials in \(A\) keep the eigenvectors and transform only the eigenvalues.</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Part (a) · Spectral mapping.</b> Suppose \(A\mathbf{v}=\lambda\mathbf{v}\). Then \(A^{2}\mathbf{v}=A(\lambda\mathbf{v})=\lambda^{2}\mathbf{v}\), and so
+      \[ B\mathbf{v}=(A^{2}-5A+6I)\mathbf{v}=\lambda^{2}\mathbf{v}-5\lambda\mathbf{v}+6\mathbf{v}=(\lambda^{2}-5\lambda+6)\,\mathbf{v}. \]
+      Thus \(\mathbf{v}\) is still an eigenvector — now with eigenvalue \(p(\lambda)=\lambda^{2}-5\lambda+6\).</div>
+      <div class="pstep"><b>Part (b) · Apply \(p\) to each eigenvalue.</b>
+      \[ p(1)=1-5+6=2,\qquad p(2)=4-10+6=0,\qquad p(4)=16-20+6=2. \]
+      So \(B\) has eigenvalues \(\{2,\,0,\,2\}\), and therefore
+      \[ \det(B)=2\cdot 0\cdot 2=0,\qquad \operatorname{tr}(B)=2+0+2=4. \]
+      Because \(0\) is an eigenvalue (equivalently \(\det B=0\)), \(B\) is <em>not</em> invertible — even though \(A\) itself is (none of \(1,2,4\) is zero).</div>
+      <div class="pstep"><b>Part (c) · When is \(B\) singular?</b> \(B\) is singular exactly when \(p(\lambda)=0\) for some eigenvalue \(\lambda\) of \(A\). Factoring, \(p(\lambda)=(\lambda-2)(\lambda-3)\): this vanishes iff \(A\) has \(2\) or \(3\) as an eigenvalue. Here \(\lambda=2\) occurs — which is precisely why \(B\) is singular.</div>
+      <div class="pstep"><b>Remark · Cayley–Hamilton.</b> If \(A\)'s characteristic polynomial were itself \(\lambda^{2}-5\lambda+\text{const}\), then \(p(A)\) collapses to a multiple of \(I\). E.g. \(A=\begin{bmatrix}4&5\\0&1\end{bmatrix}\) has eigenvalues \(4,1\) and characteristic polynomial \(\lambda^{2}-5\lambda+4\); Cayley–Hamilton gives \(A^{2}-5A+4I=0\), hence \(A^{2}-5A+6I=2I\).</div>
+      <div class="pans">Answer. \(p(\lambda)=\lambda^{2}-5\lambda+6\) maps each eigenvalue; \(B\) has eigenvalues \(2,\,0,\,2\). \(\det(B)=0\), \(\operatorname{tr}(B)=4\), so \(B\) is not invertible. \(B\) is singular iff \(A\) has eigenvalue \(2\) or \(3\) (the roots of \(p\)).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The eigen<em>vectors</em> do not change — only the eigenvalues pass through \(p\). And invertibility does not transfer: an invertible \(A\) can easily produce a singular \(p(A)\), as it just did.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Eigenvalues of \(p(A)\) are \(p(\text{eigenvalues of }A)\), with the same eigenvectors. So \(p(A)\) is singular \(\iff\) some eigenvalue of \(A\) is a root of \(p\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A\) is perfectly invertible, yet the innocent-looking combination \(A^{2}-5A+6I\) is singular — because \(p(t)=(t-2)(t-3)\) happens to have a root sitting exactly on one of \(A\)'s eigenvalues. Matrix polynomials can create zero out of nonzero ingredients.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 (source #9) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">For the symmetric tridiagonal matrix</p>
+    \[ A=\begin{bmatrix}2&1&0\\1&2&1\\0&1&2\end{bmatrix}, \]
+    <p class="pq">find its eigenvalues, an orthonormal set of eigenvectors, and hence write \(A=PDP^{\top}\) with \(P\) orthogonal.</p>
+    <p class="ptest"><b>What this tests.</b> The spectral theorem in action: a symmetric matrix with irrational eigenvalues still yields an exact orthonormal eigenbasis and \(A=PDP^{\top}\).</p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Eigenvalues.</b> Expanding \(\det(A-\lambda I)\) along the first row:
+      \[ \det(A-\lambda I)=(2-\lambda)\big[(2-\lambda)^{2}-1\big]-1\cdot(2-\lambda)=(2-\lambda)\big[(2-\lambda)^{2}-2\big]=0. \]
+      Hence \(\lambda=2\), or \((2-\lambda)^{2}=2\Rightarrow\lambda=2\pm\sqrt{2}\). The eigenvalues are
+      \[ \lambda_1=2+\sqrt{2},\qquad \lambda_2=2,\qquad \lambda_3=2-\sqrt{2}. \]</div>
+      <div class="pstep"><b>Step 2 · Eigenvector for \(\lambda=2\).</b> \((A-2I)\mathbf{v}=\mathbf{0}\) reads \(y=0\) (rows 1 and 3) and \(x+z=0\) (row 2), so \(\mathbf{v}_2=(1,0,-1)^{\top}\).</div>
+      <div class="pstep"><b>Step 3 · Eigenvectors for \(\lambda=2\pm\sqrt{2}\).</b> For \(\lambda=2+\sqrt{2}\): row 1 gives \(-\sqrt{2}\,x+y=0\Rightarrow y=\sqrt{2}\,x\), and row 3 gives \(y-\sqrt{2}\,z=0\Rightarrow y=\sqrt{2}\,z\), so \(x=z\). (Row 2 checks out: \(x-\sqrt{2}\,y+z=x-2x+x=0\). ✓) Thus \(\mathbf{v}_1=(1,\sqrt{2},1)^{\top}\).
+      For \(\lambda=2-\sqrt{2}\): the same computation with \(-\sqrt2\) gives \(y=-\sqrt{2}\,x\) and \(x=z\), so \(\mathbf{v}_3=(1,-\sqrt{2},1)^{\top}\).</div>
+      <div class="pstep"><b>Step 4 · Orthogonality check.</b> \(\mathbf{v}_1\cdot\mathbf{v}_2=1+0-1=0\), \(\mathbf{v}_1\cdot\mathbf{v}_3=1-2+1=0\), \(\mathbf{v}_2\cdot\mathbf{v}_3=1-0-1=0\) — mutually orthogonal, exactly as the spectral theorem guarantees for distinct eigenvalues of a symmetric matrix.</div>
+      <div class="pstep"><b>Step 5 · Normalise and assemble.</b> \(\lVert\mathbf{v}_2\rVert=\sqrt{2}\) and \(\lVert\mathbf{v}_1\rVert=\lVert\mathbf{v}_3\rVert=\sqrt{1+2+1}=2\), so
+      \[ P=\begin{bmatrix}\tfrac12&\tfrac{1}{\sqrt2}&\tfrac12\\[2pt] \tfrac{\sqrt2}{2}&0&-\tfrac{\sqrt2}{2}\\[2pt] \tfrac12&-\tfrac{1}{\sqrt2}&\tfrac12\end{bmatrix},\qquad D=\begin{bmatrix}2+\sqrt2&0&0\\0&2&0\\0&0&2-\sqrt2\end{bmatrix},\qquad A=PDP^{\top}. \]
+      Since the columns are orthonormal, \(P^{\top}P=I\), i.e. \(P^{-1}=P^{\top}\) — no matrix inversion needed.</div>
+      <div class="pans">Answer. Eigenvalues \(2+\sqrt2,\ 2,\ 2-\sqrt2\) with orthonormal eigenvectors \(\tfrac12(1,\sqrt2,1)^{\top}\), \(\tfrac{1}{\sqrt2}(1,0,-1)^{\top}\), \(\tfrac12(1,-\sqrt2,1)^{\top}\); \(A=PDP^{\top}\) with \(P\) orthogonal and \(D=\operatorname{diag}(2+\sqrt2,\,2,\,2-\sqrt2)\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Normalise each eigenvector by its <em>own</em> length: here \(\lVert\mathbf{v}_2\rVert=\sqrt2\) but \(\lVert\mathbf{v}_1\rVert=\lVert\mathbf{v}_3\rVert=2\) — one common scale factor will not do. Orthogonality comes free from symmetry; orthonormality is your job.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Symmetric matrix \(\Rightarrow\) real eigenvalues, orthogonal eigenvectors, and \(A=PDP^{\top}\) with \(P^{-1}=P^{\top}\). The transpose replaces the inverse — the single biggest computational gift of the spectral theorem.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>An integer matrix produced irrational eigenvalues \(2\pm\sqrt2\) — and the eigenvector \((1,\sqrt2,1)^{\top}\) carries its own eigenvalue's \(\sqrt2\) inside its entries. Yet the factorization \(PDP^{\top}\) reproduces every integer entry of \(A\) exactly: the irrationals conspire and cancel.</p></div>
+    </details>
+  </div>
+</section>

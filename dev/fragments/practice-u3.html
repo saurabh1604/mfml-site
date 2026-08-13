@@ -1,0 +1,224 @@
+<section class="unit" id="spractice">
+  <div class="sec-head"><span class="sec-num">__N__</span><h2>Practice arena — the session's problem set, solved in full</h2></div>
+  <div class="prose">
+    <p>This is Prof. Saurabh's practice set for Session 3 — Analytic Geometry: eight problems on inner products, positive-definite matrices, norms, angles, orthogonality and projections. Attempt each one on paper before unfolding — the fold-out solution shows every step of the computation, nothing skipped.</p>
+  </div>
+
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">On \(\mathbb{R}^3\) with the standard (Euclidean) inner product, let \(\mathbf{u} = (1,1,0)^\top\) and \(\mathbf{v} = (0,1,1)^\top\).<br>
+    (a) Find all vectors \(\mathbf{w}\in\mathbb{R}^3\) orthogonal to both \(\mathbf{u}\) and \(\mathbf{v}\), and write down the unit vectors of this form. [2 M]<br>
+    (b) Compute the angle \(\omega\) between \(\mathbf{u}\) and \(\mathbf{v}\). [1 M]<br>
+    (c) Show that \(\{\mathbf{u},\mathbf{v},\mathbf{w}\}\) is a basis of \(\mathbb{R}^3\), and explain geometrically why \(\mathbf{w}\) is perpendicular to the plane spanned by \(\mathbf{u}\) and \(\mathbf{v}\). [1 M] <em>(4 marks)</em></p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Turn "orthogonal to both" into equations (a).</b> Idea: "orthogonal to both" means two dot-product equations. Write \(\mathbf{w} = (w_1, w_2, w_3)^\top\):
+      \[ \mathbf{w}^\top\mathbf{u} = w_1 + w_2 = 0, \qquad \mathbf{w}^\top\mathbf{v} = w_2 + w_3 = 0. \]</div>
+      <div class="pstep"><b>Step 2 · Solve the little system.</b> From these, \(w_1 = -w_2\) and \(w_3 = -w_2\). Letting the free variable be \(w_2 = t\),
+      \[ \mathbf{w} = t\,(-1,\,1,\,-1)^\top, \qquad t\in\mathbb{R}. \]</div>
+      <div class="pstep"><b>Step 3 · Normalise for the unit vectors.</b> Divide by the length \(\|(-1,1,-1)^\top\| = \sqrt{(-1)^2 + 1^2 + (-1)^2} = \sqrt{3}\):
+      \[ \mathbf{w} = \pm\tfrac{1}{\sqrt{3}}\,(-1,\,1,\,-1)^\top. \]
+      Both signs: the orthogonal line carries exactly two unit vectors.</div>
+      <div class="pstep"><b>Step 4 · The angle (b).</b> Use \(\cos\omega = \dfrac{\mathbf{u}^\top\mathbf{v}}{\|\mathbf{u}\|\,\|\mathbf{v}\|}\). Here \(\mathbf{u}^\top\mathbf{v} = 0 + 1 + 0 = 1\) and \(\|\mathbf{u}\| = \|\mathbf{v}\| = \sqrt{2}\), so
+      \[ \cos\omega = \frac{1}{\sqrt{2}\cdot\sqrt{2}} = \frac{1}{2} \;\Longrightarrow\; \omega = 60^\circ. \]</div>
+      <div class="pstep"><b>Step 5 · Basis test (c).</b> Three vectors in \(\mathbb{R}^3\) form a basis exactly when their determinant is nonzero. With \(\mathbf{w} = (-1,1,-1)^\top\),
+      \[ \det[\,\mathbf{u}\ \mathbf{v}\ \mathbf{w}\,] = \det\!\begin{bmatrix} 1 & 0 & -1 \\ 1 & 1 & 1 \\ 0 & 1 & -1 \end{bmatrix} = 1\,\big(1\cdot(-1) - 1\cdot 1\big) - 0 + (-1)\,\big(1\cdot 1 - 1\cdot 0\big) = -2 - 1 = -3 \neq 0, \]
+      so \(\{\mathbf{u},\mathbf{v},\mathbf{w}\}\) is a basis.</div>
+      <div class="pstep"><b>Step 6 · The geometric picture.</b> \(\mathbf{u}\) and \(\mathbf{v}\) span a plane. Since \(\mathbf{w}\) was constructed to be orthogonal to both \(\mathbf{u}\) and \(\mathbf{v}\), it is orthogonal to every vector in that plane — any such vector is \(\alpha\mathbf{u} + \beta\mathbf{v}\), and \(\mathbf{w}^\top(\alpha\mathbf{u} + \beta\mathbf{v}) = \alpha\cdot 0 + \beta\cdot 0 = 0\). So \(\mathbf{w}\) is the normal direction to the plane.</div>
+      <div class="pans">Answer. (a) \(\mathbf{w} = t\,(-1,1,-1)^\top\), \(t\in\mathbb{R}\); unit vectors \(\pm\tfrac{1}{\sqrt{3}}(-1,1,-1)^\top\). (b) \(\omega = 60^\circ\). (c) \(\det[\,\mathbf{u}\ \mathbf{v}\ \mathbf{w}\,] = -3 \neq 0\), so it is a basis; \(\mathbf{w}\) is the plane's normal direction.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>A "unit vectors" answer needs both signs — \(+\tfrac{1}{\sqrt3}(-1,1,-1)^\top\) and \(-\tfrac{1}{\sqrt3}(-1,1,-1)^\top\). Writing only one loses half the solution set, and forgetting to divide by \(\sqrt{3}\) loses the "unit" part entirely.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>"Orthogonal to both" always translates into a homogeneous linear system — one dot-product equation per constraint. In \(\mathbb{R}^3\), two independent constraints leave a one-dimensional line of solutions: the normal line of the plane.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>You just computed a cross product without naming it: \(\mathbf{u}\times\mathbf{v} = (1,-1,1)^\top\), which is exactly the \(t = -1\) member of your family \(t\,(-1,1,-1)^\top\). Solving "orthogonal to both" as a linear system is precisely what the cross product does for a living in \(\mathbb{R}^3\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">Easy</span></div>
+    <p class="pq">(Similarity vs. dissimilarity of data objects.) Three data points live in \(\mathbb{R}^3\):
+    \[ \mathbf{p}_1 = (2,1,0)^\top, \qquad \mathbf{p}_2 = (0,1,2)^\top, \qquad \mathbf{p}_3 = (2,1,1)^\top. \]
+    (a) Build the \(3\times 3\) dissimilarity matrix \(D\) using Euclidean distance. [2 M]<br>
+    (b) Which two points are the most <em>similar</em>? [1 M]<br>
+    (c) Compute the cosine similarity between \(\mathbf{p}_1\) and \(\mathbf{p}_3\). [1 M] <em>(4 marks)</em></p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Pairwise distances (a).</b> Dissimilarity between two points is just the distance \(d(\mathbf{p}_i,\mathbf{p}_j) = \|\mathbf{p}_i - \mathbf{p}_j\|\). Compute each pair:
+      \[ d(\mathbf{p}_1,\mathbf{p}_2) = \|(2,0,-2)^\top\| = \sqrt{4+0+4} = \sqrt{8} = 2\sqrt{2}, \qquad d(\mathbf{p}_1,\mathbf{p}_3) = \|(0,0,-1)^\top\| = 1, \]
+      \[ d(\mathbf{p}_2,\mathbf{p}_3) = \|(-2,0,1)^\top\| = \sqrt{4+0+1} = \sqrt{5}. \]</div>
+      <div class="pstep"><b>Step 2 · Assemble the matrix.</b> Place these in a symmetric matrix with zeros on the diagonal (a point's distance to itself is \(0\)):
+      \[ D = \begin{bmatrix} 0 & 2\sqrt{2} & 1 \\ 2\sqrt{2} & 0 & \sqrt{5} \\ 1 & \sqrt{5} & 0 \end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 3 · Most similar pair (b).</b> "Most similar" \(=\) smallest dissimilarity. The smallest off-diagonal entry is \(d(\mathbf{p}_1,\mathbf{p}_3) = 1\), so \(\mathbf{p}_1\) and \(\mathbf{p}_3\) are the most similar.</div>
+      <div class="pstep"><b>Step 4 · Cosine similarity (c).</b> Cosine similarity is \(\cos\theta = \dfrac{\mathbf{p}_1^\top\mathbf{p}_3}{\|\mathbf{p}_1\|\,\|\mathbf{p}_3\|}\):
+      \[ \mathbf{p}_1^\top\mathbf{p}_3 = 2\cdot 2 + 1\cdot 1 + 0\cdot 1 = 5, \qquad \|\mathbf{p}_1\| = \sqrt{5}, \qquad \|\mathbf{p}_3\| = \sqrt{6}, \]
+      \[ \cos\theta = \frac{5}{\sqrt{5}\,\sqrt{6}} = \frac{5}{\sqrt{30}} = \frac{\sqrt{30}}{6} \approx 0.913. \]
+      (Close to \(1\), confirming \(\mathbf{p}_1\) and \(\mathbf{p}_3\) point in nearly the same direction.)</div>
+      <div class="pans">Answer. (a) \(D\) as above, symmetric with zero diagonal. (b) \(\mathbf{p}_1\) and \(\mathbf{p}_3\), at distance \(1\). (c) \(\cos\theta = 5/\sqrt{30} = \sqrt{30}/6 \approx 0.913\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>In a <em>dissimilarity</em> matrix, small means similar — scanning for the largest entry answers the opposite question. And the diagonal zeros are not data: every point is at distance \(0\) from itself, so only off-diagonal entries compete.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Two different rulers for "similar": Euclidean distance measures closeness in <em>position</em>, cosine similarity measures alignment of <em>direction</em>. Here they happen to agree (\(\mathbf{p}_1,\mathbf{p}_3\) win on both); in general they need not.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Cosine similarity is blind to length: \((2,1,0)^\top\) and \((4,2,0)^\top\) have cosine similarity exactly \(1\) even though they sit \(\sqrt{5}\) apart. That is why it is the default in text retrieval — a tweet and an essay about the same topic point the same way; they just differ in length.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Let \(A = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}\) and define a new inner product on \(\mathbb{R}^2\) by \(\langle\mathbf{x},\mathbf{y}\rangle_A = \mathbf{x}^\top A\,\mathbf{y}\).<br>
+    (a) Show \(A\) is symmetric positive definite, so \(\langle\cdot,\cdot\rangle_A\) is a genuine inner product. [1 M]<br>
+    (b) The vectors \(\mathbf{x} = (1,0)^\top\) and \(\mathbf{y} = (0,1)^\top\) are orthogonal in the dot product. Are they still orthogonal under \(\langle\cdot,\cdot\rangle_A\)? Find the angle between them in this new inner product. [2 M]<br>
+    (c) Find a vector \(\mathbf{y}' = (a,1)^\top\) that is orthogonal to \(\mathbf{x}\) with respect to \(\langle\cdot,\cdot\rangle_A\). [1 M] <em>(4 marks)</em></p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Certify the inner product (a).</b> \(A\) is symmetric since \(A^\top = A\). Sylvester's criterion (all leading minors positive):
+      \[ D_1 = 2 &gt; 0, \qquad D_2 = \det A = 2\cdot 2 - 1\cdot 1 = 3 &gt; 0. \]
+      So \(A\) is positive definite. A symmetric, positive-definite matrix always makes \(\mathbf{x}^\top A\,\mathbf{y}\) a valid inner product: it is bilinear, symmetric, and \(\mathbf{x}^\top A\,\mathbf{x} &gt; 0\) for \(\mathbf{x} \neq \mathbf{0}\).</div>
+      <div class="pstep"><b>Step 2 · Test orthogonality (b).</b> Compute \(\langle\mathbf{x},\mathbf{y}\rangle_A = \mathbf{x}^\top A\,\mathbf{y}\). First \(A\mathbf{y} = A(0,1)^\top = (1,2)^\top\), hence
+      \[ \langle\mathbf{x},\mathbf{y}\rangle_A = \mathbf{x}^\top(A\mathbf{y}) = (1,0)\cdot(1,2) = 1 \neq 0. \]
+      They are <em>not</em> orthogonal here.</div>
+      <div class="pstep"><b>Step 3 · The \(A\)-norms.</b> To get the angle we also need
+      \[ \|\mathbf{x}\|_A = \sqrt{\mathbf{x}^\top A\,\mathbf{x}} = \sqrt{A_{11}} = \sqrt{2}, \qquad \|\mathbf{y}\|_A = \sqrt{A_{22}} = \sqrt{2}. \]</div>
+      <div class="pstep"><b>Step 4 · The \(A\)-angle.</b>
+      \[ \cos\theta = \frac{\langle\mathbf{x},\mathbf{y}\rangle_A}{\|\mathbf{x}\|_A\,\|\mathbf{y}\|_A} = \frac{1}{\sqrt{2}\cdot\sqrt{2}} = \frac{1}{2} \;\Longrightarrow\; \theta = 60^\circ. \]
+      Takeaway (from the source): orthogonality depends on which inner product you use.</div>
+      <div class="pstep"><b>Step 5 · Force orthogonality (c).</b> We need \(\langle\mathbf{x},\mathbf{y}'\rangle_A = 0\). Note \(\mathbf{x}^\top A = (1,0)\,A = (2,1)\), so
+      \[ \langle\mathbf{x},\mathbf{y}'\rangle_A = (2,1)\cdot(a,1) = 2a + 1 = 0 \;\Longrightarrow\; a = -\tfrac{1}{2}. \]
+      Thus \(\mathbf{y}' = \left(-\tfrac{1}{2},\,1\right)^\top\).</div>
+      <div class="pans">Answer. (a) SPD by Sylvester: \(D_1 = 2 &gt; 0\), \(D_2 = 3 &gt; 0\). (b) No — \(\langle\mathbf{x},\mathbf{y}\rangle_A = 1 \neq 0\); the angle in the \(A\)-geometry is \(\theta = 60^\circ\). (c) \(a = -\tfrac12\), i.e. \(\mathbf{y}' = (-\tfrac12,\,1)^\top\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>When you switch inner products, switch <em>everything</em>: the cosine formula needs the \(A\)-inner product on top and the \(A\)-norms below. Mixing \(\langle\mathbf{x},\mathbf{y}\rangle_A = 1\) with the Euclidean norms \(\|\mathbf{x}\| = \|\mathbf{y}\| = 1\) would give \(\cos\theta = 1\), i.e. a \(0^\circ\) angle — badly wrong.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Orthogonality is relative to the inner product. The same pair of vectors can be perpendicular in one geometry and at \(60^\circ\) in another — and part (c) shows you can always re-engineer a vector to restore orthogonality in the new geometry.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>The coordinate axes themselves — \(\mathbf{e}_1\) and \(\mathbf{e}_2\), the gridlines of the plane — meet at \(60^\circ\), not \(90^\circ\), the moment \(A\) defines the geometry. Perpendicularity is not a property of two arrows; it is a property of the inner product that measures them.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">On \(\mathbb{R}^3\) use the weighted inner product \(\langle\mathbf{x},\mathbf{y}\rangle_A = \mathbf{x}^\top A\,\mathbf{y}\) with
+    \[ A = \begin{bmatrix} 2 & 1 & 0 \\ 1 & 2 & 0 \\ 0 & 0 & 1 \end{bmatrix} \quad(\text{SPD}). \]
+    Let \(\mathbf{a} = (1,-1,0)^\top\) and \(\mathbf{b} = (1,0,2)^\top\).<br>
+    (a) Compute \(\langle\mathbf{b},\mathbf{a}\rangle_A\), \(\|\mathbf{a}\|_A\), and \(\|\mathbf{b}\|_A\). [2 M]<br>
+    (b) Find the orthogonal projection \(\mathbf{p}\) of \(\mathbf{b}\) onto the line spanned by \(\mathbf{a}\), in this inner product. [2 M]<br>
+    (c) Verify that the residual \(\mathbf{b} - \mathbf{p}\) is \(A\)-orthogonal to \(\mathbf{a}\) (this is what makes \(\mathbf{p}\) the orthogonal projection). [1 M] <em>(5 marks)</em></p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · One matrix–vector product does most of the work (a).</b> Trick: compute the matrix–vector product once, then take dot products. With
+      \[ A\mathbf{a} = A(1,-1,0)^\top = (2-1,\ 1-2,\ 0)^\top = (1,-1,0)^\top: \]
+      \[ \langle\mathbf{b},\mathbf{a}\rangle_A = \mathbf{b}^\top(A\mathbf{a}) = (1,0,2)\cdot(1,-1,0) = 1, \qquad \|\mathbf{a}\|_A^2 = \mathbf{a}^\top(A\mathbf{a}) = (1,-1,0)\cdot(1,-1,0) = 2. \]</div>
+      <div class="pstep"><b>Step 2 · The norm of \(\mathbf{b}\).</b> For \(\|\mathbf{b}\|_A\), use \(A\mathbf{b} = A(1,0,2)^\top = (2,1,2)^\top\):
+      \[ \|\mathbf{b}\|_A^2 = \mathbf{b}^\top(A\mathbf{b}) = (1,0,2)\cdot(2,1,2) = 2 + 0 + 4 = 6. \]
+      So \(\langle\mathbf{b},\mathbf{a}\rangle_A = 1\), \(\|\mathbf{a}\|_A = \sqrt{2}\), \(\|\mathbf{b}\|_A = \sqrt{6}\).</div>
+      <div class="pstep"><b>Step 3 · Project (b).</b> Projection formula (same as usual, but every inner product is the \(A\)-one):
+      \[ \mathbf{p} = \frac{\langle\mathbf{b},\mathbf{a}\rangle_A}{\langle\mathbf{a},\mathbf{a}\rangle_A}\,\mathbf{a} = \frac{1}{2}\,(1,-1,0)^\top = \left(\tfrac{1}{2},\,-\tfrac{1}{2},\,0\right)^\top. \]</div>
+      <div class="pstep"><b>Step 4 · Check the residual (c).</b> The residual is
+      \[ \mathbf{r} = \mathbf{b} - \mathbf{p} = (1,0,2)^\top - \left(\tfrac{1}{2},\,-\tfrac{1}{2},\,0\right)^\top = \left(\tfrac{1}{2},\ \tfrac{1}{2},\ 2\right)^\top. \]
+      Check \(A\)-orthogonality using the same \(A\mathbf{a} = (1,-1,0)^\top\):
+      \[ \langle\mathbf{r},\mathbf{a}\rangle_A = \mathbf{r}^\top(A\mathbf{a}) = \left(\tfrac{1}{2},\tfrac{1}{2},2\right)\cdot(1,-1,0) = \tfrac{1}{2} - \tfrac{1}{2} + 0 = 0. \;\checkmark \]
+      Since \(\mathbf{r} \perp_A \mathbf{a}\), \(\mathbf{p}\) is indeed the orthogonal projection of \(\mathbf{b}\) onto the line through \(\mathbf{a}\).</div>
+      <div class="pans">Answer. (a) \(\langle\mathbf{b},\mathbf{a}\rangle_A = 1\), \(\|\mathbf{a}\|_A = \sqrt{2}\), \(\|\mathbf{b}\|_A = \sqrt{6}\). (b) \(\mathbf{p} = \left(\tfrac12, -\tfrac12, 0\right)^\top\). (c) \(\langle\mathbf{b}-\mathbf{p},\,\mathbf{a}\rangle_A = 0\) ✓ — the residual is \(A\)-orthogonal to \(\mathbf{a}\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Verify with the <em>same</em> inner product you projected in: the defining property is \(\langle\mathbf{b}-\mathbf{p},\,\mathbf{a}\rangle_A = 0\). In this particular problem a plain dot-product check happens to give \(0\) too — pure luck, because \(A\mathbf{a} = \mathbf{a}\) here (see below). In a general weighted geometry the residual is \(A\)-orthogonal, not dot-orthogonal, to \(\mathbf{a}\).</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>The projection recipe never changes: \(\mathbf{p} = \dfrac{\langle\mathbf{b},\mathbf{a}\rangle}{\langle\mathbf{a},\mathbf{a}\rangle}\,\mathbf{a}\) — swap in whichever inner product defines the geometry. The residual-orthogonality check is the certificate that \(\mathbf{p}\) really is the closest point on the line.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>\(A\mathbf{a} = \mathbf{a}\): the vector \(\mathbf{a} = (1,-1,0)^\top\) is an eigenvector of \(A\) with eigenvalue \(1\). That is why every \(A\)-computation involving \(\mathbf{a}\) collapsed to a plain dot product — and why the Euclidean projection of \(\mathbf{b}\) onto \(\mathbf{a}\) would land on the same \(\mathbf{p}\) here. Move \(\mathbf{a}\) off an eigendirection and the two projections part ways.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">Consider the symmetric matrix \(A(t) = \begin{bmatrix} t & 3 \\ 3 & t \end{bmatrix}\), \(t\in\mathbb{R}\).<br>
+    (a) Classify \(A(t)\) for all real \(t\) as positive definite, positive semidefinite, indefinite, negative semidefinite, or negative definite. [3 M]<br>
+    (b) For which \(t\) does \(\langle\mathbf{x},\mathbf{y}\rangle = \mathbf{x}^\top A(t)\,\mathbf{y}\) define a valid inner product? At the borderline value \(t = 3\), exhibit a nonzero vector \(\mathbf{v}\) with \(\langle\mathbf{v},\mathbf{v}\rangle = 0\). [2 M] <em>(5 marks)</em></p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Find the eigenvalues (a).</b> Method: a symmetric matrix is classified by the signs of its eigenvalues. Solve \(\det(A - \lambda I) = 0\):
+      \[ (t-\lambda)^2 - 9 = 0 \;\Longrightarrow\; t - \lambda = \pm 3 \;\Longrightarrow\; \lambda = t - 3 \ \text{ or } \ \lambda = t + 3. \]</div>
+      <div class="pstep"><b>Step 2 · Read off the signs.</b> Now just read off the signs of the two eigenvalues \(t-3\) and \(t+3\):
+      \[ \begin{aligned}
+      t &gt; 3 &: \ \text{both positive} \;\Rightarrow\; \text{positive definite}\\
+      t = 3 &: \ \lambda = 6,\,0 \;\Rightarrow\; \text{positive semidefinite}\\
+      -3 &lt; t &lt; 3 &: \ \text{one } +,\ \text{one } - \;\Rightarrow\; \text{indefinite}\\
+      t = -3 &: \ \lambda = 0,\,-6 \;\Rightarrow\; \text{negative semidefinite}\\
+      t &lt; -3 &: \ \text{both negative} \;\Rightarrow\; \text{negative definite}
+      \end{aligned} \]</div>
+      <div class="pstep"><b>Step 3 · Inner-product range and the degenerate vector (b).</b> An inner product needs a positive-definite matrix, so we need \(t &gt; 3\). At \(t = 3\) the matrix is only <em>semi</em>definite, which fails the rule \(\langle\mathbf{v},\mathbf{v}\rangle &gt; 0\) for \(\mathbf{v}\neq\mathbf{0}\). Concretely, take \(\mathbf{v} = (1,-1)^\top\). With \(A(3) = \begin{bmatrix} 3 & 3 \\ 3 & 3 \end{bmatrix}\),
+      \[ \langle\mathbf{v},\mathbf{v}\rangle = \mathbf{v}^\top A(3)\,\mathbf{v} = (1,-1)\begin{bmatrix} 3 & 3 \\ 3 & 3 \end{bmatrix}\begin{bmatrix} 1 \\ -1 \end{bmatrix} = (1,-1)\cdot(0,0) = 0, \]
+      even though \(\mathbf{v}\neq\mathbf{0}\). So \(t = 3\) does not give an inner product.</div>
+      <div class="pans">Answer. (a) Positive definite for \(t &gt; 3\); positive semidefinite at \(t = 3\) (\(\lambda = 6, 0\)); indefinite for \(-3 &lt; t &lt; 3\); negative semidefinite at \(t = -3\) (\(\lambda = 0, -6\)); negative definite for \(t &lt; -3\). (b) Valid inner product \(\iff t &gt; 3\); at \(t = 3\), \(\mathbf{v} = (1,-1)^\top \neq \mathbf{0}\) has \(\langle\mathbf{v},\mathbf{v}\rangle = 0\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Semidefinite is not "almost good enough": at \(t = 3\) the axiom that dies is exactly the strict inequality \(\langle\mathbf{v},\mathbf{v}\rangle &gt; 0\) for \(\mathbf{v}\neq\mathbf{0}\). A geometry in which a nonzero vector has length zero cannot measure distances — so the borderline value is excluded, not included.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>For a symmetric matrix, definiteness = the sign pattern of its eigenvalues, full stop. For the pattern \(\begin{bmatrix} t & c \\ c & t \end{bmatrix}\) the eigenvalues are always \(t + c\) and \(t - c\) — diagonal plus-or-minus off-diagonal — which makes the whole classification a one-line read-off.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>One dial sweeps all five classes — and the eigenvectors never move. For <em>every</em> \(t\), \(A(t)\,(1,1)^\top = (t+3)(1,1)^\top\) and \(A(t)\,(1,-1)^\top = (t-3)(1,-1)^\top\). Turning \(t\) just slides the two eigenvalues \(t \pm 3\) along the number line past zero, while the axes of the quadratic form stay frozen at \(45^\circ\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff hard">Hard</span></div>
+    <p class="pq">(Positive definiteness over \(\mathbb{C}\).) For a real parameter \(k\), consider
+    \[ A(k) = \begin{bmatrix} k & 1+i \\ 1-i & 2 \end{bmatrix}. \]
+    For \(\mathbf{u},\mathbf{v}\in\mathbb{C}^2\), let \(\mathbf{u}^*\) denote the conjugate transpose and set \(\langle\mathbf{u},\mathbf{v}\rangle = \mathbf{u}^* A(k)\,\mathbf{v}\).<br>
+    (a) Show \(A(k)\) is Hermitian for every real \(k\). [1 M]<br>
+    (b) Find all real \(k\) for which \(A(k)\) is positive definite — equivalently, for which \(\langle\mathbf{u},\mathbf{v}\rangle = \mathbf{u}^* A(k)\,\mathbf{v}\) is a valid inner product on \(\mathbb{C}^2\). [2 M]<br>
+    (c) At the borderline value \(k = 1\) the matrix is only positive <em>semi</em>definite. Find a nonzero vector \(\mathbf{z}\in\mathbb{C}^2\) with \(\mathbf{z}^* A(1)\,\mathbf{z} = 0\), showing the form degenerates there. [2 M] <em>(5 marks)</em></p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Hermitian check (a).</b> A matrix is Hermitian when \(A^* = A\), i.e. the diagonal entries are real and the two off-diagonal entries are complex conjugates of each other. Here the diagonal is \(k,\,2\) (real, because \(k\) is real) and the off-diagonals satisfy \(\overline{1+i} = 1-i\). Hence \(A(k)^* = A(k)\) for every real \(k\).</div>
+      <div class="pstep"><b>Step 2 · Sylvester over \(\mathbb{C}\) (b).</b> Sylvester's criterion also works for Hermitian matrices: positive definite \(\iff\) all leading principal minors are positive (they come out real automatically). The minors are
+      \[ D_1 = k, \qquad D_2 = \det A(k) = 2k - (1+i)(1-i). \]</div>
+      <div class="pstep"><b>Step 3 · The crucial complex product.</b> It is a squared modulus:
+      \[ (1+i)(1-i) = 1 - i^2 = 2 = |1+i|^2, \qquad\text{so}\qquad D_2 = 2k - 2 = 2(k-1). \]</div>
+      <div class="pstep"><b>Step 4 · Solve the inequalities.</b> Requiring \(D_1 &gt; 0\) and \(D_2 &gt; 0\) gives \(k &gt; 0\) and \(k &gt; 1\), so
+      \[ A(k) \ \text{is positive definite} \iff k &gt; 1. \]</div>
+      <div class="pstep"><b>Step 5 · The degenerate direction at \(k = 1\) (c).</b> At \(k = 1\) we have \(D_2 = 0\), so \(A(1) = \begin{bmatrix} 1 & 1+i \\ 1-i & 2 \end{bmatrix}\) is singular (\(D_1 = 1 &gt; 0\), \(D_2 = 0\): positive semidefinite). Idea: any nonzero null-space vector works, since \(A(1)\mathbf{z} = \mathbf{0} \Rightarrow \mathbf{z}^* A(1)\,\mathbf{z} = \mathbf{z}^*\mathbf{0} = 0\). From the first row, \(z_1 + (1+i)z_2 = 0\); choosing \(z_2 = 1\) gives \(z_1 = -(1+i)\), so
+      \[ \mathbf{z} = \begin{bmatrix} -(1+i) \\ 1 \end{bmatrix}. \]</div>
+      <div class="pstep"><b>Step 6 · Verify it is a null vector.</b> Using \((1-i)(1+i) = 2\):
+      \[ A(1)\,\mathbf{z} = \begin{bmatrix} 1\cdot\big({-(1+i)}\big) + (1+i)\cdot 1 \\ (1-i)\cdot\big({-(1+i)}\big) + 2\cdot 1 \end{bmatrix} = \begin{bmatrix} 0 \\ -2+2 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}. \]
+      Hence \(\mathbf{z}^* A(1)\,\mathbf{z} = 0\) with \(\mathbf{z} \neq \mathbf{0}\): at \(k = 1\) the form is not positive definite, so it is not an inner product.</div>
+      <div class="pans">Answer. (a) \(A(k)^* = A(k)\) for all real \(k\). (b) \(A(k)\) is positive definite \(\iff k &gt; 1\). (c) \(\mathbf{z} = (-(1+i),\,1)^\top \neq \mathbf{0}\) satisfies \(A(1)\mathbf{z} = \mathbf{0}\), hence \(\mathbf{z}^* A(1)\,\mathbf{z} = 0\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Over \(\mathbb{C}\), transpose is not enough — use the conjugate transpose \(\mathbf{u}^*\). And the off-diagonal product is \((1+i)(1-i) = |1+i|^2 = 2\), <em>not</em> \((1+i)^2 = 2i\). Writing \(D_2 = 2k - 2i\) (a complex determinant for a Hermitian matrix — impossible) is the classic slip.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Hermitian + positive definite is the complex analogue of symmetric + positive definite: Sylvester's criterion still runs, the leading minors are automatically real, and only \(k &gt; 1\) — both minors strictly positive — buys a genuine inner product on \(\mathbb{C}^2\).</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>At \(k = 1\) there exists a nonzero vector of length zero: \(\langle\mathbf{z},\mathbf{z}\rangle = 0\) although \(\mathbf{z} \neq \mathbf{0}\). The geometry has a direction it simply cannot see — which is precisely the disease the positive-definiteness axiom exists to rule out.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">For each matrix \(M\) below, decide whether \(\langle\mathbf{x},\mathbf{y}\rangle = \mathbf{x}^\top M\,\mathbf{y}\) defines a valid inner product on \(\mathbb{R}^2\). Justify using the three requirements (bilinear, symmetric, positive-definite); when it fails, exhibit a witness. [2 M each]
+    \[ \text{(a)}\ M = \begin{bmatrix} 1 & 2 \\ 2 & 1 \end{bmatrix} \qquad \text{(b)}\ M = \begin{bmatrix} 2 & 1 \\ 1 & 3 \end{bmatrix} \qquad \text{(c)}\ M = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix} \]
+    <em>(6 marks)</em></p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Bilinearity is free.</b> Every \(\mathbf{x}^\top M\,\mathbf{y}\) is automatically bilinear, so only symmetry and positive-definiteness can fail.</div>
+      <div class="pstep"><b>Step 2 · (a) Symmetric but indefinite.</b> \(M\) is symmetric, so symmetry holds. Check positive-definiteness by Sylvester: \(D_1 = 1 &gt; 0\) but \(D_2 = \det M = 1 - 4 = -3 &lt; 0\). Fails. A witness: \(\mathbf{x} = (1,-1)^\top\) gives
+      \[ \mathbf{x}^\top M\,\mathbf{x} = (1,-1)\begin{bmatrix} 1 & 2 \\ 2 & 1 \end{bmatrix}\begin{bmatrix} 1 \\ -1 \end{bmatrix} = (1,-1)\cdot(-1,1) = -2 &lt; 0. \]
+      So \(\langle\mathbf{x},\mathbf{x}\rangle &lt; 0\) is possible — not an inner product.</div>
+      <div class="pstep"><b>Step 3 · (b) All three requirements hold.</b> \(M\) is symmetric. Sylvester: \(D_1 = 2 &gt; 0\) and \(D_2 = \det M = 6 - 1 = 5 &gt; 0\), so \(M\) is positive definite. All three requirements hold — this is a valid inner product.</div>
+      <div class="pstep"><b>Step 4 · (c) Symmetry fails.</b> \(M\) is not symmetric, and that breaks the symmetry requirement directly. Test on the basis vectors:
+      \[ \langle\mathbf{e}_1,\mathbf{e}_2\rangle = \mathbf{e}_1^\top M\,\mathbf{e}_2 = M_{12} = 1, \qquad \langle\mathbf{e}_2,\mathbf{e}_1\rangle = \mathbf{e}_2^\top M\,\mathbf{e}_1 = M_{21} = 0. \]
+      Since \(\langle\mathbf{e}_1,\mathbf{e}_2\rangle \neq \langle\mathbf{e}_2,\mathbf{e}_1\rangle\), symmetry fails — not an inner product (even though the quadratic form \(\mathbf{x}^\top M\,\mathbf{x} = x_1^2 + x_1x_2 + x_2^2\) happens to be positive; symmetry alone already rules it out).</div>
+      <div class="pans">Answer. (a) Not an inner product — indefinite; witness \(\mathbf{x} = (1,-1)^\top\) with \(\mathbf{x}^\top M\,\mathbf{x} = -2 &lt; 0\). (b) Valid inner product — symmetric with \(D_1 = 2 &gt; 0\), \(D_2 = 5 &gt; 0\). (c) Not an inner product — symmetry fails: \(\langle\mathbf{e}_1,\mathbf{e}_2\rangle = 1 \neq 0 = \langle\mathbf{e}_2,\mathbf{e}_1\rangle\).</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>\(D_1 &gt; 0\) alone proves nothing — in (a) the first minor passes and the matrix is still indefinite; Sylvester needs <em>all</em> leading minors positive. And check symmetry <em>before</em> reaching for Sylvester: the criterion is only meaningful for symmetric matrices.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>The three-point checklist, cheapest first: bilinearity is automatic for \(\mathbf{x}^\top M\,\mathbf{y}\); then verify symmetry \(M^\top = M\); only then test positive definiteness (Sylvester or eigenvalue signs). Failing any single one ends the game.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>Matrix (c) satisfies \(\mathbf{x}^\top M\,\mathbf{x} = x_1^2 + x_1x_2 + x_2^2 = \left(x_1 + \tfrac{x_2}{2}\right)^2 + \tfrac{3}{4}x_2^2 &gt; 0\) for every \(\mathbf{x} \neq \mathbf{0}\) — genuinely positive "lengths" — and it is <em>still</em> not an inner product. Positivity cannot buy back broken symmetry: with this \(M\), the "angle between \(\mathbf{x}\) and \(\mathbf{y}\)" would depend on the order in which you name them.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">Medium</span></div>
+    <p class="pq">On \(\mathbb{R}^2\) use \(\langle\mathbf{x},\mathbf{y}\rangle_A = \mathbf{x}^\top A\,\mathbf{y}\) with \(A = \begin{bmatrix} 3 & 1 \\ 1 & 2 \end{bmatrix}\) (SPD), and let \(\mathbf{x} = (1,1)^\top\), \(\mathbf{y} = (1,-1)^\top\).<br>
+    (a) Compute \(\|\mathbf{x}\|_A\), \(\|\mathbf{y}\|_A\), and \(\langle\mathbf{x},\mathbf{y}\rangle_A\). [2 M]<br>
+    (b) Verify the Cauchy–Schwarz inequality \(|\langle\mathbf{x},\mathbf{y}\rangle_A| \le \|\mathbf{x}\|_A\,\|\mathbf{y}\|_A\). [1 M]<br>
+    (c) Compute the distance \(d(\mathbf{x},\mathbf{y}) = \|\mathbf{x}-\mathbf{y}\|_A\) and verify the triangle inequality \(\|\mathbf{x}-\mathbf{y}\|_A \le \|\mathbf{x}\|_A + \|\mathbf{y}\|_A\). [2 M] <em>(5 marks)</em></p>
+    <details class="sol"><summary>Show the worked solution — every step</summary>
+      <div class="pstep"><b>Step 1 · Two matrix–vector products (a).</b> Compute \(A\mathbf{x}\) and \(A\mathbf{y}\) once:
+      \[ A\mathbf{x} = A(1,1)^\top = (3+1,\ 1+2)^\top = (4,3)^\top, \qquad A\mathbf{y} = A(1,-1)^\top = (3-1,\ 1-2)^\top = (2,-1)^\top. \]</div>
+      <div class="pstep"><b>Step 2 · Norms and inner product.</b>
+      \[ \|\mathbf{x}\|_A^2 = \mathbf{x}^\top(A\mathbf{x}) = (1,1)\cdot(4,3) = 7, \qquad \|\mathbf{y}\|_A^2 = \mathbf{y}^\top(A\mathbf{y}) = (1,-1)\cdot(2,-1) = 2 + 1 = 3, \]
+      \[ \langle\mathbf{x},\mathbf{y}\rangle_A = \mathbf{x}^\top(A\mathbf{y}) = (1,1)\cdot(2,-1) = 1. \]
+      So \(\|\mathbf{x}\|_A = \sqrt{7}\), \(\|\mathbf{y}\|_A = \sqrt{3}\), \(\langle\mathbf{x},\mathbf{y}\rangle_A = 1\).</div>
+      <div class="pstep"><b>Step 3 · Cauchy–Schwarz (b).</b>
+      \[ |\langle\mathbf{x},\mathbf{y}\rangle_A| = 1 \ \le\ \|\mathbf{x}\|_A\,\|\mathbf{y}\|_A = \sqrt{7}\cdot\sqrt{3} = \sqrt{21} \approx 4.58. \;\checkmark \]</div>
+      <div class="pstep"><b>Step 4 · Distance and triangle inequality (c).</b> Distance uses the same norm on the difference. With \(\mathbf{x}-\mathbf{y} = (0,2)^\top\) and \(A(0,2)^\top = (2,4)^\top\):
+      \[ \|\mathbf{x}-\mathbf{y}\|_A^2 = (0,2)\cdot(2,4) = 8 \;\Longrightarrow\; d(\mathbf{x},\mathbf{y}) = \sqrt{8} = 2\sqrt{2} \approx 2.83. \]
+      Triangle inequality:
+      \[ \|\mathbf{x}-\mathbf{y}\|_A = 2\sqrt{2} \approx 2.83 \ \le\ \|\mathbf{x}\|_A + \|\mathbf{y}\|_A = \sqrt{7} + \sqrt{3} \approx 4.38. \;\checkmark \]</div>
+      <div class="pans">Answer. (a) \(\|\mathbf{x}\|_A = \sqrt{7}\), \(\|\mathbf{y}\|_A = \sqrt{3}\), \(\langle\mathbf{x},\mathbf{y}\rangle_A = 1\). (b) \(1 \le \sqrt{21} \approx 4.58\) ✓. (c) \(d(\mathbf{x},\mathbf{y}) = 2\sqrt{2} \approx 2.83 \le \sqrt{7}+\sqrt{3} \approx 4.38\) ✓.</div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>The distance must be measured with \(A\) on the <em>difference</em>: \((\mathbf{x}-\mathbf{y})^\top A\,(\mathbf{x}-\mathbf{y}) = 8\), so \(d = 2\sqrt{2}\) — not the Euclidean \(\|(0,2)^\top\| = 2\). Every length in this problem, the distance included, is an \(A\)-length.</p></div>
+      <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>Cauchy–Schwarz and the triangle inequality are theorems of <em>every</em> inner-product space: if \(A\) is genuinely SPD they cannot fail. So "verifying" them is really a sanity check on your arithmetic — if such a check ever fails, either the computation or the claimed positive-definiteness is wrong.</p></div>
+      <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>In the plain dot product these two vectors are orthogonal — \(\mathbf{x}^\top\mathbf{y} = 1 - 1 = 0\) — yet under \(A\) their inner product is \(1\), giving \(\cos\theta_A = 1/\sqrt{21} \approx 0.218\): an angle of about \(77.4^\circ\). The matrix \(A\) literally bends the right angle.</p></div>
+    </details>
+  </div>
+</section>
