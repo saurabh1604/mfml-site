@@ -1,0 +1,465 @@
+=== PAGE 1 ===
+Derivatives for Machine Learning
+From Scalars to Tensors with Visual Intuition
+Saurabh
+June 14, 2025
+=== PAGE 2 ===
+The Ultimate Guide to Derivatives for Machine Learning
+Contents
+1 Your Journey into the Mathematics of AI 3
+2 Part 1: Scalar-Valued Functions (Output is one number) 3
+2.1 Case 1: Scalar input, Scalar output . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.2 Case 2: Vector input, Scalar output . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.3 Case 3: Matrix input, Scalar output . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3 Part 2: Vector-Valued Functions (Output is a vector) 7
+3.1 Case 4: Vector input, Vector output . . . . . . . . . . . . . . . . . . . . . . . . . 7
+3.2 The Chain Rule with Jacobians . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4 Part 3: Matrix-Valued Functions (Output is a matrix) 9
+4.1 Case 5: Matrix input, Matrix output . . . . . . . . . . . . . . . . . . . . . . . . . 9
+5 Practice Problems with Solutions 11
+5.1 Problem 1: Gradient Calculation . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+5.2 Problem 2: Jacobian Calculation . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+5.3 Problem 3: Advanced Matrix Derivative . . . . . . . . . . . . . . . . . . . . . . . 11
+2
+=== PAGE 3 ===
+The Ultimate Guide to Derivatives for Machine Learning
+1Your Journey into the Mathematics of AI
+Welcome to the world of machine learning, where we teach computers to learn from data. At
+the heart of this process is a simple goal: minimizing error . We need a way to measure how
+wrong our model is and a method to systematically make it better.
+Imagine you are in a vast, foggy valley, and your goal is to find the absolute lowest point.
+This valley is the “loss function”—a mathematical landscape where height represents error. To
+navigate, you can’t see far, but you can feel the slope of the ground beneath your feet. The
+smartest move is to take a step in the direction where the ground descends most steeply.
+That “slope” is the derivative .
+This guide is your map and compass. We will walk you through everything you need to know
+about derivatives, starting from the basics and building up, step-by-step, to the powerful concepts
+that drive modern AI. Each section is packed with detailed explanations, visual diagrams, and
+practical examples to build a deep and lasting intuition.
+w1Loss
+Loss Landscape
+P
+Gradient
+2Part 1: Scalar-Valued Functions (Output
+is one number)
+These functions calculate a single “score” or “cost”. They are the foundation of optimization in
+machine learning.
+2.1 Case 1: Scalar input, Scalar output
+/book-openThe Classic Derivative
+A function where a single input number maps to a single output number.
+y=f(x)
+The derivative,dy
+dx, is also a scalar.
+3
+=== PAGE 4 ===
+The Ultimate Guide to Derivatives for Machine Learning
+♂lightbulbThe Slope of a Curve
+The derivative tells you the slope of the function’s tangent line at a specific point. It
+answers the question: “If I nudge the input xa tiny bit, how fast and in what direction
+does the output ychange?” A positive derivative means yincreases as xincreases; a
+negative derivative means ydecreases.
+Think of it as the speedometer for your function. But instead of just telling you your
+speed, it also tells you if you’re going forward or backward.
+Calculation 1
+Question: Find the derivative of y= 4x3−5x+ 7.
+Solution: We use the power rule on each term.
+dy
+dx=d
+dx(4x3)−d
+dx(5x) +d
+dx(7) = 4(3x2)−5(1) + 0 = 12x2−5
+Calculation 2
+Question: Find the derivative of y=e2xsin(x)using the product rule (uv)′=u′v+uv′.
+Solution: Letu=e2xandv= sin(x). Thenu′= 2e2xandv′= cos(x).
+dy
+dx= (2e2x)(sin(x)) + (e2x)(cos(x)) =e2x(2sin(x) + cos( x))
+2.2 Case 2: Vector input, Scalar output
+/book-openThe Gradient
+A function where a vector of inputs maps to a single output number.
+y=f(⃗ w)where⃗ w=
+w1
+...
+wn
+
+The derivative is a vectorof the same dimension as the input, called the gradient ,
+denoted∇f.
+∇f(⃗ w) =dy
+d⃗ w=
+∂y/∂w 1
+...
+∂y/∂w n
+
+♂lightbulbThe Compass and The Recipe
+The Compass Analogy: Think of the input vector ⃗ was your coordinates on a map,
+and the output yas your altitude. The gradient vector is a compass that always points in
+the direction of the steepest uphill slope . Its length (magnitude) tells you how steep
+that slope is.
+The Recipe Analogy: Suppose your function yis the "tastiness score" of a cake, and
+⃗ wis the vector of ingredient amounts (flour, sugar, etc.). The gradient is a recipe for
+4
+=== PAGE 5 ===
+The Ultimate Guide to Derivatives for Machine Learning
+improvement. It tells you the exact ratio of ingredients to add or subtract to make the
+cake tastier, faster. For example, if ∇y=(
+−0.1
+2.5)
+, it means reducing flour a bit and
+increasing sugar a lot is the fastest way to improve the taste from this point.
+Higher Loss
+Lower LossP(⃗ w)∇L
+−∇L
+The gradient∇Lpoints towards higher loss.
+We move in the opposite direction, −∇L, to minimize the loss.
+/brainThe Heart of Optimization
+This is the single most important derivative form in all of ML. Our loss function is a scalar
+value that depends on a vector of model weights, L(⃗ w). To train the model, we compute
+the gradient∇Land update the weights in the opposite direction: ⃗ wnew=⃗ wold−η∇L.
+This is Gradient Descent . More advanced optimizers like AdamorRMSprop still
+use the gradient as their core input but adapt the step size ηintelligently.
+Calculation 1
+Question: Find the gradient of L(w1,w2) = (3w1−4)2+ 5w2
+2.
+Solution: Find the partial derivative w.r.t. w1andw2.
+∂L
+∂w1= 2(3w1−4)·3 = 18w1−24and∂L
+∂w2= 2·5w2= 10w2
+The gradient vector is: ∇L=(
+18w1−24
+10w2)
+.
+Calculation 2 (Cross-Entropy Loss)
+Question: Find the gradient of the binary cross-entropy loss L=−(ylog(p) + (1−
+y) log(1−p))with respect to p. (yis a constant 0 or 1).
+Solution:
+∂L
+∂p=−(
+y·1
+p+ (1−y)·1
+1−p·(−1))
+=−(y
+p−1−y
+1−p)
+=1−y
+1−p−y
+p=p−y
+p(1−p)
+This form is crucial for classification problems.
+5
+=== PAGE 6 ===
+The Ultimate Guide to Derivatives for Machine Learning
+2.3 Case 3: Matrix input, Scalar output
+/book-openThe Gradient Matrix
+A function where a matrix of inputs maps to a single output number.
+y=f(X)
+The derivative,dy
+dX, is a matrixof the same dimensions as the input matrix X.
+(dy
+dX)
+ij=∂y
+∂Xij
+♂lightbulbA Sensitivity Heatmap
+Imagine the input matrix Xis a grid of control knobs, and the output yis a single master
+alarm light. The derivative matrix is like a heatmap overlaid on your grid of knobs. The
+“hottest” (largest value) elements in the derivative matrix are the knobs that have the
+most powerful effect on the alarm light. An entry of zero means that knob is disconnected
+from the alarm.
+/brainDerivatives for Image Kernels
+This is used when a single loss value depends on a matrix of parameters, like the weights in
+aconvolutional neural network (CNN) kernel or a covariance matrix in a statistical
+model. We need to know how to adjust each weight in the kernel to reduce the overall
+loss. The derivative matrix gives us the precise update for every parameter in the matrix.
+Calculation 1
+Question: LetX=(
+x11x12
+x21x22)
+and letybe the sum of its squared elements, y=∑
+i,jx2
+ij.
+Finddy
+dX.
+Solution:y=x2
+11+x2
+12+x2
+21+x2
+22. We compute the partial derivative for each position.
+dy
+dX=(∂y
+∂x11∂y
+∂x12∂y
+∂x21∂y
+∂x22)
+=(
+2x112x12
+2x212x22)
+= 2X
+Calculation 2
+Question: For a 2×2matrixX, find the derivative of its determinant, y=det(X), with
+respect toX.
+Solution: y=x11x22−x12x21.
+dy
+dX=(∂y
+∂x11∂y
+∂x12∂y
+∂x21∂y
+∂x22)
+=(
+x22−x21
+−x12x11)
+This matrix is known as the adjugate matrix of X.
+6
+=== PAGE 7 ===
+The Ultimate Guide to Derivatives for Machine Learning
+3Part 2: Vector-Valued Functions (Output
+is a vector)
+These functions transform a set of inputs into a set of outputs. They represent a transformation
+from one space to another, like a layer in a neural network.
+3.1 Case 4: Vector input, Vector output
+/book-openThe Jacobian Matrix
+A function where an n-dimensional vector of inputs maps to an m-dimensional vector of
+outputs.
+⃗ y=F(⃗ x)where⃗ x∈Rn,⃗ y∈Rm
+The derivative is an m×nmatrixcalled the Jacobian , denotedJ.
+Jij=∂yi
+∂xj(How output ichanges with input j)
+♂lightbulbThe Local Rulebook for Transformation
+Linear Approximation: Functions can be complex and curvy. The Jacobian gives us
+a simpler, linear approximation of that function at a specific point. It tells us how a
+tiny input vector change will be stretched, squeezed, rotated, and sheared into an output
+vector change.
+Video Game Analogy: Imagine a character in a video game whose complex, flowing
+movement is controlled by a joystick. The joystick’s position is the input vector ⃗ x. The
+character’s velocity (speed and direction) is the output vector ⃗ y. The function Fis the
+game’s physics engine. The Jacobian is the rulebook at one specific instant: if you nudge
+the joystick slightly forward, the Jacobian tells you the exact change in the character’s
+velocity vector (e.g., “+5 speed forward, +1 speed right”).
+x1x2
+Input Space∆x1∆x2ApplyJy1y2
+Output Space
+7
+=== PAGE 8 ===
+The Ultimate Guide to Derivatives for Machine Learning
+/brainThe Engine of Backpropagation
+The Jacobian is the heart of the chain rule for vectors. In a neural network, each layer is
+a vector-to-vector function. Backpropagation uses the Jacobian of each layer’s activation
+function to calculate how errors should flow backward through the network, telling us
+how to update the weights.
+Calculation 1
+Question: Find the Jacobian matrix for ⃗ y=(
+x2
+1x2
+5x1+ sin(x2))
+.
+Solution: Jis2×2. We compute the four partial derivatives:
+J=(∂y1
+∂x1∂y1
+∂x2∂y2
+∂x1∂y2
+∂x2)
+=(
+2x1x2x2
+1
+5 cos(x2))
+Calculation 2
+Question: Find the Jacobian for a linear layer ⃗ y=W⃗ x, whereWis a constant 2×2
+matrix and ⃗ xis a2×1vector.
+Solution: LetW=(
+w11w12
+w21w22)
+. Then⃗ y=(
+w11x1+w12x2
+w21x1+w22x2)
+.
+J=(∂y1
+∂x1∂y1
+∂x2∂y2
+∂x1∂y2
+∂x2)
+=(
+w11w12
+w21w22)
+=W
+The derivative of a linear transformation is the transformation matrix itself!
+3.2 The Chain Rule with Jacobians
+The true power of Jacobians is revealed in the chain rule. If you have a sequence of functions,
+⃗ xF− →⃗ yG− →⃗ z, the overall Jacobian is the product of the individual Jacobians.
+⃗ x ⃗ y ⃗ zF G
+G(F(⃗ x))
+JG◦F= (JGatF(⃗ x))·(JFat⃗ x)or simplyd⃗ z
+d⃗ x=d⃗ z
+d⃗ yd⃗ y
+d⃗ x
+This is not element-wise multiplication; it is matrix multiplication . This is exactly how
+backpropagation works: the error gradient from a later layer (e.g.,dL
+d⃗ y) is multiplied by the
+Jacobian of the current layer (d⃗ y
+d⃗ x) to find the error gradient for the previous layer (dL
+d⃗ x).
+8
+=== PAGE 9 ===
+The Ultimate Guide to Derivatives for Machine Learning
+4Part 3: Matrix-Valued Functions (Output
+is a matrix)
+4.1 Case 5: Matrix input, Matrix output
+/book-openThe Tensor Derivative
+A function where an m×nmatrix of inputs maps to a p×qmatrix of outputs.
+Y=F(X)
+The derivative,dY
+dX, is a rank-4 tensor (a 4-dimensional array). Its components are:
+(dY
+dX)
+ijkl=∂Yij
+∂Xkl
+/inf⌢-circleA Note on Layout Conventions
+When taking derivatives with vectors and matrices, the exact shape of the result can
+differ based on convention. For example, the gradient could be a row vector instead of a
+column vector. This is a choice between “numerator layout” and “denominator layout”.
+This guide uses a single, consistent layout (denominator layout). When reading other
+resources, be aware that their formulas might differ in shape (e.g., be transposed) due to
+using a different convention.
+♂lightbulbThe Grand Control Panel Material Science
+The Control Panel Analogy: Imagine the input matrix Xis a giant control panel
+full of knobs, and the output matrix Yis a giant wall of display screens. The derivative
+tensor is the complete wiring diagram. It tells you exactly how much turning any single
+knob (Xkl) will affect the reading on any single screen ( Yij). It captures every possible
+interaction between every input and every output.
+The Material Science Analogy: Think of a 2D sheet of a smart material (Matrix Y).
+You can apply a pattern of electric fields to it (Matrix X). The function Fdescribes the
+physics. The derivative tensor is the material’s fundamental property: it tells you how
+applying an electric field at point (k,l)causes the material to deform or change color at
+point (i,j).
+/brainAdvanced Backpropagation
+While we rarely construct the full tensor explicitly due to its size, its mathematical
+structure underpins backpropagation through complex layers. When you train a Con-
+volutional Neural Network (CNN) , aRecurrent Neural Network (RNN) , or
+anAttention/Transformer model, the software library’s backward pass is implicitly
+calculating the operations defined by this tensor calculus. For example, the derivative of
+a matrix multiplication or a convolution operation is defined by these tensor rules.
+9
+=== PAGE 10 ===
+The Ultimate Guide to Derivatives for Machine Learning
+/inf⌢-circleMathematical Concept vs. Computational Reality
+It’s crucial to understand that while the derivative is mathematically a giant rank-4 tensor,
+libraries like TensorFlow and PyTorch almost neveractually build this tensor in memory.
+It would be incredibly inefficient. Instead, they define the ‘backward()‘ or ‘gradient()‘
+operation for a function (like matrix multiplication). This operation directly computes
+the required output gradient given the input gradient, effectively applying the tensor’s
+linear transformation without ever instantiating the tensor itself.
+Calculation 1
+Question: ForY=X2(element-wise), find the derivative of the single output element
+y12with respect to the entire input matrix X.
+Solution: This asks for one “slice” of the full tensor. We want∂y12
+∂X. Sincey12=x2
+12, it
+only depends on x12.
+∂y12
+∂X=(∂y12
+∂x11∂y12
+∂x12∂y12
+∂x21∂y12
+∂x22)
+=(
+0 2x12
+0 0)
+Calculation 2
+Question: LetY=AXB, whereAandBare constant matrices. Find the derivative
+dY
+dX.
+Solution: This is a linear transformation. We look at a single element Yij=∑
+k∑
+lAikXklBlj. To find the derivative component (dY
+dX)ijpq=∂Yij
+∂Xpq, we see that Xpq
+only appears in the sum when k=pandl=q.
+∂Yij
+∂Xpq=∂
+∂Xpq(AipXpqBqj) =AipBqj
+This is the full expression for the tensor components.
+10
+=== PAGE 11 ===
+The Ultimate Guide to Derivatives for Machine Learning
+5 Practice Problems with Solutions
+5.1 Problem 1: Gradient Calculation
+Question: A simple neuron’s output is given by a=σ(z), wherez=w1x1+w2x2+band
+σ(z) =1
+1+e−zis the sigmoid function. The loss for a single training example is L= (a−ytrue)2,
+whereytrueis the correct label. Find the gradient of the loss Lwith respect to the weights
+vector⃗ w=(
+w1
+w2)
+.
+Solution: We need to find∇L=(
+∂L/∂w 1
+∂L/∂w 2)
+. We use the chain rule.
+∂L
+∂w1=∂L
+∂a·∂a
+∂z·∂z
+∂w1
+1.∂L
+∂a= 2(a−ytrue)
+2. The derivative of the sigmoid is famous:∂a
+∂z=σ′(z) =σ(z)(1−σ(z)) =a(1−a)
+3.∂z
+∂w1=x1
+Combining these gives:∂L
+∂w1= 2(a−ytrue)a(1−a)x1. By symmetry,∂L
+∂w2= 2(a−ytrue)a(1−a)x2.
+The gradient is:
+∇L=(
+2(a−ytrue)a(1−a)x1
+2(a−ytrue)a(1−a)x2)
+5.2 Problem 2: Jacobian Calculation
+Question: A function transforms a 2D vector ⃗ xto a 3D vector ⃗ yas follows:
+⃗ y=F(⃗ x) =
+x2
+1+x2
+x1x2
+3x3
+2
+
+Find the Jacobian matrix of this transformation.
+Solution: The Jacobian will be a 3×2matrix (output dims ×input dims).
+J=
+∂y1
+∂x1∂y1
+∂x2∂y2
+∂x1∂y2
+∂x2∂y3
+∂x1∂y3
+∂x2
+=
+2x11
+x2x1
+0 9x2
+2
+
+5.3 Problem 3: Advanced Matrix Derivative
+Question: In linear regression, a common loss function is the squared Frobenius norm of the
+error:L=||AX−B||2
+F, whereA,X,Bare matrices. Find the derivative of Lwith respect to
+the matrix X.
+11
+=== PAGE 12 ===
+The Ultimate Guide to Derivatives for Machine Learning
+Solution: ThesquaredFrobeniusnormisthesumofsquaredelements, whichcanbeconveniently
+written asL=tr((AX−B)T(AX−B)). The trace is a useful tool for matrix derivatives. Using
+properties of the trace and the chain rule:
+∂L
+∂X=∂
+∂Xtr((AX−B)T(AX−B))
+=∂
+∂Xtr((XTAT−BT)(AX−B))
+=∂
+∂Xtr(XTATAX−XTATB−BTAX+BTB)
+Using the derivative rules∂
+∂Xtr(XTCX) = (C+CT)Xand∂
+∂Xtr(CTAX) =ATCT:
+∂L
+∂X= (ATA+ (ATA)T)X−ATB−(BTA)T
+SinceATAis symmetric, (ATA)T=ATA. Also, (BTA)T=ATB.
+∂L
+∂X= 2ATAX−ATB−ATB=2AT(AX−B)
+Setting this gradient to zero, AT(AX−B) = 0, gives the famous normal equations for linear
+regression.
+12
