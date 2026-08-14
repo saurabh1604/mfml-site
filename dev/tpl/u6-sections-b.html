@@ -1,0 +1,207 @@
+
+<!-- ================= 8 · THE JACOBIAN ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head"><span class="sec-num">8</span><h2>The Jacobian — a local rulebook for a curved map</h2></div>
+  <div class="prose">
+    <p>Now let both ends be vectors: \(\mathbf{f}:\mathbb{R}^n\to\mathbb{R}^m\). This is the shape of a neural-network layer, of a coordinate change, of any transformation that takes a bundle of numbers and returns another bundle.</p>
+    <p>Each output component \(f_i\) is itself a scalar-valued function of all \(n\) inputs, so each has a gradient — a row of \(n\) partials. Stack the \(m\) rows and you have the <strong>Jacobian</strong>:</p>
+    \[\mathbf{J}=\frac{d\mathbf{f}(\mathbf{x})}{d\mathbf{x}}=\begin{bmatrix}\frac{\partial f_1}{\partial x_1}&\cdots&\frac{\partial f_1}{\partial x_n}\\ \vdots& &\vdots\\ \frac{\partial f_m}{\partial x_1}&\cdots&\frac{\partial f_m}{\partial x_n}\end{bmatrix}\in\mathbb{R}^{m\times n},\qquad J_{ij}=\frac{\partial f_i}{\partial x_j}\]
+    <p>Read it twice, in two directions. <strong>Row \(i\)</strong> is the gradient of output \(i\) — how that one output feels every input. <strong>Column \(j\)</strong> is \(\partial \mathbf{f}/\partial x_j\) — how the entire output vector twitches when input \(j\) alone is nudged.</p>
+    <p>And here is the meaning that makes it worth the notation. A curved map, zoomed in far enough, is <em>linear</em>. The Jacobian is that linear map: the matrix that best imitates your complicated function in a small neighbourhood. Stretching, rotating, shearing — whatever the function does locally, \(\mathbf J\) does exactly.</p>
+  </div>
+  <div class="callout intuition"><span class="tag">Intuition</span>
+    <p>A video game. Your joystick position is the input vector; your character's velocity is the output vector; the game's physics engine is \(\mathbf f\). The Jacobian is the rulebook <em>at this instant</em>: nudge the stick slightly forward and it tells you the exact resulting change in velocity — "+5 forward, +1 right". Move to a different game state and the rulebook changes, which is precisely what it means for \(\mathbf J\) to depend on \(\mathbf x\).</p>
+  </div>
+
+  <div class="widget" id="w-jm">
+    <div class="widget-head"><span class="w-title">Zoom until it's linear</span><span class="w-sub">A curved map bends the whole grid — but shrink the window and it becomes a plain matrix</span></div>
+    <div class="tabs" id="jm-tabs">
+      <button data-t="0" aria-selected="true">linear map</button>
+      <button data-t="1">squaring map</button>
+      <button data-t="2">exponential map</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.8 1 340px"><svg id="jm-svg" viewBox="0 0 580 330" class="svg-lab" role="img" aria-label="A grid before and after a nonlinear map, with the local linear approximation given by the Jacobian"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="jm-x">x₀</label><input id="jm-x" type="range" min="-1.2" max="1.2" step="0.05" value="0.6"><output id="jm-x-o">0.6</output></div>
+          <div class="ctl"><label for="jm-y">y₀</label><input id="jm-y" type="range" min="-1.2" max="1.2" step="0.05" value="0.5"><output id="jm-y-o">0.5</output></div>
+          <div class="ctl"><label for="jm-z">window</label><input id="jm-z" type="range" min="0.06" max="1" step="0.01" value="0.8"><output id="jm-z-o">0.8</output></div>
+        </div>
+        <div class="readout" id="jm-read" style="margin-top:.7rem;line-height:1.9"></div>
+        <div id="jm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Drag <em>window</em> to the left. The warped patch on the right straightens into a parallelogram — the one the Jacobian matrix draws. That convergence <em>is</em> differentiability: a function is differentiable exactly when zooming in makes it look linear.</p>
+      </div>
+    </div>
+  </div>
+
+  <details><summary>The lecture's example — the derivative of a linear map is the map itself</summary>
+    <p>Take \(\mathbf f(\mathbf x)=A\mathbf x\) with \(A\in\mathbb{R}^{M\times N}\). Component \(i\) is the plain sum \(f_i(\mathbf x)=\sum_{j=1}^{N}A_{ij}x_j\). Differentiate it with respect to one particular \(x_j\): every term of that sum is a constant except the \(j\)-th, which contributes its coefficient. So</p>
+    \[\frac{\partial f_i}{\partial x_j}=A_{ij}\quad\Longrightarrow\quad \frac{d\mathbf f}{d\mathbf x}=\begin{bmatrix}A_{11}&\cdots&A_{1N}\\ \vdots& &\vdots\\ A_{M1}&\cdots&A_{MN}\end{bmatrix}=A\]
+    <p>The Jacobian of a linear map is that map's own matrix — the exact analogue of \(\frac{d}{dx}(ax)=a\). It also explains why the "linear layer" of a network is the easy case in backpropagation: its local rulebook never changes, no matter where you evaluate it.</p>
+  </details>
+
+  <div class="check" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(\mathbf f(x,y)=\big(x^2-y^2,\ xe^y,\ \ln(1+x^2+y^2)\big)\), what is \(\mathbf J\) at \((1,0)\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Three outputs, two inputs → a 3×2 matrix. Row by row at (1,0): [2x, −2y] = [2, 0]; [eʸ, xeʸ] = [1, 1]; [2x/(1+x²+y²), 2y/(1+x²+y²)] = [2/2, 0] = [1, 0]. This is Problem 6 of the practice arena.">\(\begin{bmatrix}2&0\\1&1\\1&0\end{bmatrix}\)</button>
+      <button data-why="Right entries, wrong orientation — this is the transpose. Rows must correspond to outputs (there are 3) and columns to inputs (there are 2), so the matrix is 3×2, not 2×3.">\(\begin{bmatrix}2&1&1\\0&1&0\end{bmatrix}\)</button>
+      <button data-why="A 2×2 result would mean two outputs, but f has three components. Whenever the shape surprises you, count outputs then inputs — the Jacobian's dimensions are fixed before any calculus happens.">\(\begin{bmatrix}2&0\\1&1\end{bmatrix}\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 9 · DET J ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head"><span class="sec-num">9</span><h2>What the Jacobian determinant knows — area, invertibility, and one honest warning</h2></div>
+  <div class="prose">
+    <p>When the Jacobian is square, Unit 4's volume dial comes back to work. \(\det\mathbf J\) at a point is the factor by which the map stretches area (or volume) <em>right there</em>. Feed in a tiny square of area \(\varepsilon\); out comes a tiny parallelogram of area \(|\det\mathbf J|\,\varepsilon\). A negative determinant means the map also flipped orientation, turning the neighbourhood inside out like a mirror.</p>
+    <p>This buys a genuine theorem. The <strong>inverse function theorem</strong> says that wherever \(\det\mathbf J\neq 0\), the map is <em>locally</em> invertible: near that point, distinct inputs give distinct outputs and you can run the map backwards. Where \(\det\mathbf J=0\), a whole direction has been crushed flat and information is destroyed — you cannot undo it.</p>
+    <p>And now the warning, because this is a place careful people still trip. <strong>Locally invertible everywhere does not mean globally one-to-one.</strong></p>
+  </div>
+  <div class="callout watch"><span class="tag">Watch out</span>
+    <p>Take the exponential map \(T(x,y)=\big(e^x\cos y,\ e^x\sin y\big)\) — the third preset in the widget above. Its Jacobian determinant works out to \(\det\mathbf J = e^{2x}\), which is <em>strictly positive for every real \(x\)</em>. So \(T\) is locally invertible at every single point of the plane, with no exceptions.</p>
+    <p>Yet \(T(x,y)=T(x,y+2\pi)\), because sine and cosine repeat. Infinitely many different inputs land on exactly the same output. Every local statement can be true while the global one fails — the map wraps the plane around the origin over and over, like a spiral staircase whose steps all sit above one another.</p>
+  </div>
+  <div class="prose">
+    <p>Set the widget to the exponential preset and slide \(y\) through more than \(2\pi\): the patch on the right returns to where it started while the input point keeps travelling. That is the failure, made visible.</p>
+  </div>
+
+  <div class="check" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A map \(\mathbb{R}^2\to\mathbb{R}^2\) has \(\det\mathbf J = 0\) along a whole curve. What happens there?</p>
+    <div class="opts">
+      <button data-correct data-why="A zero determinant means the local linear map is singular — it collapses a 2D neighbourhood onto a line (or a point). Area is destroyed, two nearby inputs can merge into one output, and the map cannot be inverted near that curve.">The map squashes a 2D patch onto a line — locally not invertible</button>
+      <button data-why="Undefined derivatives and zero determinants are different failures. Here the Jacobian exists perfectly well; it just happens to be a singular matrix, exactly as a 2×2 matrix with dependent columns is singular.">The Jacobian doesn't exist along that curve</button>
+      <button data-why="A zero determinant tells you nothing about the output being zero. The map can send that curve anywhere — what collapses is the local area, not the values.">The function outputs zero along that curve</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 10 · CHAIN RULE = MATRIX MULTIPLICATION ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head"><span class="sec-num">10</span><h2>The chain rule becomes matrix multiplication — and that is backpropagation</h2></div>
+  <div class="prose">
+    <p>Everything so far converges here. In Section 3 the chain rule multiplied two numbers. With vectors it multiplies two <em>matrices</em>, and the order matters because matrix multiplication does not commute:</p>
+    \[\mathbf{x}\ \xrightarrow{\ \mathbf F\ }\ \mathbf{y}\ \xrightarrow{\ \mathbf G\ }\ \mathbf{z}\qquad\Longrightarrow\qquad \frac{d\mathbf z}{d\mathbf x}=\frac{d\mathbf z}{d\mathbf y}\cdot\frac{d\mathbf y}{d\mathbf x}=\mathbf J_{\mathbf G}\,\mathbf J_{\mathbf F}\]
+    <p>This is not element-wise multiplication. It is honest matrix multiplication, and the shapes police themselves: if \(\mathbf F:\mathbb{R}^n\to\mathbb{R}^p\) and \(\mathbf G:\mathbb{R}^p\to\mathbb{R}^m\), then \(\mathbf J_{\mathbf G}\) is \(m\times p\), \(\mathbf J_{\mathbf F}\) is \(p\times n\), and the product is \(m\times n\) — exactly the shape the composed map demands. <strong>When your dimensions line up, you have almost certainly written it in the right order.</strong></p>
+    <p>A network is a long composition: input → layer → layer → … → one loss number. Applying the rule end to end gives a product of Jacobians. Because the final loss is a single scalar, its derivative is a <em>row</em>, and multiplying that row through the chain from the left keeps every intermediate a row rather than a full matrix. That choice — right to left instead of left to right — is the entire efficiency trick of <strong>backpropagation</strong>, and it is why training a network costs about the same as two forward passes rather than one pass per parameter.</p>
+  </div>
+
+  <div class="widget" id="w-bp">
+    <div class="widget-head"><span class="w-title">Backprop, one Jacobian at a time</span><span class="w-sub">Push numbers forward, then send the gradient back through the same layers</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.9 1 350px"><svg id="bp-svg" viewBox="0 0 600 320" class="svg-lab" role="img" aria-label="A small network with forward values and backward gradients flowing through Jacobians"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="bp-x1">x₁</label><input id="bp-x1" type="range" min="-2" max="2" step="0.1" value="1"><output id="bp-x1-o">1</output></div>
+          <div class="ctl"><label for="bp-x2">x₂</label><input id="bp-x2" type="range" min="-2" max="2" step="0.1" value="1"><output id="bp-x2-o">1</output></div>
+        </div>
+        <div class="presets" style="margin-top:.6rem"><button class="preset" id="bp-step">▶ advance one stage</button><button class="preset" id="bp-reset">reset</button></div>
+        <div class="readout" id="bp-read" style="margin-top:.7rem;line-height:1.9"></div>
+        <div id="bp-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Step through and watch the shapes: the backward pass starts as a \(1\times 2\) row and stays a row the whole way, because each multiplication is (row)·(matrix). Nothing bigger than a row is ever built — that is the saving.</p>
+      </div>
+    </div>
+  </div>
+
+  <details><summary>The lecture's composite example — \(h(t)=f(g(t))\) with a vector in the middle</summary>
+    <p>Let \(f(\mathbf x)=\exp(x_1x_2^2)\) with \(\mathbf x=g(t)=\big(t\cos t,\ t\sin t\big)\). Here \(g:\mathbb{R}\to\mathbb{R}^2\) and \(f:\mathbb{R}^2\to\mathbb{R}\), so the shapes are \(\frac{\partial f}{\partial\mathbf x}\in\mathbb{R}^{1\times2}\) and \(\frac{\partial\mathbf x}{\partial t}\in\mathbb{R}^{2\times1}\) — their product is \(1\times1\), a single number, as it must be.</p>
+    \[\frac{\partial f}{\partial \mathbf x}=\Big[\exp(x_1x_2^2)\,x_2^2,\quad 2\exp(x_1x_2^2)\,x_1x_2\Big],\qquad \frac{\partial \mathbf x}{\partial t}=\begin{bmatrix}\cos t-t\sin t\\ \sin t+t\cos t\end{bmatrix}\]
+    <p>Multiply the row by the column:</p>
+    \[\frac{dh}{dt}=\exp(x_1x_2^2)\Big(x_2^2(\cos t-t\sin t)+2x_1x_2(\sin t+t\cos t)\Big),\quad x_1=t\cos t,\ x_2=t\sin t\]
+    <p>A simpler version of the same pattern appears earlier in the lecture: for \(f(x_1,x_2)=x_1^2+2x_2\) with \(x_1=\sin t\), \(x_2=\cos t\),</p>
+    \[\frac{df}{dt}=\frac{\partial f}{\partial x_1}\frac{\partial x_1}{\partial t}+\frac{\partial f}{\partial x_2}\frac{\partial x_2}{\partial t}=2\sin t\cos t-2\sin t=2\sin t(\cos t-1)\]
+    <p>That sum of products <em>is</em> the row-times-column multiplication written out longhand. Every "sum over paths" you meet in calculus is a matrix product waiting to be recognised.</p>
+  </details>
+
+  <div class="check" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Layers \(\mathbf F:\mathbb{R}^{4}\to\mathbb{R}^{3}\) then \(\mathbf G:\mathbb{R}^{3}\to\mathbb{R}^{2}\). Which product is the Jacobian of \(\mathbf G\circ\mathbf F\)?</p>
+    <div class="opts">
+      <button data-correct data-why="J_G is 2×3, J_F is 3×4. The product J_G·J_F is (2×3)(3×4) = 2×4 — the right shape for a map ℝ⁴→ℝ². The later layer's Jacobian goes on the LEFT, which is exactly why backpropagation runs backwards.">\(\mathbf J_{\mathbf G}\mathbf J_{\mathbf F}\), giving \(2\times 4\)</button>
+      <button data-why="Check the shapes: (3×4)(2×3) can't even be multiplied — the inner dimensions 4 and 2 disagree. Dimension mismatch is the cheapest bug detector in all of matrix calculus.">\(\mathbf J_{\mathbf F}\mathbf J_{\mathbf G}\), giving \(3\times 2\)</button>
+      <button data-why="Element-wise multiplication needs identical shapes, and 2×3 against 3×4 fails that immediately. The chain rule for vectors is genuine matrix multiplication — composition of linear maps, not entry-by-entry arithmetic.">Their element-wise product</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 11 · GRADIENT DESCENT ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head"><span class="sec-num">11</span><h2>Walking down the valley</h2></div>
+  <div class="prose">
+    <p>You now have everything needed to make the fog survivable. Compute the gradient, step against it, repeat:</p>
+    \[\mathbf{w}\ \leftarrow\ \mathbf{w}-\eta\,\nabla L(\mathbf{w})\]
+    <p>The gradient chooses the direction. The <strong>learning rate</strong> \(\eta\) chooses how far to trust it — and that is the whole difficulty, because the gradient is only honest infinitesimally close to where it was measured. Step a little and the promise holds. Step too far and you overshoot the valley floor and land higher up the opposite wall, where the new gradient points back, and you oscillate outwards forever.</p>
+  </div>
+
+  <div class="widget" id="w-gd">
+    <div class="widget-head"><span class="w-title">Learning rate roulette</span><span class="w-sub">Same landscape, same start, one number changed</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 330px"><svg id="gd-svg" viewBox="0 0 560 380" class="svg-lab grabbable" role="img" aria-label="Gradient descent steps on a contour map for different learning rates"></svg></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="gd-eta">rate η</label><input id="gd-eta" type="range" min="0.01" max="1.05" step="0.005" value="0.18"><output id="gd-eta-o">0.18</output></div>
+          <div class="ctl"><label for="gd-n">steps</label><input id="gd-n" type="range" min="1" max="40" step="1" value="18"><output id="gd-n-o">18</output></div>
+        </div>
+        <div class="readout" id="gd-read" style="margin-top:.7rem;line-height:1.9"></div>
+        <div id="gd-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Drag the start point too. Three regimes live in this one slider: too small and you crawl, about right and you glide in, too large and the path explodes outward. The valley here is stretched 8:1 — notice that even a well-tuned run zig-zags across the narrow direction instead of running straight down the long one. Unit 11 is devoted to fixing exactly that.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Training loss oscillates and grows instead of settling. Reaching for one knob first, which is it?</p>
+    <div class="opts">
+      <button data-correct data-why="Growing oscillation is the signature of overshooting: each step jumps past the minimum onto the far wall, where the gradient is bigger, so the next jump is worse. Cutting η is the direct fix — and the widget reproduces this exactly at large η.">Lower the learning rate</button>
+      <button data-why="That accelerates the divergence. Bigger steps are the cause here, not the cure — the widget makes this vivid: push η up and the spiral flies apart faster.">Raise the learning rate to escape faster</button>
+      <button data-why="Capacity isn't the issue when loss grows without bound — the optimiser is unstable, not underfitting. Fix the step size first; a diverging run tells you nothing about whether the model is big enough.">Add more layers</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 12 · FINE PRINT ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head"><span class="sec-num">12</span><h2>Fine print worth knowing</h2></div>
+  <div class="prose">
+    <p><strong>Row or column? The layout convention.</strong> Is a gradient a row vector or a column? Both conventions are in use. This unit follows the lecture and writes gradients as <em>rows</em> \(\big(\nabla f\in\mathbb{R}^{1\times n}\big)\), which makes the Jacobian chain rule read left to right without transposes. Many textbooks and most code write gradients as columns. Neither is wrong; mixing them silently is. When a formula from elsewhere seems transposed, suspect the convention before suspecting the algebra.</p>
+    <p><strong>Order matters now.</strong> With scalars, \(f'g=gf'\). With matrices it does not. The lecture flags this explicitly for the product and chain rules — once your derivatives are matrices, you must preserve the order in which the factors appear.</p>
+    <p><strong>Not everything is differentiable.</strong> \(|x|\) has no derivative at \(0\): the slope from the left is \(-1\), from the right \(+1\), and no single number splits the difference. ReLU has exactly this kink, and every framework simply picks a value there and moves on. It works fine in practice, but it is a convention rather than a theorem.</p>
+    <p><strong>The tensor nobody builds.</strong> Matrix in, matrix out gives a rank-4 tensor — for a modest \(100\times100\) layer that is \(10^8\) numbers for a single derivative. PyTorch and TensorFlow never materialise it. Instead each operation ships a <code>backward()</code> that maps an incoming gradient straight to an outgoing one, applying the tensor's action without ever storing the tensor. The mathematics is the honest description; the implementation is the same map, evaluated lazily.</p>
+  </div>
+  <div class="callout watch"><span class="tag">Errata — check this against your slides</span>
+    <p>On the Taylor-polynomial example (\(f(x)=x^4\) at \(x_0=1\)), the lecture slide lists the polynomial as \(1+4(x-1)+12(x-1)^2+24(x-1)^3+24(x-1)^4\). Those are the raw derivatives \(f^{(k)}(1)\) — the division by \(k!\) hasn't been applied. Expanding that expression gives \(24x^4-72x^3+84x^2-44x+9\), which is not \(x^4\); at \(x=2\) it returns \(65\) instead of \(16\).</p>
+    <p>With the factorials divided out — \(12/2!=6\), \(24/3!=4\), \(24/4!=1\) — the polynomial becomes \(1+4(x-1)+6(x-1)^2+4(x-1)^3+(x-1)^4\), whose coefficients are the binomial numbers \(1,4,6,4,1\). That really does collapse to \(\big((x-1)+1\big)^4=x^4\), which is the point the slide is making.</p>
+  </div>
+</section>
+
+<!-- ================= 13 · SUMMARY ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head"><span class="sec-num">13</span><h2>What to carry forward</h2></div>
+  <div class="prose">
+    <p>One idea generated this entire unit: <strong>nudge the input a little, see how much the output moves, and take the ratio as the nudge shrinks to nothing.</strong> Everything else was bookkeeping for richer shapes.</p>
+  </div>
+  <table class="plain">
+    <thead><tr><th>Idea</th><th>The one-line version</th><th>Where it returns</th></tr></thead>
+    <tbody>
+      <tr><td>Derivative</td><td>Limit of a shrinking secant slope; points along steepest ascent</td><td>everywhere below</td></tr>
+      <tr><td>Chain rule</td><td>Amplifiers in series multiply</td><td>Unit 7 · backpropagation</td></tr>
+      <tr><td>Taylor</td><td>Match derivatives one at a time; \(k!\) keeps the books</td><td>Unit 8 · approximation &amp; error</td></tr>
+      <tr><td>Partial derivative</td><td>Freeze every other variable and use ordinary rules</td><td>every gradient you ever compute</td></tr>
+      <tr><td>Gradient</td><td>All partials in one vector; direction = steepest ascent, length = steepness</td><td>Unit 9 · gradient descent</td></tr>
+      <tr><td>Jacobian</td><td>One row per output; the best local linear map</td><td>Unit 7 · layers; Unit 12 · PCA</td></tr>
+      <tr><td>\(\det \mathbf J\)</td><td>Local area factor; nonzero ⇒ locally invertible only</td><td>change of variables, normalising flows</td></tr>
+      <tr><td>Vector chain rule</td><td>Matrix multiplication, later layer on the left</td><td>Unit 7 · the training loop</td></tr>
+    </tbody>
+  </table>
+  <div class="callout remember"><span class="tag">Remember</span>
+    <p>If you keep one habit from this unit, make it <strong>counting shapes before computing anything</strong>. Outputs give rows, inputs give columns; a gradient matches the shape of the thing you are differentiating with respect to; a chain rule product must have matching inner dimensions. Most matrix-calculus errors are shape errors wearing a disguise, and they announce themselves before you do any algebra.</p>
+  </div>
+</section>

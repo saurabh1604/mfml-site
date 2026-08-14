@@ -1,0 +1,255 @@
+
+<!-- ================= 14 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head"><span class="sec-num">14</span><h2>Practice arena — the unit's problem set, solved in full</h2></div>
+  <div class="prose">
+    <p>Eight problems from Prof. Saurabh's practice set for this unit, plus two extra written to cover the two corners the set leaves open — Taylor polynomials, and the vector chain rule as matrix multiplication. Every solution below was checked symbolically before publication; the set itself came through clean, with no errata.</p>
+    <p>One rule does almost all the work: <strong>to compute \(\partial f/\partial x\), treat every other variable as a constant.</strong> The gradient collects those partials into a row; the Jacobian stacks the gradients of each output component as rows. Attempt each problem on paper first — the fold-outs give every step, entry by entry.</p>
+  </div>
+
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Let \(f(x,y)=x^2y+3xy^2-y^3\). <b>(a)</b> Compute \(\partial f/\partial x\) and \(\partial f/\partial y\) and write \(\nabla f\) as a row vector. <b>(b)</b> Evaluate \(\nabla f\) at \((2,-1)\). <b>(c)</b> Verify \(\partial f/\partial x\) at \((2,-1)\) directly from the limit definition.</p>
+    <p class="ptest"><b>What this tests.</b> The freeze-the-others rule, and the fact that the rules you use are not a separate system from the limit definition — they are shortcuts for it.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — \(\partial f/\partial x\), holding \(y\) fixed.</b> Take the three terms one at a time, treating \(y\) as a number:
+      \[\frac{\partial}{\partial x}(x^2y)=y\cdot 2x=2xy,\qquad \frac{\partial}{\partial x}(3xy^2)=3y^2,\qquad \frac{\partial}{\partial x}(-y^3)=0\]
+      The last term dies completely because it contains no \(x\). Adding: \(\ \partial f/\partial x = 2xy+3y^2\).</div>
+      <div class="pstep"><b>Step 2 — \(\partial f/\partial y\), holding \(x\) fixed.</b>
+      \[\frac{\partial}{\partial y}(x^2y)=x^2,\qquad \frac{\partial}{\partial y}(3xy^2)=3x\cdot 2y=6xy,\qquad \frac{\partial}{\partial y}(-y^3)=-3y^2\]
+      Adding: \(\ \partial f/\partial y=x^2+6xy-3y^2\).</div>
+      <div class="pstep"><b>Step 3 — assemble.</b> \(\nabla f(x,y)=\big[\,2xy+3y^2,\ \ x^2+6xy-3y^2\,\big]\).</div>
+      <div class="pstep"><b>(b) Substitute \(x=2,\ y=-1\)</b> (note \(y^2=1\), \(y^3=-1\)):
+      \[\frac{\partial f}{\partial x}\Big|_{(2,-1)}=2(2)(-1)+3(1)=-4+3=-1\]
+      \[\frac{\partial f}{\partial y}\Big|_{(2,-1)}=(2)^2+6(2)(-1)-3(1)=4-12-3=-11\]</div>
+      <div class="pstep"><b>(c) Step 1 — collapse to one variable.</b> Fix \(y=-1\): \(f(x,-1)=x^2(-1)+3x(1)-(-1)=-x^2+3x+1\).</div>
+      <div class="pstep"><b>Step 2 — form \(f(2+h,-1)\).</b>
+      \[-(2+h)^2+3(2+h)+1=-(4+4h+h^2)+6+3h+1=3-h-h^2\]
+      and \(f(2,-1)=-4+6+1=3\).</div>
+      <div class="pstep"><b>Step 3 — difference quotient and limit.</b>
+      \[\frac{(3-h-h^2)-3}{h}=\frac{-h-h^2}{h}=-1-h\ \xrightarrow[h\to0]{}\ -1\]
+      matching part (b) exactly.</div>
+      <p class="pans">\(\nabla f=[\,2xy+3y^2,\ x^2+6xy-3y^2\,]\), and \(\nabla f(2,-1)=[-1,\,-11]\).</p>
+      <div class="callout remember"><span class="tag">Remember</span><p>Notice the cancellation in step 3: the \(h\) in the denominator is consumed <em>before</em> the limit is taken. That is the whole reason the definition never divides by zero.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Let \(f(x,y)=\dfrac{x^2y}{x+2y}\) with \(x+2y\neq0\). <em>Without</em> using the quotient rule — rewrite it as \(f=x^2y(x+2y)^{-1}\) and use the product rule together with \(\frac{d}{dt}t^{-1}=-t^{-2}\). <b>(a)</b> Compute \(\partial f/\partial x\). <b>(b)</b> Compute \(\partial f/\partial y\). <b>(c)</b> Write \(\nabla f\) and evaluate at \((1,1)\).</p>
+    <p class="ptest"><b>What this tests.</b> Product plus chain rule in combination, and the discipline of putting a fractional answer over a common denominator so it can be checked.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — name the factors and their \(x\)-derivatives.</b> With \(y\) held fixed, write \(f=g\cdot w\) where
+      \[g=x^2y\ \Rightarrow\ g_x=2xy,\qquad w=(x+2y)^{-1}\ \Rightarrow\ w_x=-(x+2y)^{-2}\cdot\underbrace{1}_{\partial(x+2y)/\partial x}\]</div>
+      <div class="pstep"><b>Step 2 — product rule \((gw)_x=g_xw+gw_x\).</b>
+      \[\frac{\partial f}{\partial x}=\frac{2xy}{x+2y}-\frac{x^2y}{(x+2y)^2}\]</div>
+      <div class="pstep"><b>Step 3 — common denominator \((x+2y)^2\).</b>
+      \[\frac{\partial f}{\partial x}=\frac{2xy(x+2y)-x^2y}{(x+2y)^2}=\frac{2x^2y+4xy^2-x^2y}{(x+2y)^2}=\frac{x^2y+4xy^2}{(x+2y)^2}=\frac{xy(x+4y)}{(x+2y)^2}\]</div>
+      <div class="pstep"><b>(b) Step 1 — now hold \(x\) fixed.</b> \(g_y=x^2\), and \(w_y=-(x+2y)^{-2}\cdot 2=-2(x+2y)^{-2}\) (the inner derivative is now \(2\), not \(1\) — this is where the two parts differ).</div>
+      <div class="pstep"><b>Step 2 — product rule, then combine.</b>
+      \[\frac{\partial f}{\partial y}=\frac{x^2}{x+2y}-\frac{2x^2y}{(x+2y)^2}=\frac{x^2(x+2y)-2x^2y}{(x+2y)^2}=\frac{x^3+2x^2y-2x^2y}{(x+2y)^2}=\frac{x^3}{(x+2y)^2}\]
+      The \(2x^2y\) terms cancel exactly — a good sign the algebra is right.</div>
+      <div class="pstep"><b>(c) Evaluate at \((1,1)\),</b> where \(x+2y=3\) so \((x+2y)^2=9\):
+      \[\nabla f=\left[\frac{xy(x+4y)}{(x+2y)^2},\ \frac{x^3}{(x+2y)^2}\right],\qquad \nabla f(1,1)=\left[\frac{1\cdot1\cdot5}{9},\ \frac{1}{9}\right]=\left[\tfrac59,\ \tfrac19\right]\]</div>
+      <div class="pstep"><b>Independent check of \(\partial f/\partial y(1,1)\) from the definition.</b> Fix \(x=1\): \(f(1,y)=\dfrac{y}{1+2y}\), so \(f(1,1)=\tfrac13\) and
+      \[\frac{1}{h}\left(\frac{1+h}{3+2h}-\frac13\right)=\frac{3(1+h)-(3+2h)}{3h(3+2h)}=\frac{h}{3h(3+2h)}=\frac{1}{3(3+2h)}\ \xrightarrow[h\to0]{}\ \frac19\ \checkmark\]</div>
+      <p class="pans">\(\nabla f=\left[\dfrac{xy(x+4y)}{(x+2y)^2},\ \dfrac{x^3}{(x+2y)^2}\right]\), and \(\nabla f(1,1)=\left[\tfrac59,\ \tfrac19\right]\).</p>
+      <div class="callout watch"><span class="tag">Watch out</span><p>The two parts share the same product-rule skeleton and differ only in one number — the inner derivative of \(x+2y\), which is \(1\) for \(x\) and \(2\) for \(y\). Dropping that \(2\) is the most common slip here.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Let \(f(x,y,z)=x^2e^y+y\cos z\). <b>(a)</b> Compute the three partials. <b>(b)</b> Write \(\nabla f\) and evaluate at \((1,0,0)\).</p>
+    <p class="ptest"><b>What this tests.</b> Three variables instead of two, with exponential and trigonometric pieces — and the habit of noticing which whole terms vanish.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — \(\partial f/\partial x\).</b> Here \(e^y\) is a constant multiplier and \(y\cos z\) contains no \(x\) at all, so it dies:
+      \[\frac{\partial f}{\partial x}=e^y\cdot 2x+0=2xe^y\]</div>
+      <div class="pstep"><b>Step 2 — \(\partial f/\partial y\).</b> Now \(x^2\) and \(\cos z\) are constants; use \(\frac{d}{dy}e^y=e^y\) on the first term and \(\frac{d}{dy}y=1\) on the second:
+      \[\frac{\partial f}{\partial y}=x^2e^y+\cos z\]</div>
+      <div class="pstep"><b>Step 3 — \(\partial f/\partial z\).</b> The first term has no \(z\); in the second, \(y\) is a constant multiplier on \(\cos z\):
+      \[\frac{\partial f}{\partial z}=0+y(-\sin z)=-y\sin z\]</div>
+      <div class="pstep"><b>Evaluate at \((1,0,0)\),</b> using \(e^0=1\), \(\cos 0=1\), \(\sin 0=0\):
+      \[\nabla f=\big[2xe^y,\ x^2e^y+\cos z,\ -y\sin z\big],\quad \nabla f(1,0,0)=\big[2,\ 1+1,\ 0\big]=[\,2,\ 2,\ 0\,]\]</div>
+      <p class="pans">\(\nabla f=[\,2xe^y,\ x^2e^y+\cos z,\ -y\sin z\,]\), and \(\nabla f(1,0,0)=[\,2,\,2,\,0\,]\).</p>
+      <div class="callout aha"><span class="tag">Aha</span><p>The third component is zero not because \(z\) is irrelevant to \(f\), but because \(y=0\) at this particular point switches off the only term containing \(z\). Move to \(y\neq0\) and \(z\) matters again — gradients are local statements.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">medium</span></div>
+    <p class="pq"><b>(a)</b> For \(f(x,y,z)=\ln(x^2+y^2+z^2)\), compute \(\nabla f\) and evaluate at \((1,2,2)\). <b>(b)</b> For \(g(\mathbf x)=\lVert\mathbf x\rVert=\sqrt{x^2+y^2+z^2}\), compute \(\nabla g\) and evaluate at \((1,2,2)\). <b>(c)</b> What is special about the direction and length of \(\nabla g\) at any nonzero point?</p>
+    <p class="ptest"><b>What this tests.</b> The chain rule on radially symmetric functions, and a geometric fact used constantly in ML: the gradient of the norm is the unit radial direction.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — set the inner function.</b> Let \(u=x^2+y^2+z^2\), so \(f=\ln u\) and \(\frac{\partial}{\partial x}\ln u=\frac1u\frac{\partial u}{\partial x}\). The inner partials are \(u_x=2x,\ u_y=2y,\ u_z=2z\).</div>
+      <div class="pstep"><b>Step 2 — apply the chain rule to each variable.</b>
+      \[\frac{\partial f}{\partial x}=\frac{2x}{x^2+y^2+z^2},\qquad \frac{\partial f}{\partial y}=\frac{2y}{u},\qquad \frac{\partial f}{\partial z}=\frac{2z}{u}\]</div>
+      <div class="pstep"><b>Step 3 — assemble and evaluate.</b> \(\nabla f=\dfrac{2}{x^2+y^2+z^2}[x,y,z]\). At \((1,2,2)\), \(u=1+4+4=9\), so
+      \[\nabla f(1,2,2)=\tfrac29[1,2,2]=\left[\tfrac29,\ \tfrac49,\ \tfrac49\right]\]</div>
+      <div class="pstep"><b>(b) Step 1 — same inner function, outer is a square root.</b> \(g=u^{1/2}\), and \(\frac{\partial}{\partial x}u^{1/2}=\tfrac12u^{-1/2}\cdot 2x=\dfrac{x}{\sqrt u}\), similarly for \(y\) and \(z\).</div>
+      <div class="pstep"><b>Step 2 — assemble and evaluate.</b> \(\nabla g=\dfrac{1}{\sqrt u}[x,y,z]=\dfrac{\mathbf x^\top}{\lVert\mathbf x\rVert}\). At \((1,2,2)\), \(\sqrt u=3\):
+      \[\nabla g(1,2,2)=\tfrac13[1,2,2]=\left[\tfrac13,\ \tfrac23,\ \tfrac23\right]\]</div>
+      <div class="pstep"><b>(c)</b> \(\nabla g=\mathbf x/\lVert\mathbf x\rVert\) is the <b>unit</b> vector pointing radially outward. Its length is \(1\) everywhere:
+      \[\sqrt{\tfrac19+\tfrac49+\tfrac49}=\sqrt{\tfrac99}=1\]
+      So distance-from-the-origin grows fastest straight away from the origin, at unit rate — exactly what you would expect, now derived rather than assumed.</div>
+      <p class="pans">\(\nabla f(1,2,2)=\tfrac29[1,2,2]\); \(\ \nabla g=\mathbf x^\top/\lVert\mathbf x\rVert\) with \(\nabla g(1,2,2)=\tfrac13[1,2,2]\), a unit vector.</p>
+      <div class="callout aha"><span class="tag">Aha</span><p>Both gradients point along \([1,2,2]\) — the same direction, different lengths. Any radially symmetric function has a gradient along the radius; only the magnitude carries information about which function it was.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Let \(f(x,y)=\big(2x^2-y\big)^3\). <b>(a)</b> Compute \(\partial f/\partial x\) and \(\partial f/\partial y\). <b>(b)</b> Write \(\nabla f\) and evaluate at \((1,1)\).</p>
+    <p class="ptest"><b>What this tests.</b> The chain rule in its purest multivariable form: one outer power, two different inner derivatives.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — spot the structure.</b> The function is \((\text{inner})^3\) with \(\text{inner}=2x^2-y\), so \(\frac{\partial}{\partial\bullet}(\text{inner})^3=3(\text{inner})^2\cdot\frac{\partial(\text{inner})}{\partial\bullet}\).</div>
+      <div class="pstep"><b>Step 2 — \(\partial f/\partial x\).</b> Hold \(y\) fixed; the inner derivative is \(4x\):
+      \[\frac{\partial f}{\partial x}=3(2x^2-y)^2\cdot 4x=12x(2x^2-y)^2\]</div>
+      <div class="pstep"><b>Step 3 — \(\partial f/\partial y\).</b> Hold \(x\) fixed; the inner derivative is \(-1\):
+      \[\frac{\partial f}{\partial y}=3(2x^2-y)^2\cdot(-1)=-3(2x^2-y)^2\]</div>
+      <div class="pstep"><b>(b) Evaluate at \((1,1)\),</b> where the inner is \(2(1)^2-1=1\) so \((2x^2-y)^2=1\):
+      \[\nabla f(1,1)=\big[12(1)(1),\ -3(1)\big]=[\,12,\ -3\,]\]</div>
+      <p class="pans">\(\nabla f=\big[12x(2x^2-y)^2,\ -3(2x^2-y)^2\big]\), and \(\nabla f(1,1)=[\,12,\,-3\,]\).</p>
+      <div class="callout aha"><span class="tag">Aha</span><p>Factor out the shared piece and the structure appears: \(\nabla f=3(2x^2-y)^2\,[\,4x,\,-1\,]=3(\text{inner})^2\,\nabla(\text{inner})\). The chain rule in vector form — outer derivative times the gradient of the inner. No cube ever has to be expanded.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Consider \(\mathbf f:\mathbb{R}^2\to\mathbb{R}^3\), \(\ \mathbf f(x,y)=\big(x^2-y^2,\ \ xe^y,\ \ \ln(1+x^2+y^2)\big)\). <b>(a)</b> Compute the Jacobian and state its dimensions. <b>(b)</b> Evaluate at \((1,0)\). <b>(c)</b> Say in words what the rows and columns represent.</p>
+    <p class="ptest"><b>What this tests.</b> Assembling a non-square Jacobian, and reading it in both directions — per output and per input.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — fix the shape before differentiating.</b> Three outputs, two inputs, and \(J_{ij}=\partial f_i/\partial x_j\), so the answer is \(3\times2\). Six partials to compute.</div>
+      <div class="pstep"><b>Step 2 — row 1: \(f_1=x^2-y^2\).</b> \(\ \partial f_1/\partial x=2x\), \(\ \partial f_1/\partial y=-2y\).</div>
+      <div class="pstep"><b>Step 3 — row 2: \(f_2=xe^y\).</b> Holding \(y\) fixed, \(e^y\) is a constant multiplier so \(\partial f_2/\partial x=e^y\). Holding \(x\) fixed, \(\frac{d}{dy}e^y=e^y\) so \(\partial f_2/\partial y=xe^y\).</div>
+      <div class="pstep"><b>Step 4 — row 3: \(f_3=\ln(1+x^2+y^2)\).</b> With \(u=1+x^2+y^2\) and \(\frac{\partial}{\partial x}\ln u=\frac1u\frac{\partial u}{\partial x}\):
+      \[\frac{\partial f_3}{\partial x}=\frac{2x}{1+x^2+y^2},\qquad \frac{\partial f_3}{\partial y}=\frac{2y}{1+x^2+y^2}\]</div>
+      <div class="pstep"><b>Step 5 — assemble.</b>
+      \[\mathbf J_{\mathbf f}(x,y)=\begin{bmatrix}2x&-2y\\ e^y&xe^y\\ \dfrac{2x}{1+x^2+y^2}&\dfrac{2y}{1+x^2+y^2}\end{bmatrix}\in\mathbb{R}^{3\times2}\]</div>
+      <div class="pstep"><b>(b) Substitute \(x=1,\ y=0\),</b> so \(e^0=1\) and \(1+x^2+y^2=2\):
+      \[\mathbf J_{\mathbf f}(1,0)=\begin{bmatrix}2&0\\ 1&1\\ 2/2&0/2\end{bmatrix}=\begin{bmatrix}2&0\\1&1\\1&0\end{bmatrix}\]</div>
+      <div class="pstep"><b>(c)</b> <b>Row \(i\)</b> is the gradient \(\nabla f_i\) — a \(1\times2\) row saying how output \(i\) responds to each input. <b>Column \(j\)</b> is \(\partial\mathbf f/\partial x_j\) — how the whole output vector moves when input \(j\) alone changes. Here column 1 is \(\partial\mathbf f/\partial x\) and column 2 is \(\partial\mathbf f/\partial y\).</div>
+      <p class="pans">\(\mathbf J\in\mathbb{R}^{3\times2}\) as above, with \(\mathbf J(1,0)=\begin{bmatrix}2&0\\1&1\\1&0\end{bmatrix}\).</p>
+      <div class="callout remember"><span class="tag">Remember</span><p>Building the matrix as a <em>stack of gradients</em> — compute \(\nabla f_1,\nabla f_2,\nabla f_3\) separately, then stack — gives the same answer and is much harder to get wrong than filling in six entries by position.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">Consider \(T:\mathbb{R}^2\to\mathbb{R}^2\), \(\ T(x,y)=\big(e^x\cos y,\ e^x\sin y\big)\). <b>(a)</b> Compute \(\mathbf J_T\). <b>(b)</b> Evaluate \(\det\mathbf J_T\). <b>(c)</b> Where is \(T\) not locally invertible? Is \(T\) globally one-to-one?</p>
+    <p class="ptest"><b>What this tests.</b> The determinant as a local area factor, the inverse function theorem, and the gap between local and global statements.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — partials of \(u=e^x\cos y\).</b> With respect to \(x\), \(\cos y\) is a constant: \(u_x=e^x\cos y\). With respect to \(y\), \(e^x\) is a constant: \(u_y=-e^x\sin y\).</div>
+      <div class="pstep"><b>Step 2 — partials of \(v=e^x\sin y\).</b> \(\ v_x=e^x\sin y\), \(\ v_y=e^x\cos y\).</div>
+      <div class="pstep"><b>Step 3 — assemble.</b>
+      \[\mathbf J_T=\begin{bmatrix}\partial u/\partial x&\partial u/\partial y\\ \partial v/\partial x&\partial v/\partial y\end{bmatrix}=\begin{bmatrix}e^x\cos y&-e^x\sin y\\ e^x\sin y&e^x\cos y\end{bmatrix}\]</div>
+      <div class="pstep"><b>(b) Determinant</b> via \(ad-bc\):
+      \[\det\mathbf J_T=(e^x\cos y)(e^x\cos y)-(-e^x\sin y)(e^x\sin y)=e^{2x}\big(\cos^2y+\sin^2y\big)=e^{2x}\]</div>
+      <div class="pstep"><b>(c) Step 1 — local invertibility.</b> The inverse function theorem guarantees local invertibility wherever \(\det\mathbf J\neq0\). Since \(e^{2x}&gt;0\) for every real \(x\), the determinant is <em>never</em> zero: \(T\) is locally invertible <b>everywhere</b>.</div>
+      <div class="pstep"><b>Step 2 — global injectivity fails anyway.</b> Because \(\cos\) and \(\sin\) have period \(2\pi\),
+      \[T(x,y+2\pi)=\big(e^x\cos(y+2\pi),\ e^x\sin(y+2\pi)\big)=\big(e^x\cos y,\ e^x\sin y\big)=T(x,y)\]
+      Infinitely many distinct inputs share an output, so \(T\) is <b>not</b> globally one-to-one. "Locally invertible everywhere" and "globally invertible" are genuinely different claims.</div>
+      <p class="pans">\(\mathbf J_T=\begin{bmatrix}e^x\cos y&-e^x\sin y\\ e^x\sin y&e^x\cos y\end{bmatrix}\), \(\ \det\mathbf J_T=e^{2x}&gt;0\) always — locally invertible everywhere, but not globally one-to-one.</p>
+      <div class="callout aha"><span class="tag">Aha</span><p>Write \(z=x+iy\) and the map is simply \(w=e^{z}\). For a holomorphic map the real Jacobian determinant equals \(\lvert dw/dz\rvert^2=\lvert e^z\rvert^2=e^{2x}\) — the same answer, arrived at with no partial derivatives at all.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">Three identities are worth memorising: \(\ \nabla(\mathbf b^\top\mathbf x)=\mathbf b^\top\), \(\ \nabla(\mathbf x^\top\mathbf x)=2\mathbf x^\top\), \(\ \nabla(\mathbf x^\top A\mathbf x)=\mathbf x^\top(A+A^\top)\). Let \(f(\mathbf x)=\mathbf x^\top A\mathbf x-\mathbf b^\top\mathbf x\) with \(A=\begin{bmatrix}1&2\\0&3\end{bmatrix}\) (<b>not</b> symmetric) and \(\mathbf b=\begin{bmatrix}1\\1\end{bmatrix}\). <b>(a)</b> Write \(f\) in components. <b>(b)</b> Apply the identities to get \(\nabla f\) — why does \(A+A^\top\) appear rather than \(2A\)? <b>(c)</b> Evaluate at \((1,1)\).</p>
+    <p class="ptest"><b>What this tests.</b> Matrix-calculus identities, and the specific trap of assuming symmetry when none was given.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — compute \(A\mathbf x\).</b>
+      \[A\mathbf x=\begin{bmatrix}1&2\\0&3\end{bmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix}=\begin{bmatrix}x_1+2x_2\\3x_2\end{bmatrix}\]</div>
+      <div class="pstep"><b>Step 2 — then \(\mathbf x^\top(A\mathbf x)\).</b>
+      \[[x_1,x_2]\begin{bmatrix}x_1+2x_2\\3x_2\end{bmatrix}=x_1(x_1+2x_2)+x_2(3x_2)=x_1^2+2x_1x_2+3x_2^2\]</div>
+      <div class="pstep"><b>Step 3 — subtract \(\mathbf b^\top\mathbf x=x_1+x_2\).</b>
+      \[f(x_1,x_2)=x_1^2+2x_1x_2+3x_2^2-x_1-x_2\]</div>
+      <div class="pstep"><b>(b) Step 1 — form \(A+A^\top\).</b> \(A^\top=\begin{bmatrix}1&0\\2&3\end{bmatrix}\), so \(A+A^\top=\begin{bmatrix}2&2\\2&6\end{bmatrix}\).</div>
+      <div class="pstep"><b>Step 2 — apply the identities.</b>
+      \[\nabla f=\mathbf x^\top(A+A^\top)-\mathbf b^\top=[x_1,x_2]\begin{bmatrix}2&2\\2&6\end{bmatrix}-[1,1]=\big[\,2x_1+2x_2-1,\ \ 2x_1+6x_2-1\,\big]\]</div>
+      <div class="pstep"><b>Step 3 — why \(A+A^\top\)?</b> Write \(\mathbf x^\top A\mathbf x=\sum_{i,j}A_{ij}x_ix_j\) and differentiate with respect to \(x_k\). The variable \(x_k\) appears twice in that double sum: once as the \(i=k\) factor (contributing \(\sum_j A_{kj}x_j\)) and once as the \(j=k\) factor (contributing \(\sum_i A_{ik}x_i\)). Adding the two contributions gives the \(k\)-th entry of \(\mathbf x^\top(A+A^\top)\). Only when \(A\) is symmetric does \(A+A^\top\) collapse to \(2A\).</div>
+      <div class="pstep"><b>(c) Substitute \(x_1=x_2=1\):</b>
+      \[\nabla f(1,1)=[\,2+2-1,\ 2+6-1\,]=[\,3,\ 7\,]\]</div>
+      <p class="pans">\(\nabla f=[\,2x_1+2x_2-1,\ 2x_1+6x_2-1\,]\), and \(\nabla f(1,1)=[\,3,\,7\,]\).</p>
+      <div class="callout watch"><span class="tag">Watch out</span><p>Had you used \(2A\) instead, you would get \(\nabla f(1,1)=[1,9]\) — visibly different, so this is a trap with teeth. The safest check is part (a): differentiate the component form directly, \(\partial f/\partial x_1=2x_1+2x_2-1\), and confirm. Expanding the cross term \(2x_1x_2\) by hand automatically produces the symmetric off-diagonal \(2\)s.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 (added) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span><span class="chip" style="font-size:.68rem">added — covers Taylor</span></div>
+    <p class="pq">The practice set above never touches Taylor polynomials, so here they are. <b>(a)</b> Find the degree-4 Maclaurin polynomial of \(\ln(1+x)\) and use it to estimate \(\ln 1.5\). <b>(b)</b> The sigmoid is \(\sigma(z)=\frac{1}{1+e^{-z}}\), with the useful identity \(\sigma'=\sigma(1-\sigma)\). Find its degree-3 Maclaurin polynomial. <b>(c)</b> What does the result in (b) say about logistic regression near \(z=0\)?</p>
+    <p class="ptest"><b>What this tests.</b> Building a Taylor polynomial from repeated differentiation, keeping the \(k!\) straight, and reading a vanishing coefficient as a statement about shape.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — differentiate repeatedly at \(x_0=0\).</b> With \(f=\ln(1+x)\):
+      \[f'=\frac{1}{1+x},\quad f''=\frac{-1}{(1+x)^2},\quad f'''=\frac{2}{(1+x)^3},\quad f^{(4)}=\frac{-6}{(1+x)^4}\]
+      At \(x=0\): \(f(0)=0,\ f'(0)=1,\ f''(0)=-1,\ f'''(0)=2,\ f^{(4)}(0)=-6\).</div>
+      <div class="pstep"><b>Step 2 — divide each by \(k!\).</b> The coefficients are \(1/1!=1\), \(-1/2!=-\tfrac12\), \(2/3!=\tfrac13\), \(-6/4!=-\tfrac14\):
+      \[T_4(x)=x-\frac{x^2}{2}+\frac{x^3}{3}-\frac{x^4}{4}\]
+      The pattern \(\sum(-1)^{k+1}x^k/k\) is worth recognising on sight.</div>
+      <div class="pstep"><b>Step 3 — estimate \(\ln 1.5\) by setting \(x=0.5\).</b>
+      \[T_4(0.5)=\tfrac12-\tfrac18+\tfrac1{24}-\tfrac1{64}=\tfrac{77}{192}\approx 0.401042\]
+      The true value is \(\ln 1.5\approx0.405465\), so the error is about \(0.0044\) — roughly the size of the first omitted term, \(x^5/5=1/160\approx0.00625\), as Taylor's remainder predicts.</div>
+      <div class="pstep"><b>(b) Step 1 — use the identity to avoid quotient-rule misery.</b> From \(\sigma'=\sigma(1-\sigma)\), differentiate again with the product rule:
+      \[\sigma''=\sigma'(1-\sigma)+\sigma(-\sigma')=\sigma'(1-2\sigma)\]
+      \[\sigma'''=\sigma''(1-2\sigma)+\sigma'(-2\sigma')=\sigma''(1-2\sigma)-2(\sigma')^2\]</div>
+      <div class="pstep"><b>Step 2 — evaluate at \(z=0\),</b> where \(\sigma(0)=\tfrac12\):
+      \[\sigma'(0)=\tfrac12\cdot\tfrac12=\tfrac14,\qquad \sigma''(0)=\tfrac14\cdot\underbrace{(1-2\cdot\tfrac12)}_{=\,0}=0,\qquad \sigma'''(0)=0-2\left(\tfrac14\right)^2=-\tfrac18\]</div>
+      <div class="pstep"><b>Step 3 — divide by \(k!\) and assemble.</b> Coefficients: \(\tfrac12\), \(\tfrac14\), \(0/2!=0\), \(-\tfrac18/3!=-\tfrac1{48}\):
+      \[T_3(z)=\frac12+\frac{z}{4}-\frac{z^3}{48}\]</div>
+      <div class="pstep"><b>(c)</b> The quadratic term is exactly zero, so near \(z=0\) the sigmoid is \(\tfrac12+\tfrac z4\) up to a <em>cubic</em> correction — it is locally a straight line with slope \(\tfrac14\). That is why a logistic model behaves almost linearly for small activations, why \(\tfrac14\) is the largest gradient the sigmoid can ever pass backwards (the source of vanishing gradients in deep sigmoid networks), and why keeping activations near zero — through normalisation — keeps a network in its responsive band.</div>
+      <p class="pans">(a) \(T_4(x)=x-\tfrac{x^2}2+\tfrac{x^3}3-\tfrac{x^4}4\), giving \(\ln1.5\approx\tfrac{77}{192}\approx0.4010\). (b) \(T_3(z)=\tfrac12+\tfrac z4-\tfrac{z^3}{48}\). (c) The sigmoid is locally linear at the origin, with maximum slope \(\tfrac14\).</p>
+      <div class="callout aha"><span class="tag">Aha</span><p>The missing \(z^2\) is not an accident of arithmetic — it is symmetry. The sigmoid has rotational symmetry about the point \((0,\tfrac12)\), and odd symmetry kills every even-order term beyond the constant.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 (added) ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff hard">hard</span><span class="chip" style="font-size:.68rem">added — covers the vector chain rule</span></div>
+    <p class="pq">The set above computes Jacobians but never multiplies them, so here is the backpropagation step itself. <b>(a)</b> Let \(\mathbf g(\mathbf x)=\big(x_1^2x_2,\ x_1+x_2^2\big)\) and \(f(\mathbf u)=u_1u_2\). Compute \(\nabla(f\circ\mathbf g)\) as a product of Jacobians, and verify by substituting first. Evaluate at \((1,2)\). <b>(b)</b> A linear layer computes \(\mathbf z=W\mathbf x\) and the loss is \(L=\tfrac12\lVert\mathbf z-\mathbf y\rVert^2\). Show \(\dfrac{\partial L}{\partial\mathbf x}=(\mathbf z-\mathbf y)^\top W\), then evaluate for \(W=\begin{bmatrix}2&-1\\1&3\end{bmatrix}\), \(\mathbf y=\begin{bmatrix}1\\2\end{bmatrix}\), \(\mathbf x=\begin{bmatrix}1\\1\end{bmatrix}\).</p>
+    <p class="ptest"><b>What this tests.</b> That the vector chain rule really is matrix multiplication, that the shapes police the order, and the exact gradient a linear layer sends backwards.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the two Jacobians, with shapes first.</b> \(\mathbf g:\mathbb{R}^2\to\mathbb{R}^2\) gives a \(2\times2\); \(f:\mathbb{R}^2\to\mathbb{R}\) gives a \(1\times2\). The product must be \((1\times2)(2\times2)=1\times2\) — a gradient, as expected.
+      \[\mathbf J_{\mathbf g}=\begin{bmatrix}2x_1x_2&x_1^2\\ 1&2x_2\end{bmatrix},\qquad \mathbf J_f=[\,u_2,\ u_1\,]=\big[\,x_1+x_2^2,\ \ x_1^2x_2\,\big]\]
+      Note \(\mathbf J_f\) must be evaluated <em>at</em> \(\mathbf u=\mathbf g(\mathbf x)\) — that substitution is the step people forget.</div>
+      <div class="pstep"><b>Step 2 — multiply, later stage on the left.</b>
+      \[\nabla(f\circ\mathbf g)=\mathbf J_f\,\mathbf J_{\mathbf g}=\big[x_1+x_2^2,\ x_1^2x_2\big]\begin{bmatrix}2x_1x_2&x_1^2\\ 1&2x_2\end{bmatrix}\]
+      First entry: \((x_1+x_2^2)(2x_1x_2)+(x_1^2x_2)(1)=3x_1^2x_2+2x_1x_2^3\).<br>
+      Second entry: \((x_1+x_2^2)(x_1^2)+(x_1^2x_2)(2x_2)=x_1^3+3x_1^2x_2^2\).</div>
+      <div class="pstep"><b>Step 3 — verify by composing first.</b> \(f(\mathbf g(\mathbf x))=(x_1^2x_2)(x_1+x_2^2)=x_1^3x_2+x_1^2x_2^3\). Differentiating directly:
+      \[\frac{\partial}{\partial x_1}=3x_1^2x_2+2x_1x_2^3,\qquad \frac{\partial}{\partial x_2}=x_1^3+3x_1^2x_2^2\]
+      Identical to step 2 — the matrix product was not a shortcut with a catch, it is the same derivative.</div>
+      <div class="pstep"><b>Step 4 — evaluate at \((1,2)\).</b> \(3(1)(2)+2(1)(8)=6+16=22\); \(\ 1+3(1)(4)=13\). So \(\nabla(f\circ\mathbf g)(1,2)=[\,22,\ 13\,]\).</div>
+      <div class="pstep"><b>(b) Step 1 — split into two stages and take each Jacobian.</b> Write \(\mathbf r=\mathbf z-\mathbf y\) and \(L=\tfrac12\mathbf r^\top\mathbf r\). Then
+      \[\frac{\partial L}{\partial\mathbf z}=\mathbf r^\top=(\mathbf z-\mathbf y)^\top\ \ (1\times n),\qquad \frac{\partial \mathbf z}{\partial\mathbf x}=W\ \ (n\times n)\]
+      using \(\nabla(\mathbf r^\top\mathbf r)=2\mathbf r^\top\) from Problem 8 (the \(\tfrac12\) is chosen precisely to cancel that 2), and the fact that the Jacobian of a linear map is the map's own matrix.</div>
+      <div class="pstep"><b>Step 2 — chain them, later stage on the left.</b>
+      \[\frac{\partial L}{\partial\mathbf x}=\frac{\partial L}{\partial\mathbf z}\cdot\frac{\partial\mathbf z}{\partial\mathbf x}=(\mathbf z-\mathbf y)^\top W\]
+      Shapes: \((1\times n)(n\times n)=1\times n\) ✓. This is the backward pass of a linear layer: <em>the incoming gradient row gets multiplied by \(W\) on its way back</em>.</div>
+      <div class="pstep"><b>Step 3 — forward pass with the numbers.</b>
+      \[\mathbf z=W\mathbf x=\begin{bmatrix}2&-1\\1&3\end{bmatrix}\begin{bmatrix}1\\1\end{bmatrix}=\begin{bmatrix}1\\4\end{bmatrix},\qquad \mathbf z-\mathbf y=\begin{bmatrix}1\\4\end{bmatrix}-\begin{bmatrix}1\\2\end{bmatrix}=\begin{bmatrix}0\\2\end{bmatrix}\]
+      so \(L=\tfrac12(0^2+2^2)=2\).</div>
+      <div class="pstep"><b>Step 4 — backward pass.</b>
+      \[\frac{\partial L}{\partial\mathbf x}=[\,0,\ 2\,]\begin{bmatrix}2&-1\\1&3\end{bmatrix}=[\,0\cdot2+2\cdot1,\ \ 0\cdot(-1)+2\cdot3\,]=[\,2,\ 6\,]\]</div>
+      <p class="pans">(a) \(\nabla(f\circ\mathbf g)=\big[3x_1^2x_2+2x_1x_2^3,\ \ x_1^3+3x_1^2x_2^2\big]\), equal to \([\,22,\,13\,]\) at \((1,2)\). (b) \(\dfrac{\partial L}{\partial\mathbf x}=(\mathbf z-\mathbf y)^\top W=[\,2,\ 6\,]\), with \(L=2\).</p>
+      <div class="callout remember"><span class="tag">Remember</span><p>In part (b) the first output was already perfect (\(z_1-y_1=0\)) yet \(\partial L/\partial x_1=2\) is <em>not</em> zero. The error in output 2 still reaches input 1, because \(W\) couples them. Gradients flow along every path the weights create — which is exactly what makes a network trainable and its behaviour hard to reason about locally.</p></div>
+    </details>
+  </div>
+
+  <div class="next-card">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 7 · Backpropagation &amp; Automatic Differentiation</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">You now hold every piece: the chain rule, Jacobians, and the insight that composing layers means multiplying matrices. Unit 7 turns that into an algorithm — how a network computes a million derivatives for roughly the price of two forward passes, and why it must run backwards to do it.</p>
+    <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
+  </div>
+</section>
+</main>

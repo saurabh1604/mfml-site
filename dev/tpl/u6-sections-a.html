@@ -1,0 +1,385 @@
+<main id="main-content" tabindex="-1">
+<header class="hero">
+  <div class="kicker">Unit 6 of 16 · by Prof. Saurabh</div>
+  <h1>Differentiation</h1>
+  <p class="lede">Every learning machine, from a two-line regression to a trillion-parameter transformer, spends its whole life asking one question over and over: <strong>which way is down?</strong> This unit builds the instrument that answers it — the derivative — from a single sliding secant line all the way up to the Jacobian matrices that make backpropagation work.</p>
+  <div class="meta">
+    <span class="chip">≈ 60 min read + play</span>
+    <span class="chip">10 interactive widgets · 2 in 3D</span>
+    <span class="chip">12 inline checks</span>
+    <span class="chip">✍ 10 solved practice problems</span>
+  </div>
+</header>
+
+<!-- ================= 1 · THE FOGGY VALLEY ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head"><span class="sec-num">1</span><h2>You are standing in fog, and you want to get down</h2></div>
+  <div class="prose">
+    <p>Here is the entire story of machine learning in one image, and it is worth spending a minute on because everything else in this unit is a tool for surviving it.</p>
+    <p>You are somewhere in a vast valley. The fog is so thick you can see nothing — not the horizon, not the bottom, not even your own boots. Your altitude is your model's <strong>error</strong>: how badly it is currently getting things wrong. Your position is the <strong>setting of every knob</strong> in your model — every weight, every bias. Moving one step in some direction means nudging those numbers a little.</p>
+    <p>You want to reach the lowest point in the valley. That is training.</p>
+    <p>You cannot see. But you can do one thing: <em>feel the ground under your feet</em>. You can sense which way it tilts and how steeply. That local tilt is all you get — and remarkably, it turns out to be enough.</p>
+  </div>
+  <div class="callout scenario"><span class="tag">Scenario</span>
+    <p>That feeling underfoot has a name. In one dimension it is the <strong>derivative</strong>. In many dimensions it is the <strong>gradient</strong>. Everything in this unit — limits, rules, Taylor, partials, Jacobians — exists to compute that tilt for functions of increasing complexity, and to keep the bookkeeping straight when "position" stops being a number and becomes a vector, a matrix, or a whole neural network's worth of parameters.</p>
+  </div>
+
+  <div class="widget" id="w-val">
+    <div class="widget-head"><span class="w-title">The foggy valley</span><span class="w-sub">Drag the hiker. You only ever learn the slope where you stand — is that enough?</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 320px"><svg id="val-svg" viewBox="0 0 560 340" class="svg-lab grabbable" role="img" aria-label="A loss curve in fog; a draggable hiker shows the local slope and which way is downhill"></svg></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="val-w">position w</label><input id="val-w" type="range" min="-2.05" max="2.05" step="0.02" value="1.9"><output id="val-w-o">1.9</output></div>
+          <div class="ctl"><label for="val-fog">fog</label><input id="val-fog" type="range" min="0" max="1" step="0.01" value="1"><output id="val-fog-o">on</output></div>
+        </div>
+        <div class="readout" id="val-read" style="margin-top:.7rem;line-height:1.9"></div>
+        <div id="val-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Slide the fog away and the whole landscape appears — but a real model never gets that view. Its loss surface lives in millions of dimensions and can only ever be probed one point at a time. <strong>The slope at your feet is the entire information channel.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You are at a point where the slope is \(+3\). Which way do you step to <em>reduce</em> your altitude?</p>
+    <div class="opts">
+      <button data-correct data-why="A positive slope means the ground rises as w increases, so you go the other way — decrease w. That single sentence is gradient descent: w ← w − η·(slope). The minus sign is doing all the work.">Decrease \(w\) — move opposite the slope</button>
+      <button data-why="That walks you uphill. A positive derivative means 'output increases as input increases', so following it raises your error rather than lowering it.">Increase \(w\) — follow the slope</button>
+      <button data-why="Steepness tells you how fast, not which way. A slope of +3 and a slope of +0.1 both say 'downhill is to the left' — they only disagree on how big a step is safe.">Can't tell — the sign alone doesn't say</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 2 · THE DERIVATIVE FROM SCRATCH ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head"><span class="sec-num">2</span><h2>The derivative, built from a shrinking triangle</h2></div>
+  <div class="prose">
+    <p>"Slope at a point" is a slightly strange idea when you first meet it. Slope is a <em>ratio of two changes</em> — rise over run — but at a single point nothing changes. So the definition sneaks up on it: take a second point a distance \(h\) away, measure the honest slope between the two, then let \(h\) shrink toward zero and see what number the answer approaches.</p>
+    \[\frac{df}{dx}=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}\]
+    <p>That fraction is the <strong>difference quotient</strong>: the slope of the straight line through two points on the curve, called a <em>secant</em>. As \(h\) shrinks the second point slides toward the first, the secant pivots, and in the limit it settles onto the <strong>tangent</strong> — the line that best imitates the curve right there.</p>
+    <p>The lecture states the payoff in one line: <strong>the derivative of \(f\) points in the direction of steepest ascent of \(f\)</strong>. In one dimension there are only two directions, so this amounts to a sign; in Section 6, when the input becomes a vector, that same sentence becomes a genuine compass needle.</p>
+  </div>
+
+  <div class="widget" id="w-sec">
+    <div class="widget-head"><span class="w-title">Secant → tangent</span><span class="w-sub">Shrink \(h\) and watch a two-point slope become a one-point slope</span></div>
+    <div class="tabs" id="sec-tabs">
+      <button data-t="0" aria-selected="true">f(x) = x²</button>
+      <button data-t="1">f(x) = x³ − 2x</button>
+      <button data-t="2">f(x) = sin x</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 320px"><svg id="sec-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="A curve with a secant line through two points that becomes the tangent as h shrinks"></svg></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="sec-x">point x</label><input id="sec-x" type="range" min="-1.8" max="1.8" step="0.05" value="1"><output id="sec-x-o">1</output></div>
+          <div class="ctl"><label for="sec-h">gap h</label><input id="sec-h" type="range" min="0" max="1" step="0.005" value="0.85"><output id="sec-h-o">1.2</output></div>
+        </div>
+        <div class="readout" id="sec-read" style="margin-top:.7rem;line-height:1.9"></div>
+        <div id="sec-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Push \(h\) all the way to the left. The two points merge, the secant stops moving, and the number in the readout stops changing — that settled number <em>is</em> the derivative. Notice it never divides by zero: it only ever asks what the ratio <em>approaches</em>.</p>
+      </div>
+    </div>
+  </div>
+
+  <details><summary>The lecture's proof that \(\frac{d}{dx}x^n = n x^{n-1}\) — every step</summary>
+    <p>Put \(f(x)=x^n\) into the definition and expand the binomial:</p>
+    \[\frac{df}{dx}=\lim_{h\to0}\frac{(x+h)^n-x^n}{h}=\lim_{h\to0}\frac{\sum_{i=0}^{n}\binom{n}{i}x^{n-i}h^{i}-x^n}{h}\]
+    <p>The \(i=0\) term of the sum is exactly \(x^n\), so it cancels the \(-x^n\), leaving a sum that starts at \(i=1\) — and every surviving term carries at least one factor of \(h\), so the division by \(h\) is legal:</p>
+    \[\frac{df}{dx}=\lim_{h\to0}\sum_{i=1}^{n}\binom{n}{i}x^{n-i}h^{i-1}=\underbrace{\binom{n}{1}x^{n-1}}_{i=1,\ \text{no }h\text{ left}}+\lim_{h\to0}\underbrace{\sum_{i=2}^{n}\binom{n}{i}x^{n-i}h^{i-1}}_{\text{every term still has an }h\ \to\ 0}=n x^{n-1}\]
+    <p>The whole trick is that exactly one term survives the shrinking: the one where the single factor of \(h\) in the numerator was consumed by the \(h\) in the denominator. Everything else still has an \(h\) attached and vanishes.</p>
+  </details>
+
+  <div class="check" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the widget, why does the readout for \(f(x)=x^2\) at \(x=1\) approach exactly \(2\)?</p>
+    <div class="opts">
+      <button data-correct data-why="The difference quotient is ((1+h)² − 1)/h = (2h + h²)/h = 2 + h. As h → 0 this approaches 2 — and n·xⁿ⁻¹ = 2·1¹ = 2 agrees. Notice the algebra never divides by zero: it cancels the h first, then takes the limit.">Because \((2h+h^2)/h = 2+h\), which tends to \(2\)</button>
+      <button data-why="It isn't a coincidence of this curve — the same cancellation happens at every x, which is exactly what the power-rule proof above generalises.">Coincidence of the shape near \(x=1\)</button>
+      <button data-why="Setting h = 0 first gives 0/0, which is meaningless. The limit works precisely because you simplify the fraction before letting h shrink.">Because you can set \(h=0\) in the fraction</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 3 · THE RULES ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head"><span class="sec-num">3</span><h2>Four rules, and the only one that really matters</h2></div>
+  <div class="prose">
+    <p>Nobody computes limits by hand for a living. Once a handful of basic derivatives are known, four rules let you differentiate anything built out of them:</p>
+    \[\begin{aligned}\textbf{Sum:}\quad & (f+g)' = f' + g'\\[2pt]\textbf{Product:}\quad & (fg)' = f'g + fg'\\[2pt]\textbf{Quotient:}\quad & \left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}\\[2pt]\textbf{Chain:}\quad & \big(g(f(x))\big)' = g'(f(x))\cdot f'(x)\end{aligned}\]
+    <p>Three of those are conveniences. The fourth — the <strong>chain rule</strong> — is the reason deep learning is possible at all, so it deserves a picture rather than a formula.</p>
+    <p>Think of \(f\) and \(g\) as two machines bolted together. \(x\) goes into the first, its output \(u=f(x)\) is fed straight into the second, and \(g(u)\) comes out the far end. Now nudge \(x\) by a tiny amount. The first machine <em>amplifies</em> that nudge by its own sensitivity \(f'(x)\). The second machine takes the already-amplified nudge and amplifies it again by \(g'(u)\). Two amplifiers in series <strong>multiply</strong>.</p>
+  </div>
+  <div class="callout intuition"><span class="tag">Intuition</span>
+    <p>Gears. If a small gear turns 3× for every turn of the crank, and a large gear turns 5× for every turn of the small one, the large gear turns 15× per crank. The chain rule is gear ratios — and a 50-layer network is just 50 gears in a row. This is also the whole reason deep networks are delicate: multiply 50 numbers that are each slightly less than 1 and the signal reaching the first layer is essentially zero. That is the <em>vanishing gradient</em> problem, and you have just seen its cause.</p>
+  </div>
+
+  <div class="widget" id="w-ch">
+    <div class="widget-head"><span class="w-title">The chain rule machine</span><span class="w-sub">A nudge enters on the left and gets amplified twice — watch the ratios multiply</span></div>
+    <div class="tabs" id="ch-tabs">
+      <button data-t="0" aria-selected="true">h = (2x+1)⁴</button>
+      <button data-t="1">h = sin(x²)</button>
+      <button data-t="2">h = e^(3x)</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 320px"><svg id="ch-svg" viewBox="0 0 560 300" class="svg-lab" role="img" aria-label="Two machines in series showing how a small input nudge is amplified by each stage"></svg></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="ch-x">input x</label><input id="ch-x" type="range" min="-1.5" max="1.5" step="0.05" value="0.5"><output id="ch-x-o">0.5</output></div>
+          <div class="ctl"><label for="ch-n">nudge size</label><input id="ch-n" type="range" min="0.001" max="0.3" step="0.001" value="0.1"><output id="ch-n-o">0.1</output></div>
+        </div>
+        <div class="readout" id="ch-read" style="margin-top:.7rem;line-height:1.9"></div>
+        <div id="ch-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Shrink the nudge and the measured amplification converges on the predicted product \(g'(f(x))\cdot f'(x)\). The gap you see at large nudges is exactly the curvature the derivative ignores — Section 4 measures that gap precisely.</p>
+      </div>
+    </div>
+  </div>
+
+  <details><summary>The lecture's worked example — \(h(x)=(2x+1)^4\)</summary>
+    <p>Name the two machines. Inner: \(f(x)=2x+1\). Outer: \(g(u)=u^4\). Their separate derivatives are easy: \(f'(x)=2\) and \(g'(u)=4u^3\).</p>
+    <p>The chain rule says <em>evaluate the outer derivative at the inner value, then multiply by the inner derivative</em>:</p>
+    \[h'(x)=g'(f(x))\cdot f'(x)=4(2x+1)^3\cdot 2 = 8(2x+1)^3\]
+    <p><strong>The classic slip</strong> is writing \(4(2x+1)^3\) and stopping — forgetting to multiply by the inner derivative. The gear picture is the cure: you cannot report the final gear's speed without accounting for every gear it passed through.</p>
+  </details>
+
+  <div class="check" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Using the chain rule, what is \(\frac{d}{dx}\sin(x^2)\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Outer g(u) = sin u with g′(u) = cos u; inner f(x) = x² with f′(x) = 2x. Evaluate the outer derivative at the inner value and multiply: cos(x²)·2x.">\(2x\cos(x^2)\)</button>
+      <button data-why="That's the outer derivative alone — the inner derivative 2x was dropped. This is the single most common chain-rule error.">\(\cos(x^2)\)</button>
+      <button data-why="This differentiates the inside and leaves the outside untouched, then multiplies — the roles are inverted. The outer function must be differentiated too, and evaluated at the inner value.">\(2x\sin(x^2)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 4 · TAYLOR ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head"><span class="sec-num">4</span><h2>Taylor — rebuilding a whole function out of its derivatives</h2></div>
+  <div class="prose">
+    <p>The derivative is the best <em>straight line</em> imitation of a curve at a point. A natural greed sets in: if one derivative buys a line, what does a second derivative buy? A parabola. A third? A cubic. Keep going and you get the <strong>Taylor polynomial</strong>:</p>
+    \[T_n(x)=\sum_{k=0}^{n}\frac{f^{(k)}(x_0)}{k!}\,(x-x_0)^{k}\]
+    <p>Read it as a recipe rather than a formula. Term \(k\) does one job: it matches the \(k\)-th derivative of \(f\) at the anchor point \(x_0\), without disturbing any of the lower ones. The \(k!\) is the bookkeeping that makes that possible — differentiating \((x-x_0)^k\) exactly \(k\) times produces \(k!\), and dividing by it cancels the mess.</p>
+    <p>Let \(n\) run to infinity and you get the <strong>Taylor series</strong>; anchor it at \(x_0=0\) and it earns the name <strong>Maclaurin series</strong>. This is not a side-quest: it is why your computer can evaluate \(\sin\), \(\exp\) and \(\log\) at all, and in Unit 8 the second-order term becomes the whole basis of Newton-style optimisation.</p>
+  </div>
+
+  <div class="widget" id="w-tay">
+    <div class="widget-head"><span class="w-title">The Taylor builder</span><span class="w-sub">Add one derivative at a time and watch the imitation tighten</span></div>
+    <div class="tabs" id="tay-tabs">
+      <button data-t="0" aria-selected="true">sin x + cos x</button>
+      <button data-t="1">x⁴ &nbsp;(anchor x₀=1)</button>
+      <button data-t="2">sigmoid σ(x)</button>
+      <button data-t="3">ln(1+x)</button>
+      <button data-t="4">eˣ</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 320px"><svg id="tay-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="A function and its Taylor polynomial approximations of increasing degree"></svg></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="tay-deg">degree n</label><input id="tay-deg" type="range" min="0" max="9" step="1" value="1"><output id="tay-deg-o">1</output></div>
+        </div>
+        <div class="readout" id="tay-read" style="margin-top:.7rem;line-height:1.9"></div>
+        <div id="tay-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Two things to hunt for. First, on <em>x⁴</em> the approximation stops improving at degree 4 — it has become exact, and every higher derivative is zero. Second, on <em>ln(1+x)</em> the fit is excellent near the anchor and then falls off a cliff past \(x=1\): Taylor series are local promises, not global ones.</p>
+      </div>
+    </div>
+  </div>
+
+  <details><summary>The lecture's two examples, worked in full</summary>
+    <p><strong>Example 1 — a polynomial is reproduced exactly.</strong> Take \(f(x)=x^4\) and anchor at \(x_0=1\). The derivatives at \(1\) are</p>
+    \[f(1)=1,\quad f'(1)=4,\quad f''(1)=12,\quad f'''(1)=24,\quad f^{(4)}(1)=24,\quad f^{(5)}(1)=f^{(6)}(1)=0\]
+    <p>so, dividing each by \(k!\) \((1,1,2,6,24)\):</p>
+    \[T_6(x)=1+4(x-1)+6(x-1)^2+4(x-1)^3+(x-1)^4 = x^4 = f(x)\]
+    <p>Expanding really does collapse back to \(x^4\) — a Taylor polynomial of degree \(n\) reproduces <em>any</em> polynomial of degree \(k\le n\) exactly, because all higher derivatives are identically zero. The approximation has nothing left to approximate.</p>
+    <p class="opnote"><strong>Careful with the lecture's line here.</strong> The slide writes the coefficients as \(1+4(x-1)+12(x-1)^2+24(x-1)^3+24(x-1)^4\), which is the list of <em>derivatives</em> \(f^{(k)}(1)\) — the division by \(k!\) hasn't been carried out yet. With the \(k!\) applied (\(12/2!=6\), \(24/3!=4\), \(24/4!=1\)) you get the line above, and only that version expands back to \(x^4\). Worth checking yourself: expand both and see which one is really \(x^4\).</p>
+    <p><strong>Example 2 — a Maclaurin series that folds into two famous ones.</strong> For \(f(x)=\sin x+\cos x\) at \(x_0=0\), the derivatives cycle with period 4: \(f(0)=1,\ f'(0)=1,\ f''(0)=-1,\ f'''(0)=-1\), then repeat. So</p>
+    \[T_\infty(x)=1+x-\tfrac{1}{2!}x^2-\tfrac{1}{3!}x^3+\tfrac{1}{4!}x^4+\tfrac{1}{5!}x^5-\cdots\]
+    <p>Sort the terms by parity and the two halves are recognisable on sight:</p>
+    \[\underbrace{\sum_{k=0}^{\infty}\frac{(-1)^k}{(2k)!}x^{2k}}_{\cos x}+\underbrace{\sum_{k=0}^{\infty}\frac{(-1)^k}{(2k+1)!}x^{2k+1}}_{\sin x}=\cos x+\sin x\]
+    <p>The series reassembles the function it came from — a satisfying closed loop, and a good sanity check on the machinery.</p>
+  </details>
+
+  <div class="check" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the widget, switch to \(x^4\) and raise the degree past 4. Why does nothing change?</p>
+    <div class="opts">
+      <button data-correct data-why="Every derivative of x⁴ beyond the fourth is identically zero, so terms 5, 6, 7… all have coefficient 0 and contribute nothing. The degree-4 Taylor polynomial isn't an approximation of x⁴ — it IS x⁴.">All derivatives past the 4th are zero, so the extra terms vanish</button>
+      <button data-why="The widget does compute them — they're genuinely zero. Try the sigmoid tab and higher degrees clearly keep changing the curve, so nothing is being truncated for display.">The widget stops computing terms past degree 4</button>
+      <button data-why="The opposite: it converged perfectly, and did so at a finite degree. Slow convergence looks like ln(1+x) far from the anchor, where adding terms visibly keeps helping.">The series converges too slowly to see</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  <div class="check" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The sigmoid \(\sigma(z)=\frac{1}{1+e^{-z}}\) has Maclaurin expansion \(\tfrac12+\tfrac{z}{4}-\tfrac{z^3}{48}+\cdots\). What does the missing \(z^2\) term tell you?</p>
+    <div class="opts">
+      <button data-correct data-why="A zero second derivative at 0 means no curvature there — the sigmoid crosses its midpoint as straight as a ruler. That's why logistic regression behaves almost exactly like linear regression for inputs near zero, and it's the reason people normalise inputs to keep activations in that responsive band.">\(\sigma''(0)=0\) — the curve is locally straight at the midpoint</button>
+      <button data-why="It's genuinely zero, not small. σ′ = σ(1−σ), so σ″ = σ′(1−2σ), and at z = 0 the factor (1 − 2σ) = 0 exactly.">The term is small but nonzero; it's been rounded away</button>
+      <button data-why="The sigmoid is smooth everywhere — infinitely differentiable, in fact. A vanishing coefficient means that particular derivative is zero, not that it fails to exist.">The sigmoid isn't twice differentiable at 0</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 5 · PARTIAL DERIVATIVES ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head"><span class="sec-num">5</span><h2>Many knobs at once — partial derivatives</h2></div>
+  <div class="prose">
+    <p>Real models do not have one knob. They have millions. So we need the derivative of a function whose input is a whole vector, \(f:\mathbb{R}^n\to\mathbb{R}\) — many numbers in, one score out.</p>
+    <p>The generalisation is almost insultingly simple: <strong>vary one variable at a time and hold every other one still</strong>. That is a <em>partial derivative</em>, written with a curly \(\partial\) instead of a straight \(d\) as a reminder that other variables exist and are being deliberately frozen:</p>
+    \[\frac{\partial f}{\partial x_1}=\lim_{h\to 0}\frac{f(x_1+h,\,x_2,\dots,x_n)-f(x_1,x_2,\dots,x_n)}{h}\]
+    <p>Notice that only the first slot changes. Every other argument sits untouched on both sides of the subtraction. In practice this means something very concrete: <strong>when differentiating with respect to \(x\), treat \(y\) as if it were the number 7.</strong> All your one-variable rules come along unchanged.</p>
+    <p>Geometrically you are slicing. The surface \(z=f(x,y)\) is a landscape; freezing \(y\) cuts a vertical slice through it, and that slice is an ordinary one-variable curve with an ordinary slope. The partial derivative is the slope of that slice.</p>
+  </div>
+
+  <div class="widget" id="w-ps">
+    <div class="widget-head"><span class="w-title">The slicer</span><span class="w-sub">Freeze one variable, cut the surface, read the slope of the slice — drag to orbit</span></div>
+    <div class="tabs" id="ps-tabs">
+      <button data-t="0">slice along x (∂f/∂x)</button>
+      <button data-t="1">slice along y (∂f/∂y)</button>
+      <button data-t="2" aria-selected="true">both slices</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 340px"><svg id="ps-svg" viewBox="0 0 560 400" class="svg-lab grabbable" role="img" aria-label="A 3D surface with vertical slices showing partial derivatives as slopes of the sliced curves"></svg></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="ps-x">x₀</label><input id="ps-x" type="range" min="-1.6" max="1.6" step="0.05" value="0.8"><output id="ps-x-o">0.8</output></div>
+          <div class="ctl"><label for="ps-y">y₀</label><input id="ps-y" type="range" min="-1.6" max="1.6" step="0.05" value="-0.6"><output id="ps-y-o">-0.6</output></div>
+        </div>
+        <div class="readout" id="ps-read" style="margin-top:.7rem;line-height:1.9"></div>
+        <div id="ps-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The surface is \(f(x,y)=x^2-y^2+\tfrac12 xy\) — a saddle, which is the interesting case: at the centre one slice curves up while the other curves down. Drag to orbit and look along each slice edge-on; the tangent line you see is exactly what the partial derivative reports.</p>
+      </div>
+    </div>
+  </div>
+
+  <details><summary>The lecture's two examples — and the chain rule hiding inside them</summary>
+    <p><strong>Example 1:</strong> \(f(x,y)=(x+2y^3)^2\). This is a composition, so the chain rule applies inside each partial. Outer: square. Inner: \(x+2y^3\).</p>
+    \[\frac{\partial f}{\partial x}=2(x+2y^3)\cdot\underbrace{\frac{\partial(x+2y^3)}{\partial x}}_{=\,1}=2(x+2y^3)\]
+    \[\frac{\partial f}{\partial y}=2(x+2y^3)\cdot\underbrace{\frac{\partial(x+2y^3)}{\partial y}}_{=\,6y^2}=12y^2(x+2y^3)\]
+    <p>Same outer derivative both times; the two answers differ only in the inner derivative — the fingerprint of the chain rule.</p>
+    <p><strong>Example 2:</strong> \(f(x_1,x_2)=x_1^2x_2+x_1x_2^3\). No composition, just the freeze-the-other rule applied term by term. Treating \(x_2\) as a constant, \(x_1^2x_2\) differentiates to \(2x_1x_2\) and \(x_1x_2^3\) to \(x_2^3\):</p>
+    \[\frac{\partial f}{\partial x_1}=2x_1x_2+x_2^3,\qquad \frac{\partial f}{\partial x_2}=x_1^2+3x_1x_2^2\]
+    <p>Collecting both into one row gives the gradient of the next section:</p>
+    \[\frac{df}{d\mathbf{x}}=\big[\,2x_1x_2+x_2^3,\ \ x_1^2+3x_1x_2^2\,\big]\in\mathbb{R}^{1\times 2}\]
+  </details>
+
+  <div class="check" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(f(x,y)=x^2y+3xy^2-y^3\), what is \(\frac{\partial f}{\partial x}\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Hold y fixed. x²y → 2xy (y is just a multiplier), 3xy² → 3y² (x is linear, y² is a constant), and −y³ → 0 because it contains no x at all. This is Problem 1 of the practice arena, where it's also verified straight from the limit definition.">\(2xy+3y^2\)</button>
+      <button data-why="The −3y² comes from differentiating −y³ with respect to y, not x. With respect to x, any term with no x in it dies completely.">\(2xy+3y^2-3y^2\)</button>
+      <button data-why="That's ∂f/∂y — you differentiated the wrong variable. A quick check: ∂f/∂x can't contain a bare x² term, since differentiating with respect to x always reduces the power of x.">\(x^2+6xy-3y^2\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 6 · THE GRADIENT ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head"><span class="sec-num">6</span><h2>The gradient — a compass that always points uphill</h2></div>
+  <div class="prose">
+    <p>One partial derivative answers "how does the output respond to <em>this</em> knob?". Collect them all and something more than a list appears:</p>
+    \[\nabla_{\mathbf x} f=\operatorname{grad} f=\frac{df}{d\mathbf x}=\left[\frac{\partial f}{\partial x_1},\ \frac{\partial f}{\partial x_2},\ \dots,\ \frac{\partial f}{\partial x_n}\right]\]
+    <p>The <strong>gradient</strong> is a vector, and it has two properties that make it the most important object in this entire course.</p>
+    <p><strong>Its direction is steepest ascent.</strong> Of all the directions you could step, the gradient points the one that increases \(f\) fastest. Not merely uphill — <em>maximally</em> uphill. <strong>Its length is the steepness</strong> in that best direction: a long gradient means a cliff, a near-zero gradient means flat ground, which is either a summit, a valley floor, or a saddle.</p>
+    <p>That is why the fog of Section 1 turns out to be survivable. You cannot see the valley, but you can compute one vector, and it tells you both the best direction and how urgent the situation is. Flip its sign and you have the single most-run line of code in machine learning:</p>
+    \[\mathbf{w}_{\text{new}}=\mathbf{w}_{\text{old}}-\eta\,\nabla L(\mathbf{w})\]
+  </div>
+  <div class="callout aha"><span class="tag">The aha</span>
+    <p>Why does the gradient point <em>steepest</em> ascent, rather than merely uphill? Because the rate of change in some unit direction \(\mathbf{u}\) is the dot product \(\nabla f\cdot\mathbf{u}\) — and Unit 3 already told you that a dot product with a fixed vector is maximised when \(\mathbf{u}\) aligns with it. The compass property is Cauchy–Schwarz wearing a hat. Two units ago you proved this; today you get to use it.</p>
+  </div>
+
+  <div class="widget" id="w-gc">
+    <div class="widget-head"><span class="w-title">The gradient compass</span><span class="w-sub">Drag anywhere on the map. Red points uphill, green is the direction training would take</span></div>
+    <div class="tabs" id="gc-tabs">
+      <button data-t="0" aria-selected="true">a bowl</button>
+      <button data-t="1">a stretched valley</button>
+      <button data-t="2">a saddle</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 330px"><svg id="gc-svg" viewBox="0 0 560 380" class="svg-lab grabbable" role="img" aria-label="A contour map with a draggable point showing the gradient arrow and its negative"></svg></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="readout" id="gc-read" style="line-height:1.9"></div>
+        <div id="gc-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Watch the arrow against the contour lines: it always crosses them at a right angle. Contours are curves of constant height, so moving along one changes nothing — all the change is packed into the perpendicular direction, and that is where the gradient points. On the <em>stretched valley</em>, notice the arrow mostly ignores the long flat axis; that mismatch is what momentum and Adam exist to fix.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At some point the gradient of a loss is \(\nabla L=[0,0]\). What can you conclude?</p>
+    <div class="opts">
+      <button data-correct data-why="A zero gradient means flat ground in every direction — a stationary point. It could be a minimum, a maximum, or a saddle, and telling them apart needs second derivatives (the Hessian, Unit 8). In high dimensions saddles vastly outnumber true minima, which is why 'gradient is zero' is genuinely ambiguous news.">The ground is flat there — it could be a minimum, maximum, or saddle</button>
+      <button data-why="Tempting, but too strong. Try the saddle preset in the widget and drag to the centre: the gradient vanishes there, yet walking one way goes down and the perpendicular way goes up. It's a stationary point, not a minimum.">Training has found the minimum</button>
+      <button data-why="A zero gradient is a perfectly ordinary, well-defined situation — the function is flat to first order. Non-differentiability looks different: a kink, like |x| at zero, where no single slope exists at all.">The function isn't differentiable there</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
+
+<!-- ================= 7 · THE FIVE SHAPES ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head"><span class="sec-num">7</span><h2>The five shapes a derivative can take</h2></div>
+  <div class="prose">
+    <p>Here is where most people's intuition quietly breaks, and where a small amount of organisation pays off enormously. "The derivative" is not one kind of object. Its <em>shape</em> is decided entirely by two questions: what shape goes in, and what shape comes out.</p>
+    <p>The rule underneath every case is the same. The derivative must hold one number for every (output component, input component) pair — because each of those pairs needs its own sensitivity. Count the pairs and you know the shape. That single sentence generates all five rows below, so you never have to memorise them.</p>
+  </div>
+
+  <div class="widget" id="w-sh">
+    <div class="widget-head"><span class="w-title">The shape calculator</span><span class="w-sub">Pick what goes in and what comes out — the derivative's shape follows</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="stagebar"><span class="w-sub" style="display:block;margin-bottom:.35rem">input</span></div>
+        <div class="tabs" id="sh-in">
+          <button data-t="s" aria-selected="true">scalar x</button>
+          <button data-t="v">vector 𝐱 ∈ ℝⁿ</button>
+          <button data-t="m">matrix X ∈ ℝᵐˣⁿ</button>
+        </div>
+        <div class="stagebar" style="margin-top:.8rem"><span class="w-sub" style="display:block;margin-bottom:.35rem">output</span></div>
+        <div class="tabs" id="sh-out">
+          <button data-t="s" aria-selected="true">scalar y</button>
+          <button data-t="v">vector 𝐲 ∈ ℝᵐ</button>
+          <button data-t="m">matrix Y</button>
+        </div>
+      </div>
+      <div class="wcol" style="flex:1.5 1 300px">
+        <svg id="sh-svg" viewBox="0 0 460 250" class="svg-lab" role="img" aria-label="Diagram of the derivative object produced by the chosen input and output shapes"></svg>
+        <div class="readout" id="sh-read" style="margin-top:.5rem;line-height:1.9"></div>
+        <div id="sh-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <table class="plain">
+    <thead><tr><th>Input</th><th>Output</th><th>Derivative is a…</th><th>Shape</th><th>Where you meet it</th></tr></thead>
+    <tbody>
+      <tr><td>scalar</td><td>scalar</td><td>scalar</td><td>\(1\)</td><td>a single learning-rate schedule</td></tr>
+      <tr><td>vector \(\mathbb{R}^n\)</td><td>scalar</td><td><strong>gradient</strong></td><td>\(n\)</td><td>loss w.r.t. weights — the big one</td></tr>
+      <tr><td>matrix \(\mathbb{R}^{m\times n}\)</td><td>scalar</td><td>gradient matrix</td><td>\(m\times n\)</td><td>loss w.r.t. a CNN kernel</td></tr>
+      <tr><td>vector \(\mathbb{R}^n\)</td><td>vector \(\mathbb{R}^m\)</td><td><strong>Jacobian</strong></td><td>\(m\times n\)</td><td>one layer of a network</td></tr>
+      <tr><td>matrix</td><td>matrix</td><td>rank-4 tensor</td><td>\(p\times q\times m\times n\)</td><td>lurking inside every autodiff library</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout remember"><span class="tag">Remember</span>
+    <p>The two rows in bold carry almost all of practical machine learning. <strong>Gradient</strong>: the loss is a single number and the weights are a vector, so the derivative is a vector the same shape as the weights — which is exactly why you can subtract it from them. <strong>Jacobian</strong>: a layer maps a vector to a vector, so its derivative is a matrix, and stacking layers means multiplying those matrices. That is backpropagation in one sentence, and Section 10 makes it explicit.</p>
+  </div>
+
+  <div class="check" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A network layer maps \(\mathbb{R}^{100}\to\mathbb{R}^{50}\). What shape is its derivative?</p>
+    <div class="opts">
+      <button data-correct data-why="Vector in, vector out → Jacobian, with one row per output and one column per input: 50 × 100. Row i is the gradient of output i; column j says how the whole output vector reacts when input j alone moves.">A \(50\times 100\) Jacobian</button>
+      <button data-why="Rows and columns are swapped. The convention is J[i][j] = ∂yᵢ/∂xⱼ, so the number of rows matches the number of outputs (50) and columns the inputs (100).">A \(100\times 50\) Jacobian</button>
+      <button data-why="A gradient (a single vector) only appears when the output is one number. Here 50 numbers come out, so you need 50 gradients — stacked as rows, that's a matrix.">A gradient with 100 entries</button>
+    </div>
+    <div class="why"></div>
+  </div>
+</section>
