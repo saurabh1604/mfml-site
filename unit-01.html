@@ -308,6 +308,11 @@ main:focus{outline:none}
   details.sol{border-color:#bbb}
   .pans{background:#eee;color:#000}
 }
+/* wide inline math (matrices in a sentence or an option) scrolls instead of stretching the page */
+@media (max-width:700px){
+  .pq .katex,.check .opts button .katex,.prose .katex,.pstep .katex{
+    max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle}
+}
 </style>
 </head>
 <body>
@@ -1712,6 +1717,10 @@ M347 1759 V0 H263 V1759 v0 v1759 h84z"/></svg></span></span></span><span class="
   </div>
   <div class="next-card">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong><a href="unit-02.html">Unit 2 · Vector Spaces →</a></strong></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">You can now solve <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi mathvariant="bold">x</mi><mo>=</mo><mi mathvariant="bold">b</mi></mrow><annotation encoding="application/x-tex">A\mathbf{x}=\mathbf{b}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span><span class="mord mathbf">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.6944em;"></span><span class="mord mathbf">b</span></span></span></span> and read off its three fates. Unit 2 asks the question underneath: what kind of space are these solutions living in? Groups, subspaces, span, independence, basis, dimension — the architecture every later unit is built on.</p>
+    <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
+  </div>
 </section>
 </main>
 
@@ -2464,7 +2473,7 @@ function lineInBox(p0,d,lo,hi){
 /* ================= MBM-UX-V2 · navigation, resume, revision, print ================= */
 (function(){
   var U = 1;
-  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"}];
+  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"},{"n":6,"t":"Differentiation"}];
   var st = {get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
             set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   var secs = [].slice.call(document.querySelectorAll('section.unit'));

@@ -308,6 +308,11 @@ main:focus{outline:none}
   details.sol{border-color:#bbb}
   .pans{background:#eee;color:#000}
 }
+/* wide inline math (matrices in a sentence or an option) scrolls instead of stretching the page */
+@media (max-width:700px){
+  .pq .katex,.check .opts button .katex,.prose .katex,.pstep .katex{
+    max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle}
+}
 </style>
 </head>
 <body>
@@ -1178,6 +1183,10 @@ M347 1759 V0 H263 V1759 v0 v1759 h84z"/></svg></span></span></span><span class="
   </div>
   <div class="next-card">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong><a href="unit-03.html">Unit 3 · Analytic Geometry →</a></strong></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">Vector spaces gave you a board to play on, but nothing on it has a size or an angle yet. Unit 3 installs the ruler and the protractor — norms, inner products, orthogonality — and shows that choosing how to measure similarity is half of machine learning.</p>
+    <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
+  </div>
 </section>
 </main>
 
@@ -1671,7 +1680,7 @@ updScore();
 /* ================= MBM-UX-V2 · navigation, resume, revision, print ================= */
 (function(){
   var U = 2;
-  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"}];
+  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"},{"n":6,"t":"Differentiation"}];
   var st = {get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
             set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   var secs = [].slice.call(document.querySelectorAll('section.unit'));
