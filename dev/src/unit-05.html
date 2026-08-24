@@ -310,7 +310,7 @@ main:focus{outline:none}
 <div class="topbar"><div class="topbar-in">
   <a class="home" href="index.html">The Math<span class="txs"> Behind the Machine</span></a><span class="crumb">/ Unit 5 · Decompositions &amp; SVD</span>
   <span class="spacer"></span>
-  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">12</span></span>
+  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">14</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
   <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
@@ -321,11 +321,11 @@ main:focus{outline:none}
 <header class="hero">
   <div class="kicker">Unit 5 of 16 · by Prof. Saurabh</div>
   <h1>Matrix Decompositions &amp; SVD</h1>
-  <p class="lede">You can't tell much about 12 until you write it as \(2\times2\times3\) — then everything about it is obvious. This unit does the same to matrices: <strong>take the tangled transformation apart into a few pure moves</strong> — rotate, stretch, rotate back. We climb a three-rung ladder: the flawless symmetric case, the general square case, and then the boldest factorization in linear algebra — the <strong>SVD</strong>, which works on <em>every</em> matrix ever written, and whose truncation is the mathematics inside image compression, recommender systems, and PCA.</p>
+  <p class="lede">You can't tell much about 12 until you write it as \(2\times2\times3\) — then everything about it is obvious. This unit does the same to matrices: <strong>take the tangled transformation apart into a few pure moves</strong> — rotate, stretch, rotate back. We climb a three-rung ladder: the flawless symmetric case, the general square case, and then the boldest factorization in linear algebra — the <strong>SVD</strong>, which works on <em>every</em> matrix ever written, and whose truncation is the mathematics inside image compression, recommender systems, and PCA. By the end you will compress a real photograph with your own hands — and know exactly why it works.</p>
   <div class="meta">
-    <span class="chip">≈ 55 min read + play</span>
-    <span class="chip">5 interactive widgets · live image compression</span>
-    <span class="chip">12 inline checks</span>
+    <span class="chip">≈ 60 min read + play</span>
+    <span class="chip">8 interactive widgets · compress a real photo</span>
+    <span class="chip">14 inline checks</span>
     <span class="chip">✍ 12 solved practice problems</span>
   </div>
 </header>
@@ -368,8 +368,26 @@ main:focus{outline:none}
     <p>Every decomposition in this unit is a scheme for smuggling a <strong>diagonal matrix</strong> into the middle of the product. Why the obsession? Because for a diagonal</p>
     \[D=\begin{bmatrix}d_1&&\\&\ddots&\\&&d_n\end{bmatrix}\]
     <p>every hard matrix question collapses into arithmetic on \(n\) separate numbers. The determinant is just the product \(\prod_i d_i\) (Unit 4's volume dial, read off directly). The \(k\)-th power \(D^k\) is each entry raised to the \(k\) — no matrix multiplication at all. The inverse is each non-zero entry flipped to \(1/d_i\). Solving \(D\mathbf{x}=\mathbf{b}\) is \(n\) one-line divisions. A diagonal matrix is \(n\) independent one-dimensional problems wearing a trench coat — nothing interacts, nothing tangles.</p>
-    <p>So the game is: given a general \(A\), find a change of viewpoint in which \(A\) <em>becomes</em> diagonal. That's it. That's the unit.</p>
+    <p>So the game is: given a general \(A\), find a change of viewpoint in which \(A\) <em>becomes</em> diagonal. That's it. That's the unit. Feel the triviality yourself — two dials, nothing else:</p>
   </div>
+
+  <div class="widget" id="w-dials">
+    <div class="widget-head"><span class="w-title">Two independent dials</span><span class="w-sub">a diagonal matrix is just one dial per axis — powers and inverses come free</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.6 1 300px"><svg id="dl-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="The unit circle and grid stretched independently along each axis by a diagonal matrix"></svg></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="controls">
+          <div class="ctl"><label for="dl-d1">dial d₁ (x-axis)</label><input id="dl-d1" type="range" min="-2" max="3" step="0.1" value="2"><output id="dl-d1-o">2</output></div>
+          <div class="ctl"><label for="dl-d2">dial d₂ (y-axis)</label><input id="dl-d2" type="range" min="-2" max="3" step="0.1" value="0.6"><output id="dl-d2-o">0.6</output></div>
+          <div class="ctl"><label for="dl-k">power k</label><input id="dl-k" type="range" min="1" max="4" step="1" value="1"><output id="dl-k-o">1</output></div>
+        </div>
+        <div class="readout" id="dl-read" style="margin-top:.7rem;line-height:2"></div>
+        <div id="dl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Each dial owns one axis and <em>cannot touch the other</em> — that is the whole luxury. Every hard matrix question is answered per-dial in the readout: determinant, powers, inverse, all instant. Set a dial to 0 and watch a dimension die (and the inverse with it).</p>
+      </div>
+    </div>
+  </div>
+
   <div class="check" data-check="c2">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">\(D=\operatorname{diag}(5,-1)\). What is \(D^{3}\), and how long did it take you?</p>
@@ -412,9 +430,9 @@ main:focus{outline:none}
   <div class="widget" id="w-proj">
     <div class="widget-head"><span class="w-title">The layer view</span><span class="w-sub">A = 3·q₁q₁ᵀ + 1·q₂q₂ᵀ — watch a matrix assemble from projections</span></div>
     <div class="tabs" id="proj-tabs">
-      <button data-t="0" aria-selected="true">λ₁ layer only</button>
+      <button data-t="0">λ₁ layer only</button>
       <button data-t="1">λ₂ layer only</button>
-      <button data-t="2">both layers = A</button>
+      <button data-t="2" aria-selected="true">both layers = A</button>
     </div>
     <div class="wrow">
       <div class="wcol" style="flex:1.6 1 300px"><svg id="proj-svg" viewBox="0 0 560 400" class="svg-lab" role="img" aria-label="Unit circle mapped by the selected projection layers of a symmetric matrix"></svg></div>
@@ -504,6 +522,39 @@ main:focus{outline:none}
   <div class="prose">
     <p>Eigendecomposition is powerful, but it has a door policy, and Unit 4 already showed you both bouncers. <strong>Defective matrices:</strong> the shear \(\begin{bmatrix}1&1\\0&1\end{bmatrix}\) owns a single eigen-direction — algebraic multiplicity 2, geometric multiplicity 1 — so there aren't enough independent columns to build an invertible \(P\). No decomposition. <strong>Rotations:</strong> \(\begin{bmatrix}0&-1\\1&0\end{bmatrix}\) turns <em>every</em> real direction, its eigenvalues fled to \(\pm i\) — no real \(P\) exists at all. And beyond both: a \(3\times2\) data matrix isn't even square, so \(A\mathbf{v}=\lambda\mathbf{v}\) is <em>meaningless</em> — the input is 2-D, the output 3-D; they can't be parallel because they don't live in the same space.</p>
     <p>Three failures, one root cause: eigendecomposition insists on using <strong>a single set of axes for both input and output</strong>. The fix — dropping that insistence — is the SVD, and it repairs all three failures at once.</p>
+    <p>Don't take the bouncers' word for it — go eigenvector-hunting yourself. Sweep a direction around the circle and watch when \(A\mathbf{v}\) lines up with \(\mathbf{v}\):</p>
+  </div>
+
+  <div class="widget" id="w-hunt">
+    <div class="widget-head"><span class="w-title">The eigen-hunter</span><span class="w-sub">sweep the dial · an eigenvector is a direction the matrix refuses to turn</span></div>
+    <div class="tabs" id="ht-tabs">
+      <button data-t="sym" aria-selected="true">symmetric [[2,1],[1,2]]</button>
+      <button data-t="lean">leaning [[1,4],[2,3]]</button>
+      <button data-t="shear">the shear</button>
+      <button data-t="rot">rotation 90°</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.6 1 300px"><svg id="ht-svg" viewBox="0 0 560 400" class="svg-lab grabbable" role="img" aria-label="A direction vector and its image under the matrix, with eigendirections highlighted where they align"></svg>
+      <span class="drag-hint">✋ drag the dial — or press play and let it sweep</span></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="presets"><button class="preset" id="ht-play">▶ auto-sweep</button></div>
+        <div class="readout" id="ht-read" style="margin-top:.6rem;line-height:2"></div>
+        <svg id="ht-gauge" viewBox="0 0 300 84" class="svg-lab" role="img" aria-label="Gauge of the turning angle between v and Av across all directions" style="margin-top:.5rem"></svg>
+        <div id="ht-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The strip chart is the whole hunt at a glance: turning angle for <em>every</em> direction, with your dial as the moving dot. Wherever it touches zero, \(A\mathbf v\parallel\mathbf v\) — an eigendirection. Count the zeros: symmetric 2 (perpendicular), leaning 2 (tilted), shear <b>1</b>, rotation <b>0</b>. The ladder's door policy, drawn.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On the strip chart, the shear's curve touches zero exactly once (at the x-axis). What does that picture say in Unit 4's vocabulary?</p>
+    <div class="opts">
+      <button data-correct data-why="One zero = one independent eigen-direction, but a 2×2 matrix needs two to fill P's columns. Algebraic multiplicity 2, geometric multiplicity 1 — defective, so PDP⁻¹ is impossible. The strip chart is the door policy made visible: the shear simply doesn't own enough unturned directions.">One eigen-direction only — too few to build an invertible \(P\)</button>
+      <button data-why="The zero is real — the x-axis genuinely doesn't turn under the shear (check: [[1,1],[0,1]]·(1,0) = (1,0)). The problem isn't that the eigenvector is fake; it's that there is only ONE of them.">The zero is a numerical artifact; shears have no eigenvectors</button>
+      <button data-why="Rotation is the curve that never touches zero — every direction turns. The shear's curve does touch once: it keeps exactly one direction, which is one short of what diagonalization needs.">It means the shear is actually a rotation in disguise</button>
+    </div>
+    <div class="why"></div>
   </div>
 </section>
 
@@ -532,6 +583,7 @@ main:focus{outline:none}
       <button data-s="1">2 · rotate: Vᵀ</button>
       <button data-s="2">3 · stretch: ΣVᵀ</button>
       <button data-s="3">4 · rotate: UΣVᵀ = A</button>
+      <button class="preset" id="sv-play" style="margin-left:auto">▶ play the pipeline</button>
     </div>
     <div class="wrow">
       <div class="wcol" style="flex:2 1 320px"><svg id="sv-svg" viewBox="0 0 560 440" class="svg-lab" role="img" aria-label="Four-stage SVD pipeline: circle with V frame, axis-aligned, stretched, rotated into the output ellipse with U frame"></svg></div>
@@ -543,7 +595,7 @@ main:focus{outline:none}
         </div>
         <div class="readout" id="sv-eig" style="margin-top:.5rem"></div>
         <div id="sv-verdict" class="verdict info" style="margin-top:.6rem">—</div>
-        <p class="note" id="sv-note">Both frames stay perpendicular at every stage — the input frame \(\mathbf{v}_1,\mathbf{v}_2\) (orange) and the output frame \(\mathbf{u}_1,\mathbf{u}_2\) (blue). The σ chips are the ellipse's semi-axes; their ratio is the condition number — how much more the matrix amplifies its favourite direction than its least favourite.</p>
+        <p class="note" id="sv-note">Press <b>play</b> and watch the orange input frame ride the pipeline: rotate, stretch, rotate — and land <em>exactly inside</em> the blue axes \(\sigma_i\mathbf{u}_i\). That landing is the equation \(A\mathbf{v}_i=\sigma_i\mathbf{u}_i\), acted out. The σ chips are the ellipse's semi-axes; their ratio is the condition number — how much more the matrix amplifies its favourite direction than its least favourite.</p>
       </div>
     </div>
   </div>
@@ -582,6 +634,48 @@ main:focus{outline:none}
   </div>
   <div class="callout remember"><span class="tag">The recipe card</span>
     <p>① Form the <em>smaller</em> of \(A^{\top}A\) or \(AA^{\top}\). ② Spectrally decompose it (Rung 1 / Unit 4 machinery). ③ \(\sigma_i=\sqrt{\lambda_i}\), sorted descending, zeros dropped. ④ Its eigenvectors are \(V\) (or \(U\)); the other family comes free via \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\). ⑤ Assemble \(A=U\Sigma V^{\top}\), padding \(\Sigma\) with zero rows/columns to match \(A\)'s shape.</p>
+  </div>
+
+  <div class="prose" style="max-width:66rem">
+    <svg viewBox="0 0 880 224" role="img" aria-label="Flow diagram of the SVD factory: A feeds the Gram matrix, its spectral decomposition yields the singular values and V, and U is manufactured from them" style="display:block;width:100%;height:auto;font-family:system-ui">
+      <defs>
+        <marker id="svdarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--ink-muted)"/></marker>
+      </defs>
+      <text x="440" y="18" text-anchor="middle" style="font:700 13px system-ui" fill="var(--ink-2)">the SVD factory — one symmetric detour buys everything</text>
+      <!-- A -->
+      <rect x="8" y="78" width="118" height="70" rx="12" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>
+      <text x="67" y="106" text-anchor="middle" style="font:800 17px system-ui" fill="var(--ink)">A</text>
+      <text x="67" y="126" text-anchor="middle" style="font:600 10.5px system-ui" fill="var(--ink-muted)">any m×n, any rank</text>
+      <!-- gram -->
+      <rect x="188" y="78" width="130" height="70" rx="12" fill="var(--surface)" stroke="var(--s1)" stroke-width="2"/>
+      <text x="253" y="103" text-anchor="middle" style="font:800 15px system-ui" fill="var(--s1)">AᵀA</text>
+      <text x="253" y="121" text-anchor="middle" style="font:600 10.5px system-ui" fill="var(--ink-muted)">symmetric n×n</text>
+      <text x="253" y="136" text-anchor="middle" style="font:600 10.5px system-ui" fill="var(--ink-muted)">(take the smaller Gram)</text>
+      <line x1="130" y1="113" x2="182" y2="113" stroke="var(--ink-muted)" stroke-width="2" marker-end="url(#svdarr)"/>
+      <!-- spectral -->
+      <rect x="380" y="78" width="130" height="70" rx="12" fill="var(--surface)" stroke="var(--s7)" stroke-width="2"/>
+      <text x="445" y="103" text-anchor="middle" style="font:800 15px system-ui" fill="var(--s7)">Q, Λ</text>
+      <text x="445" y="121" text-anchor="middle" style="font:600 10.5px system-ui" fill="var(--ink-muted)">Rung 1 applies:</text>
+      <text x="445" y="136" text-anchor="middle" style="font:600 10.5px system-ui" fill="var(--ink-muted)">λᵢ real and ≥ 0</text>
+      <line x1="322" y1="113" x2="374" y2="113" stroke="var(--ink-muted)" stroke-width="2" marker-end="url(#svdarr)"/>
+      <text x="348" y="102" text-anchor="middle" style="font:650 10px system-ui" fill="var(--ink-muted)">spectral</text>
+      <!-- sigma + V -->
+      <rect x="576" y="34" width="126" height="58" rx="12" fill="var(--surface)" stroke="var(--s2)" stroke-width="2"/>
+      <text x="639" y="58" text-anchor="middle" style="font:800 14px system-ui" fill="var(--s2)">Σ : σᵢ = √λᵢ</text>
+      <text x="639" y="76" text-anchor="middle" style="font:600 10.5px system-ui" fill="var(--ink-muted)">sorted loudest-first</text>
+      <rect x="576" y="134" width="126" height="58" rx="12" fill="var(--surface)" stroke="var(--s1)" stroke-width="2"/>
+      <text x="639" y="158" text-anchor="middle" style="font:800 14px system-ui" fill="var(--s1)">V = Q</text>
+      <text x="639" y="176" text-anchor="middle" style="font:600 10.5px system-ui" fill="var(--ink-muted)">input axes, free</text>
+      <line x1="514" y1="99" x2="570" y2="70" stroke="var(--ink-muted)" stroke-width="2" marker-end="url(#svdarr)"/>
+      <line x1="514" y1="127" x2="570" y2="156" stroke="var(--ink-muted)" stroke-width="2" marker-end="url(#svdarr)"/>
+      <!-- U -->
+      <rect x="756" y="84" width="118" height="58" rx="12" fill="var(--surface)" stroke="var(--s3)" stroke-width="2"/>
+      <text x="815" y="108" text-anchor="middle" style="font:800 14px system-ui" fill="var(--s3)">uᵢ = Avᵢ/σᵢ</text>
+      <text x="815" y="126" text-anchor="middle" style="font:600 10.5px system-ui" fill="var(--ink-muted)">output axes, free</text>
+      <line x1="706" y1="70" x2="750" y2="100" stroke="var(--ink-muted)" stroke-width="2" marker-end="url(#svdarr)"/>
+      <line x1="706" y1="156" x2="750" y2="126" stroke="var(--ink-muted)" stroke-width="2" marker-end="url(#svdarr)"/>
+      <text x="440" y="214" text-anchor="middle" style="font:700 12.5px system-ui" fill="var(--ink-2)">assemble:  A = U Σ Vᵀ   —   Σ padded with zero rows/columns to wear A's shape</text>
+    </svg>
   </div>
   <div class="prose">
     <p>The lecture's wide example, walked through. \(A=\begin{bmatrix}1&0&1\\-2&1&0\end{bmatrix}\) (2×3, rank 2). <strong>Step 1:</strong> \(A^{\top}A=\begin{bmatrix}5&-2&1\\-2&1&0\\1&0&1\end{bmatrix}\), symmetric as promised. <strong>Step 2:</strong> its eigenvalues are \(6,\ 1,\ 0\) — the zero is no accident: a 2×3 matrix has rank at most 2, so one input direction <em>must</em> be crushed. <strong>Step 3:</strong> \(\sigma_1=\sqrt6,\ \sigma_2=1\), so \(\Sigma=\begin{bmatrix}\sqrt6&0&0\\0&1&0\end{bmatrix}\) — 2×3 like \(A\), with a zero <em>column</em> of padding. <strong>Step 4:</strong> eigenvectors \(\mathbf{v}_1=\tfrac{1}{\sqrt{30}}(5,-2,1)\), \(\mathbf{v}_2=\tfrac{1}{\sqrt5}(0,1,2)\), \(\mathbf{v}_3=\tfrac{1}{\sqrt6}(-1,-2,1)\) — and \(\mathbf{v}_3\), riding the zero eigenvalue, is exactly the nullspace direction \(A\) annihilates. <strong>Step 5:</strong> \(\mathbf{u}_1=\tfrac{1}{\sigma_1}A\mathbf{v}_1=\tfrac{1}{\sqrt5}(1,-2)\), \(\mathbf{u}_2=\tfrac{1}{\sigma_2}A\mathbf{v}_2=\tfrac{1}{\sqrt5}(2,1)\) — automatically orthonormal. Assembled, \(A=U\Sigma V^{\top}\) exactly.</p>
@@ -627,6 +721,7 @@ main:focus{outline:none}
       <div class="wcol" style="flex:1.5 1 300px"><svg id="tl-out" viewBox="0 0 560 420" class="svg-lab grabbable" role="img" aria-label="Output space in 3D: the image ellipse on its tilted plane, with the left-singular frame"></svg>
       <span class="drag-hint">✋ output space ℝ³ — drag to orbit</span></div>
       <div class="wcol" style="flex:1 1 220px">
+        <div class="presets"><button class="preset" id="tl-play">▶ tour the circle</button></div>
         <div class="readout" id="tl-co" style="line-height:2"></div>
         <div id="tl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
         <p class="note">When the probe sits on \(\mathbf{v}_1\) (orange), its image lands on \(\sigma_1\mathbf{u}_1\) — the ellipse's long axis, length \(\sqrt3\). On \(\mathbf{v}_2\), it lands on \(\mathbf{u}_2\), length 1. The grey arrow \(\mathbf{u}_3\) is the direction no input can ever reach: \(\Sigma\)'s zero row, standing upright out of the image plane.</p>
@@ -642,24 +737,26 @@ main:focus{outline:none}
     <p>Now collect the unit's two best ideas and let them collide. Section 4 read a symmetric matrix as a sum of importance-ranked projection layers. The SVD does the same for <em>every</em> matrix: multiply \(U\Sigma V^{\top}\) out column-against-row and \(\Sigma\)'s diagonal pairs each \(\mathbf{u}_i\) with its \(\mathbf{v}_i\):</p>
     \[A=\sum_{i=1}^{r}\sigma_i\,\mathbf{u}_i\mathbf{v}_i^{\top}=\underbrace{\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}}_{\text{loudest}}+\underbrace{\sigma_2\mathbf{u}_2\mathbf{v}_2^{\top}}_{\text{quieter}}+\cdots+\underbrace{\sigma_r\mathbf{u}_r\mathbf{v}_r^{\top}}_{\text{faintest}}\]
     <p>— a stack of rank-1 layers, <strong>sorted loudest-first</strong> because the σ's are sorted. Since real-world matrices concentrate their energy in the first few singular values, truncating the sum at \(k\) terms gives the <strong>rank-\(k\) approximation</strong> \(\hat A(k)=\sum_{i=1}^{k}\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\), and the <strong>Eckart–Young theorem</strong> says this is not merely <em>a</em> compression — it is provably the <em>best possible</em> rank-\(k\) approximation of \(A\), with error exactly the loudest singular value you discarded: \(\|A-\hat A(k)\|_2=\sigma_{k+1}\).</p>
-    <p>The companion's tiny example, by hand: keep only the loudest layer of the tall \(B\). \(\hat B(1)=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\sqrt3\cdot\tfrac{1}{\sqrt6}(2,1,1)^{\top}\cdot\tfrac{1}{\sqrt2}(1,1)=\begin{bmatrix}1&1\\0.5&0.5\\0.5&0.5\end{bmatrix}\), and the error is the dropped \(\sigma_2=1\). Six numbers describing a matrix of six — no saving yet at this toy size. But scale it up: an image <em>is</em> a matrix, and now the layer cake becomes a compressor. Try it:</p>
+    <p>The companion's tiny example, by hand: keep only the loudest layer of the tall \(B\). \(\hat B(1)=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\sqrt3\cdot\tfrac{1}{\sqrt6}(2,1,1)^{\top}\cdot\tfrac{1}{\sqrt2}(1,1)=\begin{bmatrix}1&1\\0.5&0.5\\0.5&0.5\end{bmatrix}\), and the error is the dropped \(\sigma_2=1\). Six numbers describing a matrix of six — no saving yet at this toy size. But scale it up: an image <em>is</em> a matrix — every pixel one entry — and now the layer cake becomes a compressor. Below is a real photograph (a NASA astronaut, 36×36 pixels = 1,296 honest numbers). Watch her face assemble out of rank-1 layers, loudest first:</p>
   </div>
 
   <div class="widget" id="w-rank">
     <div class="widget-head"><span class="w-title">The image squeezer</span><span class="w-sub">a picture is a matrix · keep k layers · watch it reassemble</span></div>
     <div class="tabs" id="rk-tabs">
-      <button data-t="sigma" aria-selected="true">the letter Σ</button>
-      <button data-t="face">a face</button>
+      <button data-t="photo" aria-selected="true">a real photo</button>
+      <button data-t="sigma">the letter Σ</button>
       <button data-t="grad">smooth gradient</button>
       <button data-t="noise">pure noise</button>
     </div>
     <div class="wrow">
       <div class="wcol" style="flex:1.7 1 320px"><svg id="rk-svg" viewBox="0 0 560 330" class="svg-lab" role="img" aria-label="Original image beside its rank-k reconstruction, as grayscale grids"></svg></div>
       <div class="wcol" style="flex:1 1 260px">
-        <div class="controls"><div class="ctl"><label>keep k layers</label><input type="range" id="rk-k" min="1" max="16" step="1" value="3"><output id="rk-ko">3</output></div></div>
+        <div class="controls"><div class="ctl"><label>keep k layers</label><input type="range" id="rk-k" min="1" max="36" step="1" value="3"><output id="rk-ko">3</output></div></div>
+        <div class="presets"><button class="preset" id="rk-play">▶ rebuild layer by layer</button></div>
         <svg id="rk-bars" viewBox="0 0 300 110" class="svg-lab" role="img" aria-label="Bar chart of singular values, kept versus discarded" style="margin-top:.5rem"></svg>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem">
           <span class="chip">storage <b id="rk-store">—</b></span>
+          <span class="chip">energy <b id="rk-en">—</b></span>
           <span class="chip">error σ₍k₊₁₎ = <b id="rk-err">—</b></span>
         </div>
         <div id="rk-verdict" class="verdict info" style="margin-top:.6rem">—</div>
@@ -700,9 +797,46 @@ main:focus{outline:none}
     <p>One last gift from the SVD. Ask: what is the <em>most</em> a matrix can ever amplify a vector? That worst-case stretch is the <strong>spectral norm</strong>,</p>
     \[\|A\|_2=\max_{\mathbf{x}\neq\mathbf{0}}\frac{\|A\mathbf{x}\|_2}{\|\mathbf{x}\|_2}=\sigma_1\]
     <p>— simply the longest semi-axis of the output ellipsoid, achieved by feeding in \(\mathbf{v}_1\) (the output points along \(\mathbf{u}_1\)). The lecture's example: \(A=\begin{bmatrix}1&2\\3&4\end{bmatrix}\) has \(\Sigma=\operatorname{diag}(5.465,\,0.366)\), so \(\|A\|_2=5.465\) — and the ratio \(\sigma_1/\sigma_2\approx15\) says this matrix amplifies its favourite direction fifteen times more than its least favourite: fairly ill-conditioned, the kind of matrix that makes numerical software sweat. Spectral norms bound errors, govern the stability of deep networks (exploding/vanishing signals track products of σ's), and put the "spectral" in spectral normalization for GANs.</p>
-    <p>And the family portrait, one table to close the ladder:</p>
+    <p>Hunt for the worst case yourself. Spin an input direction and watch how much the matrix amplifies it — the orange profile around the origin is the amplification in <em>every</em> direction at once:</p>
   </div>
+
+  <div class="widget" id="w-amp">
+    <div class="widget-head"><span class="w-title">The amplifier dial</span><span class="w-sub">‖Ax‖ for every unit input x — the loudest direction is the spectral norm</span></div>
+    <div class="tabs" id="am-tabs">
+      <button data-t="lec" aria-selected="true">[[1,2],[3,4]]</button>
+      <button data-t="sym">symmetric [[2,1],[1,2]]</button>
+      <button data-t="rot">rotation 90°</button>
+      <button data-t="near">nearly singular</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.6 1 300px"><svg id="am-svg" viewBox="0 0 560 400" class="svg-lab grabbable" role="img" aria-label="Polar profile of the amplification of every unit direction, with a draggable input direction"></svg>
+      <span class="drag-hint">✋ drag to aim the input — find the peak</span></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="readout" id="am-read" style="line-height:2"></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
+          <span class="chip">‖A‖₂ = σ₁ = <b id="am-s1">—</b></span>
+          <span class="chip">σ₂ = <b id="am-s2">—</b></span>
+          <span class="chip">σ₁/σ₂ = <b id="am-k">—</b></span>
+        </div>
+        <div id="am-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The orange curve plots \(\|A\mathbf{x}\|\) at angle θ — an amplification radar. Its longest reach is \(\sigma_1\) (hit it and you're aiming along \(\mathbf{v}_1\)); its shortest is \(\sigma_2\). On the rotation the profile is a perfect circle: every direction amplified by exactly 1. On <em>nearly singular</em>, the quiet direction almost dies — that pinch is what ill-conditioning looks like.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On the <em>nearly singular</em> preset, the profile is long one way and pinched almost to zero the other. What does that shape mean for solving \(A\mathbf{x}=\mathbf{b}\)?</p>
+    <div class="opts">
+      <button data-correct data-why="σ₂ ≈ 0 means some input direction is almost annihilated — so recovering it from the output means dividing by nearly zero. Tiny noise in b explodes into huge swings in x. The ratio σ₁/σ₂ (the condition number) is exactly the amplification factor of that error — the pinched profile IS numerical instability, drawn as a shape.">Solutions become hyper-sensitive: noise in \(\mathbf{b}\) gets divided by the tiny σ₂</button>
+      <button data-why="Existence isn't the issue while σ₂ > 0 — the matrix is still technically invertible. The trouble is amplification: inverting means dividing by each σ, and dividing by 0.02 turns a speck of noise into a catastrophe.">No solution exists — the matrix has become singular</button>
+      <button data-why="The loud direction is the SAFE one, oddly — it's well-determined. Trouble lives in the quiet direction: to undo the map there you must divide by the near-zero σ₂, and that division is what blows up.">Errors blow up along the loudest direction σ₁</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
   <div class="prose">
+    <p>And the family portrait, one table to close the ladder:</p>
   <table class="plain">
     <tr><th></th><th>Eigen / Spectral</th><th>SVD</th></tr>
     <tr><td>Form</td><td>\(A=PDP^{-1}\) (or \(Q\Lambda Q^{\top}\))</td><td>\(A=U\Sigma V^{\top}\)</td></tr>
@@ -736,7 +870,7 @@ main:focus{outline:none}
     <p><strong>Every matrix is rotate · stretch · rotate.</strong> The only questions are whether the two rotations are the same (symmetric), whether they're transposes or inverses (spectral vs eigen), and how fast the stretches fade (that's compressibility). Once you sort the stretches loudest-first, keeping the top few is the best summary a matrix can have — and half of applied ML is exactly that act.</p>
   </div>
     <h3 style="margin:.3rem 0 .4rem">Unit 6 · Differentiation</h3>
-    <p style="font-size:.92rem;color:var(--ink-2);margin:0">Linear algebra's board is complete. Now the pieces start to move: calculus enters, and with it the single most important question in machine learning — <em>if I nudge the input, how does the output change?</em> <em>(Being built next.)</em></p>
+    <p style="font-size:.92rem;color:var(--ink-2);margin:0">Linear algebra's board is complete. Now the pieces start to move: calculus enters, and with it the single most important question in machine learning — <em>if I nudge the input, how does the output change?</em> <a href="unit-06.html">It's live — keep going →</a></p>
   </div>
 </section>
 <section class="unit" id="spractice">
@@ -1129,38 +1263,98 @@ updScore();
   addEventListener('scroll',spy,{passive:true});spy();
 })();
 const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
+/* ---------- tiny animation runtime (respects reduced motion) ---------- */
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const easeIO=u=>u<0.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+function tween(dur,step,done){
+  if(RM){step(1);done&&done();return {stop(){}};}
+  let dead=false;const t0=performance.now();
+  (function fr(t){if(dead)return;const u=Math.min(1,(t-t0)/dur);step(easeIO(u));
+    if(u<1)requestAnimationFrame(fr);else done&&done();})(t0);
+  return {stop(){dead=true;}};}
+/* ================= W-DIALS · TWO INDEPENDENT DIALS ================= */
+(function(){
+  const svg=document.getElementById('dl-svg');if(!svg)return;
+  let d1=2,d2=0.6,k=1;
+  function draw(){
+    const p=plane(svg,-3.4,3.4,-2.4,2.4,{});
+    // transformed grid lines: images of vertical/horizontal unit-grid under diag
+    const D1=Math.pow(d1,k),D2=Math.pow(d2,k);
+    for(let g=-3;g<=3;g++){
+      if(Math.abs(g*D1)<=3.6)el('line',{x1:p.px(g*D1),y1:p.py(-2.6),x2:p.px(g*D1),y2:p.py(2.6),stroke:'var(--s1)','stroke-width':1,opacity:.28},svg);
+      if(Math.abs(g*D2)<=2.6)el('line',{x1:p.px(-3.6),y1:p.py(g*D2),x2:p.px(3.6),y2:p.py(g*D2),stroke:'var(--s1)','stroke-width':1,opacity:.28},svg);}
+    // unit circle (ghost) and its image (ellipse aligned with axes)
+    el('circle',{cx:p.px(0),cy:p.py(0),r:p.px(1)-p.px(0),fill:'none',stroke:'var(--ink-muted)','stroke-width':1.4,'stroke-dasharray':'5 4',opacity:.7},svg);
+    let d='';for(let i=0;i<=140;i++){const t=i/140*2*Math.PI;
+      d+=(i?'L':'M')+p.px(Math.cos(t)*D1).toFixed(1)+','+p.py(Math.sin(t)*D2).toFixed(1);}
+    el('path',{d:d+'Z',fill:'var(--s1)','fill-opacity':.08,stroke:'var(--s1)','stroke-width':2.2},svg);
+    arrow(p,0,0,D1,0,'var(--s2)',3,'d₁ᵏ·e₁');
+    arrow(p,0,0,0,D2,'var(--s3)',3,'d₂ᵏ·e₂');
+    const dets=D1*D2;
+    const read=document.getElementById('dl-read');
+    read.innerHTML=`D = diag(${fmt(d1)}, ${fmt(d2)})<br>`
+      +`Dᵏ = diag(${fmt(D1,3)}, ${fmt(D2,3)}) — per dial<br>`
+      +`det Dᵏ = ${fmt(D1,2)}·${fmt(D2,2)} = <b>${fmt(dets,3)}</b><br>`
+      +`D⁻¹ = ${Math.abs(d1)<0.05||Math.abs(d2)<0.05?'<b style="color:var(--critical)">impossible — a dial is 0</b>':`diag(${fmt(1/d1,3)}, ${fmt(1/d2,3)})`}`;
+    const v=document.getElementById('dl-verdict');
+    if(Math.abs(d1)<0.05||Math.abs(d2)<0.05){v.className='verdict bad';v.textContent='✗ A dial at 0 crushes its whole axis — the ellipse collapses to a line, det = 0, and no inverse can resurrect the lost dimension.';}
+    else if(d1<0||d2<0){v.className='verdict info';v.textContent='A negative dial flips its axis while scaling it — each axis still minds only its own business.';}
+    else{v.className='verdict good';v.textContent='✓ Two 1-D problems in a trench coat: each axis scales by its own dial, and nothing ever mixes.';}
+  }
+  bindCtlLocal('dl-d1',v=>{d1=v;draw();});
+  bindCtlLocal('dl-d2',v=>{d2=v;draw();});
+  bindCtlLocal('dl-k',v=>{k=v|0;draw();},v=>String(v|0));
+  function bindCtlLocal(id,fn,fm){const r=document.getElementById(id),o=document.getElementById(id+'-o');
+    const upd=()=>{if(o)o.textContent=fm?fm(+r.value):fmt(+r.value,2);fn(+r.value);};
+    r.addEventListener('input',upd);upd();}
+  draw();
+})();
 /* ================= W-PROJ · LAYER VIEW ================= */
 (function(){
   const svg=document.getElementById('proj-svg');if(!svg)return;
   const R=Math.SQRT1_2,q1=[R,R],q2=[-R,R];
   const L1=[[1.5,1.5],[1.5,1.5]],L2=[[0.5,-0.5],[-0.5,0.5]];
   const SUM=[[2,1],[1,2]];
-  let modeI=2;
+  const MOF=m=>m===0?L1:(m===1?L2:SUM);
+  let modeI=2,Mcur=SUM.map(r=>r.slice()),animH=null;
   function mstr(M){return `[[${fmt(M[0][0])}, ${fmt(M[0][1])}], [${fmt(M[1][0])}, ${fmt(M[1][1])}]]`;}
-  function draw(){
+  function draw(M){
+    M=M||Mcur;
     const p=plane(svg,-3.4,3.4,-2.6,2.6,{});
-    const M=modeI===0?L1:(modeI===1?L2:SUM);
     el('circle',{cx:p.px(0),cy:p.py(0),r:p.px(1)-p.px(0),fill:'none',stroke:'var(--ink-muted)','stroke-width':1.4,'stroke-dasharray':'5 4',opacity:.7},svg);
     [[q1,'q₁'],[q2,'q₂']].forEach(([q,lb])=>{
       el('line',{x1:p.px(-q[0]*4.4),y1:p.py(-q[1]*4.4),x2:p.px(q[0]*4.4),y2:p.py(q[1]*4.4),stroke:'var(--s7)','stroke-width':1.3,'stroke-dasharray':'7 5',opacity:.55},svg);
       txt(svg,p.px(q[0]*2.25)+4,p.py(q[1]*2.25)-4,lb,'font:700 11px system-ui;fill:var(--s7)');});
+    // ghost of the full A for reference while a single layer is shown
+    if(modeI!==2){let dg='';for(let i=0;i<=140;i++){const t=i/140*2*Math.PI,v=mul2(SUM,[Math.cos(t),Math.sin(t)]);
+      dg+=(i?'L':'M')+p.px(v[0]).toFixed(1)+','+p.py(v[1]).toFixed(1);}
+      el('path',{d:dg+'Z',fill:'none',stroke:'var(--ink-muted)','stroke-width':1.2,'stroke-dasharray':'3 4',opacity:.45},svg);}
     let d='';for(let i=0;i<=140;i++){const t=i/140*2*Math.PI,v=mul2(M,[Math.cos(t),Math.sin(t)]);
       d+=(i?'L':'M')+p.px(v[0]).toFixed(1)+','+p.py(v[1]).toFixed(1);}
-    el('path',{d:d+'Z',fill:'var(--s1)','fill-opacity':modeI===2?.08:0,stroke:'var(--s1)','stroke-width':2.2},svg);
+    el('path',{d:d+'Z',fill:'var(--s1)','fill-opacity':modeI===2?.08:0.04,stroke:'var(--s1)','stroke-width':2.2},svg);
     // sample dots to show crushing
     for(let i=0;i<12;i++){const t=i/12*2*Math.PI,x=[Math.cos(t),Math.sin(t)],v=mul2(M,x);
+      el('line',{x1:p.px(x[0]),y1:p.py(x[1]),x2:p.px(v[0]),y2:p.py(v[1]),stroke:'var(--s2)','stroke-width':1,opacity:.3},svg);
       el('circle',{cx:p.px(x[0]),cy:p.py(x[1]),r:2.5,fill:'var(--ink-muted)',opacity:.5},svg);
       el('circle',{cx:p.px(v[0]),cy:p.py(v[1]),r:3,fill:'var(--s2)',opacity:.85},svg);}
     const mx=document.getElementById('proj-mx');
-    mx.innerHTML=`3·q₁q₁ᵀ = ${modeI!==1?'<b>':''}${mstr(L1)}${modeI!==1?'</b>':''}<br>1·q₂q₂ᵀ = ${modeI!==0?'<b>':''}${mstr(L2)}${modeI!==0?'</b>':''}<br>sum = ${mstr(modeI===2?SUM:(modeI===0?L1:L2))}${modeI===2?' = A ✓':''}`;
+    mx.innerHTML=`3·q₁q₁ᵀ = ${modeI!==1?'<b>':''}${mstr(L1)}${modeI!==1?'</b>':''}<br>1·q₂q₂ᵀ = ${modeI!==0?'<b>':''}${mstr(L2)}${modeI!==0?'</b>':''}<br>sum = ${mstr(MOF(modeI))}${modeI===2?' = A ✓':''}`;
     const v=document.getElementById('proj-verdict');
-    if(modeI===0){v.className='verdict info';v.textContent='Rank 1: the whole plane is crushed onto the q₁ line, amplified ×3. One layer = one direction of information.';}
-    else if(modeI===1){v.className='verdict info';v.textContent='Rank 1: everything flattens onto the q₂ line, scale ×1 — the quiet layer.';}
+    if(modeI===0){v.className='verdict info';v.textContent='Rank 1: the whole plane is crushed onto the q₁ line, amplified ×3. One layer = one direction of information. (Dotted: the full A, waiting.)';}
+    else if(modeI===1){v.className='verdict info';v.textContent='Rank 1: everything flattens onto the q₂ line, scale ×1 — the quiet layer. (Dotted: the full A.)';}
     else{v.className='verdict good';v.textContent='✓ Layers added: 3·q₁q₁ᵀ + 1·q₂q₂ᵀ = [[2,1],[1,2]] — the full ellipse, the full matrix.';}
+  }
+  function go(m){
+    const from=Mcur.map(r=>r.slice()),to=MOF(m);modeI=m;
+    if(animH)animH.stop();
+    animH=tween(520,u=>{
+      Mcur=[[from[0][0]+(to[0][0]-from[0][0])*u,from[0][1]+(to[0][1]-from[0][1])*u],
+            [from[1][0]+(to[1][0]-from[1][0])*u,from[1][1]+(to[1][1]-from[1][1])*u]];
+      draw();});
   }
   document.querySelectorAll('#proj-tabs button').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#proj-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
-    b.setAttribute('aria-selected','true');modeI=+b.dataset.t;draw();}));
+    b.setAttribute('aria-selected','true');go(+b.dataset.t);}));
   draw();
 })();
 /* ================= W-DIAG · TRANSLATOR ================= */
@@ -1170,7 +1364,7 @@ const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
   const Pinv=v=>[(v[0]+2*v[1])/3,(-v[0]+v[1])/3]; // (1/3)[[1,2],[-1,1]]
   const Pm=v=>[v[0]*1+v[1]*(-2),v[0]*1+v[1]*1];
   const D=v=>[5*v[0],-1*v[1]];
-  let x=[1,0.5],stage=0,p;
+  let x=[1,0.5],stage=0,p,animH=null,animV=null;
   function chainOf(x){const c0=x,c1=Pinv(x),c2=D(c1),c3=Pm(c2);return [c0,c1,c2,c3];}
   function powA(k){let M=[[1,0],[0,1]];for(let i=0;i<k;i++)M=[[A[0][0]*M[0][0]+A[0][1]*M[1][0],A[0][0]*M[0][1]+A[0][1]*M[1][1]],[A[1][0]*M[0][0]+A[1][1]*M[1][0],A[1][0]*M[0][1]+A[1][1]*M[1][1]]];return M;}
   function draw(){
@@ -1180,9 +1374,10 @@ const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
       txt(svg,p.px(u[0]*3.1)+4,p.py(u[1]*3.1)-4,lb,'font:700 11px system-ui;fill:var(--s7)');});
     const chain=chainOf(x),names=['x','P⁻¹x','DP⁻¹x','PDP⁻¹x = Ax'];
     for(let s=0;s<stage;s++){const g=chain[s];
-      el('line',{x1:p.px(0),y1:p.py(0),x2:p.px(g[0]),y2:p.py(g[1]),stroke:'var(--ink-muted)','stroke-width':2,opacity:.28,'stroke-linecap':'round'},svg);}
-    const cv=chain[stage];
-    arrow(p,0,0,cv[0],cv[1],'var(--warning)',3.6,names[stage]);
+      el('line',{x1:p.px(0),y1:p.py(0),x2:p.px(g[0]),y2:p.py(g[1]),stroke:'var(--ink-muted)','stroke-width':2,opacity:.28,'stroke-linecap':'round'},svg);
+      el('circle',{cx:p.px(g[0]),cy:p.py(g[1]),r:3,fill:'var(--ink-muted)',opacity:.4},svg);}
+    const cv=animV||chain[stage];
+    arrow(p,0,0,cv[0],cv[1],'var(--warning)',3.6,animV?'':names[stage]);
     document.getElementById('dg-co').innerHTML=chain.map((v,i)=>{
       const b=i===stage;return `${b?'<b style="color:var(--s1)">':''}${['x','P⁻¹x','DP⁻¹x','PDP⁻¹x'][i]} = (${fmt(v[0])}, ${fmt(v[1])})${i===3?' = Ax ✓':''}${b?'</b>':''}`;}).join('<br>');
     const k=+document.getElementById('dg-k').value;
@@ -1202,8 +1397,85 @@ const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
   ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>drag=false));
   document.querySelectorAll('#dg-stages button').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#dg-stages button').forEach(s=>s.setAttribute('aria-selected','false'));
-    b.setAttribute('aria-selected','true');stage=+b.dataset.s;draw();}));
+    b.setAttribute('aria-selected','true');
+    const old=stage,neu=+b.dataset.s,chain=chainOf(x);
+    stage=neu;
+    if(animH)animH.stop();
+    const a=chain[old],c=chain[neu];
+    animH=tween(480,u=>{animV=[a[0]+(c[0]-a[0])*u,a[1]+(c[1]-a[1])*u];draw();},()=>{animV=null;draw();});}));
   document.getElementById('dg-k').addEventListener('input',draw);
+  draw();
+})();
+/* ================= W-HUNT · THE EIGEN-HUNTER ================= */
+(function(){
+  const svg=document.getElementById('ht-svg');if(!svg)return;
+  const MATS={
+    sym:{A:[[2,1],[1,2]],eig:[[1,1],[-1,1]],lam:[3,1],n:'symmetric — two hits, perpendicular'},
+    lean:{A:[[1,4],[2,3]],eig:[[1,1],[-2,1]],lam:[5,-1],n:'leaning — two hits, not perpendicular'},
+    shear:{A:[[1,1],[0,1]],eig:[[1,0]],lam:[1],n:'shear — ONE hit only: defective'},
+    rot:{A:[[0,-1],[1,0]],eig:[],lam:[],n:'rotation — zero hits: every direction turns'}};
+  let cur='sym',th=0.45,playing=null;
+  const lineAngle=(v,w)=>{ // angle between the LINES through v and w, in degrees 0..90
+    const dot=v[0]*w[0]+v[1]*w[1],na=Math.hypot(v[0],v[1]),nb=Math.hypot(w[0],w[1]);
+    if(nb<1e-12)return 0;
+    return Math.acos(Math.min(1,Math.abs(dot)/(na*nb)))*180/Math.PI;};
+  function draw(){
+    const M=MATS[cur],A=M.A;
+    const p=plane(svg,-2.9,2.9,-2.1,2.1,{});
+    el('circle',{cx:p.px(0),cy:p.py(0),r:p.px(1)-p.px(0),fill:'none',stroke:'var(--ink-muted)','stroke-width':1.4,'stroke-dasharray':'5 4',opacity:.65},svg);
+    // eigendirections as dashed lines
+    M.eig.forEach((q,i)=>{const L=Math.hypot(q[0],q[1]),u=[q[0]/L,q[1]/L];
+      el('line',{x1:p.px(-u[0]*4),y1:p.py(-u[1]*4),x2:p.px(u[0]*4),y2:p.py(u[1]*4),stroke:'var(--s3)','stroke-width':1.5,'stroke-dasharray':'7 5',opacity:.7},svg);
+      txt(svg,p.px(u[0]*1.98)+5,p.py(u[1]*1.98)-5,'λ='+M.lam[i],'font:700 11px system-ui;fill:var(--s3)');});
+    const v=[Math.cos(th),Math.sin(th)],Av=mul2(A,v);
+    // faint trail: image of the whole circle
+    let d='';for(let i=0;i<=140;i++){const t=i/140*2*Math.PI,w=mul2(A,[Math.cos(t),Math.sin(t)]);
+      d+=(i?'L':'M')+p.px(w[0]).toFixed(1)+','+p.py(w[1]).toFixed(1);}
+    el('path',{d:d+'Z',fill:'none',stroke:'var(--s1)','stroke-width':1.2,opacity:.3},svg);
+    arrow(p,0,0,v[0],v[1],'var(--warning)',3.4,'v');
+    arrow(p,0,0,Av[0],Av[1],'var(--s1)',3,'Av');
+    const ang=lineAngle(v,Av);
+    const dot=v[0]*Av[0]+v[1]*Av[1];
+    const hit=ang<1.2&&Math.hypot(Av[0],Av[1])>1e-9;
+    // gauge strip: line-angle for every direction
+    const g=document.getElementById('ht-gauge');g.innerHTML='';
+    const GX=t=>18+t/Math.PI*264,GY=a=>66-a/95*48;
+    el('rect',{x:18,y:14,width:264,height:52,rx:6,fill:'none',stroke:'var(--ring)'},g);
+    el('line',{x1:18,y1:GY(0),x2:282,y2:GY(0),stroke:'var(--s3)','stroke-width':1,'stroke-dasharray':'3 3',opacity:.8},g);
+    let gd='';for(let i=0;i<=180;i++){const t=i/180*Math.PI,w=[Math.cos(t),Math.sin(t)];
+      gd+=(i?'L':'M')+GX(t).toFixed(1)+','+GY(lineAngle(w,mul2(A,w))).toFixed(1);}
+    el('path',{d:gd,stroke:'var(--s2)','stroke-width':2,fill:'none'},g);
+    const thm=((th%Math.PI)+Math.PI)%Math.PI;
+    el('circle',{cx:GX(thm),cy:GY(ang),r:4.5,fill:'var(--warning)',stroke:'var(--ink)','stroke-width':1},g);
+    txt(g,18,10,'how far each direction gets turned (0° = eigen!)','font:600 9.5px system-ui;fill:var(--ink-muted)');
+    txt(g,284,GY(0)+3.5,'0°','font:600 9px system-ui;fill:var(--s3)');
+    const read=document.getElementById('ht-read');
+    read.innerHTML=`${M.n}<br>v = (${fmt(v[0])}, ${fmt(v[1])})<br>Av = (${fmt(Av[0])}, ${fmt(Av[1])})<br>line turned by <b style="color:var(--s2)">${fmt(ang,1)}°</b>`;
+    const verd=document.getElementById('ht-verdict');
+    if(hit){const lam=dot/(v[0]*v[0]+v[1]*v[1]);
+      verd.className='verdict good';
+      verd.textContent='✓ Caught one! Av = '+fmt(lam,2)+'·v — an eigendirection'+(lam<0?' (flipped: λ < 0, the line survives even though the arrow reverses)':'')+'.';}
+    else if(cur==='rot'){verd.className='verdict bad';verd.textContent='✗ 90° everywhere — the rotation turns every single direction. No real eigenvectors exist; the strip chart never touches zero.';}
+    else{verd.className='verdict info';verd.textContent='Still turning ('+fmt(ang,1)+'°). Sweep on — you\'re hunting the directions where the two arrows fuse into one line.';}
+  }
+  function stop(){if(playing){playing.stop();playing=null;document.getElementById('ht-play').textContent='▶ auto-sweep';}}
+  document.getElementById('ht-play').addEventListener('click',()=>{
+    if(playing){stop();return;}
+    document.getElementById('ht-play').textContent='⏸ stop';
+    const t0=th;
+    playing=tween(7000,u=>{th=t0+u*Math.PI;draw();},()=>{stop();});});
+  let drag=false;
+  svg.addEventListener('pointerdown',e=>{stop();drag=true;try{svg.setPointerCapture(e.pointerId)}catch(_){}
+    const p=plane(svg,-2.9,2.9,-2.1,2.1,{});const q=planePt(svg,p,e);th=Math.atan2(q[1],q[0]);draw();e.preventDefault();});
+  svg.addEventListener('pointermove',e=>{if(!drag)return;
+    const r=svg.getBoundingClientRect(),W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
+    // reuse current projection by recomputing angle directly from svg coords
+    const sx=(e.clientX-r.left)/r.width*W,sy=(e.clientY-r.top)/r.height*H;
+    th=Math.atan2(-(sy-H/2),sx-W/2);draw();});
+  ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>drag=false));
+  document.querySelectorAll('#ht-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#ht-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');stop();cur=b.dataset.t;draw();}));
   draw();
 })();
 /* ================= W-SVD · UNIVERSAL MACHINE ================= */
@@ -1213,26 +1485,45 @@ const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
               rot:{A:[[0,-1],[1,0]],eig:'eigenvalues: ±i — fled to ℂ; the SVD shrugs'},
               shear:{A:[[1,1],[0,1]],eig:'defective for eigendecomposition — SVD exists happily'},
               sym:{A:[[2,1],[1,2]],eig:'λ = 3, 1 = σ — symmetric PD: the rungs coincide'}};
-  let cur='lec',stage=3;
-  function draw(){
+  let cur='lec',stage=3,U=3,animH=null; // U = continuous pipeline position 0..3
+  function pipeline(){
     const A=MATS[cur].A,{S,Ucols,Vcols}=svdSmall(A);
-    const s1=S[0],s2=S[1],r=Math.max(2.3,s1*1.12);
-    const p=plane(svg,-r,r,-r*0.79,r*0.79,{tickEvery:r>4?2:1,step:r>4?2:1});
-    const v1=Vcols[0],v2=Vcols[1],u1=Ucols[0],u2=Ucols[1];
+    const s1=S[0],s2=S[1],v1=Vcols[0],v2=Vcols[1],u1=Ucols[0],u2=Ucols[1];
     const Vt=x=>[v1[0]*x[0]+v1[1]*x[1],v2[0]*x[0]+v2[1]*x[1]];
     const Sg=x=>[s1*x[0],s2*x[1]];
     const Um=x=>[u1[0]*x[0]+u2[0]*x[1],u1[1]*x[0]+u2[1]*x[1]];
-    const F=[x=>x,Vt,x=>Sg(Vt(x)),x=>Um(Sg(Vt(x)))][stage];
-    let d='';for(let i=0;i<=140;i++){const t=i/140*2*Math.PI,v=F([Math.cos(t),Math.sin(t)]);
+    const F=[x=>x,Vt,x=>Sg(Vt(x)),x=>Um(Sg(Vt(x)))];
+    const Fu=x=>{ // continuous morph along the pipeline
+      const s=Math.min(2,Math.floor(U)),f=U-s;
+      const a=F[s](x),b=F[s+1](x);
+      return [a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];};
+    return {A,s1,s2,v1,v2,u1,u2,F,Fu};}
+  function draw(){
+    const {s1,s2,v1,v2,u1,u2,F,Fu}=pipeline();
+    const r=Math.max(2.3,s1*1.18);
+    const p=plane(svg,-r,r,-r*0.82,r*0.82,{tickEvery:r>4?2:1,step:r>4?2:1});
+    const si=Math.round(U),atStage=Math.abs(U-si)<1e-3;
+    // ghost: the untouched input circle stays visible for reference
+    if(U>0.01){let dg='';for(let i=0;i<=100;i++){const t=i/100*2*Math.PI;
+      dg+=(i?'L':'M')+p.px(Math.cos(t)).toFixed(1)+','+p.py(Math.sin(t)).toFixed(1);}
+      el('path',{d:dg+'Z',fill:'none',stroke:'var(--ink-muted)','stroke-width':1.2,'stroke-dasharray':'4 4',opacity:.5},svg);}
+    // ghost: previous stage outline while animating or when at a stage > 1
+    const prev=Math.max(0,(atStage?si:Math.floor(U)));
+    if(prev>0&&U>0.5){let dp='';for(let i=0;i<=120;i++){const t=i/120*2*Math.PI,v=F[prev===si&&atStage?si-1:prev]([Math.cos(t),Math.sin(t)]);
+      dp+=(i?'L':'M')+p.px(v[0]).toFixed(1)+','+p.py(v[1]).toFixed(1);}
+      el('path',{d:dp+'Z',fill:'none',stroke:'var(--s1)','stroke-width':1.1,opacity:.25},svg);}
+    let d='';for(let i=0;i<=140;i++){const t=i/140*2*Math.PI,v=Fu([Math.cos(t),Math.sin(t)]);
       d+=(i?'L':'M')+p.px(v[0]).toFixed(1)+','+p.py(v[1]).toFixed(1);}
-    el('path',{d:d+'Z',fill:'var(--s1)','fill-opacity':.08,stroke:'var(--s1)','stroke-width':2.2},svg);
-    // input frame (follows the pipeline)
-    const fv1=F(v1),fv2=F(v2);
-    arrow(p,0,0,fv1[0],fv1[1],'var(--s2)',3,'v₁→');
-    arrow(p,0,0,fv2[0],fv2[1],'var(--s2)',2.2,'v₂→','font:700 11px system-ui;fill:var(--s2)');
-    // output frame shown at final stage
-    if(stage===3){arrow(p,0,0,u1[0]*s1,u1[1]*s1,'var(--s1)',2.6,'σ₁u₁');
-      arrow(p,0,0,u2[0]*s2,u2[1]*s2,'var(--s1)',2,'σ₂u₂','font:700 11px system-ui;fill:var(--s1)');}
+    el('path',{d:d+'Z',fill:'var(--s1)','fill-opacity':.09,stroke:'var(--s1)','stroke-width':2.4},svg);
+    const fv1=Fu(v1),fv2=Fu(v2),done=U>2.9;
+    // output frame fades in at the final stage
+    if(U>2.6){const op=Math.min(1,(U-2.6)/0.4);
+      const g1=arrow(p,0,0,u1[0]*s1,u1[1]*s1,'var(--s1)',3.6,'σ₁u₁');
+      const g2=arrow(p,0,0,u2[0]*s2,u2[1]*s2,'var(--s1)',2.8,'σ₂u₂','font:700 11px system-ui;fill:var(--s1)');
+      g1.setAttribute('opacity',op);g2.setAttribute('opacity',op);}
+    // input frame rides the pipeline in orange; at the end it lands exactly on σᵢuᵢ (thin core inside blue)
+    arrow(p,0,0,fv1[0],fv1[1],'var(--s2)',done?1.6:3,done?'':'v₁→');
+    arrow(p,0,0,fv2[0],fv2[1],'var(--s2)',done?1.3:2.2,done?'':'v₂→','font:700 11px system-ui;fill:var(--s2)');
     document.getElementById('sv-s1').textContent=fmt(s1,3);
     document.getElementById('sv-s2').textContent=fmt(s2,3);
     document.getElementById('sv-cond').textContent=s2>1e-9?fmt(s1/s2,2):'∞';
@@ -1241,17 +1532,24 @@ const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
     const stageTxt=['Input: the unit circle, with the special directions v₁, v₂ marked — an orthonormal frame.',
       'Vᵀ applied: still a perfect circle (rotations are honest motions) — but v₁, v₂ now sit on the axes.',
       'Σ applied: stretch ×'+fmt(s1,2)+' and ×'+fmt(s2,2)+' along the axes — the only stage that changes shape.',
-      '✓ U applied: rotated into final pose. Ellipse axes = σᵢuᵢ, and both frames stayed perpendicular throughout.'][stage];
-    v.className=stage===3?'verdict good':'verdict info';v.textContent=stageTxt;
+      '✓ U applied: rotated into final pose. Ellipse axes = σᵢuᵢ, and both frames stayed perpendicular throughout.'][si];
+    v.className=si===3&&atStage?'verdict good':'verdict info';
+    v.textContent=atStage?stageTxt:['rotating with Vᵀ…','stretching with Σ…','rotating with U…'][Math.min(2,Math.floor(U))];
   }
+  function setStageBtn(s){document.querySelectorAll('#sv-stages button[data-s]').forEach(b=>b.setAttribute('aria-selected',+b.dataset.s===s?'true':'false'));}
+  function goTo(s){
+    if(animH)animH.stop();
+    const from=U;stage=s;setStageBtn(s);
+    animH=tween(Math.abs(s-from)*450+50,u2=>{U=from+(s-from)*u2;draw();});}
   document.querySelectorAll('#sv-tabs button').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#sv-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
     b.setAttribute('aria-selected','true');cur=b.dataset.t;draw();}));
-  document.querySelectorAll('#sv-stages button').forEach(b=>b.addEventListener('click',()=>{
-    document.querySelectorAll('#sv-stages button').forEach(s=>s.setAttribute('aria-selected','false'));
-    b.setAttribute('aria-selected','true');stage=+b.dataset.s;draw();}));
-  document.querySelector('#sv-stages [data-s="0"]').setAttribute('aria-selected','false');
-  document.querySelector('#sv-stages [data-s="3"]').setAttribute('aria-selected','true');
+  document.querySelectorAll('#sv-stages button[data-s]').forEach(b=>b.addEventListener('click',()=>{goTo(+b.dataset.s);}));
+  document.getElementById('sv-play').addEventListener('click',()=>{
+    if(animH)animH.stop();
+    stage=3;setStageBtn(0);U=0;draw();
+    animH=tween(3000,u2=>{U=u2*3;const s=Math.round(U);setStageBtn(Math.min(3,Math.floor(U+0.02)));draw();},()=>{setStageBtn(3);});});
+  setStageBtn(3);
   draw();
 })();
 /* ================= W-TALL · TWO SPACES ================= */
@@ -1281,9 +1579,11 @@ const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
     svgOut.innerHTML='';
     [[1.9,0,0],[0,1.9,0],[0,0,1.9]].forEach(a=>{const P0=eng.proj([-a[0],-a[1],-a[2]]),P1=eng.proj(a);
       el('line',{x1:P0.x,y1:P0.y,x2:P1.x,y2:P1.y,stroke:'var(--grid)','stroke-width':1},svgOut);});
-    // image plane patch (spanned by u1,u2)
+    // image plane patch (spanned by u1,u2) — filled, so the "reachable slice" reads as a surface
     const c=[[1.25*s1,1.15],[1.25*s1,-1.15],[-1.25*s1,-1.15],[-1.25*s1,1.15]].map(([a,b])=>[a*u1[0]+b*u2[0],a*u1[1]+b*u2[1],a*u1[2]+b*u2[2]]);
+    el('polygon',{points:c.map(v=>{const P=eng.proj(v);return P.x.toFixed(1)+','+P.y.toFixed(1);}).join(' '),fill:'var(--wash-1)',stroke:'none'},svgOut);
     poly3([...c,c[0]],'var(--axis)',1.2,.7,'6 5');
+    txt(svgOut,eng.proj(c[0]).x-4,eng.proj(c[0]).y+14,'the only plane B can reach','font:600 10px system-ui;fill:var(--ink-muted)','end');
     // image ellipse
     const ell=[];for(let i=0;i<=100;i++){const t=i/100*2*Math.PI;ell.push(Bx([Math.cos(t),Math.sin(t)]));}
     poly3(ell,'var(--s1)',2.4,.95);
@@ -1304,76 +1604,188 @@ const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
     else if(cos2>0.998){v.className='verdict good';v.textContent='✓ Probe on v₂ → image on the short axis u₂, length 1.';}
     else{v.className='verdict info';v.textContent='The image rides the tilted ellipse — never leaving the u₁u₂ plane. 2-D in, 3-D out, but only a 2-D slice of 3-D is reachable.';}
   }
-  let drag=false;
+  let drag=false,tourH=null;
+  function stopTour(){if(tourH){tourH.stop();tourH=null;document.getElementById('tl-play').textContent='▶ tour the circle';}}
   function move(e){const q=planePt(svgIn,pIn,e);let t=Math.atan2(q[1],q[0]);
     for(const vv of [v1,v2]){const et=Math.atan2(vv[1],vv[0]);
       for(const cand of [et,et+Math.PI,et-Math.PI])if(Math.abs(t-cand)<0.05){t=cand;break;}}
     th=t;draw();}
-  svgIn.addEventListener('pointerdown',e=>{drag=true;try{svgIn.setPointerCapture(e.pointerId)}catch(_){}move(e);e.preventDefault();});
+  svgIn.addEventListener('pointerdown',e=>{stopTour();drag=true;try{svgIn.setPointerCapture(e.pointerId)}catch(_){}move(e);e.preventDefault();});
   svgIn.addEventListener('pointermove',e=>{if(drag)move(e);});
   ['pointerup','pointercancel'].forEach(ev=>svgIn.addEventListener(ev,()=>drag=false));
+  document.getElementById('tl-play').addEventListener('click',()=>{
+    if(tourH){stopTour();return;}
+    document.getElementById('tl-play').textContent='⏸ stop';
+    const t0=th;
+    tourH=tween(8000,u=>{th=t0+u*2*Math.PI;draw();},()=>stopTour());});
   eng.drag(draw);
   draw();
 })();
-/* ================= W-RANK · IMAGE SQUEEZER ================= */
+/* ================= W-RANK · IMAGE SQUEEZER (real photo) ================= */
 (function(){
   const svg=document.getElementById('rk-svg');if(!svg)return;
-  const N=16;
+  /* a real photograph: NASA astronaut (public domain), 36×36 grayscale, 0–99 per pixel */
+  const PHOTO36=['767982828383818286888885858483838486899090888788888888878685858687899293',
+'778082828385858586878684848483838688909190888787878585868686868787889093',
+'788183838386878786868482817872677582848990898786858585868687858585868993',
+'808383838486878686857966575766777972606376858686868686868786848586878992',
+'838585868786858684714651575867808173625248567384878686868787878888888992',
+'868687898987868475382144546370787770605449454868838787868789888888878789',
+'858686878886786961281843576571756652465150414648598688878889898988878687',
+'838383848473545459404257586165656060596150374143377290898888899090868586',
+'818182827050404258585149545765686561595850322736324789918988899090868485',
+'798081755245364253524739444957666665736240231531292780929292919090878584',
+'787979674547444446575648444858636565656242212329282773939393929090888785',
+'787979643748564036575049484853545153514132212729313156909291908988878684',
+'797979693942513139747263656562605041362319192428302442889087878988868380',
+'807979724239382344808486899593928675613618131521252636869086878887858381',
+'818180703228292653788583808996958980776341250716212542878786868686858584',
+'818181742918222963735744627793866960546153340715232355848283838485858585',
+'818282814820153172827868738090766768505252421116272371838182838484858686',
+'828283847841203677929592898588747385827468521717273782858484848484858586',
+'828383858780535378929894908585747085888572511716337589888787868686868686',
+'838384868990847979899584808385766176888668471928739090909090898888878787',
+'848485879091908676817774827777645563798062504977919191909092929190909090',
+'858686889293949278817977818784736362727357658594939291919091929292939393',
+'868788909394939180859279768786775956837458829795939393929292939394949594',
+'878888817263545058819189829090806675876961899594939394949493939495959594',
+'898264422312070526748790888782767178776274929393939494959493929394949493',
+'825624040100000124757887919387827870636088939494939495959493929293949291',
+'612201010707050525818178899389847056526393959595939395959492919193939190',
+'410502103012030220809280696968615048525582969795949494949392919293929089',
+'290816462705000108447984776655505454502335719396959494949493939392918989',
+'332459521302010404081624293542474735190303246391969595969797979693918888',
+'455178421106050503030607070706050502010000022261929796989999999794919088',
+'496479422808030403010405050403020201000001020228669598989999989693929190',
+'505872694614050504000304040402010202000001050307407598989898979594939291',
+'315064788040230802000204040402020201000000061305205287979697979695949394',
+'263651666266350901000305050402010101000001051917114067959696969696959279',
+'452042495561501500000306050403020101000000041924203053899595959595969490'];
   function fromPattern(rows){return rows.map(r=>[...r].map(ch=>ch==='#'?1:(ch==='+'?0.55:0)));}
   const IMGS={};
+  IMGS.photo=PHOTO36.map(r=>{const row=[];for(let j=0;j<36;j++)row.push(+(r[2*j]+r[2*j+1])/99);return row;});
   IMGS.sigma=fromPattern([
     '................','.##############.','.##############.','.###..........#.',
     '..###...........','...###..........','....###.........','.....###........',
     '.....###........','....###.........','...###..........','..###...........',
     '.###..........#.','.##############.','.##############.','................']);
-  (function(){const M=[];for(let i=0;i<N;i++){const row=[];for(let j=0;j<N;j++){
-    const dx=i-7.5,dy=j-7.5,d=Math.hypot(dx,dy);
-    let v=0;
-    if(d<7.4&&d>6.2)v=1;                              // head
-    if(Math.hypot(dx+2.6,dy+2.6)<1.25)v=1;            // eye
-    if(Math.hypot(dx+2.6,dy-2.6)<1.25)v=1;            // eye
-    if(d>3.6&&d<5&&dx>1.2)v=1;                        // smile
-    row.push(v);}M.push(row);}IMGS.face=M;})();
-  (function(){const M=[];for(let i=0;i<N;i++){const row=[];for(let j=0;j<N;j++)row.push((i+j)/(2*N-2));M.push(row);}IMGS.grad=M;})();
-  (function(){let seed=7;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return (seed>>>8)/16777216;};
+  (function(){const N=36,M=[];for(let i=0;i<N;i++){const row=[];for(let j=0;j<N;j++)row.push((i+j)/(2*N-2));M.push(row);}IMGS.grad=M;})();
+  (function(){const N=36;let seed=7;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return (seed>>>8)/16777216;};
     const M=[];for(let i=0;i<N;i++){const row=[];for(let j=0;j<N;j++)row.push(rnd());M.push(row);}IMGS.noise=M;})();
-  let cur='sigma',cache={};
+  let cur='photo',cache={},rects=null,barRects=null,builtFor='',playH=null;
   function svdOf(name){if(!cache[name])cache[name]=svdSmall(IMGS[name]);return cache[name];}
-  function draw(){
-    const A=IMGS[cur],{S,Ucols,Vcols}=svdOf(cur);
-    const k=+document.getElementById('rk-k').value;
-    document.getElementById('rk-ko').textContent=k;
-    // reconstruction
-    const R=Array.from({length:N},()=>Array(N).fill(0));
-    for(let l=0;l<k;l++){if(S[l]<1e-10)break;
-      for(let i=0;i<N;i++)for(let j=0;j<N;j++)R[i][j]+=S[l]*Ucols[l][i]*Vcols[l][j];}
-    svg.innerHTML='';
-    const cell=15.5,gx0=18,gx1=308,gy=38;
-    txt(svg,gx0+N*cell/2,20,'original (256 numbers)','font:650 12px system-ui;fill:var(--ink-2)','middle');
-    txt(svg,gx1+N*cell/2,20,`rank-${k} rebuild (${k}×33 = ${k*33} numbers)`,'font:650 12px system-ui;fill:var(--ink-2)','middle');
-    function grid(M,x0){for(let i=0;i<N;i++)for(let j=0;j<N;j++){
-      const g=Math.max(0,Math.min(1,M[i][j])),c=Math.round(245-g*215);
-      el('rect',{x:x0+j*cell,y:gy+i*cell,width:cell-1,height:cell-1,fill:`rgb(${c},${c},${c})`,rx:1.5},svg);}}
-    grid(A,gx0);grid(R,gx1);
-    // singular value bars
-    const bars=document.getElementById('rk-bars');bars.innerHTML='';
+  function shade(g){const q=Math.max(0,Math.min(1,g));
+    const c=Math.round(245-q*215);return `rgb(${c},${c},${c})`;}
+  function build(){ // create the DOM once per image; later redraws only touch fills
+    const A=IMGS[cur],N=A.length,{S}=svdOf(cur);
+    svg.innerHTML='';rects={o:[],r:[]};
+    const gw=248,cell=gw/N,gx0=18,gx1=308,gy=38;
+    txt(svg,gx0+gw/2,20,`original (${N*N} numbers)`,'font:650 12px system-ui;fill:var(--ink-2)','middle');
+    rects.title=txt(svg,gx1+gw/2,20,'','font:650 12px system-ui;fill:var(--ink-2)','middle');
+    const cw=N>20?cell+0.45:cell-1; // large grids: overlap cells a hair so no seams show
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+      rects.o.push(el('rect',{x:gx0+j*cell,y:gy+i*cell,width:cw,height:cw,fill:shade(A[i][j]),rx:N>20?0:1.5},svg));}
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+      rects.r.push(el('rect',{x:gx1+j*cell,y:gy+i*cell,width:cw,height:cw,fill:'rgb(245,245,245)',rx:N>20?0:1.5},svg));}
+    const bars=document.getElementById('rk-bars');bars.innerHTML='';barRects=[];
     const bw=300/N,smax=S[0]||1;
     S.forEach((s,i)=>{const h=Math.max(1.5,s/smax*86);
-      el('rect',{x:i*bw+2,y:104-h,width:bw-4,height:h,rx:2,fill:i<k?'var(--s1)':'var(--grid)'},bars);});
+      barRects.push(el('rect',{x:i*bw+Math.min(2,bw*0.15),y:104-h,width:Math.max(1,bw-Math.min(4,bw*0.3)),height:h,rx:Math.min(2,bw*0.2),fill:'var(--grid)'},bars));});
     txt(bars,2,10,'singular values — kept vs discarded','font:600 9.5px system-ui;fill:var(--ink-muted)');
-    const err=k<N?S[k]:0;
+    const r=document.getElementById('rk-k');
+    r.max=N;if(+r.value>N)r.value=N;
+    builtFor=cur;
+  }
+  function draw(){
+    if(builtFor!==cur)build();
+    const A=IMGS[cur],N=A.length,{S,Ucols,Vcols}=svdOf(cur);
+    const k=Math.min(N,+document.getElementById('rk-k').value);
+    document.getElementById('rk-ko').textContent=k;
+    const R=Array.from({length:N},()=>Array(N).fill(0));
+    for(let l=0;l<k;l++){if(S[l]<1e-10)break;
+      for(let i=0;i<N;i++){const u=S[l]*Ucols[l][i];const Ri=R[i],V=Vcols[l];
+        for(let j=0;j<N;j++)Ri[j]+=u*V[j];}}
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++)rects.r[i*N+j].setAttribute('fill',shade(R[i][j]));
+    const per=2*N+1;
+    rects.title.textContent=`rank-${k} rebuild (${k}×${per} = ${k*per} numbers)`;
+    barRects.forEach((b,i)=>b.setAttribute('fill',i<k?'var(--s1)':'var(--grid)'));
+    const err=k<N?S[k]:0,store=Math.round(k*per/(N*N)*100);
     document.getElementById('rk-err').textContent=fmt(err,2);
-    document.getElementById('rk-store').textContent=Math.round(k*33/256*100)+'%';
-    const v=document.getElementById('rk-verdict');
+    document.getElementById('rk-store').textContent=store+'%';
     const energy=S.slice(0,k).reduce((a,b)=>a+b*b,0)/S.reduce((a,b)=>a+b*b,0);
+    document.getElementById('rk-en').textContent=(energy*100).toFixed(1)+'%';
+    const v=document.getElementById('rk-verdict');
     if(cur==='grad'&&k>=2){v.className='verdict good';v.textContent='✓ Perfect at k = 2 — this image was secretly rank 2 all along (it\'s built from i + j).';}
-    else if(cur==='noise'){v.className='verdict bad';v.textContent='✗ Noise refuses to compress: its σ\'s barely decay, so every layer matters equally. Structure compresses; randomness doesn\'t.';}
-    else if(energy>0.985){v.className='verdict good';v.textContent=`✓ ${(energy*100).toFixed(1)}% of the energy in ${k} layers — visually done, at ${Math.round(k*33/256*100)}% storage.`;}
+    else if(cur==='noise'){v.className='verdict bad';v.textContent='✗ Noise refuses to compress: its σ\'s barely decay (look at the bars), so every layer matters equally. Structure compresses; randomness doesn\'t.';}
+    else if(cur==='photo'&&k<=2){v.className='verdict info';v.textContent='One or two layers = just the broad stripes of light and dark. A face is in there, but it needs a few more layers of detail.';}
+    else if(cur==='photo'&&energy>0.99){v.className='verdict good';v.textContent=`✓ Recognizably her at k = ${k}: ${(energy*100).toFixed(1)}% of the energy, ${store}% of the storage. The remaining ${N-k} layers are mostly texture and noise.`;}
+    else if(energy>0.985){v.className='verdict good';v.textContent=`✓ ${(energy*100).toFixed(1)}% of the energy in ${k} layers — visually done, at ${store}% storage.`;}
     else{v.className='verdict info';v.textContent=`${(energy*100).toFixed(1)}% of the matrix energy captured — Eckart–Young says no rank-${k} matrix does better.`;}
   }
-  document.getElementById('rk-k').addEventListener('input',draw);
+  function stopPlay(){if(playH){playH.stop();playH=null;document.getElementById('rk-play').textContent='▶ rebuild layer by layer';}}
+  document.getElementById('rk-play').addEventListener('click',()=>{
+    if(playH){stopPlay();return;}
+    const N=IMGS[cur].length,r=document.getElementById('rk-k');
+    document.getElementById('rk-play').textContent='⏸ stop';
+    playH=tween(N>20?6000:3500,u=>{const k=Math.max(1,Math.round(u*N));
+      if(+r.value!==k){r.value=k;draw();}},()=>stopPlay());});
+  document.getElementById('rk-k').addEventListener('input',()=>{stopPlay();draw();});
   document.querySelectorAll('#rk-tabs button').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#rk-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');stopPlay();cur=b.dataset.t;draw();}));
+  draw();
+})();
+/* ================= W-AMP · THE AMPLIFIER DIAL ================= */
+(function(){
+  const svg=document.getElementById('am-svg');if(!svg)return;
+  const MATS={lec:{A:[[1,2],[3,4]],n:'the lecture\'s [[1,2],[3,4]]'},
+              sym:{A:[[2,1],[1,2]],n:'symmetric — profile axes = eigen axes'},
+              rot:{A:[[0,-1],[1,0]],n:'rotation — every direction amplified ×1'},
+              near:{A:[[1,2],[2,4.1]],n:'nearly singular — one direction almost dies'}};
+  let cur='lec',th=0.5;
+  function draw(){
+    const A=MATS[cur].A,{S,Ucols,Vcols}=svdSmall(A);
+    const s1=S[0],s2=S[1],v1=Vcols[0],v2=Vcols[1];
+    const r=Math.max(1.6,s1*1.14);
+    const p=plane(svg,-r,r,-r*0.72,r*0.72,{tickEvery:r>4?2:1,step:r>4?2:1});
+    // reference: unit circle
+    el('circle',{cx:p.px(0),cy:p.py(0),r:p.px(1)-p.px(0),fill:'none',stroke:'var(--ink-muted)','stroke-width':1.2,'stroke-dasharray':'4 4',opacity:.55},svg);
+    // amplification profile: r(θ) = ‖A u(θ)‖ drawn as a polar curve
+    let d='';for(let i=0;i<=240;i++){const t=i/240*2*Math.PI,u=[Math.cos(t),Math.sin(t)],w=mul2(A,u);
+      const R=Math.hypot(w[0],w[1]);
+      d+=(i?'L':'M')+p.px(u[0]*R).toFixed(1)+','+p.py(u[1]*R).toFixed(1);}
+    el('path',{d:d+'Z',fill:'var(--s2)','fill-opacity':.08,stroke:'var(--s2)','stroke-width':2.4},svg);
+    // extreme directions
+    [[v1,'σ₁ here','var(--s3)',0.82],[v2,'σ₂ here','var(--ink-muted)',0.5]].forEach(([q,lb,col,frac])=>{
+      const L=Math.hypot(q[0],q[1]),u=[q[0]/L,q[1]/L];
+      el('line',{x1:p.px(-u[0]*r*1.4),y1:p.py(-u[1]*r*1.4),x2:p.px(u[0]*r*1.4),y2:p.py(u[1]*r*1.4),stroke:col,'stroke-width':1.3,'stroke-dasharray':'7 5',opacity:.6},svg);
+      let c=frac*r; // clamp the label inside the visible frame
+      if(Math.abs(u[0])>1e-6)c=Math.min(c,0.9*r/Math.abs(u[0]));
+      if(Math.abs(u[1])>1e-6)c=Math.min(c,0.58*r/Math.abs(u[1]));
+      txt(svg,p.px(u[0]*c)+4,p.py(u[1]*c)-4,lb,`font:700 10.5px system-ui;fill:${col}`);});
+    const x=[Math.cos(th),Math.sin(th)],Ax=mul2(A,x),amp=Math.hypot(Ax[0],Ax[1]);
+    arrow(p,0,0,x[0],x[1],'var(--warning)',3.2,'x');
+    arrow(p,0,0,Ax[0],Ax[1],'var(--s1)',2.6,'Ax');
+    el('circle',{cx:p.px(x[0]*amp),cy:p.py(x[1]*amp),r:5,fill:'var(--s2)',stroke:'var(--surface)','stroke-width':1.5},svg);
+    document.getElementById('am-s1').textContent=fmt(s1,3);
+    document.getElementById('am-s2').textContent=fmt(s2,3);
+    document.getElementById('am-k').textContent=s2>1e-9?fmt(s1/s2,1):'∞';
+    document.getElementById('am-read').innerHTML=`${MATS[cur].n}<br>x = (${fmt(x[0])}, ${fmt(x[1])}) — unit length<br>‖Ax‖ = <b style="color:var(--s2)">${fmt(amp,3)}</b><br>of the worst case: <b>${fmt(amp/s1*100,1)}%</b>`;
+    const v=document.getElementById('am-verdict');
+    if(cur==='rot'){v.className='verdict info';v.textContent='A perfect circle of radius 1: a rotation is all turn and no amplification — σ₁ = σ₂ = 1, condition number 1, the friendliest matrix alive.';}
+    else if(amp>s1*0.999){v.className='verdict good';v.textContent='✓ Peak found: ‖Ax‖ = σ₁ = ‖A‖₂. You are aiming along v₁ — the input the matrix amplifies hardest.';}
+    else if(amp<s2*1.001+1e-9){v.className='verdict good';v.textContent='✓ The valley: ‖Ax‖ = σ₂, the matrix\'s quietest response. Everything else lies between σ₂ and σ₁.';}
+    else{v.className='verdict info';v.textContent='‖Ax‖ = '+fmt(amp,2)+' — between σ₂ and σ₁. Sweep toward the profile\'s longest reach to find the spectral norm.';}
+  }
+  let drag=false;
+  function aim(e){const r=svg.getBoundingClientRect(),W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
+    const sx=(e.clientX-r.left)/r.width*W,sy=(e.clientY-r.top)/r.height*H;
+    th=Math.atan2(-(sy-H/2),sx-W/2);draw();}
+  svg.addEventListener('pointerdown',e=>{drag=true;try{svg.setPointerCapture(e.pointerId)}catch(_){}aim(e);e.preventDefault();});
+  svg.addEventListener('pointermove',e=>{if(drag)aim(e);});
+  ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>drag=false));
+  document.querySelectorAll('#am-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#am-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
     b.setAttribute('aria-selected','true');cur=b.dataset.t;draw();}));
   draw();
 })();

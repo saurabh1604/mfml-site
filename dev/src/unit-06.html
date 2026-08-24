@@ -319,7 +319,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 <div class="topbar"><div class="topbar-in">
   <a class="home" href="index.html">The Math<span class="txs"> Behind the Machine</span></a><span class="crumb">/ Unit 6 · Differentiation</span>
   <span class="spacer"></span>
-  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">12</span></span>
+  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">14</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
   <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
@@ -333,9 +333,9 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <h1>Differentiation</h1>
   <p class="lede">Every learning machine, from a two-line regression to a trillion-parameter transformer, spends its whole life asking one question over and over: <strong>which way is down?</strong> This unit builds the instrument that answers it — the derivative — from a single sliding secant line all the way up to the Jacobian matrices that make backpropagation work.</p>
   <div class="meta">
-    <span class="chip">≈ 60 min read + play</span>
-    <span class="chip">10 interactive widgets · 2 in 3D</span>
-    <span class="chip">12 inline checks</span>
+    <span class="chip">≈ 65 min read + play</span>
+    <span class="chip">12 interactive widgets · animated landscapes</span>
+    <span class="chip">14 inline checks</span>
     <span class="chip">✍ 10 solved practice problems</span>
   </div>
 </header>
@@ -405,6 +405,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
           <div class="ctl"><label for="sec-x">point x</label><input id="sec-x" type="range" min="-1.8" max="1.8" step="0.05" value="1"><output id="sec-x-o">1</output></div>
           <div class="ctl"><label for="sec-h">gap h</label><input id="sec-h" type="range" min="0" max="1" step="0.005" value="0.85"><output id="sec-h-o">1.2</output></div>
         </div>
+        <div class="presets"><button class="preset" id="sec-play">▶ shrink h to 0</button></div>
         <div class="readout" id="sec-read" style="margin-top:.7rem;line-height:1.9"></div>
         <div id="sec-verdict" class="verdict info" style="margin-top:.6rem">—</div>
         <p class="note">Push \(h\) all the way to the left. The two points merge, the secant stops moving, and the number in the readout stops changing — that settled number <em>is</em> the derivative. Notice it never divides by zero: it only ever asks what the ratio <em>approaches</em>.</p>
@@ -510,6 +511,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
         <div class="controls">
           <div class="ctl"><label for="tay-deg">degree n</label><input id="tay-deg" type="range" min="0" max="9" step="1" value="1"><output id="tay-deg-o">1</output></div>
         </div>
+        <div class="presets"><button class="preset" id="tay-play">▶ add terms one by one</button></div>
         <div class="readout" id="tay-read" style="margin-top:.7rem;line-height:1.9"></div>
         <div id="tay-verdict" class="verdict info" style="margin-top:.6rem">—</div>
         <p class="note">Two things to hunt for. First, on <em>x⁴</em> the approximation stops improving at degree 4 — it has become exact, and every higher derivative is zero. Second, on <em>ln(1+x)</em> the fit is excellent near the anchor and then falls off a cliff past \(x=1\): Taylor series are local promises, not global ones.</p>
@@ -621,11 +623,36 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     \[\mathbf{w}_{\text{new}}=\mathbf{w}_{\text{old}}-\eta\,\nabla L(\mathbf{w})\]
   </div>
   <div class="callout aha"><span class="tag">The aha</span>
-    <p>Why does the gradient point <em>steepest</em> ascent, rather than merely uphill? Because the rate of change in some unit direction \(\mathbf{u}\) is the dot product \(\nabla f\cdot\mathbf{u}\) — and Unit 3 already told you that a dot product with a fixed vector is maximised when \(\mathbf{u}\) aligns with it. The compass property is Cauchy–Schwarz wearing a hat. Two units ago you proved this; today you get to use it.</p>
+    <p>Why does the gradient point <em>steepest</em> ascent, rather than merely uphill? Because the rate of change in some unit direction \(\mathbf{u}\) is the dot product \(\nabla f\cdot\mathbf{u}\) — and Unit 3 already told you that a dot product with a fixed vector is maximised when \(\mathbf{u}\) aligns with it. The compass property is Cauchy–Schwarz wearing a hat. Two units ago you proved this; today you get to use it — literally, in the next widget: aim a step in any direction and watch the payoff trace out a perfect cosine.</p>
+  </div>
+
+  <div class="widget" id="w-dd">
+    <div class="widget-head"><span class="w-title">Every direction, priced</span><span class="w-sub">aim a step · the climb rate is ∇f·u — a cosine with its peak on the gradient</span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.5 1 300px"><svg id="dd-svg" viewBox="0 0 560 380" class="svg-lab grabbable" role="img" aria-label="A contour landscape with a point, a draggable step direction, and the gradient arrow"></svg>
+      <span class="drag-hint">✋ drag to aim your step · grab the black dot to move base camp</span></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="readout" id="dd-read" style="line-height:2"></div>
+        <svg id="dd-gauge" viewBox="0 0 300 120" class="svg-lab" role="img" aria-label="Climb rate as a function of step direction: a cosine curve with the current aim marked" style="margin-top:.5rem"></svg>
+        <div id="dd-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The curve below is the whole theorem: climb rate vs. aim angle is \(\|\nabla f\|\cos\theta\). Its peak sits exactly on the gradient's direction (steepest ascent, rate \(+\|\nabla f\|\)), its trough exactly opposite (steepest descent), and it crosses <b>zero</b> when you aim along a contour — walking the level curve changes nothing.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At your point, \(\|\nabla f\| = 2\). You are forced to step in a direction 60° away from the gradient. How fast do you climb?</p>
+    <div class="opts">
+      <button data-correct data-why="Rate = ∇f·u = ‖∇f‖cos θ = 2·cos 60° = 2·½ = 1. Half the best rate — the cosine in the widget is exactly this formula, and the dot product from Unit 3 is doing all the pricing.">At rate \(1\) — half the best possible</button>
+      <button data-why="Rate 2 is reserved for θ = 0°, aiming dead along the gradient. At 60° off you pay the cosine tax: cos 60° = ½ of the full rate.">Still at rate \(2\) — uphill is uphill</button>
+      <button data-why="Zero climb happens at θ = 90°, along the contour line. At 60° you still have cos 60° = ½ of the gradient's length working for you.">At rate \(0\) — off-gradient steps don't climb</button>
+    </div>
+    <div class="why"></div>
   </div>
 
   <div class="widget" id="w-gc">
-    <div class="widget-head"><span class="w-title">The gradient compass</span><span class="w-sub">Drag anywhere on the map. Red points uphill, green is the direction training would take</span></div>
+    <div class="widget-head"><span class="w-title">The gradient compass</span><span class="w-sub">Drag anywhere on the map. Orange points uphill, green is the direction training would take</span></div>
     <div class="tabs" id="gc-tabs">
       <button data-t="0" aria-selected="true">a bowl</button>
       <button data-t="1">a stretched valley</button>
@@ -743,6 +770,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
           <div class="ctl"><label for="jm-y">y₀</label><input id="jm-y" type="range" min="-1.2" max="1.2" step="0.05" value="0.5"><output id="jm-y-o">0.5</output></div>
           <div class="ctl"><label for="jm-z">window</label><input id="jm-z" type="range" min="0.06" max="1" step="0.01" value="0.8"><output id="jm-z-o">0.8</output></div>
         </div>
+        <div class="presets"><button class="preset" id="jm-play">▶ zoom until linear</button></div>
         <div class="readout" id="jm-read" style="margin-top:.7rem;line-height:1.9"></div>
         <div id="jm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
         <p class="note">Drag <em>window</em> to the left. The warped patch on the right straightens into a parallelogram — the one the Jacobian matrix draws. That convergence <em>is</em> differentiability: a function is differentiable exactly when zooming in makes it look linear.</p>
@@ -863,6 +891,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
           <div class="ctl"><label for="gd-eta">rate η</label><input id="gd-eta" type="range" min="0.01" max="1.05" step="0.005" value="0.18"><output id="gd-eta-o">0.18</output></div>
           <div class="ctl"><label for="gd-n">steps</label><input id="gd-n" type="range" min="1" max="40" step="1" value="18"><output id="gd-n-o">18</output></div>
         </div>
+        <div class="presets"><button class="preset" id="gd-play">▶ watch it walk</button></div>
         <div class="readout" id="gd-read" style="margin-top:.7rem;line-height:1.9"></div>
         <div id="gd-verdict" class="verdict info" style="margin-top:.6rem">—</div>
         <p class="note">Drag the start point too. Three regimes live in this one slider: too small and you crawl, about right and you glide in, too large and the path explodes outward. The valley here is stretched 8:1 — notice that even a well-tuned run zig-zags across the narrow direction instead of running straight down the long one. Unit 11 is devoted to fixing exactly that.</p>
@@ -888,8 +917,40 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="prose">
     <p><strong>Row or column? The layout convention.</strong> Is a gradient a row vector or a column? Both conventions are in use. This unit follows the lecture and writes gradients as <em>rows</em> \(\big(\nabla f\in\mathbb{R}^{1\times n}\big)\), which makes the Jacobian chain rule read left to right without transposes. Many textbooks and most code write gradients as columns. Neither is wrong; mixing them silently is. When a formula from elsewhere seems transposed, suspect the convention before suspecting the algebra.</p>
     <p><strong>Order matters now.</strong> With scalars, \(f'g=gf'\). With matrices it does not. The lecture flags this explicitly for the product and chain rules — once your derivatives are matrices, you must preserve the order in which the factors appear.</p>
-    <p><strong>Not everything is differentiable.</strong> \(|x|\) has no derivative at \(0\): the slope from the left is \(-1\), from the right \(+1\), and no single number splits the difference. ReLU has exactly this kink, and every framework simply picks a value there and moves on. It works fine in practice, but it is a convention rather than a theorem.</p>
+    <p><strong>Not everything is differentiable.</strong> \(|x|\) has no derivative at \(0\): the slope from the left is \(-1\), from the right \(+1\), and no single number splits the difference. ReLU has exactly this kink, and every framework simply picks a value there and moves on. It works fine in practice, but it is a convention rather than a theorem. Watch the disagreement happen — squeeze the two secants below and see them refuse to meet:</p>
     <p><strong>The tensor nobody builds.</strong> Matrix in, matrix out gives a rank-4 tensor — for a modest \(100\times100\) layer that is \(10^8\) numbers for a single derivative. PyTorch and TensorFlow never materialise it. Instead each operation ships a <code>backward()</code> that maps an incoming gradient straight to an outgoing one, applying the tensor's action without ever storing the tensor. The mathematics is the honest description; the implementation is the same map, evaluated lazily.</p>
+  </div>
+
+  <div class="widget" id="w-kink">
+    <div class="widget-head"><span class="w-title">The kink</span><span class="w-sub">approach zero from both sides — the two secants never agree</span></div>
+    <div class="tabs" id="kn-tabs">
+      <button data-t="0" aria-selected="true">|x|</button>
+      <button data-t="1">ReLU = max(0, x)</button>
+      <button data-t="2">smooth: x² (for contrast)</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.6 1 300px"><svg id="kn-svg" viewBox="0 0 560 340" class="svg-lab" role="img" aria-label="A function with a kink at zero and one-sided secant lines approaching different slopes"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="kn-h">gap h</label><input id="kn-h" type="range" min="0.02" max="1.6" step="0.01" value="1.2"><output id="kn-h-o">1.2</output></div>
+        </div>
+        <div class="presets"><button class="preset" id="kn-play">▶ squeeze h → 0</button></div>
+        <div class="readout" id="kn-read" style="margin-top:.6rem;line-height:2"></div>
+        <div id="kn-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">A derivative exists only when the left and right secants settle on the <em>same</em> number. On \(x^2\) they do (both → 0). On \(|x|\) and ReLU they converge to two different numbers — the readout shows the standoff — so no tangent exists at 0, and your framework quietly declares one by fiat.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">PyTorch defines ReLU′(0) = 0. A colleague worries this "wrong" derivative will break training. What's the honest reassurance?</p>
+    <div class="opts">
+      <button data-correct data-why="The kink is a single point: an input hits x = 0 exactly with essentially zero probability, and any value between the one-sided slopes 0 and 1 leaves gradient descent's behaviour unchanged in practice. (Formally: it's a valid subgradient.) The convention matters so rarely that every framework just picks one and moves on.">A single point almost never matters — any value in \([0,1]\) works in practice</button>
+      <button data-why="It genuinely is undefined in the classical sense — the widget shows the two secants settling on 0 and 1. The reassurance isn't that the derivative exists; it's that the single bad point is measure-zero and any subgradient choice trains fine.">ReLU is actually differentiable at 0; the concern is baseless</button>
+      <button data-why="No smoothing is applied — backward() literally returns 0 at exactly 0. The fix isn't in the function; it's in the fact that landing exactly on the kink is a probability-zero event.">Frameworks secretly smooth ReLU near 0 before differentiating</button>
+    </div>
+    <div class="why"></div>
   </div>
   <div class="callout watch"><span class="tag">Errata — check this against your slides</span>
     <p>On the Taylor-polynomial example (\(f(x)=x^4\) at \(x_0=1\)), the lecture slide lists the polynomial as \(1+4(x-1)+12(x-1)^2+24(x-1)^3+24(x-1)^4\). Those are the raw derivatives \(f^{(k)}(1)\) — the division by \(k!\) hasn't been applied. Expanding that expression gives \(24x^4-72x^3+84x^2-44x+9\), which is not \(x^4\); at \(x=2\) it returns \(65\) instead of \(16\).</p>
@@ -1290,6 +1351,36 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
     }
     if(d)el('path',{d,stroke:color||'var(--grid)','stroke-width':1.1,fill:'none'},g);});
   return g;}
+/* ---------- tiny animation runtime (respects reduced motion) ---------- */
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const easeIO=u=>u<0.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+function tween(dur,step,done){
+  if(RM){step(1);done&&done();return {stop(){}};}
+  let dead=false;const t0=performance.now();
+  (function fr(t){if(dead)return;const u=Math.min(1,(t-t0)/dur);step(easeIO(u));
+    if(u<1)requestAnimationFrame(fr);else done&&done();})(t0);
+  return {stop(){dead=true;}};}
+/* ---------- terrain: filled height wash + contour lines, built once as a static layer.
+   Moving parts go into the returned dyn group (clear it, redraw it — the landscape stays). */
+function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
+  opts=opts||{};
+  const p=plane(svg,X0,X1,Y0,Y1,opts.plane||{step:1,tickEvery:1,pad:26});
+  const NX=56,NY=40,V=[];let mn=1e9,mx=-1e9;
+  for(let i=0;i<=NX;i++){V[i]=[];for(let j=0;j<=NY;j++){
+    const v=f(X0+(X1-X0)*i/NX,Y0+(Y1-Y0)*j/NY);V[i][j]=v;if(v<mn)mn=v;if(v>mx)mx=v;}}
+  const heat=el('g',{},svg);
+  const cw=(X1-X0)/NX,ch=(Y1-Y0)/NY,rw=p.px(X0+cw)-p.px(X0)+0.6,rh=p.py(Y0)-p.py(Y0+ch)+0.6;
+  for(let i=0;i<NX;i++)for(let j=0;j<NY;j++){
+    const v=(V[i][j]+V[i+1][j]+V[i][j+1]+V[i+1][j+1])/4;
+    const t=(v-mn)/((mx-mn)||1);
+    const pc=Math.round(Math.pow(1-t,1.5)*32); // valley floor wears the deepest wash
+    if(pc<2)continue;
+    el('rect',{x:p.px(X0+i*cw).toFixed(1),y:p.py(Y0+(j+1)*ch).toFixed(1),width:rw.toFixed(1),height:rh.toFixed(1),
+      fill:`color-mix(in srgb, var(--s1) ${pc}%, transparent)`},heat);}
+  svg.insertBefore(heat,svg.firstChild); // under the grid lines
+  contours(p,f,levels,X0,X1,Y0,Y1,'var(--axis)',52);
+  const dyn=el('g',{},svg);
+  return {p,dyn,pd:{px:p.px,py:p.py,svg:dyn}};}
 
 /* ================= W1 · THE FOGGY VALLEY ================= */
 (function(){
@@ -1300,16 +1391,37 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
   function draw(){
     const p=plane(svg,-VX,VX,-0.05,VY,{step:1,tickEvery:1,pad:24});
     const lit=fog>0.02?0.45+ (1-fog)*3.2 : 99;
-    let dFull='',dLit='';
+    let dFull='',dLit='',litPts=[];
     for(let i=0;i<=300;i++){const x=-VX+2*VX*i/300,y=L(x);
       const seg=(i?'L':'M')+p.px(x).toFixed(1)+','+p.py(y).toFixed(1);
-      dFull+=seg; if(Math.abs(x-w)<lit)dLit+=(dLit?'L':'M')+p.px(x).toFixed(1)+','+p.py(y).toFixed(1);}
+      dFull+=seg; if(Math.abs(x-w)<lit){dLit+=(dLit?'L':'M')+p.px(x).toFixed(1)+','+p.py(y).toFixed(1);litPts.push([x,y]);}}
+    // solid ground under the visible stretch of valley
+    if(litPts.length>1){
+      let da='M'+p.px(litPts[0][0]).toFixed(1)+','+p.py(litPts[0][1]).toFixed(1);
+      litPts.forEach(q=>{da+='L'+p.px(q[0]).toFixed(1)+','+p.py(q[1]).toFixed(1);});
+      da+='L'+p.px(litPts[litPts.length-1][0]).toFixed(1)+','+p.py(-0.05).toFixed(1)
+        +'L'+p.px(litPts[0][0]).toFixed(1)+','+p.py(-0.05).toFixed(1)+'Z';
+      el('path',{d:da,fill:'var(--wash-1)',stroke:'none'},svg);}
     el('path',{d:dFull,stroke:'var(--grid)','stroke-width':2,fill:'none',opacity:fog>0.02?(1-fog)*0.9+0.06:1},svg);
     el('path',{d:dLit,stroke:'var(--s1)','stroke-width':3,fill:'none'},svg);
+    // the fog itself: a veil with a clear hole around the hiker
+    const m=dL(w),y0=L(w);
+    if(fog>0.03){
+      const defs=el('defs',{},svg);
+      const gr=el('radialGradient',{id:'valfog',gradientUnits:'userSpaceOnUse',
+        cx:p.px(w),cy:p.py(y0),r:110+(1-fog)*560},defs);
+      el('stop',{offset:'0%','stop-color':'var(--page)','stop-opacity':0},gr);
+      el('stop',{offset:'52%','stop-color':'var(--page)','stop-opacity':0.05*fog},gr);
+      el('stop',{offset:'78%','stop-color':'var(--page)','stop-opacity':(0.78*fog).toFixed(2)},gr);
+      el('stop',{offset:'100%','stop-color':'var(--page)','stop-opacity':(0.94*fog).toFixed(2)},gr);
+      el('rect',{x:0,y:0,width:560,height:340,fill:'url(#valfog)','pointer-events':'none'},svg);}
     // tangent, shortened so a steep slope stays inside the frame
-    const m=dL(w),y0=L(w),dx=Math.min(0.8,0.55/Math.max(0.35,Math.abs(m)));
+    const dx=Math.min(0.8,0.55/Math.max(0.35,Math.abs(m)));
     el('path',{d:`M${p.px(w-dx)},${p.py(y0-m*dx)}L${p.px(w+dx)},${p.py(y0+m*dx)}`,stroke:'var(--s2)','stroke-width':2.2,'stroke-dasharray':'7 5'},svg);
+    // the hiker: dot + a little summit flag so there's a person in the story
     el('circle',{cx:p.px(w),cy:p.py(y0),r:6,fill:'var(--ink)'},svg);
+    el('line',{x1:p.px(w),y1:p.py(y0)-6,x2:p.px(w),y2:p.py(y0)-24,stroke:'var(--ink)','stroke-width':1.8},svg);
+    el('polygon',{points:`${p.px(w)},${p.py(y0)-24} ${p.px(w)+13},${p.py(y0)-19.5} ${p.px(w)},${p.py(y0)-15}`,fill:'var(--s2)'},svg);
     // downhill arrow
     const dir=-Math.sign(m)||1;
     const ay=Math.max(0.18,y0-0.42);
@@ -1336,7 +1448,7 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
   const FS=[{n:'x²',f:x=>x*x,d:x=>2*x,sym:'2x'},
             {n:'x³−2x',f:x=>x*x*x-2*x,d:x=>3*x*x-2,sym:'3x²−2'},
             {n:'sin x',f:x=>Math.sin(x),d:x=>Math.cos(x),sym:'cos x'}];
-  let k=0,x0=1,hv=0.85;
+  let k=0,x0=1,hv=0.85,trail=[],playH=null;
   const hOf=v=>0.02+v*1.2;
   function draw(){
     const F=FS[k],h=hOf(hv);
@@ -1344,6 +1456,10 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
     let d='';for(let i=0;i<=300;i++){const x=-2.2+4.4*i/300;d+=(i?'L':'M')+p.px(x).toFixed(1)+','+p.py(F.f(x)).toFixed(1);}
     el('path',{d,stroke:'var(--s1)','stroke-width':2.6,fill:'none'},svg);
     const y0=F.f(x0),x1=x0+h,y1=F.f(x1),m=(y1-y0)/h,tr=F.d(x0);
+    // ghost secants left behind while h shrinks — the line caught mid-pivot
+    trail.forEach((ht,i)=>{const mg=(F.f(x0+ht)-y0)/ht;
+      el('path',{d:`M${p.px(x0-1.5)},${p.py(y0-mg*1.5)}L${p.px(x0+1.5)},${p.py(y0+mg*1.5)}`,
+        stroke:'var(--s2)','stroke-width':1.4,opacity:0.12+0.3*i/Math.max(1,trail.length)},svg);});
     // tangent (dashed, truth)
     el('path',{d:`M${p.px(x0-1.5)},${p.py(y0-tr*1.5)}L${p.px(x0+1.5)},${p.py(y0+tr*1.5)}`,stroke:'var(--s3)','stroke-width':2,'stroke-dasharray':'6 5'},svg);
     // secant
@@ -1359,9 +1475,21 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
     verd.className='verdict '+(close?'good':'info');
     verd.textContent=close?'✓ The secant has settled onto the tangent — that number is the derivative.':'The two lines still disagree. Shrink h and watch the gap collapse.';
   }
-  tabs(document.getElementById('sec-tabs'),t=>{k=+t;draw();});
-  bindCtl('sec-x',v=>{x0=v;draw();})();
-  bindCtl('sec-h',v=>{hv=v;draw();},v=>fmt(hOf(v),3))();
+  function stopPlay(){if(playH){playH.stop();playH=null;}document.getElementById('sec-play').textContent='▶ shrink h to 0';}
+  document.getElementById('sec-play').addEventListener('click',()=>{
+    if(playH){stopPlay();return;}
+    trail=[];const r=document.getElementById('sec-h'),start=Math.max(+r.value,0.55);
+    document.getElementById('sec-play').textContent='⏸ stop';
+    let lastRec=99;
+    playH=tween(2800,u=>{
+      hv=start*(1-u);
+      const h=hOf(hv);
+      if(lastRec/h>1.7&&h>0.05){trail.push(h);lastRec=h;}
+      r.value=hv;document.getElementById('sec-h-o').textContent=fmt(h,3);
+      draw();},()=>stopPlay());});
+  tabs(document.getElementById('sec-tabs'),t=>{k=+t;stopPlay();trail=[];draw();});
+  bindCtl('sec-x',v=>{x0=v;stopPlay();trail=[];draw();})();
+  bindCtl('sec-h',v=>{hv=v;stopPlay();draw();},v=>fmt(hOf(v),3))();
   draw();
 })();
 
@@ -1427,11 +1555,20 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
     const T=x=>{let s=0;for(let j=0;j<=deg;j++)s+=F.c(j)*Math.pow(x-F.x0,j);return s;};
     let df='',dt='';const N=340;let worst=0,pf=false,pt2=false;
     const inY=v=>isFinite(v)&&v>=F.Y[0]&&v<=F.Y[1];
+    const clampY=v=>Math.max(F.Y[0],Math.min(F.Y[1],v));
+    const bandF=[],bandT=[];
     for(let i=0;i<=N;i++){const x=F.X[0]+(F.X[1]-F.X[0])*i/N;
       const yf=F.f(x),yt=T(x);
+      if(isFinite(yf)&&isFinite(yt)){bandF.push([x,clampY(yf)]);bandT.push([x,clampY(yt)]);}
       if(inY(yf)){df+=(pf?'L':'M')+p.px(x).toFixed(1)+','+p.py(yf).toFixed(1);pf=true;}else pf=false;
       if(inY(yt)){dt+=(pt2?'L':'M')+p.px(x).toFixed(1)+','+p.py(yt).toFixed(1);pt2=true;}else pt2=false;
       if(Math.abs(x-F.x0)<1&&isFinite(yf)&&isFinite(yt))worst=Math.max(worst,Math.abs(yf-yt));}
+    // the error, shaded: the region the polynomial still gets wrong
+    if(bandF.length>1){
+      let db='M'+p.px(bandF[0][0]).toFixed(1)+','+p.py(bandF[0][1]).toFixed(1);
+      bandF.forEach(q=>{db+='L'+p.px(q[0]).toFixed(1)+','+p.py(q[1]).toFixed(1);});
+      for(let i=bandT.length-1;i>=0;i--)db+='L'+p.px(bandT[i][0]).toFixed(1)+','+p.py(bandT[i][1]).toFixed(1);
+      el('path',{d:db+'Z',fill:'var(--wash-2)',stroke:'none'},svg);}
     el('path',{d:df,stroke:'var(--s1)','stroke-width':2.8,fill:'none'},svg);
     el('path',{d:dt,stroke:'var(--s2)','stroke-width':2.4,fill:'none','stroke-dasharray':'7 4'},svg);
     el('circle',{cx:p.px(F.x0),cy:p.py(F.f(F.x0)),r:5.5,fill:'var(--ink)'},svg);
@@ -1444,8 +1581,17 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
     verd.className='verdict '+(exact?'good':'info');
     verd.textContent=exact?'✓ Exact — the polynomial has fully reproduced the function.':F.note;
   }
-  tabs(document.getElementById('tay-tabs'),t=>{k=+t;draw();});
-  bindCtl('tay-deg',v=>{deg=v;draw();},v=>String(v|0))();
+  let playH=null;
+  function stopPlay(){if(playH){playH.stop();playH=null;}document.getElementById('tay-play').textContent='▶ add terms one by one';}
+  document.getElementById('tay-play').addEventListener('click',()=>{
+    if(playH){stopPlay();return;}
+    document.getElementById('tay-play').textContent='⏸ stop';
+    const r=document.getElementById('tay-deg');
+    playH=tween(5200,u=>{const n=Math.round(u*9);
+      if(deg!==n){deg=n;r.value=n;document.getElementById('tay-deg-o').textContent=String(n);draw();}},
+      ()=>stopPlay());});
+  tabs(document.getElementById('tay-tabs'),t=>{k=+t;stopPlay();draw();});
+  bindCtl('tay-deg',v=>{deg=v;stopPlay();draw();},v=>String(v|0))();
   draw();
 })();
 
@@ -1459,16 +1605,20 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
   function draw(){
     svg.innerHTML='';
     const P=v=>E.proj([v[0],v[1],v[2]*0.62]);
-    const segs=[];
-    const N=13;
-    for(let i=0;i<=N;i++){const u=-R+2*R*i/N;
-      for(let j=0;j<N;j++){
-        const v1=-R+2*R*j/N,v2=-R+2*R*(j+1)/N;
-        segs.push([[u,v1,f(u,v1)],[u,v2,f(u,v2)]]);
-        segs.push([[v1,u,f(v1,u)],[v2,u,f(v2,u)]]);}}
-    segs.map(s=>({s,d:(P(s[0]).d+P(s[1]).d)/2})).sort((a,b)=>a.d-b.d).forEach(({s,d})=>{
-      const A=P(s[0]),B=P(s[1]);
-      el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:'var(--grid)','stroke-width':1,opacity:Math.max(.25,Math.min(1,0.62+d*0.2))},svg);});
+    // the surface itself: depth-sorted shaded tiles (deep = darker blue), so the saddle reads as a solid sheet
+    const N=20,Z=[];let zmn=1e9,zmx=-1e9;
+    for(let i=0;i<=N;i++){Z[i]=[];for(let j=0;j<=N;j++){const z=f(-R+2*R*i/N,-R+2*R*j/N);Z[i][j]=z;if(z<zmn)zmn=z;if(z>zmx)zmx=z;}}
+    const quads=[];
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+      const x0=-R+2*R*i/N,x1=-R+2*R*(i+1)/N,ya=-R+2*R*j/N,yb=-R+2*R*(j+1)/N;
+      const c=[[x0,ya,Z[i][j]],[x1,ya,Z[i+1][j]],[x1,yb,Z[i+1][j+1]],[x0,yb,Z[i][j+1]]];
+      const Ps=c.map(P);
+      quads.push({Ps,dpt:(Ps[0].d+Ps[1].d+Ps[2].d+Ps[3].d)/4,zc:(Z[i][j]+Z[i+1][j]+Z[i+1][j+1]+Z[i][j+1])/4});}
+    quads.sort((a,b)=>a.dpt-b.dpt).forEach(q=>{
+      const t=(q.zc-zmn)/((zmx-zmn)||1);
+      const pc=Math.round(5+(1-t)*27);
+      el('polygon',{points:q.Ps.map(pp=>pp.x.toFixed(1)+','+pp.y.toFixed(1)).join(' '),
+        fill:`color-mix(in srgb, var(--s1) ${pc}%, var(--surface))`,stroke:'var(--grid)','stroke-width':0.6,'stroke-opacity':.6},svg);});
     // slice curves
     function curve(fixY,col){let d='';
       for(let i=0;i<=90;i++){const t=-R+2*R*i/90;
@@ -1504,32 +1654,102 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
   const FS=[{n:'bowl',f:(x,y)=>0.5*(x*x+y*y),g:(x,y)=>[x,y],lv:[0.1,0.3,0.6,1,1.5,2.1,2.8,3.6],note:'Circular contours: the gradient points straight at the centre from anywhere.'},
             {n:'stretched valley',f:(x,y)=>0.5*(0.16*x*x+2.4*y*y),g:(x,y)=>[0.16*x,2.4*y],lv:[0.05,0.15,0.3,0.5,0.8,1.2,1.7,2.3],note:'The arrow barely leans along the flat axis — descent will zig-zag across the narrow one.'},
             {n:'saddle',f:(x,y)=>0.5*(x*x-y*y),g:(x,y)=>[x,-y],lv:[-2,-1.2,-0.6,-0.2,0.2,0.6,1.2,2],note:'Up one way, down the other. The centre is flat yet is no minimum at all.'}];
-  let k=0,px0=1.5,py0=1.05;
-  function draw(){
-    const F=FS[k];
-    const p=plane(svg,-2.6,2.6,-1.9,1.9,{step:1,tickEvery:1,pad:26});
-    contours(p,F.f,F.lv,-2.6,2.6,-1.9,1.9,'var(--grid)',52);
-    const g=F.g(px0,py0),n=Math.hypot(g[0],g[1])||1e-9,s=Math.min(1.15,0.35+n*0.42)/n;
-    arrow(p,px0,py0,px0+g[0]*s,py0+g[1]*s,'var(--s2)',3.2,'∇f');
-    arrow(p,px0,py0,px0-g[0]*s,py0-g[1]*s,'var(--s3)',3.2,'−∇f');
-    el('circle',{cx:p.px(px0),cy:p.py(py0),r:6,fill:'var(--ink)'},svg);
+  let k=0,px0=1.5,py0=1.05,T=null;
+  function rebuild(){
+    const F=FS[k];svg.innerHTML='';
+    T=terrain(svg,F.f,F.lv,-2.6,2.6,-1.9,1.9,{});
     txt(svg,16,24,F.n,'font:700 12px system-ui;fill:var(--ink-2)');
     txt(svg,16,42,'drag anywhere','font:600 11px system-ui;fill:var(--ink-muted)');
+    draw();
+  }
+  function draw(){
+    const F=FS[k];T.dyn.innerHTML='';
+    const g=F.g(px0,py0),n=Math.hypot(g[0],g[1])||1e-9,s=Math.min(1.15,0.35+n*0.42)/n;
+    arrow(T.pd,px0,py0,px0+g[0]*s,py0+g[1]*s,'var(--s2)',3.2,'∇f');
+    arrow(T.pd,px0,py0,px0-g[0]*s,py0-g[1]*s,'var(--s3)',3.2,'−∇f');
+    el('circle',{cx:T.p.px(px0),cy:T.p.py(py0),r:6,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':1.5},T.dyn);
     read.innerHTML=`point = ( ${fmt(px0,2)}, ${fmt(py0,2)} )<br>f = <b>${fmt(F.f(px0,py0),3)}</b><br>∇f = [ <b style="color:var(--s2)">${fmt(g[0],3)}</b>, <b style="color:var(--s2)">${fmt(g[1],3)}</b> ]<br>‖∇f‖ = <b>${fmt(n,3)}</b> &nbsp;<span style="color:var(--ink-muted)">(steepness)</span>`;
     const flat=n<0.09;
     verd.className='verdict '+(flat?'good':'info');
     verd.textContent=flat?(k===2?'✓ Gradient ≈ 0 — but this is a saddle, not a minimum.':'✓ Gradient ≈ 0 — you have arrived at the flat point.'):F.note;
   }
-  function pick(e){const p=plane(svg,-2.6,2.6,-1.9,1.9,{step:1,pad:26});const q=planePt(svg,p,e);
+  function pick(e){const q=planePt(svg,T.p,e);
     px0=Math.max(-2.5,Math.min(2.5,q[0]));py0=Math.max(-1.8,Math.min(1.8,q[1]));draw();}
   let down=false;
   svg.addEventListener('pointerdown',e=>{down=true;try{svg.setPointerCapture(e.pointerId)}catch(_){}pick(e);e.preventDefault();});
   svg.addEventListener('pointermove',e=>{if(down)pick(e);});
   ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>down=false));
-  tabs(document.getElementById('gc-tabs'),t=>{k=+t;draw();});
-  draw();
+  tabs(document.getElementById('gc-tabs'),t=>{k=+t;rebuild();});
+  rebuild();
 })();
 
+/* ================= W6b · EVERY DIRECTION, PRICED ================= */
+(function(){
+  const svg=document.getElementById('dd-svg'),read=document.getElementById('dd-read'),verd=document.getElementById('dd-verdict');
+  if(!svg)return;
+  const f=(x,y)=>0.5*(x*x+1.6*y*y),gf=(x,y)=>[x,1.6*y];
+  let pt=[1.3,0.8],phi=2.6,T=null;
+  function rebuild(){
+    svg.innerHTML='';
+    T=terrain(svg,f,[0.12,0.35,0.7,1.15,1.7,2.4,3.2],-2.6,2.6,-1.9,1.9,{});
+    txt(svg,16,24,'f(x,y) = ½(x² + 1.6y²)','font:700 12px system-ui;fill:var(--ink-2)');
+    draw();
+  }
+  function draw(){
+    if(!T)return;
+    T.dyn.innerHTML='';const p=T.p;
+    const g=gf(pt[0],pt[1]),n=Math.hypot(g[0],g[1])||1e-9;
+    const u=[Math.cos(phi),Math.sin(phi)],rate=g[0]*u[0]+g[1]*u[1];
+    const thg=Math.atan2(g[1],g[0]);
+    // contour direction through the point (perpendicular to ∇f) — the "free walk"
+    const tv=[-g[1]/n,g[0]/n];
+    el('line',{x1:p.px(pt[0]-tv[0]*1.1),y1:p.py(pt[1]-tv[1]*1.1),x2:p.px(pt[0]+tv[0]*1.1),y2:p.py(pt[1]+tv[1]*1.1),
+      stroke:'var(--s3)','stroke-width':1.4,'stroke-dasharray':'6 5',opacity:.75},T.dyn);
+    txt(T.dyn,p.px(pt[0]+tv[0]*1.18)+3,p.py(pt[1]+tv[1]*1.18),'level walk','font:650 10px system-ui;fill:var(--s3)');
+    const s=Math.min(1.1,0.35+n*0.4)/n;
+    arrow(T.pd,pt[0],pt[1],pt[0]+g[0]*s,pt[1]+g[1]*s,'var(--s2)',2.8,'∇f');
+    arrow(T.pd,pt[0],pt[1],pt[0]+u[0]*0.95,pt[1]+u[1]*0.95,'var(--warning)',3.4,'your step u');
+    el('circle',{cx:p.px(pt[0]),cy:p.py(pt[1]),r:6.5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':1.5},T.dyn);
+    // gauge: the cosine of directions
+    const gg=document.getElementById('dd-gauge');gg.innerHTML='';
+    const GX=a=>18+((a+Math.PI)/(2*Math.PI))*264,GY=v=>60-v/Math.max(n,1e-9)*40;
+    el('rect',{x:18,y:12,width:264,height:96,rx:6,fill:'none',stroke:'var(--ring)'},gg);
+    el('line',{x1:18,y1:GY(0),x2:282,y2:GY(0),stroke:'var(--axis)','stroke-width':1},gg);
+    // relative angle to the gradient, wrapped to (-π, π]
+    const rel=a=>{let r=a-thg;while(r>Math.PI)r-=2*Math.PI;while(r<=-Math.PI)r+=2*Math.PI;return r;};
+    let d='';for(let i=0;i<=180;i++){const r=-Math.PI+2*Math.PI*i/180;
+      d+=(i?'L':'M')+GX(r).toFixed(1)+','+GY(n*Math.cos(r)).toFixed(1);}
+    el('path',{d,stroke:'var(--s2)','stroke-width':2,fill:'none'},gg);
+    el('circle',{cx:GX(0),cy:GY(n),r:3.5,fill:'var(--s2)'},gg);
+    txt(gg,GX(0),GY(n)-7,'∇f','font:700 10px system-ui;fill:var(--s2)','middle');
+    const rc=rel(phi);
+    el('circle',{cx:GX(rc),cy:GY(rate),r:4.5,fill:'var(--warning)',stroke:'var(--ink)','stroke-width':1},gg);
+    txt(gg,18,9,'climb rate vs. aim angle — a pure cosine','font:600 9.5px system-ui;fill:var(--ink-muted)');
+    txt(gg,18,118,'−180°','font:600 9px system-ui;fill:var(--ink-muted)');
+    txt(gg,150,118,'0° = with the gradient','font:600 9px system-ui;fill:var(--ink-muted)','middle');
+    txt(gg,282,118,'+180°','font:600 9px system-ui;fill:var(--ink-muted)','end');
+    const deg=Math.abs(rc)*180/Math.PI;
+    read.innerHTML=`∇f = [ ${fmt(g[0],2)}, ${fmt(g[1],2)} ] · ‖∇f‖ = <b>${fmt(n,3)}</b><br>aim: <b>${fmt(deg,0)}°</b> from the gradient<br>climb rate ∇f·u = <b style="color:var(--s2)">${fmt(rate,3)}</b><br>of the best possible: <b>${fmt(rate/n*100,0)}%</b>`;
+    if(deg<7){verd.className='verdict good';verd.textContent='✓ Aimed with the gradient: the peak of the cosine — climb rate ‖∇f‖, the fastest ascent that exists.';}
+    else if(deg>173){verd.className='verdict good';verd.textContent='✓ Dead against the gradient: rate −‖∇f‖, the fastest way DOWN. This is precisely the direction gradient descent takes.';}
+    else if(Math.abs(deg-90)<7){verd.className='verdict info';verd.textContent='Along the contour: rate ≈ 0. You are walking the level curve — effort spent, altitude unchanged.';}
+    else{verd.className='verdict info';verd.textContent='Climb rate '+fmt(rate,2)+' = ‖∇f‖·cos('+fmt(deg,0)+'°). Sweep the aim and ride the cosine.';}
+  }
+  let mode=null;
+  function handle(e){
+    const q=planePt(svg,T.p,e);
+    if(mode==='move'){pt=[Math.max(-2.4,Math.min(2.4,q[0])),Math.max(-1.75,Math.min(1.75,q[1]))];}
+    else{phi=Math.atan2(q[1]-pt[1],q[0]-pt[0]);}
+    draw();}
+  svg.addEventListener('pointerdown',e=>{
+    const q=planePt(svg,T.p,e);
+    mode=Math.hypot(q[0]-pt[0],q[1]-pt[1])<0.38?'move':'aim';
+    try{svg.setPointerCapture(e.pointerId)}catch(_){}
+    handle(e);e.preventDefault();});
+  svg.addEventListener('pointermove',e=>{if(mode)handle(e);});
+  ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>mode=null));
+  rebuild();
+})();
 /* ================= W7 · THE SHAPE CALCULATOR ================= */
 (function(){
   const svg=document.getElementById('sh-svg'),read=document.getElementById('sh-read'),verd=document.getElementById('sh-verdict');
@@ -1621,7 +1841,7 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
     const corner=(a,b)=>[c[0]+a*e1[0]+b*e2[0],c[1]+a*e1[1]+b*e2[1]];
     const cs=[corner(-1,-1),corner(1,-1),corner(1,1),corner(-1,1)];
     el('polygon',{points:cs.map(q=>rpx(q[0]).toFixed(1)+','+rpy(q[1]).toFixed(1)).join(' '),
-      fill:'none',stroke:'var(--s2)','stroke-width':2.4,'stroke-dasharray':'7 4'},svg);
+      fill:'var(--wash-2)',stroke:'var(--s2)','stroke-width':2.4,'stroke-dasharray':'7 4'},svg);
     el('circle',{cx:rpx(c[0]),cy:rpy(c[1]),r:4.5,fill:'var(--ink)'},svg);
     txt(svg,rox+rw/2,roy-10,'output — dashed = what J predicts','font:700 12px system-ui;fill:var(--ink-2)','middle');
     txt(svg,22,17,M.lab,'font:700 12px system-ui;fill:var(--s1)');
@@ -1635,10 +1855,19 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
     verd.className='verdict '+(rel<0.02?'good':'info');
     verd.textContent=rel<0.02?'✓ At this window size the map is linear to the eye — J tells the whole story.':'Curvature still visible: the true image bulges away from the dashed parallelogram. Shrink the window.';
   }
-  tabs(document.getElementById('jm-tabs'),t=>{k=+t;draw();});
-  bindCtl('jm-x',v=>{x0=v;draw();})();
-  bindCtl('jm-y',v=>{y0=v;draw();})();
-  bindCtl('jm-z',v=>{win=v;draw();})();
+  let playH=null;
+  function stopPlay(){if(playH){playH.stop();playH=null;}document.getElementById('jm-play').textContent='▶ zoom until linear';}
+  document.getElementById('jm-play').addEventListener('click',()=>{
+    if(playH){stopPlay();return;}
+    document.getElementById('jm-play').textContent='⏸ stop';
+    const r=document.getElementById('jm-z'),start=Math.max(+r.value,0.5);
+    playH=tween(3200,u=>{win=start+(0.07-start)*u;
+      r.value=win;document.getElementById('jm-z-o').textContent=fmt(win,2);draw();},
+      ()=>stopPlay());});
+  tabs(document.getElementById('jm-tabs'),t=>{k=+t;stopPlay();draw();});
+  bindCtl('jm-x',v=>{x0=v;stopPlay();draw();})();
+  bindCtl('jm-y',v=>{y0=v;stopPlay();draw();})();
+  bindCtl('jm-z',v=>{win=v;stopPlay();draw();})();
   draw();
 })();
 
@@ -1693,7 +1922,15 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
     verd.className='verdict '+(stage>=4?'good':'info');
     verd.textContent=stage>=4?'✓ Every backward quantity stayed a 1×2 row — no full matrix was ever formed.':'W = [[2,−1],[1,3]], y = [0.5, −0.5]. Advance to watch the values propagate.';
   }
-  document.getElementById('bp-step').addEventListener('click',()=>{stage=Math.min(stage+1,4);draw();});
+  function pulse(s){ // a value visibly travels the wire it just crossed
+    if(RM)return;
+    let x0p,x1p,y,col;
+    if(s>=1&&s<=3){x0p=[116,256,396][s-1];x1p=x0p+44;y=87;col='var(--s1)';}
+    else if(s===4){x0p=500;x1p=130;y=232;col='var(--s2)';}
+    else return;
+    const dot=el('circle',{cx:x0p,cy:y,r:5.5,fill:col,opacity:.95},svg);
+    tween(s===4?750:400,u=>{dot.setAttribute('cx',x0p+(x1p-x0p)*u);},()=>dot.remove());}
+  document.getElementById('bp-step').addEventListener('click',()=>{stage=Math.min(stage+1,4);draw();pulse(stage);});
   document.getElementById('bp-reset').addEventListener('click',()=>{stage=0;draw();});
   bindCtl('bp-x1',v=>{x[0]=v;draw();})();
   bindCtl('bp-x2',v=>{x[1]=v;draw();})();
@@ -1704,37 +1941,104 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
 (function(){
   const svg=document.getElementById('gd-svg'),read=document.getElementById('gd-read'),verd=document.getElementById('gd-verdict');
   const f=(x,y)=>0.5*(0.25*x*x+2*y*y), g=(x,y)=>[0.25*x,2*y];
-  let eta=0.18,N=18,sx=2.6,sy=1.15;
-  function draw(){
-    const p=plane(svg,-3.1,3.1,-1.75,1.75,{step:1,tickEvery:1,pad:26});
-    contours(p,f,[0.05,0.15,0.35,0.65,1.05,1.6,2.3,3.2],-3.1,3.1,-1.75,1.75,'var(--grid)',56);
-    let x=sx,y=sy,d='',pts=[[x,y]],blew=false;
+  let eta=0.18,N=18,sx=2.6,sy=1.15,T=null,playH=null,shown=Infinity;
+  function rebuild(){
+    svg.innerHTML='';
+    T=terrain(svg,f,[0.05,0.15,0.35,0.65,1.05,1.6,2.3,3.2],-3.1,3.1,-1.75,1.75,{});
+    txt(svg,16,24,'valley stretched 8 : 1','font:700 12px system-ui;fill:var(--ink-2)');
+    txt(svg,16,42,'drag to move the start','font:600 11px system-ui;fill:var(--ink-muted)');
+    draw();
+  }
+  function path(){
+    let x=sx,y=sy,pts=[[x,y]],blew=false;
     for(let i=0;i<N;i++){const gr=g(x,y);x-=eta*gr[0];y-=eta*gr[1];
       if(!isFinite(x)||!isFinite(y)||Math.abs(x)>40||Math.abs(y)>40){blew=true;break;}
       pts.push([x,y]);}
-    pts.forEach((q,i)=>{const X=Math.max(-3.05,Math.min(3.05,q[0])),Y=Math.max(-1.72,Math.min(1.72,q[1]));
-      d+=(i?'L':'M')+p.px(X).toFixed(1)+','+p.py(Y).toFixed(1);});
-    el('path',{d,stroke:'var(--s2)','stroke-width':2.2,fill:'none'},svg);
-    pts.forEach((q,i)=>{const X=Math.max(-3.05,Math.min(3.05,q[0])),Y=Math.max(-1.72,Math.min(1.72,q[1]));
-      el('circle',{cx:p.px(X),cy:p.py(Y),r:i===0?6:3.4,fill:i===0?'var(--ink)':'var(--s2)',opacity:i===0?1:.85},svg);});
-    el('circle',{cx:p.px(0),cy:p.py(0),r:5,fill:'none',stroke:'var(--s3)','stroke-width':2.4},svg);
-    txt(svg,p.px(0),p.py(0)-12,'minimum','font:700 11px system-ui;fill:var(--s3)','middle');
-    txt(svg,16,24,'valley stretched 8 : 1','font:700 12px system-ui;fill:var(--ink-2)');
-    txt(svg,16,42,'drag to move the start','font:600 11px system-ui;fill:var(--ink-muted)');
-    const last=pts[pts.length-1],fl=f(last[0],last[1]);
-    read.innerHTML=`η = <b>${fmt(eta,3)}</b> · steps = <b>${N}</b><br>final loss = <b>${blew?'diverged':fmt(fl,4)}</b><br>distance to minimum = <b>${blew?'∞':fmt(Math.hypot(last[0],last[1]),3)}</b>`;
+    return {pts,blew};}
+  function draw(){
+    if(!T)return;
+    T.dyn.innerHTML='';const p=T.p;
+    const {pts,blew}=path();
+    const upto=Math.min(pts.length,Math.max(1,shown));
+    const cl=q=>[Math.max(-3.05,Math.min(3.05,q[0])),Math.max(-1.72,Math.min(1.72,q[1]))];
+    let d='';
+    for(let i=0;i<upto;i++){const [X,Y]=cl(pts[i]);d+=(i?'L':'M')+p.px(X).toFixed(1)+','+p.py(Y).toFixed(1);}
+    el('path',{d,stroke:'var(--s2)','stroke-width':2.2,fill:'none',opacity:.9},T.dyn);
+    for(let i=0;i<upto;i++){const [X,Y]=cl(pts[i]);
+      el('circle',{cx:p.px(X),cy:p.py(Y),r:i===0?6:3.2,fill:i===0?'var(--ink)':'var(--s2)',opacity:i===0?1:.85},T.dyn);}
+    const [bx,by]=cl(pts[upto-1]);
+    el('circle',{cx:p.px(bx),cy:p.py(by),r:6.5,fill:'var(--s2)',stroke:'var(--surface)','stroke-width':2},T.dyn);
+    el('circle',{cx:p.px(0),cy:p.py(0),r:5,fill:'none',stroke:'var(--s3)','stroke-width':2.4},T.dyn);
+    txt(T.dyn,p.px(0),p.py(0)-12,'minimum','font:700 11px system-ui;fill:var(--s3)','middle');
+    const last=pts[Math.min(upto,pts.length)-1],fl=f(last[0],last[1]);
+    const running=upto<pts.length;
+    read.innerHTML=`η = <b>${fmt(eta,3)}</b> · step <b>${upto-1}</b> of <b>${N}</b><br>loss now = <b>${blew&&!running?'diverged':fmt(fl,4)}</b><br>distance to minimum = <b>${blew&&!running?'∞':fmt(Math.hypot(last[0],last[1]),3)}</b>`;
+    if(running){verd.className='verdict info';verd.textContent='Walking… each step is  w ← w − η∇L, nothing more.';return;}
     const div=blew||fl>f(sx,sy);
     verd.className='verdict '+(div?'bad':(fl<0.02?'good':'info'));
     verd.textContent=div?'✗ Diverging — each step overshoots onto a steeper wall, so the next is worse. Stability here needs η < 1.':(fl<0.02?'✓ Converged. Notice the zig-zag: the narrow direction is what limits η.':'Descending, but slowly — the flat direction crawls while the narrow one dominates the step size.');
   }
-  function pick(e){const p=plane(svg,-3.1,3.1,-1.75,1.75,{step:1,pad:26});const q=planePt(svg,p,e);
-    sx=Math.max(-3,Math.min(3,q[0]));sy=Math.max(-1.7,Math.min(1.7,q[1]));draw();}
+  function stopPlay(){if(playH){playH.stop();playH=null;}shown=Infinity;document.getElementById('gd-play').textContent='▶ watch it walk';}
+  document.getElementById('gd-play').addEventListener('click',()=>{
+    if(playH){stopPlay();draw();return;}
+    const total=path().pts.length;
+    document.getElementById('gd-play').textContent='⏸ stop';
+    playH=tween(Math.min(5000,Math.max(1600,total*180)),u=>{shown=Math.max(1,Math.round(u*total));draw();},
+      ()=>{stopPlay();draw();});});
+  function pick(e){const q=planePt(svg,T.p,e);
+    sx=Math.max(-3,Math.min(3,q[0]));sy=Math.max(-1.7,Math.min(1.7,q[1]));stopPlay();draw();}
   let down=false;
   svg.addEventListener('pointerdown',e=>{down=true;try{svg.setPointerCapture(e.pointerId)}catch(_){}pick(e);e.preventDefault();});
   svg.addEventListener('pointermove',e=>{if(down)pick(e);});
   ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>down=false));
-  bindCtl('gd-eta',v=>{eta=v;draw();},v=>fmt(v,3))();
-  bindCtl('gd-n',v=>{N=v|0;draw();},v=>String(v|0))();
+  bindCtl('gd-eta',v=>{eta=v;stopPlay();draw();},v=>fmt(v,3))();
+  bindCtl('gd-n',v=>{N=v|0;stopPlay();draw();},v=>String(v|0))();
+  rebuild();
+})();
+
+/* ================= W11 · THE KINK ================= */
+(function(){
+  const svg=document.getElementById('kn-svg'),read=document.getElementById('kn-read'),verd=document.getElementById('kn-verdict');
+  if(!svg)return;
+  const FS=[
+    {n:'|x|',f:x=>Math.abs(x),ls:-1,rs:1,kinked:true},
+    {n:'ReLU',f:x=>Math.max(0,x),ls:0,rs:1,kinked:true},
+    {n:'x²',f:x=>x*x,ls:0,rs:0,kinked:false}];
+  let k=0,h=1.2,playH=null;
+  function draw(){
+    const F=FS[k];
+    const p=plane(svg,-2.1,2.1,-0.6,2.4,{step:1,tickEvery:1,pad:26});
+    let d='';for(let i=0;i<=300;i++){const x=-2.1+4.2*i/300;d+=(i?'L':'M')+p.px(x).toFixed(1)+','+p.py(F.f(x)).toFixed(1);}
+    el('path',{d,stroke:'var(--s1)','stroke-width':2.8,fill:'none'},svg);
+    const y0=F.f(0);
+    const mR=(F.f(h)-y0)/h, mL=(F.f(-h)-y0)/(-h);
+    // one-sided secants through the origin point
+    el('path',{d:`M${p.px(0)},${p.py(y0)}L${p.px(1.9)},${p.py(y0+mR*1.9)}`,stroke:'var(--s2)','stroke-width':2.4},svg);
+    el('path',{d:`M${p.px(0)},${p.py(y0)}L${p.px(-1.9)},${p.py(y0-mL*1.9)}`,stroke:'var(--s7)','stroke-width':2.4},svg);
+    el('circle',{cx:p.px(h),cy:p.py(F.f(h)),r:5,fill:'var(--s2)'},svg);
+    el('circle',{cx:p.px(-h),cy:p.py(F.f(-h)),r:5,fill:'var(--s7)'},svg);
+    el('circle',{cx:p.px(0),cy:p.py(y0),r:5.5,fill:'var(--ink)'},svg);
+    txt(svg,p.px(1.55),p.py(y0+mR*1.55)-10,'from the right','font:700 11px system-ui;fill:var(--s2)','middle');
+    txt(svg,p.px(-1.55),p.py(y0-mL*1.55)-10,'from the left','font:700 11px system-ui;fill:var(--s7)','middle');
+    const gap=Math.abs(mR-mL);
+    read.innerHTML=`h = <b>${fmt(h,3)}</b><br>right secant slope → <b style="color:var(--s2)">${fmt(mR,3)}</b><br>left secant slope → <b style="color:var(--s7)">${fmt(mL,3)}</b><br>disagreement = <b>${fmt(gap,3)}</b>`;
+    const settledR=Math.abs(mR-F.rs)<0.06,settledL=Math.abs(mL-F.ls)<0.06;
+    if(F.kinked&&settledR&&settledL){verd.className='verdict bad';
+      verd.textContent='✗ The limits exist — but they are different numbers ('+fmt(F.ls,0)+' vs '+fmt(F.rs,0)+'). No single slope fits: f is NOT differentiable at 0. Frameworks shrug and pick one.';}
+    else if(!F.kinked&&settledR&&settledL){verd.className='verdict good';
+      verd.textContent='✓ Both sides agree on 0 — smooth curve, honest derivative. This is what |x| and ReLU fail to do.';}
+    else{verd.className='verdict info';
+      verd.textContent='Squeeze h toward 0 and watch what each side\'s slope settles on.';}
+  }
+  function stopPlay(){if(playH){playH.stop();playH=null;}document.getElementById('kn-play').textContent='▶ squeeze h → 0';}
+  document.getElementById('kn-play').addEventListener('click',()=>{
+    if(playH){stopPlay();return;}
+    document.getElementById('kn-play').textContent='⏸ stop';
+    const r=document.getElementById('kn-h'),start=Math.max(+r.value,0.8);
+    playH=tween(2600,u=>{h=start+(0.02-start)*u;
+      r.value=h;document.getElementById('kn-h-o').textContent=fmt(h,3);draw();},()=>stopPlay());});
+  tabs(document.getElementById('kn-tabs'),t=>{k=+t;stopPlay();draw();});
+  bindCtl('kn-h',v=>{h=v;stopPlay();draw();},v=>fmt(v,3))();
   draw();
 })();
 
