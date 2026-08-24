@@ -310,6 +310,9 @@ main:focus{outline:none}
 .mx::after{right:0;border-left:0;border-radius:0 .3em .3em 0}
 .mx i{font-style:normal}
 .tabs .mx{font-size:.8em;margin-left:.3em}
+.onesent{max-width:var(--prose);margin:1.2rem auto 0;font-family:var(--sans);font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--s1);padding:.45rem 1rem;background:var(--surface);border-radius:0 10px 10px 0}
+.onesent b{color:var(--ink)}
+.rung svg{flex:none;align-self:center}
 </style>
 </head>
 <body>
@@ -317,7 +320,7 @@ main:focus{outline:none}
 <div class="topbar"><div class="topbar-in">
   <a class="home" href="index.html">The Math<span class="txs"> Behind the Machine</span></a><span class="crumb">/ Unit 5 · Decompositions &amp; SVD</span>
   <span class="spacer"></span>
-  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">14</span></span>
+  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">16</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
   <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
@@ -330,9 +333,9 @@ main:focus{outline:none}
   <h1>Matrix Decompositions &amp; SVD</h1>
   <p class="lede">The number 12 becomes easy the moment you write it as \(2\times2\times3\). This unit does the same thing to matrices. A matrix mixes rotation and stretching into one block of numbers; a <strong>decomposition un-mixes it</strong>, rewriting the matrix as a few simple moves: rotate, stretch, rotate. We build the idea in three steps — symmetric matrices (the easiest case), square matrices, and finally the <strong>SVD</strong>: one factorization that works for <em>every</em> matrix, of any shape. The SVD is also the engine inside image compression, recommender systems, and PCA. By the end you will compress a real photograph with it — and know exactly why that works.</p>
   <div class="meta">
-    <span class="chip">≈ 60 min read + play</span>
-    <span class="chip">8 interactive widgets · compress a real photo</span>
-    <span class="chip">14 inline checks</span>
+    <span class="chip">≈ 70 min read + play</span>
+    <span class="chip">10 interactive widgets · a real photo, a taste table</span>
+    <span class="chip">16 inline checks</span>
     <span class="chip">✍ 12 solved practice problems</span>
   </div>
 </header>
@@ -344,14 +347,54 @@ main:focus{outline:none}
     <p>Someone hands you the number 5040 and asks: is it divisible by 48? Hard to say. Now factor both: \(5040 = 2^4\cdot3^2\cdot5\cdot7\), and \(48=2^4\cdot 3\). Compare the factors — the answer is an easy yes. The number never changed; you just wrote it in a form that <strong>shows what it is made of</strong>. We will do exactly this to matrices. Remember from Unit 1: a matrix is a machine that moves space. In its raw form, the rotation and the stretching it performs are mixed together in the entries, where you cannot see them. <strong>A decomposition is factoring, for matrices:</strong> it rewrites \(A\) as a few simple moves — each one easy to picture.</p>
   </div>
   <div class="prose">
-    <p>Here is the unit's main result, up front: almost every matrix can be written as <em>rotate → stretch → rotate</em>. The three famous decompositions below are not three separate tricks. They are one idea, applied to harder and harder matrices — each step asks for less and works for more:</p>
+    <p>Here is the unit's main result, up front: almost every matrix can be written as <em>rotate → stretch → rotate</em>. Before any formulas — watch it happen. The flag below is about to be hit by a matrix, and the matrix will turn out to be nothing but three simple moves:</p>
+  </div>
+
+  <div class="widget" id="w-moves">
+    <div class="widget-head"><span class="w-title">The three moves</span><span class="w-sub">one matrix = turn · stretch · turn — watch it happen to a flag</span></div>
+    <div class="tabs" id="mv-tabs">
+      <button data-t="lec" aria-selected="true">the lecture's <span class="mx"><i>3</i><i>0</i><i>4</i><i>5</i></span></button>
+      <button data-t="sym">symmetric <span class="mx"><i>2</i><i>1</i><i>1</i><i>2</i></span></button>
+      <button data-t="shear">the shear <span class="mx"><i>1</i><i>1</i><i>0</i><i>1</i></span></button>
+      <button data-t="rot">rotation 90°</button>
+    </div>
+    <div class="stagebar" id="mv-stages">
+      <button data-s="0" aria-selected="true">start</button>
+      <button data-s="1">move 1 · turn</button>
+      <button data-s="2">move 2 · stretch</button>
+      <button data-s="3">move 3 · turn</button>
+      <button class="preset" id="mv-play" style="margin-left:auto">▶ play all three</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.8 1 320px"><svg id="mv-svg" viewBox="0 0 560 400" class="svg-lab" role="img" aria-label="A flag shape carried through rotate, stretch, rotate; a dashed target shows where the matrix sends it in one go"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="readout" id="mv-read" style="line-height:2.1"></div>
+        <div id="mv-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The dashed orange flag is where the matrix sends the blue one <em>in a single blow</em>. The three moves land on it exactly — every time, for every matrix here, even the shear. Finding those three moves inside any matrix is what this whole unit builds toward (it is called the SVD, and you will own it by Section 7).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Switch to the shear. It slides the top of the flag sideways — yet the three moves are only turns and stretches. What does that mean?</p>
+    <div class="opts">
+      <button data-correct data-why="Exactly — 'shearing' is not a basic move. Turn by about −58°, stretch by 1.618 and 0.618 (the golden ratio and its reciprocal, a lovely accident), turn back by about 32°, and you have reproduced the shear perfectly. Turn · stretch · turn is enough to build every matrix in this unit.">Shearing is not fundamental — it is turns and stretches in disguise</button>
+      <button data-why="Watch the final frame: the three-move flag lands exactly on the dashed target, not approximately. The decomposition is exact — that is the whole promise of the SVD.">The three moves only approximate a shear</button>
+      <button data-why="The shear does need all three: its stretch step is ×1.618 and ×0.618 along tilted directions. A pure turn (like the rotation preset) is the case where the stretch step does nothing.">The shear is secretly just one big rotation</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  <div class="prose">
+    <p>Three simple moves — that is the destination. The three famous decompositions below are not three separate tricks. They are one idea, applied to harder and harder matrices — each step asks for less and works for more:</p>
   </div>
   <div class="ladder">
-    <div class="rung r1"><b>Step 1 · Spectral</b><span class="form">A = QΛQᵀ</span><span class="who">symmetric A only — perpendicular axes, free inverse (just the transpose)</span></div>
+    <div class="rung r1"><svg viewBox="0 0 46 30" width="46" height="30" aria-hidden="true"><ellipse cx="23" cy="15" rx="16" ry="8" fill="none" stroke="var(--s3)" stroke-width="1.6"/><line x1="23" y1="15" x2="39" y2="15" stroke="var(--s3)" stroke-width="1.6"/><line x1="23" y1="15" x2="23" y2="7" stroke="var(--s3)" stroke-width="1.6"/></svg><b>Step 1 · Spectral</b><span class="form">A = QΛQᵀ</span><span class="who">symmetric A only — perpendicular axes, free inverse (just the transpose)</span></div>
     <div class="rung-arrow">↓ now allow axes that lean</div>
-    <div class="rung r2"><b>Step 2 · Eigendecomposition</b><span class="form">A = PDP⁻¹</span><span class="who">any square A with enough eigenvectors — leaning axes, real inverse</span></div>
+    <div class="rung r2"><svg viewBox="0 0 46 30" width="46" height="30" aria-hidden="true"><ellipse cx="23" cy="15" rx="16" ry="8" fill="none" stroke="var(--s2)" stroke-width="1.6" transform="rotate(-18 23 15)"/><line x1="23" y1="15" x2="38" y2="9" stroke="var(--s2)" stroke-width="1.6"/><line x1="23" y1="15" x2="30" y2="4" stroke="var(--s2)" stroke-width="1.6"/></svg><b>Step 2 · Eigendecomposition</b><span class="form">A = PDP⁻¹</span><span class="who">any square A with enough eigenvectors — leaning axes, real inverse</span></div>
     <div class="rung-arrow">↓ now allow any shape at all</div>
-    <div class="rung r3"><b>Step 3 · SVD</b><span class="form">A = UΣVᵀ</span><span class="who">EVERY matrix, any shape — two perpendicular frames, always works</span></div>
+    <div class="rung r3"><svg viewBox="0 0 46 30" width="46" height="30" aria-hidden="true"><circle cx="9" cy="15" r="7" fill="none" stroke="var(--s1)" stroke-width="1.6"/><path d="M19,15L26,15" stroke="var(--s1)" stroke-width="1.4"/><path d="M26,15l-3,-2.4v4.8z" fill="var(--s1)"/><ellipse cx="36" cy="15" rx="8" ry="4.5" fill="none" stroke="var(--s1)" stroke-width="1.6" transform="rotate(24 36 15)"/></svg><b>Step 3 · SVD</b><span class="form">A = UΣVᵀ</span><span class="who">EVERY matrix, any shape — two perpendicular frames, always works</span></div>
   </div>
   <div class="prose">
     <p>Why this order? Each step teaches one lesson. Step 1 is the perfect case: perpendicular axes and plain stretching, nothing else. Step 2 asks: <em>what if the special axes lean?</em> The idea survives, but the easy transpose must be replaced by a real inverse. Step 3 asks the biggest question: <em>what if the matrix is not even square, so "eigenvector" makes no sense?</em> The SVD answers it, with one construction that works for every matrix there is.</p>
@@ -405,6 +448,8 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> A diagonal matrix is easy because each axis minds its own business — so the whole unit is a hunt for the diagonal hiding inside every matrix.</div>
 </section>
 
 <!-- ================= 3 · DIAGONALIZABLE ================= -->
@@ -418,6 +463,8 @@ main:focus{outline:none}
     <p>— which you have seen before. <strong>The columns of \(P\) must be eigenvectors of \(A\), and the diagonal of \(D\) must be their eigenvalues.</strong> Diagonalization isn't a new technique; it is Unit 4's eigen-hunt, repackaged as a factorization. The lecture's opening example: \(A=\begin{bmatrix}1&4\\2&3\end{bmatrix}\) with \(P=\begin{bmatrix}-2&1\\1&1\end{bmatrix}\) gives \(P^{-1}AP=\begin{bmatrix}-1&0\\0&5\end{bmatrix}\) — and sure enough, the columns \((-2,1)\) and \((1,1)\) are exactly the eigenvectors of \(A\) for \(\lambda=-1\) and \(\lambda=5\) (check: \(A\binom{-2}{1}=\binom{2}{-1}=-1\binom{-2}{1}\) ✓).</p>
     <p>One catch, straight from Unit 4: this needs <em>n independent eigenvectors</em> to fill \(P\)'s columns, so that \(P\) is invertible. Matrices with enough eigenvectors can be diagonalized; defective ones (like the shear) cannot. Hold that thought for Section 6.</p>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> \(A=PDP^{-1}\) just says: put \(A\)'s eigenvectors in the columns of \(P\) and their eigenvalues in \(D\).</div>
 </section>
 
 <!-- ================= 4 · RUNG 1: SPECTRAL ================= -->
@@ -465,6 +512,8 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> A symmetric matrix is a set of perpendicular axes, each scaled by its own eigenvalue — nothing more.</div>
 </section>
 <!-- ================= 5 · RUNG 2: EIGEN ================= -->
 <section class="unit" id="s5">
@@ -521,6 +570,8 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> \(P^{-1}\) translates into the matrix's own language, \(D\) does simple scaling there, and \(P\) translates back.</div>
 </section>
 
 <!-- ================= 6 · WHEN EIGEN FAILS ================= -->
@@ -563,6 +614,8 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Eigendecomposition fails whenever one set of axes must serve both input and output — the shear, the rotation, and every rectangular matrix.</div>
 </section>
 
 <!-- ================= 7 · RUNG 3: SVD ================= -->
@@ -628,10 +681,15 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Every matrix is turn · stretch · turn — \(V^{\top}\), then \(\Sigma\), then \(U\) — no exceptions.</div>
 </section>
 <!-- ================= 8 · BUILDING THE SVD ================= -->
 <section class="unit" id="s8">
   <div class="sec-head"><span class="sec-num">8</span><h2>Building U, Σ, V — the symmetric-matrix bridge</h2></div>
+  <div class="callout intuition"><span class="tag">In plain words</span>
+    <p>We do not attack \(A\) head-on. We take a detour: build \(A^{\top}A\), which is <em>always</em> square and symmetric — and symmetric matrices are exactly the case we already solved in Step 1. Decompose that instead, and everything about \(A\)'s own decomposition falls out for free.</p>
+  </div>
   <div class="prose">
     <p>Where do the three factors come from? From the step we already know. \(A\) may be rectangular, but \(A^{\top}A\) (size \(n\times n\)) and \(AA^{\top}\) (size \(m\times m\)) are both square and symmetric — so Step 1, the spectral theorem, applies to <em>them</em>. Substitute the SVD and watch the structure fall out:</p>
     \[A^{\top}A=(U\Sigma V^{\top})^{\top}(U\Sigma V^{\top})=V\,\Sigma^{\top}\Sigma\,V^{\top}\]
@@ -711,6 +769,8 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> To decompose \(A\), decompose the symmetric \(A^{\top}A\) instead: \(V\) and the σ's fall out, and \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\) finishes the job.</div>
 </section>
 
 <!-- ================= 9 · RECTANGULAR IN 3D ================= -->
@@ -735,6 +795,8 @@ main:focus{outline:none}
       </div>
     </div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> A rectangular matrix maps one world into another: its image is a flat slice of the bigger world, and \(\mathbf{u}_3\) is the direction it can never reach.</div>
 </section>
 
 <!-- ================= 10 · LAYER CAKE ================= -->
@@ -775,7 +837,7 @@ main:focus{outline:none}
     <p>Switch the widget to <strong>pure noise</strong> and drag \(k\): the reconstruction barely improves, because noise spreads its energy <em>evenly</em> across all singular values — there are no quiet layers to discard for free. Structure compresses; noise doesn't. Turn that around and you get <strong>denoising</strong>: real signal hides in the loud early layers, noise in the faint tail, so truncating the SVD <em>removes noise</em>. One theorem, two superpowers.</p>
   </div>
 
-  <div class="check" data-check="c10">
+<div class="check" data-check="c10">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">You keep \(k=3\) layers of a matrix whose singular values are \(9,\,4,\,2,\,0.5,\,0.1\). What is \(\|A-\hat A(3)\|_2\)?</p>
     <div class="opts">
@@ -795,6 +857,40 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
+  <div class="prose">
+    <p>One more disguise, because this is where the SVD earns its keep in machine learning. A matrix does not have to be a picture — <strong>a table is a matrix too</strong>. Below: six people, five films, thirty star ratings. It looks like thirty separate opinions. It is not:</p>
+  </div>
+
+  <div class="widget" id="w-taste">
+    <div class="widget-head"><span class="w-title">The taste machine</span><span class="w-sub">thirty ratings, but only two patterns — how recommenders see a table</span></div>
+    <div class="tabs" id="ts-tabs">
+      <button data-t="0">pattern 1 · action taste</button>
+      <button data-t="1">pattern 2 · romance taste</button>
+      <button data-t="2" aria-selected="true">pattern 1 + pattern 2 = the table</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.8 1 330px"><svg id="ts-svg" viewBox="0 0 560 340" class="svg-lab" role="img" aria-label="A heatmap of six people rating five films, assembled from two rank-one taste patterns"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <svg id="ts-bars" viewBox="0 0 300 168" class="svg-lab" role="img" aria-label="Bar strips showing each person's strength of the selected taste and each film's amount of it"></svg>
+        <div id="ts-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Each pattern is one <em>column of person-numbers</em> times one <em>row of film-numbers</em> — a rank-1 layer, exactly like the photo's layers. Two of them rebuild all thirty ratings. This is how a streaming service guesses films you haven't seen: it doesn't learn your thirty ratings, it learns your <em>two taste numbers</em> — and run the SVD on this table and it discovers both patterns by itself (σ₃ = 0).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A streaming service has a million users and 10,000 films — ten billion possible ratings, almost all of them missing. Why does the layer idea rescue it?</p>
+    <div class="opts">
+      <button data-correct data-why="Real taste tables are close to low-rank: a few dozen patterns (genres, moods, eras) explain most ratings. So the service only needs to learn each user's few pattern-strengths and each film's few pattern-amounts — millions of numbers, not ten billion — and the observed ratings are enough to pin those down. Every missing cell is then just a dot product. That is matrix factorization, the engine behind classic recommender systems.">Tastes follow a few patterns, so a few layers pin down every missing cell</button>
+      <button data-why="It never fills the table first — that's the point. It fits the layers directly to the ratings it has; the low-rank structure is what lets so few observations determine so many missing cells.">SVD compresses the full table after it has been collected</button>
+      <button data-why="More users make it easier, not harder: each new user's ratings are yet more evidence about the same few shared patterns. The patterns are shared; only the two-or-so numbers per person are new.">It can't — with that many users, no structure survives</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  
+  <div class="onesent"><b>In one sentence:</b> Sort the layers loudest-first and keep the top few — the best possible summary of any matrix, whether it is a photograph or a table of tastes.</div>
 </section>
 
 <!-- ================= 11 · SPECTRAL NORM + FAMILY TABLE ================= -->
@@ -865,6 +961,8 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> \(\sigma_1\) is the loudest the matrix can ever be; \(\sigma_1/\sigma_2\) says how lopsided it is.</div>
 </section>
 
 <!-- ================= 12 · SUMMARY ================= -->
@@ -1280,6 +1378,76 @@ function tween(dur,step,done){
   (function fr(t){if(dead)return;const u=Math.min(1,(t-t0)/dur);step(easeIO(u));
     if(u<1)requestAnimationFrame(fr);else done&&done();})(t0);
   return {stop(){dead=true;}};}
+/* ================= W-MOVES · THE THREE MOVES ================= */
+(function(){
+  const svg=document.getElementById('mv-svg');if(!svg)return;
+  const MATS={lec:[[3,0],[4,5]],sym:[[2,1],[1,2]],shear:[[1,1],[0,1]],rot:[[0,-1],[1,0]]};
+  // the flag: a letter-F outline, centered — its clear orientation makes turns and stretches unmistakable
+  const RAW=[[0,0],[0.22,0],[0.22,0.38],[0.5,0.38],[0.5,0.58],[0.22,0.58],[0.22,0.78],[0.62,0.78],[0.62,1],[0,1]];
+  const FLAG=RAW.map(([x,y])=>[(x-0.31)*1.6,(y-0.5)*1.6]);
+  let cur='lec',U=0,animH=null;
+  const wrap=a=>{while(a>Math.PI)a-=2*Math.PI;while(a<=-Math.PI)a+=2*Math.PI;return a;};
+  const mm=(A,B)=>[[A[0][0]*B[0][0]+A[0][1]*B[1][0],A[0][0]*B[0][1]+A[0][1]*B[1][1]],
+                   [A[1][0]*B[0][0]+A[1][1]*B[1][0],A[1][0]*B[0][1]+A[1][1]*B[1][1]]];
+  const Rot=a=>[[Math.cos(a),-Math.sin(a)],[Math.sin(a),Math.cos(a)]];
+  function decomp(){
+    const A=MATS[cur],{S,Ucols,Vcols}=svdSmall(A);
+    let v1=Vcols[0].slice(),v2=Vcols[1].slice(),u1=Ucols[0].slice(),u2=Ucols[1].slice();
+    if(v1[0]*v2[1]-v1[1]*v2[0]<0){v2=[-v2[0],-v2[1]];u2=[-u2[0],-u2[1]];} // make V a pure rotation
+    const phiV=wrap(Math.atan2(v2[0],v1[0]));       // angle of Vᵀ
+    const phiU=wrap(Math.atan2(u1[1],u1[0]));       // angle of U
+    return {A,s1:S[0],s2:S[1],phiV,phiU};}
+  function Tof(D,u){
+    if(u<=1)return Rot(D.phiV*u);
+    if(u<=2){const f=u-1;return mm([[1+(D.s1-1)*f,0],[0,1+(D.s2-1)*f]],Rot(D.phiV));}
+    const f=u-2;return mm(Rot(D.phiU*f),mm([[D.s1,0],[0,D.s2]],Rot(D.phiV)));}
+  function poly(p,M,cls){let d='';FLAG.forEach((q,i)=>{const v=mul2(M,q);
+    d+=(i?'L':'M')+p.px(v[0]).toFixed(1)+','+p.py(v[1]).toFixed(1);});return d+'Z';}
+  function draw(){
+    const D=decomp();
+    // frame the view around everything the flag will ever cover
+    let bx0=-1,bx1=1,by0=-1,by1=1,topPt=[0,-1e9];
+    FLAG.forEach(q=>{
+      [q,mul2(D.A,q)].forEach(w=>{
+        bx0=Math.min(bx0,w[0]);bx1=Math.max(bx1,w[0]);
+        by0=Math.min(by0,w[1]);by1=Math.max(by1,w[1]);});
+      const t=mul2(D.A,q);if(t[1]>topPt[1])topPt=t;});
+    const mx2=(bx1-bx0)*0.14,my2=(by1-by0)*0.1;
+    const big=(by1-by0)>7||(bx1-bx0)>7;
+    const p=plane(svg,bx0-mx2,bx1+mx2,by0-my2,by1+my2,{tickEvery:big?2:1,step:big?2:1});
+    // target: where A sends the flag in one blow
+    el('path',{d:poly(p,D.A,''),fill:'var(--wash-2)',stroke:'var(--s2)','stroke-width':2,'stroke-dasharray':'7 5'},svg);
+    txt(svg,p.px(Math.max(bx0,Math.min(bx1,topPt[0]))),p.py(topPt[1])-8,'target: A · flag','font:700 11px system-ui;fill:var(--s2)','middle');
+    // ghost of the starting flag
+    if(U>0.02)el('path',{d:poly(p,[[1,0],[0,1]],''),fill:'none',stroke:'var(--ink-muted)','stroke-width':1.3,'stroke-dasharray':'4 4',opacity:.55},svg);
+    // the travelling flag
+    el('path',{d:poly(p,Tof(D,U),''),fill:'var(--s1)','fill-opacity':.14,stroke:'var(--s1)','stroke-width':2.6,'stroke-linejoin':'round'},svg);
+    const deg=a=>fmt(a*180/Math.PI,1)+'°';
+    const on=(i,t)=>U>i+0.001?`<b style="color:var(--s1)">${t}</b>`:t;
+    document.getElementById('mv-read').innerHTML=
+      on(0,`move 1 · turn by ${deg(D.phiV)}`)+'<br>'+
+      on(1,`move 2 · stretch ×${fmt(D.s1,2)} and ×${fmt(D.s2,2)}`)+'<br>'+
+      on(2,`move 3 · turn by ${deg(D.phiU)}`)+'<br>'+
+      `together = A, <b>exactly</b>`;
+    const v=document.getElementById('mv-verdict');
+    if(U>=2.999){v.className='verdict good';
+      v.textContent=cur==='rot'?'✓ Landed on the target. A rotation is all move 3 — the stretch step had nothing to do (×1, ×1).':(cur==='shear'?'✓ Landed exactly on the target — the shear rebuilt from nothing but turns and stretches.':'✓ Landed exactly on the target. The matrix was never mysterious — it was these three moves all along.');}
+    else if(U<=0.001){v.className='verdict info';v.textContent='Press ▶ — the flag will reach the dashed target in three simple moves.';}
+    else{v.className='verdict info';v.textContent=['Move 1: turning… (shape unchanged — a turn distorts nothing)','Move 2: stretching along the axes — the only move that changes shape','Move 3: turning into final position…'][Math.min(2,Math.floor(U))];}
+  }
+  function setStageBtn(s){document.querySelectorAll('#mv-stages button[data-s]').forEach(b=>b.setAttribute('aria-selected',+b.dataset.s===s?'true':'false'));}
+  function goTo(s){if(animH)animH.stop();setStageBtn(s);const from=U;
+    animH=tween(Math.abs(s-from)*500+60,f=>{U=from+(s-from)*f;draw();});}
+  document.querySelectorAll('#mv-stages button[data-s]').forEach(b=>b.addEventListener('click',()=>goTo(+b.dataset.s)));
+  document.getElementById('mv-play').addEventListener('click',()=>{
+    if(animH)animH.stop();U=0;setStageBtn(0);draw();
+    animH=tween(4200,f=>{U=f*3;setStageBtn(Math.min(3,Math.ceil(U-0.02)));draw();},()=>setStageBtn(3));});
+  document.querySelectorAll('#mv-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#mv-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');cur=b.dataset.t;
+    if(animH)animH.stop();U=0;setStageBtn(0);draw();}));
+  draw();
+})();
 /* ================= W-DIALS · TWO INDEPENDENT DIALS ================= */
 (function(){
   const svg=document.getElementById('dl-svg');if(!svg)return;
@@ -1741,6 +1909,65 @@ function tween(dur,step,done){
   document.querySelectorAll('#rk-tabs button').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#rk-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
     b.setAttribute('aria-selected','true');stopPlay();cur=b.dataset.t;draw();}));
+  draw();
+})();
+/* ================= W-TASTE · THE TASTE MACHINE ================= */
+(function(){
+  const svg=document.getElementById('ts-svg');if(!svg)return;
+  const PEOPLE=['Asha','Ben','Chloe','Dev','Elif','Farid'];
+  const FILMS=['Chase','Steel','Autumn','Paris','Robot'];
+  const GENRE=['action','action','romance','romance','half & half'];
+  const ACT=[5,4,1,0,3,2],  ROM=[0,1,5,4,2,3];      // each person's two taste numbers
+  const MACT=[1,0.9,0,0.1,0.5], MROM=[0,0.1,1,0.9,0.5]; // each film's two pattern amounts
+  const layer=(pu,pm)=>PEOPLE.map((_,i)=>FILMS.map((_,j)=>pu[i]*pm[j]));
+  const L1=layer(ACT,MACT),L2=layer(ROM,MROM);
+  const SUM=L1.map((r,i)=>r.map((v,j)=>v+L2[i][j]));
+  let mode=2;
+  const cellFill=v=>`color-mix(in srgb, var(--s1) ${Math.round(Math.max(0,Math.min(5,v))/5*52)}%, var(--surface))`;
+  function draw(){
+    const M=mode===0?L1:(mode===1?L2:SUM);
+    svg.innerHTML='';
+    const x0=88,y0=52,cw=(560-x0-6)/5,ch=(340-y0-10)/6;
+    FILMS.forEach((f,j)=>{
+      txt(svg,x0+j*cw+cw/2,20,f,'font:700 11.5px system-ui;fill:var(--ink-2)','middle');
+      txt(svg,x0+j*cw+cw/2,34,GENRE[j],'font:600 8.5px system-ui;fill:var(--ink-muted)','middle');});
+    PEOPLE.forEach((p2,i)=>txt(svg,x0-10,y0+i*ch+ch/2+4,p2,'font:650 11.5px system-ui;fill:var(--ink-2)','end'));
+    for(let i=0;i<6;i++)for(let j=0;j<5;j++){
+      const v=M[i][j];
+      el('rect',{x:x0+j*cw+1.5,y:y0+i*ch+1.5,width:cw-3,height:ch-3,rx:6,fill:cellFill(v)},svg);
+      txt(svg,x0+j*cw+cw/2,y0+i*ch+ch/2+4,(Math.round(v*10)/10).toString().replace(/\.0$/,''),
+        `font:700 12.5px system-ui;fill:${v>3.1?'#fff':'var(--ink)'}`,'middle');}
+    // side bars: the selected pattern's person-strengths and film-amounts
+    const bars=document.getElementById('ts-bars');bars.innerHTML='';
+    if(mode<2){
+      const pu=mode===0?ACT:ROM,pm=mode===0?MACT:MROM,name=mode===0?'action':'romance';
+      txt(bars,4,12,`person → ${name} taste`,'font:600 9.5px system-ui;fill:var(--ink-muted)');
+      PEOPLE.forEach((p2,i)=>{const w=pu[i]/5*120;
+        txt(bars,40,30+i*13,p2,'font:600 9px system-ui;fill:var(--ink-2)','end');
+        el('rect',{x:46,y:23+i*13,width:Math.max(1.5,w),height:9,rx:3,fill:'var(--s1)',opacity:.85},bars);});
+      txt(bars,170,12,`film → ${name} amount`,'font:600 9.5px system-ui;fill:var(--ink-muted)');
+      FILMS.forEach((f,j)=>{const w=pm[j]*95;
+        txt(bars,214,30+j*13,f,'font:600 9px system-ui;fill:var(--ink-2)','end');
+        el('rect',{x:220,y:23+j*13,width:Math.max(1.5,w),height:9,rx:3,fill:'var(--s2)',opacity:.85},bars);});
+      txt(bars,4,120,'pattern = person-column × film-row','font:650 9.5px system-ui;fill:var(--ink-2)');
+      txt(bars,4,134,`only ${PEOPLE.length} + ${FILMS.length} = 11 numbers`,'font:600 9.5px system-ui;fill:var(--ink-muted)');
+    }else{
+      const {S}=svdSmall(SUM);
+      txt(bars,4,12,'ask the SVD: singular values of this table','font:600 9.5px system-ui;fill:var(--ink-muted)');
+      S.forEach((s,i)=>{const h=Math.max(2,s/S[0]*95);
+        el('rect',{x:20+i*52,y:120-h,width:34,height:h,rx:3,fill:i<2?'var(--s1)':'var(--grid)'},bars);
+        txt(bars,37+i*52,134,'σ'+'₁₂₃₄₅'[i],'font:650 10px system-ui;fill:var(--ink-2)','middle');
+        txt(bars,37+i*52,120-h-5,fmt(s,1),'font:600 9px system-ui;fill:var(--ink-muted)','middle');});
+      txt(bars,4,158,'σ₃ = σ₄ = σ₅ = 0 — the table really is just two patterns','font:650 9.5px system-ui;fill:var(--ink-2)');
+    }
+    const verd=document.getElementById('ts-verdict');
+    if(mode===0){verd.className='verdict info';verd.textContent='Asha and Ben light up on Chase and Steel; Chloe and Dev stay dark. One taste, drawn as 6 person-numbers × 5 film-numbers = 11 numbers doing the work of 30.';}
+    else if(mode===1){verd.className='verdict info';verd.textContent='The mirror image: Chloe and Dev glow on Autumn and Paris. Robot Love gets half from each pattern — that is what "half & half" means.';}
+    else{verd.className='verdict good';verd.textContent='✓ Pattern 1 + pattern 2 = all thirty ratings, exactly. This table was never thirty separate opinions — it was two tastes. The SVD discovers that on its own: σ₃ = 0.';}
+  }
+  document.querySelectorAll('#ts-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#ts-tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');mode=+b.dataset.t;draw();}));
   draw();
 })();
 /* ================= W-AMP · THE AMPLIFIER DIAL ================= */
