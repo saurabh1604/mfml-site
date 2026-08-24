@@ -318,6 +318,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 .mx::after{right:0;border-left:0;border-radius:0 .3em .3em 0}
 .mx i{font-style:normal}
 .tabs .mx{font-size:.8em;margin-left:.3em}
+.onesent{max-width:var(--prose);margin:1.2rem auto 0;font-family:var(--sans);font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--s1);padding:.45rem 1rem;background:var(--surface);border-radius:0 10px 10px 0}
+.onesent b{color:var(--ink)}
 </style>
 
 </head>
@@ -326,7 +328,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 <div class="topbar"><div class="topbar-in">
   <a class="home" href="index.html">The Math<span class="txs"> Behind the Machine</span></a><span class="crumb">/ Unit 6 · Differentiation</span>
   <span class="spacer"></span>
-  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">14</span></span>
+  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">15</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
   <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
@@ -341,8 +343,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <p class="lede">Every learning machine — from a tiny regression to a giant transformer — keeps asking one question, millions of times: <strong>which way is down?</strong> This unit builds the tool that answers it: the derivative. We start with one sliding line, and end at the Jacobian matrices that make backpropagation work.</p>
   <div class="meta">
     <span class="chip">≈ 65 min read + play</span>
-    <span class="chip">12 interactive widgets · animated landscapes</span>
-    <span class="chip">14 inline checks</span>
+    <span class="chip">13 interactive widgets · animated landscapes</span>
+    <span class="chip">15 inline checks</span>
     <span class="chip">✍ 10 solved practice problems</span>
   </div>
 </header>
@@ -386,11 +388,50 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Training is walking downhill in fog: you cannot see the valley, but you can always feel the slope under your feet — and that is enough.</div>
 </section>
 
 <!-- ================= 2 · THE DERIVATIVE FROM SCRATCH ================= -->
 <section class="unit" id="s2">
   <div class="sec-head"><span class="sec-num">2</span><h2>The derivative, built from a shrinking triangle</h2></div>
+  <div class="prose">
+    <p>Before the definition, one experiment — the deepest fact in this unit, and you can see it with your own eyes. Take any smooth curve and zoom in on a point. Keep zooming. The curve straightens. Zoom far enough and it becomes indistinguishable from a straight line — <strong>the</strong> line, the one whose slope we are about to compute. That is what "differentiable" means, and it is why derivatives exist at all:</p>
+  </div>
+
+  <div class="widget" id="w-zoom">
+    <div class="widget-head"><span class="w-title">The zoom lens</span><span class="w-sub">every smooth curve is secretly straight — zoom in and watch</span></div>
+    <div class="tabs" id="zm-tabs">
+      <button data-t="0" aria-selected="true">sin x</button>
+      <button data-t="1">x² − 1</button>
+      <button data-t="2">|x| — trouble at 0</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.7 1 320px"><svg id="zm-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="A curve viewed through a shrinking window; smooth curves straighten into a line, the absolute value keeps its corner"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="zm-x">point x₀</label><input id="zm-x" type="range" min="-1.5" max="1.5" step="0.05" value="0.6"><output id="zm-x-o">0.6</output></div>
+          <div class="ctl"><label for="zm-z">zoom</label><input id="zm-z" type="range" min="0" max="1" step="0.005" value="0"><output id="zm-z-o">×1</output></div>
+        </div>
+        <div class="presets"><button class="preset" id="zm-play">▶ zoom in</button></div>
+        <div class="readout" id="zm-read" style="margin-top:.6rem;line-height:2"></div>
+        <div id="zm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The little map in the corner shows where you are: the box is your window, shrinking around the point. On the smooth curves the window's contents go dead straight — the slope of that line is the derivative. Now try <b>|x| at x₀ = 0</b>: zoom forever, the corner never straightens. No line, no slope, no derivative. (Move x₀ off 0 and even |x| behaves.)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="check" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Zoom into any smooth curve and it straightens. Zoom into \(|x|\) at \(0\) and the corner survives every zoom. What is the moral?</p>
+    <div class="opts">
+      <button data-correct data-why="That is the honest meaning of the word: differentiable at a point = looks like a straight line up close there. The derivative is that line's slope. |x| never looks like a line at 0, so it has no derivative there — which is exactly the ReLU story waiting in Section 12.">Differentiable = looks like a straight line up close; \(|x|\) fails that test at 0</button>
+      <button data-why="The corner is scale-free: |2x| is just |x| stretched, so it looks identical at every zoom. No amount of zooming ever straightens it — that's precisely what having no derivative at 0 means.">Every function straightens eventually — just zoom more</button>
+      <button data-why="|x| is perfectly continuous at 0 — no jump, the two halves meet. Continuity means no jumps; differentiability means no corners. |x| passes the first test and fails the second.">The corner shows \(|x|\) is not continuous at 0</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
   <div class="prose">
     <p>"Slope at a point" is a slightly strange idea when you first meet it. Slope is a <em>ratio of two changes</em> — rise over run — but at a single point nothing changes. So the definition sneaks up on it: take a second point a distance \(h\) away, measure the honest slope between the two, then let \(h\) shrink toward zero and see what number the answer approaches.</p>
     \[\frac{df}{dx}=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}\]
@@ -438,6 +479,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> The derivative is the slope of a two-point line as the two points squeeze into one — and it exists exactly where the curve straightens under zoom.</div>
 </section>
 
 <!-- ================= 3 · THE RULES ================= -->
@@ -467,6 +510,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
           <div class="ctl"><label for="ch-x">input x</label><input id="ch-x" type="range" min="-1.5" max="1.5" step="0.05" value="0.5"><output id="ch-x-o">0.5</output></div>
           <div class="ctl"><label for="ch-n">nudge size</label><input id="ch-n" type="range" min="0.001" max="0.3" step="0.001" value="0.1"><output id="ch-n-o">0.1</output></div>
         </div>
+        <div class="presets"><button class="preset" id="ch-play">▶ shrink the nudge</button></div>
         <div class="readout" id="ch-read" style="margin-top:.7rem;line-height:1.9"></div>
         <div id="ch-verdict" class="verdict info" style="margin-top:.6rem">—</div>
         <p class="note">Shrink the nudge and the measured amplification converges on the predicted product \(g'(f(x))\cdot f'(x)\). The gap you see at large nudges is exactly the curvature the derivative ignores — Section 4 measures that gap precisely.</p>
@@ -491,6 +535,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Sensitivities in series multiply — and a deep network is a long series, which is why the chain rule runs machine learning.</div>
 </section>
 
 <!-- ================= 4 · TAYLOR ================= -->
@@ -561,6 +607,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Term \(k\) of a Taylor polynomial copies the \(k\)-th derivative at the anchor; the \(k!\) is bookkeeping so the copies don't disturb each other.</div>
 </section>
 
 <!-- ================= 5 · PARTIAL DERIVATIVES ================= -->
@@ -616,6 +664,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> To take a partial derivative, freeze every other variable and differentiate as usual.</div>
 </section>
 
 <!-- ================= 6 · THE GRADIENT ================= -->
@@ -685,6 +735,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> The gradient collects all the partials into one vector: it points exactly uphill, its length is the steepness, and minus it is the training direction.</div>
 </section>
 
 <!-- ================= 7 · THE FIVE SHAPES ================= -->
@@ -745,6 +797,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Count shapes: one sensitivity number per (output, input) pair — outputs give rows, inputs give columns.</div>
 </section>
 
 
@@ -801,6 +855,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> The Jacobian is the matrix a curved map turns into when you zoom in.</div>
 </section>
 
 <!-- ================= 9 · DET J ================= -->
@@ -829,11 +885,16 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> \(\det\mathbf J\) is the local area factor: nonzero means locally invertible — but locally invertible everywhere still does not mean globally one-to-one.</div>
 </section>
 
 <!-- ================= 10 · CHAIN RULE = MATRIX MULTIPLICATION ================= -->
 <section class="unit" id="s10">
   <div class="sec-head"><span class="sec-num">10</span><h2>The chain rule becomes matrix multiplication — and that is backpropagation</h2></div>
+  <div class="callout intuition"><span class="tag">In plain words</span>
+    <p>A network is a chain of machines. Each machine's local sensitivity is a matrix — its Jacobian. The chain rule says: <em>multiply the matrices</em>. Backpropagation adds one practical trick on top: multiply them starting from the loss end, so you only ever carry a thin row of numbers instead of building big matrices. That is the entire idea.</p>
+  </div>
   <div class="prose">
     <p>Everything so far converges here. In Section 3 the chain rule multiplied two numbers. With vectors it multiplies two <em>matrices</em>, and the order matters because matrix multiplication does not commute:</p>
     \[\mathbf{x}\ \xrightarrow{\ \mathbf F\ }\ \mathbf{y}\ \xrightarrow{\ \mathbf G\ }\ \mathbf{z}\qquad\Longrightarrow\qquad \frac{d\mathbf z}{d\mathbf x}=\frac{d\mathbf z}{d\mathbf y}\cdot\frac{d\mathbf y}{d\mathbf x}=\mathbf J_{\mathbf G}\,\mathbf J_{\mathbf F}\]
@@ -878,6 +939,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Backpropagation is the chain rule as matrix multiplication, done from the loss end backwards so nothing bigger than a row is ever built.</div>
 </section>
 
 <!-- ================= 11 · GRADIENT DESCENT ================= -->
@@ -916,6 +979,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Gradient descent is \(\mathbf w \leftarrow \mathbf w-\eta\nabla L\): the gradient picks the direction, and \(\eta\) decides how far to trust it.</div>
 </section>
 
 <!-- ================= 12 · FINE PRINT ================= -->
@@ -963,6 +1028,8 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     <p>On the Taylor-polynomial example (\(f(x)=x^4\) at \(x_0=1\)), the lecture slide lists the polynomial as \(1+4(x-1)+12(x-1)^2+24(x-1)^3+24(x-1)^4\). Those are the raw derivatives \(f^{(k)}(1)\) — the division by \(k!\) hasn't been applied. Expanding that expression gives \(24x^4-72x^3+84x^2-44x+9\), which is not \(x^4\); at \(x=2\) it returns \(65\) instead of \(16\).</p>
     <p>With the factorials divided out — \(12/2!=6\), \(24/3!=4\), \(24/4!=1\) — the polynomial becomes \(1+4(x-1)+6(x-1)^2+4(x-1)^3+(x-1)^4\), whose coefficients are the binomial numbers \(1,4,6,4,1\). That really does collapse to \(\big((x-1)+1\big)^4=x^4\), which is the point the slide is making.</p>
   </div>
+
+  <div class="onesent"><b>In one sentence:</b> Row vs. column is a convention; the order of matrix factors is not; and a kink means no derivative — frameworks simply pick a value and move on.</div>
 </section>
 
 <!-- ================= 13 · SUMMARY ================= -->
@@ -1450,6 +1517,78 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
   draw();
 })();
 
+/* ================= W1b · THE ZOOM LENS ================= */
+(function(){
+  const svg=document.getElementById('zm-svg'),read=document.getElementById('zm-read'),verd=document.getElementById('zm-verdict');
+  if(!svg)return;
+  const FS=[
+    {n:'sin x',f:x=>Math.sin(x),d:x=>Math.cos(x),kink:null,X:[-2.2,2.2],Y:[-1.5,1.5]},
+    {n:'x² − 1',f:x=>x*x-1,d:x=>2*x,kink:null,X:[-2.2,2.2],Y:[-1.4,2.4]},
+    {n:'|x|',f:x=>Math.abs(x),d:x=>Math.sign(x)||1,kink:0,X:[-2.2,2.2],Y:[-0.4,2.4]}];
+  let k=0,x0=0.6,zv=0,playH=null;
+  const zoomOf=v=>Math.pow(10,v*2.3); // ×1 … ×200
+  function draw(){
+    const F=FS[k],Z=zoomOf(zv),hw=1.8/Z,y0=F.f(x0);
+    svg.innerHTML='';
+    const W=560,H=360,pad=14;
+    const hh=hw*(H-2*pad)/(W-2*pad);
+    const px=x=>pad+(x-(x0-hw))/(2*hw)*(W-2*pad);
+    const py=y=>H-pad-(y-(y0-hh))/(2*hh)*(H-2*pad);
+    el('rect',{x:pad,y:pad,width:W-2*pad,height:H-2*pad,rx:10,fill:'none',stroke:'var(--ring)'},svg);
+    const defs=el('defs',{},svg),cp=el('clipPath',{id:'zmclip'},defs);
+    el('rect',{x:pad,y:pad,width:W-2*pad,height:H-2*pad,rx:10},cp);
+    const win=el('g',{'clip-path':'url(#zmclip)'},svg);
+    // tangent (the line the curve is becoming) — skip at the kink itself
+    const atKink=F.kink!==null&&Math.abs(x0-F.kink)<0.026;
+    if(!atKink){const m=F.d(x0);
+      el('path',{d:`M${px(x0-hw)},${py(y0-m*hw)}L${px(x0+hw)},${py(y0+m*hw)}`,stroke:'var(--s2)','stroke-width':2,'stroke-dasharray':'7 5',opacity:.85},win);}
+    // the curve, seen through the window
+    let d='';const N=420;
+    for(let i=0;i<=N;i++){const x=x0-hw+2*hw*i/N,y=F.f(x);
+      d+=(i?'L':'M')+px(x).toFixed(2)+','+py(y).toFixed(2);}
+    el('path',{d,stroke:'var(--s1)','stroke-width':3,fill:'none','stroke-linejoin':'round'},win);
+    el('circle',{cx:px(x0),cy:py(y0),r:5.5,fill:'var(--ink)'},svg);
+    // scale bar
+    const bar=Math.max(30,(W-2*pad)*0.22);
+    el('line',{x1:pad+16,y1:H-30,x2:pad+16+bar,y2:H-30,stroke:'var(--ink-2)','stroke-width':2.4,'stroke-linecap':'round'},svg);
+    txt(svg,pad+16+bar/2,H-38,'width '+fmt(bar/(W-2*pad)*2*hw,hw<0.01?4:(hw<0.2?3:2)),'font:600 10px system-ui;fill:var(--ink-2)','middle');
+    // inset map: where you are on the full curve
+    const ix=W-172,iy=24,iw=150,ih=96;
+    el('rect',{x:ix,y:iy,width:iw,height:ih,rx:8,fill:'var(--surface)',stroke:'var(--ring)'},svg);
+    const mxp=x=>ix+6+(x-F.X[0])/(F.X[1]-F.X[0])*(iw-12);
+    const myp=y=>iy+ih-8-(y-F.Y[0])/(F.Y[1]-F.Y[0])*(ih-16);
+    let di='';for(let i=0;i<=120;i++){const x=F.X[0]+(F.X[1]-F.X[0])*i/120;
+      di+=(i?'L':'M')+mxp(x).toFixed(1)+','+myp(F.f(x)).toFixed(1);}
+    el('path',{d:di,stroke:'var(--s1)','stroke-width':1.6,fill:'none'},svg);
+    const bw=Math.max(4,(2*hw)/(F.X[1]-F.X[0])*(iw-12));
+    const bh=Math.max(4,(2*hh)/(F.Y[1]-F.Y[0])*(ih-16));
+    el('rect',{x:Math.max(ix+2,mxp(x0)-bw/2),y:Math.max(iy+2,myp(y0)-bh/2),width:bw,height:bh,rx:2,fill:'none',stroke:'var(--s2)','stroke-width':1.6},svg);
+    txt(svg,ix+iw/2,iy+ih+12,'you are here','font:600 9px system-ui;fill:var(--ink-muted)','middle');
+    // measurements
+    const mApp=(F.f(x0+hw)-F.f(x0-hw))/(2*hw);
+    let dev=0;for(let i=0;i<=40;i++){const x=x0-hw+2*hw*i/40;
+      dev=Math.max(dev,Math.abs(F.f(x)-(y0+mApp*(x-x0))));}
+    const straight=dev/(2*hh)<0.004;
+    read.innerHTML=`zoom = <b>×${Z<10?fmt(Z,1):Math.round(Z)}</b> · window width = <b>${fmt(2*hw,hw<0.01?4:3)}</b><br>`
+      +`slope across the window = <b style="color:var(--s2)">${fmt(mApp,4)}</b><br>`
+      +`true f′(x₀) = <b>${atKink?'undefined':fmt(F.d(x0),4)}</b>`;
+    if(atKink&&Z>60){verd.className='verdict bad';verd.textContent='✗ Still a corner at ×'+Math.round(Z)+'. The left arm says −1, the right says +1 — no single line fits, ever. |x| is NOT differentiable at 0.';}
+    else if(atKink){verd.className='verdict info';verd.textContent='You are sitting on the corner. Zoom in and watch whether it straightens…';}
+    else if(straight&&Z>8){verd.className='verdict good';verd.textContent='✓ Dead straight at ×'+Math.round(Z)+' — indistinguishable from a line of slope '+fmt(mApp,3)+'. That line is the tangent; that slope is the derivative.';}
+    else{verd.className='verdict info';verd.textContent='Still visibly curved. Zoom on — the dashed line is what the curve is turning into.';}
+  }
+  function stopPlay(){if(playH){playH.stop();playH=null;}document.getElementById('zm-play').textContent='▶ zoom in';}
+  document.getElementById('zm-play').addEventListener('click',()=>{
+    if(playH){stopPlay();return;}
+    document.getElementById('zm-play').textContent='⏸ stop';
+    const r=document.getElementById('zm-z'),start=+r.value>0.95?0:+r.value;
+    playH=tween(4200,u=>{zv=start+(1-start)*u;r.value=zv;
+      const Zz=zoomOf(zv);document.getElementById('zm-z-o').textContent='×'+(Zz<10?fmt(Zz,1):Math.round(Zz));draw();},()=>stopPlay());});
+  tabs(document.getElementById('zm-tabs'),t=>{k=+t;stopPlay();draw();});
+  bindCtl('zm-x',v=>{x0=v;stopPlay();draw();})();
+  bindCtl('zm-z',v=>{zv=v;stopPlay();draw();},v=>{const Zz=zoomOf(v);return '×'+(Zz<10?fmt(Zz,1):Math.round(Zz));})();
+  draw();
+})();
 /* ================= W2 · SECANT → TANGENT ================= */
 (function(){
   const svg=document.getElementById('sec-svg'),read=document.getElementById('sec-read'),verd=document.getElementById('sec-verdict');
@@ -1540,9 +1679,17 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     verd.className='verdict '+(close?'good':'info');
     verd.textContent=close?'✓ Measured amplification matches the product of the two derivatives.':'Nudge still too big — the leftover gap is curvature, which the derivative ignores.';
   }
-  tabs(document.getElementById('ch-tabs'),t=>{k=+t;draw();});
-  bindCtl('ch-x',v=>{x=v;draw();})();
-  bindCtl('ch-n',v=>{dx=v;draw();},v=>fmt(v,3))();
+  let playH=null;
+  function stopPlay(){if(playH){playH.stop();playH=null;}document.getElementById('ch-play').textContent='▶ shrink the nudge';}
+  document.getElementById('ch-play').addEventListener('click',()=>{
+    if(playH){stopPlay();return;}
+    document.getElementById('ch-play').textContent='⏸ stop';
+    const r=document.getElementById('ch-n'),start=Math.max(+r.value,0.22);
+    playH=tween(3200,u=>{dx=start+(0.001-start)*u;
+      r.value=dx;document.getElementById('ch-n-o').textContent=fmt(dx,3);draw();},()=>stopPlay());});
+  tabs(document.getElementById('ch-tabs'),t=>{k=+t;stopPlay();draw();});
+  bindCtl('ch-x',v=>{x=v;stopPlay();draw();})();
+  bindCtl('ch-n',v=>{dx=v;stopPlay();draw();},v=>fmt(v,3))();
   draw();
 })();
 
