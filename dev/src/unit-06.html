@@ -311,6 +311,13 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   .pq .katex,.check .opts button .katex,.prose .katex,.pstep .katex{
     max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle}
 }
+/* inline mini-matrix (proper bracketed 2x2) */
+.mx{display:inline-grid;grid-template-columns:repeat(2,minmax(1.05em,auto));gap:.02em .5em;padding:.12em .42em;margin:0 .14em;vertical-align:middle;position:relative;font-family:var(--mono);font-size:.88em;font-weight:600;line-height:1.25;text-align:center;color:inherit}
+.mx::before,.mx::after{content:'';position:absolute;top:0;bottom:0;width:.32em;border:1.5px solid currentColor;opacity:.8}
+.mx::before{left:0;border-right:0;border-radius:.3em 0 0 .3em}
+.mx::after{right:0;border-left:0;border-radius:0 .3em .3em 0}
+.mx i{font-style:normal}
+.tabs .mx{font-size:.8em;margin-left:.3em}
 </style>
 
 </head>
@@ -331,7 +338,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 <header class="hero">
   <div class="kicker">Unit 6 of 16 · by Prof. Saurabh</div>
   <h1>Differentiation</h1>
-  <p class="lede">Every learning machine, from a two-line regression to a trillion-parameter transformer, spends its whole life asking one question over and over: <strong>which way is down?</strong> This unit builds the instrument that answers it — the derivative — from a single sliding secant line all the way up to the Jacobian matrices that make backpropagation work.</p>
+  <p class="lede">Every learning machine — from a tiny regression to a giant transformer — keeps asking one question, millions of times: <strong>which way is down?</strong> This unit builds the tool that answers it: the derivative. We start with one sliding line, and end at the Jacobian matrices that make backpropagation work.</p>
   <div class="meta">
     <span class="chip">≈ 65 min read + play</span>
     <span class="chip">12 interactive widgets · animated landscapes</span>
@@ -490,7 +497,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 <section class="unit" id="s4">
   <div class="sec-head"><span class="sec-num">4</span><h2>Taylor — rebuilding a whole function out of its derivatives</h2></div>
   <div class="prose">
-    <p>The derivative is the best <em>straight line</em> imitation of a curve at a point. A natural greed sets in: if one derivative buys a line, what does a second derivative buy? A parabola. A third? A cubic. Keep going and you get the <strong>Taylor polynomial</strong>:</p>
+    <p>The derivative is the best <em>straight line</em> imitation of a curve at a point. A natural question follows: if one derivative buys a line, what does a second derivative buy? A parabola. A third? A cubic. Keep going and you get the <strong>Taylor polynomial</strong>:</p>
     \[T_n(x)=\sum_{k=0}^{n}\frac{f^{(k)}(x_0)}{k!}\,(x-x_0)^{k}\]
     <p>Read it as a recipe rather than a formula. Term \(k\) does one job: it matches the \(k\)-th derivative of \(f\) at the anchor point \(x_0\), without disturbing any of the lower ones. The \(k!\) is the bookkeeping that makes that possible — differentiating \((x-x_0)^k\) exactly \(k\) times produces \(k!\), and dividing by it cancels the mess.</p>
     <p>Let \(n\) run to infinity and you get the <strong>Taylor series</strong>; anchor it at \(x_0=0\) and it earns the name <strong>Maclaurin series</strong>. This is not a side-quest: it is why your computer can evaluate \(\sin\), \(\exp\) and \(\log\) at all, and in Unit 8 the second-order term becomes the whole basis of Newton-style optimisation.</p>
@@ -561,7 +568,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="sec-head"><span class="sec-num">5</span><h2>Many knobs at once — partial derivatives</h2></div>
   <div class="prose">
     <p>Real models do not have one knob. They have millions. So we need the derivative of a function whose input is a whole vector, \(f:\mathbb{R}^n\to\mathbb{R}\) — many numbers in, one score out.</p>
-    <p>The generalisation is almost insultingly simple: <strong>vary one variable at a time and hold every other one still</strong>. That is a <em>partial derivative</em>, written with a curly \(\partial\) instead of a straight \(d\) as a reminder that other variables exist and are being deliberately frozen:</p>
+    <p>The generalisation is surprisingly simple: <strong>vary one variable at a time and hold every other one still</strong>. That is a <em>partial derivative</em>, written with a curly \(\partial\) instead of a straight \(d\) as a reminder that other variables exist and are being deliberately frozen:</p>
     \[\frac{\partial f}{\partial x_1}=\lim_{h\to 0}\frac{f(x_1+h,\,x_2,\dots,x_n)-f(x_1,x_2,\dots,x_n)}{h}\]
     <p>Notice that only the first slot changes. Every other argument sits untouched on both sides of the subtraction. In practice this means something very concrete: <strong>when differentiating with respect to \(x\), treat \(y\) as if it were the number 7.</strong> All your one-variable rules come along unchanged.</p>
     <p>Geometrically you are slicing. The surface \(z=f(x,y)\) is a landscape; freezing \(y\) cuts a vertical slice through it, and that slice is an ordinary one-variable curve with an ordinary slope. The partial derivative is the slope of that slice.</p>
@@ -684,7 +691,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 <section class="unit" id="s7">
   <div class="sec-head"><span class="sec-num">7</span><h2>The five shapes a derivative can take</h2></div>
   <div class="prose">
-    <p>Here is where most people's intuition quietly breaks, and where a small amount of organisation pays off enormously. "The derivative" is not one kind of object. Its <em>shape</em> is decided entirely by two questions: what shape goes in, and what shape comes out.</p>
+    <p>Here is where most people's intuition quietly breaks — and where a little organisation pays off enormously. "The derivative" is not one kind of object. Its <em>shape</em> is decided by two questions only: what shape goes in, and what shape comes out.</p>
     <p>The rule underneath every case is the same. The derivative must hold one number for every (output component, input component) pair — because each of those pairs needs its own sensitivity. Count the pairs and you know the shape. That single sentence generates all five rows below, so you never have to memorise them.</p>
   </div>
 
@@ -1354,6 +1361,7 @@ function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
 /* ---------- tiny animation runtime (respects reduced motion) ---------- */
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const easeIO=u=>u<0.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+const mx=(a,b,c,d)=>'<span class="mx"><i>'+a+'</i><i>'+b+'</i><i>'+c+'</i><i>'+d+'</i></span>';
 function tween(dur,step,done){
   if(RM){step(1);done&&done();return {stop(){}};}
   let dead=false;const t0=performance.now();
@@ -1846,7 +1854,7 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     txt(svg,rox+rw/2,roy-10,'output — dashed = what J predicts','font:700 12px system-ui;fill:var(--ink-2)','middle');
     txt(svg,22,17,M.lab,'font:700 12px system-ui;fill:var(--s1)');
     const det=J[0][0]*J[1][1]-J[0][1]*J[1][0];
-    read.innerHTML=`J at (${fmt(x0,2)}, ${fmt(y0,2)}) =<br><span style="font-family:var(--mono)">[ ${fmt(J[0][0],2)}&nbsp; ${fmt(J[0][1],2)} ]<br>[ ${fmt(J[1][0],2)}&nbsp; ${fmt(J[1][1],2)} ]</span><br>det J = <b>${fmt(det,3)}</b> &nbsp;<span style="color:var(--ink-muted)">(${M.det})</span>`;
+    read.innerHTML=`J at (${fmt(x0,2)}, ${fmt(y0,2)}) = ${mx(fmt(J[0][0],2),fmt(J[0][1],2),fmt(J[1][0],2),fmt(J[1][1],2))}<br>det J = <b>${fmt(det,3)}</b> &nbsp;<span style="color:var(--ink-muted)">(${M.det})</span>`;
     // how well does the linear model match the true image corners?
     let err=0;[[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([a,b])=>{
       const tr=M.T(x0+a*hw,y0+b*hw),pr=corner(a,b);
@@ -1920,7 +1928,8 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
       + `L = <b style="color:var(--s2)">${stage>=3?fmt(C.L,4):'—'}</b><br>`
       + `∂L/∂x = ${stage>=4?`[ <b>${fmt(C.dLdx[0],3)}</b>, <b>${fmt(C.dLdx[1],3)}</b> ]`:'—'}`;
     verd.className='verdict '+(stage>=4?'good':'info');
-    verd.textContent=stage>=4?'✓ Every backward quantity stayed a 1×2 row — no full matrix was ever formed.':'W = [[2,−1],[1,3]], y = [0.5, −0.5]. Advance to watch the values propagate.';
+    if(stage>=4)verd.textContent='✓ Every backward quantity stayed a 1×2 row — no full matrix was ever formed.';
+    else verd.innerHTML='W = '+mx(2,'−1',1,3)+' and y = (0.5, −0.5) are fixed. Advance to watch the values propagate.';
   }
   function pulse(s){ // a value visibly travels the wire it just crossed
     if(RM)return;

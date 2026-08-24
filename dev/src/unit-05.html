@@ -303,6 +303,13 @@ main:focus{outline:none}
   .pq .katex,.check .opts button .katex,.prose .katex,.pstep .katex{
     max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle}
 }
+/* inline mini-matrix (proper bracketed 2x2) */
+.mx{display:inline-grid;grid-template-columns:repeat(2,minmax(1.05em,auto));gap:.02em .5em;padding:.12em .42em;margin:0 .14em;vertical-align:middle;position:relative;font-family:var(--mono);font-size:.88em;font-weight:600;line-height:1.25;text-align:center;color:inherit}
+.mx::before,.mx::after{content:'';position:absolute;top:0;bottom:0;width:.32em;border:1.5px solid currentColor;opacity:.8}
+.mx::before{left:0;border-right:0;border-radius:.3em 0 0 .3em}
+.mx::after{right:0;border-left:0;border-radius:0 .3em .3em 0}
+.mx i{font-style:normal}
+.tabs .mx{font-size:.8em;margin-left:.3em}
 </style>
 </head>
 <body>
@@ -321,7 +328,7 @@ main:focus{outline:none}
 <header class="hero">
   <div class="kicker">Unit 5 of 16 · by Prof. Saurabh</div>
   <h1>Matrix Decompositions &amp; SVD</h1>
-  <p class="lede">You can't tell much about 12 until you write it as \(2\times2\times3\) — then everything about it is obvious. This unit does the same to matrices: <strong>take the tangled transformation apart into a few pure moves</strong> — rotate, stretch, rotate back. We climb a three-rung ladder: the flawless symmetric case, the general square case, and then the boldest factorization in linear algebra — the <strong>SVD</strong>, which works on <em>every</em> matrix ever written, and whose truncation is the mathematics inside image compression, recommender systems, and PCA. By the end you will compress a real photograph with your own hands — and know exactly why it works.</p>
+  <p class="lede">The number 12 becomes easy the moment you write it as \(2\times2\times3\). This unit does the same thing to matrices. A matrix mixes rotation and stretching into one block of numbers; a <strong>decomposition un-mixes it</strong>, rewriting the matrix as a few simple moves: rotate, stretch, rotate. We build the idea in three steps — symmetric matrices (the easiest case), square matrices, and finally the <strong>SVD</strong>: one factorization that works for <em>every</em> matrix, of any shape. The SVD is also the engine inside image compression, recommender systems, and PCA. By the end you will compress a real photograph with it — and know exactly why that works.</p>
   <div class="meta">
     <span class="chip">≈ 60 min read + play</span>
     <span class="chip">8 interactive widgets · compress a real photo</span>
@@ -334,20 +341,20 @@ main:focus{outline:none}
 <section class="unit" id="s1">
   <div class="sec-head"><span class="sec-num">1</span><h2>Taking things apart — the oldest trick in mathematics</h2></div>
   <div class="callout scenario"><span class="tag">Imagine this</span>
-    <p>Someone hands you the number 5040 and asks: is it divisible by 48? Ugly question — until you factor it: \(5040 = 2^4\cdot3^2\cdot5\cdot7\), and \(48=2^4\cdot 3\). Read the exponents: yes, instantly. You didn't change the number; you <strong>revealed what it was made of</strong>. Now recall from Unit 1 that a matrix isn't a grid of numbers — it's a <em>verb</em>, a machine that moves space. A raw matrix tangles rotation, stretching, and shearing into one bundle of entries. <strong>Matrix decomposition is prime factorization for transformations:</strong> rewrite \(A\) as a short sequence of pure moves you can actually picture.</p>
+    <p>Someone hands you the number 5040 and asks: is it divisible by 48? Hard to say. Now factor both: \(5040 = 2^4\cdot3^2\cdot5\cdot7\), and \(48=2^4\cdot 3\). Compare the factors — the answer is an easy yes. The number never changed; you just wrote it in a form that <strong>shows what it is made of</strong>. We will do exactly this to matrices. Remember from Unit 1: a matrix is a machine that moves space. In its raw form, the rotation and the stretching it performs are mixed together in the entries, where you cannot see them. <strong>A decomposition is factoring, for matrices:</strong> it rewrites \(A\) as a few simple moves — each one easy to picture.</p>
   </div>
   <div class="prose">
-    <p>The punchline of the whole unit, up front: almost every matrix you'll meet can be written as <em>rotate → stretch along axes → rotate</em>. The three famous decompositions are not three unrelated tricks — they are one idea applied to progressively harder matrices, each rung dropping one requirement and gaining one power:</p>
+    <p>Here is the unit's main result, up front: almost every matrix can be written as <em>rotate → stretch → rotate</em>. The three famous decompositions below are not three separate tricks. They are one idea, applied to harder and harder matrices — each step asks for less and works for more:</p>
   </div>
   <div class="ladder">
-    <div class="rung r1"><b>Rung 1 · Spectral</b><span class="form">A = QΛQᵀ</span><span class="who">symmetric A only — ⊥ axes, clean transpose (Unit 4's crown jewel)</span></div>
-    <div class="rung-arrow">↓ drop the requirement that eigen-axes be perpendicular</div>
-    <div class="rung r2"><b>Rung 2 · Eigendecomposition</b><span class="form">A = PDP⁻¹</span><span class="who">any square, diagonalizable A — tilted axes, honest inverse</span></div>
-    <div class="rung-arrow">↓ drop the requirement that A be square at all</div>
-    <div class="rung r3"><b>Rung 3 · SVD</b><span class="form">A = UΣVᵀ</span><span class="who">EVERY matrix, any shape, any rank — two ⊥ frames, always exists</span></div>
+    <div class="rung r1"><b>Step 1 · Spectral</b><span class="form">A = QΛQᵀ</span><span class="who">symmetric A only — perpendicular axes, free inverse (just the transpose)</span></div>
+    <div class="rung-arrow">↓ now allow axes that lean</div>
+    <div class="rung r2"><b>Step 2 · Eigendecomposition</b><span class="form">A = PDP⁻¹</span><span class="who">any square A with enough eigenvectors — leaning axes, real inverse</span></div>
+    <div class="rung-arrow">↓ now allow any shape at all</div>
+    <div class="rung r3"><b>Step 3 · SVD</b><span class="form">A = UΣVᵀ</span><span class="who">EVERY matrix, any shape — two perpendicular frames, always works</span></div>
   </div>
   <div class="prose">
-    <p>Why climb in this order? Because each rung teaches one lesson. Spectral shows the <em>dream scenario</em>: perpendicular axes, real scalings, no distortion. Eigendecomposition asks <em>what if the natural axes lean?</em> — the idea survives, but the tidy transpose becomes a real inverse. And SVD asks the boldest question — <em>what if the matrix isn't even square, so "eigenvector" is meaningless?</em> — and answers it with one elegant move that works for every matrix in existence.</p>
+    <p>Why this order? Each step teaches one lesson. Step 1 is the perfect case: perpendicular axes and plain stretching, nothing else. Step 2 asks: <em>what if the special axes lean?</em> The idea survives, but the easy transpose must be replaced by a real inverse. Step 3 asks the biggest question: <em>what if the matrix is not even square, so "eigenvector" makes no sense?</em> The SVD answers it, with one construction that works for every matrix there is.</p>
   </div>
   <div class="check" data-check="c1">
     <span class="tag">Pause &amp; predict</span>
@@ -363,12 +370,12 @@ main:focus{outline:none}
 
 <!-- ================= 2 · DIAGONAL DREAM ================= -->
 <section class="unit" id="s2">
-  <div class="sec-head"><span class="sec-num">2</span><h2>The shape we're chasing — diagonal matrices are trivial</h2></div>
+  <div class="sec-head"><span class="sec-num">2</span><h2>The goal — diagonal matrices are easy</h2></div>
   <div class="prose">
-    <p>Every decomposition in this unit is a scheme for smuggling a <strong>diagonal matrix</strong> into the middle of the product. Why the obsession? Because for a diagonal</p>
+    <p>Every decomposition in this unit has the same goal: get a <strong>diagonal matrix</strong> into the middle of the product. Why? Because for a diagonal</p>
     \[D=\begin{bmatrix}d_1&&\\&\ddots&\\&&d_n\end{bmatrix}\]
-    <p>every hard matrix question collapses into arithmetic on \(n\) separate numbers. The determinant is just the product \(\prod_i d_i\) (Unit 4's volume dial, read off directly). The \(k\)-th power \(D^k\) is each entry raised to the \(k\) — no matrix multiplication at all. The inverse is each non-zero entry flipped to \(1/d_i\). Solving \(D\mathbf{x}=\mathbf{b}\) is \(n\) one-line divisions. A diagonal matrix is \(n\) independent one-dimensional problems wearing a trench coat — nothing interacts, nothing tangles.</p>
-    <p>So the game is: given a general \(A\), find a change of viewpoint in which \(A\) <em>becomes</em> diagonal. That's it. That's the unit. Feel the triviality yourself — two dials, nothing else:</p>
+    <p>every hard matrix question turns into easy arithmetic on \(n\) separate numbers. The determinant is just the product \(d_1 d_2\cdots d_n\). The power \(D^k\) just raises each entry to the \(k\) — no matrix multiplication needed. The inverse just flips each entry to \(1/d_i\). Solving \(D\mathbf{x}=\mathbf{b}\) is \(n\) one-line divisions. In short: a diagonal matrix is really \(n\) separate one-number problems — nothing mixes with anything else.</p>
+    <p>So the game is: given a general \(A\), find a change of viewpoint in which \(A\) <em>becomes</em> diagonal. That's it. That's the unit. Try it yourself — two dials, nothing else:</p>
   </div>
 
   <div class="widget" id="w-dials">
@@ -383,7 +390,7 @@ main:focus{outline:none}
         </div>
         <div class="readout" id="dl-read" style="margin-top:.7rem;line-height:2"></div>
         <div id="dl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
-        <p class="note">Each dial owns one axis and <em>cannot touch the other</em> — that is the whole luxury. Every hard matrix question is answered per-dial in the readout: determinant, powers, inverse, all instant. Set a dial to 0 and watch a dimension die (and the inverse with it).</p>
+        <p class="note">Each dial owns one axis and <em>cannot touch the other</em> — that is the whole point. Every hard matrix question is answered per-dial in the readout: determinant, powers, inverse, all instant. Set a dial to 0 and watch a dimension die (and the inverse with it).</p>
       </div>
     </div>
   </div>
@@ -409,22 +416,22 @@ main:focus{outline:none}
     <p>Where do \(P\) and \(D\) come from? Multiply the definition out. \(AP=PD\), and because \(D\) is diagonal, the product \(PD\) just scales each column of \(P\) by its own diagonal entry. Column by column, \(AP=PD\) says:</p>
     \[A\mathbf{p}_i=\lambda_i\,\mathbf{p}_i\]
     <p>— which you have seen before. <strong>The columns of \(P\) must be eigenvectors of \(A\), and the diagonal of \(D\) must be their eigenvalues.</strong> Diagonalization isn't a new technique; it is Unit 4's eigen-hunt, repackaged as a factorization. The lecture's opening example: \(A=\begin{bmatrix}1&4\\2&3\end{bmatrix}\) with \(P=\begin{bmatrix}-2&1\\1&1\end{bmatrix}\) gives \(P^{-1}AP=\begin{bmatrix}-1&0\\0&5\end{bmatrix}\) — and sure enough, the columns \((-2,1)\) and \((1,1)\) are exactly the eigenvectors of \(A\) for \(\lambda=-1\) and \(\lambda=5\) (check: \(A\binom{-2}{1}=\binom{2}{-1}=-1\binom{-2}{1}\) ✓).</p>
-    <p>One catch, straight from Unit 4's fine print: this needs <em>n independent eigenvectors</em> to fill \(P\)'s columns — and \(P\) must be genuinely invertible. Matrices with enough eigenvectors get the luxury; defective ones (the shear!) are turned away at the door. Hold that thought for Section 6.</p>
+    <p>One catch, straight from Unit 4: this needs <em>n independent eigenvectors</em> to fill \(P\)'s columns, so that \(P\) is invertible. Matrices with enough eigenvectors can be diagonalized; defective ones (like the shear) cannot. Hold that thought for Section 6.</p>
   </div>
 </section>
 
 <!-- ================= 4 · RUNG 1: SPECTRAL ================= -->
 <section class="unit" id="s4">
-  <div class="sec-head"><span class="sec-num">4</span><h2>Rung 1 · Spectral — the flawless case, plus a reading you haven't seen</h2></div>
+  <div class="sec-head"><span class="sec-num">4</span><h2>Step 1 · Spectral — the perfect case, read a new way</h2></div>
   <div class="callout intuition"><span class="tag">In plain words</span>
     <p><strong>The trampoline.</strong> Grab a circular trampoline at two perpendicular points and pull: one axis stretches by \(\lambda_1\), the perpendicular one by \(\lambda_2\), and the circle becomes an ellipse whose axes line up exactly with your hands. That is a symmetric matrix: <em>pure stretch along perpendicular directions, no twist</em>. Unit 4's Spectral Theorem is the guarantee: symmetric \(A\) has orthonormal eigenvectors and real eigenvalues, so</p>
     <p style="text-align:center">\(A=Q\Lambda Q^{\top}\), &nbsp; with \(Q^{-1}=Q^{\top}\) free of charge.</p>
-    <p>In the language of this unit: spectral decomposition is diagonalization where \(P\) happens to be orthonormal — the lucky rung where the inverse costs nothing.</p>
+    <p>In the language of this unit: spectral decomposition is diagonalization where \(P\) happens to be orthonormal — the lucky case where the inverse costs nothing, because it is just the transpose.</p>
   </div>
   <div class="prose">
-    <p>Now the new reading, and it's the most important formula of the unit. Multiply \(Q\Lambda Q^{\top}\) out column-against-row instead of the usual row-against-column, and the product unpacks into a <strong>sum of rank-1 layers</strong>:</p>
+    <p>Now the new way to read that formula — the most important idea in this unit. Multiply \(Q\Lambda Q^{\top}\) out column-times-row instead of the usual row-times-column, and it splits into a <strong>sum of simple layers</strong>:</p>
     \[A=Q\Lambda Q^{\top}=\lambda_1\,\mathbf{q}_1\mathbf{q}_1^{\top}+\lambda_2\,\mathbf{q}_2\mathbf{q}_2^{\top}+\cdots+\lambda_n\,\mathbf{q}_n\mathbf{q}_n^{\top}\]
-    <p>Each block \(\mathbf{q}_i\mathbf{q}_i^{\top}\) is a <strong>projector</strong> — Unit 3's shadow machine, boxed up as a matrix: it flattens any input onto the line through \(\mathbf{q}_i\). So a symmetric matrix literally reads: <em>"project onto axis 1 and amplify by \(\lambda_1\), plus project onto axis 2 and amplify by \(\lambda_2\), …"</em> The eigenvalues become an honest <strong>importance ranking</strong> of the axes. Toggle the layers yourself:</p>
+    <p>Each piece \(\mathbf{q}_i\mathbf{q}_i^{\top}\) is a <strong>projector</strong> (Unit 3's shadow machine): it flattens any input onto the line through \(\mathbf{q}_i\). So a symmetric matrix says, in plain words: <em>"project onto axis 1 and scale by \(\lambda_1\); project onto axis 2 and scale by \(\lambda_2\); …"</em> The eigenvalues <strong>rank the axes by importance</strong>. Toggle the layers yourself:</p>
   </div>
 
   <div class="widget" id="w-proj">
@@ -453,7 +460,7 @@ main:focus{outline:none}
     <p class="q">In \(A=Q\Lambda Q^{\top}\), undoing the rotation costs a transpose. In \(A=PDP^{-1}\), it costs a genuine matrix inverse. What buys symmetric matrices the discount?</p>
     <div class="opts">
       <button data-correct data-why="The Spectral Theorem hands symmetric matrices orthonormal eigenvectors, and for an orthonormal Q the identity QᵀQ = I means Q⁻¹ = Qᵀ — Unit 3's honest motions. General matrices have leaning eigenvectors, P is merely invertible, and the discount is revoked.">Their eigenvectors are orthonormal, so \(Q^{\top}Q=I\)</button>
-      <button data-why="Symmetric matrices are generally NOT orthogonal themselves (A = [[2,1],[1,2]] isn't). The orthogonality lives in the eigenvector matrix Q, not in A.">Symmetric matrices are their own inverses</button>
+      <button data-why="Symmetric matrices are generally NOT orthogonal themselves \u2014 our running example isn't. The orthogonality lives in the eigenvector matrix Q, not in A.">Symmetric matrices are their own inverses</button>
       <button data-why="Λ being diagonal is true on every rung — D is diagonal in PDP⁻¹ too. The discount is about the OUTER factors, and it comes from their orthonormal columns.">Because Λ is diagonal</button>
     </div>
     <div class="why"></div>
@@ -461,15 +468,15 @@ main:focus{outline:none}
 </section>
 <!-- ================= 5 · RUNG 2: EIGEN ================= -->
 <section class="unit" id="s5">
-  <div class="sec-head"><span class="sec-num">5</span><h2>Rung 2 · Eigendecomposition — speak the matrix's native language</h2></div>
+  <div class="sec-head"><span class="sec-num">5</span><h2>Step 2 · Eigendecomposition — the matrix's own language</h2></div>
   <div class="callout intuition"><span class="tag">In plain words</span>
     <p>A general square matrix looks chaotic in your standard \(x,y\) grid because it rotates <em>and</em> stretches at once. But the matrix has a private coordinate system — its eigenvectors — in which it does nothing but scale numbers. \(A=PDP^{-1}\) is a <strong>translator</strong>: read right-to-left, \(P^{-1}\) translates your vector into the matrix's native eigen-language, \(D\) does the embarrassingly simple scaling there, and \(P\) translates back to your language. The transformation was never complicated — you were just listening in the wrong language.</p>
   </div>
   <div class="prose">
-    <p>The price of leaving the symmetric world: the eigenvectors <strong>lean</strong>. For the lecture's \(A=\begin{bmatrix}1&4\\2&3\end{bmatrix}\): eigenvalues from \(\lambda^2-4\lambda-5=(\lambda-5)(\lambda+1)=0\), so \(\lambda_1=5,\ \lambda_2=-1\) (a negative eigenvalue — flip-and-scale — something a positive-definite symmetric matrix never shows). Eigenvectors: \(\mathbf{p}_1=(1,1)\) and \(\mathbf{p}_2=(-2,1)\). Check the angle: \(\mathbf{p}_1\cdot\mathbf{p}_2=-1\neq0\) — <em>not perpendicular</em>. So \(P=\begin{bmatrix}1&-2\\1&1\end{bmatrix}\) is invertible but not orthonormal, and the clean transpose is gone: \(P^{-1}=\tfrac13\begin{bmatrix}1&2\\-1&1\end{bmatrix}\), computed honestly.</p>
-    <p>Why bother? The payoff is <strong>matrix powers for free</strong>. Sandwiched between \(P\) and \(P^{-1}\), repeated multiplication telescopes — every interior \(P^{-1}P\) collapses to \(I\):</p>
+    <p>Outside the symmetric world there is one price to pay: the eigenvectors <strong>lean</strong> — they are no longer perpendicular. For the lecture's \(A=\begin{bmatrix}1&4\\2&3\end{bmatrix}\): eigenvalues from \(\lambda^2-4\lambda-5=(\lambda-5)(\lambda+1)=0\), so \(\lambda_1=5,\ \lambda_2=-1\) (a negative eigenvalue — flip-and-scale — something a positive-definite symmetric matrix never shows). Eigenvectors: \(\mathbf{p}_1=(1,1)\) and \(\mathbf{p}_2=(-2,1)\). Check the angle: \(\mathbf{p}_1\cdot\mathbf{p}_2=-1\neq0\) — <em>not perpendicular</em>. So \(P=\begin{bmatrix}1&-2\\1&1\end{bmatrix}\) is invertible but not orthonormal, and the clean transpose is gone: \(P^{-1}=\tfrac13\begin{bmatrix}1&2\\-1&1\end{bmatrix}\), computed the usual way.</p>
+    <p>Why bother? Because <strong>powers of \(A\) become almost free</strong>. Multiply \(A\) by itself and every \(P^{-1}P\) in the middle cancels to \(I\):</p>
     \[A^{k}=(PDP^{-1})(PDP^{-1})\cdots(PDP^{-1})=P\,D^{k}\,P^{-1}\]
-    <p>Computing \(A^3\) by brute force is nine dot products, twice. With the decomposition: cube two numbers (\(5^3=125\), \((-1)^3=-1\)) and translate once — \(A^3=\begin{bmatrix}41&84\\42&83\end{bmatrix}\), done. The same telescope drives matrix exponentials, Markov-chain steady states, and the long-run behaviour of recurrent networks. Watch the translator and the telescope run:</p>
+    <p>Computing \(A^3\) directly takes two full matrix multiplications. With the decomposition you cube two numbers (\(5^3=125\), \((-1)^3=-1\)) and translate back once: \(A^3=\begin{bmatrix}41&84\\42&83\end{bmatrix}\), done. The same shortcut powers Markov chains, matrix exponentials, and the long-run behaviour of recurrent networks. Watch it run:</p>
   </div>
 
   <div class="widget" id="w-diag">
@@ -518,18 +525,18 @@ main:focus{outline:none}
 
 <!-- ================= 6 · WHEN EIGEN FAILS ================= -->
 <section class="unit" id="s6">
-  <div class="sec-head"><span class="sec-num">6</span><h2>Where the ladder breaks — and why we need one more rung</h2></div>
+  <div class="sec-head"><span class="sec-num">6</span><h2>Where eigendecomposition fails — and the fix</h2></div>
   <div class="prose">
-    <p>Eigendecomposition is powerful, but it has a door policy, and Unit 4 already showed you both bouncers. <strong>Defective matrices:</strong> the shear \(\begin{bmatrix}1&1\\0&1\end{bmatrix}\) owns a single eigen-direction — algebraic multiplicity 2, geometric multiplicity 1 — so there aren't enough independent columns to build an invertible \(P\). No decomposition. <strong>Rotations:</strong> \(\begin{bmatrix}0&-1\\1&0\end{bmatrix}\) turns <em>every</em> real direction, its eigenvalues fled to \(\pm i\) — no real \(P\) exists at all. And beyond both: a \(3\times2\) data matrix isn't even square, so \(A\mathbf{v}=\lambda\mathbf{v}\) is <em>meaningless</em> — the input is 2-D, the output 3-D; they can't be parallel because they don't live in the same space.</p>
-    <p>Three failures, one root cause: eigendecomposition insists on using <strong>a single set of axes for both input and output</strong>. The fix — dropping that insistence — is the SVD, and it repairs all three failures at once.</p>
-    <p>Don't take the bouncers' word for it — go eigenvector-hunting yourself. Sweep a direction around the circle and watch when \(A\mathbf{v}\) lines up with \(\mathbf{v}\):</p>
+    <p>Eigendecomposition is powerful, but some matrices are simply refused. Unit 4 already showed you both kinds of trouble. <strong>Defective matrices:</strong> the shear \(\begin{bmatrix}1&1\\0&1\end{bmatrix}\) has only <em>one</em> eigen-direction (algebraic multiplicity 2, geometric multiplicity 1), so there are not enough independent columns to build an invertible \(P\). No decomposition. <strong>Rotations:</strong> \(\begin{bmatrix}0&-1\\1&0\end{bmatrix}\) turns <em>every</em> real direction; its eigenvalues are the imaginary pair \(\pm i\), so no real \(P\) exists at all. And a third case beyond both: a \(3\times2\) data matrix is not even square, so \(A\mathbf{v}=\lambda\mathbf{v}\) makes <em>no sense</em> — the input is 2-D and the output is 3-D, so they cannot be parallel; they do not even live in the same space.</p>
+    <p>Three failures, one shared cause: eigendecomposition insists on <strong>one set of axes for both input and output</strong>. The SVD drops that demand — and all three failures disappear at once.</p>
+    <p>See it for yourself first. Sweep a direction around the circle and watch when \(A\mathbf{v}\) lines up with \(\mathbf{v}\):</p>
   </div>
 
   <div class="widget" id="w-hunt">
     <div class="widget-head"><span class="w-title">The eigen-hunter</span><span class="w-sub">sweep the dial · an eigenvector is a direction the matrix refuses to turn</span></div>
     <div class="tabs" id="ht-tabs">
-      <button data-t="sym" aria-selected="true">symmetric [[2,1],[1,2]]</button>
-      <button data-t="lean">leaning [[1,4],[2,3]]</button>
+      <button data-t="sym" aria-selected="true">symmetric <span class="mx"><i>2</i><i>1</i><i>1</i><i>2</i></span></button>
+      <button data-t="lean">leaning <span class="mx"><i>1</i><i>4</i><i>2</i><i>3</i></span></button>
       <button data-t="shear">the shear</button>
       <button data-t="rot">rotation 90°</button>
     </div>
@@ -541,7 +548,7 @@ main:focus{outline:none}
         <div class="readout" id="ht-read" style="margin-top:.6rem;line-height:2"></div>
         <svg id="ht-gauge" viewBox="0 0 300 84" class="svg-lab" role="img" aria-label="Gauge of the turning angle between v and Av across all directions" style="margin-top:.5rem"></svg>
         <div id="ht-verdict" class="verdict info" style="margin-top:.6rem">—</div>
-        <p class="note">The strip chart is the whole hunt at a glance: turning angle for <em>every</em> direction, with your dial as the moving dot. Wherever it touches zero, \(A\mathbf v\parallel\mathbf v\) — an eigendirection. Count the zeros: symmetric 2 (perpendicular), leaning 2 (tilted), shear <b>1</b>, rotation <b>0</b>. The ladder's door policy, drawn.</p>
+        <p class="note">The strip chart is the whole hunt at a glance: turning angle for <em>every</em> direction, with your dial as the moving dot. Wherever it touches zero, \(A\mathbf v\parallel\mathbf v\) — an eigendirection. Count the zeros: symmetric 2 (perpendicular), leaning 2 (tilted), shear <b>1</b>, rotation <b>0</b>. Who can and cannot be diagonalized — drawn.</p>
       </div>
     </div>
   </div>
@@ -551,7 +558,7 @@ main:focus{outline:none}
     <p class="q">On the strip chart, the shear's curve touches zero exactly once (at the x-axis). What does that picture say in Unit 4's vocabulary?</p>
     <div class="opts">
       <button data-correct data-why="One zero = one independent eigen-direction, but a 2×2 matrix needs two to fill P's columns. Algebraic multiplicity 2, geometric multiplicity 1 — defective, so PDP⁻¹ is impossible. The strip chart is the door policy made visible: the shear simply doesn't own enough unturned directions.">One eigen-direction only — too few to build an invertible \(P\)</button>
-      <button data-why="The zero is real — the x-axis genuinely doesn't turn under the shear (check: [[1,1],[0,1]]·(1,0) = (1,0)). The problem isn't that the eigenvector is fake; it's that there is only ONE of them.">The zero is a numerical artifact; shears have no eigenvectors</button>
+      <button data-why="The zero is real — the x-axis genuinely doesn't turn under the shear (check: the shear sends (1,0) straight back out as (1,0)). The problem isn't that the eigenvector is fake; it's that there is only ONE of them.">The zero is a numerical artifact; shears have no eigenvectors</button>
       <button data-why="Rotation is the curve that never touches zero — every direction turns. The shear's curve does touch once: it keeps exactly one direction, which is one short of what diagonalization needs.">It means the shear is actually a rotation in disguise</button>
     </div>
     <div class="why"></div>
@@ -560,23 +567,23 @@ main:focus{outline:none}
 
 <!-- ================= 7 · RUNG 3: SVD ================= -->
 <section class="unit" id="s7">
-  <div class="sec-head"><span class="sec-num">7</span><h2>Rung 3 · SVD — two frames, every matrix, no exceptions</h2></div>
+  <div class="sec-head"><span class="sec-num">7</span><h2>Step 3 · SVD — two frames, every matrix, no exceptions</h2></div>
   <div class="callout aha"><span class="tag">The idea, in one question</span>
-    <p>Eigendecomposition asked: <em>"which directions does the matrix not rotate?"</em> — too demanding; rotations and rectangles refuse. SVD asks the question that <strong>always</strong> has an answer: <em>"which perpendicular frame of input directions lands on a perpendicular frame of output directions?"</em> Feed any matrix the unit circle (or sphere) and the output is always a perfect ellipse (or ellipsoid). SVD names the perpendicular input directions \(\mathbf{v}_i\) that map onto the ellipse's perpendicular axes \(\sigma_i\mathbf{u}_i\). Two frames instead of one — that single generosity makes it universal.</p>
+    <p>Eigendecomposition asked: <em>"which directions does the matrix not turn?"</em> For rotations and for rectangular matrices the answer is: none — so it fails. The SVD asks a friendlier question, one that <strong>always</strong> has an answer: <em>"which perpendicular input directions land on perpendicular output directions?"</em> Feed any matrix the unit circle and the output is always a perfect ellipse. The SVD simply names the input directions \(\mathbf{v}_i\) that map onto the ellipse's axes \(\sigma_i\mathbf{u}_i\). Two frames instead of one — that single change makes it work for everything.</p>
   </div>
   <div class="prose">
-    <p>The theorem, in full dress. Every \(A\in\mathbb{R}^{m\times n}\) of rank \(r\) factors as</p>
+    <p>The theorem itself. Every \(A\in\mathbb{R}^{m\times n}\) of rank \(r\) factors as</p>
     \[A=U\,\Sigma\,V^{\top}\]
-    <p>where \(V\in\mathbb{R}^{n\times n}\) is orthonormal (the <strong>right-singular vectors</strong> — input axes), \(U\in\mathbb{R}^{m\times m}\) is orthonormal (the <strong>left-singular vectors</strong> — output axes), and \(\Sigma\in\mathbb{R}^{m\times n}\) is "diagonal" with the <strong>singular values</strong> \(\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_r&gt;0\) on its diagonal, sorted loudest-first by convention, padded with zeros to match \(A\)'s shape. Read right-to-left, it is the unit's mantra in its final form: \(V^{\top}\) <strong>rotates</strong> the input so the special directions sit on the axes, \(\Sigma\) <strong>stretches</strong> each axis by \(\sigma_i\), \(U\) <strong>rotates</strong> into the final pose. Rotate · stretch · rotate — now for <em>any</em> matrix, including the ones eigendecomposition rejected:</p>
+    <p>where \(V\in\mathbb{R}^{n\times n}\) is orthonormal (the <strong>right-singular vectors</strong> — input axes), \(U\in\mathbb{R}^{m\times m}\) is orthonormal (the <strong>left-singular vectors</strong> — output axes), and \(\Sigma\in\mathbb{R}^{m\times n}\) is "diagonal" with the <strong>singular values</strong> \(\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_r&gt;0\) on its diagonal, sorted loudest-first by convention, padded with zeros to match \(A\)'s shape. Read right to left, it is the unit's motto in its final form: \(V^{\top}\) <strong>rotates</strong> the input so the special directions sit on the axes, \(\Sigma\) <strong>stretches</strong> each axis by \(\sigma_i\), \(U\) <strong>rotates</strong> into the final pose. Rotate · stretch · rotate — now for <em>any</em> matrix, including the ones eigendecomposition rejected:</p>
   </div>
 
   <div class="widget" id="w-svd">
-    <div class="widget-head"><span class="w-title">The universal machine</span><span class="w-sub">A = UΣVᵀ acted out — including the matrices eigen turned away</span></div>
+    <div class="widget-head"><span class="w-title">The universal machine</span><span class="w-sub">A = UΣVᵀ acted out — including the matrices eigendecomposition rejects</span></div>
     <div class="tabs" id="sv-tabs">
-      <button data-t="lec" aria-selected="true">[[3,0],[4,5]]</button>
+      <button data-t="lec" aria-selected="true"><span class="mx"><i>3</i><i>0</i><i>4</i><i>5</i></span></button>
       <button data-t="rot">rotation 90°</button>
       <button data-t="shear">the shear</button>
-      <button data-t="sym">symmetric [[2,1],[1,2]]</button>
+      <button data-t="sym">symmetric <span class="mx"><i>2</i><i>1</i><i>1</i><i>2</i></span></button>
     </div>
     <div class="stagebar" id="sv-stages">
       <button data-s="0" aria-selected="true">1 · input + V frame</button>
@@ -626,11 +633,11 @@ main:focus{outline:none}
 <section class="unit" id="s8">
   <div class="sec-head"><span class="sec-num">8</span><h2>Building U, Σ, V — the symmetric-matrix bridge</h2></div>
   <div class="prose">
-    <p>Where do the three factors come from? From the rung we already own. \(A\) may be rectangular, but \(A^{\top}A\) (size \(n\times n\)) and \(AA^{\top}\) (size \(m\times m\)) are both square, symmetric — Unit 4's Gram matrices — so Rung 1 applies to <em>them</em>. Substitute the SVD and watch the structure fall out:</p>
+    <p>Where do the three factors come from? From the step we already know. \(A\) may be rectangular, but \(A^{\top}A\) (size \(n\times n\)) and \(AA^{\top}\) (size \(m\times m\)) are both square and symmetric — so Step 1, the spectral theorem, applies to <em>them</em>. Substitute the SVD and watch the structure fall out:</p>
     \[A^{\top}A=(U\Sigma V^{\top})^{\top}(U\Sigma V^{\top})=V\,\Sigma^{\top}\Sigma\,V^{\top}\]
     <p>That is a spectral decomposition of \(A^{\top}A\) — so \(V\) is its eigenvector matrix, and the eigenvalues sitting in \(\Sigma^{\top}\Sigma\) are \(\sigma_i^2\): <strong>the singular values are the square roots of \(A^{\top}A\)'s eigenvalues</strong> (which the spectral theorem guarantees are real and \(\ge0\) — this is why σ's never go negative or complex). Symmetrically, \(AA^{\top}=U\Sigma\Sigma^{\top}U^{\top}\) hands \(U\) to us as the eigenvectors of \(AA^{\top}\). And in practice you never even compute the second one: post-multiplying \(A=U\Sigma V^{\top}\) by \(V\) gives \(AV=U\Sigma\), i.e. column by column</p>
     \[\mathbf{u}_i=\frac{1}{\sigma_i}A\mathbf{v}_i\qquad(i=1,\dots,r)\]
-    <p>— each output axis is just the <em>normalized image of its input axis</em>. One eigendecomposition plus \(r\) matrix–vector products and you own the whole factorization.</p>
+    <p>— each output axis is just the <em>image of its input axis, rescaled to length 1</em>. One eigendecomposition plus \(r\) quick products gives you the whole factorization.</p>
   </div>
   <div class="callout remember"><span class="tag">The recipe card</span>
     <p>① Form the <em>smaller</em> of \(A^{\top}A\) or \(AA^{\top}\). ② Spectrally decompose it (Rung 1 / Unit 4 machinery). ③ \(\sigma_i=\sqrt{\lambda_i}\), sorted descending, zeros dropped. ④ Its eigenvectors are \(V\) (or \(U\)); the other family comes free via \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\). ⑤ Assemble \(A=U\Sigma V^{\top}\), padding \(\Sigma\) with zero rows/columns to match \(A\)'s shape.</p>
@@ -680,7 +687,7 @@ main:focus{outline:none}
   <div class="prose">
     <p>The lecture's wide example, walked through. \(A=\begin{bmatrix}1&0&1\\-2&1&0\end{bmatrix}\) (2×3, rank 2). <strong>Step 1:</strong> \(A^{\top}A=\begin{bmatrix}5&-2&1\\-2&1&0\\1&0&1\end{bmatrix}\), symmetric as promised. <strong>Step 2:</strong> its eigenvalues are \(6,\ 1,\ 0\) — the zero is no accident: a 2×3 matrix has rank at most 2, so one input direction <em>must</em> be crushed. <strong>Step 3:</strong> \(\sigma_1=\sqrt6,\ \sigma_2=1\), so \(\Sigma=\begin{bmatrix}\sqrt6&0&0\\0&1&0\end{bmatrix}\) — 2×3 like \(A\), with a zero <em>column</em> of padding. <strong>Step 4:</strong> eigenvectors \(\mathbf{v}_1=\tfrac{1}{\sqrt{30}}(5,-2,1)\), \(\mathbf{v}_2=\tfrac{1}{\sqrt5}(0,1,2)\), \(\mathbf{v}_3=\tfrac{1}{\sqrt6}(-1,-2,1)\) — and \(\mathbf{v}_3\), riding the zero eigenvalue, is exactly the nullspace direction \(A\) annihilates. <strong>Step 5:</strong> \(\mathbf{u}_1=\tfrac{1}{\sigma_1}A\mathbf{v}_1=\tfrac{1}{\sqrt5}(1,-2)\), \(\mathbf{u}_2=\tfrac{1}{\sigma_2}A\mathbf{v}_2=\tfrac{1}{\sqrt5}(2,1)\) — automatically orthonormal. Assembled, \(A=U\Sigma V^{\top}\) exactly.</p>
   </div>
-  <details><summary>The tall twin: SVD of B = [[1,1],[0,1],[1,0]] — featuring an old friend</summary>
+  <details><summary>The tall twin: the SVD of a 3×2 matrix — featuring an old friend</summary>
     <p>\(B\) is 3×2, so be smart and take the <em>smaller</em> Gram matrix: \(B^{\top}B=\begin{bmatrix}2&1\\1&2\end{bmatrix}\) — <strong>the very matrix this unit keeps meeting</strong>. Its spectral data is memorized by now: \(\lambda=3,1\) on \(\tfrac{1}{\sqrt2}(1,1)\), \(\tfrac{1}{\sqrt2}(1,-1)\). So \(\sigma_1=\sqrt3,\ \sigma_2=1\), \(\mathbf{v}_{1,2}\) as above, and \(\mathbf{u}_1=\tfrac{1}{\sqrt3}B\mathbf{v}_1=\tfrac{1}{\sqrt6}(2,1,1)\), \(\mathbf{u}_2=B\mathbf{v}_2=\tfrac{1}{\sqrt2}(0,-1,1)\). A third vector \(\mathbf{u}_3=\tfrac{1}{\sqrt3}(1,-1,-1)\) completes the 3×3 \(U\) but rides on \(\sigma_3=0\): \(\Sigma=\begin{bmatrix}\sqrt3&0\\0&1\\0&0\end{bmatrix}\) pads with a zero <em>row</em>, because \(B\) sends 2-D into 3-D and the third output dimension receives nothing. Tall matrices pad with zero rows (unreachable outputs); wide ones with zero columns (annihilated inputs). \(\Sigma\) always wears \(A\)'s shape.</p>
   </details>
 
@@ -734,10 +741,10 @@ main:focus{outline:none}
 <section class="unit" id="s10">
   <div class="sec-head"><span class="sec-num">10</span><h2>The layer cake — low-rank approximation, live</h2></div>
   <div class="prose">
-    <p>Now collect the unit's two best ideas and let them collide. Section 4 read a symmetric matrix as a sum of importance-ranked projection layers. The SVD does the same for <em>every</em> matrix: multiply \(U\Sigma V^{\top}\) out column-against-row and \(\Sigma\)'s diagonal pairs each \(\mathbf{u}_i\) with its \(\mathbf{v}_i\):</p>
+    <p>Now put the unit's two best ideas together. Section 4 read a symmetric matrix as a sum of layers, ranked by importance. The SVD does the same for <em>every</em> matrix: multiply \(U\Sigma V^{\top}\) out column-times-row, and \(\Sigma\) pairs each \(\mathbf{u}_i\) with its \(\mathbf{v}_i\):</p>
     \[A=\sum_{i=1}^{r}\sigma_i\,\mathbf{u}_i\mathbf{v}_i^{\top}=\underbrace{\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}}_{\text{loudest}}+\underbrace{\sigma_2\mathbf{u}_2\mathbf{v}_2^{\top}}_{\text{quieter}}+\cdots+\underbrace{\sigma_r\mathbf{u}_r\mathbf{v}_r^{\top}}_{\text{faintest}}\]
-    <p>— a stack of rank-1 layers, <strong>sorted loudest-first</strong> because the σ's are sorted. Since real-world matrices concentrate their energy in the first few singular values, truncating the sum at \(k\) terms gives the <strong>rank-\(k\) approximation</strong> \(\hat A(k)=\sum_{i=1}^{k}\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\), and the <strong>Eckart–Young theorem</strong> says this is not merely <em>a</em> compression — it is provably the <em>best possible</em> rank-\(k\) approximation of \(A\), with error exactly the loudest singular value you discarded: \(\|A-\hat A(k)\|_2=\sigma_{k+1}\).</p>
-    <p>The companion's tiny example, by hand: keep only the loudest layer of the tall \(B\). \(\hat B(1)=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\sqrt3\cdot\tfrac{1}{\sqrt6}(2,1,1)^{\top}\cdot\tfrac{1}{\sqrt2}(1,1)=\begin{bmatrix}1&1\\0.5&0.5\\0.5&0.5\end{bmatrix}\), and the error is the dropped \(\sigma_2=1\). Six numbers describing a matrix of six — no saving yet at this toy size. But scale it up: an image <em>is</em> a matrix — every pixel one entry — and now the layer cake becomes a compressor. Below is a real photograph (a NASA astronaut, 36×36 pixels = 1,296 honest numbers). Watch her face assemble out of rank-1 layers, loudest first:</p>
+    <p>— a stack of simple layers, <strong>loudest first</strong>, because the σ's are sorted. Real-world matrices keep most of their energy in the first few layers. So keep only the top \(k\) and you get the <strong>rank-\(k\) approximation</strong> \(\hat A(k)=\sum_{i=1}^{k}\sigma_i\mathbf{u}_i\mathbf{v}_i^{\top}\). The <strong>Eckart–Young theorem</strong> says no rank-\(k\) matrix comes closer to \(A\): this is the <em>best possible</em> compression at that size, and its error is exactly the loudest layer you dropped: \(\|A-\hat A(k)\|_2=\sigma_{k+1}\).</p>
+    <p>The companion's tiny example, by hand: keep only the loudest layer of the tall \(B\). \(\hat B(1)=\sigma_1\mathbf{u}_1\mathbf{v}_1^{\top}=\sqrt3\cdot\tfrac{1}{\sqrt6}(2,1,1)^{\top}\cdot\tfrac{1}{\sqrt2}(1,1)=\begin{bmatrix}1&1\\0.5&0.5\\0.5&0.5\end{bmatrix}\), and the error is the dropped \(\sigma_2=1\). Six numbers to describe a matrix of six — no saving at this toy size. But scale up: an image <em>is</em> a matrix (every pixel is one entry), and the layer cake becomes a compressor. Below is a real photograph — a NASA astronaut, 36×36 pixels, so 1,296 numbers. Watch her face assemble from layers, loudest first:</p>
   </div>
 
   <div class="widget" id="w-rank">
@@ -765,7 +772,7 @@ main:focus{outline:none}
   </div>
 
   <div class="callout watch"><span class="tag">Watch out — the noise lesson</span>
-    <p>Switch the widget to <strong>pure noise</strong> and drag \(k\): the reconstruction barely improves, because noise spreads its energy <em>evenly</em> across all singular values — there are no quiet layers to discard for free. Structure compresses; noise doesn't. Flip that insight around and you get <strong>denoising</strong>: real signal hides in the loud early layers, noise in the faint tail, so truncating the SVD <em>removes noise</em>. One theorem, two superpowers.</p>
+    <p>Switch the widget to <strong>pure noise</strong> and drag \(k\): the reconstruction barely improves, because noise spreads its energy <em>evenly</em> across all singular values — there are no quiet layers to discard for free. Structure compresses; noise doesn't. Turn that around and you get <strong>denoising</strong>: real signal hides in the loud early layers, noise in the faint tail, so truncating the SVD <em>removes noise</em>. One theorem, two superpowers.</p>
   </div>
 
   <div class="check" data-check="c10">
@@ -796,15 +803,15 @@ main:focus{outline:none}
   <div class="prose">
     <p>One last gift from the SVD. Ask: what is the <em>most</em> a matrix can ever amplify a vector? That worst-case stretch is the <strong>spectral norm</strong>,</p>
     \[\|A\|_2=\max_{\mathbf{x}\neq\mathbf{0}}\frac{\|A\mathbf{x}\|_2}{\|\mathbf{x}\|_2}=\sigma_1\]
-    <p>— simply the longest semi-axis of the output ellipsoid, achieved by feeding in \(\mathbf{v}_1\) (the output points along \(\mathbf{u}_1\)). The lecture's example: \(A=\begin{bmatrix}1&2\\3&4\end{bmatrix}\) has \(\Sigma=\operatorname{diag}(5.465,\,0.366)\), so \(\|A\|_2=5.465\) — and the ratio \(\sigma_1/\sigma_2\approx15\) says this matrix amplifies its favourite direction fifteen times more than its least favourite: fairly ill-conditioned, the kind of matrix that makes numerical software sweat. Spectral norms bound errors, govern the stability of deep networks (exploding/vanishing signals track products of σ's), and put the "spectral" in spectral normalization for GANs.</p>
+    <p>— simply the longest semi-axis of the output ellipsoid, achieved by feeding in \(\mathbf{v}_1\) (the output points along \(\mathbf{u}_1\)). The lecture's example: \(A=\begin{bmatrix}1&2\\3&4\end{bmatrix}\) has \(\Sigma=\operatorname{diag}(5.465,\,0.366)\), so \(\|A\|_2=5.465\) — and the ratio \(\sigma_1/\sigma_2\approx15\) says this matrix amplifies its favourite direction fifteen times more than its least favourite: that is called being <em>ill-conditioned</em>, and it is what makes numerical software struggle. The spectral norm bounds errors, controls whether signals in deep networks explode or fade away, and gives "spectral normalization" its name.</p>
     <p>Hunt for the worst case yourself. Spin an input direction and watch how much the matrix amplifies it — the orange profile around the origin is the amplification in <em>every</em> direction at once:</p>
   </div>
 
   <div class="widget" id="w-amp">
     <div class="widget-head"><span class="w-title">The amplifier dial</span><span class="w-sub">‖Ax‖ for every unit input x — the loudest direction is the spectral norm</span></div>
     <div class="tabs" id="am-tabs">
-      <button data-t="lec" aria-selected="true">[[1,2],[3,4]]</button>
-      <button data-t="sym">symmetric [[2,1],[1,2]]</button>
+      <button data-t="lec" aria-selected="true"><span class="mx"><i>1</i><i>2</i><i>3</i><i>4</i></span></button>
+      <button data-t="sym">symmetric <span class="mx"><i>2</i><i>1</i><i>1</i><i>2</i></span></button>
       <button data-t="rot">rotation 90°</button>
       <button data-t="near">nearly singular</button>
     </div>
@@ -864,10 +871,10 @@ main:focus{outline:none}
 <section class="unit" id="s12">
   <div class="sec-head"><span class="sec-num">12</span><h2>The whole story, in five lines</h2></div>
   <div class="prose">
-    <p>① A matrix is a transformation, and <strong>decomposition is prime factorization for transformations</strong>: rewrite \(A\) as rotate → stretch → rotate, without changing what it does. ② The chase is always for a <strong>diagonal middle</strong> — because diagonal matrices reduce every question to arithmetic on \(n\) separate numbers. ③ <strong>Spectral</strong> (\(A=Q\Lambda Q^{\top}\), symmetric only) is the flawless rung: perpendicular axes, free transpose, and the layer reading \(A=\sum\lambda_i\mathbf{q}_i\mathbf{q}_i^{\top}\). <strong>Eigen</strong> (\(A=PDP^{-1}\), square + enough eigenvectors) keeps the idea on tilted axes and pays with an inverse — earning \(A^k=PD^kP^{-1}\). ④ <strong>SVD</strong> (\(A=U\Sigma V^{\top}\)) drops every remaining requirement by using <em>two</em> orthonormal frames bridged by non-negative stretches — built from the spectral decomposition of \(A^{\top}A\), with \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\) for free. ⑤ Sorting the σ's turns every matrix into a <strong>loudest-first layer cake</strong>: truncate for the provably-best low-rank approximation (Eckart–Young), read \(\sigma_1\) as the worst-case amplification (spectral norm), and you hold the mathematics of compression, denoising, PCA, and recommenders in one formula.</p>
+    <p>① A matrix is a transformation, and a <strong>decomposition factors it</strong> into rotate → stretch → rotate, without changing what it does. ② The goal is always a <strong>diagonal middle</strong>, because a diagonal matrix turns every question into easy arithmetic on \(n\) separate numbers. ③ <strong>Spectral</strong> (\(A=Q\Lambda Q^{\top}\), symmetric only) is the perfect case: perpendicular axes, free inverse, and the layer reading \(A=\sum\lambda_i\mathbf{q}_i\mathbf{q}_i^{\top}\). <strong>Eigen</strong> (\(A=PDP^{-1}\), square with enough eigenvectors) keeps the idea on leaning axes and pays with a real inverse — earning \(A^k=PD^kP^{-1}\). ④ The <strong>SVD</strong> (\(A=U\Sigma V^{\top}\)) drops every remaining requirement by using <em>two</em> perpendicular frames joined by plain stretches — built from the spectral decomposition of \(A^{\top}A\), with \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\) for free. ⑤ Sorting the σ's turns every matrix into a <strong>loudest-first stack of layers</strong>: keep the top few for the best possible compression (Eckart–Young), and read \(\sigma_1\) as the worst-case amplification (the spectral norm). Compression, denoising, PCA, and recommenders all live in that one formula.</p>
   </div>
   <div class="callout remember"><span class="tag">The one thing to remember</span>
-    <p><strong>Every matrix is rotate · stretch · rotate.</strong> The only questions are whether the two rotations are the same (symmetric), whether they're transposes or inverses (spectral vs eigen), and how fast the stretches fade (that's compressibility). Once you sort the stretches loudest-first, keeping the top few is the best summary a matrix can have — and half of applied ML is exactly that act.</p>
+    <p><strong>Every matrix is rotate · stretch · rotate.</strong> The only questions are: are the two rotations the same (symmetric)? Are they transposes or inverses (spectral vs. eigen)? And how fast do the stretches fade (that decides how well it compresses)? Sort the stretches loudest-first and keep the top few — that is the best short summary a matrix can have, and half of applied machine learning is exactly that move.</p>
   </div>
     <h3 style="margin:.3rem 0 .4rem">Unit 6 · Differentiation</h3>
     <p style="font-size:.92rem;color:var(--ink-2);margin:0">Linear algebra's board is complete. Now the pieces start to move: calculus enters, and with it the single most important question in machine learning — <em>if I nudge the input, how does the output change?</em> <a href="unit-06.html">It's live — keep going →</a></p>
@@ -960,7 +967,7 @@ main:focus{outline:none}
       <div class="pstep"><b>Step 4 · Verify, entry by entry.</b> First \(PD=\begin{bmatrix}1\cdot 3&1\cdot 4\\2\cdot 3&1\cdot 4\end{bmatrix}=\begin{bmatrix}3&4\\6&4\end{bmatrix}\). Then
       \[ PDP^{-1}=\begin{bmatrix}3&4\\6&4\end{bmatrix}\begin{bmatrix}-1&1\\2&-1\end{bmatrix}=\begin{bmatrix}3(-1)+4(2)&3(1)+4(-1)\\6(-1)+4(2)&6(1)+4(-1)\end{bmatrix}=\begin{bmatrix}5&-1\\2&2\end{bmatrix}=A.\ \checkmark \]</div>
       <div class="pans">Answer. \(A=PDP^{-1}\) with \(P=\begin{bmatrix}1&1\\2&1\end{bmatrix}\), \(D=\begin{bmatrix}3&0\\0&4\end{bmatrix}\), \(P^{-1}=\begin{bmatrix}-1&1\\2&-1\end{bmatrix}\).</div>
-      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Column order must match: \(\mathbf{p}_1\) under \(\lambda_1\), \(\mathbf{p}_2\) under \(\lambda_2\) — swap one and not the other, and the "decomposition" silently produces a different matrix. And since \(A\) is not symmetric, \(P^{-1}\neq P^{\top}\): the eigenvectors \((1,2)^{\top},(1,1)^{\top}\) are not orthogonal, so the inverse must be computed honestly.</p></div>
+      <div class="callout watch" style="margin:.8rem 0 0"><span class="tag">Watch out</span><p>Column order must match: \(\mathbf{p}_1\) under \(\lambda_1\), \(\mathbf{p}_2\) under \(\lambda_2\) — swap one and not the other, and the "decomposition" silently produces a different matrix. And since \(A\) is not symmetric, \(P^{-1}\neq P^{\top}\): the eigenvectors \((1,2)^{\top},(1,1)^{\top}\) are not orthogonal, so the inverse must be computed the usual way.</p></div>
       <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>The \(PDP^{-1}\) recipe: eigenvalues \(\to\) eigenvectors \(\to\) stack into \(P\), \(D\) \(\to\) invert \(P\) \(\to\) multiply back and check. The verification costs two small multiplications and catches nearly every bookkeeping error.</p></div>
       <div class="callout aha" style="margin:.8rem 0 0"><span class="tag">Wait — really?</span><p>A non-symmetric matrix can still diagonalize perfectly — but on a <em>slanted</em> basis. \(A\) acts as pure stretching (by 3 and by 4) along the directions \((1,2)\) and \((1,1)\), axes that are not perpendicular. Orthogonal eigenvectors are a luxury reserved for symmetric matrices.</p></div>
     </details>
@@ -1266,6 +1273,7 @@ const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
 /* ---------- tiny animation runtime (respects reduced motion) ---------- */
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const easeIO=u=>u<0.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+const mx=(a,b,c,d)=>'<span class="mx"><i>'+a+'</i><i>'+b+'</i><i>'+c+'</i><i>'+d+'</i></span>';
 function tween(dur,step,done){
   if(RM){step(1);done&&done();return {stop(){}};}
   let dead=false;const t0=performance.now();
@@ -1292,14 +1300,14 @@ function tween(dur,step,done){
     arrow(p,0,0,0,D2,'var(--s3)',3,'d₂ᵏ·e₂');
     const dets=D1*D2;
     const read=document.getElementById('dl-read');
-    read.innerHTML=`D = diag(${fmt(d1)}, ${fmt(d2)})<br>`
-      +`Dᵏ = diag(${fmt(D1,3)}, ${fmt(D2,3)}) — per dial<br>`
+    read.innerHTML=`D = ${mx(fmt(d1),0,0,fmt(d2))}<br>`
+      +`Dᵏ = ${mx(fmt(D1,3),0,0,fmt(D2,3))} — one dial at a time<br>`
       +`det Dᵏ = ${fmt(D1,2)}·${fmt(D2,2)} = <b>${fmt(dets,3)}</b><br>`
-      +`D⁻¹ = ${Math.abs(d1)<0.05||Math.abs(d2)<0.05?'<b style="color:var(--critical)">impossible — a dial is 0</b>':`diag(${fmt(1/d1,3)}, ${fmt(1/d2,3)})`}`;
+      +`D⁻¹ = ${Math.abs(d1)<0.05||Math.abs(d2)<0.05?'<b style="color:var(--critical)">impossible — a dial is 0</b>':mx(fmt(1/d1,3),0,0,fmt(1/d2,3))}`;
     const v=document.getElementById('dl-verdict');
     if(Math.abs(d1)<0.05||Math.abs(d2)<0.05){v.className='verdict bad';v.textContent='✗ A dial at 0 crushes its whole axis — the ellipse collapses to a line, det = 0, and no inverse can resurrect the lost dimension.';}
     else if(d1<0||d2<0){v.className='verdict info';v.textContent='A negative dial flips its axis while scaling it — each axis still minds only its own business.';}
-    else{v.className='verdict good';v.textContent='✓ Two 1-D problems in a trench coat: each axis scales by its own dial, and nothing ever mixes.';}
+    else{v.className='verdict good';v.textContent='✓ Two separate 1-D problems: each axis scales by its own dial, and nothing ever mixes.';}
   }
   bindCtlLocal('dl-d1',v=>{d1=v;draw();});
   bindCtlLocal('dl-d2',v=>{d2=v;draw();});
@@ -1317,7 +1325,7 @@ function tween(dur,step,done){
   const SUM=[[2,1],[1,2]];
   const MOF=m=>m===0?L1:(m===1?L2:SUM);
   let modeI=2,Mcur=SUM.map(r=>r.slice()),animH=null;
-  function mstr(M){return `[[${fmt(M[0][0])}, ${fmt(M[0][1])}], [${fmt(M[1][0])}, ${fmt(M[1][1])}]]`;}
+  function mstr(M){return mx(fmt(M[0][0]),fmt(M[0][1]),fmt(M[1][0]),fmt(M[1][1]));}
   function draw(M){
     M=M||Mcur;
     const p=plane(svg,-3.4,3.4,-2.6,2.6,{});
@@ -1342,7 +1350,7 @@ function tween(dur,step,done){
     const v=document.getElementById('proj-verdict');
     if(modeI===0){v.className='verdict info';v.textContent='Rank 1: the whole plane is crushed onto the q₁ line, amplified ×3. One layer = one direction of information. (Dotted: the full A, waiting.)';}
     else if(modeI===1){v.className='verdict info';v.textContent='Rank 1: everything flattens onto the q₂ line, scale ×1 — the quiet layer. (Dotted: the full A.)';}
-    else{v.className='verdict good';v.textContent='✓ Layers added: 3·q₁q₁ᵀ + 1·q₂q₂ᵀ = [[2,1],[1,2]] — the full ellipse, the full matrix.';}
+    else{v.className='verdict good';v.textContent='✓ Layers added back together: the full matrix A, the full ellipse.';}
   }
   function go(m){
     const from=Mcur.map(r=>r.slice()),to=MOF(m);modeI=m;
@@ -1383,10 +1391,10 @@ function tween(dur,step,done){
     const k=+document.getElementById('dg-k').value;
     document.getElementById('dg-ko').textContent=k;
     const Mk=powA(k),dk1=Math.pow(5,k),dk2=Math.pow(-1,k);
-    document.getElementById('dg-pow').innerHTML=`D<sup>${k}</sup> = diag(${dk1}, ${dk2})<br>A<sup>${k}</sup> = PD<sup>${k}</sup>P⁻¹ = [[${Mk[0][0]}, ${Mk[0][1]}], [${Mk[1][0]}, ${Mk[1][1]}]]`;
+    document.getElementById('dg-pow').innerHTML=`D<sup>${k}</sup> = ${mx(dk1,0,0,dk2)}<br>A<sup>${k}</sup> = PD<sup>${k}</sup>P⁻¹ = ${mx(Mk[0][0],Mk[0][1],Mk[1][0],Mk[1][1])}`;
     const v=document.getElementById('dg-verdict');
     v.className='verdict good';
-    v.textContent=k===3?'✓ A³ = [[41,84],[42,83]] — the lecture\'s answer, via two scalar cubes (5³ and (−1)³).':'✓ Matches multiplying A out '+k+' time'+(k>1?'s':'')+' — but here the middle cost two scalar powers.';
+    v.textContent=k===3?'✓ A³ matches the lecture\'s answer — computed with just two scalar cubes: 5³ and (−1)³.':'✓ Matches multiplying A out '+k+' time'+(k>1?'s':'')+' — but here the middle cost two scalar powers.';
   }
   let drag=false;
   function move(e){const q=planePt(svg,p,e),n=Math.hypot(q[0],q[1]);
@@ -1530,7 +1538,7 @@ function tween(dur,step,done){
     document.getElementById('sv-eig').textContent=MATS[cur].eig;
     const v=document.getElementById('sv-verdict');
     const stageTxt=['Input: the unit circle, with the special directions v₁, v₂ marked — an orthonormal frame.',
-      'Vᵀ applied: still a perfect circle (rotations are honest motions) — but v₁, v₂ now sit on the axes.',
+      'Vᵀ applied: still a perfect circle (a rotation never changes shape) — but v₁, v₂ now sit on the axes.',
       'Σ applied: stretch ×'+fmt(s1,2)+' and ×'+fmt(s2,2)+' along the axes — the only stage that changes shape.',
       '✓ U applied: rotated into final pose. Ellipse axes = σᵢuᵢ, and both frames stayed perpendicular throughout.'][si];
     v.className=si===3&&atStage?'verdict good':'verdict info';
@@ -1738,7 +1746,7 @@ function tween(dur,step,done){
 /* ================= W-AMP · THE AMPLIFIER DIAL ================= */
 (function(){
   const svg=document.getElementById('am-svg');if(!svg)return;
-  const MATS={lec:{A:[[1,2],[3,4]],n:'the lecture\'s [[1,2],[3,4]]'},
+  const MATS={lec:{A:[[1,2],[3,4]],n:'the lecture\'s example matrix'},
               sym:{A:[[2,1],[1,2]],n:'symmetric — profile axes = eigen axes'},
               rot:{A:[[0,-1],[1,0]],n:'rotation — every direction amplified ×1'},
               near:{A:[[1,2],[2,4.1]],n:'nearly singular — one direction almost dies'}};
