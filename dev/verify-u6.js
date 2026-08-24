@@ -22,7 +22,7 @@ const num = async (page, sel, re) => {
 };
 
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
   const page = await browser.newPage({ viewport: { width: 1340, height: 980 } });
   const errs = [];
   page.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE: ' + m.text().slice(0, 180)); });
@@ -201,7 +201,7 @@ const num = async (page, sel, re) => {
   console.log('\n— W10 · learning-rate roulette —');
   await setRange(page, 'gd-eta', 0.18); await setRange(page, 'gd-n', 18);
   await page.waitForTimeout(250);
-  const lossSmall = await num(page, '#gd-read', /final loss = ([\d.]+)/);
+  const lossSmall = await num(page, '#gd-read', /loss now = ([\d.]+)/);
   await setRange(page, 'gd-eta', 1.05); await page.waitForTimeout(250);
   {
     const t = (await page.locator('#gd-read').textContent()).replace(/\s+/g, ' ');
@@ -211,7 +211,7 @@ const num = async (page, sel, re) => {
   }
   await setRange(page, 'gd-eta', 0.18); await page.waitForTimeout(200);
   {
-    const again = await num(page, '#gd-read', /final loss = ([\d.]+)/);
+    const again = await num(page, '#gd-read', /loss now = ([\d.]+)/);
     if (Math.abs(again - lossSmall) > 1e-9) fail('returning to η = 0.18 should reproduce the earlier run');
     else console.log('  ok   the run is deterministic (' + again + ')');
   }
@@ -222,7 +222,7 @@ const num = async (page, sel, re) => {
     if (katexErr) fail(katexErr + ' KaTeX errors'); else console.log('  ok   0 KaTeX errors');
     const empty = await page.evaluate(() =>
       [...document.querySelectorAll('.widget svg')].filter(s => s.children.length === 0 && s.checkVisibility()).map(s => s.id));
-    if (empty.length) fail('empty widget svgs: ' + empty.join(', ')); else console.log('  ok   all 10 widget svgs drew');
+    if (empty.length) fail('empty widget svgs: ' + empty.join(', ')); else console.log('  ok   all 12 widget svgs drew');
     const dup = await page.evaluate(() => {
       const seen = {}, d = []; document.querySelectorAll('[id]').forEach(e => { if (seen[e.id]) d.push(e.id); seen[e.id] = 1; }); return d;
     });

@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
   const errors = [];
   const page = await browser.newPage({ viewport: { width: 1300, height: 950 } });
   page.on('console', m => { if (m.type() === 'error') errors.push('CONSOLE: ' + m.text().slice(0, 200)); });
@@ -49,8 +49,10 @@ const { chromium } = require('playwright');
   await page.locator('#sv-tabs [data-t="sym"]').click(); await page.waitForTimeout(120);
   console.log('svd sym: σ =', await page.locator('#sv-s1').textContent(), ',', await page.locator('#sv-s2').textContent());
   await page.locator('#sv-tabs [data-t="lec"]').click(); await page.waitForTimeout(100);
-  for (const s of ['0', '1', '2', '3']) { await page.locator(`#sv-stages [data-s="${s}"]`).click(); await page.waitForTimeout(80); }
+  for (const s of ['0', '1', '2', '3']) { await page.locator(`#sv-stages [data-s="${s}"]`).click(); await page.waitForTimeout(600); }
   console.log('svd stage4:', (await page.locator('#sv-verdict').textContent()).slice(0, 70));
+  await page.locator('#sv-play').click(); await page.waitForTimeout(3400);
+  console.log('svd after play:', (await page.locator('#sv-verdict').textContent()).slice(0, 50));
   await page.locator('#w-svd').screenshot({ path: 'shots/u5-svd.png' });
 
   // ---- w-tall
@@ -72,11 +74,39 @@ const { chromium } = require('playwright');
   console.log('rank grad k=2:', (await page.locator('#rk-verdict').textContent()).slice(0, 60));
   await page.locator('#rk-tabs [data-t="noise"]').click(); await page.waitForTimeout(150);
   console.log('rank noise:', (await page.locator('#rk-verdict').textContent()).slice(0, 60));
-  await page.locator('#rk-tabs [data-t="face"]').click(); await page.waitForTimeout(120);
-  await setRange('rk-k', 5); await page.waitForTimeout(120);
-  console.log('rank face k=5:', (await page.locator('#rk-verdict').textContent()).slice(0, 60));
-  await page.locator('#rk-tabs [data-t="sigma"]').click(); await setRange('rk-k', 3); await page.waitForTimeout(150);
+  await page.locator('#rk-tabs [data-t="photo"]').click(); await page.waitForTimeout(200);
+  await setRange('rk-k', 8); await page.waitForTimeout(200);
+  console.log('rank photo k=8:', await page.locator('#rk-en').textContent(), '|', (await page.locator('#rk-verdict').textContent()).slice(0, 60));
+  await page.locator('#rk-play').click(); await page.waitForTimeout(6300);
+  console.log('rank after play: k =', await page.locator('#rk-ko').textContent(), 'en =', await page.locator('#rk-en').textContent());
+  await setRange('rk-k', 8); await page.waitForTimeout(200);
   await page.locator('#w-rank').screenshot({ path: 'shots/u5-rank.png' });
+
+  // ---- w-dials (new)
+  await setRange('dl-d1', 2); await setRange('dl-d2', 0.6); await setRange('dl-k', 3); await page.waitForTimeout(120);
+  console.log('dials k=3:', (await page.locator('#dl-read').innerText()).split('\n')[1]);
+  await setRange('dl-d2', 0); await page.waitForTimeout(100);
+  console.log('dials d2=0:', (await page.locator('#dl-verdict').textContent()).slice(0, 55));
+  await setRange('dl-d2', 0.6); await setRange('dl-k', 1);
+
+  // ---- w-hunt (new)
+  for (const t of ['sym', 'lean', 'shear', 'rot']) {
+    await page.locator(`#ht-tabs [data-t="${t}"]`).click(); await page.waitForTimeout(120);
+    console.log('hunt', t + ':', (await page.locator('#ht-read').innerText()).split('\n')[0]);
+  }
+  await page.locator('#ht-tabs [data-t="sym"]').click();
+  await page.locator('#ht-play').click(); await page.waitForTimeout(1500);
+  await page.locator('#ht-play').click(); await page.waitForTimeout(150); // stop
+  console.log('hunt sweep ran, verdict:', (await page.locator('#ht-verdict').textContent()).slice(0, 45));
+
+  // ---- w-amp (new)
+  console.log('amp lec: s1 =', await page.locator('#am-s1').textContent(), 's2 =', await page.locator('#am-s2').textContent(), 'k =', await page.locator('#am-k').textContent());
+  await page.locator('#am-tabs [data-t="rot"]').click(); await page.waitForTimeout(120);
+  console.log('amp rot:', (await page.locator('#am-verdict').textContent()).slice(0, 55));
+  await page.locator('#am-tabs [data-t="near"]').click(); await page.waitForTimeout(120);
+  console.log('amp near: k =', await page.locator('#am-k').textContent());
+  await page.locator('#am-tabs [data-t="lec"]').click(); await page.waitForTimeout(100);
+  await page.locator('#w-amp').screenshot({ path: 'shots/u5-amp.png' });
 
   // ---- checks + toc + dark
   await page.locator('[data-check="c1"] .opts button[data-correct]').click(); await page.waitForTimeout(100);
