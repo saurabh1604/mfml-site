@@ -222,7 +222,7 @@ const num = async (page, sel, re) => {
     if (katexErr) fail(katexErr + ' KaTeX errors'); else console.log('  ok   0 KaTeX errors');
     const empty = await page.evaluate(() =>
       [...document.querySelectorAll('.widget svg')].filter(s => s.children.length === 0 && s.checkVisibility()).map(s => s.id));
-    if (empty.length) fail('empty widget svgs: ' + empty.join(', ')); else console.log('  ok   all 12 widget svgs drew');
+    if (empty.length) fail('empty widget svgs: ' + empty.join(', ')); else console.log('  ok   all 13 widget svgs drew');
     const dup = await page.evaluate(() => {
       const seen = {}, d = []; document.querySelectorAll('[id]').forEach(e => { if (seen[e.id]) d.push(e.id); seen[e.id] = 1; }); return d;
     });
