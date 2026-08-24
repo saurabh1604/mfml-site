@@ -108,6 +108,23 @@ const { chromium } = require('playwright');
   await page.locator('#am-tabs [data-t="lec"]').click(); await page.waitForTimeout(100);
   await page.locator('#w-amp').screenshot({ path: 'shots/u5-amp.png' });
 
+  // ---- w-moves (new)
+  console.log('moves lec:', (await page.locator('#mv-read').innerText()).split('\n').slice(0,3).join(' | '));
+  await page.locator('#mv-play').click(); await page.waitForTimeout(4600);
+  console.log('moves after play:', (await page.locator('#mv-verdict').textContent()).slice(0, 60));
+  await page.locator('#mv-tabs [data-t="shear"]').click(); await page.waitForTimeout(150);
+  await page.locator('#mv-stages [data-s="3"]').click(); await page.waitForTimeout(1800);
+  console.log('moves shear @3:', (await page.locator('#mv-verdict').textContent()).slice(0, 60));
+  await page.locator('#mv-tabs [data-t="lec"]').click(); await page.waitForTimeout(150);
+  await page.locator('#w-moves').screenshot({ path: 'shots/u5-moves.png' });
+
+  // ---- w-taste (new)
+  console.log('taste both:', (await page.locator('#ts-verdict').textContent()).slice(0, 70));
+  await page.locator('#ts-tabs [data-t="0"]').click(); await page.waitForTimeout(150);
+  console.log('taste p1:', (await page.locator('#ts-verdict').textContent()).slice(0, 60));
+  await page.locator('#ts-tabs [data-t="2"]').click(); await page.waitForTimeout(150);
+  await page.locator('#w-taste').screenshot({ path: 'shots/u5-taste.png' });
+
   // ---- checks + toc + dark
   await page.locator('[data-check="c1"] .opts button[data-correct]').click(); await page.waitForTimeout(100);
   console.log('check c1 → score:', await page.locator('#score').textContent());
