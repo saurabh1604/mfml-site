@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const UNITS = [['01',10,15],['02',18,14],['03',8,14],['04',5,13],['05',12,13],['06',10,14]];
+const UNITS = [['01',10,15],['02',18,14],['03',8,14],['04',5,13],['05',12,13],['06',10,14],['07',8,12]];
 (async () => {
   const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
   let bad = 0;
@@ -62,6 +62,6 @@ const UNITS = [['01',10,15],['02',18,14],['03',8,14],['04',5,13],['05',12,13],['
     }
     await page.close();
   }
-  console.log(bad ? `\n${bad} unit(s) with problems` : '\nALL 6 UNITS PASS ✓');
+  console.log(bad ? `\n${bad} unit(s) with problems` : `\nALL ${UNITS.length} UNITS PASS ✓`);
   await browser.close();
 })();
