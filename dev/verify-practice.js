@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const UNITS = [['01',10,15],['02',18,14],['03',8,14],['04',5,13],['05',12,13],['06',10,14],['07',8,12]];
+const UNITS = [['01',10,15],['02',18,14],['03',8,14],['04',5,13],['05',12,13],['06',10,14],['07',11,13]];
 (async () => {
   const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
   let bad = 0;

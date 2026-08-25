@@ -130,5 +130,59 @@ K = 8
 chk("reuse: naive = sum(i+2) = 44, backprop = 2K = 16 at K=8",
     sum(i+2 for i in range(K)) == 44 and 2*K == 16)
 
+
+# --- Round 2 (proof layer): activation family, ridge, dual numbers, FD error law ---
+z = sp.Symbol('z')
+sig = 1/(1+sp.exp(-z))
+chk("sigma' = sigma(1-sigma)", sp.simplify(sp.diff(sig,z) - sig*(1-sig)) == 0)
+chk("P9a: softplus' = sigma", sp.simplify(sp.diff(sp.log(1+sp.exp(z)),z) - sig) == 0)
+chk("P9b: tanh(z) = 2 sigma(2z) - 1", sp.simplify(2/(1+sp.exp(-2*z)) - 1 - sp.tanh(z).rewrite(sp.exp)) == 0)
+chk("P9c: tanh' = 1 - tanh^2 via the bridge",
+    sp.simplify(sp.diff(2/(1+sp.exp(-2*z))-1, z) - (1-sp.tanh(z).rewrite(sp.exp)**2)) == 0)
+
+# ridge regression (P10)
+lam = 1
+Ar = sp.Matrix([[1,0],[2,1],[0,3]]); xr = sp.Matrix([1,2,0])
+M = Ar.T*Ar + lam*sp.eye(2); rhs = Ar.T*xr
+chk("P10c: A^TA+I = [[6,2],[2,11]], A^Tx = (5,2)",
+    M == sp.Matrix([[6,2],[2,11]]) and rhs == sp.Matrix([5,2]))
+sstar = M.solve(rhs)
+chk("P10c: s* = (51/62, 1/31)", sstar == sp.Matrix([sp.Rational(51,62), sp.Rational(1,31)]))
+s1r, s2r = sp.symbols('s1r s2r'); sv2 = sp.Matrix([s1r, s2r])
+Er = ((xr-Ar*sv2).T*(xr-Ar*sv2))[0] + lam*(sv2.T*sv2)[0]
+gr1 = sp.diff(Er, s1r).subs({s1r: sstar[0], s2r: sstar[1]})
+gr2 = sp.diff(Er, s2r).subs({s1r: sstar[0], s2r: sstar[1]})
+chk("P10b: gradient vanishes at s*", sp.simplify(gr1) == 0 and sp.simplify(gr2) == 0)
+chk("P10c decimals: 0.8226, 0.0323",
+    abs(float(sstar[0])-0.8226) < 1e-4 and abs(float(sstar[1])-0.0323) < 1e-4)
+
+# dual numbers (S11 example + P11)
+chk("dual: x e^x at 1 -> (e, 2e), 2e = 5.4366",
+    sp.diff(x*sp.exp(x), x).subs(x,1) == 2*sp.E and abs(2*float(sp.E)-5.4366) < 1e-4)
+chk("dual P11a: x^2 e^x at 1 -> (e, 3e), 3e = 8.1548",
+    sp.diff(x**2*sp.exp(x), x).subs(x,1) == 3*sp.E and abs(3*float(sp.E)-8.1548) < 1e-4)
+g11 = sp.sqrt(x**2+9)
+chk("dual P11b: sqrt(x^2+9) at -4 -> (5, -0.8) via pairs",
+    g11.subs(x,-4) == 5 and sp.diff(g11,x).subs(x,-4) == sp.Rational(-4,5)
+    and abs((-8)/(2*5.0) + 0.8) < 1e-12)
+
+# finite-difference error law (S11 derive box)
+f3 = float(sp.diff(f, x, 3).subs(x, 1))   # third derivative of the monster at 1
+e2 = abs((fn(1+1e-2)-fn(1-1e-2))/2e-2 - EX)
+e3 = abs((fn(1+1e-3)-fn(1-1e-3))/2e-3 - EX)
+chk("FD law: log-log slope 2 (error ratio ~100 from h=1e-2 to 1e-3)", 80 < e2/e3 < 120)
+chk("FD law: truncation term (f3/6)h^2 predicts the h=1e-3 error within 20%",
+    abs(e3 - abs(f3)/6*1e-6) < 0.2*e3)
+u16 = 2**-52
+hstar = (3*u16*abs(fn(1))/(2*abs(f3)))**(1/3.0)
+chk("FD law: optimal h = (3u|f|/2|f3|)^(1/3) lands in [1e-6, 1e-4]", 1e-6 < hstar < 1e-4)
+chk("FD law: E(1e-5) beats E(1e-2) and E(1e-11)",
+    abs((fn(1+1e-5)-fn(1-1e-5))/2e-5 - EX) < min(e2, abs((fn(1+1e-11)-fn(1-1e-11))/2e-11 - EX)))
+
+# quadratic-form gradient at a concrete point (c9 / cookbook derive)
+Bq = np.array([[1,2],[3,4]]); xq = np.array([1,2])
+chk("cookbook: x^TBx = 27 and grad row = (12,21) at x=(1,2)",
+    xq@Bq@xq == 27 and np.allclose((Bq+Bq.T)@xq, [12,21]))
+
 print("=" * 60)
 print(f"ALL {ok} UNIT-7 MATH CHECKS PASS ✓")

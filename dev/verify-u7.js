@@ -86,11 +86,15 @@ const okay = m => console.log('  ok   ' + m);
   if (ids.length) fail('duplicate ids: ' + ids.join(', ')); else okay('no duplicate ids');
   await page.locator('[data-check="c1"] .opts button[data-correct]').click(); await page.waitForTimeout(150);
   const score = await text('#score');
-  if (score === '1') okay('check scoring works (1/12)'); else fail('score after c1: ' + score);
+  if (score === '1') okay('check scoring works (1/16)'); else fail('score after c1: ' + score);
   const nc = await page.locator('.next-card').innerText();
   if (/Unit 8/.test(nc)) okay('next-card points at Unit 8'); else fail('next-card: ' + nc.slice(0, 60));
   const probs = await page.locator('.prob').count();
-  if (probs === 8) okay('8 practice problems'); else fail(probs + ' problems');
+  if (probs === 11) okay('11 practice problems'); else fail(probs + ' problems');
+  const derives = await page.locator('.derive').count();
+  if (derives === 10) okay('10 derivation boxes render'); else fail(derives + ' derive boxes');
+  const stot = await text('#score-total');
+  if (stot === '16') okay('score total = 16'); else fail('score-total: ' + stot);
 
   console.log(errors.length ? 'ERRORS:\n' + errors.join('\n') : '  ok   zero console/page errors');
   if (errors.length) bad++;
