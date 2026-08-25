@@ -165,10 +165,10 @@ button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
     <p style="font-family:var(--sans);font-weight:650;color:var(--ink-2);margin:.2rem 0 .6rem">by <strong>Prof. Saurabh</strong></p>
     <p class="lede">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
     <div class="meta-chips">
-      <span class="chip">📐 16 units · 6 live so far</span>
-      <span class="chip">🎛 56 hands-on widgets</span>
-      <span class="chip">✅ 74 pause-and-predict checks</span>
-      <span class="chip">✍ 63 problems solved step by step</span>
+      <span class="chip">📐 16 units · 7 live so far</span>
+      <span class="chip">🎛 63 hands-on widgets</span>
+      <span class="chip">✅ 86 pause-and-predict checks</span>
+      <span class="chip">✍ 71 problems solved step by step</span>
     </div>
     <div class="progress-row" id="progress-row">
       <a class="cta" id="continue-link" href="unit-01.html" hidden>Continue where you left off →</a>
@@ -215,11 +215,11 @@ button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
       <p>Which way is down? From a shrinking secant to the Jacobian matrices behind backpropagation — the language every learning machine speaks.</p>
       <div class="foot"><span class="status ready">✓ Ready</span><span>13 widgets · 15 checks · 10 problems</span></div>
     </a>
-    <div class="card locked">
+    <a class="card" href="unit-07.html" data-unit="7">
       <div class="top"><span class="num">07</span><h3>Backprop &amp; Automatic Differentiation</h3></div>
-      <p>The chain rule, industrialized: how a network computes a million derivatives for the price of two forward passes.</p>
-      <div class="foot"><span class="status soon">Coming soon</span></div>
-    </div>
+      <p>The chain rule, industrialized: watch blame flow backwards through a graph, train a neuron with your own hands, and see why a million derivatives cost one sweep.</p>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>7 widgets · 12 checks · 8 problems</span></div>
+    </a>
     <div class="card locked">
       <div class="top"><span class="num">08</span><h3>Taylor &amp; MacLaurin Series</h3></div>
       <p>Polynomial impostors: approximating any function — and knowing exactly how big the lie (the remainder) is.</p>
@@ -291,9 +291,9 @@ button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
   /* Fallbacks are used only until a student opens the unit itself — each unit
      page writes its true check count to mfml-uN-total when it loads. */
-  const FALLBACK={1:10,2:10,3:11,4:12,5:16,6:15};
+  const FALLBACK={1:10,2:10,3:11,4:12,5:16,6:15,7:12};
   const TITLE={1:'Systems of Linear Equations',2:'Vector Spaces',3:'Analytic Geometry',
-               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation'};
+               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff'};
   let done=0, total=0;
 
   document.querySelectorAll('a.card[data-unit]').forEach(card=>{
