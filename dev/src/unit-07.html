@@ -320,6 +320,17 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 .tabs .mx{font-size:.8em;margin-left:.3em}
 .onesent{max-width:var(--prose);margin:1.2rem auto 0;font-family:var(--sans);font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--s1);padding:.45rem 1rem;background:var(--surface);border-radius:0 10px 10px 0}
 .onesent b{color:var(--ink)}
+/* ============ derivation boxes ============ */
+.derive{max-width:var(--prose);border:1px solid var(--ring);border-left:3px solid var(--s7);border-radius:12px;background:var(--surface);padding:1rem 1.15rem;margin:1.5rem auto}
+.derive .tag{font-family:var(--sans);font-size:.72rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--s7)}
+.derive .dgoal{font-size:1.02rem;margin:.5rem 0 .3rem}
+.dstep{display:flex;gap:.85rem;margin:.9rem 0;align-items:flex-start}
+.dstep .dn{flex:0 0 auto;width:1.55rem;height:1.55rem;border-radius:50%;background:color-mix(in srgb,var(--s7) 13%,transparent);color:var(--s7);font-family:var(--sans);font-weight:750;font-size:.85rem;display:flex;align-items:center;justify-content:center;margin-top:.1rem}
+.dstep .dbody{flex:1 1 auto;min-width:0}
+.dstep .dbody .katex-display{margin:.45rem 0}
+.dwhy{display:block;font-family:var(--sans);font-size:.87rem;color:var(--ink-2);margin-top:.2rem}
+.dqed{font-family:var(--sans);font-size:.9rem;color:var(--s7);font-weight:750}
+@media (max-width:700px){.dstep{gap:.6rem}}
 </style>
 
 </head>
@@ -328,7 +339,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 <div class="topbar"><div class="topbar-in">
   <a class="home" href="index.html">The Math<span class="txs"> Behind the Machine</span></a><span class="crumb">/ Unit 7 · Backprop &amp; Auto-diff</span>
   <span class="spacer"></span>
-  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">12</span></span>
+  <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">16</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
   <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
@@ -341,12 +352,13 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 <header class="hero">
   <div class="kicker">Unit 7 of 16 · by Prof. Saurabh</div>
   <h1>Backpropagation &amp; Automatic Differentiation</h1>
-  <p class="lede">Unit 6 ended with a promise: <em>the chain rule becomes matrix multiplication, and that is backpropagation</em>. This unit keeps the promise. You will watch a value flow forward through a graph and its error flow backward; train a single neuron with your own hands and see the loss actually drop; then do a whole layer at once, in matrix form — the exact four formulas inside every deep-learning framework. One backward sweep, and <strong>every</strong> knob in the network knows which way to turn.</p>
+  <p class="lede">Unit 6 ended with a promise: <em>the chain rule becomes matrix multiplication, and that is backpropagation</em>. This unit keeps the promise. You will watch a value flow forward through a graph and its error flow backward; train a single neuron with your own hands and see the loss actually drop; then do a whole layer at once, in matrix form — the exact four formulas inside every deep-learning framework. One backward sweep, and <strong>every</strong> knob in the network knows which way to turn. And nothing here is taken on faith: the chain rule itself, the four layer formulas, every cookbook identity, even the checker's best step size — each is <em>proved</em> on this page, step by step, in plain language.</p>
   <div class="meta">
-    <span class="chip">≈ 60 min read + play</span>
+    <span class="chip">≈ 80 min read + play</span>
     <span class="chip">7 interactive widgets · train a neuron live</span>
-    <span class="chip">12 inline checks</span>
-    <span class="chip">✍ 8 solved practice problems</span>
+    <span class="chip">16 inline checks</span>
+    <span class="chip">🧾 10 proofs, step by step</span>
+    <span class="chip">✍ 11 solved practice problems</span>
   </div>
 </header>
 
@@ -466,9 +478,90 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="onesent"><b>In one sentence:</b> Backpropagation is exactly two rules — multiply local derivatives along each path, add the paths — applied without ever walking a path twice.</div>
 </section>
 
-<!-- ================= 4 · THE GENERAL RECIPE ================= -->
+<!-- ================= 4 · THE CHAIN RULE, PROVED ================= -->
+<section class="unit" id="sproof">
+  <div class="sec-head"><span class="sec-num">4</span><h2>Why you can trust the rules — the chain rule, proved</h2></div>
+  <div class="prose">
+    <p>"Multiply along paths, add across paths" has been doing a lot of work, so it had better be <em>true</em> — a theorem, not a slogan. The proof needs exactly one idea, and it is the idea this course keeps returning to: <strong>a derivative is a promise about a straight line.</strong> Saying "\(g\) has slope \(g'(x_0)\) at \(x_0\)" means precisely this:</p>
+    \[g(x_0+h)=g(x_0)+g'(x_0)\,h+r(h),\qquad\text{where }\ \frac{r(h)}{h}\to 0\ \text{ as }h\to 0.\]
+    <p>In words: near \(x_0\) the function is a straight line plus a leftover \(r(h)\) so small that <em>even after dividing by the tiny number \(h\)</em>, it still shrinks to nothing. That last clause is the entire content of differentiability. Hold on to it — both rules fall out of it in a few lines each.</p>
+  </div>
+  <div class="check" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The promise demands \(r(h)/h\to0\), not merely \(r(h)\to0\). What would go wrong if we only asked for \(r(h)\to0\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Take any continuous function and claim ANY slope you like — say 999. The 'leftover' r(h) = g(x₀+h) − g(x₀) − 999h still shrinks to 0 as h does, because both other pieces do. So r(h)→0 lets every number pose as the derivative. Demanding r(h)/h→0 says the leftover dies FASTER than the nudge itself — and that pins down exactly one slope. (Try r(h)=√|h|: it shrinks to 0, but r/h blows up — the weak condition would accept it, the real one refuses.)">Any slope would qualify — \(r(h)\to0\) is just continuity, so "the" derivative wouldn't be pinned down</button>
+      <button data-why="No — the derivative wouldn't become infinite, it would become meaningless. With only r(h)→0, the slope 3, the slope 999, and the slope −7 all satisfy the definition at once, so no single number deserves the name.">Derivatives would come out infinite</button>
+      <button data-why="They differ by exactly a factor of h, and that factor is everything. Example: r(h)=√|h| goes to 0, yet r(h)/h grows without bound — a function with that leftover has NO derivative, but the weak condition wouldn't notice.">Nothing — the two conditions say the same thing</button>
+    </div>
+    <div class="why"></div>
+  </div>
+
+  <div class="derive">
+    <span class="tag">Prove it · Rule 1 — along a path, multiply</span>
+    <p class="dgoal"><b>Claim.</b> If \(u=g(x)\) and \(y=f(u)\), then at \(x_0\) (writing \(u_0=g(x_0)\)): \(\ \dfrac{dy}{dx}=f'(u_0)\,g'(x_0)\) — the two slopes multiply.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Nudge the input by \(h\) and ask how much \(u\) moves. That is \(g\)'s own promise:
+      \[\Delta u \;=\; g(x_0+h)-g(x_0)\;=\;g'(x_0)\,h+r_g(h)\]
+      <span class="dwhy">Line plus leftover, with \(r_g(h)/h\to0\). Nothing new — just the definition, applied to \(g\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Feed that movement to \(f\). That is \(f\)'s promise, written at \(u_0\) with nudge \(\Delta u\):
+      \[f(u_0+\Delta u)\;=\;f(u_0)+f'(u_0)\,\Delta u+r_f(\Delta u)\]
+      <span class="dwhy">Same definition, applied to \(f\). Note the nudge \(f\) receives is \(\Delta u\), not \(h\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Substitute step 1 into step 2 and multiply out:
+      \[f\big(g(x_0+h)\big)=f(u_0)+\underbrace{f'(u_0)\,g'(x_0)}_{\text{the clean slope}}\,h\;+\;\underbrace{f'(u_0)\,r_g(h)+r_f(\Delta u)}_{\text{call it }R(h)}\]
+      <span class="dwhy">One term proportional to \(h\), and everything else swept into a single bracket \(R(h)\).</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Check that \(R(h)\) is a legal leftover — that \(R(h)/h\to0\). Piece by piece:
+      \[\frac{f'(u_0)\,r_g(h)}{h}\to f'(u_0)\cdot 0=0,\qquad
+        \frac{r_f(\Delta u)}{h}=\frac{r_f(\Delta u)}{\Delta u}\cdot\frac{\Delta u}{h}\to 0\cdot g'(x_0)=0\]
+      <span class="dwhy">The first piece is a constant times something dying. The second: \(\Delta u/h\to g'(x_0)\) by step 1, while \(r_f(\Delta u)/\Delta u\to0\) because \(\Delta u\to0\). (Fine point: if \(\Delta u\) happens to be exactly \(0\), then \(r_f(\Delta u)=r_f(0)=0\) and the term is already zero — no division needed.)</span></div></div>
+    <div class="dstep"><span class="dn">5</span><div class="dbody">Read off the conclusion. We have shown
+      \[f\big(g(x_0+h)\big)=f\big(g(x_0)\big)+\big[f'(u_0)\,g'(x_0)\big]\,h+R(h),\qquad \frac{R(h)}{h}\to0\]
+      — one clean slope, one dying leftover. That is <em>exactly</em> the shape of a derivative's promise, so the number in the bracket <em>is</em> the derivative of the composite. <span class="dqed">∎</span>
+      <span class="dwhy">Two promises composed make a third promise, and slopes multiply while the leftovers stay harmless. "Multiply along a path" is now a theorem.</span></div></div>
+  </div>
+
+  <div class="prose">
+    <p>Now the second rule. Suppose \(f\) reaches the output through <em>several</em> intermediates at once — \(f\) is a function of \(u_1,\dots,u_m\), and each \(u_k\) is a function of \(x\). This is precisely the fork situation in the graph: one input, many routes.</p>
+  </div>
+
+  <div class="derive">
+    <span class="tag">Prove it · Rule 2 — across paths, add</span>
+    <p class="dgoal"><b>Claim.</b> \(\ \dfrac{df}{dx}=\displaystyle\sum_{k=1}^{m}\frac{\partial f}{\partial u_k}\,\frac{du_k}{dx}\) — each route contributes its product, and the contributions add.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The many-input promise (Unit 6's total derivative): nudging all inputs at once,
+      \[f(u_1+\Delta u_1,\dots,u_m+\Delta u_m)=f(\mathbf u)+\sum_{k}\frac{\partial f}{\partial u_k}\,\Delta u_k+r,\qquad \frac{r}{\|\Delta \mathbf u\|}\to0\]
+      <span class="dwhy">A multivariable derivative is a <em>plane</em>-promise: one slope per input, one shared leftover that dies faster than the total nudge. This is what "differentiable" means in several variables.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Each intermediate keeps its own one-variable promise:
+      \[\Delta u_k=\frac{du_k}{dx}\,h+r_k(h),\qquad \frac{r_k(h)}{h}\to0\]
+      <span class="dwhy">Every route's first leg is an honest derivative — \(m\) copies of step 1 from Rule 1.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Substitute and collect the \(h\)-terms:
+      \[f(\cdots)=f(\mathbf u)+\Big[\sum_{k}\frac{\partial f}{\partial u_k}\frac{du_k}{dx}\Big]h+R(h)\]
+      where \(R(h)\) gathers every \(\frac{\partial f}{\partial u_k}r_k(h)\) and the shared \(r\) — and, by the same argument as in Rule 1, \(R(h)/h\to0\).
+      <span class="dwhy">Each piece of \(R\) is either a constant times a dying leftover, or \(r\) itself, which dies faster than \(\|\Delta\mathbf u\|\approx(\text{const})\cdot h\).</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Same shape, same conclusion: the composite keeps a promise whose slope is the bracket — the <em>sum over routes</em> of (slope out) × (slope in). <span class="dqed">∎</span>
+      <span class="dwhy">"Add across paths" is not a new fact about graphs. It is what a multi-input derivative <em>means</em>, read one route at a time.</span></div></div>
+  </div>
+
+  <div class="callout aha"><span class="tag">The bridge</span>
+    <p><strong>The two rules are matrix multiplication in disguise.</strong> For vector maps \(\mathbf x\xrightarrow{F}\mathbf u\xrightarrow{G}\mathbf y\), the chain rule reads \(J_{G\circ F}=J_G\,J_F\) — Jacobians multiply. Now look at one entry of that product, using the row-times-column rule:</p>
+    \[\big(J_G J_F\big)_{ij}=\sum_{k}\big(J_G\big)_{ik}\big(J_F\big)_{kj}\]
+    <p>Each term is one path: input \(j\) nudges intermediate \(k\) (that is \((J_F)_{kj}\)), which nudges output \(i\) (that is \((J_G)_{ik}\)) — <em>multiply along the path</em>. The \(\sum_k\) adds one product per intermediate stop — <em>add across paths</em>. The row-times-column rule you have used since Unit 1 is literally the two rules of backpropagation, written at once. Unit 6 promised "the chain rule becomes matrix multiplication"; you have now watched the promise come true, entry by entry.</p>
+  </div>
+
+  <div class="check" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In \(\big(J_G J_F\big)_{ij}=\sum_k (J_G)_{ik}(J_F)_{kj}\), what is one single term \((J_G)_{ik}(J_F)_{kj}\) of the sum, in graph language?</p>
+    <div class="opts">
+      <button data-correct data-why="One term = one route: input j moves intermediate k by (J_F)_{kj}, and intermediate k moves output i by (J_G)_{ik} — multiplied, that is the sensitivity along the single path j → k → i. The Σ over k then adds one such product per intermediate. Matrix multiplication IS multiply-along-paths, add-across-paths.">The product of local slopes along the single path \(j\to k\to i\)</button>
+      <button data-why="The TOTAL sensitivity of output i to input j is the whole sum, after all intermediates have contributed. A single term is one route only — through one particular intermediate k.">The total derivative of output \(i\) with respect to input \(j\)</button>
+      <button data-why="Jacobian entries are slopes — how much things MOVE per unit of nudge — not values. The forward values matter only by deciding where those slopes are evaluated.">The value that intermediate \(k\) took in the forward pass</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent"><b>In one sentence:</b> A derivative is a "line plus dying leftover" promise; composing promises multiplies slopes (Rule 1), parallel routes add their products (Rule 2), and matrix multiplication's row-times-column formula is both rules written at once.</div>
+</section>
+
+<!-- ================= 5 · THE GENERAL RECIPE ================= -->
 <section class="unit" id="s4">
-  <div class="sec-head"><span class="sec-num">4</span><h2>The recipe, written once and for all</h2></div>
+  <div class="sec-head"><span class="sec-num">5</span><h2>The recipe, written once and for all</h2></div>
   <div class="prose">
     <p>The lecture states the two rules formally, and it is worth reading slowly because this half-line <em>is</em> automatic differentiation. Number every quantity in the graph: \(x_1,\dots,x_d\) are the inputs, \(x_{d+1},\dots,x_{D-1}\) the intermediate baby steps, \(x_D\) the output. Each is computed from its parents by an elementary function:</p>
     \[x_i = g_i\big(x_{\mathrm{Pa}(x_i)}\big)\]
@@ -476,6 +569,18 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     \[\frac{\partial f}{\partial x_D}=1,\qquad \frac{\partial f}{\partial x_i}=\sum_{j:\,x_i\in \mathrm{Pa}(x_j)}\frac{\partial f}{\partial x_j}\,\frac{\partial g_j}{\partial x_i}\]
     <p>Read it like a postal system: node \(j\) already knows its own blame \(\partial f/\partial x_j\). It mails each parent \(i\) a copy, <em>scaled by the local derivative</em> \(\partial g_j/\partial x_i\) of its own baby step. A parent with several children just adds up its mail. One sweep from right to left and every node in the graph — every input, every weight — holds its derivative.</p>
     <p>Two things make this cheap. Each blame \(\partial f/\partial x_j\) is computed <strong>once</strong> and reused by all of \(j\)'s parents. And each local derivative \(\partial g_j/\partial x_i\) is trivial, because each baby step is trivial — the derivative of \(e^a\) or \(\sqrt c\) or \(a+b\), never of the whole monster. This is why the lecture can conclude: <em>computing all the derivatives costs about the same as computing the function itself.</em></p>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the recipe is correct</span>
+    <p class="dgoal"><b>Claim.</b> Process the nodes from right to left; then the recipe's \(\bar x_i\) equals the true \(\partial f/\partial x_i\) for <em>every</em> node in the graph.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Base case.</b> The rightmost node: \(\bar x_D=1=\partial f/\partial f\) — the output's sensitivity to itself.
+      <span class="dwhy">Nudge \(f\) by \(h\) and \(f\) changes by \(h\). Slope 1, no leftover at all.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>The order does the bookkeeping.</b> Working right to left means: by the time we reach node \(x_i\), every child \(x_j\) (every node that uses \(x_i\)) has already been processed and — by induction — already holds its <em>correct</em> blame \(\bar x_j=\partial f/\partial x_j\).
+      <span class="dwhy">Children sit to the right of their parents in the graph, so a right-to-left sweep always finds the mail ready before it must be sent.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>Apply Rule 2 at node \(x_i\), with its children as the intermediates.</b> Any nudge of \(x_i\) can reach \(f\) only through the children, so §4's theorem says
+      \[\frac{\partial f}{\partial x_i}=\sum_{j:\,x_i\in\mathrm{Pa}(x_j)}\frac{\partial f}{\partial x_j}\,\frac{\partial g_j}{\partial x_i}\]
+      — and every factor on the right is one the recipe possesses: the child's (already correct) blame, times the local slope of the child's baby step. So the value the recipe writes into \(\bar x_i\) is the true derivative. Right-to-left induction covers the whole graph. <span class="dqed">∎</span>
+      <span class="dwhy">The recipe is not a new algorithm to take on trust — it is Rule 2, applied once per node, in an order that guarantees the mail is always ready.</span></div></div>
   </div>
   <div class="check" data-check="c4">
     <span class="tag">Pause &amp; predict</span>
@@ -490,9 +595,9 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="onesent"><b>In one sentence:</b> Set \(\bar f=1\), then let every node mail each parent its own blame times a local derivative — one right-to-left sweep prices every knob.</div>
 </section>
 
-<!-- ================= 5 · ONE NEURON, TRAINED BY HAND ================= -->
+<!-- ================= 6 · ONE NEURON, TRAINED BY HAND ================= -->
 <section class="unit" id="s5">
-  <div class="sec-head"><span class="sec-num">5</span><h2>One neuron, trained by your own hands</h2></div>
+  <div class="sec-head"><span class="sec-num">6</span><h2>One neuron, trained by your own hands</h2></div>
   <div class="prose">
     <p>Time to point this machinery at something that <em>learns</em>. The smallest possible network: one neuron with one weight \(w\) and one bias \(b\), one input \(x\), one target \(y\):</p>
     \[z=wx+b,\qquad a=\tanh(z),\qquad L=\tfrac12\,(a-y)^2\]
@@ -516,6 +621,24 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
   </div>
 
+  <div class="derive">
+    <span class="tag">Prove it · every number in the widget, from scratch</span>
+    <p class="dgoal"><b>Claim.</b> \(\delta=(a-y)(1-a^2)\). Nothing to memorise — derive each local slope, then chain them with Rule 1.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>The loss.</b> \(L(a)=\tfrac12(a-y)^2\). Nudge \(a\) by \(\Delta\) and expand the square:
+      \[\tfrac12(a+\Delta-y)^2=\tfrac12(a-y)^2+(a-y)\,\Delta+\tfrac12\Delta^2\quad\Rightarrow\quad \frac{\partial L}{\partial a}=a-y\]
+      <span class="dwhy">The \(\tfrac12\Delta^2\) is the dying leftover. And now you can see why the \(\tfrac12\) was planted in the loss: it exists purely to eat the 2 that squaring brings down.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>The activation.</b> \(a=\tanh z=\dfrac{s}{c}\) with \(s=e^z-e^{-z}\), \(c=e^z+e^{-z}\). Notice the pair swaps under differentiation: \(s'=c\) and \(c'=s\). Quotient rule:
+      \[\Big(\frac{s}{c}\Big)'=\frac{s'c-sc'}{c^2}=\frac{c^2-s^2}{c^2}=1-\Big(\frac{s}{c}\Big)^2=1-\tanh^2 z=1-a^2\]
+      <span class="dwhy">The derivative comes out written in terms of the <em>output</em> \(a\) — which the forward pass already computed. So the backward pass buys \(1-a^2\) for one multiplication, no new function calls.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>The pre-activation.</b> \(z=wx+b\) is linear, and a linear function's slopes are just its coefficients:
+      \[\frac{\partial z}{\partial w}=x,\qquad \frac{\partial z}{\partial b}=1,\qquad \frac{\partial z}{\partial x}=w\]
+      <span class="dwhy">Nudge \(w\) by \(\Delta\) and \(z\) moves by \(x\Delta\) exactly — not even a leftover this time.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody"><b>Chain them (Rule 1, twice).</b>
+      \[\delta=\frac{\partial L}{\partial z}=\frac{\partial L}{\partial a}\cdot\frac{da}{dz}=(a-y)(1-a^2)
+      \;\;\xrightarrow{\ \text{widget's numbers}\ }\;\;(-0.5379)(0.7864)=-0.4230\]
+      then \(\ \partial L/\partial w=\delta\,x,\ \ \partial L/\partial b=\delta,\ \ \partial L/\partial x=\delta\,w\). <span class="dqed">∎</span>
+      <span class="dwhy">Every figure the widget displays is these four lines evaluated — press the buttons above and check any of them by hand.</span></div></div>
+  </div>
   <div class="check" data-check="c5">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">At the starting numbers, \(\partial L/\partial w\) and \(\partial L/\partial b\) are both exactly \(\delta\cdot x\) and \(\delta\cdot 1\) with \(\delta=-0.423\). What made them so cheap to get?</p>
@@ -539,9 +662,9 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="onesent"><b>In one sentence:</b> Compute the blame \(\delta=\partial L/\partial z\) once, and every parameter feeding \(z\) reads its gradient off it — then step downhill and the loss actually falls.</div>
 </section>
 
-<!-- ================= 6 · A WHOLE LAYER ================= -->
+<!-- ================= 7 · A WHOLE LAYER ================= -->
 <section class="unit" id="s6">
-  <div class="sec-head"><span class="sec-num">6</span><h2>A whole layer at once — backprop in matrix form</h2></div>
+  <div class="sec-head"><span class="sec-num">7</span><h2>A whole layer at once — backprop in matrix form</h2></div>
   <div class="prose">
     <p>A real layer is the same neuron, vectorised: \(m\) neurons share the input vector \(\mathbf{x}\in\mathbb{R}^n\),</p>
     \[Z=A\mathbf{x}+\mathbf{b},\qquad \mathbf{a}=\sigma(Z)\]
@@ -551,6 +674,19 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     <p>(\(\odot\) is the Hadamard — entrywise — product.) Step two: through \(Z=A\mathbf x+\mathbf b\). Since \(Z_i=\sum_j A_{ij}x_j+b_i\), each weight sees \(\partial Z_i/\partial A_{ij}=x_j\), and the chain rule assembles into three matrix formulas:</p>
     \[\frac{\partial\mathrm{Loss}}{\partial A}=\boldsymbol\delta^{(Z)}\mathbf{x}^{\top},\qquad \frac{\partial\mathrm{Loss}}{\partial \mathbf b}=\boldsymbol\delta^{(Z)},\qquad \frac{\partial\mathrm{Loss}}{\partial \mathbf x}=A^{\top}\boldsymbol\delta^{(Z)}\]
     <p>Read them as people, not symbols. <strong>The weights:</strong> \(\boldsymbol\delta^{(Z)}\mathbf x^\top\) is an outer product — blame of my row, times activity of my column. A weight gets a big gradient exactly when <em>its neuron is blamed and its input was active</em>. <strong>The biases:</strong> they get the blame straight. <strong>The input:</strong> \(A^\top\boldsymbol\delta^{(Z)}\) re-mixes the blame back through the transposed weights — and this vector is precisely the \(\boldsymbol\delta^{(a)}\) that the <em>previous</em> layer receives as its mail. Layer after layer, the same four lines: that is deep learning's inner loop.</p>
+  </div>
+
+  <div class="derive">
+    <span class="tag">Prove it · where σ(1−σ) comes from</span>
+    <p class="dgoal"><b>Claim.</b> \(\sigma(z)=\dfrac{1}{1+e^{-z}}\) satisfies \(\sigma'=\sigma(1-\sigma)\) — so the backward pass needs no new function evaluations.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Differentiate with Rule 1: \(\sigma=(1+e^{-z})^{-1}\), outer slope \(-(1+e^{-z})^{-2}\), inner slope \(-e^{-z}\):
+      \[\sigma'=-(1+e^{-z})^{-2}\cdot(-e^{-z})=\frac{e^{-z}}{(1+e^{-z})^{2}}\]
+      <span class="dwhy">The two minus signs cancel — sigmoid always rises.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Split the fraction into two factors you can recognise:
+      \[\frac{e^{-z}}{(1+e^{-z})^{2}}=\underbrace{\frac{1}{1+e^{-z}}}_{=\ \sigma}\cdot\underbrace{\frac{e^{-z}}{1+e^{-z}}}_{=\ 1-\sigma}
+      \qquad\text{since}\quad 1-\sigma=\frac{(1+e^{-z})-1}{1+e^{-z}}=\frac{e^{-z}}{1+e^{-z}}\]
+      So \(\sigma'=\sigma(1-\sigma)\). <span class="dqed">∎</span>
+      <span class="dwhy">Output in, derivative out: \(\mathbf a\odot(1-\mathbf a)\) uses only the \(\mathbf a\) the forward pass cached. This is why frameworks store activations — the way back is pure arithmetic.</span></div></div>
   </div>
 
   <div class="widget" id="w-layer">
@@ -571,6 +707,23 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
   </div>
 
+  <div class="derive">
+    <span class="tag">Prove it · the three matrix formulas, entry by entry</span>
+    <p class="dgoal"><b>Claim.</b> The matrix formulas hide no new laws — they are Rule 1 and Rule 2 aimed at each entry, then reassembled into matrix shape. Write \(\boldsymbol\delta=\boldsymbol\delta^{(Z)}\) for short.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>A weight \(A_{ij}\).</b> Scan the forward pass \(Z_k=\sum_p A_{kp}x_p+b_k\): the entry \(A_{ij}\) appears in exactly <em>one</em> place — the row \(k=i\), multiplied by \(x_j\). One appearance means one path, so Rule 1 alone:
+      \[\frac{\partial L}{\partial A_{ij}}=\delta_i\cdot\frac{\partial Z_i}{\partial A_{ij}}=\delta_i\,x_j\]
+      <span class="dwhy">"Blame of my row, times activity of my column" — now proved, not just recited.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>Assemble.</b> The matrix whose \((i,j)\) entry is \(\delta_i x_j\) is, by definition, the outer product:
+      \[\frac{\partial L}{\partial A}=\boldsymbol\delta\,\mathbf x^{\top}\]
+      <span class="dwhy">Same shape as \(A\), one honest entry per weight, ready for \(A\leftarrow A-\eta\,\partial L/\partial A\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>A bias \(b_i\).</b> It appears only in \(Z_i\), with slope \(1\): \(\ \partial L/\partial b_i=\delta_i\cdot1\), so \(\partial L/\partial\mathbf b=\boldsymbol\delta\).
+      <span class="dwhy">The bias rides its own row and nothing else — blame arrives undiluted.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody"><b>An input \(x_j\) — the fork.</b> \(x_j\) appears in <em>every</em> row: \(Z_1,\dots,Z_m\) all use it. \(m\) appearances, \(m\) paths — Rule 2:
+      \[\frac{\partial L}{\partial x_j}=\sum_{i=1}^{m}\delta_i\,\frac{\partial Z_i}{\partial x_j}=\sum_{i=1}^{m}\delta_i\,A_{ij}=\big(A^{\top}\boldsymbol\delta\big)_j\]
+      <span class="dwhy">Summing \(\delta_i A_{ij}\) over \(i\) walks down <em>column</em> \(j\) of \(A\) — and reading columns is exactly what the transpose does. The mysterious \(A^{\top}\) is Rule 2 wearing matrix clothes.</span></div></div>
+    <div class="dstep"><span class="dn">5</span><div class="dbody">All three formulas recovered from two rules and one scan of where each variable appears. <span class="dqed">∎</span>
+      <span class="dwhy">This "find every appearance, add a term per appearance" habit is the entire skill of differentiating matrix expressions. The very next section runs on it.</span></div></div>
+  </div>
   <div class="check" data-check="c7">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">A layer has \(A\in\mathbb{R}^{100\times 300}\). What is the shape of \(\partial\mathrm{Loss}/\partial A=\boldsymbol\delta^{(Z)}\mathbf{x}^{\top}\), and why was that inevitable?</p>
@@ -594,9 +747,9 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="onesent"><b>In one sentence:</b> \(\boldsymbol\delta^{(Z)}=\boldsymbol\delta^{(a)}\!\odot\mathbf a\odot(1-\mathbf a)\), then weights get \(\boldsymbol\delta^{(Z)}\mathbf x^{\top}\), biases get \(\boldsymbol\delta^{(Z)}\), and the layer below gets \(A^{\top}\boldsymbol\delta^{(Z)}\) — four lines, all of deep learning's inner loop.</div>
 </section>
 
-<!-- ================= 7 · THE GRADIENT COOKBOOK ================= -->
+<!-- ================= 8 · THE GRADIENT COOKBOOK ================= -->
 <section class="unit" id="s7">
-  <div class="sec-head"><span class="sec-num">7</span><h2>The gradient cookbook — five identities you'll use forever</h2></div>
+  <div class="sec-head"><span class="sec-num">8</span><h2>The gradient cookbook — five identities you'll use forever</h2></div>
   <div class="prose">
     <p>Backprop needs local derivatives, and in matrix land a handful of them cover almost everything. The lecture lists five; learn them as sentences, not just symbols. (Gradients here are rows, Unit 6's convention.)</p>
   </div>
@@ -611,7 +764,26 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </tbody>
   </table>
   <div class="prose">
-    <p>Notice the family resemblance to Section 6: the third identity <em>is</em> why \(\partial\mathrm{Loss}/\partial A\) came out as an outer product, and the last one is the loss \(\|\mathbf y-A\mathbf s\|^2\) that trains linear models — you will meet it again the moment optimisation starts in Unit 9. Every identity can be checked the honest way, entry by entry; the arena's Problem 7 does exactly that.</p>
+    <p>Notice the family resemblance to Section 7: the third identity <em>is</em> why \(\partial\mathrm{Loss}/\partial A\) came out as an outer product, and the last one is the loss \(\|\mathbf y-A\mathbf s\|^2\) that trains linear models — you will meet it again the moment optimisation starts in Unit 9. Below, every identity is derived in full — the whole cookbook takes four short arguments. The arena's Problem 7 re-checks two of them with concrete numbers, and Problem 10 puts the cookbook to work on a real model.</p>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the whole cookbook, four short derivations</span>
+    <p class="dgoal"><b>Claim.</b> Every identity in the table is entry-wise differentiation, organised. The method is always the same: <em>find every appearance of the variable, add one term per appearance.</em></p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Dot product.</b> \(\mathbf x^{\top}\mathbf a=\sum_i x_i a_i\). Differentiate with respect to one coordinate \(x_k\): every term is constant except \(x_k a_k\), whose slope is \(a_k\). Collect the coordinates into a row:
+      \[\frac{\partial(\mathbf x^{\top}\mathbf a)}{\partial\mathbf x}=\mathbf a^{\top}\]
+      <span class="dwhy">And \(\mathbf a^{\top}\mathbf x\) is the same scalar, so the table's second line comes free.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>The sandwich.</b> \(\mathbf a^{\top}X\mathbf b=\sum_{i,j}a_i X_{ij}b_j\). The entry \(X_{ij}\) appears once, with coefficient \(a_ib_j\):
+      \[\frac{\partial(\mathbf a^{\top}X\mathbf b)}{\partial X_{ij}}=a_ib_j\quad\Rightarrow\quad \frac{\partial(\mathbf a^{\top}X\mathbf b)}{\partial X}=\mathbf a\mathbf b^{\top}\]
+      <span class="dwhy">The same one-appearance argument that made \(\partial L/\partial A\) an outer product in the layer proof — it is literally the same fact.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>The quadratic — where \(B+B^{\top}\) is born.</b> \(\mathbf x^{\top}B\mathbf x=\sum_{i,j}B_{ij}\,x_i\,x_j\), and \(\mathbf x\) appears <em>twice</em> in each term. Product rule on \(x_ix_j\), with respect to \(x_k\): the left copy fires when \(i=k\), contributing \(\sum_j B_{kj}x_j=(B\mathbf x)_k\); the right copy fires when \(j=k\), contributing \(\sum_i B_{ik}x_i=(B^{\top}\mathbf x)_k\). Add the two:
+      \[\frac{\partial(\mathbf x^{\top}B\mathbf x)}{\partial x_k}=(B\mathbf x)_k+(B^{\top}\mathbf x)_k\quad\Rightarrow\quad \frac{\partial(\mathbf x^{\top}B\mathbf x)}{\partial\mathbf x}=\mathbf x^{\top}\big(B+B^{\top}\big)\]
+      <span class="dwhy">Two appearances of \(\mathbf x\), two donated terms — the "mysterious" \(+B^{\top}\) is Rule 2's fork, hiding in plain algebra. For symmetric \(B\) it collapses to \(2\mathbf x^{\top}B\).</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody"><b>Least squares — a chain of the previous lines.</b> Set the residual \(\mathbf r=\mathbf x-A\mathbf s\) and \(E=\mathbf r^{\top}W\mathbf r\) with \(W\) symmetric. Rule 1 with \(\mathbf r\) as the intermediate:
+      \[\frac{\partial E}{\partial\mathbf s}=\frac{\partial E}{\partial\mathbf r}\,\frac{\partial\mathbf r}{\partial\mathbf s}
+      =\underbrace{\mathbf r^{\top}(W+W^{\top})}_{\text{line 3}}\cdot\underbrace{(-A)}_{\mathbf r\text{ linear in }\mathbf s}
+      =2\,\mathbf r^{\top}W\cdot(-A)=-2(\mathbf x-A\mathbf s)^{\top}WA\]
+      <span class="dqed">∎</span>
+      <span class="dwhy">The \(2\) came from \(W+W^{\top}\) under symmetry; the minus came from the \(-A\mathbf s\) inside the residual. Nothing to memorise once you can rebuild it in two lines.</span></div></div>
   </div>
   <div class="check" data-check="c9">
     <span class="tag">Pause &amp; predict</span>
@@ -623,17 +795,27 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+  <div class="check" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the least-squares gradient \(-2(\mathbf x-A\mathbf s)^{\top}WA\), where exactly did the factor \(2\) come from?</p>
+    <div class="opts">
+      <button data-correct data-why="From the quadratic step of the derivation: the residual r appears TWICE in rᵀWr, so its gradient is rᵀ(W+Wᵀ) — and symmetry (W = Wᵀ) collapses that to 2rᵀW. Without symmetry there is no clean 2: you would carry (W+Wᵀ) through instead.">From \(W+W^{\top}\) collapsing to \(2W\) — the residual appears twice and \(W\) is symmetric</button>
+      <button data-why="Close — with W = I the quadratic IS a plain square and 'bring down the 2' works. But the derivation shows the general mechanism: TWO appearances of r donate W and Wᵀ, and only symmetry merges them into 2W. The power rule is the special case W = I.">From the power rule bringing down the exponent of \(\|\cdot\|^2\)</button>
+      <button data-why="A contributes only the inner slope ∂r/∂s = −A — the minus sign, not the 2. The 2 would appear even if A were a single column, and vanishes if W is not symmetric.">From the two columns of \(A\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
   <div class="onesent"><b>In one sentence:</b> Five identities — dot product, outer product, the \(B+B^\top\) doubling, and least squares — supply nearly every local derivative a real model needs.</div>
 </section>
 
-<!-- ================= 8 · WHY SO CHEAP ================= -->
+<!-- ================= 9 · WHY SO CHEAP ================= -->
 <section class="unit" id="s8">
-  <div class="sec-head"><span class="sec-num">8</span><h2>Why it's so cheap — one sweep, everything reused</h2></div>
+  <div class="sec-head"><span class="sec-num">9</span><h2>Why it's so cheap — one sweep, everything reused</h2></div>
   <div class="prose">
     <p>Stack \(K\) layers, \(f_i=\sigma_i(A_{i-1}f_{i-1}+b_{i-1})\), and put a loss at the end: \(L=\|\mathbf y-f_K\|^2\). Every layer's parameters \(\theta_i=\{A_i,b_i\}\) need a gradient, and the chain rule writes each one as a product that reaches from the loss back to that layer:</p>
     \[\frac{\partial L}{\partial\theta_{K-1}}=\frac{\partial L}{\partial f_K}\frac{\partial f_K}{\partial\theta_{K-1}},\qquad
       \frac{\partial L}{\partial\theta_{K-2}}=\frac{\partial L}{\partial f_K}\frac{\partial f_K}{\partial f_{K-1}}\frac{\partial f_{K-1}}{\partial\theta_{K-2}},\qquad\dots\]
-    <p>Look at the shape of those formulas: each one is the <em>previous one's product, extended by one factor</em>. Computed naively, left to right every time, you would rebuild the same long prefix over and over. Computed once from the loss end — keeping the running product as the \(\boldsymbol\delta\) that Section 6 handed backwards — every factor in the whole triangle is touched exactly once:</p>
+    <p>Look at the shape of those formulas: each one is the <em>previous one's product, extended by one factor</em>. Computed naively, left to right every time, you would rebuild the same long prefix over and over. Computed once from the loss end — keeping the running product as the \(\boldsymbol\delta\) that Section 7 handed backwards — every factor in the whole triangle is touched exactly once:</p>
   </div>
 
   <div class="widget" id="w-cost">
@@ -651,6 +833,20 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
   </div>
 
+  <div class="derive">
+    <span class="tag">Prove it · why the sweep must start at the loss</span>
+    <p class="dgoal"><b>Claim.</b> The chain \(\dfrac{\partial L}{\partial f_1}=\dfrac{\partial L}{\partial f_K}\,\dfrac{\partial f_K}{\partial f_{K-1}}\cdots\dfrac{\partial f_2}{\partial f_1}\) can be multiplied in either order. One order is about \(m\) times cheaper — count it.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Shapes first</b> (Unit 6's rule: outputs × inputs). \(L\) is a scalar, so \(\partial L/\partial f_K\) is a \(1\times m\) <em>row</em>. Each layer-to-layer Jacobian \(\partial f_{i}/\partial f_{i-1}\) is a full \(m\times m\) matrix, for layers of width \(m\).
+      <span class="dwhy">One skinny row at the loss end; big square blocks everywhere else. That asymmetry is the whole story.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>Multiply from the loss end.</b> \((1\times m)\cdot(m\times m)\) costs about \(m^2\) multiplications — and returns another \(1\times m\) row. Repeat through all \(K\) layers:
+      \[\text{cost}\approx K\,m^{2},\qquad\text{always carrying just a row}\]
+      <span class="dwhy">That carried row is exactly the blame \(\boldsymbol\delta\) of the layer section — reverse mode never holds anything bigger than one layer's worth of numbers.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>Multiply from the input end.</b> The first product is \((m\times m)\cdot(m\times m)\): cost \(m^3\), and it returns another \(m\times m\) <em>matrix</em> that must be carried the whole way:
+      \[\text{cost}\approx K\,m^{3}\]
+      <span class="dwhy">For \(m=1000\), that is a thousand times more work — from nothing but multiplying the same factors in the wrong order.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Same factors, same answer, wildly different bill. Keeping the scalar-loss end first means every step is a cheap row-times-matrix product. That choice of order <em>is</em> reverse-mode automatic differentiation. <span class="dqed">∎</span>
+      <span class="dwhy">And it explains the fine print to come: reverse mode wins because training has ONE output (the loss) and millions of inputs. Flip that ratio and the other order — forward mode — wins instead.</span></div></div>
+  </div>
   <div class="check" data-check="c10">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Rule of thumb: one full backward pass costs about as much as the forward pass itself. What single fact makes that possible?</p>
@@ -664,9 +860,9 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="onesent"><b>In one sentence:</b> All the gradient formulas share their long prefix — carry it once, from the loss end, and the whole triangle of factors costs one sweep.</div>
 </section>
 
-<!-- ================= 9 · LINEARIZATION ================= -->
+<!-- ================= 10 · LINEARIZATION ================= -->
 <section class="unit" id="s9">
-  <div class="sec-head"><span class="sec-num">9</span><h2>Linearization — the gradient as a stand-in for the function</h2></div>
+  <div class="sec-head"><span class="sec-num">10</span><h2>Linearization — the gradient as a stand-in for the function</h2></div>
   <div class="prose">
     <p>The companion closes with the other reason gradients matter. Once you own \(\nabla f(\mathbf x_0)\), you own the best <em>linear stand-in</em> for \(f\) near \(\mathbf x_0\):</p>
     \[L(\mathbf x)\;\approx\;f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}(\mathbf x-\mathbf x_0)\]
@@ -704,9 +900,9 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="onesent"><b>In one sentence:</b> \(f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}(\mathbf x-\mathbf x_0)\) is the best linear stand-in near \(\mathbf x_0\) — the first two Taylor terms, and the promise each gradient-descent step relies on.</div>
 </section>
 
-<!-- ================= 10 · FINE PRINT ================= -->
+<!-- ================= 11 · FINE PRINT ================= -->
 <section class="unit" id="s10">
-  <div class="sec-head"><span class="sec-num">10</span><h2>Fine print worth knowing</h2></div>
+  <div class="sec-head"><span class="sec-num">11</span><h2>Fine print worth knowing</h2></div>
   <div class="prose">
     <p><strong>Three ways to differentiate, only one scales.</strong> <em>Symbolic</em> differentiation (what you do on paper, what algebra systems do) produces exact formulas — which explode in size for deep compositions. <em>Numerical</em> differentiation nudges the input and divides — one pass per parameter, plus a precision trap you can see below. <em>Automatic</em> differentiation — this unit — is a third thing: exact like symbolic, cheap like a function call, because it differentiates the <em>program</em>, step by step, instead of the formula.</p>
     <p><strong>The precision trap.</strong> A finite difference \(\tfrac{f(x+h)-f(x-h)}{2h}\) has two enemies. Big \(h\): the secant misses the tangent (Unit 6's curvature gap). Tiny \(h\): the computer subtracts two nearly equal numbers and the difference drowns in rounding error. Squeeze \(h\) yourself:</p>
@@ -727,6 +923,24 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
   </div>
 
+  <div class="derive">
+    <span class="tag">Prove it · the V-shape has a formula</span>
+    <p class="dgoal"><b>Claim.</b> The checker's error falls like \(h^2\), rises like \(1/h\), and bottoms out near \(h\approx10^{-5}\) — all three facts derived, not observed.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Taylor both evaluations</b> around \(x\) (Unit 6's tool, Unit 8's whole subject):
+      \[f(x\pm h)=f(x)\pm f'(x)h+\tfrac{f''(x)}{2}h^{2}\pm\tfrac{f'''(x)}{6}h^{3}+\cdots\]
+      <span class="dwhy">Same expansion, two signs — writing them together is what makes the next line click.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>Subtract — the even terms cancel.</b> \(f(x+h)-f(x-h)=2f'(x)h+\tfrac{f'''(x)}{3}h^{3}+\cdots\). Divide by \(2h\):
+      \[\frac{f(x+h)-f(x-h)}{2h}=f'(x)+\frac{f'''(x)}{6}\,h^{2}+\cdots\]
+      <span class="dwhy">The \(h^2\) term is the <em>left wall</em> of the V — slope 2 on log–log axes. (The one-sided version \(\frac{f(x+h)-f(x)}{h}\) keeps an \(\frac{f''}{2}h\) term — slope only 1. That is why the checker uses the centred difference.)</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>Rounding.</b> The computer stores \(f(x\pm h)\) only to relative precision \(u\approx10^{-16}\), so the subtraction of two nearly equal numbers carries an absolute error of about \(u|f(x)|\); dividing by \(2h\) turns it into
+      \[\text{rounding error}\approx\frac{u\,|f(x)|}{2h}\]
+      <span class="dwhy">The \(1/h\) is the <em>right wall</em>: shrink \(h\) and you divide the same noise by an ever smaller number.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody"><b>Add the walls and minimise.</b> \(E(h)\approx\frac{|f'''|}{6}h^{2}+\frac{u|f|}{2h}\). Set \(E'(h)=\frac{|f'''|}{3}h-\frac{u|f|}{2h^{2}}=0\):
+      \[h_{*}=\Big(\frac{3\,u\,|f|}{2\,|f'''|}\Big)^{1/3}\sim u^{1/3}\approx 5\times10^{-6}\]
+      <span class="dqed">∎</span>
+      <span class="dwhy">The widget's valley floor near \(10^{-5}\) is this cube root. And the best possible error is only \(\sim u^{2/3}\approx10^{-11}\) — while autodiff is exact to full precision. That is the entire case for automatic differentiation, compressed into one minimisation.</span></div></div>
+  </div>
+
   <div class="prose">
     <p><strong>\(\sigma' \) is free.</strong> The identity \(\sigma'=\sigma(1-\sigma)\) means the backward pass needs no new function calls — the forward pass already computed \(\mathbf a\), and \(\mathbf a\odot(1-\mathbf a)\) is two cheap operations. The same trick works for \(\tanh\) (\(1-a^2\)). Frameworks cache activations on the way forward precisely so the way back is arithmetic only — that cache is the "memory cost of training".</p>
     <p><strong>Vanishing gradients, revisited.</strong> Each sigmoid layer multiplies the blame by \(\mathbf a\odot(1-\mathbf a)\le\tfrac14\). Fifty layers deep, the blame arriving at layer one has passed fifty such factors — Unit 6's gears compounding — which is why early deep networks would not train, and why ReLU (slope 1 where active) took over.</p>
@@ -742,12 +956,40 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     </div>
     <div class="why"></div>
   </div>
+  <div class="prose">
+    <p><strong>Forward mode you can hold in your hand — dual numbers.</strong> Reverse mode swept blame backwards. Forward mode has an algebraic form so tidy you can run it with pencil and paper: carry every quantity as a <em>pair</em> — its value and its derivative — and teach ordinary arithmetic to update both at once.</p>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · arithmetic that differentiates itself</span>
+    <p class="dgoal"><b>Claim.</b> Write each pair \((v,\dot v)\) as \(v+\dot v\,\varepsilon\), where \(\varepsilon\) is a new symbol with one rule: \(\varepsilon^{2}=0\). Then ordinary algebra on these "dual numbers" performs <em>exact</em> differentiation.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Sums.</b> \((a+\dot a\varepsilon)+(b+\dot b\varepsilon)=(a+b)+(\dot a+\dot b)\varepsilon\).
+      <span class="dwhy">Values add, derivatives add — the sum rule, with no one enforcing it.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>Products.</b> Multiply out and apply the one rule:
+      \[(a+\dot a\varepsilon)(b+\dot b\varepsilon)=ab+(a\dot b+\dot a b)\varepsilon+\dot a\dot b\,\varepsilon^{2}=ab+(a\dot b+\dot a b)\,\varepsilon\]
+      <span class="dwhy">\(\varepsilon^2=0\) killed the last term — it is the product of two tiny nudges, the very leftover that §4's promise says must die. What survives is exactly the product rule.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>Any smooth function.</b> Define \(g(a+\dot a\varepsilon)=g(a)+g'(a)\,\dot a\,\varepsilon\) — and this is forced, not chosen: Taylor gives \(g(a+t)=g(a)+g'(a)t+\tfrac{g''(a)}{2}t^2+\cdots\), and with \(t=\dot a\varepsilon\) every term from \(t^2\) onwards contains \(\varepsilon^2\) and vanishes.
+      <span class="dwhy">The chain rule arrives baked in: whatever \(\dot a\) is carrying gets multiplied by the local slope \(g'(a)\).</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody"><b>Run the program on pairs</b>, seeding the input as \(x=x_0+1\cdot\varepsilon\) (its derivative with respect to itself is 1). Example — \(f(x)=x\,e^{x}\) at \(x_0=1\):
+      \[x=(1,\,1)\ \xrightarrow{\ e^{x}\ }\ (e,\,e)\ \xrightarrow{\ \times\, x\ }\ \big(1\cdot e,\ \ 1\cdot e+1\cdot e\big)=(e,\,2e)\]
+      So \(f(1)=e\) and \(f'(1)=2e\approx5.4366\) — exact, and no derivative formula was ever written down. <span class="dqed">∎</span>
+      <span class="dwhy">Check: \(f'=e^{x}(1+x)\) gives \(2e\). ✓ This is forward-mode autodiff: one sweep prices <em>all outputs of one input</em> — the mirror image of backprop, and the winner when inputs are few and outputs many.</span></div></div>
+  </div>
+  <div class="check" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The single rule \(\varepsilon^{2}=0\) makes the product rule appear on its own. What is \(\varepsilon^{2}=0\) really encoding?</p>
+    <div class="opts">
+      <button data-correct data-why="ȧḃε² is the product of two tiny nudges — the Δ² term — and §4's promise is precisely that such second-order leftovers die faster than the nudge itself. Dual numbers turn 'ignore h²' from a limit argument into an algebra rule, so plain bookkeeping performs exact calculus.">That second-order leftovers never matter to a derivative — "ignore \(h^2\)" made into an algebra rule</button>
+      <button data-why="If ε were 0 in disguise, a + ȧε would collapse to a and the pair could carry no derivative at all. The trick is that ε is NOT zero — it is a new symbol that squares to zero, keeping first-order information alive while erasing second-order noise.">That \(\varepsilon\) is just the number \(0\) written strangely</button>
+      <button data-why="Nothing tends anywhere — no limits, no h shrinking. The rule is exact algebra, and the derivatives it produces are exact to full precision. That exactness is precisely what separates autodiff from the finite differences in the checker above.">It's an approximation that becomes exact as \(\varepsilon\to0\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
   <div class="onesent"><b>In one sentence:</b> Autodiff is exact like symbolic and cheap like numerical with neither one's flaw — and the finite-difference valley is why "just use tiny h" was never an option.</div>
 </section>
 
-<!-- ================= 11 · SUMMARY ================= -->
+<!-- ================= 12 · SUMMARY ================= -->
 <section class="unit" id="s11">
-  <div class="sec-head"><span class="sec-num">11</span><h2>What to carry forward</h2></div>
+  <div class="sec-head"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
   <div class="prose">
     <p>One picture generated this entire unit: <strong>a function drawn as a graph of baby steps, with values flowing right and blame flowing left.</strong> Everything else was careful bookkeeping on that picture.</p>
   </div>
@@ -767,14 +1009,14 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
     <p><strong>Blame flows backwards through the same graph that computed the value.</strong> Multiply along paths, add at forks, reuse every partial product — and a million derivatives cost one sweep. When a framework call like <code>loss.backward()</code> feels like magic, it is exactly this unit, executed by a for-loop.</p>
   </div>
     <h3 style="margin:.3rem 0 .4rem">Unit 8 · Taylor &amp; MacLaurin Series</h3>
-    <p style="font-size:.92rem;color:var(--ink-2);margin:0">The linear stand-in of Section 9 kept only one derivative. Unit 8 keeps them all — rebuilding whole functions from derivatives at a point, with the error terms that tell you how far to trust each cut. <em>(Being built next.)</em></p>
+    <p style="font-size:.92rem;color:var(--ink-2);margin:0">The linear stand-in of Section 10 kept only one derivative. Unit 8 keeps them all — rebuilding whole functions from derivatives at a point, with the error terms that tell you how far to trust each cut. <em>(Being built next.)</em></p>
 </section>
 
-<!-- ================= 12 · PRACTICE ARENA ================= -->
+<!-- ================= 13 · PRACTICE ARENA ================= -->
 <section class="unit" id="spractice">
-  <div class="sec-head"><span class="sec-num">12</span><h2>Practice arena — the unit's problem set, solved in full</h2></div>
+  <div class="sec-head"><span class="sec-num">13</span><h2>Practice arena — the unit's problem set, solved in full</h2></div>
   <div class="prose">
-    <p>Eight problems: three from Part C of Prof. Saurabh's practice set (Parts A and B — Taylor series and the Hessian — belong to Unit 8's territory and wait there), three from his companion guide, and two written for this arena to cover the gradient identities and a complete numeric backward pass. Every solution below is machine-verified.</p>
+    <p>Eight problems: three from Part C of Prof. Saurabh's practice set (Parts A and B — Taylor series and the Hessian — belong to Unit 8's territory and wait there), three from his companion guide, and five written for this arena — the identity drill (Problem 7), the complete numeric backward pass (Problem 8), and three <em>proof workouts</em> (Problems 9–11) that derive from scratch the rules this unit leaned on. Every solution below is machine-verified.</p>
     <p>One habit does most of the work: <strong>draw the graph first, then walk it backwards</strong> — multiply along paths, add at forks, and check every shape before trusting any algebra.</p>
   </div>
 
@@ -800,7 +1042,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="prob">
     <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">medium</span></div>
     <p class="pq">A neuron computes \(z=wx+b,\ a=\tanh(z)\), and the loss \(L=\tfrac12(a-y)^2\). Using \(\tanh'(z)=1-\tanh^2(z)\) and the values \(w=0.5,\ x=1,\ b=0,\ y=1\): <b>(a)</b> do the forward pass \((z,a,L)\); <b>(b)</b> backpropagate to obtain \(\partial L/\partial w,\ \partial L/\partial b,\ \partial L/\partial x\).</p>
-    <p class="ptest"><b>What this tests.</b> The full forward–backward cycle on a single neuron, and the shared blame \(\delta\) that Section 5 trains with.</p>
+    <p class="ptest"><b>What this tests.</b> The full forward–backward cycle on a single neuron, and the shared blame \(\delta\) that Section 6 trains with.</p>
     <details class="sol"><summary>Show the full solution</summary>
       <div class="pstep"><b>(a) Forward.</b> \(z=0.5\cdot1+0=0.5\); \(\ a=\tanh(0.5)=0.4621\); \(\ L=\tfrac12(0.4621-1)^2=\tfrac12(-0.5379)^2=0.1447\).</div>
       <div class="pstep"><b>(b) Step 1 — the shared blame.</b> Walk \(z\to a\to L\) backwards:
@@ -809,7 +1051,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
       <div class="pstep"><b>Step 2 — hand out copies.</b> \(z=wx+b\) gives \(\partial z/\partial w=x=1\), \(\partial z/\partial b=1\), \(\partial z/\partial x=w=0.5\):
       \[\frac{\partial L}{\partial w}=\delta\cdot x=-0.4230,\qquad \frac{\partial L}{\partial b}=\delta=-0.4230,\qquad \frac{\partial L}{\partial x}=\delta\cdot w=-0.2115\]</div>
       <p class="pans">\(z=0.5,\ a=0.4621,\ L=0.1447\); \(\ \partial L/\partial w=-0.4230,\ \partial L/\partial b=-0.4230,\ \partial L/\partial x=-0.2115\).</p>
-      <div class="callout remember"><span class="tag">Remember</span><p>\(\delta\) is computed <em>once</em> and reused three times — the whole economy of backprop in miniature. Both parameter gradients are negative, so a descent step raises \(w\) and \(b\), pushing \(a\) toward the target \(1\). Section 5's widget runs exactly these numbers.</p></div>
+      <div class="callout remember"><span class="tag">Remember</span><p>\(\delta\) is computed <em>once</em> and reused three times — the whole economy of backprop in miniature. Both parameter gradients are negative, so a descent step raises \(w\) and \(b\), pushing \(a\) toward the target \(1\). Section 6's widget runs exactly these numbers.</p></div>
     </details>
   </div>
 
@@ -870,11 +1112,11 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="prob">
     <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span></div>
     <p class="pq">Compute \(\dfrac{d\mathbf f}{d\mathbf x}\) for \(\mathbf f(\mathbf z)=\sin(\mathbf z)\) applied entrywise, \(\ \mathbf z=A\mathbf x+\mathbf b\), with \(A\in\mathbb{R}^{E\times D},\ \mathbf x\in\mathbb{R}^{D},\ \mathbf b\in\mathbb{R}^{E}\). State every dimension.</p>
-    <p class="ptest"><b>What this tests.</b> The Jacobian chain rule with an entrywise nonlinearity — the exact structure of Section 6's layer, with \(\sin\) in place of \(\sigma\).</p>
+    <p class="ptest"><b>What this tests.</b> The Jacobian chain rule with an entrywise nonlinearity — the exact structure of Section 7's layer, with \(\sin\) in place of \(\sigma\).</p>
     <details class="sol"><summary>Show the full solution</summary>
       <div class="pstep"><b>Step 1 — the outer Jacobian.</b> \(f_i=\sin(z_i)\) touches only its own \(z_i\), so off-diagonal partials vanish and
       \[\frac{\partial\mathbf f}{\partial\mathbf z}=\operatorname{diag}\!\big(\cos(z_1),\dots,\cos(z_E)\big)=\operatorname{diag}\!\big(\cos(\mathbf z)\big)\qquad(E\times E)\]
-      — the same diagonal shape as Section 6's \(\operatorname{diag}(\mathbf a\odot(1-\mathbf a))\), and for the same reason: entrywise functions have diagonal Jacobians.</div>
+      — the same diagonal shape as Section 7's \(\operatorname{diag}(\mathbf a\odot(1-\mathbf a))\), and for the same reason: entrywise functions have diagonal Jacobians.</div>
       <div class="pstep"><b>Step 2 — the inner Jacobian.</b> \(\mathbf z=A\mathbf x+\mathbf b\) is linear, so \(\ \partial\mathbf z/\partial\mathbf x=A\) \((E\times D)\); the constant \(\mathbf b\) contributes nothing.</div>
       <div class="pstep"><b>Step 3 — multiply, order matters.</b>
       \[\frac{d\mathbf f}{d\mathbf x}=\frac{\partial\mathbf f}{\partial\mathbf z}\,\frac{\partial\mathbf z}{\partial\mathbf x}=\operatorname{diag}\!\big(\cos(A\mathbf x+\mathbf b)\big)\,A\qquad(E\times E)(E\times D)=(E\times D)\ \checkmark\]
@@ -897,7 +1139,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
       \[\mathbf a^{\top}X\mathbf b=\sum_{i,j}a_i X_{ij} b_j=3X_{11}+X_{12}+6X_{21}+2X_{22}\]</div>
       <div class="pstep"><b>Step 2 — differentiate per entry.</b> \(\partial/\partial X_{ij}=a_ib_j\): the four coefficients \(3,1,6,2\) arranged in \(X\)'s own shape are
       \[\frac{\partial(\mathbf a^{\top}X\mathbf b)}{\partial X}=\begin{bmatrix}3&1\\6&2\end{bmatrix}=\mathbf a\mathbf b^{\top}\ \checkmark\]</div>
-      <p class="pans">Both identities check entry by entry — and (b) is exactly why Section 6's \(\partial\mathrm{Loss}/\partial A\) came out as the outer product \(\boldsymbol\delta^{(Z)}\mathbf x^{\top}\).</p>
+      <p class="pans">Both identities check entry by entry — and (b) is exactly why Section 7's \(\partial\mathrm{Loss}/\partial A\) came out as the outer product \(\boldsymbol\delta^{(Z)}\mathbf x^{\top}\).</p>
     </details>
   </div>
 
@@ -905,7 +1147,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
   <div class="prob">
     <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff hard">hard</span></div>
     <p class="pq">Run the full backward pass on the lecture's function \(f(x)=\sqrt{x^2+e^{x^2}}+\cos(x^2+e^{x^2})\) at \(x=1\), using the graph \(a=x^2,\ b=e^a,\ c=a+b,\ d=\sqrt c,\ e=\cos c,\ f=d+e\). <b>(a)</b> Forward pass: all six values to 4 decimals. <b>(b)</b> Backward pass: all the blames \(\bar f,\bar d,\bar e,\bar c,\bar b,\bar a,\bar x\). <b>(c)</b> Confirm \(\bar x\) against the closed-form derivative.</p>
-    <p class="ptest"><b>What this tests.</b> The complete algorithm of Sections 2–4, executed by hand with real numbers — including the fork at \(c\) and the fork at \(a\).</p>
+    <p class="ptest"><b>What this tests.</b> The complete algorithm of Sections 2–5, executed by hand with real numbers — including the fork at \(c\) and the fork at \(a\).</p>
     <details class="sol"><summary>Show the full solution</summary>
       <div class="pstep"><b>(a) Forward, left to right.</b>
       \[a=1^2=1,\quad b=e^1=2.7183,\quad c=1+2.7183=3.7183\]
@@ -923,6 +1165,78 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
       Notice the factor \(0.8045\) <em>is</em> \(\bar c\), and \(2x+2xe^{x^2}=7.4366\) is what the graph assembled as \(\bar a\cdot2x/\bar c\) — the closed form and the graph are the same computation, differently organised.</div>
       <p class="pans">Forward: \(1,\ 2.7183,\ 3.7183,\ 1.9283,\ -0.8383,\ 1.0900\). Backward: \(\bar f=1,\ \bar d=\bar e=1,\ \bar c=\bar b=0.8045,\ \bar a=2.9915,\ \bar x=5.9831=df/dx\). ✓</p>
       <div class="callout watch"><span class="tag">Watch out</span><p>Run the same pass at \(x=2\) and \(e^{x^2}=e^4=54.6\) dominates everything: \(\bar c=-0.8223\) and \(df/dx=-182.87\). The companion doc's printed run at \(x=2\) uses \(\cos(58.6)\approx0.83\), but the true value in radians is \(-0.46\) — a calculator slip that flips the final answer completely (see the errata note in §2). The habit that catches such slips: always confirm a hand-computed derivative with a small numerical nudge.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">The activation family, from first principles. <b>(a)</b> Show that the <em>softplus</em> \(s(z)=\ln(1+e^{z})\) has derivative \(s'(z)=\sigma(z)\) — the sigmoid is softplus's slope. <b>(b)</b> Prove the bridge \(\tanh(z)=2\,\sigma(2z)-1\). <b>(c)</b> Using (b) and \(\sigma'=\sigma(1-\sigma)\), derive \(\tanh'=1-\tanh^{2}\) <em>without</em> a quotient rule.</p>
+    <p class="ptest"><b>What this tests.</b> That the activation identities frameworks hard-code are a small connected family — one proof engine (find the appearances, chain the slopes) generates them all.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Chain rule through the logarithm.</b> Outer slope \(1/(1+e^{z})\), inner slope \(e^{z}\):
+      \[s'(z)=\frac{e^{z}}{1+e^{z}}=\frac{1}{e^{-z}+1}=\sigma(z)\ \checkmark\]
+      (dividing top and bottom by \(e^{z}\) in the middle step). So the smooth ramp softplus steepens exactly at the sigmoid's rate — which is why \(\sigma\) is also called the <em>logistic</em> function.</div>
+      <div class="pstep"><b>(b) Build \(2\sigma(2z)-1\) and simplify.</b>
+      \[2\,\sigma(2z)-1=\frac{2}{1+e^{-2z}}-1=\frac{2-(1+e^{-2z})}{1+e^{-2z}}=\frac{1-e^{-2z}}{1+e^{-2z}}\]
+      Multiply top and bottom by \(e^{z}\):
+      \[\frac{e^{z}-e^{-z}}{e^{z}+e^{-z}}=\tanh(z)\ \checkmark\]
+      In words: tanh is a sigmoid, stretched to run twice as fast and re-centred to fill \((-1,1)\).</div>
+      <div class="pstep"><b>(c) Differentiate the bridge with Rule 1.</b> Write \(t=\tanh z\) and note from (b) that \(\sigma(2z)=\tfrac{1+t}{2}\), hence \(1-\sigma(2z)=\tfrac{1-t}{2}\). Then
+      \[\tanh'(z)=2\cdot\sigma'(2z)\cdot 2=4\,\sigma(2z)\big(1-\sigma(2z)\big)=4\cdot\frac{1+t}{2}\cdot\frac{1-t}{2}=(1+t)(1-t)=1-t^{2}\ \checkmark\]
+      — the factor \(2\) outside is the bridge's scaling, the factor \(2\) inside is the chain rule through \(2z\).</div>
+      <p class="pans">\(s'=\sigma\); \(\ \tanh z=2\sigma(2z)-1\); \(\ \tanh'=1-\tanh^{2}\), derived purely from \(\sigma'=\sigma(1-\sigma)\).</p>
+      <div class="callout remember"><span class="tag">Remember</span><p>All three facts are one family portrait: softplus's slope is \(\sigma\), \(\tanh\) is a rescaled \(\sigma\), and both backward-pass identities (\(\sigma(1-\sigma)\) and \(1-a^2\)) are the same identity seen through the bridge. Knowing one buys you the others.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">The cookbook earns its keep: <em>ridge regression solved by pure algebra.</em> Consider the regularised least-squares loss
+    \[E(\mathbf s)=\|\mathbf x-A\mathbf s\|^{2}+\lambda\|\mathbf s\|^{2}\]
+    <b>(a)</b> Using the cookbook identities, derive \(\nabla_{\mathbf s}E\). <b>(b)</b> Set it to zero and show the minimiser solves \((A^{\top}A+\lambda I)\,\mathbf s=A^{\top}\mathbf x\). <b>(c)</b> Solve numerically for
+    \[A=\begin{bmatrix}1&0\\2&1\\0&3\end{bmatrix},\qquad \mathbf x=\begin{bmatrix}1\\2\\0\end{bmatrix},\qquad \lambda=1.\]</p>
+    <p class="ptest"><b>What this tests.</b> That the identities you proved are tools, not trivia: two of them combine into the closed-form solution of ridge regression — the first machine-learning model this course can now train end-to-end by algebra alone.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Differentiate each piece with the cookbook.</b> The first piece is the least-squares identity with \(W=I\):
+      \[\frac{\partial}{\partial\mathbf s}\|\mathbf x-A\mathbf s\|^{2}=-2(\mathbf x-A\mathbf s)^{\top}A\]
+      The second is the quadratic identity with \(B=I\) (so \(B+B^{\top}=2I\)):
+      \[\frac{\partial}{\partial\mathbf s}\lambda\,\mathbf s^{\top}\mathbf s=2\lambda\,\mathbf s^{\top}\]
+      Sum: \(\ \nabla_{\mathbf s}E=-2(\mathbf x-A\mathbf s)^{\top}A+2\lambda\,\mathbf s^{\top}\).</div>
+      <div class="pstep"><b>(b) Set the gradient to zero</b> (and transpose the row into a column to read it as an equation in \(\mathbf s\)):
+      \[-2A^{\top}(\mathbf x-A\mathbf s)+2\lambda\mathbf s=\mathbf 0
+      \;\;\Longrightarrow\;\; A^{\top}A\,\mathbf s+\lambda\mathbf s=A^{\top}\mathbf x
+      \;\;\Longrightarrow\;\; \big(A^{\top}A+\lambda I\big)\mathbf s=A^{\top}\mathbf x\ \checkmark\]
+      This is a stationary point, and it is the minimum: \(E\) is a sum of squares whose quadratic part \(\mathbf s^{\top}(A^{\top}A+\lambda I)\mathbf s\) is positive for every \(\mathbf s\neq\mathbf 0\) once \(\lambda>0\) — the bowl opens upward in every direction, and adding \(\lambda I\) even guarantees the system is invertible when \(A^{\top}A\) alone is not (Unit 5's nearly-singular warning, answered).</div>
+      <div class="pstep"><b>(c) Numbers.</b>
+      \[A^{\top}A=\begin{bmatrix}1{+}4{+}0&0{+}2{+}0\\0{+}2{+}0&0{+}1{+}9\end{bmatrix}=\begin{bmatrix}5&2\\2&10\end{bmatrix},\qquad
+      A^{\top}A+I=\begin{bmatrix}6&2\\2&11\end{bmatrix},\qquad
+      A^{\top}\mathbf x=\begin{bmatrix}1{+}4{+}0\\0{+}2{+}0\end{bmatrix}=\begin{bmatrix}5\\2\end{bmatrix}\]
+      Solve \(\begin{bmatrix}6&2\\2&11\end{bmatrix}\mathbf s=\begin{bmatrix}5\\2\end{bmatrix}\): determinant \(66-4=62\), so by Cramer (or elimination)
+      \[s_1=\frac{5\cdot11-2\cdot2}{62}=\frac{51}{62}\approx0.8226,\qquad s_2=\frac{6\cdot2-2\cdot5}{62}=\frac{2}{62}=\frac{1}{31}\approx0.0323\]</div>
+      <p class="pans">\(\nabla_{\mathbf s}E=-2(\mathbf x-A\mathbf s)^{\top}A+2\lambda\mathbf s^{\top}\); minimiser \((A^{\top}A+\lambda I)\mathbf s=A^{\top}\mathbf x\); numerically \(\mathbf s\approx(0.8226,\ 0.0323)^{\top}\).</p>
+      <div class="callout remember"><span class="tag">Remember</span><p>Gradient \(\to\) zero \(\to\) linear system: for quadratic losses, "training" is one solve. Unit 9 begins exactly where this stops — with losses whose gradients <em>cannot</em> be set to zero in closed form, so we must walk downhill instead.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Differentiate a <em>program</em> with dual numbers (Section 11), seeding \(x=x_0+1\cdot\varepsilon\). <b>(a)</b> \(f(x)=x^{2}e^{x}\) at \(x_0=1\). <b>(b)</b> \(f(x)=\sqrt{x^{2}+9}\) at \(x_0=-4\) — then compare with Section 10's stand-in line. <b>(c)</b> In one sentence: why are these results <em>exact</em>, where the gradient checker's finite differences never are?</p>
+    <p class="ptest"><b>What this tests.</b> Forward-mode autodiff executed by hand: the \(\varepsilon^{2}=0\) algebra runs the chain rule mechanically — you only ever do arithmetic on pairs.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Run the pairs.</b> Seed \(x=(1,\,1)\).
+      \[x^{2}=(1\cdot1,\ 1\cdot1+1\cdot1)=(1,\,2)\qquad e^{x}=(e,\ e\cdot1)=(e,\,e)\]
+      \[x^{2}\cdot e^{x}=(1\cdot e,\ \ 1\cdot e+2\cdot e)=(e,\ 3e)\]
+      So \(f(1)=e\approx2.7183\) and \(f'(1)=3e\approx8.1548\). Check against the formula the program never used: \(f'=(2x+x^{2})e^{x}\big|_{1}=3e\) ✓.</div>
+      <div class="pstep"><b>(b) A chain with a square root.</b> Seed \(x=(-4,\,1)\).
+      \[x^{2}=\big((-4)^2,\ 2\cdot(-4)\cdot1\big)=(16,\,-8)\qquad x^{2}+9=(25,\,-8)\]
+      \[\sqrt{\,\cdot\,}:\ \big(\sqrt{25},\ \tfrac{-8}{2\sqrt{25}}\big)=(5,\ -0.8)\]
+      So \(f(-4)=5\) and \(f'(-4)=-0.8=-\tfrac45\) — precisely the anchor value and slope of Section 10's stand-in line. The widget's tangent line and this pencil-and-paper pair computation are the same mathematics arriving by two roads.</div>
+      <div class="pstep"><b>(c) Why exact.</b> No step ever subtracts two nearly equal numbers or divides by a small \(h\) — each rule (sum, product, \(g'(a)\dot a\)) <em>is</em> the corresponding calculus rule, applied with ordinary arithmetic — so the only error anywhere is standard floating-point rounding of the values themselves.</div>
+      <p class="pans">(a) \((e,\,3e)\): \(f'(1)=3e\approx8.1548\). (b) \((5,\,-0.8)\): \(f'(-4)=-\tfrac45\). (c) The algebra rules are the calculus rules — nothing is approximated, so nothing needs a step size.</p>
+      <div class="callout remember"><span class="tag">Remember</span><p>Reverse mode (this unit's hero) and dual numbers (its mirror) bracket the field: backward for one output and many inputs, forward for one input and many outputs. Both differentiate the <em>program</em>, both are exact — and neither ever writes a derivative formula.</p></div>
     </details>
   </div>
 
