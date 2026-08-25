@@ -1,0 +1,385 @@
+Companion for Lecture 7 (file named lecture_8_Companion.pdf — numbering offset). NOTE: the numeric backward-pass at x=2 in this doc contains arithmetic errors (cos(58.6) taken as 0.83; true radian value -0.46; true df/dx(2) = -182.87). Site uses machine-verified numbers.
+
+--- page 1 ---
+Lecture 8
+Saurabh
+Abstract
+This guide aims to demystify backpropagation and linearization, two foundational
+concepts in machine learning. We will move from high-level intuition to a concrete,
+step-by-step mathematical understanding. Our goal is to show not just what the
+formulas are, but why they are what they are, in a way that is clear, simple, and
+memorable for any student.
+--- page 2 ---
+BITS Pilani Mathematical Foundations for AI
+The Core Idea: How Do Machines Learn?
+Imagine you’re playing a game of darts. Your first throw is off the mark. To improve,
+your brain subconsciously performs a series of calculations. It sees how far off you were
+and in which direction (this is the error ), and you adjust your stance, aim, angle, and
+force for the next throw. You are learning from your error.
+In machine learning, this process is formalized and given mathematical rigor:
+•The Throw: The model makes a prediction based on its current state.
+•The Error: Aloss function measures how far the prediction is from the actual
+target. A high loss means a bad prediction; a low loss means a good one.
+•The Adjustment: The model must adjust its internal parameters (weights and
+biases) to reduce this error for the next prediction.
+The key question is: how exactly should it adjust them? If we have millions of parameters,
+which ones do we change, and by how much?
+This is where the gradient comes in. Think of the loss function as a hilly landscape,
+where your goal is to get to the lowest valley (minimum loss). The gradient at your
+current position is a vector that points in the direction of the steepest ascent —the fastest
+way to go uphill. To reduce the error, we simply take a small step in the exact opposite
+direction of the gradient.
+This entire guide is about Backpropagation , the powerful and brilliantly efficient algo-
+rithm that calculates these necessary gradients for every single parameter in the model,
+telling us exactly how to ”adjust our aim.”
+1. The Challenge: Differentiation is Hard
+For simple functions, finding a derivative is easy. But what about a complex function
+composed of many nested parts, like the one from the lecture?
+f(x) =p
+x2+ exp( x2) + cos( x2+ exp( x2))
+2
+--- page 3 ---
+BITS Pilani Mathematical Foundations for AI
+Manually deriving this using the standard chain rule gives a very long and messy expres-
+sion. Implementing this by hand is not only slow but also extremely prone to errors.
+Now, consider a real-world neural network like GPT-3, which has billions of parameters.
+A manual approach is not just impractical; it’s fundamentally impossible. We need an
+automated, efficient, and scalable method.
+2. The Solution: Automatic Differentiation
+Instead of tackling the whole function at once, we can break it down into a series of simple,
+elementary operations whose derivatives we already know. This creates a roadmap for
+the calculation, which we call a computation graph .
+2.1 The Forward Pass: Building the Function Step-by-Step
+Let’s decompose our function. This process is called the forward pass , where we start
+with an input and compute the final value step-by-step. Let’s make this concrete with a
+numerical example: let x= 2.
+•Start with input x= 2
+•Leta=x2→ a= 22= 4
+•Letb= exp( a)→ b= exp(4) ≈54.6
+•Letc=a+b→ c= 4 + 54 .6 = 58 .6
+•Letd=√c→ d=√
+58.6≈7.66
+•Lete= cos( c)→ e= cos(58 .6)≈0.83
+•Finally, f=d+e→ f= 7.66 + 0 .83 = 8 .49
+This sequence is visualized in the computation graph below. The green values show the
+result of the forward pass.
+3
+--- page 4 ---
+BITS Pilani Mathematical Foundations for AI
+2.2 The Backward Pass: The Magic of the Chain Rule
+Now, we findd f
+dxby moving backward through the graph, starting from the end. The
+core idea is simple: at each node, we compute its gradient, which represents that node’s
+total influence on the final output f. We start with the derivative of the output with
+respect to itself, which is trivially 1 (d f
+d f= 1).
+Then, for any node uthat is an input to a node v, the chain rule tells us:
+∂f
+∂u=∂f
+∂v·∂v
+∂u
+If a node ufeeds into multiple other nodes ( v1, v2, . . .), its total influence is the sum of
+its influences through each path (multivariate chain rule):
+∂f
+∂u=X
+i∂f
+∂vi∂vi
+∂u
+This reuse of previously computed ”downstream” gradients (∂f
+∂vi) is what makes back-
+propagation so efficient.
+Let’s apply this to our example. We’ll denoted f
+dyas ¯y. We start with ¯f= 1. The red
+values on the graph show the gradients calculated during the backward pass.
+x2.0 (·)2a4.0¯a≈ −0.56exp(·) b54.6¯b≈ −0.01
++ c58.6¯c≈ −0.01√·
+cos(·)d7.66¯d= 1.0
+e0.83¯e= 1.0+ f8.49¯f= 1.0¯x≈ −2.24
+∂c
+∂a= 1∂b
+∂a=ea
+∂c
+∂b= 1∂d
+∂c=1
+2√c
+∂e
+∂c=−sinc
+Backward Pass Step-by-Step Calculation:
+1.¯f= 1 (by definition).
+2.f=d+e=⇒∂f
+∂d= 1,∂f
+∂e= 1. ¯d=¯f∂f
+∂d= 1·1 = 1. ¯ e=¯f∂f
+∂e= 1·1 = 1.
+3.d=√c, e= cos( c). Node creceives gradient from its two children, dande.
+¯c=¯d∂d
+∂c+ ¯e∂e
+∂c= 1·1
+2√c+ 1·(−sinc)≈1
+15.32−0.075≈0.065−0.075 = −0.01.
+4
+--- page 5 ---
+BITS Pilani Mathematical Foundations for AI
+4.c=a+b=⇒∂c
+∂a= 1,∂c
+∂b= 1. The gradient flows back from ctob:¯b= ¯c∂c
+∂b=
+−0.01·1 =−0.01.
+5. Node ais a parent to both b(via the exp operation) and c(via the addition). So, it
+receives gradient from both. ¯ a=¯b∂b
+∂a+ ¯c∂c
+∂a=¯b·(expa) + ¯c·(1)≈(−0.01)·(54.6) +
+(−0.01)·1≈ −0.546−0.01 =−0.556.
+6.Final step (Gradient w.r.t. input x): The gradient flows from aback to x.
+¯x= ¯a∂a
+∂x= (−0.556)·(2x) =−0.556·4 =−2.224.
+*Note on diagram values: The numerical values for the gradients in the text are derived
+step-by-step from the chain rule. These should be considered authoritative over the static
+values in the diagram if any discrepancies arise. The final result ford f
+dxatx= 2 is
+approximately -2.224.*
+2.3 Application to Neural Networks
+A neural network is just a very large, layered computation graph. Each layer performs
+a simple operation, and backpropagation works on this graph in exactly the same way.
+The output of layer iis the input to layer i+ 1. A typical layer is:
+ai=σ(Wiai−1+bi)
+where ai−1is the input from the previous layer, Wi,biare the parameters (weights and
+biases) of the current layer, and σis a non-linear activation function (like sigmoid, tanh,
+or ReLU).
+The goal is to find the parameters θ={W1,b1, . . . , W L,bL}that minimize a loss function,
+for example, the squared error:
+L(θ) =||ytrue−aL||2
+Backpropagation is the algorithm used to compute the gradient of this loss Lwith respect
+to every single parameter in the network (∂L
+∂W i,∂L
+∂bi), allowing us to update them using
+gradient descent and train the model.
+5
+--- page 6 ---
+BITS Pilani Mathematical Foundations for AI
+x a1 a2 L
+W1,b1 W2,b2σ(W1x+b1) σ(W2a1+b2) ||y−a2||2
+∂L
+∂W2,∂L
+∂b2∂L
+∂W1,∂L
+∂b1
+Figure 1: A cleaner view of a 2-layer neural network computation graph. The forward
+pass flows left-to-right through the data nodes (yellow circles). The parameters (blue
+rectangles) are updated via backpropagation (red dashed arrows), which computes their
+gradient with respect to the final loss.
+3. Linearization: The Tangent Line Approximation
+Often in math and engineering, we want to approximate a complex curve with a simple
+straight line, at least around a specific point of interest. This process is called lineariza-
+tion, and the gradient is the perfect tool for it. The linear approximation L(x) of a
+function f(x) at a point x0is simply its tangent line (or plane, or hyperplane) at that
+point. It is given by the first two terms of the Taylor series:
+L(x)≈f(x0) +∇f(x0)T(x−x0)
+This approximation is very accurate near x0but naturally gets worse as you move further
+away. We use it to simplify hard problems into easy, linear ones, which is a cornerstone
+of many optimization algorithms.
+xf(x) f(x) =x2−2x+ 2Linearization L(x) atx0= 2
+Point of tangency ( x0, f(x0))
+x0= 2
+6
+--- page 7 ---
+BITS Pilani Mathematical Foundations for AI
+3.1 Linearization Examples
+Example 1: Find the linearization of f(x) =√
+x2+ 9around x0=−4.
+1.Evaluate the function at the point: f(−4) =p
+(−4)2+ 9 =√16 + 9 =√
+25 =
+5.
+2.Find the derivative (gradient): f′(x) =1
+2√
+x2+9·(2x) =x√
+x2+9.
+3.Evaluate the derivative at the point: f′(−4) =−4√
+(−4)2+9=−4
+5.
+4.Assemble the linearization formula: L(x) =f(x0) +f′(x0)(x−x0).
+L(x) = 5−4
+5(x−(−4)) = 5 −4
+5(x+ 4)
+Example 2: Find the linearization of f(x, y) = excos(y)around the point
+(x0, y0) = (0 ,0).
+1.Evaluate function: f(0,0) = e0cos(0) = 1 ·1 = 1.
+2.Find the gradient vector: ∇f=⟨∂f
+∂x,∂f
+∂y⟩=⟨excosy,−exsiny⟩.
+3.Evaluate gradient at the point: ∇f(0,0) =⟨e0cos 0,−e0sin 0⟩=⟨1,0⟩.
+4.Assemble linearization: L(x, y) =f(0,0) +∇f(0,0)· ⟨x−0, y−0⟩.
+L(x, y) = 1 + ⟨1,0⟩ · ⟨x, y⟩= 1 + (1 ·x+ 0·y) = 1 + x
+4. Practice Problems
+Problem 1
+We define
+g(z, ν) := log p(x,z)−logq(z, ν)
+z:=t(ϵ, ν)
+for differentiable functions p, q, t , and x∈RD,z∈RE, ν∈RF, ϵ∈RG. By using
+the chain rule, compute the total derivative
+d
+dνg(z, ν).
+7
+--- page 8 ---
+BITS Pilani Mathematical Foundations for AI
+Problem 2
+Compute the derivativesd f
+dxof the following functions by using the chain rule.
+Provide the dimensions of every single partial derivative. Describe your steps in
+detail.
+a.
+f(z) = log(1 + z), z =x⊤x,x∈RD
+b.
+f(z) = sin( z),z=Ax+b, A∈RE×D,x∈RD,b∈RE
+where sin( ·) is applied to every element of z, and the output fis also in RE.
+5. Solutions to Practice Problems
+Solution to Problem 1 - A More Intuitive Approach
+Goal: Find the total effect that changing the parameter vector νhas on the final
+scalar value g.
+Strategy: Think of νas a set of control knobs. Turning these knobs has two
+distinct effects on g, and we must account for both:
+1.Direct Path: νappears directly inside the function g(within the log qterm).
+Changing νhas an immediate, direct impact on g.
+2.Indirect Path: νis also used to compute the intermediate variable z(since
+z=t(ϵ, ν)). Changing νchanges z, and this new value of zthen propagates
+forward to change the value of g.
+To find the total derivative (the total sensitivity), we must calculate the gradient
+from each path and add them together. This is the essence of the multivariate
+chain rule.
+Step-by-Step Execution: The formula for the total derivative is a sum over all
+paths of influence:
+dg
+dν=∂g
+∂ν|{z}
+Path 1: Direct influence of νong+∂g
+∂z∂z
+∂ν|{z}
+Path 2: Indirect, via z
+•Calculate Path 1 (Direct Effect): We find the partial derivative of gwith
+8
+--- page 9 ---
+BITS Pilani Mathematical Foundations for AI
+respect to ν, treating zas a constant for this step.
+∂g
+∂ν=∂
+∂ν(logp(x,z)−logq(z, ν)) =−∂logq(z, ν)
+∂ν
+•Calculate Path 2 (Indirect Effect): This path itself has two links in the
+chain.
+–First, how sensitive is gto changes in z?
+∂g
+∂z=∂logp(x,z)
+∂z−∂logq(z, ν)
+∂z
+–Second, how sensitive is zto changes in ν?
+∂z
+∂ν=∂t(ϵ, ν)
+∂ν
+Final Answer: Now we combine everything to get the total derivative.
+dg
+dν=−∂logq(z, ν)
+∂ν+∂logp(x,z)
+∂z−∂logq(z, ν)
+∂z∂t(ϵ, ν)
+∂ν
+Solution to Problem 2a
+Goal: Find the gradient of the scalar output fwith respect to the vector input x.
+Strategy: This is a two-step computation graph: x→z→f. The vector xfirst
+gets converted to a scalar z, which then produces the final scalar f. The chain rule
+lets us multiply the sensitivities (derivatives) of each step.
+d f
+dx= (sensitivity of ftoz)×(sensitivity of ztox)
+d f
+dx=d f
+dz∂z
+∂x
+Step-by-Step Execution:
+1.First Link (d f
+dz):Sensitivity of the final output fto its immediate input z.
+This is a standard scalar derivative.
+d f
+dz=d
+dzlog(1 + z) =1
+1 +z
+Dimension: Scalar (1 ×1).
+2.Second Link (∂z
+∂x):Sensitivity of the intermediate scalar zto the input
+vector x. This is the derivative of a scalar by a vector, which results in a
+9
+--- page 10 ---
+BITS Pilani Mathematical Foundations for AI
+row vector. Let’s derive it from scratch: z=x⊤x=PD
+i=1x2
+i. The k-th
+component of the gradient is∂z
+∂xk= 2xk. Arranging these into a row vector
+gives [2 x1,2x2, . . . , 2xD] = 2x⊤.
+∂z
+∂x= 2x⊤
+Dimension: Row vector (1 ×D).
+Final Answer: We multiply the results (scalar times row vector). The dimensions
+(1×1)·(1×D) yield a (1 ×D) row vector, as expected for the gradient of a scalar
+function with respect to a column vector.
+d f
+dx=1
+1 +z
+(2x⊤) =2x⊤
+1 +x⊤x
+Solution to Problem 2b
+Goal: Find the derivative of the vector function fwith respect to the vector input
+x. When the input and output are both vectors, the derivative is a matrix called
+theJacobian .
+Strategy: The computation graph is x→z→f. The chain rule for Jacobians
+works like matrix multiplication of the Jacobians from each step.
+∂f
+∂x|{z}
+Jacobian of fwrtx=∂f
+∂z|{z}
+Jacobian of fwrtz·∂z
+∂x|{z}
+Jacobian of zwrtx
+Step-by-Step Execution:
+1.First Link (∂f
+∂z):This is the Jacobian of fwith respect to z. The key insight
+here is that the sin( ·) function is applied element-wise :fi= sin( zi). This
+means that fidepends only onzi, and not on any other zjwhere j̸=i.
+Therefore, the partial derivative∂fi
+∂zjis 0 if i̸=j. The Jacobian matrix is zero
+everywhere except for the main diagonal.
+(∂f
+∂z)ij=∂fi
+∂zj=
+
+cos(zi) if i=j
+0 if i̸=j
+This forms a diagonal matrix:
+∂f
+∂z= diag(cos( z1), . . . , cos(zE)) = diag(cos( z))
+Dimension: Square diagonal matrix ( E×E).
+10
+--- page 11 ---
+BITS Pilani Mathematical Foundations for AI
+2.Second Link (∂z
+∂x):This is the Jacobian of zwith respect to x. For the
+linear transformation z=Ax+b, the derivative is simply the matrix A.
+∂z
+∂x=A
+Dimension: The matrix Aitself ( E×D).
+Final Answer: We multiply the two matrices. The order is crucial. The dimen-
+sions ( E×E)·(E×D) yield a final ( E×D) Jacobian matrix.
+∂f
+∂x= diag(cos( z))·A= diag(cos( Ax+b))·A
+Conclusion
+We have journeyed from a simple analogy of playing darts to the formal mechanics of
+how machine learning models truly learn. The two key takeaways should be:
+1.Backpropagation is just the chain rule applied to a computation graph.
+By breaking down complex functions into simple steps, we can efficiently compute
+the gradient of every parameter by passing gradient information backward through
+the graph.
+2.Linearization is approximation using the gradient. It allows us to replace a
+complex function with its tangent line at a point, simplifying analysis and forming
+the basis for powerful optimization methods.
+Mastering these two concepts provides a solid foundation for understanding and devel-
+oping advanced machine learning and deep learning models.
+11
