@@ -380,7 +380,7 @@ footer p:first-child{color:var(--ink-2)}
     <div class="topbar">
       <span class="brand">The Math Behind the Machine</span>
       <span class="spacer"></span>
-      <button class="ghost" id="theme-btn">Theme: auto</button>
+      <button class="ghost" id="theme-btn">Theme: dark</button>
     </div>
   </div>
   <div id="hero-3d" role="img" aria-label="A glowing grid of space being rotated, sheared and stretched by a slowly changing matrix, with the two basis vectors and a probe vector tracing an ellipse."></div>
@@ -717,10 +717,10 @@ footer p:first-child{color:var(--ink-2)}
 <script>
 (function(){
   const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-  const btn=document.getElementById('theme-btn'); const modes=['auto','light','dark'];
-  let mode=store.get('mfml-theme')||'auto';
-  function apply(){ if(mode==='auto')document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',mode); btn.textContent='Theme: '+mode; }
-  btn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%3];store.set('mfml-theme',mode);apply();});
+  const btn=document.getElementById('theme-btn'); const modes=['dark','light'];
+  let mode=store.get('mfml-theme')==='light'?'light':'dark';
+  function apply(){ document.documentElement.setAttribute('data-theme',mode); btn.textContent='Theme: '+mode; }
+  btn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%2];store.set('mfml-theme',mode);apply();});
   apply();
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
   /* Fallbacks are used only until a student opens the unit itself — each unit

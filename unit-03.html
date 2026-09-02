@@ -683,7 +683,7 @@ details.sol{background:color-mix(in srgb,var(--surface-2) 60%,transparent)}
   <span class="spacer"></span>
   <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">13</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">â˜° <span class="tw">Contents</span></button>
-  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
+  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: dark</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
 <nav class="toc" id="toc" aria-label="On this page"><div class="toc-t">On this page</div></nav>
 <div class="toc-backdrop" id="toc-backdrop"></div>
@@ -2729,9 +2729,9 @@ M834 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">â€
 "use strict";
 /* ---------- shared helpers ---------- */
 const store={mem:{},get(k){try{return localStorage.getItem(k)??this.mem[k]??null}catch(e){return this.mem[k]??null}},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}}};
-const themeBtn=document.getElementById('theme-btn');const modes=['auto','light','dark'];let mode=store.get('mfml-theme')||'auto';
-function applyTheme(){if(mode==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',mode);themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;}
-themeBtn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%3];store.set('mfml-theme',mode);applyTheme();});applyTheme();
+const themeBtn=document.getElementById('theme-btn');const modes=['dark','light'];let mode=store.get('mfml-theme')==='light'?'light':'dark';
+function applyTheme(){document.documentElement.setAttribute('data-theme',mode);themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;}
+themeBtn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%2];store.set('mfml-theme',mode);applyTheme();});applyTheme();
 addEventListener('load',()=>setTimeout(()=>document.documentElement.classList.add('smooth'),120));   /* a #hash landing jumps; everything after is smooth */
 const rail=document.getElementById('read-progress');
 addEventListener('scroll',()=>{const h=document.documentElement;rail.style.width=((h.scrollTop/(h.scrollHeight-h.clientHeight))*100).toFixed(2)+'%';},{passive:true});

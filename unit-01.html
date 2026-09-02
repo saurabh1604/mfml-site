@@ -684,7 +684,7 @@ table.plain th{background:color-mix(in srgb,var(--surface-2) 80%,transparent)}
   <span class="spacer"></span>
   <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">11</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
-  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
+  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: dark</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
 <nav class="toc" id="toc" aria-label="On this page"><div class="toc-t">On this page</div></nav>
 <div class="toc-backdrop" id="toc-backdrop"></div>
@@ -2654,14 +2654,13 @@ const store = {
 };
 /* ---------- theme ---------- */
 const themeBtn = document.getElementById('theme-btn');
-const modes = ['auto','light','dark'];
-let mode = store.get('mfml-theme') || 'auto';
+const modes=['dark','light'];
+let mode=store.get('mfml-theme')==='light'?'light':'dark';
 function applyTheme(){
-  if(mode==='auto') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', mode);
+  document.documentElement.setAttribute('data-theme',mode);
   themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;
 }
-themeBtn.addEventListener('click', ()=>{ mode = modes[(modes.indexOf(mode)+1)%3]; store.set('mfml-theme',mode); applyTheme(); });
+themeBtn.addEventListener('click', ()=>{ mode = modes[(modes.indexOf(mode)+1)%2]; store.set('mfml-theme',mode); applyTheme(); });
 applyTheme();
 /* ---------- KaTeX ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
