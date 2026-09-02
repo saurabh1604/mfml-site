@@ -31,11 +31,11 @@ const { chromium } = require('playwright');
 
   // ---- w-det
   console.log('det default:', await page.locator('#det-val').textContent(), '|', (await page.locator('#det-verdict').textContent()).slice(0, 50));
-  await page.locator('#det-presets [data-p="ones"]').click(); await page.waitForTimeout(150);
+  await page.locator('#det-presets [data-p="ones"]').click(); await page.waitForTimeout(600); // presets tween (420ms)
   console.log('det ones:', await page.locator('#det-val').textContent(), '|', (await page.locator('#det-verdict').textContent()).slice(0, 60));
-  await page.locator('#det-presets [data-p="mirror"]').click(); await page.waitForTimeout(150);
+  await page.locator('#det-presets [data-p="mirror"]').click(); await page.waitForTimeout(600);
   console.log('det mirror:', await page.locator('#det-val').textContent(), '|', (await page.locator('#det-verdict').textContent()).slice(0, 60));
-  await page.locator('#det-presets [data-p="double"]').click(); await page.waitForTimeout(150);
+  await page.locator('#det-presets [data-p="double"]').click(); await page.waitForTimeout(600);
   await page.locator('#w-det').screenshot({ path: 'shots/u4-det.png' });
 
   // ---- w-cof

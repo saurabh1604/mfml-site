@@ -2,7 +2,7 @@
 const { chromium } = require('playwright');
 const SITE = 'file:///home/claude/mfml-site/site';
 const UNITS = [1, 2, 3, 4, 5, 6, 7];
-const EXPECT_CHECKS = { 1: 10, 2: 10, 3: 11, 4: 12, 5: 16, 6: 15, 7: 16 };
+const EXPECT_CHECKS = { 1: 11, 2: 11, 3: 13, 4: 13, 5: 17, 6: 17, 7: 16 };
 const EXPECT_PROBS = { 1: 10, 2: 18, 3: 8, 4: 5, 5: 12, 6: 10, 7: 11 };
 
 let bad = 0;
@@ -37,10 +37,10 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
     await page.waitForTimeout(150);
     if (!(await page.locator('#toc-btn').isVisible())) fail(tag, 'contents button missing at 1280px');
     const railHidden = await page.evaluate(() => getComputedStyle(document.getElementById('toc')).transform);
-    await page.setViewportSize({ width: 1500, height: 900 });
+    await page.setViewportSize({ width: 1600, height: 900 });
     await page.waitForTimeout(150);
-    if (await page.locator('#toc-btn').isVisible()) fail(tag, 'contents button still shown at 1500px (rail width)');
-    if (!(await page.locator('#toc').isVisible())) fail(tag, 'toc rail not visible at 1500px');
+    if (await page.locator('#toc-btn').isVisible()) fail(tag, 'contents button still shown at 1600px (rail width)');
+    if (!(await page.locator('#toc').isVisible())) fail(tag, 'toc rail not visible at 1600px');
 
     /* 3 · drawer opens, traps nothing, closes three ways */
     await page.setViewportSize({ width: 1024, height: 860 });
@@ -175,17 +175,17 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
 
     /* card copy matches the real pages */
     const feet = await page.locator('a.card[data-unit] .foot span:not(.status)').allTextContents();
-    const want = ['11 widgets · 10 checks · 10 problems', '6 widgets · 10 checks · 18 problems',
-                  '8 widgets · 11 checks · 8 problems', '8 widgets · 12 checks · 5 problems',
-                  '10 widgets · 16 checks · 12 problems', '13 widgets · 15 checks · 10 problems',
+    const want = ['13 widgets · 11 checks · 10 problems', '6 widgets · 11 checks · 18 problems',
+                  '8 widgets · 13 checks · 8 problems', '8 widgets · 13 checks · 5 problems',
+                  '10 widgets · 17 checks · 12 problems', '13 widgets · 17 checks · 10 problems',
                   '7 widgets · 16 checks · 11 problems'];
     feet.forEach((f, i) => { if (f.trim() !== want[i]) fail('hub', `card ${i + 1} reads "${f.trim()}", should be "${want[i]}"`); });
 
     /* returning student: partial on 3, complete on 1, last position in unit 3 */
     await page.evaluate(() => {
-      localStorage.setItem('mfml-u1-total', '10');
-      localStorage.setItem('mfml-u1-checks', 'c1,c2,c3,c4,c5,c6,c7,c8,c9,c10');
-      localStorage.setItem('mfml-u3-total', '11');
+      localStorage.setItem('mfml-u1-total', '11');
+      localStorage.setItem('mfml-u1-checks', 'c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11');
+      localStorage.setItem('mfml-u3-total', '13');
       localStorage.setItem('mfml-u3-checks', 'c1,c2,c3,c4');
       localStorage.setItem('mfml-last', '3|s7');
     });
@@ -194,15 +194,15 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
 
     if (!(await page.locator('#progress-row.on').count())) fail('hub', 'progress row hidden for a returning student');
     const overall = (await page.locator('#overall-txt').textContent()).trim();
-    if (overall !== '14 of 90 checks passed') fail('hub', `overall reads "${overall}", expected "14 of 90 checks passed"`);
+    if (overall !== '15 of 98 checks passed') fail('hub', `overall reads "${overall}", expected "15 of 98 checks passed"`);
     const barW = await page.evaluate(() => document.getElementById('obar-fill').style.width);
-    if (barW !== '15.6%') fail('hub', `overall bar width ${barW}, expected 15.6%`);
+    if (barW !== '15.3%') fail('hub', `overall bar width ${barW}, expected 15.3%`);
     const cont = await page.locator('#continue-link');
     if (!(await cont.isVisible())) fail('hub', 'continue button hidden despite a stored position');
     if (await cont.getAttribute('href') !== 'unit-03.html#s7') fail('hub', `continue href = ${await cont.getAttribute('href')}`);
     if (!(await cont.textContent()).includes('Unit 3')) fail('hub', 'continue button does not name the unit');
     const nums = await page.locator('.cnum').allTextContents();
-    if (nums.join(' | ') !== '10/10 checks | 4/11 checks') fail('hub', `card progress "${nums.join(' | ')}"`);
+    if (nums.join(' | ') !== '11/11 checks | 4/13 checks') fail('hub', `card progress "${nums.join(' | ')}"`);
     const c1 = page.locator('a.card[data-unit="1"]');
     if (!(await c1.evaluate(e => e.classList.contains('complete')))) fail('hub', 'finished unit not marked complete');
     if ((await c1.locator('.status').textContent()).trim() !== '✓ Complete') fail('hub', 'finished unit still says Ready');

@@ -184,5 +184,19 @@ Bq = np.array([[1,2],[3,4]]); xq = np.array([1,2])
 chk("cookbook: x^TBx = 27 and grad row = (12,21) at x=(1,2)",
     xq@Bq@xq == 27 and np.allclose((Bq+Bq.T)@xq, [12,21]))
 
+# --- polish pass 2026-09: new figures & derive boxes ---
+chk("fig: line-plus-leftover r(h)=0.35h^2 -> r/h halves as h halves",
+    all(abs(0.35*h*h/h - v) < 1e-12 for h, v in [(1,0.35),(0.5,0.175),(0.25,0.0875)]))
+chk("diag-Jacobian box: (0.6*0.235, -0.4*0.045) = (0.141, -0.018)",
+    abs(0.6*s[0]-0.141) < 6e-4 and abs(-0.4*s[1]+0.018) < 6e-4)
+g9 = sp.sqrt(x**2+9)
+chk("Taylor-link box: f''(-4) = 9/125 = 0.072 and (1/2)f''h^2 = 0.009 vs actual 0.0098",
+    sp.diff(g9,x,2).subs(x,-4) == sp.Rational(9,125) and abs(0.5*0.072*0.25-0.009) < 1e-12
+    and abs(float(g9.subs(x,-3.5)) - 4.6 - 0.0098) < 1e-4)
+chk("V-shape box: |f3(1)| ~ 153 and h* ~ 1e-6 for the monster",
+    150 < abs(f3) < 156 and 8e-7 < (3*2**-53*abs(fn(1))/(2*abs(f3)))**(1/3.0) < 1.3e-6)
+chk("vanishing strip: 4^-9 ~ 3.8e-6, and layer-widget neuron 2 factor 0.045",
+    abs(0.25**9 - 3.8e-6) < 1e-7 and abs(s[1]-0.045) < 6e-4)
+
 print("=" * 60)
 print(f"ALL {ok} UNIT-7 MATH CHECKS PASS ✓")

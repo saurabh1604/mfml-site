@@ -92,7 +92,7 @@ const okay = m => console.log('  ok   ' + m);
   const probs = await page.locator('.prob').count();
   if (probs === 11) okay('11 practice problems'); else fail(probs + ' problems');
   const derives = await page.locator('.derive').count();
-  if (derives === 10) okay('10 derivation boxes render'); else fail(derives + ' derive boxes');
+  if (derives === 13) okay("13 derivation boxes render"); else fail(derives + " derive boxes");
   const stot = await text('#score-total');
   if (stot === '16') okay('score total = 16'); else fail('score-total: ' + stot);
 

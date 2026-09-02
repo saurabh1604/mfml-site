@@ -21,14 +21,14 @@ const { chromium } = require('playwright');
 
   // W2 subspace
   await page.locator('#sub-presets [data-p="square"]').click(); await page.waitForTimeout(150);
-  await page.locator('#w-sub .presets [data-op="2"]').click(); await page.waitForTimeout(200);
+  await page.locator('#w-sub .presets [data-op="2"]').click(); await page.waitForTimeout(750); // scale tween is 520ms
   console.log('square ×2:', await page.locator('#sub-verdict').textContent());
   await page.screenshot({ path: 'shots/v2-sub.png', clip: await clip(page, '#w-sub') });
   await page.locator('#sub-presets [data-p="x1"]').click();
-  await page.locator('#w-sub .presets [data-op="0"]').click(); await page.waitForTimeout(150);
+  await page.locator('#w-sub .presets [data-op="0"]').click(); await page.waitForTimeout(750);
   console.log('x1 ×0:', await page.locator('#sub-verdict').textContent());
   await page.locator('#sub-presets [data-p="diag"]').click();
-  await page.locator('#w-sub .presets [data-op="add"]').click(); await page.waitForTimeout(150);
+  await page.locator('#w-sub .presets [data-op="add"]').click(); await page.waitForTimeout(750);
   console.log('diag u+v:', await page.locator('#sub-verdict').textContent());
 
   // W3 span

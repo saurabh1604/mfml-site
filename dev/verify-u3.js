@@ -43,7 +43,7 @@ const { chromium } = require('playwright');
   // high-dim
   await page.evaluate(() => { const s = document.getElementById('hd-n'); s.value = '3'; s.dispatchEvent(new Event('input')); });
   await page.waitForTimeout(600);
-  console.log('hd n=1000: mean|cos| =', await page.locator('#hd-mean').textContent(), '|', (await page.locator('#hd-verdict').textContent()).slice(0, 60));
+  console.log('hd n=1000: std(cos) =', await page.locator('#hd-mean').textContent(), '|', (await page.locator('#hd-verdict').textContent()).slice(0, 60));
   await page.screenshot({ path: 'shots/u3-hd.png', clip: await clip(page, '#w-hd') });
 
   // rigid motions

@@ -51,7 +51,8 @@ function transform(html) {
 }
 
 fs.mkdirSync(OUT, { recursive: true });
-for (const f of fs.readdirSync(SRC).filter(f => f.endsWith('.html'))) {
+const ONLY = process.argv.slice(2);
+for (const f of fs.readdirSync(SRC).filter(f => f.endsWith('.html') && (ONLY.length === 0 || ONLY.includes(f)))) {
   const src = fs.readFileSync(path.join(SRC, f), 'utf8');
   nDisp = 0; nInline = 0;
   const out = src.includes('\\(') || src.includes('\\[') ? transform(src) : src;
