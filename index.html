@@ -96,6 +96,9 @@ a.skip:focus{left:0}
 :focus-visible{outline:2px solid var(--s1);outline-offset:2px;border-radius:6px}
 .progress-row{display:none;flex-wrap:wrap;align-items:center;gap:.9rem;margin-top:1.5rem}
 .progress-row.on{display:flex}
+.start-row{display:flex;flex-wrap:wrap;align-items:center;gap:.9rem;margin-top:1.5rem}
+.start-row.off{display:none}
+.start-note{font-family:var(--sans);font-size:.8rem;color:var(--ink-2)}
 a.cta{display:inline-flex;align-items:center;gap:.45rem;background:var(--s1);color:#fff;border:1px solid var(--s1);border-radius:999px;
       padding:.44rem 1.05rem;font-family:var(--sans);font-size:.86rem;font-weight:650;text-decoration:none;
       box-shadow:0 12px 26px -16px rgba(42,120,214,.9)}
@@ -166,10 +169,12 @@ button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
     <p class="lede">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
     <div class="meta-chips">
       <span class="chip">📐 16 units · 7 live so far</span>
-      <span class="chip">🎛 63 hands-on widgets</span>
-      <span class="chip">✅ 90 pause-and-predict checks</span>
+      <span class="chip">🎛 65 hands-on widgets</span>
+      <span class="chip">✅ 98 pause-and-predict checks</span>
       <span class="chip">✍ 74 problems solved step by step</span>
+      <span class="chip">🧾 60 rules derived step by step, nothing on faith</span>
     </div>
+    <div class="start-row" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 →</a><span class="start-note">Each unit is a story you can play with — about an hour, no prerequisites.</span></div>
     <div class="progress-row" id="progress-row">
       <a class="cta" id="continue-link" href="unit-01.html" hidden>Continue where you left off →</a>
       <div class="overall" id="overall" hidden>
@@ -184,27 +189,27 @@ button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
     <a class="card" href="unit-01.html" data-unit="1">
       <div class="top"><span class="num">01</span><h3>Systems of Linear Equations</h3></div>
       <p>A matrix is a machine that moves space. Three windows on Ax = b, the three fates, and elimination — the algorithm that never lies.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 10 checks · 10 problems</span></div>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>13 widgets · 11 checks · 10 problems</span></div>
     </a>
     <a class="card" href="unit-02.html" data-unit="2">
       <div class="top"><span class="num">02</span><h3>Vector Spaces</h3></div>
       <p>The universe where vectors live: groups, subspaces, span, independence, basis, dimension — the architecture of ML math.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>6 widgets · 10 checks · 18 problems</span></div>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>6 widgets · 11 checks · 18 problems</span></div>
     </a>
     <a class="card" href="unit-03.html" data-unit="3">
       <div class="top"><span class="num">03</span><h3>Analytic Geometry</h3></div>
       <p>The board gets its ruler: norms, inner products, angles, orthogonality — and Gram–Schmidt, the cleanest grid a geometry can have.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>8 widgets · 11 checks · 8 problems</span></div>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>8 widgets · 13 checks · 8 problems</span></div>
     </a>
     <a class="card" href="unit-04.html" data-unit="4">
       <div class="top"><span class="num">04</span><h3>Determinants, Eigenvalues &amp; the Spectral Theorem</h3></div>
       <p>A matrix's fingerprints: the volume dial, the directions it cannot turn, A = QΛQᵀ — and Cholesky, the covariance square root.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>8 widgets · 12 checks · 5 problems</span></div>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>8 widgets · 13 checks · 5 problems</span></div>
     </a>
     <a class="card" href="unit-05.html" data-unit="5">
       <div class="top"><span class="num">05</span><h3>Matrix Decompositions &amp; SVD</h3></div>
       <p>Prime factorization for transformations: the ladder from spectral to eigen to SVD — ending with a real photograph compressed live.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>10 widgets · 16 checks · 12 problems</span></div>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>10 widgets · 17 checks · 12 problems</span></div>
     </a>
   </div>
 
@@ -213,7 +218,7 @@ button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
     <a class="card" href="unit-06.html" data-unit="6">
       <div class="top"><span class="num">06</span><h3>Differentiation</h3></div>
       <p>Which way is down? From a shrinking secant to the Jacobian matrices behind backpropagation — the language every learning machine speaks.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>13 widgets · 15 checks · 10 problems</span></div>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>13 widgets · 17 checks · 10 problems</span></div>
     </a>
     <a class="card" href="unit-07.html" data-unit="7">
       <div class="top"><span class="num">07</span><h3>Backprop &amp; Automatic Differentiation</h3></div>
@@ -291,7 +296,7 @@ button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
   /* Fallbacks are used only until a student opens the unit itself — each unit
      page writes its true check count to mfml-uN-total when it loads. */
-  const FALLBACK={1:10,2:10,3:11,4:12,5:16,6:15,7:16};
+  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16};
   const TITLE={1:'Systems of Linear Equations',2:'Vector Spaces',3:'Analytic Geometry',
                4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff'};
   let done=0, total=0;
@@ -332,6 +337,8 @@ button.link.arm{color:var(--critical);text-decoration:none;font-weight:650}
     link.hidden=false;
     row.classList.add('on');
   }
+
+  if(row.classList.contains('on')) document.getElementById('start-row').classList.add('off');
 
   /* reset — two taps, no browser dialog, theme survives */
   const rb=document.getElementById('reset-btn');
