@@ -13,7 +13,7 @@
 <meta property="og:url" content="https://linearalgebra.info/unit-01.html">
 <meta property="og:image" content="https://linearalgebra.info/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f9f9f7">
+<meta name="theme-color" content="#070a12">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"></script>
@@ -336,6 +336,165 @@ main:focus{outline:none}
     max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle}
 }
 </style>
+<!--@cinema-css-->
+<style id="u1-cinema">
+/* ================= CINEMA-U1 · round 8 · "math as cinema" ================= */
+html{overflow-x:hidden}
+body{overflow-x:hidden}
+body::before{display:none}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;z-index:60;pointer-events:none;opacity:.85;
+  background:linear-gradient(90deg,var(--s1),var(--s7) 34%,var(--s2) 67%,var(--s3))}
+main{padding-top:0}
+.topbar a.home{font-family:var(--ui);font-weight:800;color:var(--ink)}
+.topbar a.home::before{content:"Σ";display:inline-grid;place-items:center;width:1.45rem;height:1.45rem;margin-right:.5rem;border-radius:6px;
+  background:linear-gradient(135deg,var(--s1),var(--s7));color:#fff;font-family:var(--display);font-weight:600;font-size:.9rem;vertical-align:-.3rem;box-shadow:var(--glow-1)}
+#score-chip b{color:var(--s4)}
+
+/* --- opening shot --- */
+.hero-stage{position:relative;min-height:clamp(540px,76vh,740px);display:flex;align-items:center;isolation:isolate;overflow:hidden;background:var(--canvas)}
+#hero-3d{position:absolute;inset:0;z-index:0;border-radius:0;background:none}
+#hero-3d canvas{display:block;width:100%;height:100%}
+.hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--page) 92%,transparent) 0%,color-mix(in srgb,var(--page) 78%,transparent) 30%,color-mix(in srgb,var(--page) 40%,transparent) 56%,transparent 76%),
+    linear-gradient(180deg,transparent 0%,transparent 66%,color-mix(in srgb,var(--page) 70%,transparent) 88%,var(--page) 100%)}
+.hero-stage>.wrap{position:relative;z-index:2;width:100%;max-width:var(--maxw);margin:0 auto;padding:4.4rem 1.25rem 3.2rem;pointer-events:none}
+.hero-stage .chip{pointer-events:auto}
+.hero-stage header.hero{max-width:44rem;margin:0;padding:0}
+.hero .kicker{color:var(--s6);text-shadow:0 0 18px color-mix(in srgb,var(--s6) 50%,transparent);font-family:var(--ui);letter-spacing:.2em}
+:root[data-theme="light"] .hero .kicker{text-shadow:none}
+.hero h1{font-family:var(--display);font-variation-settings:"opsz" 144,"SOFT" 40,"WONK" 1;font-weight:640;font-size:clamp(2.5rem,6.2vw,4.9rem);line-height:1;letter-spacing:-.03em;margin:.55rem 0 1rem;text-wrap:balance}
+.hero .lede{font-family:var(--body);font-size:1.22rem;line-height:1.55;color:var(--ink-2);max-width:39rem}
+.hero .lede strong{color:var(--ink)}
+.hero .meta{margin-top:1.4rem;gap:.45rem}
+.hero .meta .chip{font-size:.76rem;padding:.26rem .8rem;background:color-mix(in srgb,var(--surface) 55%,transparent);border-color:var(--line);color:var(--ink-2);backdrop-filter:blur(8px)}
+.hero-hint{position:absolute;right:1.2rem;bottom:1.1rem;z-index:2;font-family:var(--ui);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);pointer-events:none;display:none}
+@media (hover:hover) and (pointer:fine){.hero-hint{display:block}}
+.hero-hint::before{content:"";display:inline-block;width:.45rem;height:.45rem;border-radius:50%;background:var(--s6);box-shadow:0 0 10px var(--s6);margin-right:.5rem;vertical-align:.05rem;animation:pulse 2.4s var(--ease) infinite}
+
+/* --- sections & rhythm --- */
+section.unit{margin-top:4.8rem;scroll-margin-top:4.5rem}
+.sec-head{gap:1.1rem;margin-bottom:1.1rem;align-items:baseline}
+.sec-num{font-size:2.8rem;color:color-mix(in srgb,var(--s1) 55%,transparent);text-shadow:var(--glow-1);padding:0;flex:none}
+:root[data-theme="light"] .sec-num{text-shadow:none}
+h3{font-family:var(--display);font-variation-settings:"opsz" 48,"SOFT" 30;font-size:1.35rem;font-weight:600;letter-spacing:-.01em;margin:1.8rem 0 .5rem}
+.callout .tag{font-family:var(--ui);letter-spacing:.18em;font-size:.68rem}
+.callout.scenario{border-left-color:var(--s6);box-shadow:-6px 0 24px -18px var(--s6)} .callout.scenario .tag{color:var(--s6)}
+.callout.remember{border-left-color:var(--s4);box-shadow:-6px 0 24px -18px var(--s4)} .callout.remember .tag{color:var(--s4)}
+.callout.try{box-shadow:-6px 0 24px -18px var(--s2)}
+.callout.intuition{border-left-color:var(--s3);box-shadow:-6px 0 24px -18px var(--s3)} .callout.intuition .tag{color:var(--s3)}
+details{background:color-mix(in srgb,var(--surface) 75%,transparent);border-color:var(--line);border-radius:var(--r-md)}
+details summary{font-family:var(--ui)}
+.derive .tag{color:var(--s7)}
+.derive .dn{background:color-mix(in srgb,var(--s7) 22%,transparent);color:var(--ink);border:1px solid color-mix(in srgb,var(--s7) 55%,transparent);box-shadow:var(--glow-7)}
+.derive .dqed{text-shadow:var(--glow-7)}
+.next-card{margin-top:3.6rem}
+.next-card .kicker{color:var(--s6)!important}
+
+/* --- stages (widgets) --- */
+.widget{padding:1.3rem 1.4rem 1.4rem;margin:2rem auto;max-width:70rem;font-family:var(--ui)}
+.widget-head{margin-bottom:.5rem}
+.widget-head .w-title{font-size:1.08rem;font-weight:750;letter-spacing:-.012em}
+.widget-head .w-sub{font-size:.84rem}
+.widget svg.svg-lab{background:radial-gradient(70% 70% at 50% 45%,color-mix(in srgb,var(--s1) 9%,transparent),transparent 72%);border-radius:var(--r-md)}
+.wrow{gap:1.4rem}
+.controls .ctl{grid-template-columns:6.2rem 1fr 3.6rem}
+.controls output{color:var(--s4);font-size:.82rem}
+.chip b{font-family:var(--mono);color:var(--s4)}
+.verdict{font-family:var(--ui)}
+.verdict.bad{border-color:color-mix(in srgb,var(--critical) 45%,transparent);box-shadow:none}
+.verdict.info{border-color:color-mix(in srgb,var(--s1) 40%,transparent)}
+.readout{font-size:.86rem;color:var(--ink-2)}
+.note{font-size:.86rem;line-height:1.55}
+.legend i{box-shadow:0 0 8px currentColor}
+.eqlive{font-size:.98rem;padding:.4rem .7rem;border-radius:var(--r-sm);background:color-mix(in srgb,var(--surface) 70%,transparent);border:1px solid var(--line)}
+.eqlive .coef.hot{background:color-mix(in srgb,var(--s2) 28%,transparent);color:var(--s2);box-shadow:var(--glow-2)}
+button.ghost{font-family:var(--ui)}
+button.ghost:disabled{opacity:.4}
+.drag-hint{font-family:var(--ui)}
+.stepper button{background:color-mix(in srgb,var(--surface-2) 80%,transparent);border:1px solid var(--line);color:var(--ink);border-radius:999px;transition:all .18s var(--ease)}
+.stepper button:hover{border-color:var(--s1);box-shadow:var(--glow-1)}
+.stepper .val{color:var(--s4);font-size:1.05rem}
+.bar-track{background:color-mix(in srgb,var(--surface-2) 80%,transparent);border-color:var(--line);height:26px;border-radius:999px;overflow:hidden}
+.bar-fill{border-radius:999px;background:linear-gradient(90deg,color-mix(in srgb,var(--s1) 70%,transparent),var(--s1));box-shadow:var(--glow-1);transition:width .35s var(--ease-out),background .3s}
+.bar-target{background:var(--s4);box-shadow:0 0 8px var(--s4);top:0;bottom:0;width:2px}
+.bar-val{color:var(--ink-2)}
+.mx-edit input{background:color-mix(in srgb,var(--surface-2) 80%,transparent);border-color:var(--line);color:var(--s4);font-weight:600;border-radius:8px}
+.mx-edit input:focus{box-shadow:var(--glow-1)}
+.mx-edit::before,.mx-edit::after,.mx::before,.mx::after{border-color:var(--ink-2)}
+/* 3D stage containers */
+.stage3d{position:relative;height:460px;border-radius:var(--r-md);overflow:hidden;background:radial-gradient(80% 80% at 50% 40%,color-mix(in srgb,var(--s1) 8%,transparent),transparent 70%)}
+.stage3d canvas{display:block;width:100%;height:100%}
+@media (max-width:640px){.stage3d{height:300px}}
+.stage-canvas .hud{font-size:.76rem;padding:.24rem .7rem}
+.stage-canvas .hud b{font-family:var(--mono);color:var(--s4);font-weight:700}
+.stage-canvas .hud.hud-b{top:auto;bottom:.6rem}
+.stage-canvas .hud.hud-r{left:auto;right:.7rem}
+.stage-canvas .hint{display:none}
+@media (hover:hover) and (pointer:fine){.stage-canvas .hint{display:block}}
+.stage-tap{display:none;font-size:.74rem;color:var(--ink-muted);margin:.35rem 0 0}
+@media (hover:none){.stage-tap{display:block}}
+/* matrices as lit cells; elimination sweeps left→right, pivots flash */
+.mx{font-size:1rem;gap:3px}
+.mx span{padding:.26rem .55rem;min-width:2.3rem}
+.mx span.pivot{background:color-mix(in srgb,var(--s1) 26%,transparent);color:var(--ink);box-shadow:var(--glow-1);animation:pivotFlash 1.2s var(--ease-out)}
+.mx span.rowchg{background:color-mix(in srgb,var(--s2) 22%,transparent);color:var(--s2);font-weight:700;animation:cellSweep .7s var(--ease-out) backwards;animation-delay:calc(var(--k,0)*90ms)}
+.mx span.was-chg{outline-color:color-mix(in srgb,var(--s2) 70%,transparent)}
+.mx span.hl-r{background:color-mix(in srgb,var(--s1) 22%,transparent);box-shadow:var(--glow-1)}
+.mx span.hl-c{background:color-mix(in srgb,var(--s2) 22%,transparent);box-shadow:var(--glow-2)}
+.mx span.aug{border-left-color:color-mix(in srgb,var(--ink-2) 60%,transparent)}
+.elim-pair .arr{color:var(--s2);text-shadow:var(--glow-2)}
+.opnote{color:var(--s2);font-weight:600}
+@keyframes cellSweep{0%{opacity:.15;transform:translateX(-8px)}45%{opacity:1;transform:none;background:color-mix(in srgb,var(--s2) 70%,transparent);box-shadow:var(--glow-2)}100%{transform:none}}
+@keyframes pivotFlash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--s1) 85%,transparent),var(--glow-1);transform:scale(1.18)}60%{box-shadow:0 0 0 10px transparent,var(--glow-1)}100%{transform:none}}
+:root[data-theme="light"] .mx span.rowchg,:root[data-theme="light"] .mx span.pivot{animation-name:none}
+/* checks */
+.check{font-family:var(--ui)}
+.check .tag{color:var(--s2);letter-spacing:.18em}
+.check .opts button{background:color-mix(in srgb,var(--surface-2) 75%,transparent);border-color:var(--line);border-radius:var(--r-sm);transition:all .18s var(--ease)}
+.check .opts button:hover{border-color:color-mix(in srgb,var(--s1) 60%,transparent);transform:translateX(3px)}
+.check .opts button.picked-good{box-shadow:var(--glow-3);border-color:var(--s3)}
+.check .opts button.picked-bad{border-color:var(--critical)}
+.check .why.good{background:color-mix(in srgb,var(--s3) 12%,transparent);border:1px solid color-mix(in srgb,var(--s3) 40%,transparent)}
+.check .why.bad{background:color-mix(in srgb,var(--critical) 10%,transparent);border:1px solid color-mix(in srgb,var(--critical) 35%,transparent)}
+/* static figures */
+.pic{background:color-mix(in srgb,var(--surface) 60%,transparent);border:1px solid var(--line);border-radius:var(--r-lg);padding:1rem 1rem .7rem;max-width:48rem;position:relative;overflow:hidden}
+.pic::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--s7) 60%,transparent) 50%,transparent);opacity:.7}
+.pic .picsub{font-family:var(--ui);color:var(--ink-2);font-size:.84rem}
+.pic svg .draw{stroke-dasharray:900;stroke-dashoffset:900}
+.pic.in svg .draw{animation:drawOn 1.7s var(--ease-out) .25s forwards}
+@keyframes drawOn{to{stroke-dashoffset:0}}
+@keyframes linesBurst{0%{r:8;opacity:.9;stroke-width:3}100%{r:70;opacity:0;stroke-width:.5}}
+@media (prefers-reduced-motion:reduce){.pic svg .draw{stroke-dashoffset:0;animation:none}}
+.pic svg text{font-family:var(--ui)!important}
+/* practice */
+.prob{font-family:var(--body)}
+.ptag{color:var(--s2);letter-spacing:.18em}
+.pdiff.easy{background:color-mix(in srgb,var(--s3) 16%,transparent);color:var(--good-text)}
+.pdiff.medium{background:color-mix(in srgb,var(--s1) 16%,transparent)}
+.pdiff.hard{background:color-mix(in srgb,var(--s2) 18%,transparent)}
+details.sol{background:color-mix(in srgb,var(--surface-2) 60%,transparent)}
+.pstep{border-left-color:color-mix(in srgb,var(--s7) 45%,transparent)}
+.pans{background:color-mix(in srgb,var(--s3) 14%,transparent);border:1px solid color-mix(in srgb,var(--s3) 40%,transparent)}
+.sol-bulk{font-family:var(--ui)}
+.toc{background:color-mix(in srgb,var(--surface) 92%,transparent)}
+.toc a.on{background:color-mix(in srgb,var(--s1) 14%,transparent)}
+.resume{background:color-mix(in srgb,var(--surface) 92%,transparent);border-color:var(--line);backdrop-filter:blur(10px);font-family:var(--ui)}
+table.plain th{background:color-mix(in srgb,var(--surface-2) 80%,transparent)}
+@media (max-width:760px){
+  .hero-stage{min-height:auto}
+  .hero-stage>.wrap{padding-top:14.5rem;padding-bottom:2.2rem}
+  #hero-3d{height:340px;bottom:auto}
+  .hero-scrim{background:linear-gradient(180deg,color-mix(in srgb,var(--page) 30%,transparent) 0px,transparent 80px,transparent 160px,color-mix(in srgb,var(--page) 82%,transparent) 260px,var(--page) 340px)}
+  .hero h1{font-size:clamp(2.3rem,10vw,3.2rem)}
+  .hero .lede{font-size:1.08rem}
+  .hero-hint{display:none!important}
+  .widget{padding:1rem 1rem 1.1rem}
+  .sec-num{font-size:2.2rem}
+}
+@media (prefers-reduced-motion:reduce){.hero-hint::before{animation:none}}
+@media print{.hero-stage{min-height:auto}#hero-3d,.hero-scrim,.hero-hint,.stage3d{display:none!important}.pic svg .draw{stroke-dashoffset:0}}
+</style>
 </head>
 <body>
 <a class="skip" href="#main-content">Skip to content</a>
@@ -344,42 +503,50 @@ main:focus{outline:none}
   <span class="spacer"></span>
   <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">11</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
-  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
+  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: dark</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
 <nav class="toc" id="toc" aria-label="On this page"><div class="toc-t">On this page</div></nav>
 <div class="toc-backdrop" id="toc-backdrop"></div>
 
-<main id="main-content" tabindex="-1">
-<header class="hero">
-  <div class="kicker">Unit 1 of 16 · by Prof. Saurabh</div>
-  <h1>Systems of Linear Equations</h1>
-  <p class="lede">Behind every Instagram feed, GPS route, and next-word prediction sits one humble object: <span class="m">\(A\mathbf{x}=\mathbf{b}\)</span>. This unit earns you the single most useful mental picture in the course — <strong>a matrix is a machine that moves space</strong> — and a method that never lies: Gaussian elimination.</p>
-  <div class="meta">
-    <span class="chip">≈ 65 min read + play</span>
-    <span class="chip">13 interactive widgets · 2 in 3D</span>
-    <span class="chip">11 inline checks</span>
-    <span class="chip">🧾 8 rules derived step by step</span>
-    <span class="chip">✍ 10 solved practice problems</span>
+<section class="hero-stage">
+  <div id="hero-3d" role="img" aria-label="A glowing grid of space being rotated, sheared and stretched by a slowly changing matrix; the two basis arrows follow the columns and a probe vector traces its image."></div>
+  <div class="hero-scrim"></div>
+  <div class="wrap">
+  <header class="hero">
+    <div class="kicker reveal">Unit 1 of 16 · by Prof. Saurabh</div>
+    <h1 class="reveal">Systems of Linear Equations</h1>
+    <p class="lede reveal">Behind every Instagram feed, GPS route, and next-word prediction sits one humble object: <span class="m">\(A\mathbf{x}=\mathbf{b}\)</span>. This unit earns you the single most useful mental picture in the course — <strong>a matrix is a machine that moves space</strong> — and a method that never lies: Gaussian elimination.</p>
+    <div class="meta reveal-stagger">
+      <span class="chip">≈ 65 min read + play</span>
+      <span class="chip">13 interactive widgets · 4 in 3D</span>
+      <span class="chip">11 inline checks</span>
+      <span class="chip">🧾 8 rules derived step by step</span>
+      <span class="chip">✍ 10 solved practice problems</span>
+    </div>
+  </header>
   </div>
-</header>
+  <div class="hero-hint">drag the space to orbit</div>
+</section>
+
+<main id="main-content" tabindex="-1">
 
 <!-- ================= 1 · WHY LINES ================= -->
 <section class="unit" id="s1">
-  <div class="sec-head"><span class="sec-num">1</span><h2>Why are we even talking about lines?</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>Why are we even talking about lines?</h2></div>
   <div class="prose">
     <p>Open Instagram and scroll for ten seconds. The app just decided what to show you — which photo, which order, which ad. Behind that decision is a tower of math, and at the very bottom of the tower sits one humble object: a <strong>system of linear equations</strong>. Same story for the GPS routing you home, the camera autofocusing on a face, and a language model predicting the next word. Sooner or later, every one of them lands on something of the form \(A\mathbf{x}=\mathbf{b}\).</p>
     <p>But wait — look out the window. Roads curve. Light bends. The stock market zigzags. <em>Almost nothing in real life is a straight line.</em> So why does an entire branch of math — and the engine room of every ML model — obsess over linear things?</p>
   </div>
-  <div class="callout intuition"><span class="tag">Intuition</span>
+  <div class="callout intuition reveal"><span class="tag">Intuition</span>
     <p><strong>Three honest reasons.</strong> ① Linear problems can <em>always</em> be decided — not "solved if we're lucky." There's a recipe a computer can follow that either finds every answer or proves none exists. ② <strong>Up close, almost everything looks linear.</strong> The Earth is round, but your floor is flat. ③ You can <em>see</em> it — lines, planes, hyperplanes. Geometry you can draw on a napkin.</p>
   </div>
   <div class="prose"><p>Reason ② is the profound one, and you shouldn't take it on faith. Test it yourself:</p></div>
 
-  <div class="widget" id="w-zoom">
+  <div class="widget reveal" id="w-zoom">
     <div class="widget-head"><span class="w-title">Zoom until the world turns straight</span><span class="w-sub">the curve is y = sin x, examined near x = 1</span></div>
     <p class="wtry"><b>Try:</b> zoom to 10×, then 100× — and watch the bottom row of the table settle on one number.</p>
     <div class="wrow">
-      <div class="wcol" style="flex:2 1 340px"><svg id="zoom-svg" viewBox="0 0 560 330" class="svg-lab" role="img" aria-label="A curve and its tangent line; zooming in makes them indistinguishable"></svg></div>
+      <div class="wcol" style="flex:3 1 380px"><svg id="zoom-svg" viewBox="0 0 640 400" class="svg-lab" role="img" aria-label="A curve and its tangent line; zooming in makes them indistinguishable"></svg></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls">
           <div class="ctl"><label for="zoom-r">Zoom</label><input type="range" id="zoom-r" min="0" max="1" step="0.001" value="0"><output id="zoom-out">1×</output></div>
@@ -404,12 +571,12 @@ main:focus{outline:none}
 
 <!-- ================= 2 · VECTORS ARE LISTS ================= -->
 <section class="unit" id="s2">
-  <div class="sec-head"><span class="sec-num">2</span><h2>What is a vector, really?</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>What is a vector, really?</h2></div>
   <div class="prose">
     <p>The slides say it precisely: linear algebra is the study of <strong>vectors</strong> and the rules for manipulating them. But a vector is not some mysterious arrow floating in an abstract space. A vector is just an <strong>ordered list of numbers</strong> — plus the promise that adding two lists, or scaling a list, gives you back the same kind of object. (That promise has a name — <em>closure</em> — and it's the seed of the "vector space" idea that Unit 2 grows into.)</p>
     <p>Lists you already use every day: a house in a dataset is a vector \((\text{area},\ \text{bedrooms},\ \text{age},\ \text{price})\). A photo is a vector — one number per pixel, hundreds of thousands of them. A word inside a modern language model is a vector, the famous <em>embedding</em>. Even a polynomial can be treated as a vector — its list of coefficients. Even <em>you</em>, in your bank's risk model, are a vector.</p>
   </div>
-  <div class="pic">
+  <div class="pic reveal">
     <div class="scroll">
     <svg viewBox="0 0 640 170" role="img" aria-label="Four faces of one vector: a list of numbers, an arrow, a pixel grid, and a word embedding">
       <g font-family="system-ui,sans-serif">
@@ -424,8 +591,8 @@ main:focus{outline:none}
         <rect x="166" y="22" width="130" height="112" rx="10" fill="var(--surface)" stroke="var(--line,var(--ring))"/>
         <text x="231" y="14" font-size="11" font-weight="700" fill="var(--ink-2)" text-anchor="middle">an arrow</text>
         <g stroke="var(--grid)" stroke-width="1"><path d="M190 120V40M210 120V40M230 120V40M250 120V40M270 120V40M190 120H280M190 100H280M190 80H280M190 60H280"/></g>
-        <line x1="190" y1="120" x2="250" y2="80" stroke="var(--s1)" stroke-width="3" stroke-linecap="round"/>
-        <polygon points="254,77 243,80 247,89" fill="var(--s1)"/>
+        <g class="glow-1"><line x1="190" y1="120" x2="250" y2="80" stroke="var(--s1)" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="254,77 243,80 247,89" fill="var(--s1)"/></g>
         <text x="258" y="74" font-size="11" font-weight="700" fill="var(--s1)">(3, 2)</text>
         <text x="310" y="82" font-size="16" fill="var(--ink-muted)" text-anchor="middle">=</text>
         <!-- pixels -->
@@ -453,7 +620,7 @@ main:focus{outline:none}
     </div>
     <p class="picsub">Four faces of one vector (swipe sideways on a phone).</p>
   </div>
-  <div class="check" data-check="c1">
+  <div class="check reveal" data-check="c1">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Which of these can legitimately be treated as a vector?</p>
     <div class="opts">
@@ -468,8 +635,8 @@ main:focus{outline:none}
 
 <!-- ================= 3 · THE FURNITURE PROBLEM ================= -->
 <section class="unit" id="s3">
-  <div class="sec-head"><span class="sec-num">3</span><h2>A small problem you can solve by hand</h2></div>
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>A small problem you can solve by hand</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>You run a workshop making three furniture kits — <strong>chairs</strong>, <strong>tables</strong>, <strong>cabinets</strong>. Each kit consumes wood, labor, machine time and shipping effort. Today you have exactly <strong>9</strong> units of wood, <strong>8</strong> hours of labor, <strong>7</strong> hours of machine time, <strong>11</strong> units of shipping effort. How many of each kit should you make so that <em>every resource is used exactly — nothing wasted, nothing short?</em></p>
   </div>
   <div class="prose">
@@ -478,7 +645,7 @@ main:focus{outline:none}
     <p>Before any theory — just <em>play</em>. Find the production plan with your hands:</p>
   </div>
 
-  <div class="widget" id="w-mixer">
+  <div class="widget reveal" id="w-mixer">
     <div class="widget-head"><span class="w-title">The production mixer</span><span class="w-sub">hit every target exactly</span></div>
     <p class="wtry"><b>Try:</b> press + on chairs once and watch which bars move. Then hunt for the plan where all four read ✓.</p>
     <div class="wrow">
@@ -498,7 +665,7 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="callout intuition"><span class="tag">Intuition</span>
+  <div class="callout intuition reveal"><span class="tag">Intuition</span>
     <p>How would you solve it on paper instead of by trial? You'd play a small game: take two equations, scale one, subtract. A variable disappears. Take equation 2 minus 2× equation 1:</p>
     <p>\[\begin{aligned}(2x_1+x_2+x_3)-2(x_1+2x_2+x_3)&=8-2\cdot 9\\ -3x_2-x_3&=-10.\end{aligned}\]</p>
     <p>The \(x_1\) vanished — that is literally what <em>eliminate</em> means. Repeat until one variable stands alone, then <em>substitute</em> back up. Two moves. Everything fancy in this unit — matrices, Gaussian elimination, echelon form — is just these two moves, made automatic and made to scale.</p>
@@ -510,13 +677,13 @@ main:focus{outline:none}
 
 <!-- ================= 4 · THE THREE FATES ================= -->
 <section class="unit" id="s4">
-  <div class="sec-head"><span class="sec-num">4</span><h2>The three fates: zero, one, or infinity</h2></div>
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>The three fates: zero, one, or infinity</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>A treasure is hidden on a flat island. Two friends each hand you a clue, and each clue happens to describe a straight line: <em>"the treasure is somewhere on this line."</em> Before you read on — what are all the ways this can play out?</p>
   </div>
   <div class="prose"><p>There are exactly three, and you can generate all of them with your own hands:</p></div>
 
-  <div class="widget" id="w-lines">
+  <div class="widget reveal" id="w-lines">
     <div class="widget-head"><span class="w-title">Two clues, one island</span><span class="w-sub">each equation is a line; a solution is a point obeying both</span></div>
     <div class="presets" id="lines-presets">
       <button class="preset" data-p="one">One solution</button>
@@ -527,7 +694,7 @@ main:focus{outline:none}
     <p class="wtry"><b>Try:</b> drag one coefficient and watch its line tilt — the equation above the plot updates live, with the number you moved lit up.</p>
     <div class="eqlive" id="lines-eq" aria-live="polite"></div>
     <div class="wrow">
-      <div class="wcol" style="flex:2 1 330px"><svg id="lines-svg" viewBox="0 0 560 420" class="svg-lab" role="img" aria-label="Two lines on a coordinate plane; their intersection pattern shows the number of solutions"></svg></div>
+      <div class="wcol" style="flex:3 1 400px"><svg id="lines-svg" viewBox="0 0 640 480" class="svg-lab" role="img" aria-label="Two lines on a coordinate plane; their intersection pattern shows the number of solutions"></svg></div>
       <div class="wcol" style="flex:1 1 260px">
         <div class="controls" id="lines-ctls"></div>
         <div id="lines-verdict" class="verdict info" style="margin-top:.8rem">—</div>
@@ -536,13 +703,13 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="callout aha"><span class="tag">Aha</span>
+  <div class="callout aha reveal"><span class="tag">Aha</span>
     <p>A linear system can never have exactly <em>two</em> answers. Or seven. Or forty-two. Suppose you somehow found two different solutions \(\mathbf{u}\) and \(\mathbf{v}\). Then their midpoint is a solution. So is every blend \(\tfrac13\mathbf{u}+\tfrac23\mathbf{v}\). The moment you have two, linearity hands you the whole line through them — infinitely many. Finite counts above one are not on the menu: zero, one, or infinity. Nothing else.</p>
   </div>
   <div class="prose">
     <p>The same trichotomy appeared in the slides with three variables, where each equation is a <em>plane</em> in 3D. Add equations ① \(x_1+x_2+x_3=3\) and ② \(x_1-x_2+2x_3=2\): you get \(2x_1+3x_3=5\). If equation ③ says \(2x_1+3x_3=1\) — contradiction, <strong>no solution</strong>. If ③ says \(2x_1+3x_3=5\) — it's the other two in disguise, <strong>infinitely many</strong>, one for every choice of the <em>free variable</em> \(x_3\). And if ③ cuts through independently (say \(x_2+x_3=2\)), the three planes meet at <strong>one point</strong> \((1,1,1)\). In \(n\) dimensions the surfaces are called hyperplanes, we stop trying to draw them, and the story doesn't change: zero, one, or infinity. (In Section 13 you'll <em>fly through</em> those three planes in 3D and read each fate off a single number — the rank.)</p>
   </div>
-  <div class="check" data-check="c2">
+  <div class="check reveal" data-check="c2">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Your classmate claims a linear system with exactly <strong>two</strong> solutions exists. What do you say?</p>
     <div class="opts">
@@ -556,7 +723,7 @@ main:focus{outline:none}
 
 <!-- ================= 5 · MEET THE MATRIX ================= -->
 <section class="unit" id="s5">
-  <div class="sec-head"><span class="sec-num">5</span><h2>Meet the matrix — a spreadsheet with superpowers</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>Meet the matrix — a spreadsheet with superpowers</h2></div>
   <div class="prose">
     <p>An \((m,n)\) <strong>matrix</strong> is a grid of numbers \(a_{ij}\) — \(m\) rows, \(n\) columns. If you've opened Excel, you've seen one. A row vector is a \((1,n)\) matrix, a column vector an \((m,1)\) matrix, and \(\mathbb{R}^{m\times n}\) is the set of all such real grids. Strip our furniture problem of its variable names and plus signs, and keep only the numbers:</p>
     \[\underbrace{\begin{pmatrix}1&2&1\\2&1&1\\1&1&2\\3&1&2\end{pmatrix}}_{A\ \text{(the recipe)}}\ \underbrace{\begin{pmatrix}x_1\\x_2\\x_3\end{pmatrix}}_{\mathbf{x}\ \text{(unknowns)}} = \underbrace{\begin{pmatrix}9\\8\\7\\11\end{pmatrix}}_{\mathbf{b}\ \text{(targets)}}\]
@@ -564,7 +731,7 @@ main:focus{outline:none}
     <p><strong>Adding</strong> two matrices: same shape, add cell by cell. <strong>Scaling</strong> by \(\lambda\): multiply every cell. <strong>Multiplying</strong> two matrices is the strange one — row times column: for \(A\in\mathbb{R}^{m\times k}\), \(B\in\mathbb{R}^{k\times n}\), the product \(C=AB\) has \(c_{ij}=\sum_{l=1}^{k} a_{il}\,b_{lj}\). Trace it with your cursor:</p>
   </div>
 
-  <div class="widget" id="w-mult" style="max-width:48rem">
+  <div class="widget reveal" id="w-mult" style="max-width:48rem">
     <div class="widget-head"><span class="w-title">Row × column, cell by cell</span><span class="w-sub">hover / tap any cell of C = AB</span></div>
     <p class="wtry"><b>Try:</b> tap a cell of C, then press ▶ to watch the row and column slide together for every cell. Switch to BA to see the shapes refuse.</p>
     <div class="presets" id="mult-presets">
@@ -578,7 +745,7 @@ main:focus{outline:none}
     <p class="note">Inner sizes must agree: \((m\times k)(k\times n)\to m\times n\). If they don't, the product isn't defined — and even when both AB and BA exist, they're different matrices (here 2×2 versus 3×3).</p>
   </div>
 
-  <div class="pic">
+  <div class="pic reveal">
     <svg viewBox="0 0 640 150" role="img" aria-label="Composition: x goes through B (blur) then A (darken); the combined filter is AB">
       <g font-family="system-ui,sans-serif" font-size="12">
         <text x="40" y="60" font-size="15" font-weight="700" fill="var(--ink)" text-anchor="middle">x</text>
@@ -595,14 +762,14 @@ main:focus{outline:none}
         <line x1="412" y1="56" x2="462" y2="56" stroke="var(--ink-muted)" stroke-width="2"/><polygon points="468,56 458,51 458,61" fill="var(--ink-muted)"/>
         <text x="520" y="60" font-size="15" font-weight="700" fill="var(--ink)" text-anchor="middle">A(Bx)</text>
         <text x="520" y="78" font-size="11" fill="var(--ink-muted)" text-anchor="middle">blurred, then darkened</text>
-        <path d="M120 96 Q263 128 406 96" fill="none" stroke="var(--s7)" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <path class="glow-7" d="M120 96 Q263 128 406 96" fill="none" stroke="var(--s7)" stroke-width="1.8" stroke-dasharray="5 4"/>
         <text x="263" y="138" font-weight="700" fill="var(--s7)" text-anchor="middle">one combined filter: (AB)x = A(Bx) — read right to left</text>
       </g>
     </svg>
     <p class="picsub">Swap the boxes (darken first, then blur) and the output differs — that is BA ≠ AB, and it is why the order of a product matters.</p>
   </div>
 
-  <div class="callout intuition"><span class="tag">Intuition</span>
+  <div class="callout intuition reveal"><span class="tag">Intuition</span>
     <p><strong>Why this strange rule?</strong> Because matrices are <em>functions</em>, and multiplication is <em>composition</em>. Two photo filters: \(B\) blurs, \(A\) darkens. "Blur, then darken" is itself one combined filter — that filter is \(AB\) (read right-to-left: \(B\) acts first). The row-times-column recipe is exactly the arithmetic that makes \((AB)\mathbf{x} = A(B\mathbf{x})\) come out true. Matrix multiplication is function composition, written in numbers.</p>
     <p><strong>And why does order matter?</strong> Socks then shoes ≠ shoes then socks. Rotate a page then slide it right ≠ slide then rotate. Same two operations, different order, different result: \(AB\neq BA\) in general.</p>
   </div>
@@ -610,7 +777,7 @@ main:focus{outline:none}
     <p>Facts you'll use forever: \((AB)C=A(BC)\), \(A(B+C)=AB+AC\), \(I_mA=AI_n=A\), \(\lambda(AB)=(\lambda A)B\), and for transposes — writing rows as columns, \(b_{ij}=a_{ji}\) — the order-flipping rules \((A^T)^T=A\), \((A+B)^T=A^T+B^T\), \((AB)^T=B^T A^T\). A few matrices to greet by name: the <strong>identity</strong> \(I\) (the do-nothing filter), the <strong>zero matrix</strong> (destroy everything), <strong>diagonal</strong> matrices (stretch each axis independently), and <strong>symmetric</strong> matrices \(A=A^T\) — the best-behaved matrices in the subject; Unit 4 leans on them heavily.</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="dhead">Why (AB)ᵀ = BᵀAᵀ — derived</span>
     <p class="dgoal"><b>Claim.</b> For \(A\in\mathbb{R}^{m\times k}\) and \(B\in\mathbb{R}^{k\times n}\): \((AB)^T=B^TA^T\) — transposing a product flips the order.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Write one entry of the product with the definition:
@@ -628,7 +795,7 @@ main:focus{outline:none}
       <span class="dwhy">The order flipped because the shared index \(l\) sits on the right of \(A\) and the left of \(B\); after transposing it must sit on the left of \(A^T\) and the right of \(B^T\). Same story as undoing "socks then shoes": shoes off first.</span></div></div>
   </div>
 
-  <div class="check" data-check="c3">
+  <div class="check reveal" data-check="c3">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Without computing anything: \((AB)^T\) equals…</p>
     <div class="opts">
@@ -642,13 +809,13 @@ main:focus{outline:none}
 
 <!-- ================= 6 · THREE WINDOWS ================= -->
 <section class="unit" id="s6">
-  <div class="sec-head"><span class="sec-num">6</span><h2>Pause. Stare at Ax = b through three windows.</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Pause. Stare at Ax = b through three windows.</h2></div>
   <div class="prose">
     <p><strong>This is the most important section of the unit.</strong> One tiny system, three ways of seeing it — and switching between them at will is the most useful skill in linear algebra. Whenever you're stuck, ask: <em>which window would let me see this clearly?</em> Our toy system:</p>
     \[\begin{aligned}2x_1+x_2&=5\\ x_1+3x_2&=5\end{aligned}\qquad\Longleftrightarrow\qquad A=\begin{pmatrix}2&1\\1&3\end{pmatrix},\ \ \mathbf{b}=\begin{pmatrix}5\\5\end{pmatrix},\qquad\text{answer } \mathbf{x}=\begin{pmatrix}2\\1\end{pmatrix}.\]
   </div>
 
-  <div class="widget" id="w-windows">
+  <div class="widget reveal" id="w-windows">
     <div class="widget-head"><span class="w-title">The same equation, three ways</span></div>
     <div class="tabs" role="tablist" id="win-tabs">
       <button role="tab" aria-selected="true" data-t="rows">① Rows: each row is a rule</button>
@@ -657,7 +824,7 @@ main:focus{outline:none}
     </div>
     <div class="pane on" data-pane="rows">
       <div class="wrow">
-        <div class="wcol" style="flex:2 1 320px"><svg id="win-rows-svg" viewBox="0 0 560 400" class="svg-lab" role="img" aria-label="Two lines crossing at the solution point (2,1)"></svg></div>
+        <div class="wcol" style="flex:3 1 380px"><svg id="win-rows-svg" viewBox="0 0 640 440" class="svg-lab" role="img" aria-label="Two lines crossing at the solution point (2,1)"></svg></div>
         <div class="wcol" style="flex:1 1 250px">
           <p style="font-size:.9rem">Each row of \(A\), paired with its entry of \(\mathbf{b}\), is one <strong>rule</strong> the answer must obey. Rule 1: \(2x_1+x_2=5\). Rule 2: \(x_1+3x_2=5\). Geometrically each rule is a line (a plane in 3D, a hyperplane beyond). <strong>Solving = finding the point that obeys every rule at once</strong> — here, the crossing at \((2,1)\).</p>
           <p class="note">This is the schoolbook view — and it scales: ten equations, ten hyperplanes, one intersection.</p>
@@ -666,13 +833,14 @@ main:focus{outline:none}
     </div>
     <div class="pane" data-pane="cols">
       <div class="wrow">
-        <div class="wcol" style="flex:2 1 320px"><svg id="win-cols-svg" viewBox="0 0 560 400" class="svg-lab" role="img" aria-label="Scaled column vectors added head to tail, trying to reach the target b"></svg></div>
+        <div class="wcol" style="flex:3 1 380px"><div id="win-cols-svg" class="stage3d" role="img" aria-label="3D view: the two columns of A as glowing arrows on a glass plane — the column space — with scaled copies stacked head to tail, trying to reach the target b"></div><p class="stage-tap">drag the picture to orbit</p></div>
         <div class="wcol" style="flex:1 1 250px">
           <p style="font-size:.9rem">Now ignore the rows. See the <strong>columns</strong>: \(\mathbf{a}_1=\binom{2}{1}\), \(\mathbf{a}_2=\binom{1}{3}\). A line of algebra shows \(A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2\) — so \(\mathbf{x}\) is a <strong>shopping list</strong>: how much of each ingredient-column to mix so the pot equals \(\mathbf{b}\)?</p>
           <div class="controls">
             <div class="ctl"><label>x₁ (scoops of a₁)</label><input type="range" id="cols-x1" min="-1" max="4" step="0.1" value="0.8"><output id="cols-o1">0.8</output></div>
             <div class="ctl"><label>x₂ (scoops of a₂)</label><input type="range" id="cols-x2" min="-1" max="4" step="0.1" value="2.4"><output id="cols-o2">2.4</output></div>
           </div>
+          <div class="presets" style="margin:.5rem 0 .2rem"><button class="preset" id="cols-lift" aria-pressed="false">lift b off the plane</button></div>
           <div id="cols-verdict" class="verdict info" style="margin-top:.7rem">Mix the columns to hit b.</div>
           <p class="note">The set of everything you could ever cook from these columns is the <strong>column space</strong> of \(A\). If \(\mathbf{b}\) lives inside it, a recipe exists; if not, no solution — a fact that will run the show in Section 13.</p>
         </div>
@@ -680,7 +848,7 @@ main:focus{outline:none}
     </div>
     <div class="pane" data-pane="machine">
       <div class="wrow">
-        <div class="wcol" style="flex:2 1 320px"><svg id="win-mach-svg" viewBox="0 0 560 400" class="svg-lab" role="img" aria-label="A grid being deformed by the matrix; the input x lands on the output b"></svg></div>
+        <div class="wcol" style="flex:3 1 380px"><svg id="win-mach-svg" viewBox="0 0 640 440" class="svg-lab" role="img" aria-label="A grid being deformed by the matrix; the input x lands on the output b"></svg></div>
         <div class="wcol" style="flex:1 1 250px">
           <p style="font-size:.9rem">The deepest view. \(A\) is a <strong>function</strong>: feed it any vector \(\mathbf{x}\), it outputs \(A\mathbf{x}\) — it <em>moves all of space</em>. Then \(A\mathbf{x}=\mathbf{b}\) asks the question backwards: <strong>you can see the output \(\mathbf{b}\); which input \(\mathbf{x}\) produced it?</strong></p>
           <div class="controls"><div class="ctl"><label>Run the machine</label><input type="range" id="mach-t" min="0" max="1" step="0.01" value="0"><output id="mach-o">0%</output></div></div>
@@ -692,7 +860,7 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="dhead">Why Ax = x₁a₁ + x₂a₂ — derived</span>
     <p class="dgoal"><b>Claim.</b> For any \(2\times2\) matrix with columns \(\mathbf{a}_1,\mathbf{a}_2\): \(A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2\). The "row rules" window and the "column recipe" window are the same arithmetic.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Write the product row by row, exactly as the row window reads it:
@@ -707,11 +875,11 @@ main:focus{outline:none}
       <span class="dwhy">Scaling a vector multiplies every entry, so factoring \(x_1\) out of both entries is legal. With our numbers: \(2\binom{2}{1}+1\binom{1}{3}=\binom{5}{5}\) — the recipe the column tab found. The same three steps work for any \(m\times n\) matrix: \(A\mathbf{x}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n\).</span></div></div>
   </div>
 
-  <div class="callout aha"><span class="tag">Aha</span>
+  <div class="callout aha reveal"><span class="tag">Aha</span>
     <p>Picture a vending machine. The chocolate bar \(\mathbf{b}\) is sitting in the tray; your job is to figure out which button code \(\mathbf{x}\) was punched in. Three questions decide everything — <em>can</em> the code be recovered? could <em>multiple</em> codes give the same item? could <em>no</em> code give it? — and all three are properties of <strong>the machine itself</strong>, not of the particular bar in the tray. Keep this view alive: 3Blue1Brown's <em>Essence of Linear Algebra</em> builds everything on it, and so will we.</p>
   </div>
 
-  <div class="check" data-check="c4">
+  <div class="check reveal" data-check="c4">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">In the <em>column</em> window, "solve \(A\mathbf{x}=\mathbf{b}\)" translates to…</p>
     <div class="opts">
@@ -725,12 +893,12 @@ main:focus{outline:none}
 
 <!-- ================= 7 · FILTER FOR SPACE + DETERMINANT ================= -->
 <section class="unit" id="s7">
-  <div class="sec-head"><span class="sec-num">7</span><h2>A matrix is a Photoshop filter for space</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>A matrix is a Photoshop filter for space</h2></div>
   <div class="prose">
     <p>Here's the picture to keep. Feed \(A\) the two basis arrows \(\hat\imath=\binom{1}{0}\) and \(\hat\jmath=\binom{0}{1}\). Then \(A\hat\imath\) is <strong>the first column</strong> of \(A\), and \(A\hat\jmath\) is <strong>the second column</strong>. That's the entire game: once you know where those two arrows land, linearity fixes everything else — \(A\mathbf{x}=x_1(A\hat\imath)+x_2(A\hat\jmath)\). Four numbers, two arrows, one whole transformation of the plane.</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="dhead">Why Aî is column 1 — derived</span>
     <p class="dgoal"><b>Claim.</b> \(A\hat\imath=\mathbf{a}_1\) and \(A\hat\jmath=\mathbf{a}_2\); therefore the whole map is fixed by where two arrows land: \(A\mathbf{x}=x_1(A\hat\imath)+x_2(A\hat\jmath)\).</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Multiply out with \(\mathbf{x}=\hat\imath=(1,0)^T\):
@@ -749,7 +917,7 @@ main:focus{outline:none}
     <p>And the <strong>determinant</strong>? The unit square (area 1) becomes a parallelogram; \(\det A\) is the factor by which <em>area</em> got scaled — with a sign that records whether the plane got mirror-flipped. For a \(2\times2\) matrix, \(\det A = a_{11}a_{22}-a_{12}a_{21}\). Don't memorize first — <em>watch</em> first:</p>
   </div>
 
-  <div class="widget" id="w-machine">
+  <div class="widget reveal" id="w-machine">
     <div class="widget-head"><span class="w-title">The space machine</span><span class="w-sub">every linear map: lines stay lines, origin stays put, parallels stay parallel</span></div>
     <div class="presets" id="mach-presets">
       <button class="preset" data-p="id">Identity</button>
@@ -758,10 +926,11 @@ main:focus{outline:none}
       <button class="preset" data-p="stretch">Stretch</button>
       <button class="preset" data-p="reflect">Reflect</button>
       <button class="preset" data-p="squash">Squash flat (det = 0)</button>
+      <button class="preset" id="machine-play">▶ play the morph</button>
     </div>
     <p class="wtry"><b>Try:</b> drag the tip of î or ĵ right on the picture (or type entries). Then press "Squash flat" and watch the area label hit 0.</p>
     <div class="wrow">
-      <div class="wcol" style="flex:2 1 330px"><svg id="mach-svg" viewBox="0 0 560 430" class="svg-lab" style="touch-action:pan-y" role="img" aria-label="A deforming grid with the unit square shown as a parallelogram whose area is the determinant"></svg></div>
+      <div class="wcol" style="flex:3 1 400px"><svg id="mach-svg" viewBox="0 0 640 500" class="svg-lab" style="touch-action:pan-y" role="img" aria-label="A deforming grid with the unit square shown as a parallelogram whose area is the determinant"></svg></div>
       <div class="wcol" style="flex:1 1 260px">
         <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
           <span style="font-weight:650;font-size:.9rem">A =</span>
@@ -785,11 +954,11 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="callout watch"><span class="tag">Watch out</span>
+  <div class="callout watch reveal"><span class="tag">Watch out</span>
     <p>When det \(A=0\), one fact gets told in three languages: ① \(A\) is <strong>not invertible</strong> — no undo exists. ② The columns are <strong>linearly dependent</strong> — one is a blend of the others, so they bring no new direction. ③ <strong>Many inputs share one output</strong> — a filter so aggressive that a hundred different photos come out identical. Get fluent at translating between the three; exams and real ML phrase it at random. The name for this case is <em>singular matrix</em> — a whole dimension's worth of vectors collapsing into one point, the origin.</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="dhead">Why det = ad − bc is an area — derived</span>
     <p class="dgoal"><b>Claim.</b> For \(A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\) with \(a\neq0\), the parallelogram spanned by the columns \(\mathbf{a}_1=(a,c)^T\) and \(\mathbf{a}_2=(b,d)^T\) has signed area \(ad-bc\).</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Shear the parallelogram along \(\mathbf{a}_1\): replace the second side by \(\mathbf{a}_2-\tfrac{b}{a}\mathbf{a}_1\).
@@ -809,7 +978,7 @@ main:focus{outline:none}
     <p>Nothing about the area story was special to 2D. In 3D, a matrix \(A\in\mathbb{R}^{3\times3}\) carries the <strong>unit cube</strong> (volume 1) to a slanted box — a <em>parallelepiped</em> — and \(\det A\) is its <strong>signed volume</strong>. In \(n\) dimensions, \(\det A\) scales <em>hyper-volume</em>: the same idea, just past where drawing stops working. Grab the box below and spin it:</p>
   </div>
 
-  <div class="widget" id="w-det3">
+  <div class="widget reveal" id="w-det3">
     <div class="widget-head"><span class="w-title">Determinant in 3D — the volume machine</span><span class="w-sub">drag the picture to orbit · edit A freely</span></div>
     <div class="presets" id="det3-presets">
       <button class="preset" data-p="id">Identity</button>
@@ -822,7 +991,7 @@ main:focus{outline:none}
     </div>
     <p class="wtry"><b>Try:</b> press "Shear" and watch the box lean while det stays at 1 — then "Flatten" and watch the volume die.</p>
     <div class="wrow">
-      <div class="wcol" style="flex:2 1 330px"><svg id="det3-svg" viewBox="0 0 560 430" class="svg-lab grabbable" role="img" aria-label="Rotatable 3D view: the unit cube transformed into a parallelepiped whose volume is the determinant"></svg></div>
+      <div class="wcol" style="flex:3 1 400px"><div id="det3-svg" class="stage3d" role="img" aria-label="Orbitable 3D view: a lit parallelepiped — the unit cube after A — beside a ghost of the original cube; its volume is the determinant"></div><p class="stage-tap">drag the picture to orbit</p></div>
       <div class="wcol" style="flex:1 1 260px">
         <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
           <span style="font-weight:650;font-size:.9rem">A =</span>
@@ -843,7 +1012,7 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="check" data-check="c5">
+  <div class="check reveal" data-check="c5">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">You compute \(\det A = 0\) for a \(2\times2\) matrix. Which of the following must be true?</p>
     <div class="opts">
@@ -858,13 +1027,13 @@ main:focus{outline:none}
 
 <!-- ================= 8 · THE INVERSE ================= -->
 <section class="unit" id="s8">
-  <div class="sec-head"><span class="sec-num">8</span><h2>The undo button — A⁻¹</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The undo button — A⁻¹</h2></div>
   <div class="prose">
     <p>If \(A\) is "translate to French," \(A^{-1}\) is "translate back." The matrix that exactly reverses \(A\) satisfies \(A^{-1}A = AA^{-1} = I\) — do, then undo, and you're back where you started. If it exists, solving becomes one line: \(A\mathbf{x}=\mathbf{b}\Rightarrow \mathbf{x}=A^{-1}\mathbf{b}\).</p>
     <p>Does every square matrix have one? For \(2\times 2\) the answer can be built by hand — and the build shows exactly where it breaks:</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="dhead">Why the 2×2 inverse formula works — derived</span>
     <p class="dgoal"><b>Claim.</b> For \(A=\begin{pmatrix}a_{11}&a_{12}\\a_{21}&a_{22}\end{pmatrix}\) with \(\det A=a_{11}a_{22}-a_{12}a_{21}\neq0\): \(\ A^{-1}=\dfrac{1}{\det A}\begin{pmatrix}a_{22}&-a_{12}\\-a_{21}&a_{11}\end{pmatrix}\).</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Take the candidate \(B=\begin{pmatrix}a_{22}&-a_{12}\\-a_{21}&a_{11}\end{pmatrix}\) (swap the diagonal, negate the off-diagonal) and compute \(AB\) entry by entry:
@@ -885,10 +1054,10 @@ main:focus{outline:none}
   <div class="prose">
     <p>Non-square matrices don't get a true inverse at all; their story — least squares — comes later in the course.</p>
   </div>
-  <div class="callout try"><span class="tag">Try it yourself</span>
+  <div class="callout try reveal"><span class="tag">Try it yourself</span>
     <p>For our toy \(A=\begin{pmatrix}2&1\\1&3\end{pmatrix}\): \(\det A = 2\cdot3-1\cdot1=5\), so \(A^{-1}=\tfrac15\begin{pmatrix}3&-1\\-1&2\end{pmatrix}\). Multiply \(A^{-1}\binom{5}{5}\) by hand and confirm you land on \(\binom{2}{1}\) — the same answer the two crossing lines gave you in Section 6. Three windows, one truth.</p>
   </div>
-  <div class="callout watch"><span class="tag">Watch out</span>
+  <div class="callout watch reveal"><span class="tag">Watch out</span>
     <p><strong>If \(A^{-1}\) is so beautiful, why do practitioners avoid computing it?</strong> Four strikes:</p>
     <ol style="margin:.3rem 0 .4rem 1.2rem;padding:0">
       <li><strong>It often doesn't exist.</strong> \(\mathbf{x}=A^{-1}\mathbf{b}\) is only a legal sentence when \(A\) is square <em>and</em> full rank. A singular matrix has no inverse; a rectangular data matrix (the everyday ML case: 10,000 examples × 50 features) never has one. Elimination keeps working in every one of those worlds.</li>
@@ -901,11 +1070,11 @@ main:focus{outline:none}
 
   <div class="prose"><p>"Fragile" deserves to be <em>felt</em>, not just read. Here is a system whose true answer is always \((1,1)\) — and a dial that slides its matrix toward singularity:</p></div>
 
-  <div class="widget" id="w-frag">
+  <div class="widget reveal" id="w-frag">
     <div class="widget-head"><span class="w-title">The master-key trap</span><span class="w-sub">watching x = A⁻¹b fall apart as det → 0</span></div>
     <p class="wtry"><b>Try:</b> first nudge δ a little with ε = 1 (nothing much happens). Then drag ε toward 0 and watch the same nudge send the answer off the map.</p>
     <div class="wrow">
-      <div class="wcol" style="flex:2 1 320px"><svg id="frag-svg" viewBox="0 0 560 400" class="svg-lab" role="img" aria-label="Two nearly parallel lines; a tiny nudge of one line sends the intersection flying"></svg></div>
+      <div class="wcol" style="flex:3 1 380px"><svg id="frag-svg" viewBox="0 0 640 440" class="svg-lab" role="img" aria-label="Two nearly parallel lines; a tiny nudge of one line sends the intersection flying"></svg></div>
       <div class="wcol" style="flex:1 1 270px">
         <div class="controls">
           <div class="ctl"><label for="frag-eps">ε (det A)</label><input type="range" id="frag-eps" min="0" max="1" step="0.005" value="0"><output id="frag-eps-o">1</output></div>
@@ -926,7 +1095,7 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="check" data-check="c6">
+  <div class="check reveal" data-check="c6">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">You need \(\mathbf{x}\) for one system \(A\mathbf{x}=\mathbf{b}\) in production code. The professional move is…</p>
     <div class="opts">
@@ -940,7 +1109,7 @@ main:focus{outline:none}
 
 <!-- ================= 9 · TRAINING WHEELS ================= -->
 <section class="unit" id="s9">
-  <div class="sec-head"><span class="sec-num">9</span><h2>A system with training wheels</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>A system with training wheels</h2></div>
   <div class="prose">
     <p>Before building the general algorithm, the slides hand us a system so friendly it solves itself — <em>if</em> we look through the column window:</p>
     \[\begin{pmatrix}1&0&8&-4\\0&1&2&12\end{pmatrix}\begin{pmatrix}x_1\\x_2\\x_3\\x_4\end{pmatrix}=\begin{pmatrix}42\\8\end{pmatrix}\]
@@ -951,7 +1120,7 @@ main:focus{outline:none}
     <p>— and likewise for column 4: \(-4\mathbf{c}_1+12\mathbf{c}_2+0\mathbf{c}_3-\mathbf{c}_4=\mathbf{0}\). Any multiple \(\lambda_1(8,2,-1,0)^T\) or \(\lambda_2(-4,12,0,-1)^T\) is an <em>invisible ingredient</em>: add it to \(\mathbf{x}_p\) and the machine still outputs exactly \(\mathbf{b}\). The complete answer:</p>
     \[\Big\{\,\mathbf{x}\in\mathbb{R}^4:\ \mathbf{x}=\underbrace{\begin{pmatrix}42\\8\\0\\0\end{pmatrix}}_{\text{one valid answer}}+\ \lambda_1\underbrace{\begin{pmatrix}8\\2\\-1\\0\end{pmatrix}}_{\text{wiggle}}+\ \lambda_2\underbrace{\begin{pmatrix}-4\\12\\0\\-1\end{pmatrix}}_{\text{wiggle}},\ \ \lambda_1,\lambda_2\in\mathbb{R}\,\Big\}\]
   </div>
-  <div class="widget" id="w-lam" style="max-width:48rem">
+  <div class="widget reveal" id="w-lam" style="max-width:48rem">
     <div class="widget-head"><span class="w-title">The invisible ingredients</span><span class="w-sub">slide λ₁, λ₂ — the input changes, the output never does</span></div>
     <p class="wtry"><b>Try:</b> push both sliders to their extremes. Every entry of x moves; A·x reads (42, 8) the whole time.</p>
     <div class="wrow">
@@ -976,7 +1145,7 @@ main:focus{outline:none}
     <p class="note">The readout shows each output entry computed from the current x. The λ terms always cancel — because (8, 2, −1, 0) and (−4, 12, 0, −1) were built to satisfy A·x = 0. Four unknowns, two real rules → two invisible directions.</p>
   </div>
 
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>You walk into a sandwich shop. House rule: every sandwich must contain bread and a protein — that's the constraint, the "\(A\mathbf{x}=\mathbf{b}\)" part. Beyond that, add any toppings you like. The <strong>particular solution</strong> is the pre-made base sandwich; the <strong>toppings</strong> are the wiggle directions. Every legal sandwich = base + your topping combination. In math clothes: the wiggle directions solve \(A\mathbf{x}=\mathbf{0}\), their span is called the <strong>null space</strong> of \(A\), and</p>
     <p style="text-align:center"><em>full solution set of \(A\mathbf{x}=\mathbf{b}\)</em> = <em>any one solution</em> + <em>null space of \(A\)</em>.</p>
     <p>You will meet this formula again in linear regression, in optimization, and inside neural networks.</p>
@@ -988,8 +1157,8 @@ main:focus{outline:none}
 
 <!-- ================= 10 · THE NULL SPACE ================= -->
 <section class="unit" id="s10">
-  <div class="sec-head"><span class="sec-num">10</span><h2>The null space — the machine's blind spot</h2></div>
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>The null space — the machine's blind spot</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>A flashlight throws your hand's shadow onto a wall. The shadow-maker is a machine: 3D hand in, 2D shadow out. Now slide your hand <em>straight along the beam</em>, toward the flashlight. The shadow doesn't move. Not a pixel. That beam direction is invisible to the machine — motion along it produces <strong>zero change in the output</strong>. And because of that one invisible direction, any shadow you see could have been cast from <em>infinitely many</em> hand positions, all lined up along the beam.</p>
   </div>
   <div class="prose">
@@ -997,7 +1166,7 @@ main:focus{outline:none}
     \[N(A)\;=\;\{\,\mathbf{x}_n \in\mathbb{R}^n \;:\; A\mathbf{x}_n=\mathbf{0}\,\}\]
     <p>— the <strong>null space</strong>: every input the machine sends to zero. (The subscript is a habit worth copying: \(\mathbf{x}_n\) for "null solution," the inputs that answer the <em>homogeneous</em> question \(A\mathbf{x}=\mathbf{0}\).) It's never empty: \(A\mathbf{0}=\mathbf{0}\) always, so the origin is in every null space. The interesting question is whether anything <em>else</em> is — and here is exactly why you should care:</p>
   </div>
-  <div class="callout aha"><span class="tag">Aha</span>
+  <div class="callout aha reveal"><span class="tag">Aha</span>
     <p><strong>The null space is why solutions come in families.</strong> Suppose \(\mathbf{x}_p\) solves your problem: \(A\mathbf{x}_p=\mathbf{b}\). Take any null vector \(\mathbf{x}_n\) and add it. Linearity does the rest:</p>
     \[\begin{aligned}A(\mathbf{x}_p+\lambda\,\mathbf{x}_n)&=A\mathbf{x}_p+\lambda\,\underbrace{A\mathbf{x}_n}_{=\;\mathbf{0}}\\&=\mathbf{b}+\lambda\,\mathbf{0}=\mathbf{b}\qquad\text{for every }\lambda.\end{aligned}\]
     <p>The machine <em>cannot tell</em> \(\mathbf{x}_p\) and \(\mathbf{x}_p+\lambda\mathbf{x}_n\) apart — they're perfect aliases, hand positions along the beam. <strong>And the converse seals it:</strong> if \(\mathbf{u}\) and \(\mathbf{v}\) both solve \(A\mathbf{x}=\mathbf{b}\), then \(A(\mathbf{u}-\mathbf{v})=\mathbf{b}-\mathbf{b}=\mathbf{0}\) — any two solutions differ by a null vector. Nothing lives outside the family. Together, the two directions give the complete anatomy of every solution set:</p>
@@ -1007,10 +1176,11 @@ main:focus{outline:none}
     <p>Watch the whole story run live. The system below is singular on purpose — \(A=\begin{pmatrix}1&2\\2&4\end{pmatrix}\) (rank 1, second row a copy of the first), \(\mathbf{b}=\binom{4}{8}\), null direction \(\mathbf{x}_n=\binom{-2}{1}\) (check: \(A\mathbf{x}_n = \binom{-2+2}{-4+4}=\mathbf{0}\)). Slide \(\lambda\) and keep one eye on each panel:</p>
   </div>
 
-  <div class="widget" id="w-null">
+  <div class="widget reveal" id="w-null">
     <div class="widget-head"><span class="w-title">The blind-spot machine</span><span class="w-sub">the input walks the solution line — the output never feels it</span></div>
     <p class="wtry"><b>Try:</b> slide λ all the way left, then right. Left panel: the black dot walks the blue line. Right panel: nothing moves.</p>
     <div class="legend"><span><i style="background:var(--s1)"></i>solution line xₚ + λxₙ (input)</span><span><i style="background:var(--s7)"></i>null space N(A) and the λxₙ step</span><span><i style="background:var(--s3)"></i>column space (every possible output)</span></div>
+    <div id="null-3d" class="stage3d" style="margin-bottom:1rem" role="img" aria-label="3D projector: a flashlight throws the shadow of a vector onto a glass wall; sliding the vector along the beam leaves the shadow exactly where it was"></div>
     <div class="wrow">
       <div class="wcol" style="flex:1 1 300px">
         <div style="font-weight:700;font-size:.85rem;margin-bottom:.3rem">INPUT SPACE — where x lives</div>
@@ -1031,14 +1201,14 @@ main:focus{outline:none}
     <p class="note">Left: the violet dashed line through the <em>origin</em> is \(N(A)\) itself — a genuine space (contains 0, closed under adding and scaling: the closure promise of Section 2). The solid blue line is <strong>the same line, picked up and parked at \(\mathbf{x}_p\)</strong>; it misses the origin, so the solution set of \(A\mathbf{x}=\mathbf{b}\) (with \(\mathbf{b}\neq\mathbf{0}\)) is <em>not</em> a subspace. Right: every possible output lives on the aqua line — the <em>column space</em> — which is why this rank-1 machine can only ever be solved for targets on that line.</p>
   </div>
 
-  <div class="callout watch"><span class="tag">Watch out — this is everywhere in ML</span>
+  <div class="callout watch reveal"><span class="tag">Watch out — this is everywhere in ML</span>
     <p>Put two perfectly correlated columns in your data matrix — say, temperature in °C and the same temperature in °F — and you have just manufactured a null space: some combination of those features is invisible to the model. Consequence: <em>infinitely many weight vectors produce identical predictions</em>, your regression "can't decide," and its coefficients can swing wildly without changing the fit. That is a null space attacking in the wild. The clean fix is the policy "among all aliases, pick the shortest \(\mathbf{x}\)" — the <em>minimum-norm</em> solution, which the pseudoinverse computes. Ridge regularization approximates that policy by adding a small penalty on the size of \(\mathbf{x}\); you'll meet both later in the course, and you'll recognize them.</p>
   </div>
   <div class="prose">
     <p><em>How big is the blind spot?</em> Each independent null direction is one dimension of invisibility — a line, a plane, or more. The exact count will fall out of elimination in Sections 11–12: one free variable per missing pivot, \(\dim N(A)=n-\operatorname{rank}(A)\). And when the blind spot is just \(\{\mathbf{0}\}\)? Then aliases don't exist, and solutions — when they exist — are unique. You already know that case by its other names: full rank, \(\det\neq 0\), invertible.</p>
   </div>
 
-  <div class="check" data-check="c10">
+  <div class="check reveal" data-check="c10">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">\(\mathbf{x}_0\) solves \(A\mathbf{x}=\mathbf{b}\) (with \(\mathbf{b}\neq\mathbf{0}\)), and \(\mathbf{x}_n\neq\mathbf{0}\) lies in \(N(A)\). Which of these is guaranteed to be another solution?</p>
     <div class="opts">
@@ -1053,7 +1223,7 @@ main:focus{outline:none}
 
 <!-- ================= 11 · GAUSSIAN ELIMINATION ================= -->
 <section class="unit" id="s11">
-  <div class="sec-head"><span class="sec-num">11</span><h2>Gaussian elimination — the algorithm</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Gaussian elimination — the algorithm</h2></div>
   <div class="prose">
     <p>Hand-elimination worked for chairs and tables, but a million-variable regression needs a procedure with <em>no choices to make</em>: the same kind of step every time, guaranteed to finish, and a verdict — which of the three fates — at the end. That's what an algorithm is. Here it is.</p>
     <p>First, glue \(A\) and \(\mathbf{b}\) into one grid — the <strong>augmented matrix</strong> \([A\,|\,\mathbf{b}]\). Then use exactly <strong>three legal moves</strong>, each an honest re-statement of the equations:</p>
@@ -1065,7 +1235,7 @@ main:focus{outline:none}
     <p>Each move is <em>reversible</em>, so the solution set never changes (proved just below). We are not solving a different problem — we're rewriting the same problem until the answer becomes obvious. The target shape: pivots marching down-and-right in a staircase, zeros below — <strong>row-echelon form</strong> (REF).</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="dhead">Why row operations never change the solutions — derived</span>
     <p class="dgoal"><b>Claim.</b> If \([A'\,|\,\mathbf{b}']\) is obtained from \([A\,|\,\mathbf{b}]\) by any of the three moves, then \(A\mathbf{x}=\mathbf{b}\) and \(A'\mathbf{x}=\mathbf{b}'\) have exactly the same solution set.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Show every solution of the old system solves the new one. Write the rows as equations \(E_1,\dots,E_m\). A solution \(\mathbf{x}\) makes each \(E_i\) true — left side equals right side.
@@ -1080,7 +1250,7 @@ main:focus{outline:none}
       <span class="dwhy">A chain of moves is a chain of equalities, so the staircase at the end of elimination has <em>precisely</em> the solutions you started with — that is why reading the answer off the staircase is legitimate.</span></div></div>
   </div>
 
-  <div class="widget" id="w-elim" style="max-width:56rem">
+  <div class="widget reveal" id="w-elim" style="max-width:56rem">
     <div class="widget-head"><span class="w-title">The elimination machine</span><span class="w-sub">watch the staircase appear</span></div>
     <p class="wtry"><b>Try:</b> step through the 2×2 warm-up, then the full 4×5 example. Orange cells changed in this step; dashed cells on the left are what they were. At the final step a slider for the parameter <i>a</i> appears.</p>
     <div class="tabs" id="elim-tabs">
@@ -1091,6 +1261,7 @@ main:focus{outline:none}
       <button class="ghost" id="elim-prev">← Prev</button>
       <span class="chip">Step <b id="elim-step">0</b>/<span id="elim-total">0</span></span>
       <button class="ghost" id="elim-next">Next →</button>
+      <button class="ghost" id="elim-play">▶ play</button>
       <span class="opnote" id="elim-op"></span>
     </div>
     <div class="mxwrap elim-pair" id="elim-mx"></div>
@@ -1111,7 +1282,7 @@ main:focus{outline:none}
     <p>Formally, a matrix is in <strong>row-echelon form</strong> when all-zero rows sit at the bottom, and each row's first non-zero entry — its <strong>pivot</strong> — lies strictly to the right of the pivot above, with only zeros beneath it. Variables owning a pivot column are <strong>basic (bound)</strong>; the rest are <strong>free</strong>. And notice what the last row of the big example did for us: it distilled the entire system's fate into one sentence, "\(0 = a+1\)" — consistent only when \(a=-1\). Elimination doesn't just solve systems; it <em>diagnoses</em> them.</p>
   </div>
 
-  <div class="pic">
+  <div class="pic reveal">
     <svg viewBox="0 0 640 200" role="img" aria-label="Row-echelon form as a staircase: pivots step down and right, free columns are shaded, zeros below the stairs">
       <g font-family="ui-monospace,Menlo,monospace" font-size="15">
         <rect x="112" y="18" width="34" height="150" fill="color-mix(in srgb,var(--s2) 14%,transparent)"/>
@@ -1119,7 +1290,7 @@ main:focus{outline:none}
         <rect x="60" y="18" width="34" height="34" rx="6" fill="color-mix(in srgb,var(--s1) 18%,transparent)"/>
         <rect x="162" y="56" width="34" height="34" rx="6" fill="color-mix(in srgb,var(--s1) 18%,transparent)"/>
         <rect x="206" y="94" width="34" height="34" rx="6" fill="color-mix(in srgb,var(--s1) 18%,transparent)"/>
-        <path d="M60 52 H162 V90 H206 V128 H310" fill="none" stroke="var(--s1)" stroke-width="2.5" stroke-linejoin="round"/>
+        <path class="draw glow-1" d="M60 52 H162 V90 H206 V128 H310" fill="none" stroke="var(--s1)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
         <g fill="var(--ink)">
           <text x="77" y="42" text-anchor="middle" font-weight="700" fill="var(--s1)">1</text><text x="129" y="42" text-anchor="middle">−2</text><text x="179" y="42" text-anchor="middle">1</text><text x="223" y="42" text-anchor="middle">−1</text><text x="265" y="42" text-anchor="middle">1</text>
           <text x="77" y="80" text-anchor="middle">0</text><text x="129" y="80" text-anchor="middle">0</text><text x="179" y="80" text-anchor="middle" font-weight="700" fill="var(--s1)">1</text><text x="223" y="80" text-anchor="middle">−1</text><text x="265" y="80" text-anchor="middle">3</text>
@@ -1143,7 +1314,7 @@ main:focus{outline:none}
     <p class="picsub">The REF of the slide example (with a = −1): pivot columns 1, 3, 4 bind x₁, x₃, x₄; columns 2 and 5 are free.</p>
   </div>
 
-  <div class="check" data-check="c7">
+  <div class="check reveal" data-check="c7">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Move ② lets you scale a row by any \(\lambda \neq 0\). Why exactly is \(\lambda = 0\) forbidden?</p>
     <div class="opts">
@@ -1157,13 +1328,13 @@ main:focus{outline:none}
 
 <!-- ================= 12 · RREF & WHAT IT UNLOCKS ================= -->
 <section class="unit" id="s12">
-  <div class="sec-head"><span class="sec-num">12</span><h2>RREF — finish the job, and two tricks fall out</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>RREF — finish the job, and two tricks fall out</h2></div>
   <div class="prose">
     <p><strong>Why go further than REF?</strong> Because in <strong>reduced row-echelon form</strong> the solution can be <em>read off directly</em> — no back-substitution, no algebra left. The rule: keep eliminating until every pivot equals 1 and is the <em>only</em> non-zero entry in its column (sweep upward too). Pivot columns become canonical basis vectors, and the answers sit on the right of the bar. REF is making your bed; RREF is hospital corners. And unlike REF, which depends on your route, <strong>RREF is unique</strong> — the matrix's fingerprint.</p>
     <p>Watch the last mile happen on the Section 11 example (with \(a=-1\)), and then see the same machinery compute an inverse:</p>
   </div>
 
-  <div class="widget" id="w-rref" style="max-width:56rem">
+  <div class="widget reveal" id="w-rref" style="max-width:56rem">
     <div class="widget-head"><span class="w-title">The last mile: REF → RREF, and [A | I] → [I | A⁻¹]</span><span class="w-sub">same three moves, now sweeping upward</span></div>
     <p class="wtry"><b>Try:</b> step to the end of the first tab and read x₁, x₃, x₄ straight off the bar. Then switch tabs and watch A⁻¹ appear on the right.</p>
     <div class="tabs" id="rref-tabs">
@@ -1190,13 +1361,13 @@ main:focus{outline:none}
     <p>Because the pivot columns are canonical basis vectors, the particular solution is <em>read straight off the bar</em>: put each right-hand entry into its pivot variable's slot, zeros for the free variables — \(\mathbf{x}_p=(2,0,1,-1,0)^T\). Add the two null-space directions we just found, and the entire infinite family is:</p>
     \[\mathbf{x}=\underbrace{\begin{pmatrix}2\\0\\1\\-1\\0\end{pmatrix}}_{\text{one answer}}+\;\lambda_1\underbrace{\begin{pmatrix}3\\-1\\0\\0\\0\end{pmatrix}}_{\text{null dir.}}+\;\lambda_2\underbrace{\begin{pmatrix}3\\0\\9\\-4\\-1\end{pmatrix}}_{\text{null dir.}},\qquad\lambda_1,\lambda_2\in\mathbb{R}.\]
   </div>
-  <div class="callout aha"><span class="tag">Aha</span>
+  <div class="callout aha reveal"><span class="tag">Aha</span>
     <p><strong>The null space is not a bag of leftovers — it's a <em>space</em>.</strong> Check the closure promise from Section 2: if \(A\mathbf{u}=\mathbf{0}\) and \(A\mathbf{v}=\mathbf{0}\), then \(A(\mathbf{u}+\mathbf{v})=\mathbf{0}\) and \(A(\lambda\mathbf{u})=\mathbf{0}\). Add two invisible ingredients, or scale one — still invisible. The null space passes the vector-space entrance exam, and its size is bookkept by a beautiful ledger: <em>each free column donates exactly one direction</em>, so</p>
     <p style="text-align:center">\(\dim(\text{null space}) = n - \operatorname{rank}(A)\) &nbsp;(here \(5-3=2\)) — the <strong>rank–nullity theorem</strong> in plain clothes.</p>
     <p>Every pivot is a rule that pins a variable down; every missing pivot is a freedom left over. Information used + freedom remaining = number of unknowns. In Unit 2 (Vector Spaces) the null space and column space get their full treatment — bases, dimensions, geometry. You've already met them; there you'll learn their language.</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="dhead">Why dim N(A) = n − rank — derived</span>
     <p class="dgoal"><b>Claim.</b> If the RREF of \(A\) has \(r\) pivots among \(n\) columns, then \(N(A)\) has a basis of exactly \(n-r\) vectors — one per free column.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Row operations don't change \(N(A)\) (Section 11's derivation with \(\mathbf{b}=\mathbf{0}\)), so work with the RREF \(R\). Each pivot row of \(R\) reads
@@ -1214,7 +1385,7 @@ main:focus{outline:none}
   <div class="prose">
     <p><strong>Trick 2: the inverse, for free.</strong> If \(A\) is invertible, its RREF is \(I\) itself. Stack \([A\,|\,I]\) and row-reduce the left half to \(I\): the right half becomes \(A^{-1}\) — the second tab of the stepper above shows it for the toy matrix, landing on \(\tfrac15\begin{pmatrix}3&-1\\-1&2\end{pmatrix}\), the same inverse Section 8 wrote down. Why it works: solving \(A\mathbf{x}=\mathbf{e}_i\) for each basis vector recovers column \(i\) of \(A^{-1}\), and the augmented block runs all \(n\) of those systems at once. Elimination "knows" how to invert — even though (Section 8!) you'll rarely ask it to.</p>
   </div>
-  <div class="check" data-check="c11">
+  <div class="check reveal" data-check="c11">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">In the RREF stepper above, the left block of \([A\,|\,I]\) became \(I\) and the right block became \(\tfrac15\begin{pmatrix}3&-1\\-1&2\end{pmatrix}\). Why is that right block \(A^{-1}\)?</p>
     <div class="opts">
@@ -1228,8 +1399,8 @@ main:focus{outline:none}
 
 <!-- ================= 13 · RANK ================= -->
 <section class="unit" id="s13">
-  <div class="sec-head"><span class="sec-num">13</span><h2>Rank — one number that settles everything</h2></div>
-  <div class="callout intuition"><span class="tag">Intuition</span>
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Rank — one number that settles everything</h2></div>
+  <div class="callout intuition reveal"><span class="tag">Intuition</span>
     <p>Three friends in a group chat: whenever one speaks, the other two repeat it. Three people, <em>one</em> opinion — effectively a one-person chat. <strong>Rank</strong> counts the genuinely different voices in a matrix: the number of pivots that survive elimination — the number of truly independent directions its columns carry.</p>
   </div>
   <div class="prose">
@@ -1239,7 +1410,7 @@ main:focus{outline:none}
     <p><strong>Now look at \(B\)'s pivots from both sides.</strong> Its two pivots sit in columns 1 and 2 — so columns 1 and 2 are independent and column 3 is a blend of them (column 3 = 2·column 2 − column 1; check it). The same two pivots sit in rows 1 and 2 — so rows 1 and 2 are independent and row 3 is a blend of them. Two independent <strong>rows</strong> (rules), two independent <strong>columns</strong> (ingredients). Different questions about different objects — rows live in \(\mathbb{R}^n\), columns in \(\mathbb{R}^m\) — and the same count. That is not a coincidence of this example:</p>
   </div>
 
-  <div class="pic">
+  <div class="pic reveal">
     <svg viewBox="0 0 640 210" role="img" aria-label="One staircase counts twice: each pivot marks an independent row and an independent column">
       <g font-family="ui-monospace,Menlo,monospace" font-size="15">
         <!-- column highlights -->
@@ -1253,7 +1424,7 @@ main:focus{outline:none}
           <text x="168" y="97" text-anchor="middle">0</text><text x="214" y="97" text-anchor="middle" font-weight="700" fill="var(--s7)">−3</text><text x="260" y="97" text-anchor="middle">−6</text>
           <text x="168" y="137" text-anchor="middle" fill="var(--ink-muted)">0</text><text x="214" y="137" text-anchor="middle" fill="var(--ink-muted)">0</text><text x="260" y="137" text-anchor="middle" fill="var(--ink-muted)">0</text>
         </g>
-        <path d="M150 66 H196 V106 H290" fill="none" stroke="var(--s7)" stroke-width="2.5" stroke-linejoin="round"/>
+        <path class="draw glow-7" d="M150 66 H196 V106 H290" fill="none" stroke="var(--s7)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
         <path d="M136 26 V152 M136 26 h8 M136 152 h8 M292 26 V152 M292 26 h-8 M292 152 h-8" fill="none" stroke="var(--ink-2)" stroke-width="2"/>
         <g font-family="system-ui,sans-serif" font-size="12">
           <text x="128" y="57" text-anchor="end" fill="var(--s1)" font-weight="700">rule 1</text>
@@ -1273,20 +1444,20 @@ main:focus{outline:none}
     <p class="picsub">The staircase is counted once and read twice: down the rows, and across the columns.</p>
   </div>
 
-  <div class="callout aha"><span class="tag">Aha</span>
+  <div class="callout aha reveal"><span class="tag">Aha</span>
     <p><strong>Row rank = column rank. Always.</strong> Every matrix, every shape — which is why we get away with saying just "rank." The number of independent <em>rules</em> a matrix imposes equals the number of independent <em>directions</em> it can produce, because each pivot certifies one of each and the staircase counts both at once. Two ceilings follow: rank can't exceed the number of rows or the number of columns, so \(\operatorname{rank}(A)\le\min(m,n)\). A matrix at that ceiling is <strong>full rank</strong> — zero redundancy.</p>
     <p>The collapse dictionary is now complete: \(\det=0\) \(\iff\) rank below the ceiling \(\iff\) area/volume crushed to 0 \(\iff\) <em>singular</em>. Drop by one rank in 3D and the cube flattens to a sheet; by two, to a line — you watched exactly this in the volume machine of Section 7. Rank is <em>how many dimensions survive</em> the transformation.</p>
   </div>
   <div class="prose">
     <p>And rank answers the existence question completely — the three lines the whole unit was building toward:</p>
   </div>
-  <div class="callout remember"><span class="tag">Existence &amp; uniqueness, in three lines</span>
+  <div class="callout remember reveal"><span class="tag">Existence &amp; uniqueness, in three lines</span>
     <p>① <strong>At least one</strong> solution \(\iff \operatorname{rank}(A)=\operatorname{rank}([A|\mathbf{b}])\) — i.e. \(\mathbf{b}\) lies in the column space; the recipe can be cooked.</p>
     <p>② <strong>Exactly one</strong> \(\iff\) ① holds and \(\operatorname{rank}(A)=n\), the number of unknowns — no free variables, no wiggle room.</p>
     <p>③ <strong>Infinitely many</strong> \(\iff\) ① holds and \(\operatorname{rank}(A)<n\) — free variables exist, the null space is alive.</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="dhead">Why "consistent ⇔ rank(A) = rank([A|b])" — derived</span>
     <p class="dgoal"><b>Claim.</b> \(A\mathbf{x}=\mathbf{b}\) has at least one solution exactly when adding the column \(\mathbf{b}\) to \(A\) does not raise the rank.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Run elimination on \([A\,|\,\mathbf{b}]\) to reach a REF \([R\,|\,\mathbf{c}]\). The solutions are unchanged (Section 11's derivation), and \(R\) is a REF of \(A\) on its own.
@@ -1302,7 +1473,7 @@ main:focus{outline:none}
   </div>
   <div class="prose"><p>Watch all three lines come true in 3D. Same first two planes every time; only the third equation changes — and the rank chips tell each fate before your eyes do:</p></div>
 
-  <div class="widget" id="w-pl3">
+  <div class="widget reveal" id="w-pl3">
     <div class="widget-head"><span class="w-title">Three planes, three fates — through the rank lens</span><span class="w-sub">drag to orbit · each equation is a plane in 3D</span></div>
     <p class="wtry"><b>Try:</b> orbit until you can see the dashed lines where pairs of planes meet — three lines through one point, one shared line, or three parallel lines.</p>
     <div class="tabs" id="pl3-tabs">
@@ -1311,7 +1482,7 @@ main:focus{outline:none}
       <button aria-selected="false" data-t="none">No solution</button>
     </div>
     <div class="wrow">
-      <div class="wcol" style="flex:2 1 330px"><svg id="pl3-svg" viewBox="0 0 560 440" class="svg-lab grabbable" role="img" aria-label="Rotatable 3D view of three planes meeting in a point, a line, or not at all"></svg></div>
+      <div class="wcol" style="flex:3 1 400px"><div id="pl3-svg" class="stage3d" role="img" aria-label="Orbitable 3D view of three translucent glass planes meeting in a glowing point, sharing a glowing line, or never meeting at all"></div><p class="stage-tap">drag the picture to orbit</p></div>
       <div class="wcol" style="flex:1 1 270px">
         <div id="pl3-eqs" style="font-size:.95rem;line-height:2"></div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem;align-items:center">
@@ -1326,7 +1497,7 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="check" data-check="c9">
+  <div class="check reveal" data-check="c9">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Elimination on a 3-unknown system leaves \(\operatorname{rank}(A)=\operatorname{rank}([A|\mathbf{b}])=2\). What is the solution set?</p>
     <div class="opts">
@@ -1338,7 +1509,7 @@ main:focus{outline:none}
     <div class="why"></div>
   </div>
 
-  <div class="check" data-check="c8">
+  <div class="check reveal" data-check="c8">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">\(A\in\mathbb{R}^{5\times 7}\) with \(\operatorname{rank}(A)=5\). For a given \(\mathbf{b}\), how many solutions can \(A\mathbf{x}=\mathbf{b}\) have?</p>
     <div class="opts">
@@ -1352,11 +1523,11 @@ main:focus{outline:none}
 
 <!-- ================= 14 · SUMMARY ================= -->
 <section class="unit" id="s14">
-  <div class="sec-head"><span class="sec-num">14</span><h2>The whole story, in five lines</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>The whole story, in five lines</h2></div>
   <div class="prose">
     <p>① Linear systems matter because the world is <em>locally</em> linear, and ML is stacks of linear pieces with non-linear glue. ② \(A\mathbf{x}=\mathbf{b}\) is three pictures at once — row rules, column recipe, machine — keep all three windows open. ③ \(\mathbf{x}=A^{-1}\mathbf{b}\) is beautiful theory and poor practice: <code>solve</code>, don't <code>inv</code>. ④ Gaussian elimination → staircase → read off solutions, rank, inverse, and the system's fate. ⑤ Everything else this semester — LU, Cholesky, QR, even SVD — is a smarter flavor of the same elimination move.</p>
   </div>
-  <div class="callout remember"><span class="tag">The one thing to remember</span>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
     <p><strong>One image:</strong> a matrix is a machine that moves space; solving \(A\mathbf{x}=\mathbf{b}\) asks which input the machine turned into that output. <strong>One method:</strong> elimination on \([A|\mathbf{b}]\) until the staircase appears. <strong>One number:</strong> rank — the matrix's real dimension, and the judge of all three fates.</p>
   </div>
   <details><summary>What's coming — every later method is elimination in disguise</summary>
@@ -1376,7 +1547,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 1 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">Easy</span></div>
     <p class="pq">Solve the system below. Do it first by reducing to REF and back substituting, then again by going all the way to RREF. State \(\operatorname{rank}(A)\), \(\operatorname{rank}([A\,|\,\mathbf{b}])\) and the number of unknowns, and use them to justify the number of solutions.</p>
     \[ \begin{aligned} x + 2y &= 8\\ 3x - y &= 3 \end{aligned} \]
@@ -1398,7 +1569,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 2 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">Easy</span></div>
     <p class="pq">Use Gauss–Jordan elimination to solve the system below. Confirm your classification with the rank criterion.</p>
     \[ \begin{aligned} x + y + z &= 6\\ 2x - y + z &= 3\\ x + 2y - z &= 2 \end{aligned} \]
@@ -1419,7 +1590,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 3 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">Easy</span></div>
     <p class="pq">Show that the following system has no solution, and identify the exact row of the reduced matrix that proves it.</p>
     \[ \begin{aligned} x + y + z &= 3\\ 2x + 3y + z &= 5\\ 3x + 4y + 2z &= 10 \end{aligned} \]
@@ -1437,7 +1608,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 4 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">Medium</span></div>
     <p class="pq">Solve the system below. Give the general solution in parametric form and in vector form, and state how many free variables there are and why.</p>
     \[ \begin{aligned} x + y + z &= 3\\ 2x + 3y + z &= 5\\ 3x + 4y + 2z &= 8 \end{aligned} \]
@@ -1459,7 +1630,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 5 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">Medium</span></div>
     <p class="pq">Determine whether the system below has a solution other than \(x=y=z=0\). If it does, find every solution and give a basis for the null space of the coefficient matrix.</p>
     \[ \begin{aligned} x + 2y + 3z &= 0\\ 2x + 5y + 7z &= 0\\ 3x + 7y + 10z &= 0 \end{aligned} \]
@@ -1480,7 +1651,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 6 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">Medium</span></div>
     <p class="pq">For the matrix</p>
     \[ A=\begin{bmatrix}1&2&3&4\\2&4&6&8\\1&3&5&7\\2&5&8&11\end{bmatrix} \]
@@ -1505,7 +1676,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 7 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">Medium</span></div>
     <p class="pq">Solve the system below. Identify the pivot and free variables, and write the complete solution in vector form.</p>
     \[ \begin{aligned} x_1 + 2x_2 - x_3 + x_4 &= 1\\ 2x_1 + 4x_2 + x_3 - x_4 &= 5 \end{aligned} \]
@@ -1527,7 +1698,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 8 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff hard">Hard</span></div>
     <p class="pq">Consider the system</p>
     \[ \begin{aligned} x + y + z &= 6\\ x + 2y + 3z &= 14\\ x + 2y + az &= b \end{aligned} \]
@@ -1551,7 +1722,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 9 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff hard">Hard</span></div>
     <p class="pq">Solve</p>
     \[ \begin{aligned} x_1 + 2x_2 - x_3 + 3x_4 + x_5 &= 3\\ 2x_1 + 4x_2 - x_3 + 4x_4 + 3x_5 &= 5\\ 3x_1 + 6x_2 - 2x_3 + 7x_4 + 4x_5 &= 8\\ x_1 + 2x_2 + x_3 + 5x_5 &= 2 \end{aligned} \]
@@ -1579,7 +1750,7 @@ main:focus{outline:none}
   </div>
 
   <!-- ===== Problem 10 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff hard">Hard</span></div>
     <p class="pq">Let</p>
     \[ A=\begin{bmatrix}1&2&3\\2&5&8\\1&3&5\end{bmatrix},\qquad \mathbf{b}=\begin{bmatrix}b_1\\b_2\\b_3\end{bmatrix}. \]
@@ -1601,7 +1772,7 @@ main:focus{outline:none}
       <div class="callout remember" style="margin:.8rem 0 0"><span class="tag">Key takeaway</span><p>A parameter on the left of the bar controls \(\operatorname{rank}(A)\) and so the number of solutions. A parameter on the right of the bar controls only whether any solution exists.</p></div>
     </details>
   </div>
-  <div class="next-card">
+  <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
     <p style="margin:.35rem 0 .6rem"><strong><a href="unit-02.html">Unit 2 · Vector Spaces →</a></strong></p>
     <p style="margin:0 0 .6rem;font-family:var(--serif)">You can now solve \(A\mathbf{x}=\mathbf{b}\) and read off its three fates. Unit 2 asks the question underneath: what kind of space are these solutions living in? Groups, subspaces, span, independence, basis, dimension — the architecture every later unit is built on.</p>
@@ -1610,6 +1781,7 @@ main:focus{outline:none}
 </section>
 </main>
 
+<!--@cinema-js-->
 <script>
 (function(){
 "use strict";
@@ -1621,14 +1793,13 @@ const store = {
 };
 /* ---------- theme ---------- */
 const themeBtn = document.getElementById('theme-btn');
-const modes = ['auto','light','dark'];
-let mode = store.get('mfml-theme') || 'auto';
+const modes=['dark','light'];
+let mode=store.get('mfml-theme')==='light'?'light':'dark';
 function applyTheme(){
-  if(mode==='auto') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', mode);
+  document.documentElement.setAttribute('data-theme',mode);
   themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;
 }
-themeBtn.addEventListener('click', ()=>{ mode = modes[(modes.indexOf(mode)+1)%3]; store.set('mfml-theme',mode); applyTheme(); });
+themeBtn.addEventListener('click', ()=>{ mode = modes[(modes.indexOf(mode)+1)%2]; store.set('mfml-theme',mode); applyTheme(); });
 applyTheme();
 /* ---------- KaTeX ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -1649,7 +1820,24 @@ addEventListener('scroll', ()=>{
 /* ---------- svg helpers ---------- */
 const NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,parent){ const n=document.createElementNS(NS,tag); for(const k in attrs) n.setAttribute(k,attrs[k]); if(parent) parent.appendChild(n); return n; }
-function txt(parent,x,y,s,style,anchor){ const t=el('text',{x,y,'text-anchor':anchor||'start'},parent); t.setAttribute('style',style||'font:600 11px system-ui;fill:var(--ink-muted)'); t.textContent=s; return t; }
+function txt(parent,x,y,s,style,anchor){ const t=el('text',{x,y,'text-anchor':anchor||'start'},parent); t.setAttribute('style',(style||'font:600 11px system-ui;fill:var(--ink-muted)').replace(/system-ui/g,'Inter,system-ui')); t.textContent=s; return t; }
+/* ---- cinema helpers: SVG glow (dropped in the light theme) + theme probe ---- */
+const CIN=window.Cinema||null;
+const isLight=()=>document.documentElement.getAttribute('data-theme')==='light';
+function glo(svg,blur){ if(!CIN||isLight()) return null; return CIN.glowFilter(svg,'g-'+(svg.id||'x'),blur||2.4); }
+/* ---- three.js stage registry: every stage rebuilds itself when the theme flips, so colours are always the live palette ---- */
+const STAGES=[];
+function mountStage(box, build){ const S={box,build,handle:null}; STAGES.push(S); remount(S);
+  if('IntersectionObserver' in window) new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting&&S.handle) S.handle.requestRender(); }),{threshold:.02}).observe(box);  /* a canvas the browser discarded off-screen gets repainted on return */
+  return S; }
+function remount(S){
+  if(S.handle){ const h=S.handle; try{ h.ctx.dead=true; const R=h.ctx.renderer; R.render=()=>{}; R.setSize=()=>{}; h.dispose(); R.forceContextLoss(); }catch(e){} S.handle=null; }  /* and give the GL context back — browsers cap live contexts and silently kill the oldest */  /* the old loop may be woken again by its observers: make it inert */
+  S.box.innerHTML=''; if(CIN&&window.THREE){ try{ S.handle=S.build(); }catch(e){ console.warn('stage failed', e); } } }
+function hud(box, cls){ const d=document.createElement('div'); d.className='hud'+(cls?' '+cls:''); box.appendChild(d); return d; }
+function hint(box, text){ const d=document.createElement('div'); d.className='hint'; d.textContent=text||'drag to orbit'; box.appendChild(d); return d; }
+new MutationObserver(()=>STAGES.forEach(remount)).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+const T3=v=>[v[0],v[2],-v[1]];   /* math (x, y, z-up) → three.js (x, y-up, z toward the camera): a rotation, so handedness — and the sign of det — stays honest */
+const F3=(x,y)=>[x,0,-y];        /* a 2D math point laid on the floor */
 function plane(svg, X0,X1,Y0,Y1, opts){
   opts=opts||{};
   svg.innerHTML='';
@@ -1658,7 +1846,14 @@ function plane(svg, X0,X1,Y0,Y1, opts){
   const sx=(W-2*pad)/(X1-X0), sy=(H-2*pad)/(Y1-Y0), s=Math.min(sx,sy);
   const cx=pad+((W-2*pad)-s*(X1-X0))/2, cy=pad+((H-2*pad)-s*(Y1-Y0))/2;
   const px=x=>cx+(x-X0)*s, py=y=>H-cy-(y-Y0)*s;
-  const g=el('g',{},svg);
+  /* the grid fades toward the edges (radial mask) and the key strokes glow */
+  const glow=glo(svg);
+  const defs=svg.querySelector('defs')||el('defs',{},svg);
+  const mid='m-'+(svg.id||'p');
+  const rg=el('radialGradient',{id:mid+'-g',cx:'50%',cy:'50%',r:'62%'},defs);
+  el('stop',{offset:'0','stop-color':'#fff'},rg); el('stop',{offset:'.72','stop-color':'#fff','stop-opacity':'.8'},rg); el('stop',{offset:'1','stop-color':'#fff','stop-opacity':'.05'},rg);
+  const mk=el('mask',{id:mid},defs); el('rect',{x:0,y:0,width:W,height:H,fill:`url(#${mid}-g)`},mk);
+  const g=el('g',{mask:`url(#${mid})`},svg);
   const step=opts.step||1;
   for(let x=Math.ceil(X0);x<=X1;x+=step) el('line',{x1:px(x),y1:py(Y0),x2:px(x),y2:py(Y1),stroke:'var(--grid)','stroke-width':x===0?0:1},g);
   for(let y=Math.ceil(Y0);y<=Y1;y+=step) el('line',{x1:px(X0),y1:py(y),x2:px(X1),y2:py(y),stroke:'var(--grid)','stroke-width':y===0?0:1},g);
@@ -1668,10 +1863,11 @@ function plane(svg, X0,X1,Y0,Y1, opts){
     for(let x=Math.ceil(X0);x<=X1;x+=step) if(x!==0&&Math.abs(x)%Math.max(1,opts.tickEvery||1)===0) txt(svg,px(x),py(0)+15,x,'font:500 10px system-ui;fill:var(--ink-muted)','middle');
     for(let y=Math.ceil(Y0);y<=Y1;y+=step) if(y!==0&&Math.abs(y)%Math.max(1,opts.tickEvery||1)===0) txt(svg,px(0)-7,py(y)+3.5,y,'font:500 10px system-ui;fill:var(--ink-muted)','end');
   }
-  return {px,py,svg};
+  return {px,py,svg,grid:g,glow};
 }
+const G=(p,attrs)=>{ if(p&&p.glow) attrs.filter=p.glow; return attrs; };
 function arrow(p, x0,y0,x1,y1, color, w, label, lblStyle){
-  const g=el('g',{},p.svg);
+  const g=el('g',G(p,{}),p.svg);
   const X0=p.px(x0),Y0=p.py(y0),X1=p.px(x1),Y1=p.py(y1);
   const dx=X1-X0, dy=Y1-Y0, L=Math.hypot(dx,dy)||1;
   const hx=X1-dx/L*10, hy=Y1-dy/L*10;
@@ -1746,7 +1942,7 @@ function tabs(bar, onSwitch){
   function draw(){
     const t=+r.value, w=2.5*Math.pow(10,-2.4*t);
     const p=plane(svg, x0-w, x0+w, f0-w*0.75, f0+w*0.75, {noticks:true, step:w/2, pad:38});
-    svg.firstChild.remove(); // drop plane()'s integer grid: this window has its own ruler
+    p.grid.remove(); // drop plane()'s integer grid: this window has its own ruler
     const yb=p.py(f0-w*0.75), yt=p.py(f0+w*0.75);
     [-1,-0.5,0,0.5,1].forEach(k=>{ const X=p.px(x0+k*w); el('line',{x1:X,y1:yt,x2:X,y2:yb,stroke:'var(--grid)','stroke-width':k===0?1.5:1},svg); txt(svg,X,yb+14,tickFmt(x0+k*w),'font:500 10px system-ui;fill:var(--ink-muted)','middle'); });
     [-0.5,0,0.5].forEach(k=>{ const Y=p.py(f0+k*w); el('line',{x1:p.px(x0-w),y1:Y,x2:p.px(x0+w),y2:Y,stroke:'var(--grid)','stroke-width':k===0?1.5:1},svg); txt(svg,p.px(x0-w)-4,Y+3.5,tickFmt(f0+k*w),'font:500 10px system-ui;fill:var(--ink-muted)','end'); });
@@ -1757,9 +1953,9 @@ function tabs(bar, onSwitch){
       gap=Math.max(gap, Math.abs(y-(f0+df*(x-x0))));
       d+=(i?'L':'M')+p.px(x).toFixed(1)+','+p.py(y).toFixed(1);
     }
-    el('path',{d:`M${p.px(x0-w)},${p.py(f0+df*(-w))} L${p.px(x0+w)},${p.py(f0+df*(w))}`,stroke:'var(--s2)','stroke-width':2,'stroke-dasharray':'7 5',fill:'none'},svg);
-    el('path',{d,stroke:'var(--s1)','stroke-width':2.5,fill:'none'},svg);
-    el('circle',{cx:p.px(x0),cy:p.py(f0),r:4.5,fill:'var(--ink)'},svg);
+    el('path',G(p,{d:`M${p.px(x0-w)},${p.py(f0+df*(-w))} L${p.px(x0+w)},${p.py(f0+df*(w))}`,stroke:'var(--s2)','stroke-width':2.4,'stroke-dasharray':'8 6',fill:'none','stroke-linecap':'round'}),svg);
+    el('path',G(p,{d,stroke:'var(--s1)','stroke-width':3,fill:'none','stroke-linecap':'round'}),svg);
+    el('circle',G(p,{cx:p.px(x0),cy:p.py(f0),r:5.5,fill:'var(--s4)'}),svg);
     txt(svg,p.px(x0)+8,p.py(f0)-8,'x = 1','font:600 11px system-ui;fill:var(--ink-2)');
     txt(svg,14,20,'y = sin x','font:700 12px system-ui;fill:var(--s1)');
     txt(svg,14,36,'its tangent line','font:700 12px system-ui;fill:var(--s2)');
@@ -1821,7 +2017,7 @@ function tabs(bar, onSwitch){
     inp.addEventListener('input',()=>{ C[i]=+inp.value; o.value=fmt(C[i],1); hot=i; document.querySelectorAll('#lines-presets .preset').forEach(b=>b.setAttribute('aria-pressed','false')); draw(); });
     return {inp,o};
   });
-  let hot=-1; const eqBox=document.getElementById('lines-eq');
+  let hot=-1, burst=false, prevKind=''; const eqBox=document.getElementById('lines-eq');
   function eqText(){
     const co=(v,i)=>`<span class="coef${hot===i?' hot':''}">${fmt(v,1)}</span>`;
     const term=(v,i,sym,first)=>{ const sign=v<0?'−':(first?'':'+'); return `${sign} ${co(Math.abs(v),i)}${sym} `; };
@@ -1842,20 +2038,29 @@ function tabs(bar, onSwitch){
     const det=a1*b2-a2*b1, eps=1e-9;
     let kind;
     if(Math.abs(det)>eps) kind='one';
-    else {
+    if(kind==='one'&&prevKind!=='one') burst=true;
+    if(Math.abs(det)<=eps){
       const prop = Math.abs(a1)>eps? a2/a1 : (Math.abs(b1)>eps? b2/b1 : null);
       const degenerate1 = Math.abs(a1)<eps&&Math.abs(b1)<eps, degenerate2=Math.abs(a2)<eps&&Math.abs(b2)<eps;
       if(degenerate1||degenerate2) kind = (degenerate1&&Math.abs(c1)>eps)||(degenerate2&&Math.abs(c2)>eps) ? 'none':'inf-degenerate';
       else kind = Math.abs((prop??1)*c1-c2)<1e-6 ? 'inf':'none';
     }
-    if(s1.length===2) el('line',{x1:p.px(s1[0][0]),y1:p.py(s1[0][1]),x2:p.px(s1[1][0]),y2:p.py(s1[1][1]),stroke:'var(--s1)','stroke-width':2.5},svg);
-    if(s2.length===2) el('line',{x1:p.px(s2[0][0]),y1:p.py(s2[0][1]),x2:p.px(s2[1][0]),y2:p.py(s2[1][1]),stroke:'var(--s2)','stroke-width':2.5,'stroke-dasharray':kind.startsWith('inf')?'8 6':'none'},svg);
+    prevKind=kind;
+    if(s1.length===2) el('line',G(p,{x1:p.px(s1[0][0]),y1:p.py(s1[0][1]),x2:p.px(s1[1][0]),y2:p.py(s1[1][1]),stroke:'var(--s1)','stroke-width':3,'stroke-linecap':'round'}),svg);
+    if(s2.length===2) el('line',G(p,{x1:p.px(s2[0][0]),y1:p.py(s2[0][1]),x2:p.px(s2[1][0]),y2:p.py(s2[1][1]),stroke:'var(--s2)','stroke-width':3,'stroke-linecap':'round','stroke-dasharray':kind.startsWith('inf')?'9 7':'none'}),svg);
     if(s1.length===2) txt(svg,p.px(s1[1][0])-6,p.py(s1[1][1])-8,'ℓ₁','font:700 13px system-ui;fill:var(--s1)','end');
     if(s2.length===2) txt(svg,p.px(s2[1][0])-24,p.py(s2[1][1])+16,'ℓ₂','font:700 13px system-ui;fill:var(--s2)','end');
     if(kind==='one'){
       const X=(c1*b2-c2*b1)/det, Y=(a1*c2-a2*c1)/det;
-      el('circle',{cx:p.px(X),cy:p.py(Y),r:7,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':2},svg);
-      txt(svg,p.px(X)+11,p.py(Y)-9,`(${fmt(X)}, ${fmt(Y)})`,'font:700 12px system-ui;fill:var(--ink)');
+      const inView=Math.abs(X)<=V&&Math.abs(Y)<=V;
+      if(inView){
+        /* the crossing: a soft halo, a pulse ring, and — when the lines have just met — a burst */
+        el('circle',{cx:p.px(X),cy:p.py(Y),r:22,fill:'var(--s4)','fill-opacity':.12},svg);
+        el('circle',{cx:p.px(X),cy:p.py(Y),r:12,fill:'none',stroke:'var(--s4)','stroke-width':1.2,class:'pulse',opacity:.7},svg);
+        if(burst){ const bg=el('g',{class:'burst'},svg); [0,1,2].forEach(k=>el('circle',{cx:p.px(X),cy:p.py(Y),r:8,fill:'none',stroke:'var(--s4)','stroke-width':2.5,style:`animation:linesBurst 1.1s cubic-bezier(.16,1,.3,1) ${k*.13}s both`},bg)); burst=false; }
+      }
+      el('circle',G(p,{cx:p.px(X),cy:p.py(Y),r:7,fill:'var(--s4)',stroke:'var(--page)','stroke-width':2}),svg);
+      txt(svg,p.px(X)+13,p.py(Y)-11,`(${fmt(X)}, ${fmt(Y)})`,'font:700 13px system-ui;fill:var(--ink)');
       verd.className='verdict good'; verd.innerHTML=`✓ One solution: (${fmt(X)}, ${fmt(Y)})`;
       note.textContent='The clues cross once — X marks the spot. This is the generic case: it happens exactly when a₁b₂ − a₂b₁ ≠ 0 (a number you\'ll soon call the determinant).';
     } else if(kind==='none'){
@@ -1872,7 +2077,7 @@ function tabs(bar, onSwitch){
     if(b.dataset.p==='rand'){ do{ C=C.map((_,i)=> (i===2||i===5)? (Math.round(Math.random()*12)-6)/1 : (Math.round(Math.random()*16)-8)/2 ); }while(Math.abs(C[0])+Math.abs(C[1])<0.5||Math.abs(C[3])+Math.abs(C[4])<0.5); }
     else C=[...P[b.dataset.p]];
     sliders.forEach((s,i)=>{ s.inp.value=C[i]; s.o.value=fmt(C[i],1); });
-    hot=-1; draw();
+    hot=-1; if(b.dataset.p==='one'||b.dataset.p==='rand') prevKind=''; draw();
   }));
   document.querySelector('#lines-presets [data-p="one"]').setAttribute('aria-pressed','true');
   draw();
@@ -1945,33 +2150,81 @@ function tabs(bar, onSwitch){
     function drawLine(a,bb,c,color,label,lx){
       const pts=[];
       [[-1,null],[6,null]].forEach(([x])=>{const y=(c-a*x)/bb; pts.push([x,y]);});
-      el('line',{x1:p.px(pts[0][0]),y1:p.py(pts[0][1]),x2:p.px(pts[1][0]),y2:p.py(pts[1][1]),stroke:color,'stroke-width':2.5},svg);
-      txt(svg,p.px(lx),p.py((c-a*lx)/bb)-10,label,`font:700 12px system-ui;fill:${color}`);
+      el('line',G(p,{x1:p.px(pts[0][0]),y1:p.py(pts[0][1]),x2:p.px(pts[1][0]),y2:p.py(pts[1][1]),stroke:color,'stroke-width':3,'stroke-linecap':'round'}),svg);
+      txt(svg,p.px(lx),p.py((c-a*lx)/bb)-10,label,`font:700 13px system-ui;fill:${color}`);
     }
     drawLine(2,1,5,'var(--s1)','2x₁+x₂=5',1.1);
     drawLine(1,3,5,'var(--s2)','x₁+3x₂=5',4.4);
-    el('circle',{cx:p.px(2),cy:p.py(1),r:7,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':2},svg);
-    txt(svg,p.px(2)+11,p.py(1)+16,'(2, 1) — obeys both rules','font:700 12px system-ui;fill:var(--ink)');
+    el('circle',{cx:p.px(2),cy:p.py(1),r:20,fill:'var(--s4)','fill-opacity':.14},svg);
+    el('circle',{cx:p.px(2),cy:p.py(1),r:12,fill:'none',stroke:'var(--s4)','stroke-width':1.2,class:'pulse',opacity:.7},svg);
+    el('circle',G(p,{cx:p.px(2),cy:p.py(1),r:7,fill:'var(--s4)',stroke:'var(--page)','stroke-width':2}),svg);
+    txt(svg,p.px(2)+13,p.py(1)+18,'(2, 1) — obeys both rules','font:700 13px system-ui;fill:var(--ink)');
+  }
+  /* ---- the column picture, in 3D: the two columns as glowing arrows on the glass "column space" ---- */
+  const colsBox=document.getElementById('win-cols-svg'); let col3=null, lifted=false, bH=0, liftAnim=null, colsHud=null;
+  function buildCols(){
+    const P={}; col3=null;
+    return CIN.stage3d(colsBox,{fill:true,camera:{pos:[5.6,4.0,6.6],look:[2.7,.1,-2.6],fov:38},autoRotate:.09,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors}=ctx, hx=k=>CIN.hex(colors[k]);
+        const glass=CIN.prim.glass(ctx,9,9,hx('s3'),ctx.isLight?.07:.1); glass.rotation.x=-Math.PI/2; glass.position.set(2.5,-.006,-2.5); root.add(glass);
+        const grid=CIN.prim.grid(ctx,9,9,hx('s3'),{opacity:ctx.isLight?.4:.26}); grid.position.set(2.5,0,-2.5); root.add(grid);
+        root.add(CIN.prim.label(ctx,'column space — every output A can make',[4.6,.04,1.2],{size:26,color:colors.s3,bg:false}));
+        /* the ingredients: a₁ and a₂, as faint ghosts */
+        const ghost=(v,c)=>{ const a=CIN.prim.arrow(ctx,[0,0,0],F3(v[0],v[1]),c,{radius:.03,head:.26}); a.children.forEach(m=>{ m.material=m.material.clone(); m.material.transparent=true; m.material.opacity=.42; }); root.add(a); return a; };
+        ghost([2,1],hx('s1')); ghost([1,3],hx('s2'));
+        root.add(CIN.prim.label(ctx,'a₁ = (2, 1)',[3.15,.35,-.35],{size:36,color:colors.s1,bg:false,depthTest:false}));
+        root.add(CIN.prim.label(ctx,'a₂ = (1, 3)',[-.35,.5,-3.7],{size:36,color:colors.s2,bg:false,depthTest:false}));
+        /* the live recipe: x₁a₁ then x₂a₂ head to tail */
+        P.A1=CIN.prim.arrow(ctx,[0,0,0],[1,0,0],hx('s1'),{radius:.065,head:.36}); P.A2=CIN.prim.arrow(ctx,[0,0,0],[1,0,0],hx('s2'),{radius:.065,head:.36}); root.add(P.A1,P.A2);
+        P.tip=CIN.prim.dot(ctx,[0,0,0],hx('s4'),.11); root.add(P.tip);
+        const dg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(1,0,0)]);
+        P.dash=new THREE.Line(dg,new THREE.LineDashedMaterial({color:hx('ink2'),dashSize:.12,gapSize:.09,transparent:true,opacity:.7})); P.dash.frustumCulled=false; root.add(P.dash);
+        /* the target b: a glowing ring on the plane — or floating above it */
+        P.ring=new THREE.Mesh(new THREE.TorusGeometry(.32,.035,10,44),new THREE.MeshStandardMaterial({color:hx('s3'),emissive:hx('s3'),emissiveIntensity:ctx.isLight?.2:.9,roughness:.3})); P.ring.rotation.x=Math.PI/2; root.add(P.ring);
+        P.bdot=CIN.prim.dot(ctx,[5,0,-5],hx('s3'),.08); root.add(P.bdot);
+        P.blab=CIN.prim.label(ctx,'b = (5, 5)',[5,.55,-5],{size:36,color:colors.s3,bg:false,depthTest:false}); root.add(P.blab);
+        P.shadow=new THREE.Mesh(new THREE.RingGeometry(.26,.36,40),new THREE.MeshBasicMaterial({color:hx('s3'),transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false})); P.shadow.rotation.x=-Math.PI/2; P.shadow.position.set(5,.01,-5); P.shadow.visible=false; root.add(P.shadow);
+        const dr=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(5,0,-5),new THREE.Vector3(5,1,-5)]);
+        P.drop=new THREE.Line(dr,new THREE.LineDashedMaterial({color:hx('s3'),dashSize:.1,gapSize:.07,transparent:true,opacity:.8})); P.drop.visible=false; P.drop.frustumCulled=false; root.add(P.drop);
+        root.add(CIN.prim.dot(ctx,[0,0,0],hx('ink2'),.05));
+        P.ctx=ctx; colsHud=hud(colsBox); hint(colsBox,'drag to orbit');
+        col3=P; apply3d();
+      },
+      update(ctx,t){ if(ctx.dead||!col3) return false; const k=1+.06*Math.sin(t*2.6); col3.ring.scale.set(k,k,1); return true; }
+    });
+  }
+  function apply3d(){
+    if(!col3) return;
+    const x1=+document.getElementById('cols-x1').value, x2=+document.getElementById('cols-x2').value;
+    const t1=[2*x1,x1], tip=[t1[0]+x2,t1[1]+3*x2];
+    col3.A1.visible=Math.abs(x1)>.02; if(col3.A1.visible) col3.A1.userData.set([0,0,0],F3(t1[0],t1[1]));
+    col3.A2.visible=Math.abs(x2)>.02; if(col3.A2.visible) col3.A2.userData.set(F3(t1[0],t1[1]),F3(tip[0],tip[1]));
+    col3.tip.position.set(...F3(tip[0],tip[1]));
+    const dp=col3.dash.geometry.attributes.position.array; dp[3]=tip[0]; dp[4]=0; dp[5]=-tip[1]; col3.dash.geometry.attributes.position.needsUpdate=true; col3.dash.computeLineDistances();
+    col3.ring.position.set(5,bH+.02,-5); col3.bdot.position.set(5,bH,-5); col3.blab.position.set(5,bH+.55,-5);
+    const up=bH>.02; col3.shadow.visible=up; col3.drop.visible=up;
+    const rp=col3.drop.geometry.attributes.position.array; rp[4]=bH; col3.drop.geometry.attributes.position.needsUpdate=true; col3.drop.computeLineDistances();
+    if(colsHud) colsHud.innerHTML=`blend = (<b>${fmt(tip[0],1)}</b>, <b>${fmt(tip[1],1)}</b>)`+(up?' · b is <b>off</b> the plane':'');
+    if(col3.ctx.requestRender) col3.ctx.requestRender();
   }
   function cols(){
-    const svg=document.getElementById('win-cols-svg');
     const x1=+document.getElementById('cols-x1').value, x2=+document.getElementById('cols-x2').value;
     document.getElementById('cols-o1').value=fmt(x1,1); document.getElementById('cols-o2').value=fmt(x2,1);
-    const p=plane(svg,-1,7,-1,7,{tickEvery:2});
     const t1=[x1*2,x1*1], tip=[t1[0]+x2*1, t1[1]+x2*3];
-    // target b
-    el('circle',{cx:p.px(5),cy:p.py(5),r:8,fill:'none',stroke:'var(--s3)','stroke-width':2.5},svg);
-    el('circle',{cx:p.px(5),cy:p.py(5),r:3,fill:'var(--s3)'},svg);
-    txt(svg,p.px(5)+12,p.py(5)-8,'b = (5,5)','font:700 12px system-ui;fill:var(--s3)');
-    if(Math.hypot(t1[0],t1[1])>0.05){ arrow(p,0,0,t1[0],t1[1],'var(--s1)',3); txt(svg,p.px(t1[0]/2)+10,p.py(t1[1]/2)+14,`${fmt(x1,1)}·a₁`,'font:700 12px system-ui;fill:var(--s1)'); }
-    if(Math.abs(x2)>0.02){ arrow(p,t1[0],t1[1],tip[0],tip[1],'var(--s2)',3); txt(svg,p.px((t1[0]+tip[0])/2)+8,p.py((t1[1]+tip[1])/2)+4,`${fmt(x2,1)}·a₂`,'font:700 12px system-ui;fill:var(--s2)'); }
-    el('line',{x1:p.px(0),y1:p.py(0),x2:p.px(tip[0]),y2:p.py(tip[1]),stroke:'var(--ink-muted)','stroke-width':1.5,'stroke-dasharray':'4 4'},svg);
-    el('circle',{cx:p.px(tip[0]),cy:p.py(tip[1]),r:4,fill:'var(--ink)'},svg);
+    apply3d();
     const verd=document.getElementById('cols-verdict');
-    if(Math.hypot(tip[0]-5,tip[1]-5)<0.15){ verd.className='verdict good'; verd.innerHTML='✓ Recipe found: 2 scoops of a₁ + 1 scoop of a₂ = b'; }
+    if(lifted){ verd.className='verdict bad'; verd.innerHTML='✗ b = (5, 5, 2) floats above the plane — no amounts of a₁ and a₂ can leave it. No solution.'; }
+    else if(Math.hypot(tip[0]-5,tip[1]-5)<0.15){ verd.className='verdict good'; verd.innerHTML='✓ Recipe found: 2 scoops of a₁ + 1 scoop of a₂ = b'; }
     else { verd.className='verdict info'; verd.textContent=`current blend: (${fmt(tip[0],1)}, ${fmt(tip[1],1)}) — aim for (5, 5)`; }
   }
+  document.getElementById('cols-lift').addEventListener('click',e=>{
+    lifted=!lifted; e.currentTarget.setAttribute('aria-pressed',lifted?'true':'false'); e.currentTarget.textContent=lifted?'put b back on the plane':'lift b off the plane';
+    if(liftAnim) liftAnim.stop(); const from=bH, to=lifted?2.2:0;
+    liftAnim=tween(700,u=>{ bH=from+(to-from)*u; apply3d(); },()=>{ liftAnim=null; cols(); }); cols();
+  });
   ['cols-x1','cols-x2'].forEach(id=>document.getElementById(id).addEventListener('input',cols));
+  if(colsBox) mountStage(colsBox,buildCols);
   function mach(){
     const svg=document.getElementById('win-mach-svg');
     const t=+document.getElementById('mach-t').value;
@@ -1985,11 +2238,12 @@ function tabs(bar, onSwitch){
       el('line',{x1:p.px(l1[0][0]),y1:p.py(l1[0][1]),x2:p.px(l1[1][0]),y2:p.py(l1[1][1]),stroke:'var(--s1)','stroke-width':.7,opacity:.35},g);
       el('line',{x1:p.px(l2[0][0]),y1:p.py(l2[0][1]),x2:p.px(l2[1][0]),y2:p.py(l2[1][1]),stroke:'var(--s1)','stroke-width':.7,opacity:.35},g);
     }
-    el('circle',{cx:p.px(5),cy:p.py(5),r:8,fill:'none',stroke:'var(--s3)','stroke-width':2.5},svg);
-    txt(svg,p.px(5)+12,p.py(5)-8,'b = (5,5)','font:700 13px system-ui;fill:var(--s3)');
+    el('circle',{cx:p.px(5),cy:p.py(5),r:18,fill:'var(--s3)','fill-opacity':.12},svg);
+    el('circle',G(p,{cx:p.px(5),cy:p.py(5),r:8,fill:'none',stroke:'var(--s3)','stroke-width':2.5}),svg);
+    txt(svg,p.px(5)+14,p.py(5)-10,'b = (5,5)','font:700 13px system-ui;fill:var(--s3)');
     // unit square and the basis arrows
     const S=[[0,0],[1,0],[1,1],[0,1]].map(ap);
-    el('polygon',{points:S.map(pt=>p.px(pt[0])+','+p.py(pt[1])).join(' '),fill:'var(--wash-1)',stroke:'var(--s1)','stroke-width':1.5},svg);
+    el('polygon',G(p,{points:S.map(pt=>p.px(pt[0])+','+p.py(pt[1])).join(' '),fill:'var(--s1)','fill-opacity':.16,stroke:'var(--s1)','stroke-width':1.6}),svg);
     const ei=ap([1,0]), ej=ap([0,1]);
     arrow(p,0,0,ei[0],ei[1],'var(--s1)',3,t>0.95?'Aî = (2,1)':'î');
     arrow(p,0,0,ej[0],ej[1],'var(--s2)',3,t>0.95?'Aĵ = (1,3)':'ĵ');
@@ -2022,7 +2276,7 @@ function tabs(bar, onSwitch){
     c.addEventListener('input',()=>{ const v=parseFloat(c.value); if(!isFinite(v)) return; M[i]=clamp10(v); sliders[i].inp.value=M[i]; sliders[i].o.value=fmt(M[i]); clearPressed(); draw(); });
     c.addEventListener('change',()=>{ c.value=fmt(M[i]); });
   });
-  function clearPressed(){ document.querySelectorAll('#mach-presets .preset').forEach(b=>b.setAttribute('aria-pressed','false')); }
+  function clearPressed(){ document.querySelectorAll('#mach-presets .preset[data-p]').forEach(b=>b.setAttribute('aria-pressed','false')); }
   function syncSliders(){ sliders.forEach((s,i)=>{ s.inp.value=M[i]; s.o.value=fmt(M[i]); cells[i].value=fmt(M[i]); }); }
   function draw(){
     const ext=Math.max(Math.abs(M[0])+Math.abs(M[1]), Math.abs(M[2])+Math.abs(M[3]), 2.2);
@@ -2038,11 +2292,11 @@ function tabs(bar, onSwitch){
       el('line',{x1:p.px(l2[0][0]),y1:p.py(l2[0][1]),x2:p.px(l2[1][0]),y2:p.py(l2[1][1]),stroke:'var(--s1)','stroke-width':.7,opacity:.3},g);
     }
     const S=[[0,0],[1,0],[1,1],[0,1]].map(ap);
-    el('polygon',{points:S.map(pt=>p.px(pt[0])+','+p.py(pt[1])).join(' '),fill:'var(--wash-1)',stroke:'var(--s1)','stroke-width':2},svg);
-    arrow(p,0,0,M[0],M[2],'var(--s1)',3,'î');
-    arrow(p,0,0,M[1],M[3],'var(--s2)',3,'ĵ');
-    el('circle',{cx:p.px(M[0]),cy:p.py(M[2]),r:9,fill:'var(--s1)','fill-opacity':.18,stroke:'var(--s1)','stroke-width':1},svg);
-    el('circle',{cx:p.px(M[1]),cy:p.py(M[3]),r:9,fill:'var(--s2)','fill-opacity':.18,stroke:'var(--s2)','stroke-width':1},svg);
+    el('polygon',G(p,{points:S.map(pt=>p.px(pt[0])+','+p.py(pt[1])).join(' '),fill:'var(--s1)','fill-opacity':.18,stroke:'var(--s1)','stroke-width':2.2,'stroke-linejoin':'round'}),svg);
+    arrow(p,0,0,M[0],M[2],'var(--s1)',3.4,'î');
+    arrow(p,0,0,M[1],M[3],'var(--s2)',3.4,'ĵ');
+    el('circle',{cx:p.px(M[0]),cy:p.py(M[2]),r:11,fill:'var(--s1)','fill-opacity':.2,stroke:'var(--s1)','stroke-width':1,class:'pulse'},svg);
+    el('circle',{cx:p.px(M[1]),cy:p.py(M[3]),r:11,fill:'var(--s2)','fill-opacity':.2,stroke:'var(--s2)','stroke-width':1,class:'pulse'},svg);
     const det=M[0]*M[3]-M[1]*M[2];
     if(Math.abs(det)>0.15){ const c=ap([0.5,0.5]); txt(svg,p.px(c[0]),p.py(c[1])+4,'area '+fmt(Math.abs(det)),'font:700 12px system-ui;fill:var(--s1)','middle'); }
     lastP=p;
@@ -2055,11 +2309,11 @@ function tabs(bar, onSwitch){
       else{
         let nv=[-M[1],M[0]]; if(Math.hypot(nv[0],nv[1])<1e-9) nv=[M[3],-M[2]];
         const nn=Math.hypot(nv[0],nv[1]); nv=[nv[0]/nn*R*1.3, nv[1]/nn*R*1.3];
-        el('line',{x1:p.px(-nv[0]),y1:p.py(-nv[1]),x2:p.px(nv[0]),y2:p.py(nv[1]),stroke:'var(--s7)','stroke-width':2.5,'stroke-dasharray':'8 6'},svg);
+        el('line',G(p,{x1:p.px(-nv[0]),y1:p.py(-nv[1]),x2:p.px(nv[0]),y2:p.py(nv[1]),stroke:'var(--s7)','stroke-width':2.8,'stroke-dasharray':'8 6','stroke-linecap':'round'}),svg);
         txt(svg,p.px(nv[0]*0.72)+8,p.py(nv[1]*0.72)-8,'null space → crushed to 0','font:700 11px system-ui;fill:var(--s7)');
         let cv=[M[0],M[2]]; if(Math.hypot(cv[0],cv[1])<1e-9) cv=[M[1],M[3]];
         const cn=Math.hypot(cv[0],cv[1]); cv=[cv[0]/cn*R*1.3, cv[1]/cn*R*1.3];
-        el('line',{x1:p.px(-cv[0]),y1:p.py(-cv[1]),x2:p.px(cv[0]),y2:p.py(cv[1]),stroke:'var(--s3)','stroke-width':2.5,'stroke-dasharray':'3 5'},svg);
+        el('line',G(p,{x1:p.px(-cv[0]),y1:p.py(-cv[1]),x2:p.px(cv[0]),y2:p.py(cv[1]),stroke:'var(--s3)','stroke-width':2.8,'stroke-dasharray':'3 6','stroke-linecap':'round'}),svg);
         txt(svg,p.px(cv[0]*0.55)+8,p.py(cv[1]*0.55)+16,'column space (all outputs)','font:700 11px system-ui;fill:var(--s3)');
         verd.className='verdict bad'; verd.textContent='✗ Collapsed: rank 1 — outputs live on the aqua line; the violet line is sent to 0.';
       }
@@ -2092,10 +2346,17 @@ function tabs(bar, onSwitch){
   });
   ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>dragTip=-1));
   const P={id:[1,0,0,1],rot:[0.866,-0.5,0.5,0.866],shear:[1,1,0,1],stretch:[1.6,0,0,0.6],reflect:[-1,0,0,1],squash:[1,0.5,2,1]};
-  document.querySelectorAll('#mach-presets .preset').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#mach-presets .preset[data-p]').forEach(b=>b.addEventListener('click',()=>{
     clearPressed(); b.setAttribute('aria-pressed','true'); animateTo(P[b.dataset.p]);
   }));
   undo.addEventListener('click',()=>{ if(!undo.disabled){ clearPressed(); animateTo([1,0,0,1]); } });
+  /* ▶ play the morph: the grid grows from the identity into the current matrix, a 2.6 s story */
+  document.getElementById('machine-play').addEventListener('click',()=>{
+    if(anim) anim.stop();
+    const T=[...M]; const same=T.every((v,i)=>Math.abs(v-[1,0,0,1][i])<1e-9); const target=same?[1,1,0,1]:T;
+    M=[1,0,0,1]; syncSliders(); draw();
+    anim=tween(2600,e=>{ M=[1,0,0,1].map((v,i)=>v+(target[i]-v)*e); syncSliders(); draw(); },()=>anim=null);
+  });
   document.querySelector('#mach-presets [data-p="id"]').setAttribute('aria-pressed','true');
   draw();
 })();
@@ -2125,7 +2386,7 @@ function tabs(bar, onSwitch){
       const changed = prev && st.chg && st.chg.includes(i) && String(prev.m[i][j])!==String(v);
       if(isPrev){ if(changed) s.classList.add('was-chg'); }
       else{
-        if(changed) s.classList.add('rowchg');
+        if(changed){ s.classList.add('rowchg'); s.style.setProperty('--k',j); }
         if(st.piv&&st.piv.some(([pi,pj])=>pi===i&&pj===j)) { s.classList.remove('rowchg'); s.classList.add('pivot'); }
       }
       d.appendChild(s);
@@ -2147,9 +2408,16 @@ function tabs(bar, onSwitch){
     fin.style.display=(data===FULL&&step===data.length-1)?'block':'none';
     if(fin.style.display==='block') verdictA();
   }
-  document.getElementById('elim-prev').addEventListener('click',()=>{ if(step>0){step--;render();} });
-  document.getElementById('elim-next').addEventListener('click',()=>{ if(step<data.length-1){step++;render();} });
-  tabs(document.getElementById('elim-tabs'), t=>{ data=(t==='warm')?WARM:FULL; step=0; render(); });
+  let anim=null;
+  document.getElementById('elim-prev').addEventListener('click',()=>{ if(anim){anim.stop();anim=null;} if(step>0){step--;render();} });
+  document.getElementById('elim-next').addEventListener('click',()=>{ if(anim){anim.stop();anim=null;} if(step<data.length-1){step++;render();} });
+  /* ▶ play: the whole elimination as one sweep, ~1.5 s per move */
+  document.getElementById('elim-play').addEventListener('click',()=>{
+    if(anim) anim.stop(); step=0; render();
+    const n=data.length-1; let shown=0;
+    anim=tween(1500*n,u=>{ const want=Math.floor(u*n+1e-9); while(shown<want){ shown++; step=shown; render(); } },()=>{ step=n; render(); anim=null; });
+  });
+  tabs(document.getElementById('elim-tabs'), t=>{ if(anim){anim.stop();anim=null;} data=(t==='warm')?WARM:FULL; step=0; render(); });
   const aS=document.getElementById('a-slider'), aO=document.getElementById('a-out'), aV=document.getElementById('a-verdict'), solD=document.getElementById('elim-solution');
   function verdictA(){
     const a=+aS.value; aO.value=fmt(a,1);
@@ -2186,7 +2454,7 @@ function tabs(bar, onSwitch){
       if(j===augAt) c.classList.add('aug');
       const changed = prev && st.chg && st.chg.includes(i) && String(prev.m[i][j])!==String(v);
       if(isPrev){ if(changed) c.classList.add('was-chg'); }
-      else{ if(changed) c.classList.add('rowchg'); if(st.piv&&st.piv.some(([pi,pj])=>pi===i&&pj===j)){ c.classList.remove('rowchg'); c.classList.add('pivot'); } }
+      else{ if(changed){ c.classList.add('rowchg'); c.style.setProperty('--k',j); } if(st.piv&&st.piv.some(([pi,pj])=>pi===i&&pj===j)){ c.classList.remove('rowchg'); c.classList.add('pivot'); } }
       d.appendChild(c);
     }));
     return d;
@@ -2213,29 +2481,6 @@ function tabs(bar, onSwitch){
   tabs(document.getElementById('rref-tabs'), t=>{ if(anim){anim.stop();anim=null;} data=(t==='rref')?RREF:INV; step=0; render(); });
   render();
 })();
-/* ================= 3D ENGINE ================= */
-function engine3d(svg, opts){
-  opts=opts||{};
-  const W=+svg.viewBox.baseVal.width, H=+svg.viewBox.baseVal.height;
-  let yaw=opts.yaw??-0.62, pitch=opts.pitch??0.40;
-  let scale=opts.scale||70;
-  const cx=W/2+(opts.cx||0), cy=H/2+(opts.cy||0), origin=opts.origin||[0,0,0];
-  function proj(v){
-    const x=v[0]-origin[0], y=v[1]-origin[1], z=v[2]-origin[2];
-    const cyw=Math.cos(yaw), syw=Math.sin(yaw);
-    const X=x*cyw+y*syw, Y=-x*syw+y*cyw;
-    const cp=Math.cos(pitch), sp=Math.sin(pitch);
-    const depth=Y*cp-z*sp, up=Y*sp+z*cp;
-    return {x:cx+X*scale, y:cy-up*scale, d:depth};
-  }
-  function drag(redraw){
-    let last=null;
-    svg.addEventListener('pointerdown',e=>{ last=[e.clientX,e.clientY]; svg.setPointerCapture(e.pointerId); e.preventDefault(); });
-    svg.addEventListener('pointermove',e=>{ if(!last) return; yaw+=(e.clientX-last[0])*0.008; pitch=Math.max(-1.45,Math.min(1.45,pitch+(e.clientY-last[1])*0.008)); last=[e.clientX,e.clientY]; redraw(); });
-    ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>last=null));
-  }
-  return {proj,drag,setScale:s=>scale=s,spin:a=>{yaw+=a;}};
-}
 function rankOf(rowsIn){
   const m=rowsIn.map(r=>r.slice()); const R=m.length, C=m[0].length; let rank=0;
   for(let c=0;c<C&&rank<R;c++){
@@ -2259,41 +2504,69 @@ function lineInBox(p0,d,lo,hi){
   }
   return t0<t1?[t0,t1]:null;
 }
-/* ================= W-DET3D · VOLUME MACHINE ================= */
+/* ================= W-DET3D · VOLUME MACHINE (three.js) ================= */
 (function(){
-  const svg=document.getElementById('det3-svg'); if(!svg) return;
-  const E=engine3d(svg,{scale:82,cy:14,origin:[0.5,0.5,0.5]});
+  const box=document.getElementById('det3-svg'); if(!box) return;
   let M=[[1,0,0],[0,1,0],[0,0,1]];
   const inputs=[...document.querySelectorAll('#det3-edit input')];
   const detEl=document.getElementById('det3-val'), volEl=document.getElementById('det3-vol'), rkEl=document.getElementById('det3-rank'), verd=document.getElementById('det3-verdict');
   const corners=[]; for(let i=0;i<8;i++) corners.push([i&1,(i>>1)&1,(i>>2)&1]);
   const cubeEdges=[]; for(let i=0;i<8;i++) for(let j=i+1;j<8;j++){ const x=i^j; if(x===1||x===2||x===4) cubeEdges.push([i,j]); }
-  const faces=[[0,1,3,2],[4,5,7,6],[0,1,5,4],[2,3,7,6],[0,2,6,4],[1,3,7,5]];
+  const faces=[[0,1,3,2],[4,6,7,5],[0,4,5,1],[2,3,7,6],[0,2,6,4],[1,5,7,3]];
   const apply=v=>[M[0][0]*v[0]+M[0][1]*v[1]+M[0][2]*v[2], M[1][0]*v[0]+M[1][1]*v[1]+M[1][2]*v[2], M[2][0]*v[0]+M[2][1]*v[1]+M[2][2]*v[2]];
   const det3=m=>m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+  let sc=null, hudEl=null, handle=null, wantR=5.2, orbiting=false;
+  const orbitBtn=document.getElementById('det3-orbit');
+  function build(){
+    sc=null;
+    handle=CIN.stage3d(box,{fill:true,camera:{pos:[3.3,2.6,4.3],look:[.5,.55,-.5],fov:34},autoRotate:.12,autoRotateStopsOnUser:false,
+      build(ctx){
+        const {THREE,root,colors}=ctx, hx=k=>CIN.hex(colors[k]);
+        const grid=CIN.prim.grid(ctx,8,16,hx('grid'),{opacity:ctx.isLight?.6:.42}); grid.position.set(.5,-.003,-.5); root.add(grid);
+        /* axes through the origin (math x, y, z) */
+        const ap=new Float32Array([-3,0,0, 3,0,0, 0,0,3, 0,0,-3, 0,-1.2,0, 0,3,0]);
+        const ag=new THREE.BufferGeometry(); ag.setAttribute('position',new THREE.BufferAttribute(ap,3));
+        root.add(new THREE.LineSegments(ag,new THREE.LineBasicMaterial({color:hx('axis'),transparent:true,opacity:.95})));
+        [['x',[2.6,0,0]],['y',[0,2.6,0]],['z',[0,0,2.6]]].forEach(([t,v])=>root.add(CIN.prim.label(ctx,t,T3(v),{size:30,color:colors.muted,bg:false,depthTest:false})));
+        /* ghost unit cube — dashed orange, always visible */
+        const gp=new Float32Array(cubeEdges.length*6); cubeEdges.forEach(([i,j],k)=>{ const a=T3(corners[i]), b=T3(corners[j]); gp.set([a[0],a[1],a[2],b[0],b[1],b[2]],k*6); });
+        const gg=new THREE.BufferGeometry(); gg.setAttribute('position',new THREE.BufferAttribute(gp,3));
+        const ghost=new THREE.LineSegments(gg,new THREE.LineDashedMaterial({color:hx('s2'),dashSize:.07,gapSize:.045,transparent:true,opacity:.95})); ghost.computeLineDistances(); root.add(ghost);
+        /* the lit box A·cube — rebuilt from its 8 corners on every change */
+        const bg=new THREE.BufferGeometry(); bg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(36*3),3));
+        const mesh=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:hx('s1'),emissive:hx('s1'),emissiveIntensity:ctx.isLight?.06:.38,roughness:.28,metalness:.18,transparent:true,opacity:ctx.isLight?.5:.6,side:THREE.DoubleSide,depthWrite:false}));
+        mesh.frustumCulled=false; root.add(mesh);
+        const eg=new THREE.BufferGeometry(); eg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12*6),3));
+        const edges=new THREE.LineSegments(eg,new THREE.LineBasicMaterial({color:hx('s1'),transparent:true,opacity:1})); edges.frustumCulled=false; root.add(edges);
+        /* the three columns: where î, ĵ, k̂ land */
+        const cols=['s1','s2','s3'].map(k=>{ const a=CIN.prim.arrow(ctx,[0,0,0],[1,0,0],hx(k),{radius:.032,head:.2}); root.add(a); return a; });
+        const dots=corners.map(()=>{ const d=CIN.prim.dot(ctx,[0,0,0],hx('s1'),.03); root.add(d); return d; });
+        root.add(CIN.prim.dot(ctx,[0,0,0],hx('ink2'),.04));
+        sc={THREE,ctx,mesh,edges,cols,dots};
+        hudEl=hud(box); hint(box,'drag to orbit · grabbing pauses the spin');
+        draw();
+      },
+      update(ctx,t,dt){ if(ctx.dead) return false; const s=ctx.orbit.sph; if(Math.abs(s.radius-wantR)>.004){ s.radius+=(wantR-s.radius)*Math.min(1,dt*3.5); ctx.orbit.place(); return true; } return false; }
+    });
+    return handle;
+  }
   function draw(){
-    svg.innerHTML='';
     const V=corners.map(apply);
-    const ext=Math.max(2.2, ...V.map(v=>Math.max(Math.abs(v[0]-0.5),Math.abs(v[1]-0.5),Math.abs(v[2]-0.5))));
-    E.setScale(Math.min(125, 230/ext));
-    // axes
-    [[[1.9,0,0],'x'],[[0,1.9,0],'y'],[[0,0,1.9],'z']].forEach(([a,lb])=>{
-      const o=E.proj([0,0,0]), t=E.proj(a);
-      el('line',{x1:o.x,y1:o.y,x2:t.x,y2:t.y,stroke:'var(--axis)','stroke-width':1.2},svg);
-      txt(svg,t.x+4,t.y+4,lb,'font:600 11px system-ui;fill:var(--ink-muted)');
-    });
-    // transformed parallelepiped, far faces first
-    const projected=V.map(v=>E.proj(v));
-    faces.map(f=>({f,d:f.reduce((s,i)=>s+projected[i].d,0)/4})).sort((a,b)=>b.d-a.d).forEach(({f})=>{
-      el('polygon',{points:f.map(i=>projected[i].x+','+projected[i].y).join(' '),fill:'var(--s1)','fill-opacity':.14,stroke:'var(--s1)','stroke-width':1.6,'stroke-opacity':.9,'stroke-linejoin':'round'},svg);
-    });
-    // ghost cube drawn on top, dashed orange, so it stays visible even when the box sits exactly on it
-    {const gp=corners.map(c=>E.proj(c));
-     const ds=cubeEdges.map(([i,j])=>(gp[i].d+gp[j].d)/2),dmin=Math.min(...ds),dmax=Math.max(...ds);
-     cubeEdges.forEach(([i,j],k)=>{const o=.45+.5*(1-((ds[k]-dmin)/((dmax-dmin)||1)));
-       el('line',{x1:gp[i].x,y1:gp[i].y,x2:gp[j].x,y2:gp[j].y,stroke:'var(--s2)','stroke-width':1.4,'stroke-dasharray':'5 4',opacity:o},svg);});}
-    txt(svg,14,20,'dashed orange = unit cube · blue = A × cube','font:600 11px system-ui;fill:var(--ink-muted)');
+    const ext=Math.max(1.6, ...V.map(v=>Math.max(Math.abs(v[0]),Math.abs(v[1]),Math.abs(v[2]))));
+    wantR=5.2*Math.max(1,ext/1.75);
     const d=det3(M), r=rankOf(M);
+    if(sc){
+      const P=sc.mesh.geometry.attributes.position.array; let k=0;
+      faces.forEach(f=>[[0,1,2],[0,2,3]].forEach(tri=>tri.forEach(ci=>{ const p=T3(V[f[ci]]); P[k++]=p[0]; P[k++]=p[1]; P[k++]=p[2]; })));
+      sc.mesh.geometry.attributes.position.needsUpdate=true; sc.mesh.geometry.computeVertexNormals();
+      const E=sc.edges.geometry.attributes.position.array; k=0;
+      cubeEdges.forEach(([i,j])=>{ const a=T3(V[i]), b=T3(V[j]); E[k++]=a[0]; E[k++]=a[1]; E[k++]=a[2]; E[k++]=b[0]; E[k++]=b[1]; E[k++]=b[2]; });
+      sc.edges.geometry.attributes.position.needsUpdate=true;
+      sc.cols.forEach((a,i)=>{ const c=[M[0][i],M[1][i],M[2][i]]; const L=Math.hypot(c[0],c[1],c[2]); a.visible=L>.05; if(a.visible) a.userData.set([0,0,0],T3(c)); });
+      sc.dots.forEach((dot,i)=>dot.position.set(...T3(V[i])));
+      if(hudEl) hudEl.innerHTML=`volume ×<b>${fmt(Math.abs(d))}</b> · rank <b>${r}</b>${r<3?' · <span style="color:var(--critical)">collapsed</span>':''}`;
+      if(sc.ctx.requestRender) sc.ctx.requestRender();
+    }
     detEl.textContent=fmt(d); volEl.textContent=fmt(Math.abs(d)); rkEl.textContent=r;
     if(r===3&&d<0){ verd.className='verdict info'; verd.textContent='Mirrored (det < 0) — volume ×'+fmt(Math.abs(d))+', orientation flipped.'; }
     else if(r===3){ verd.className='verdict good'; verd.textContent='✓ A full 3-D volume — all three directions alive.'; }
@@ -2305,53 +2578,50 @@ function lineInBox(p0,d,lo,hi){
     c.addEventListener('input',()=>{ const v=parseFloat(c.value); if(!isFinite(v)) return; M[Math.floor(idx/3)][idx%3]=Math.max(-10,Math.min(10,v)); clearP(); draw(); });
     c.addEventListener('change',()=>{ c.value=fmt(M[Math.floor(idx/3)][idx%3]); });
   });
-  function clearP(){ document.querySelectorAll('#det3-presets .preset').forEach(b=>b.setAttribute('aria-pressed','false')); }
+  function clearP(){ document.querySelectorAll('#det3-presets .preset[data-p]').forEach(b=>b.setAttribute('aria-pressed','false')); }
   function syncInputs(){ inputs.forEach((c,idx)=>c.value=fmt(M[Math.floor(idx/3)][idx%3])); }
   const P={id:[[1,0,0],[0,1,0],[0,0,1]], stretch:[[2,0,0],[0,1.4,0],[0,0,0.6]], shear:[[1,0.9,0],[0,1,0],[0,0,1]], rot:[[0.866,-0.5,0],[0.5,0.866,0],[0,0,1]], flat:[[1,0,1],[0,1,1],[1,1,2]], line:[[1,1,0.5],[2,2,1],[1,1,0.5]]};
   let anim=null;
   document.querySelectorAll('#det3-presets .preset[data-p]').forEach(b=>b.addEventListener('click',()=>{
     clearP(); b.setAttribute('aria-pressed','true');
-    const T=P[b.dataset.p], F=M.map(r=>r.slice()), t0=performance.now();
-    if(anim) cancelAnimationFrame(anim);
-    (function tick(now){
-      const u=Math.min(1,((now||performance.now())-t0)/420), e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
-      M=F.map((row,i)=>row.map((v,j)=>v+(T[i][j]-v)*e)); syncInputs(); draw();
-      if(u<1) anim=requestAnimationFrame(tick); else anim=null;
-    })(t0);
+    const T=P[b.dataset.p], F=M.map(r=>r.slice());
+    if(anim) anim.stop();
+    anim=tween(900,e=>{ M=F.map((row,i)=>row.map((v,j)=>v+(T[i][j]-v)*e)); syncInputs(); draw(); },()=>anim=null);
   }));
   document.querySelector('#det3-presets [data-p="id"]').setAttribute('aria-pressed','true');
-  E.drag(draw); draw();
-  // auto-orbit (skipped under reduced motion: one 45° step per press instead)
-  const orbitBtn=document.getElementById('det3-orbit'); let orbiting=false, orbitRaf=null, lastT=0;
-  function orbitTick(t){ if(!orbiting) return; const dt=Math.min(50,t-lastT); lastT=t; E.spin(0.0006*dt); draw(); orbitRaf=requestAnimationFrame(orbitTick); }
+  /* auto-orbit: a slow ambient spin by default; the button makes it a real turntable; grabbing the picture stops it */
   orbitBtn.addEventListener('click',()=>{
-    if(RM){ E.spin(Math.PI/4); draw(); return; }
-    orbiting=!orbiting; orbitBtn.setAttribute('aria-pressed',orbiting?'true':'false');
-    if(orbiting){ lastT=performance.now(); orbitRaf=requestAnimationFrame(orbitTick); } else if(orbitRaf) cancelAnimationFrame(orbitRaf);
+    if(!handle) return;
+    if(RM){ handle.ctx.orbit.sph.theta+=Math.PI/4; handle.ctx.orbit.place(); return; }
+    orbiting=!orbiting; orbitBtn.setAttribute('aria-pressed',orbiting?'true':'false'); handle.setAutoRotate(orbiting?.55:0);
   });
-  svg.addEventListener('pointerdown',()=>{ if(orbiting){ orbiting=false; orbitBtn.setAttribute('aria-pressed','false'); } });
+  box.addEventListener('pointerdown',()=>{ if(handle) handle.setAutoRotate(0); orbiting=false; orbitBtn.setAttribute('aria-pressed','false'); });
+  mountStage(box,build);
+  draw();
 })();
-/* ================= W-PL3 · THREE PLANES, THREE FATES ================= */
+/* ================= W-PL3 · THREE PLANES, THREE FATES (three.js) ================= */
 (function(){
-  const svg=document.getElementById('pl3-svg'); if(!svg) return;
-  const LO=-0.6, HI=3.4;
-  const E=engine3d(svg,{scale:76,origin:[(LO+HI)/2,(LO+HI)/2,(LO+HI)/2],cy:8,yaw:-0.55,pitch:0.35});
-  const COLS=['var(--s1)','var(--s2)','var(--s3)'];
+  const box=document.getElementById('pl3-svg'); if(!box) return;
+  const LO=-0.6, HI=3.4, CEN=(LO+HI)/2;
+  const COLS=['var(--s1)','var(--s2)','var(--s3)'], CK=['s1','s2','s3'];
   const SYS={
     unique:{rows:[[1,1,1],[1,-1,2],[0,1,1]], b:[3,2,2],
       eq:['x + y + z = 3','x − y + 2z = 2','y + z = 2'],
       v:['good','✓ rank(A) = rank([A|b]) = 3 = n → exactly one solution: the point (1, 1, 1)'],
+      hud:'rank 3 · one point',
       cap:'Three genuinely different rules, one obedient point. Full rank: every unknown is pinned. This is the system you solved back in Section 4 — now you can walk around it.'},
     inf:{rows:[[1,1,1],[1,-1,2],[2,0,3]], b:[3,2,5],
       eq:['x + y + z = 3','x − y + 2z = 2','2x + 3z = 5'],
       v:['info','∞ rank(A) = rank([A|b]) = 2 < n = 3 → a line of solutions'],
+      hud:'rank 2 · a line of solutions',
       cap:'The aqua plane is an impostor: row₃ = row₁ + row₂, so it repeats what the others already said. Two real rules, three unknowns → one leftover freedom: the violet line xₚ + λ·xₙ, with null direction xₙ = (−3, 1, 2)ᵀ (check: A·xₙ = 0). That line IS the blind spot from Section 10, parked at xₚ — same anatomy, one dimension up. Unit 2 gives these spaces their full passport.'},
     none:{rows:[[1,1,1],[1,-1,2],[2,0,3]], b:[3,2,1],
       eq:['x + y + z = 3','x − y + 2z = 2','2x + 3z = 1'],
       v:['bad','✗ rank(A) = 2 but rank([A|b]) = 3 → no solution'],
+      hud:'rank 2 vs 3 · no common point',
       cap:'Same left-hand sides as the infinite case — but the aqua plane now demands 2x + 3z = 1 while the others force 2x + 3z = 5. Adding b raised the rank: contradiction. The three planes never meet; their pairwise intersection lines (dashed) run parallel forever — an endless triangular chimney with no common point.'}
   };
-  let cur='unique';
+  let cur='unique', sc=null, hudEl=null, fadeAnim=null;
   const eqBox=document.getElementById('pl3-eqs'), ra=document.getElementById('pl3-ra'), rab=document.getElementById('pl3-rab'), verd=document.getElementById('pl3-verdict'), cap=document.getElementById('pl3-cap');
   const bcorners=[]; for(let i=0;i<8;i++) bcorners.push([i&1?HI:LO,(i>>1)&1?HI:LO,(i>>2)&1?HI:LO]);
   const bedges=[]; for(let i=0;i<8;i++) for(let j=i+1;j<8;j++){ const x=i^j; if(x===1||x===2||x===4) bedges.push([i,j]); }
@@ -2368,46 +2638,34 @@ function lineInBox(p0,d,lo,hi){
     const cen=pts.reduce((s,p)=>[s[0]+p[0],s[1]+p[1],s[2]+p[2]],[0,0,0]).map(v=>v/pts.length);
     const nn=norm3(n), e=Math.abs(nn[0])<0.9?[1,0,0]:[0,1,0];
     const u=norm3(cross3(nn,e)), w=cross3(nn,u);
-    pts.sort((p,q)=>{
-      const a=Math.atan2((p[0]-cen[0])*w[0]+(p[1]-cen[1])*w[1]+(p[2]-cen[2])*w[2], (p[0]-cen[0])*u[0]+(p[1]-cen[1])*u[1]+(p[2]-cen[2])*u[2]);
-      const b=Math.atan2((q[0]-cen[0])*w[0]+(q[1]-cen[1])*w[1]+(q[2]-cen[2])*w[2], (q[0]-cen[0])*u[0]+(q[1]-cen[1])*u[1]+(q[2]-cen[2])*u[2]);
-      return a-b;
-    });
+    const ang=p=>Math.atan2((p[0]-cen[0])*w[0]+(p[1]-cen[1])*w[1]+(p[2]-cen[2])*w[2], (p[0]-cen[0])*u[0]+(p[1]-cen[1])*u[1]+(p[2]-cen[2])*u[2]);
+    pts.sort((p,q)=>ang(p)-ang(q));
     return {pts,cen};
   }
-  function seg3(p0,d,dash,color,wdt){
-    const t=lineInBox(p0,d,LO,HI); if(!t) return;
-    const A=E.proj([p0[0]+t[0]*d[0],p0[1]+t[0]*d[1],p0[2]+t[0]*d[2]]);
-    const B=E.proj([p0[0]+t[1]*d[0],p0[1]+t[1]*d[1],p0[2]+t[1]*d[2]]);
-    el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:color,'stroke-width':wdt||3,'stroke-dasharray':dash||'none','stroke-linecap':'round'},svg);
-    return {A,B};
-  }
-  function draw(){
-    svg.innerHTML='';
-    const S=SYS[cur];
-    // box frame (depth-cued)
-    {const gp=bcorners.map(c=>E.proj(c));
-     const ds=bedges.map(([i,j])=>(gp[i].d+gp[j].d)/2),dmin=Math.min(...ds),dmax=Math.max(...ds);
-     bedges.forEach(([i,j],k)=>{const o=.35+.55*(1-((ds[k]-dmin)/((dmax-dmin)||1)));
-       el('line',{x1:gp[i].x,y1:gp[i].y,x2:gp[j].x,y2:gp[j].y,stroke:'var(--grid)','stroke-width':1,opacity:o},svg);});}
-    // axes labels at box corner
-    [[[HI+0.35,LO,LO],'x'],[[LO,HI+0.35,LO],'y'],[[LO,LO,HI+0.35],'z']].forEach(([a,lb])=>{ const t=E.proj(a); txt(svg,t.x-3,t.y+4,lb,'font:600 11px system-ui;fill:var(--ink-muted)'); });
-    // planes far→near
-    const polys=S.rows.map((n,i)=>({i,poly:planePoly(n,S.b[i])})).filter(o=>o.poly);
-    polys.map(o=>({...o,d:E.proj(o.poly.cen).d})).sort((a,b)=>b.d-a.d).forEach(o=>{
-      el('polygon',{points:o.poly.pts.map(p=>{const q=E.proj(p);return q.x+','+q.y;}).join(' '),fill:COLS[o.i],'fill-opacity':.20,stroke:COLS[o.i],'stroke-width':2,'stroke-opacity':.85,'stroke-linejoin':'round'},svg);
+  function dashed(THREE,pts,color,opacity,dash){ const g=new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(...p))); const l=new THREE.Line(g,new THREE.LineDashedMaterial({color,dashSize:dash||.12,gapSize:(dash||.12)*.7,transparent:true,opacity:opacity==null?1:opacity})); l.computeLineDistances(); return l; }
+  function tube(ctx,a,b,color,r){ const T=ctx.THREE; const A=new T.Vector3(...a), B=new T.Vector3(...b); const d=B.clone().sub(A), L=d.length();
+    const m=new T.Mesh(new T.CylinderGeometry(r,r,L,14),new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:ctx.isLight?.15:.7,roughness:.3,transparent:true,opacity:1}));
+    m.position.copy(A).add(d.clone().multiplyScalar(.5)); m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize()); return m; }
+  function buildSys(){
+    if(!sc) return;
+    const {THREE,ctx,root,colors}=sc, hx=k=>CIN.hex(colors[k]);
+    if(sc.grp) root.remove(sc.grp);
+    const grp=new THREE.Group(); root.add(grp); sc.grp=grp;
+    const S=SYS[cur], fades=[];
+    /* the three glass planes, clipped to the box */
+    S.rows.forEach((n,i)=>{
+      const poly=planePoly(n,S.b[i]); if(!poly) return;
+      const pts=poly.pts.map(T3), cen=T3(poly.cen);
+      const pos=[]; for(let k=0;k<pts.length;k++){ const a=pts[k], b=pts[(k+1)%pts.length]; pos.push(...cen,...a,...b); }
+      const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pos),3)); g.computeVertexNormals();
+      const mat=new THREE.MeshStandardMaterial({color:hx(CK[i]),emissive:hx(CK[i]),emissiveIntensity:ctx.isLight?.04:.22,roughness:.12,metalness:.05,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false});
+      const m=new THREE.Mesh(g,mat); m.frustumCulled=false; grp.add(m); fades.push([mat,ctx.isLight?.26:.3]);
+      const lg=new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(...p)));
+      const lm=new THREE.LineBasicMaterial({color:hx(CK[i]),transparent:true,opacity:0}); grp.add(new THREE.LineLoop(lg,lm)); fades.push([lm,.95]);
     });
-    if(cur==='inf'){
-      seg3([2.5,0.5,0],[-1.5,0.5,1],null,'var(--s7)',3.5);
-      const xp=E.proj([2.5,0.5,0]);
-      el('circle',{cx:xp.x,cy:xp.y,r:4.5,fill:'var(--s7)',stroke:'var(--surface)','stroke-width':2},svg);
-      txt(svg,xp.x+9,xp.y+14,'xₚ','font:700 12px system-ui;fill:var(--s7)');
-      const mid=E.proj([2.5-1.5*1.1, 0.5+0.5*1.1, 1.1]);
-      txt(svg,mid.x+10,mid.y-8,'xₚ + λ·n — the solution line','font:700 12px system-ui;fill:var(--s7)');
-    }
+    /* where pairs of planes meet: dashed lines */
     if(cur==='none'||cur==='unique'){
-      const pairs=[[0,1],[0,2],[1,2]];
-      pairs.forEach(([i,j])=>{
+      [[0,1],[0,2],[1,2]].forEach(([i,j])=>{
         const d=cross3(S.rows[i],S.rows[j]);
         const k=[0,1,2].reduce((m,idx)=>Math.abs(d[idx])>Math.abs(d[m])?idx:m,0);
         const idx=[0,1,2].filter(t=>t!==k);
@@ -2416,22 +2674,60 @@ function lineInBox(p0,d,lo,hi){
         const p0=[0,0,0]; p0[k]=fixed;
         p0[idx[0]]=(r1*S.rows[j][idx[1]]-S.rows[i][idx[1]]*r2)/det2;
         p0[idx[1]]=(S.rows[i][idx[0]]*r2-r1*S.rows[j][idx[0]])/det2;
-        seg3(p0,d,'7 6','var(--ink-muted)',2);
+        const t=lineInBox(p0,d,LO,HI); if(!t) return;
+        const A=[p0[0]+t[0]*d[0],p0[1]+t[0]*d[1],p0[2]+t[0]*d[2]], B=[p0[0]+t[1]*d[0],p0[1]+t[1]*d[1],p0[2]+t[1]*d[2]];
+        const l=dashed(THREE,[T3(A),T3(B)],hx(cur==='none'?'s4':'ink2'),0,.14); grp.add(l); fades.push([l.material,cur==='none'?.95:.8]);
       });
-      txt(svg,16,24,cur==='none'?'dashed: where pairs of planes meet — three parallel lines, never one point':'dashed: where pairs of planes meet — all three lines pass through (1, 1, 1)','font:600 11px system-ui;fill:var(--ink-muted)');
     }
     if(cur==='unique'){
-      const q=E.proj([1,1,1]);
-      el('circle',{cx:q.x,cy:q.y,r:6.5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':2.5},svg);
-      txt(svg,q.x+11,q.y-9,'(1, 1, 1)','font:700 12px system-ui;fill:var(--ink)');
+      const q=T3([1,1,1]);
+      const halo=CIN.prim.dot(ctx,q,hx('s4'),.2); halo.material.transparent=true; halo.material.opacity=0; halo.material.depthWrite=false; grp.add(halo); fades.push([halo.material,.22]);
+      const dot=CIN.prim.dot(ctx,q,hx('s4'),.085); dot.material.transparent=true; dot.material.opacity=0; grp.add(dot); fades.push([dot.material,1]);
+      const lab=CIN.prim.label(ctx,'(1, 1, 1)',[q[0]+.05,q[1]+.38,q[2]],{size:24,color:colors.s4,bg:false,depthTest:false}); lab.material.opacity=0; grp.add(lab); fades.push([lab.material,1]);
+      sc.halo=halo;
+    } else sc.halo=null;
+    if(cur==='inf'){
+      const p0=[2.5,0.5,0], dir=[-1.5,0.5,1]; const t=lineInBox(p0,dir,LO,HI);
+      if(t){ const A=[p0[0]+t[0]*dir[0],p0[1]+t[0]*dir[1],p0[2]+t[0]*dir[2]], B=[p0[0]+t[1]*dir[0],p0[1]+t[1]*dir[1],p0[2]+t[1]*dir[2]];
+        const tb=tube(ctx,T3(A),T3(B),hx('s7'),.03); tb.material.opacity=0; grp.add(tb); fades.push([tb.material,1]); }
+      const xp=T3(p0); const dot=CIN.prim.dot(ctx,xp,hx('s7'),.09); dot.material.transparent=true; dot.material.opacity=0; grp.add(dot); fades.push([dot.material,1]);
+      const l1=CIN.prim.label(ctx,'xₚ',[xp[0]+.15,xp[1]-.3,xp[2]],{size:24,color:colors.s7,bg:false,depthTest:false}); l1.material.opacity=0; grp.add(l1); fades.push([l1.material,1]);
+      const mid=T3([2.5-1.5*1.1,0.5+0.5*1.1,1.1]);
+      const l2=CIN.prim.label(ctx,'xₚ + λ·xₙ — the solution line',[mid[0],mid[1]+.4,mid[2]],{size:22,color:colors.s7,bg:false,depthTest:false}); l2.material.opacity=0; grp.add(l2); fades.push([l2.material,1]);
     }
-    eqBox.innerHTML=S.eq.map((e,i)=>`<span style="display:block"><span style="display:inline-block;width:.7rem;height:.7rem;border-radius:3px;background:${COLS[i]};margin-right:.5rem"></span>${e}</span>`).join('');
+    if(fadeAnim) fadeAnim.stop();
+    fadeAnim=tween(700,u=>{ fades.forEach(([m,t])=>m.opacity=t*u); if(ctx.requestRender) ctx.requestRender(); },()=>fadeAnim=null);
+    if(hudEl) hudEl.innerHTML=S.hud.replace(/(\d)/g,'<b>$1</b>');
+  }
+  function build(){
+    sc=null;
+    return CIN.stage3d(box,{fill:true,camera:{pos:[5.6,3.6,6.0],look:[0,0,0],fov:34},autoRotate:.1,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors}=ctx, hx=k=>CIN.hex(colors[k]);
+        root.position.set(-CEN,-CEN,CEN);
+        const fg=CIN.prim.grid(ctx,HI-LO,8,hx('grid'),{opacity:ctx.isLight?.55:.4}); fg.position.set(CEN,LO,-CEN); root.add(fg);
+        const fp=new Float32Array(bedges.length*6); bedges.forEach(([i,j],k)=>{ const a=T3(bcorners[i]), b=T3(bcorners[j]); fp.set([a[0],a[1],a[2],b[0],b[1],b[2]],k*6); });
+        const fgm=new THREE.BufferGeometry(); fgm.setAttribute('position',new THREE.BufferAttribute(fp,3));
+        root.add(new THREE.LineSegments(fgm,new THREE.LineBasicMaterial({color:hx('axis'),transparent:true,opacity:.55})));
+        [['x',[HI+.35,LO,LO]],['y',[LO,HI+.35,LO]],['z',[LO,LO,HI+.35]]].forEach(([t,v])=>root.add(CIN.prim.label(ctx,t,T3(v),{size:24,color:colors.muted,bg:false,depthTest:false})));
+        sc={THREE,ctx,root,colors};
+        hudEl=hud(box); hint(box,'drag to orbit');
+        buildSys();
+      },
+      update(ctx,t){ if(ctx.dead) return false; if(sc&&sc.halo){ const k=1+.18*Math.sin(t*3); sc.halo.scale.set(k,k,k); return true; } return false; }
+    });
+  }
+  function draw(){
+    const S=SYS[cur];
+    eqBox.innerHTML=S.eq.map((e,i)=>`<span style="display:block"><span style="display:inline-block;width:.7rem;height:.7rem;border-radius:3px;background:${COLS[i]};box-shadow:0 0 8px ${COLS[i]};margin-right:.5rem"></span>${e}</span>`).join('');
     const rA=rankOf(S.rows); ra.textContent=rA; rab.textContent=rankOf(S.rows.map((r,i)=>[...r,S.b[i]]));
     document.getElementById('pl3-free').textContent=3-rA;
     verd.className='verdict '+S.v[0]; verd.innerHTML=S.v[1]; cap.textContent=S.cap;
+    buildSys();
   }
   tabs(document.getElementById('pl3-tabs'), t=>{ cur=t; draw(); });
-  E.drag(draw); draw();
+  mountStage(box,build);
+  draw();
 })();
 /* ================= W-FRAG · MASTER-KEY TRAP ================= */
 (function(){
@@ -2447,14 +2743,14 @@ function lineInBox(p0,d,lo,hi){
     const x=1-del/eps, y=1+del/eps;
     const p=plane(svg,-2,4,-2,4,{});
     const yl2=x0=>(2+eps+del-x0)/(1+eps);
-    el('line',{x1:p.px(-2),y1:p.py(4),x2:p.px(4),y2:p.py(-2),stroke:'var(--s1)','stroke-width':2.5},svg);
-    el('line',{x1:p.px(-2),y1:p.py(yl2(-2)),x2:p.px(4),y2:p.py(yl2(4)),stroke:'var(--s2)','stroke-width':2.5},svg);
+    el('line',G(p,{x1:p.px(-2),y1:p.py(4),x2:p.px(4),y2:p.py(-2),stroke:'var(--s1)','stroke-width':3,'stroke-linecap':'round'}),svg);
+    el('line',G(p,{x1:p.px(-2),y1:p.py(yl2(-2)),x2:p.px(4),y2:p.py(yl2(4)),stroke:'var(--s2)','stroke-width':3,'stroke-linecap':'round'}),svg);
     txt(svg,p.px(-1.8)+4,p.py(3.8)-8,'ℓ₁','font:700 13px system-ui;fill:var(--s1)');
     txt(svg,p.px(3.6),p.py(yl2(3.6))+18,'ℓ₂ (nudged by δ)','font:700 12px system-ui;fill:var(--s2)','end');
     const ring=E=>el('circle',{cx:p.px(1),cy:p.py(1),r:E,fill:'none',stroke:'var(--ink-muted)','stroke-width':1.5,'stroke-dasharray':'3 3'},svg);
     ring(7); txt(svg,p.px(1)-12,p.py(1)+26,'true answer (1,1)','font:600 11px system-ui;fill:var(--ink-muted)','end');
     if(x>=-2&&x<=4){
-      el('circle',{cx:p.px(x),cy:p.py(y),r:6.5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':2.5},svg);
+      el('circle',G(p,{cx:p.px(x),cy:p.py(y),r:6.5,fill:'var(--s4)',stroke:'var(--page)','stroke-width':2.5}),svg);
       if(Math.abs(del)>1e-9) txt(svg,p.px(x)+(x>2.6?-10:10),p.py(y)-12,`computed (${fmt(x,2)}, ${fmt(y,2)})`,'font:700 11px system-ui;fill:var(--ink)',x>2.6?'end':'start');
     } else {
       const sgn=x>4?1:-1, ex=sgn>0?4:-2, ey=2-ex;
@@ -2483,9 +2779,9 @@ function lineInBox(p0,d,lo,hi){
     const x=[xp[0]+lam*nv[0], xp[1]+lam*nv[1]];
     /* ---- input space ---- */
     const p=plane(sin,-5.2,5.2,-3,5.4,{tickEvery:2,pad:30});
-    el('line',{x1:p.px(-3*nv[0]),y1:p.py(-3*nv[1]),x2:p.px(3*nv[0]),y2:p.py(3*nv[1]),stroke:'var(--s7)','stroke-width':2.5,'stroke-dasharray':'8 6'},sin);
+    el('line',G(p,{x1:p.px(-3*nv[0]),y1:p.py(-3*nv[1]),x2:p.px(3*nv[0]),y2:p.py(3*nv[1]),stroke:'var(--s7)','stroke-width':2.8,'stroke-dasharray':'8 6','stroke-linecap':'round'}),sin);
     txt(sin,p.px(4.2),p.py(-2.1)+22,'N(A)',F+'var(--s7)','middle');
-    el('line',{x1:p.px(xp[0]-3.6*nv[0]),y1:p.py(xp[1]-3.6*nv[1]),x2:p.px(xp[0]+3.6*nv[0]),y2:p.py(xp[1]+3.6*nv[1]),stroke:'var(--s1)','stroke-width':2.5},sin);
+    el('line',G(p,{x1:p.px(xp[0]-3.6*nv[0]),y1:p.py(xp[1]-3.6*nv[1]),x2:p.px(xp[0]+3.6*nv[0]),y2:p.py(xp[1]+3.6*nv[1]),stroke:'var(--s1)','stroke-width':3,'stroke-linecap':'round'}),sin);
     txt(sin,p.px(-5),p.py(4.5)-12,'all solutions of Ax = b',F+'var(--s1)');
     // the λ·xₙ step, drawn once, from xₚ
     arrow(p,0,0,xp[0],xp[1],'var(--s1)',3);
@@ -2495,17 +2791,18 @@ function lineInBox(p0,d,lo,hi){
       const mx=(xp[0]+x[0])/2, my=(xp[1]+x[1])/2;
       txt(sin,p.px(mx),p.py(my)+22,'λ·xₙ',F+'var(--s7)','middle');
     }
-    el('circle',{cx:p.px(x[0]),cy:p.py(x[1]),r:6.5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':2.5},sin);
+    el('circle',G(p,{cx:p.px(x[0]),cy:p.py(x[1]),r:7,fill:'var(--s4)',stroke:'var(--page)','stroke-width':2.5}),sin);
     txt(sin,p.px(x[0])+(x[0]>2?-12:12),p.py(x[1])-12,'x',F+'var(--ink)',x[0]>2?'end':'start');
     el('circle',{cx:p.px(0),cy:p.py(0),r:3,fill:'var(--ink-muted)'},sin);
     /* ---- output space ---- */
     const q=plane(sout,-2.6,10.6,-2.6,10.6,{tickEvery:4,pad:30});
-    el('line',{x1:q.px(-1.3),y1:q.py(-2.6),x2:q.px(5.2),y2:q.py(10.4),stroke:'var(--s3)','stroke-width':2},sout);
+    el('line',G(q,{x1:q.px(-1.3),y1:q.py(-2.6),x2:q.px(5.2),y2:q.py(10.4),stroke:'var(--s3)','stroke-width':2.6,'stroke-linecap':'round'}),sout);
     txt(sout,q.px(5.2)+8,q.py(9.9),'column space',F+'var(--s3)');
-    el('circle',{cx:q.px(4),cy:q.py(8),r:10,fill:'none',stroke:'var(--s3)','stroke-width':2.5},sout);
-    el('circle',{cx:q.px(4),cy:q.py(8),r:5.5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':2},sout);
+    el('circle',{cx:q.px(4),cy:q.py(8),r:22,fill:'var(--s3)','fill-opacity':.12},sout);
+    el('circle',G(q,{cx:q.px(4),cy:q.py(8),r:10,fill:'none',stroke:'var(--s3)','stroke-width':2.5}),sout);
+    el('circle',G(q,{cx:q.px(4),cy:q.py(8),r:5.5,fill:'var(--s4)',stroke:'var(--page)','stroke-width':2}),sout);
     txt(sout,q.px(4)+16,q.py(8)+5,'A·x = b — never moves',F+'var(--ink)');
-    el('circle',{cx:q.px(0),cy:q.py(0),r:5.5,fill:'var(--s7)',stroke:'var(--surface)','stroke-width':2},sout);
+    el('circle',G(q,{cx:q.px(0),cy:q.py(0),r:5.5,fill:'var(--s7)',stroke:'var(--page)','stroke-width':2}),sout);
     txt(sout,q.px(0)+12,q.py(0)-30,'A·(λxₙ) = 0',F+'var(--s7)');
     txt(sout,q.px(0)+12,q.py(0)-12,'the step is swallowed',Fs+'var(--s7)');
     /* ---- readouts ---- */
@@ -2513,7 +2810,67 @@ function lineInBox(p0,d,lo,hi){
     if(Math.abs(lam)<0.03){ verd.className='verdict info'; verd.textContent='λ = 0: you are standing on xₚ. Slide away — the output won\'t care.'; }
     else { verd.className='verdict good'; verd.textContent='✓ output frozen at b — λ·xₙ is invisible to A'; }
   }
-  lS.addEventListener('input',draw); draw();
+  /* ---- the flashlight, for real: a 3D projector. x slides along the beam; its shadow on the glass wall never moves ---- */
+  const box3=document.getElementById('null-3d'); let pj=null, pjHud=null, pjGrabbed=false, pjTheta0=null;
+  if(box3) box3.addEventListener('pointerdown',()=>{ pjGrabbed=true; });
+  const d3=(()=>{ const v=[.36,.26,1], n=Math.hypot(v[0],v[1],v[2]); return v.map(x=>x/n); })();  /* beam direction, toward the lamp */
+  const H0=[.9,1.0,.45], WZ=-1.9;
+  const along=(P,t)=>[P[0]+t*d3[0],P[1]+t*d3[1],P[2]+t*d3[2]];
+  const toWall=P=>along(P,(WZ-P[2])/d3[2]);
+  const LAMP=along(H0,3.0), SH=toWall(H0), O2=toWall([0,0,0]);
+  function buildProj(){
+    const P={}; pj=null; pjTheta0=null;
+    return CIN.stage3d(box3,{fill:true,camera:{pos:[5.0,2.9,4.6],look:[.5,.55,-.5],fov:36},autoRotate:0,
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx, hx=k=>CIN.hex(colors[k]);
+        /* the wall = output space: glass + grid */
+        const wall=CIN.prim.glass(ctx,6.6,5,hx('s7'),isLight?.07:.10); wall.position.set(.3,.9,WZ); root.add(wall);
+        const wg=CIN.prim.grid(ctx,6.6,13,hx('s7'),{opacity:isLight?.3:.2,vertical:true}); wg.position.set(.3,.9,WZ+.003); root.add(wg);
+        root.add(CIN.prim.label(ctx,'the wall — output space',[.3,3.55,WZ],{size:22,color:colors.s7,bg:false,depthTest:false}));
+        const fg=CIN.prim.grid(ctx,9,18,hx('grid'),{opacity:isLight?.45:.28}); fg.position.set(0,-1.6,0); root.add(fg);
+        /* the lamp: a hot dot, a halo, and the beam */
+        P.lamp=CIN.prim.dot(ctx,LAMP,hx('s4'),.12); root.add(P.lamp);
+        const hc=document.createElement('canvas'); hc.width=hc.height=128; const g2=hc.getContext('2d'); const gr=g2.createRadialGradient(64,64,0,64,64,64);
+        gr.addColorStop(0,colors.s4); gr.addColorStop(.35,colors.s4+'66'); gr.addColorStop(1,colors.s4+'00'); g2.fillStyle=gr; g2.fillRect(0,0,128,128);
+        const htex=new THREE.CanvasTexture(hc); htex.colorSpace=THREE.SRGBColorSpace;
+        const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:htex,transparent:true,opacity:isLight?.55:.9,depthWrite:false,blending:isLight?THREE.NormalBlending:THREE.AdditiveBlending})); halo.scale.set(1.3,1.3,1); halo.position.set(...LAMP); root.add(halo);
+        const A=new THREE.Vector3(...LAMP), B=new THREE.Vector3(...SH), dv=B.clone().sub(A), L=dv.length();
+        const cone=new THREE.Mesh(new THREE.CylinderGeometry(.03,.62,L,28,1,true),new THREE.MeshBasicMaterial({color:hx('s4'),transparent:true,opacity:isLight?.07:.12,side:THREE.DoubleSide,depthWrite:false,blending:isLight?THREE.NormalBlending:THREE.AdditiveBlending}));
+        cone.position.copy(A).add(dv.clone().multiplyScalar(.5)); cone.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0),dv.clone().normalize()); root.add(cone);
+        root.add(CIN.prim.label(ctx,'flashlight',[LAMP[0]+.1,LAMP[1]+.42,LAMP[2]],{size:20,color:colors.s4,bg:false,depthTest:false}));
+        /* the vector x and its shadow Ax */
+        P.hand=CIN.prim.arrow(ctx,[0,0,0],H0,hx('s1'),{radius:.045,head:.28}); root.add(P.hand);
+        P.hdot=CIN.prim.dot(ctx,H0,hx('s1'),.09); root.add(P.hdot);
+        P.hlab=CIN.prim.label(ctx,'x',[H0[0],H0[1]+.35,H0[2]],{size:26,color:colors.s1,bg:false,depthTest:false}); root.add(P.hlab);
+        const shadow=CIN.prim.arrow(ctx,O2,SH,hx('s7'),{radius:.04,head:.26}); root.add(shadow);
+        const sd=CIN.prim.dot(ctx,SH,hx('s7'),.1); root.add(sd);
+        const sh2=CIN.prim.dot(ctx,SH,hx('s7'),.26); sh2.material.transparent=true; sh2.material.opacity=.22; sh2.material.depthWrite=false; root.add(sh2); P.halo=sh2;
+        root.add(CIN.prim.label(ctx,'Ax — the shadow, pinned',[SH[0]-.15,SH[1]+.62,SH[2]],{size:22,color:colors.s7,bg:false,depthTest:false}));
+        root.add(CIN.prim.dot(ctx,O2,hx('ink2'),.05));
+        root.add(CIN.prim.dot(ctx,[0,0,0],hx('ink2'),.05));
+        const mk=(color,dash)=>{ const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(1,0,0)]); const l=new THREE.Line(g,new THREE.LineDashedMaterial({color,dashSize:dash,gapSize:dash*.7,transparent:true,opacity:.85})); l.frustumCulled=false; root.add(l); return l; };
+        P.ray=mk(hx('s4'),.1); P.nl=mk(hx('s7'),.14);
+        root.add(CIN.prim.label(ctx,'the beam = N(A)',along(H0,.55).map((v,i)=>v+[0,-.85,0][i]),{size:20,color:colors.s7,bg:false,depthTest:false}));
+        P.ctx=ctx; pjHud=hud(box3); hint(box3,'drag to orbit');
+        pj=P; applyProj();
+      },
+      update(ctx,t){ if(ctx.dead||!pj) return false; const k=1+.12*Math.sin(t*4); pj.lamp.scale.set(k,k,k); const j=1+.15*Math.sin(t*3+1); pj.halo.scale.set(j,j,j);
+        /* a projector is a side-view story: sway gently around it instead of orbiting behind the lamp; the first grab hands the camera over */
+        if(!pjGrabbed&&!RM){ const s=ctx.orbit.sph; if(pjTheta0==null) pjTheta0=s.theta; s.theta=pjTheta0+.34*Math.sin(t*.32); ctx.orbit.place(); }
+        return true; }
+    });
+  }
+  function applyProj(){
+    if(!pj) return;
+    const lam=+lS.value, h=along(H0,.55*lam);
+    pj.hand.userData.set([0,0,0],h); pj.hdot.position.set(...h); pj.hlab.position.set(h[0],h[1]+.35,h[2]);
+    const set=(line,a,b)=>{ const p=line.geometry.attributes.position.array; p.set([a[0],a[1],a[2],b[0],b[1],b[2]]); line.geometry.attributes.position.needsUpdate=true; line.computeLineDistances(); };
+    set(pj.ray,h,SH); set(pj.nl,along(H0,-1.6),along(H0,1.6));
+    if(pjHud) pjHud.innerHTML=`λ = <b>${fmt(lam,2)}</b> · x moved along the beam · shadow <b>unchanged</b>`;
+    if(pj.ctx.requestRender) pj.ctx.requestRender();
+  }
+  lS.addEventListener('input',()=>{ draw(); applyProj(); }); draw();
+  if(box3) mountStage(box3,buildProj);
 })();
 /* ================= W-LAM · INVISIBLE INGREDIENTS ================= */
 (function(){
@@ -2540,6 +2897,86 @@ function lineInBox(p0,d,lo,hi){
     anim=tween(500,u=>{ l1.value=fa+(ta-fa)*u; l2.value=fb+(tb-fb)*u; draw(); },()=>anim=null);
   }));
   draw();
+})();
+/* ================= OPENING SHOT · a grid sculpted by a slowly changing matrix ================= */
+(function(){
+  const box=document.getElementById('hero-3d'); if(!box||!CIN) return;
+  const reduced=CIN.reduced;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), smooth=(a,b,x)=>{ const t=clamp((x-a)/(b-a),0,1); return t*t*(3-2*t); };
+  /* the story: I → rotate → shear → the unit's own A = [[2,1],[1,3]] (scaled) → stretch → I */
+  const KEYS=(()=>{ const a=Math.PI*.2, c=Math.cos(a), s=Math.sin(a); return [[1,0,0,1],[c,-s,s,c],[1,.75,0,1],[1.2,.6,.6,1.8],[1.55,0,0,.62],[1,0,0,1]]; })();
+  const HOLD=1.5, MOVE=3.0, STEP=HOLD+MOVE, CYCLE=STEP*(KEYS.length-1);
+  function matrixAt(t){
+    if(reduced) return [1.2,.6,.6,1.8];
+    const u=((t%CYCLE)+CYCLE)%CYCLE, k=Math.floor(u/STEP), p=clamp((u-k*STEP-HOLD)/MOVE,0,1), e=CIN.ease.inOut(p);
+    const A=KEYS[k], B=KEYS[k+1]; return [A[0]+(B[0]-A[0])*e,A[1]+(B[1]-A[1])*e,A[2]+(B[2]-A[2])*e,A[3]+(B[3]-A[3])*e];
+  }
+  function build(){
+    const wide=innerWidth>=760, fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+    return CIN.stage3d(box,{fill:true,orbit:fine,zoom:false,autoRotate:.045,autoRotateStopsOnUser:true,
+      camera:{pos:wide?[3.4,4.4,7.6]:[1.4,6.0,7.4],look:wide?[-2.1,0,.3]:[0,0,.6],fov:36},
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx, hx=k=>CIN.hex(colors[k]);
+        const blend=isLight?THREE.NormalBlending:THREE.AdditiveBlending;
+        const L=4, STEPS=17, SEG=24;
+        const paint=(col,i,u,v,strength)=>{
+          const r=Math.hypot(u,v), f=(1-smooth(2.1,4.7,r))*strength;
+          const base=new THREE.Color(CIN.lerpColor(colors.s1,colors.s6,(u+L)/(2*L)));
+          if(isLight){ base.setRGB(1-(1-base.r)*f,1-(1-base.g)*f,1-(1-base.b)*f); } else { base.multiplyScalar(f); }
+          base.convertSRGBToLinear(); col[3*i]=base.r; col[3*i+1]=base.g; col[3*i+2]=base.b;
+        };
+        const nV=STEPS*2*SEG*2, uv=new Float32Array(nV*2); let i=0;
+        for(let a=0;a<STEPS;a++){ const c=-L+a*(2*L)/(STEPS-1);
+          for(let s=0;s<SEG;s++){ const p0=-L+s*(2*L)/SEG, p1=-L+(s+1)*(2*L)/SEG;
+            uv[2*i]=c; uv[2*i+1]=p0; i++; uv[2*i]=c; uv[2*i+1]=p1; i++;
+            uv[2*i]=p0; uv[2*i+1]=c; i++; uv[2*i]=p1; uv[2*i+1]=c; i++; } }
+        const mkGrid=(strength,y)=>{
+          const pos=new Float32Array(nV*3), col=new Float32Array(nV*3);
+          for(let j=0;j<nV;j++){ pos[3*j]=uv[2*j]; pos[3*j+1]=y; pos[3*j+2]=-uv[2*j+1]; paint(col,j,uv[2*j],uv[2*j+1],strength); }
+          const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(pos,3)); g.setAttribute('color',new THREE.BufferAttribute(col,3));
+          const m=new THREE.LineSegments(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:isLight?.9:1,blending:blend,depthWrite:false})); m.frustumCulled=false; root.add(m); return m;
+        };
+        mkGrid(isLight?.28:.16,-.01); const live=mkGrid(isLight?1:1.15,0);
+        if(!isLight){ const n=520, sp=new Float32Array(n*3); for(let k=0;k<n;k++){ let x,y,z; do{ x=(Math.random()*2-1)*22; y=(Math.random()*2-1)*14; z=(Math.random()*2-1)*22; }while(Math.hypot(x,z)<6&&Math.abs(y)<3); sp[3*k]=x; sp[3*k+1]=y; sp[3*k+2]=z; }
+          const sg=new THREE.BufferGeometry(); sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+          root.add(new THREE.Points(sg,new THREE.PointsMaterial({color:hx('ink2'),size:.06,transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false}))); }
+        const iHat=CIN.prim.arrow(ctx,[0,0,0],[1.6,0,0],hx('s2'),{radius:.045,head:.34});
+        const jHat=CIN.prim.arrow(ctx,[0,0,0],[0,0,-1.6],hx('s3'),{radius:.045,head:.34});
+        const probe=CIN.prim.arrow(ctx,[0,0,0],[1,0,-1],hx('s4'),{radius:.028,head:.24});
+        root.add(iHat,jHat,probe);
+        const tip=CIN.prim.dot(ctx,[1,0,-1],hx('s4'),.075); root.add(tip);
+        const li=CIN.prim.label(ctx,'î',[1.9,.25,0],{bg:false,color:colors.s2,size:34,weight:700});
+        const lj=CIN.prim.label(ctx,'ĵ',[0,.25,-1.9],{bg:false,color:colors.s3,size:34,weight:700}); li.material.depthWrite=false; lj.material.depthWrite=false; root.add(li,lj);
+        const TN=140, tp=new Float32Array(TN*3), tc=new Float32Array(TN*3), s4=new THREE.Color(hx('s4'));
+        for(let k=0;k<TN;k++){ const f=Math.pow(k/(TN-1),1.6); const c=isLight?new THREE.Color(1-(1-s4.r)*f,1-(1-s4.g)*f,1-(1-s4.b)*f):s4.clone().multiplyScalar(f); c.convertSRGBToLinear(); tc[3*k]=c.r; tc[3*k+1]=c.g; tc[3*k+2]=c.b; }
+        const tg=new THREE.BufferGeometry(); tg.setAttribute('position',new THREE.BufferAttribute(tp,3)); tg.setAttribute('color',new THREE.BufferAttribute(tc,3));
+        const trail=new THREE.Line(tg,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.95,blending:blend,depthWrite:false})); trail.frustumCulled=false; root.add(trail);
+        let trailN=0;
+        const UP=new THREE.Vector3(0,1,0), tmp=new THREE.Vector3();
+        const aim=(g,x,z,head)=>{ const len=Math.hypot(x,z), hl=Math.min(head,len*.5); tmp.set(x,0,z).normalize(); g.quaternion.setFromUnitVectors(UP,tmp);
+          const shaft=g.children[0], hd=g.children[1]; const base=shaft.geometry.parameters.height; shaft.scale.y=Math.max(1e-3,len-hl)/base; shaft.position.y=(len-hl)/2; hd.position.y=len-hl/2; };
+        ctx.hero={apply(M,t){
+          const pos=live.geometry.attributes.position.array;
+          for(let j=0;j<nV;j++){ const u=uv[2*j],v=uv[2*j+1]; pos[3*j]=M[0]*u+M[1]*v; pos[3*j+2]=-(M[2]*u+M[3]*v); }
+          live.geometry.attributes.position.needsUpdate=true;
+          aim(iHat,1.6*M[0],-1.6*M[2],.34); aim(jHat,1.6*M[1],-1.6*M[3],.34);
+          li.position.set(1.6*M[0]*1.2,.28,-1.6*M[2]*1.2); lj.position.set(1.6*M[1]*1.2,.28,-1.6*M[3]*1.2);
+          const q=reduced?[1.3,.6]:[1.3*Math.cos(.95*t),1.3*Math.sin(.95*t)];
+          const px=M[0]*q[0]+M[1]*q[1], pz=-(M[2]*q[0]+M[3]*q[1]);
+          aim(probe,px,pz,.24); tip.position.set(px,.02,pz);
+          for(let k=0;k<TN-1;k++){ tp[3*k]=tp[3*k+3]; tp[3*k+1]=tp[3*k+4]; tp[3*k+2]=tp[3*k+5]; }
+          tp[3*(TN-1)]=px; tp[3*(TN-1)+1]=.02; tp[3*(TN-1)+2]=pz;
+          if(trailN<TN){ for(let k=0;k<TN-1-trailN;k++){ tp[3*k]=px; tp[3*k+1]=.02; tp[3*k+2]=pz; } trailN++; }
+          trail.geometry.attributes.position.needsUpdate=true;
+        }};
+        const M=matrixAt(0); ctx.hero.apply(M,0);
+        if(reduced){ for(let k=0;k<TN;k++){ const a=k/(TN-1)*Math.PI*2, qx=1.3*Math.cos(a), qz=1.3*Math.sin(a); tp[3*k]=M[0]*qx+M[1]*qz; tp[3*k+1]=.02; tp[3*k+2]=-(M[2]*qx+M[3]*qz); } trail.geometry.attributes.position.needsUpdate=true; }
+      },
+      update(ctx,t){ if(reduced||ctx.dead) return false; ctx.hero.apply(matrixAt(t),t); return true; }
+    });
+  }
+  const S=mountStage(box,build);
+  let rw=innerWidth; addEventListener('resize',()=>{ const wide=innerWidth>=760; if(wide!==(rw>=760)) remount(S); rw=innerWidth; });
 })();
 })();
 
@@ -2627,7 +3064,8 @@ function lineInBox(p0,d,lo,hi){
       requestAnimationFrame(function(){ pill.classList.add('on'); });
       var hide = function(){ pill.classList.remove('on'); setTimeout(function(){ pill.remove(); }, 320); };
       pill.querySelector('.rgo').addEventListener('click', function(){
-        target.scrollIntoView({behavior:'smooth', block:'start'});
+        var far = Math.abs(target.getBoundingClientRect().top) > 3500;   /* a long jump across heavy 3-D stages lands instantly; short ones glide */
+        target.scrollIntoView({behavior: far ? 'auto' : 'smooth', block:'start'});
         hide();
       });
       pill.querySelector('.rx').addEventListener('click', hide);

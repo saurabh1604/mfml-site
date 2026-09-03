@@ -13,7 +13,7 @@
 <meta property="og:url" content="https://linearalgebra.info/unit-02.html">
 <meta property="og:image" content="https://linearalgebra.info/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f9f9f7">
+<meta name="theme-color" content="#070a12">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
 <style>
 /* ============ design tokens (dataviz reference palette) ============ */
@@ -337,6 +337,189 @@ main:focus{outline:none}
   .prose .katex{max-width:100%}
 }
 </style>
+<!--@cinema-css-->
+<style id="u2-cinema">
+/* ================= CINEMA-U2 · round 8 · "math as cinema" ================= */
+html{overflow-x:hidden}
+body{overflow-x:hidden}
+body::before{display:none}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;z-index:60;pointer-events:none;opacity:.85;
+  background:linear-gradient(90deg,var(--s1),var(--s7) 34%,var(--s2) 67%,var(--s3))}
+main{padding-top:0}
+.topbar a.home{font-family:var(--ui);font-weight:800;color:var(--ink)}
+.topbar a.home::before{content:"Σ";display:inline-grid;place-items:center;width:1.45rem;height:1.45rem;margin-right:.5rem;border-radius:6px;
+  background:linear-gradient(135deg,var(--s1),var(--s7));color:#fff;font-family:var(--display);font-weight:600;font-size:.9rem;vertical-align:-.3rem;box-shadow:var(--glow-1)}
+#score-chip b{color:var(--s4)}
+
+/* --- opening shot --- */
+.hero-stage{position:relative;min-height:clamp(540px,76vh,740px);display:flex;align-items:center;isolation:isolate;overflow:hidden;background:var(--canvas)}
+#hero-3d{position:absolute;inset:0;z-index:0;border-radius:0;background:none}
+#hero-3d canvas{display:block;width:100%;height:100%}
+.hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--page) 92%,transparent) 0%,color-mix(in srgb,var(--page) 78%,transparent) 30%,color-mix(in srgb,var(--page) 40%,transparent) 56%,transparent 76%),
+    linear-gradient(180deg,transparent 0%,transparent 66%,color-mix(in srgb,var(--page) 70%,transparent) 88%,var(--page) 100%)}
+.hero-stage>.wrap{position:relative;z-index:2;width:100%;max-width:var(--maxw);margin:0 auto;padding:4.4rem 1.25rem 3.2rem;pointer-events:none}
+.hero-stage .chip{pointer-events:auto}
+.hero-stage header.hero{max-width:44rem;margin:0;padding:0}
+.hero .kicker{color:var(--s6);text-shadow:0 0 18px color-mix(in srgb,var(--s6) 50%,transparent);font-family:var(--ui);letter-spacing:.2em}
+:root[data-theme="light"] .hero .kicker{text-shadow:none}
+.hero h1{font-family:var(--display);font-variation-settings:"opsz" 144,"SOFT" 40,"WONK" 1;font-weight:640;font-size:clamp(2.5rem,6.2vw,4.9rem);line-height:1;letter-spacing:-.03em;margin:.55rem 0 1rem;text-wrap:balance}
+.hero .lede{font-family:var(--body);font-size:1.22rem;line-height:1.55;color:var(--ink-2);max-width:39rem}
+.hero .lede strong{color:var(--ink)}
+.hero .meta{margin-top:1.4rem;gap:.45rem}
+.hero .meta .chip{font-size:.76rem;padding:.26rem .8rem;background:color-mix(in srgb,var(--surface) 55%,transparent);border-color:var(--line);color:var(--ink-2);backdrop-filter:blur(8px)}
+.hero-hint{position:absolute;right:1.2rem;bottom:1.1rem;z-index:2;font-family:var(--ui);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);pointer-events:none;display:none}
+@media (hover:hover) and (pointer:fine){.hero-hint{display:block}}
+.hero-hint::before{content:"";display:inline-block;width:.45rem;height:.45rem;border-radius:50%;background:var(--s6);box-shadow:0 0 10px var(--s6);margin-right:.5rem;vertical-align:.05rem;animation:pulse 2.4s var(--ease) infinite}
+
+/* --- sections & rhythm --- */
+section.unit{margin-top:4.8rem;scroll-margin-top:4.5rem}
+.sec-head{gap:1.1rem;margin-bottom:1.1rem;align-items:baseline}
+.sec-num{font-size:2.8rem;color:color-mix(in srgb,var(--s1) 55%,transparent);text-shadow:var(--glow-1);padding:0;flex:none}
+:root[data-theme="light"] .sec-num{text-shadow:none}
+h3{font-family:var(--display);font-variation-settings:"opsz" 48,"SOFT" 30;font-size:1.35rem;font-weight:600;letter-spacing:-.01em;margin:1.8rem 0 .5rem}
+.callout .tag{font-family:var(--ui);letter-spacing:.18em;font-size:.68rem}
+.callout.scenario{border-left-color:var(--s6);box-shadow:-6px 0 24px -18px var(--s6)} .callout.scenario .tag{color:var(--s6)}
+.callout.remember{border-left-color:var(--s4);box-shadow:-6px 0 24px -18px var(--s4)} .callout.remember .tag{color:var(--s4)}
+.callout.try{box-shadow:-6px 0 24px -18px var(--s2)}
+.callout.intuition{border-left-color:var(--s3);box-shadow:-6px 0 24px -18px var(--s3)} .callout.intuition .tag{color:var(--s3)}
+details{background:color-mix(in srgb,var(--surface) 75%,transparent);border-color:var(--line);border-radius:var(--r-md)}
+details summary{font-family:var(--ui)}
+.derive .tag{color:var(--s7)}
+.derive .dn{background:color-mix(in srgb,var(--s7) 22%,transparent);color:var(--ink);border:1px solid color-mix(in srgb,var(--s7) 55%,transparent);box-shadow:var(--glow-7)}
+.derive .dqed{text-shadow:var(--glow-7)}
+.next-card{margin-top:3.6rem}
+.next-card .kicker{color:var(--s6)!important}
+.axlist li{border-top-color:var(--line)}
+.axlist .ak{font-family:var(--ui);color:var(--s6);text-shadow:var(--glow-1)}
+:root[data-theme="light"] .axlist .ak{text-shadow:none}
+.axlist .ag{font-family:var(--ui)}
+
+/* --- stages (widgets) --- */
+.widget{padding:1.3rem 1.4rem 1.4rem;margin:2rem auto;max-width:70rem;font-family:var(--ui)}
+.widget-head{margin-bottom:.5rem}
+.widget-head .w-title{font-size:1.08rem;font-weight:750;letter-spacing:-.012em}
+.widget-head .w-sub{font-size:.84rem}
+.widget svg.svg-lab{background:radial-gradient(70% 70% at 50% 45%,color-mix(in srgb,var(--s1) 9%,transparent),transparent 72%);border-radius:var(--r-md)}
+.wrow{gap:1.4rem}
+.controls .ctl{grid-template-columns:7.4rem 1fr 3.6rem}
+.controls output{color:var(--s4);font-size:.82rem}
+.chip b{font-family:var(--mono);color:var(--s4)}
+.verdict{font-family:var(--ui)}
+.verdict.bad{border-color:color-mix(in srgb,var(--critical) 45%,transparent);box-shadow:none}
+.verdict.info{border-color:color-mix(in srgb,var(--s1) 40%,transparent)}
+.readout{font-size:.86rem;color:var(--ink-2)}
+.note{font-size:.86rem;line-height:1.55}
+.try-line{font-family:var(--ui);color:var(--ink-2);background:color-mix(in srgb,var(--s2) 9%,transparent);border-left-color:var(--s2);border-radius:0 var(--r-sm) var(--r-sm) 0}
+.try-line b{color:var(--s4);letter-spacing:.06em;text-transform:uppercase;font-size:.72rem}
+.eqread{font-size:.9rem;padding:.45rem .7rem;border-radius:var(--r-sm);background:color-mix(in srgb,var(--surface) 70%,transparent);border:1px solid var(--line);color:var(--ink-2)}
+.eqread b{color:var(--s4)}
+button.ghost{font-family:var(--ui)}
+button.ghost:disabled{opacity:.4}
+.drag-hint{font-family:var(--ui)}
+.stepper button{background:color-mix(in srgb,var(--surface-2) 80%,transparent);border:1px solid var(--line);color:var(--ink);border-radius:999px;transition:all .18s var(--ease)}
+.stepper button:hover{border-color:var(--s1);box-shadow:var(--glow-1)}
+.stepper button:disabled{opacity:.35}
+.stepper .val{color:var(--s4);font-size:.95rem}
+.steplog{font-family:var(--ui);background:color-mix(in srgb,var(--surface) 70%,transparent);border:1px solid var(--line);border-radius:var(--r-sm);padding:.35rem;max-height:12rem}
+.steplog div{cursor:pointer;transition:background .15s}
+.steplog div:hover{background:color-mix(in srgb,var(--s1) 10%,transparent)}
+.steplog div.cur{background:color-mix(in srgb,var(--s2) 20%,transparent);color:var(--ink);box-shadow:inset 3px 0 0 var(--s2)}
+.steplog .op{color:var(--s2)}
+.mx-edit input{background:color-mix(in srgb,var(--surface-2) 80%,transparent);border-color:var(--line);color:var(--s4);font-weight:600;border-radius:8px}
+.mx-edit input:focus{box-shadow:var(--glow-1)}
+.mx-edit input.pv{background:color-mix(in srgb,var(--s1) 22%,transparent);border-color:color-mix(in srgb,var(--s1) 70%,transparent);color:var(--ink);box-shadow:var(--glow-1)}
+.mx-edit::before,.mx-edit::after,.mx::before,.mx::after{border-color:var(--ink-2)}
+/* group inspector: four promise cards + the undo lab as glass */
+.gcard{border:1px solid var(--line);border-radius:var(--r-md);padding:.65rem .75rem;background:color-mix(in srgb,var(--surface) 70%,transparent);position:relative;overflow:hidden;transition:transform .2s var(--ease)}
+.gcard::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:var(--s3);box-shadow:0 0 10px var(--s3);opacity:.9}
+.gcard.fail::before{background:var(--critical);box-shadow:0 0 10px var(--critical)}
+.gcard .gk{font-size:.68rem;font-weight:750;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
+.gcard .gv{font-weight:750;font-size:1.05rem;margin-top:.15rem;color:var(--good-text);text-shadow:var(--glow-3)}
+.gcard.fail .gv{color:var(--critical);text-shadow:none;animation:shake .5s var(--ease)}
+.gcard .gw{font-size:.8rem;color:var(--ink-2);margin-top:.15rem;line-height:1.4}
+:root[data-theme="light"] .gcard .gv{text-shadow:none}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#grp-lab{background:color-mix(in srgb,var(--surface) 70%,transparent)!important;border-color:var(--line)!important;border-radius:var(--r-md)!important;backdrop-filter:blur(6px)}
+#grp-state{font-family:var(--mono);color:var(--s4)!important;font-size:1.15rem!important;transition:color .3s}
+#grp-clock{background:radial-gradient(60% 60% at 50% 50%,color-mix(in srgb,var(--s1) 12%,transparent),transparent 72%)}
+/* 3D stage containers */
+.stage3d{position:relative;height:460px;border-radius:var(--r-md);overflow:hidden;background:radial-gradient(80% 80% at 50% 40%,color-mix(in srgb,var(--s1) 8%,transparent),transparent 70%)}
+.stage3d canvas{display:block;width:100%;height:100%}
+.stage3d.tall{height:520px}
+@media (max-width:640px){.stage3d,.stage3d.tall{height:300px}}
+.stage-canvas .hud{font-size:.76rem;padding:.24rem .7rem}
+.stage-canvas .hud b{font-family:var(--mono);color:var(--s4);font-weight:700}
+.stage-canvas .hud.hud-b{top:auto;bottom:.6rem}
+.stage-canvas .hud.hud-r{left:auto;right:.7rem}
+.stage-canvas .hud.bad{border-color:color-mix(in srgb,var(--critical) 55%,transparent);color:var(--critical)}
+.stage-canvas .hud.good{border-color:color-mix(in srgb,var(--s3) 55%,transparent)}
+.stage-canvas .hint{display:none}
+@media (hover:hover) and (pointer:fine){.stage-canvas .hint{display:block}}
+.stage-tap{display:none;font-size:.74rem;color:var(--ink-muted);margin:.35rem 0 0}
+@media (hover:none){.stage-tap{display:block}}
+/* matrices as lit cells; elimination sweeps, pivots flash */
+.mx{font-size:1rem;gap:3px}
+.mx span{padding:.26rem .55rem;min-width:2.3rem}
+.mx span.pivot{background:color-mix(in srgb,var(--s1) 26%,transparent);color:var(--ink);box-shadow:var(--glow-1);animation:pivotFlash 1.2s var(--ease-out)}
+.mx span.rowchg{background:color-mix(in srgb,var(--s2) 22%,transparent);color:var(--s2);font-weight:700;animation:cellSweep .7s var(--ease-out) backwards;animation-delay:calc(var(--k,0)*90ms)}
+@keyframes cellSweep{0%{opacity:.15;transform:translateX(-8px)}45%{opacity:1;transform:none;background:color-mix(in srgb,var(--s2) 70%,transparent);box-shadow:var(--glow-2)}100%{transform:none}}
+@keyframes pivotFlash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--s1) 85%,transparent),var(--glow-1);transform:scale(1.18)}60%{box-shadow:0 0 0 10px transparent,var(--glow-1)}100%{transform:none}}
+:root[data-theme="light"] .mx span.rowchg,:root[data-theme="light"] .mx span.pivot{animation-name:none}
+/* checks */
+.check{font-family:var(--ui)}
+.check .tag{color:var(--s2);letter-spacing:.18em}
+.check .opts button{background:color-mix(in srgb,var(--surface-2) 75%,transparent);border-color:var(--line);border-radius:var(--r-sm);transition:all .18s var(--ease)}
+.check .opts button:hover{border-color:color-mix(in srgb,var(--s1) 60%,transparent);transform:translateX(3px)}
+.check .opts button.picked-good{box-shadow:var(--glow-3);border-color:var(--s3)}
+.check .opts button.picked-bad{border-color:var(--critical)}
+.check .why.good{background:color-mix(in srgb,var(--s3) 12%,transparent);border:1px solid color-mix(in srgb,var(--s3) 40%,transparent)}
+.check .why.bad{background:color-mix(in srgb,var(--critical) 10%,transparent);border:1px solid color-mix(in srgb,var(--critical) 35%,transparent)}
+/* static figures */
+.fig{background:color-mix(in srgb,var(--surface) 60%,transparent);border:1px solid var(--line);border-radius:var(--r-lg);padding:1rem 1rem .7rem;max-width:48rem;position:relative;overflow:hidden;margin:1.4rem auto}
+.fig::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--s7) 60%,transparent) 50%,transparent);opacity:.7}
+.fig .cap{font-family:var(--ui);color:var(--ink-2);font-size:.84rem}
+.fig svg{background:radial-gradient(70% 70% at 50% 45%,color-mix(in srgb,var(--s1) 7%,transparent),transparent 72%);border-radius:var(--r-md)}
+.fig svg .draw{stroke-dasharray:900;stroke-dashoffset:900}
+.fig.in svg .draw{animation:drawOn 1.7s var(--ease-out) .25s forwards}
+.fig svg .fade{opacity:0}
+.fig.in svg .fade{animation:fadeIn .9s var(--ease-out) 1.2s forwards}
+@keyframes drawOn{to{stroke-dashoffset:0}}
+@keyframes fadeIn{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.fig svg .draw{stroke-dashoffset:0;animation:none}.fig svg .fade{opacity:1;animation:none}}
+.fig svg text{font-family:var(--ui)!important}
+.fig .stage3d{margin-bottom:.5rem}
+/* practice */
+.prob{font-family:var(--body)}
+.ptag{color:var(--s2);letter-spacing:.18em}
+.pdiff.easy{background:color-mix(in srgb,var(--s3) 16%,transparent);color:var(--good-text)}
+.pdiff.medium{background:color-mix(in srgb,var(--s1) 16%,transparent)}
+.pdiff.hard{background:color-mix(in srgb,var(--s2) 18%,transparent)}
+details.sol{background:color-mix(in srgb,var(--surface-2) 60%,transparent)}
+.pstep{border-left-color:color-mix(in srgb,var(--s7) 45%,transparent)}
+.pans{background:color-mix(in srgb,var(--s3) 14%,transparent);border:1px solid color-mix(in srgb,var(--s3) 40%,transparent)}
+.sol-bulk{font-family:var(--ui)}
+.toc{background:color-mix(in srgb,var(--surface) 92%,transparent)}
+.toc a.on{background:color-mix(in srgb,var(--s1) 14%,transparent)}
+.resume{background:color-mix(in srgb,var(--surface) 92%,transparent);border-color:var(--line);backdrop-filter:blur(10px);font-family:var(--ui)}
+table.plain th{background:color-mix(in srgb,var(--surface-2) 80%,transparent)}
+@media (max-width:760px){
+  .hero-stage{min-height:auto}
+  .hero-stage>.wrap{padding-top:14.5rem;padding-bottom:2.2rem}
+  #hero-3d{height:340px;bottom:auto}
+  .hero-scrim{background:linear-gradient(180deg,color-mix(in srgb,var(--page) 30%,transparent) 0px,transparent 80px,transparent 160px,color-mix(in srgb,var(--page) 82%,transparent) 260px,var(--page) 340px)}
+  .hero h1{font-size:clamp(2.3rem,10vw,3.2rem)}
+  .hero .lede{font-size:1.08rem}
+  .hero-hint{display:none!important}
+  .widget{padding:1rem 1rem 1.1rem}
+  .sec-num{font-size:2.2rem}
+  .controls .ctl{grid-template-columns:6rem 1fr 2.9rem}
+}
+@media (prefers-reduced-motion:reduce){.hero-hint::before{animation:none}.gcard.fail .gv{animation:none}}
+@media print{.hero-stage{min-height:auto}#hero-3d,.hero-scrim,.hero-hint,.stage3d{display:none!important}.fig svg .draw{stroke-dashoffset:0}.fig svg .fade{opacity:1}}
+</style>
 </head>
 <body>
 <a class="skip" href="#main-content">Skip to content</a>
@@ -345,33 +528,41 @@ main:focus{outline:none}
   <span class="spacer"></span>
   <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">11</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
-  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
+  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: dark</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
 <nav class="toc" id="toc" aria-label="On this page"><div class="toc-t">On this page</div></nav>
 <div class="toc-backdrop" id="toc-backdrop"></div>
 
-<main id="main-content" tabindex="-1">
-<header class="hero">
-  <div class="kicker">Unit 2 of 16 · by Prof. Saurabh</div>
-  <h1>Vector Spaces</h1>
-  <p class="lede">Lecture 1 was tactical: solve \(A\mathbf{x}=\mathbf{b}\). This unit is strategic: we zoom out and map the <strong>universe those vectors live in</strong>. Six ideas — groups, vector spaces, subspaces, span, independence, basis — and suddenly every ML algorithm is a small geometric story on one board.</p>
-  <div class="meta">
-    <span class="chip">≈ 50 min read + play</span>
-    <span class="chip">6 interactive widgets · span in 3D</span>
-    <span class="chip">11 inline checks</span>
-    <span class="chip">6 derivations · every step justified</span>
-    <span class="chip">✍ 18 solved practice problems</span>
+<section class="hero-stage">
+  <div id="hero-3d" role="img" aria-label="Two glowing vectors in a starry three-dimensional space; as the second vector slowly swings around the first, the translucent plane they span tilts with it, and a probe point rides across the plane leaving a trail."></div>
+  <div class="hero-scrim"></div>
+  <div class="wrap">
+  <header class="hero">
+    <div class="kicker reveal">Unit 2 of 16 · by Prof. Saurabh</div>
+    <h1 class="reveal">Vector Spaces</h1>
+    <p class="lede reveal">Lecture 1 was tactical: solve \(A\mathbf{x}=\mathbf{b}\). This unit is strategic: we zoom out and map the <strong>universe those vectors live in</strong>. Six ideas — groups, vector spaces, subspaces, span, independence, basis — and suddenly every ML algorithm is a small geometric story on one board.</p>
+    <div class="meta reveal-stagger">
+      <span class="chip">≈ 50 min read + play</span>
+      <span class="chip">6 interactive widgets · 4 stages in 3D</span>
+      <span class="chip">11 inline checks</span>
+      <span class="chip">6 derivations · every step justified</span>
+      <span class="chip">✍ 18 solved practice problems</span>
+    </div>
+  </header>
   </div>
-</header>
+  <div class="hero-hint">drag the space to orbit</div>
+</section>
+
+<main id="main-content" tabindex="-1">
 
 <!-- ================= 1 · WHY ================= -->
 <section class="unit" id="s1">
-  <div class="sec-head"><span class="sec-num">1</span><h2>The universe upgrade</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>The universe upgrade</h2></div>
   <div class="prose">
     <p>In Unit 1 you played <em>inside</em> the game: rows, pivots, solutions. Now we ask a question one level up: <strong>what kind of world makes those moves legal in the first place?</strong> The answer is a <em>vector space</em> — and once you know its rules, "add a gradient step," "average two models," "project onto principal components" all become obviously-allowed moves on the same board.</p>
     <p>Nearly every object in ML is a vector in some space: a cat photo is a vector in \(\mathbb{R}^{224\times224\times3}\) (150,528 numbers), a word inside a language model is a vector in \(\mathbb{R}^{768}\), your Netflix taste is a vector in some \(\mathbb{R}^d\), a layer's weights are a vector in \(\mathbb{R}^{m\times n}\). Training a model is <em>moving through these spaces in clever ways</em> — and you can't reason about a move without knowing the rules of the board.</p>
   </div>
-  <details><summary>Decoder ring: how to read ℝ-with-exponents (worth 60 seconds)</summary>
+  <details class="reveal"><summary>Decoder ring: how to read ℝ-with-exponents (worth 60 seconds)</summary>
     <table class="plain">
       <tr><th>Notation</th><th>Shape</th><th>Mental picture</th></tr>
       <tr><td>\(\mathbb{R}\)</td><td>a single number (scalar)</td><td>a dot on the number line</td></tr>
@@ -382,18 +573,18 @@ main:focus{outline:none}
     </table>
     <p>Read each \(\mathbb{R}^{\text{(shape)}}\) as "the set of all real-valued data with this shape." \(\mathbb{R}^{768}\) is nothing scarier than "a column with 768 numbers in it."</p>
   </details>
-  <div class="callout intuition"><span class="tag">Intuition</span>
+  <div class="callout intuition reveal"><span class="tag">Intuition</span>
     <p><strong>The board-game picture</strong> — keep it for the whole unit. A vector space is the board ML plays on. Groups supply the addition rules. Vector spaces add scaling. Subspaces are the legal regions. Independence says which moves are redundant. A basis is the minimal toolkit that reaches every square, and dimension is how big the board really is. Six pieces; the rest of the course is mostly geometry played with them.</p>
   </div>
 </section>
 
 <!-- ================= 2 · GROUPS ================= -->
 <section class="unit" id="s2">
-  <div class="sec-head"><span class="sec-num">2</span><h2>Groups — the bare skeleton of "combining things"</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>Groups — the bare skeleton of "combining things"</h2></div>
   <div class="prose">
     <p>Before we can say what a vector space is, we need the minimum structure under which "combine two things, get a sensible third thing" works. That's a <strong>group</strong>: a set \(G\) with an operation \(\otimes\) such that four promises hold.
     </p></div>
-  <div class="callout intuition"><span class="tag">In plain words — why axioms at all?</span>
+  <div class="callout intuition reveal"><span class="tag">In plain words — why axioms at all?</span>
     <p>Think of a video game with an <em>undo button</em>. For undo to be trustworthy, the game needs four guarantees: every move leads to a legal game state (you can't glitch out of the map); the order you <em>think</em> about grouped moves doesn't change the outcome; there's a "do nothing" move; and every move can be reversed. A group is exactly a world with a trustworthy undo button. Mathematicians bottle these guarantees as axioms so that anything proved once — for clock arithmetic, for vectors, for cube rotations — is proved for <em>every</em> world with the same guarantees. Prove once, use everywhere.</p>
   </div>
   <div class="prose"><p> <strong>Closure</strong>: \(x\otimes y\) stays in \(G\) — you don't fall out of the set. <strong>Associativity</strong>: \((x\otimes y)\otimes z = x\otimes(y\otimes z)\) — grouping doesn't matter. <strong>Identity</strong>: some do-nothing element \(e\) exists with \(x\otimes e = e\otimes x = x\). <strong>Inverse</strong>: everything can be undone — each \(x\) has a partner \(y\) with \(x\otimes y = y\otimes x = e\). If order also never matters for <em>every</em> pair (\(x\otimes y = y\otimes x\)), the group is <strong>Abelian</strong>.</p>
@@ -401,14 +592,24 @@ main:focus{outline:none}
     <p>Closure and associativity rarely break. The killers are <strong>identity</strong> and, above all, <strong>inverse</strong> — sets fail the moment they're missing the negatives, the fractions, or whatever "undo partner" their elements need. Audit the classics yourself:</p>
   </div>
 
-  <div class="widget" id="w-group">
+  <div class="widget reveal" id="w-group">
     <div class="widget-head"><span class="w-title">The group inspector</span><span class="w-sub">four promises — one broken promise disqualifies</span></div>
     <p class="try-line"><b>Try:</b> pick a set, press <em>do</em> to make a move, then press <em>undo</em> — the sets that fail are the ones whose undo partner isn't a member.</p>
-    <div class="presets" id="grp-presets"></div>
+    <div class="presets reveal-stagger" id="grp-presets"></div>
     <div class="wrow">
       <div class="wcol" style="flex:1.4 1 300px">
         <div id="grp-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem"></div>
         <div id="grp-verdict" class="verdict good" style="margin-top:.8rem">—</div>
+        <div id="grp-clockcol" style="margin-top:.9rem;max-width:360px">
+          <svg id="grp-clock" viewBox="0 0 300 300" class="svg-lab" role="img" aria-label="A 12-hour clock showing wrap-around addition"></svg>
+          <div class="presets" style="margin-top:.3rem">
+            <button class="preset" data-c="5">+5</button>
+            <button class="preset" data-c="9">+9</button>
+            <button class="preset" data-c="7">+7 (the undo of 5)</button>
+            <button class="preset" data-c="reset">reset to 0</button>
+          </div>
+          <p class="readout" id="clock-read">hand at 0</p>
+        </div>
       </div>
       <div class="wcol" style="flex:1 1 240px">
         <div id="grp-lab" style="border:1px solid var(--ring);border-radius:12px;background:var(--page);padding:.7rem .8rem">
@@ -421,22 +622,12 @@ main:focus{outline:none}
           </div>
           <div id="grp-labmsg" class="verdict info" style="font-size:.82rem">Press <b>do</b>, then <b>undo</b>.</div>
         </div>
-        <div id="grp-clockcol" style="margin-top:.6rem">
-          <svg id="grp-clock" viewBox="0 0 260 260" class="svg-lab" role="img" aria-label="A 12-hour clock showing wrap-around addition"></svg>
-          <div class="presets" style="margin-top:.3rem">
-            <button class="preset" data-c="5">+5</button>
-            <button class="preset" data-c="9">+9</button>
-            <button class="preset" data-c="7">+7 (the undo of 5)</button>
-            <button class="preset" data-c="reset">reset to 0</button>
-          </div>
-          <p class="readout" id="clock-read">hand at 0</p>
-        </div>
       </div>
     </div>
     <p class="note" id="grp-note"></p>
   </div>
 
-  <div class="check" data-check="c1">
+  <div class="check reveal" data-check="c1">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">The counting numbers with zero, \((\mathbb{N}_0,+)\), fail to be a group. Which promise breaks?</p>
     <div class="opts">
@@ -446,7 +637,7 @@ main:focus{outline:none}
     </div>
     <div class="why"></div>
   </div>
-  <div class="check" data-check="c2">
+  <div class="check reveal" data-check="c2">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">On the 12-hour clock group, what is the inverse of 5?</p>
     <div class="opts">
@@ -460,10 +651,10 @@ main:focus{outline:none}
 
 <!-- ================= 3 · VECTOR SPACES ================= -->
 <section class="unit" id="s3">
-  <div class="sec-head"><span class="sec-num">3</span><h2>Vector spaces = group + scaling</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Vector spaces = group + scaling</h2></div>
   <div class="prose">
     <p>A vector space is a place where the two basic moves of linear algebra — <em>add</em> and <em>scale</em> — always make sense and never throw you off the board. Take an Abelian group of vectors under addition and bolt on one more power, <strong>scaling by real numbers</strong>. A real vector space \(V=(\mathcal{V},+,\cdot)\) asks for four things:</p>
-    <ul class="axlist">
+    <ul class="axlist reveal-stagger">
       <li><span class="ak">V1</span><span>\((\mathcal{V},+)\) is an Abelian group.<span class="ag">Adding never leaves the set, \(\mathbf{0}\) is the do-nothing vector, \(-\mathbf{v}\) undoes \(\mathbf{v}\), and order doesn't matter.</span></span></li>
       <li><span class="ak">V2</span><span>\(\lambda(\mathbf{x}+\mathbf{y})=\lambda\mathbf{x}+\lambda\mathbf{y}\) and \((\lambda+\psi)\mathbf{x}=\lambda\mathbf{x}+\psi\mathbf{x}\).<span class="ag">Distributivity, both ways: scaling a sum is the same as summing the scaled pieces, and adding scalars first is the same as scaling twice and adding.</span></span></li>
       <li><span class="ak">V3</span><span>\(\lambda(\psi\mathbf{x})=(\lambda\psi)\mathbf{x}\).<span class="ag">Scaling stacks: stretch by 2, then by 3, is one stretch by 6.</span></span></li>
@@ -471,7 +662,7 @@ main:focus{outline:none}
     </ul>
     <p>The picture behind V2 is worth a look, because it is the picture behind every "linear" thing in this course — two different routes, same destination:</p>
   </div>
-  <figure class="fig">
+  <figure class="fig reveal">
     <div class="scroll">
     <svg viewBox="0 0 560 250" role="img" aria-label="Two routes to the same point: scale the sum u plus v by lambda, or scale u and v separately and then add">
       <defs>
@@ -485,8 +676,8 @@ main:focus{outline:none}
       <circle cx="60" cy="215" r="3" fill="var(--ink-muted)"/>
       <text x="48" y="230" font-size="11" fill="var(--ink-muted)">0</text>
       <!-- route 1 (blue): u, then v, then stretch the sum -->
-      <line x1="60" y1="215" x2="180" y2="200" stroke="var(--s1)" stroke-width="2.6" marker-end="url(#ah-s1)"/>
-      <line x1="180" y1="200" x2="210" y2="125" stroke="var(--s1)" stroke-width="2.6" marker-end="url(#ah-s1)"/>
+      <line class="draw glow-1" x1="60" y1="215" x2="180" y2="200" stroke="var(--s1)" stroke-width="2.6" marker-end="url(#ah-s1)"/>
+      <line class="draw glow-1" x1="180" y1="200" x2="210" y2="125" stroke="var(--s1)" stroke-width="2.6" marker-end="url(#ah-s1)"/>
       <line x1="60" y1="215" x2="210" y2="125" stroke="var(--s1)" stroke-width="1.6" stroke-dasharray="5 4" opacity=".8"/>
       <line x1="210" y1="125" x2="285" y2="80" stroke="var(--s1)" stroke-width="2.6" stroke-dasharray="7 4" marker-end="url(#ah-s1)"/>
       <text x="112" y="196" font-size="12" font-weight="700" fill="var(--s1)">u</text>
@@ -494,12 +685,12 @@ main:focus{outline:none}
       <text x="92" y="160" font-size="11" fill="var(--s1)">u + v</text>
       <text x="150" y="104" font-size="11" font-weight="700" fill="var(--s1)">stretch × λ</text>
       <!-- route 2 (orange): λu, then λv -->
-      <line x1="60" y1="215" x2="240" y2="192" stroke="var(--s2)" stroke-width="2.6" marker-end="url(#ah-s2)"/>
-      <line x1="240" y1="192" x2="285" y2="80" stroke="var(--s2)" stroke-width="2.6" marker-end="url(#ah-s2)"/>
+      <line class="draw glow-2" x1="60" y1="215" x2="240" y2="192" stroke="var(--s2)" stroke-width="2.6" marker-end="url(#ah-s2)"/>
+      <line class="draw glow-2" x1="240" y1="192" x2="285" y2="80" stroke="var(--s2)" stroke-width="2.6" marker-end="url(#ah-s2)"/>
       <text x="196" y="220" font-size="12" font-weight="700" fill="var(--s2)">λu</text>
       <text x="270" y="150" font-size="12" font-weight="700" fill="var(--s2)">λv</text>
       <!-- meeting point -->
-      <circle cx="285" cy="80" r="6" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>
+      <circle class="fade glow-4" cx="285" cy="80" r="6" fill="var(--s4)" stroke="var(--ink)" stroke-width="2"/>
       <text x="298" y="76" font-size="12" font-weight="700" fill="var(--ink)">same point</text>
       <text x="298" y="92" font-size="11" fill="var(--ink-2)">λ(u + v) = λu + λv</text>
       <!-- legend -->
@@ -512,16 +703,16 @@ main:focus{outline:none}
     </div>
     <p class="cap"><b>Distributivity is "two routes, one destination".</b> Walk \(\mathbf{u}\) then \(\mathbf{v}\) and stretch the result by \(\lambda\), or stretch each leg first and walk them — V2 promises you land on the same spot. Linear maps, gradients and expectations are all "route-swapping" of this kind.</p>
   </figure>
-  <div class="callout intuition"><span class="tag">Intuition</span>
+  <div class="callout intuition reveal"><span class="tag">Intuition</span>
     <p><strong>The drawing board.</strong> Picture an infinite drawing board with one marked point, \(\mathbf{0}\). A vector is a <em>movement instruction</em> from the origin. Addition chains movements ("go along \(\mathbf{u}\), then along \(\mathbf{v}\)"); scaling stretches them ("go 3× as far"). The axioms are simply the guarantee that no matter how you mix these moves, you never fall off the board. That guarantee has a name you met in Unit 1: <strong>closure</strong> — and it's the reason "add a small gradient to the weights" or "average two models" always yields a valid model of the same shape.</p>
   </div>
   <div class="prose">
     <p>Two examples to hold on to. <strong>Lists:</strong> \(\mathbb{R}^n\) with entrywise addition and scaling — three exam scores \((85,92,78)\) plus a bonus \((5,-2,3)\) is \((90,90,81)\), still three scores. <strong>Spreadsheets:</strong> \(\mathbb{R}^{m\times n}\) — whole matrices treated as single vectors, added cell by cell, scaled cell by cell. A weekly-sales sheet plus a corrections sheet is a sheet of the same shape. Same axioms, bigger object.</p>
   </div>
-  <div class="callout watch"><span class="tag">Watch out</span>
+  <div class="callout watch reveal"><span class="tag">Watch out</span>
     <p><strong>Don't get attached to the word "vector."</strong> In linear algebra it does <em>not</em> mean "column of numbers." It means <em>any element of a vector space</em>. A \(4\times4\) matrix is a vector. A polynomial is a vector. A function can be a vector. If it adds and scales without leaving its set, it's a vector — that generality is precisely why one theory covers images, sentences, and weight tensors at once.</p>
   </div>
-  <div class="check" data-check="c3">
+  <div class="check reveal" data-check="c3">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Is a \(3\times3\) weight matrix a "vector"?</p>
     <div class="opts">
@@ -535,29 +726,31 @@ main:focus{outline:none}
 
 <!-- ================= 4 · SUBSPACES ================= -->
 <section class="unit" id="s4">
-  <div class="sec-head"><span class="sec-num">4</span><h2>Subspaces — spaces inside spaces</h2></div>
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>Subspaces — spaces inside spaces</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>A flat sheet of glass floats through the corner of your 3-D room, passing through the room's origin. Ants living on the glass experience a complete little 2-D universe: any two of their movements add to a movement on the glass, any scaling stays on the glass. Their world is <em>self-contained</em> — a whole vector space that happens to live inside a bigger one. That's a <strong>subspace</strong>.</p>
   </div>
   <div class="prose">
     <p>Formally: \(U\subseteq\mathcal{V}\), \(U\neq\emptyset\), is a subspace of \(V\) if \(U\) is itself a vector space under the <em>same</em> operations. The good news: associativity, distributivity and friends are <strong>inherited free</strong> from \(V\) — they hold for all of \(\mathcal{V}\), so certainly on \(U\). Only three things can go wrong, and they're all about <em>staying inside</em>:</p>
   </div>
-  <div class="callout remember"><span class="tag">The subspace test — 3 checks</span>
+  <div class="callout remember reveal"><span class="tag">The subspace test — 3 checks</span>
     <p><strong>(S1)</strong> \(\mathbf{0}\in U\) — it contains the origin (if not, stop immediately). <strong>(S2)</strong> closed under adding: \(\mathbf{u},\mathbf{v}\in U \Rightarrow \mathbf{u}+\mathbf{v}\in U\). <strong>(S3)</strong> closed under scaling: \(\mathbf{u}\in U,\ \lambda\in\mathbb{R} \Rightarrow \lambda\mathbf{u}\in U\) — <em>including</em> \(\lambda=0\) and negative \(\lambda\).</p>
   </div>
   <div class="prose"><p>Now stress-test four candidate sets with your own hands — the buttons apply real operations to a sample point and check whether the result stays inside:</p></div>
 
-  <div class="widget" id="w-sub">
-    <div class="widget-head"><span class="w-title">The subspace stress-tester</span><span class="w-sub">add and scale until something escapes</span></div>
+  <div class="widget reveal" id="w-sub">
+    <div class="widget-head"><span class="w-title">The subspace stress-tester</span><span class="w-sub">add and scale until something escapes · drag to orbit</span></div>
     <p class="try-line"><b>Try:</b> pick <em>the unit square</em>, then press <em>u × 2</em> — watch the result slide out of the fence. Then try <em>the line x = 1</em> with <em>u × 0</em>.</p>
     <div class="presets" id="sub-presets">
       <button class="preset" data-p="yaxis">the y-axis</button>
       <button class="preset" data-p="x1">the line x = 1</button>
       <button class="preset" data-p="square">the unit square</button>
       <button class="preset" data-p="diag">the line y = x/2</button>
+      <button class="preset" data-p="plane0">the plane x + y + z = 0</button>
+      <button class="preset" data-p="plane1">the plane x + y + z = 1</button>
     </div>
     <div class="wrow">
-      <div class="wcol" style="flex:2 1 320px"><svg id="sub-svg" viewBox="0 0 560 420" class="svg-lab" role="img" aria-label="A candidate subset of the plane with sample vectors being added and scaled"></svg></div>
+      <div class="wcol" style="flex:2.6 1 380px"><div id="sub-svg" class="stage3d" role="img" aria-label="Orbitable 3D view: a candidate set drawn as a glowing line, a glass square or a glass plane inside the room; sample vectors u and v are scaled and added, and the result glows green when it stays inside the set or red when it escapes"></div><p class="stage-tap">drag the picture to orbit</p></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls"><div class="ctl"><label for="sub-t">slide u along</label><input type="range" id="sub-t" min="-1" max="1" step="0.02" value="0.55"><output id="sub-to">—</output></div></div>
         <div class="presets" style="margin-top:.5rem">
@@ -572,11 +765,11 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="callout remember"><span class="tag">The one-line rule — and it is a theorem, not a hunch</span>
+  <div class="callout remember reveal"><span class="tag">The one-line rule — and it is a theorem, not a hunch</span>
     <p>In \(\mathbb{R}^n\), the only subspaces are <strong>flat things through the origin</strong>: \(\{\mathbf{0}\}\) itself, lines through \(\mathbf{0}\), planes through \(\mathbf{0}\), … up to the whole space. Anything shifted off the origin, curved, or bounded will get caught by scaling or adding — somewhere, some operation escapes the set. This is not just a pattern from the widget — it is a theorem. Sections 10–11 show why: every subspace is the span of some basis, and the span of \(k\) independent vectors is exactly a \(k\)-dimensional flat through \(\mathbf{0}\).</p>
     <p><strong>So what for ML:</strong> a model with a bias term, \(\mathbf{w}^\top\mathbf{x}+b\), traces a shifted flat — <em>affine</em>, not linear. That is why the bias is handled by appending a constant 1 to \(\mathbf{x}\): it turns the shifted flat back into a genuine subspace one dimension up.</p>
   </div>
-  <div class="check" data-check="c4">
+  <div class="check reveal" data-check="c4">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Which of these is a subspace of \(\mathbb{R}^3\)?</p>
     <div class="opts">
@@ -590,11 +783,11 @@ main:focus{outline:none}
 
 <!-- ================= 5 · NULL SPACE PASSPORT ================= -->
 <section class="unit" id="s5">
-  <div class="sec-head"><span class="sec-num">5</span><h2>The promised passport: the null space is a subspace</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>The promised passport: the null space is a subspace</h2></div>
   <div class="prose">
     <p>Unit 1 ended with a promise: the blind spot would get its full papers here. Recall \(N(A)=\{\mathbf{x}\in\mathbb{R}^n : A\mathbf{x}=\mathbf{0}\}\) — the directions the machine can't see. The claim: <strong>for every matrix \(A\), no exceptions, \(N(A)\) passes the three-point test.</strong> Linearity of \(A\) does all the work, and the same three lines certify the column space \(C(A)=\{A\mathbf{x}\}\) — all the outputs the machine can produce.</p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · null space and column space are subspaces — derived</span>
     <p class="dgoal"><b>Claim.</b> For any \(m\times n\) matrix \(A\): \(N(A)\) is a subspace of \(\mathbb{R}^n\) and \(C(A)\) is a subspace of \(\mathbb{R}^m\). The only tool is linearity: \(A(\mathbf{x}+\mathbf{y})=A\mathbf{x}+A\mathbf{y}\) and \(A(\lambda\mathbf{x})=\lambda A\mathbf{x}\).</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">(S1 for \(N(A)\)) \(A\mathbf{0}=\mathbf{0}\), so \(\mathbf{0}\in N(A)\).
@@ -617,53 +810,15 @@ main:focus{outline:none}
   <div class="prose">
     <p><strong>So what?</strong> This is why the geometry of Unit 1 looked the way it did. The solution set of \(A\mathbf{x}=\mathbf{b}\) was "a flat thing <em>not</em> through the origin" — because it is the null space <em>shifted</em> by one particular solution \(\mathbf{x}_p\): every solution is \(\mathbf{x}_p+\mathbf{n}\) with \(\mathbf{n}\in N(A)\). Subspace + shift = affine flat.</p>
   </div>
-  <figure class="fig">
-    <div class="scroll">
-    <svg viewBox="0 0 560 320" role="img" aria-label="The null space of A as a line through the origin, and the solution set of Ax=b as the same line shifted by a particular solution">
-      <defs>
-        <marker id="ah5-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
-        <marker id="ah5-s1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--s1)"/></marker>
-        <marker id="ah5-s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--s2)"/></marker>
-      </defs>
-      <!-- grid -->
-      <g stroke="var(--grid)" stroke-width="1">
-        <line x1="40" y1="70" x2="480" y2="70"/><line x1="40" y1="110" x2="480" y2="110"/><line x1="40" y1="150" x2="480" y2="150"/><line x1="40" y1="230" x2="480" y2="230"/><line x1="40" y1="270" x2="480" y2="270"/>
-        <line x1="80" y1="40" x2="80" y2="290"/><line x1="120" y1="40" x2="120" y2="290"/><line x1="160" y1="40" x2="160" y2="290"/><line x1="240" y1="40" x2="240" y2="290"/><line x1="280" y1="40" x2="280" y2="290"/><line x1="320" y1="40" x2="320" y2="290"/><line x1="360" y1="40" x2="360" y2="290"/><line x1="400" y1="40" x2="400" y2="290"/><line x1="440" y1="40" x2="440" y2="290"/>
-      </g>
-      <line x1="40" y1="190" x2="480" y2="190" stroke="var(--axis)" stroke-width="1.4"/>
-      <line x1="200" y1="40" x2="200" y2="290" stroke="var(--axis)" stroke-width="1.4"/>
-      <!-- null line x+2y=0 -->
-      <line x1="40" y1="110" x2="400" y2="290" stroke="var(--s1)" stroke-width="3" opacity=".9"/>
-      <!-- solution line x+2y=4 -->
-      <line x1="80" y1="50" x2="480" y2="250" stroke="var(--s2)" stroke-width="3" opacity=".9"/>
-      <!-- n along null line -->
-      <line x1="200" y1="190" x2="120" y2="150" stroke="var(--s1)" stroke-width="2.4" marker-end="url(#ah5-s1)"/>
-      <!-- x_p -->
-      <line x1="200" y1="190" x2="280" y2="150" stroke="var(--ink)" stroke-width="2.6" marker-end="url(#ah5-ink)"/>
-      <!-- copies of n on the solution line -->
-      <line x1="280" y1="150" x2="200" y2="110" stroke="var(--s1)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ah5-s1)"/>
-      <line x1="280" y1="150" x2="360" y2="190" stroke="var(--s1)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ah5-s1)"/>
-      <!-- shift arrow -->
-      <line x1="150" y1="165" x2="230" y2="125" stroke="var(--ink-muted)" stroke-width="1.6" stroke-dasharray="3 3"/>
-      <circle cx="200" cy="190" r="3.5" fill="var(--ink)"/>
-      <circle cx="280" cy="150" r="4" fill="var(--ink)" stroke="var(--surface)" stroke-width="1.5"/>
-      <circle cx="200" cy="110" r="3.5" fill="var(--s2)"/><circle cx="360" cy="190" r="3.5" fill="var(--s2)"/>
-      <text x="206" y="207" font-size="11" fill="var(--ink-muted)">0</text>
-      <text x="236" y="180" font-size="12" font-weight="700" fill="var(--ink)">xₚ = (2, 1)</text>
-      <text x="118" y="142" font-size="12" font-weight="700" fill="var(--s1)" text-anchor="end">n = (−2, 1)</text>
-      <text x="294" y="254" font-size="12" font-weight="700" fill="var(--s1)" text-anchor="middle" transform="rotate(26.57 294 254)">N(A): x + 2y = 0</text>
-      <text x="356" y="170" font-size="12" font-weight="700" fill="var(--s2)" text-anchor="middle" transform="rotate(26.57 356 170)">solutions of Ax = 4: x + 2y = 4</text>
-      <text x="206" y="104" font-size="11" fill="var(--ink-2)">xₚ + n</text>
-      <text x="366" y="208" font-size="11" fill="var(--ink-2)">xₚ − n</text>
-      <text x="40" y="310" font-size="11.5" fill="var(--ink-2)">A = [ 1  2 ],  b = 4  —  one grid square = 1 unit</text>
-    </svg>
-    </div>
+  <figure class="fig reveal" id="fig-ns">
+    <div id="ns-3d" class="stage3d" role="img" aria-label="Orbitable 3D view: the null space of A = [1 2] as a glowing blue rail through the origin on the plane, and the solution set of Ax = 4 as the same rail carried by the particular solution x_p to an orange rail that misses the origin; a probe slides along the blue rail while its twin slides along the orange one"></div>
+    <p class="stage-tap">drag the picture to orbit</p>
     <p class="cap"><b>Subspace + shift = solution set.</b> The null space (blue) passes through \(\mathbf{0}\); the solution set (orange) is that same line picked up and carried by \(\mathbf{x}_p\). Every orange point is \(\mathbf{x}_p\) plus some null vector — so the orange line is <em>not</em> a subspace (it misses \(\mathbf{0}\)), but it inherits its shape entirely from one that is.</p>
   </figure>
-  <div class="callout watch"><span class="tag">Watch out — the null space in a trained model</span>
+  <div class="callout watch reveal"><span class="tag">Watch out — the null space in a trained model</span>
     <p>If \(A\) is a data matrix and \(\mathbf{w}\) a weight vector, then any \(\mathbf{n}\in N(A)\) gives \(A(\mathbf{w}+\mathbf{n})=A\mathbf{w}\): the weights \(\mathbf{w}\) and \(\mathbf{w}+\mathbf{n}\) make <em>identical</em> predictions on the training data. A non-trivial null space means the weights are <strong>not identifiable</strong> — the data cannot tell them apart, and only extra rules (regularisation, a preference for small norm) pick one. Weight symmetries in neural networks are the non-linear cousin of this same blind spot.</p>
   </div>
-<div class="check" data-check="c5">
+<div class="check reveal" data-check="c5">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Why does \(N(A)\) pass the closure-under-addition test?</p>
     <div class="opts">
@@ -677,8 +832,8 @@ main:focus{outline:none}
 
 <!-- ================= 6 · SPAN ================= -->
 <section class="unit" id="s6">
-  <div class="sec-head"><span class="sec-num">6</span><h2>Span — everywhere you can reach</h2></div>
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Span — everywhere you can reach</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>You're at the origin of a city with a strange transit system: each vector you own is a <em>transport mode</em> — a tram that runs one fixed direction (and backwards, for negative weights, as far as you like). A <strong>linear combination</strong> \(\lambda_1\mathbf{x}_1+\cdots+\lambda_k\mathbf{x}_k\) is an itinerary. The <strong>span</strong> is your reachable city: every destination some itinerary can hit. Buy a new tram line that runs along an existing one, and your reachable city doesn't grow by a single block.</p>
   </div>
   <div class="prose">
@@ -686,7 +841,7 @@ main:focus{outline:none}
     \[\operatorname{span}(\mathbf{x}_1,\dots,\mathbf{x}_k)=\{\lambda_1\mathbf{x}_1+\cdots+\lambda_k\mathbf{x}_k : \lambda_i\in\mathbb{R}\}.\]
     <p>It is <em>always a subspace</em> — the proof is three lines, and it's the same three lines as the null space:</p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · a span is a subspace — derived</span>
     <p class="dgoal"><b>Claim.</b> \(U=\operatorname{span}(\mathbf{x}_1,\dots,\mathbf{x}_k)\) passes S1, S2, S3.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">(S1) \(\mathbf{0}=0\,\mathbf{x}_1+\cdots+0\,\mathbf{x}_k\in U\).
@@ -702,7 +857,7 @@ main:focus{outline:none}
   </div>
   <div class="prose"><p>Now fly through what spans look like in 3D:</p></div>
 
-  <div class="widget" id="w-span">
+  <div class="widget reveal" id="w-span">
     <div class="widget-head"><span class="w-title">The span machine — 3D</span><span class="w-sub">drag to orbit · toggle and edit the vectors</span></div>
     <p class="try-line"><b>Try:</b> press <em>3 coplanar</em>, then slide λ₃ — the ink dot never lifts off the plane, because v₃ is built from v₁ and v₂. Then press <em>3 independent</em> and slide λ₃ again.</p>
     <div class="presets" id="span-presets">
@@ -713,7 +868,7 @@ main:focus{outline:none}
       <button class="preset" data-p="cop">3 coplanar → still a plane</button>
     </div>
     <div class="wrow">
-      <div class="wcol" style="flex:2.6 1 390px"><svg id="span-svg" viewBox="0 0 640 460" class="svg-lab grabbable" role="img" aria-label="Rotatable 3D view of the span of up to three vectors: a line, a plane, or all of space"></svg></div>
+      <div class="wcol" style="flex:2.6 1 390px"><div id="span-svg" class="stage3d tall" role="img" aria-label="Orbitable 3D view of the span of up to three glowing vectors: a lit rail, a glass plane with its own graph paper, or the whole glowing room; a golden trip point built leg by leg from the vectors rides the span and leaves a trail"></div><p class="stage-tap">drag the picture to orbit</p></div>
       <div class="wcol" style="flex:1 1 260px">
         <div id="span-eds"></div>
         <div class="controls" id="span-lams" style="margin-top:.7rem"></div>
@@ -732,10 +887,10 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="callout watch"><span class="tag">Watch out — span is everywhere in ML</span>
+  <div class="callout watch reveal"><span class="tag">Watch out — span is everywhere in ML</span>
     <p>Linear regression's predictions \(\hat{\mathbf{y}}=X\mathbf{w}\) live, by definition, in \(\operatorname{span}(\text{columns of }X)\) — the column space you met in Unit 1. PCA compresses by projecting data onto the span of a few top directions. And the famous <code>king − man + woman ≈ queen</code> lives inside the span of four word vectors. "What can this model express?" is usually a question about a span.</p>
   </div>
-  <div class="check" data-check="c6">
+  <div class="check reveal" data-check="c6">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Two <em>collinear</em> vectors in \(\mathbb{R}^3\) (one is \(-\tfrac34\) times the other). Their span is…</p>
     <div class="opts">
@@ -749,17 +904,17 @@ main:focus{outline:none}
 
 <!-- ================= 7 · INDEPENDENCE ================= -->
 <section class="unit" id="s7">
-  <div class="sec-head"><span class="sec-num">7</span><h2>Linear independence — the art of non-redundancy</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Linear independence — the art of non-redundancy</h2></div>
   <div class="prose">
     <p>The span machine kept whispering one idea: some vectors <em>add nothing</em>. Here's the formal detector. Ask: can the vectors <strong>cancel each other out</strong> — combine to \(\mathbf{0}\) — <em>without</em> every weight being zero?</p>
     \[\lambda_1\mathbf{x}_1+\lambda_2\mathbf{x}_2+\cdots+\lambda_k\mathbf{x}_k=\mathbf{0},\qquad\text{some }\lambda_i\neq 0\ ?\]
     <p><strong>Yes → linearly dependent.</strong> Rearrange that equation and one vector is exposed as a blend of the others — a redundant tram, the "agreeing friend" from Unit 1's group chat. <strong>No → linearly independent</strong>: the only way to \(\mathbf{0}\) is the boring all-zeros way, and every vector contributes something the rest collectively can't replicate. There is no third option.</p>
     <p>Two instant shortcuts. ① If \(\mathbf{0}\) is one of your vectors, the set is dependent on the spot — put weight 1 on \(\mathbf{0}\), zero elsewhere: a non-trivial combination summing to \(\mathbf{0}\). ② For non-zero vectors, "dependent" is exactly "at least one is a combination of the others" — redundancy made literal.</p>
   </div>
-  <div class="callout try"><span class="tag">Feel it on two tiny examples</span>
+  <div class="callout try reveal"><span class="tag">Feel it on two tiny examples</span>
     <p><strong>Dependent:</strong> \(\binom{1}{2}\) and \(\binom{2}{4}\). The second is just the first, doubled — so \(2\binom{1}{2}-1\binom{2}{4}=\binom{0}{0}\): a route to \(\mathbf{0}\) with non-zero weights \((2,-1)\). Caught. <strong>Independent:</strong> \(\binom{1}{0}\) and \(\binom{1}{1}\). Try \(\lambda_1\binom{1}{0}+\lambda_2\binom{1}{1}=\binom{0}{0}\): the second row forces \(\lambda_2=0\), then the first forces \(\lambda_1=0\) — only the boring all-zeros way exists. Every dependence question in this course, however huge the matrix, is these two examples scaled up.</p>
   </div>
-  <figure class="fig">
+  <figure class="fig reveal">
     <div class="scroll">
     <svg viewBox="0 0 560 270" role="img" aria-label="Left: (1,2) and (2,4) lie on one line and a route returns to the origin. Right: (1,0) and (1,1) open a parallelogram">
       <defs>
@@ -771,13 +926,13 @@ main:focus{outline:none}
       <line x1="20" y1="220" x2="250" y2="220" stroke="var(--axis)" stroke-width="1.2"/>
       <line x1="60" y1="250" x2="60" y2="40" stroke="var(--axis)" stroke-width="1.2"/>
       <line x1="30" y1="280" x2="150" y2="40" stroke="var(--ink-muted)" stroke-width="1" stroke-dasharray="3 4"/>
-      <line x1="60" y1="220" x2="96" y2="148" stroke="var(--s1)" stroke-width="3" marker-end="url(#ah7-s1)"/>
-      <line x1="60" y1="220" x2="132" y2="76" stroke="var(--s2)" stroke-width="3" marker-end="url(#ah7-s2)"/>
+      <line class="draw glow-1" x1="60" y1="220" x2="96" y2="148" stroke="var(--s1)" stroke-width="3" marker-end="url(#ah7-s1)"/>
+      <line class="draw glow-2" x1="60" y1="220" x2="132" y2="76" stroke="var(--s2)" stroke-width="3" marker-end="url(#ah7-s2)"/>
       <text x="40" y="152" font-size="12" font-weight="700" fill="var(--s1)" text-anchor="end">(1,2)</text>
       <text x="138" y="80" font-size="12" font-weight="700" fill="var(--s2)">(2,4)</text>
       <!-- route to zero: go 2·(1,2) out (offset right), come −1·(2,4) back (offset left) -->
-      <path d="M72,226 L144,82" stroke="var(--s1)" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#ah7-s1)"/>
-      <path d="M120,70 L48,214" stroke="var(--s2)" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#ah7-s2)"/>
+      <path class="fade glow-1" d="M72,226 L144,82" stroke="var(--s1)" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#ah7-s1)"/>
+      <path class="fade glow-2" d="M120,70 L48,214" stroke="var(--s2)" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#ah7-s2)"/>
       <text x="150" y="130" font-size="11" fill="var(--s1)">2·(1,2)</text>
       <text x="4" y="112" font-size="11" fill="var(--s2)">−1·(2,4)</text>
       <text x="20" y="262" font-size="11" fill="var(--ink-2)">one line; round trip 2·(1,2) − 1·(2,4) = 0</text>
@@ -786,9 +941,9 @@ main:focus{outline:none}
       <text x="300" y="24" font-size="12.5" font-weight="700" fill="var(--good-text)">Independent: (1,0) and (1,1)</text>
       <line x1="300" y1="220" x2="540" y2="220" stroke="var(--axis)" stroke-width="1.2"/>
       <line x1="330" y1="250" x2="330" y2="40" stroke="var(--axis)" stroke-width="1.2"/>
-      <polygon points="330,220 390,220 450,160 390,160" fill="color-mix(in srgb,var(--s1) 14%,transparent)" stroke="var(--s1)" stroke-width="1" stroke-dasharray="4 3"/>
-      <line x1="330" y1="220" x2="390" y2="220" stroke="var(--s1)" stroke-width="3" marker-end="url(#ah7-s1)"/>
-      <line x1="330" y1="220" x2="390" y2="160" stroke="var(--s2)" stroke-width="3" marker-end="url(#ah7-s2)"/>
+      <polygon class="fade" points="330,220 390,220 450,160 390,160" fill="color-mix(in srgb,var(--s1) 18%,transparent)" stroke="var(--s1)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line class="draw glow-1" x1="330" y1="220" x2="390" y2="220" stroke="var(--s1)" stroke-width="3" marker-end="url(#ah7-s1)"/>
+      <line class="draw glow-2" x1="330" y1="220" x2="390" y2="160" stroke="var(--s2)" stroke-width="3" marker-end="url(#ah7-s2)"/>
       <text x="368" y="240" font-size="12" font-weight="700" fill="var(--s1)">(1,0)</text>
       <text x="396" y="156" font-size="12" font-weight="700" fill="var(--s2)">(1,1)</text>
       <text x="410" y="205" font-size="11" fill="var(--s1)">area opens up</text>
@@ -798,7 +953,7 @@ main:focus{outline:none}
     </div>
     <p class="cap"><b>Dependence is a round trip.</b> On the left, going out along one vector and back along the other lands you home with non-zero weights \((2,-1)\). On the right, no such round trip exists: the two vectors point in genuinely different directions and open up area between them.</p>
   </figure>
-  <div class="check" data-check="c7">
+  <div class="check reveal" data-check="c7">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">A set of five vectors happens to include \(\mathbf{0}\). What can you conclude?</p>
     <div class="opts">
@@ -812,12 +967,12 @@ main:focus{outline:none}
 
 <!-- ================= 8 · THE DETECTOR ================= -->
 <section class="unit" id="s8">
-  <div class="sec-head"><span class="sec-num">8</span><h2>The detector: elimination hunts redundancy</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The detector: elimination hunts redundancy</h2></div>
   <div class="prose">
     <p>You never have to guess. The foolproof procedure is one you already own: <strong>stack the vectors as columns, run Gaussian elimination, read the pivots.</strong> Every column with a pivot is a genuine contributor; every pivot-less column is a blend of the pivot columns to its left — and in <em>reduced</em> row-echelon form, the entries of a non-pivot column spell out its recipe. Step through the elimination below to see the redundancy being hunted, one row operation at a time.</p>
   </div>
 
-  <div class="widget" id="w-ind">
+  <div class="widget reveal" id="w-ind">
     <div class="widget-head"><span class="w-title">The redundancy detector</span><span class="w-sub">columns in → pivots, verdict, recipes out</span></div>
     <p class="try-line"><b>Try:</b> load <em>The recipes example</em>, then press <em>▶ play</em> and watch column 4 lose its pivot. Then edit one entry of v₄ and see whether it earns one back.</p>
     <div class="presets" id="ind-presets">
@@ -839,7 +994,7 @@ main:focus{outline:none}
           <button type="button" id="ind-prev" aria-label="previous step">‹</button>
           <span class="val" id="ind-stepno" style="min-width:5.4rem;font-size:.82rem">step 0 / 0</span>
           <button type="button" id="ind-next" aria-label="next step">›</button>
-          <button type="button" class="preset" id="ind-play" style="width:auto;height:auto;padding:.3rem .8rem">▶ play</button>
+          <button type="button" class="preset play" id="ind-play" style="width:auto;height:auto;padding:.32rem .9rem">▶ play</button>
           <button type="button" class="preset" id="ind-end" style="width:auto;height:auto;padding:.3rem .8rem">⇥ finish</button>
         </div>
         <div class="steplog" id="ind-log"></div>
@@ -857,7 +1012,7 @@ main:focus{outline:none}
   <div class="prose">
     <p>Try the presets against the slides: the \(2\times3\) example exposes column 2 as \(2\times\) column 1; the three vectors in \(\mathbb{R}^4\) come out all-pivots — independent, no redundancy anywhere. But why is reading a recipe off the <em>reduced</em> matrix legitimate, when row operations have scrambled every column? Because they scramble every column <em>the same way</em>:</p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · a non-pivot RREF column is a recipe for the original column — derived</span>
     <p class="dgoal"><b>Claim.</b> If \(R=\operatorname{rref}(A)\) and column \(j\) of \(R\) is not a pivot column, then the entries of that column (rows 1…rank) are the weights that build the <em>original</em> column \(\mathbf{a}_j\) from the original pivot columns.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Every row operation is a left-multiplication by an invertible matrix \(E\) (swap, scale a row, add a multiple of one row to another). So after all of them,
@@ -874,7 +1029,7 @@ main:focus{outline:none}
       <span style="white-space:nowrap">The X-ray reads the skeleton's recipe. <span class="dqed">∎</span></span>
       <span class="dwhy">The same argument shows the original pivot columns are independent: their reduced versions are distinct unit vectors, and independence is a "which weights give 0" question, which step 2 says is shared.</span></div></div>
   </div>
-  <div class="check" data-check="c11">
+  <div class="check reveal" data-check="c11">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">After row-reducing \(A\), the RREF has a non-pivot third column reading \((3,-1,0)^\top\). Which statement is right?</p>
     <div class="opts">
@@ -888,18 +1043,18 @@ main:focus{outline:none}
 
 <!-- ================= 9 · RECIPES THEOREM ================= -->
 <section class="unit" id="s9">
-  <div class="sec-head"><span class="sec-num">9</span><h2>The recipes theorem — independence survives translation</h2></div>
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>The recipes theorem — independence survives translation</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>Your pantry holds \(k\) trusted, non-redundant ingredients \(\mathbf{b}_1,\dots,\mathbf{b}_k\) (linearly independent). You cook \(m\) new dishes \(\mathbf{x}_1,\dots,\mathbf{x}_m\), each defined purely by its <strong>recipe</strong> — how much of each ingredient it uses: \(\mathbf{x}_j=\lambda_{1j}\mathbf{b}_1+\cdots+\lambda_{kj}\mathbf{b}_k\). Question: did you accidentally cook the same dish twice under different names? Do you have to taste the dishes — or is reading the recipe cards enough?</p>
   </div>
   <div class="prose">
     <p>Pack the ingredients as columns of \(B=[\mathbf{b}_1\ \cdots\ \mathbf{b}_k]\) and each recipe as a column \(\boldsymbol{\lambda}_j\); then cooking is a matrix product, \(\mathbf{x}_j = B\boldsymbol{\lambda}_j\). The theorem:</p>
   </div>
-  <div class="callout aha"><span class="tag">Aha</span>
+  <div class="callout aha reveal"><span class="tag">Aha</span>
     <p style="text-align:center">\(\{\mathbf{x}_1,\dots,\mathbf{x}_m\}\) independent \(\iff\) \(\{\boldsymbol{\lambda}_1,\dots,\boldsymbol{\lambda}_m\}\) independent.</p>
     <p><strong>Reading recipe cards is enough.</strong> The dish-level question collapses onto the recipe-level question, weight for weight — in both directions. <strong>Geometry in the space mirrors geometry among the recipes</strong>; that mirror is the entire reason coordinate systems are useful.</p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · the recipes theorem, both directions — derived</span>
     <p class="dgoal"><b>Setting.</b> \(B=[\mathbf{b}_1\cdots\mathbf{b}_k]\) has independent columns, and \(\mathbf{x}_j=B\boldsymbol{\lambda}_j\) for \(j=1,\dots,m\). Pick any weights \(\psi_1,\dots,\psi_m\) and write \(\mathbf{v}=\psi_1\boldsymbol{\lambda}_1+\cdots+\psi_m\boldsymbol{\lambda}_m\).</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">A combination of dishes is \(B\) applied to the same combination of recipes:
@@ -913,25 +1068,25 @@ main:focus{outline:none}
       <span style="white-space:nowrap">Both directions hold. <span class="dqed">∎</span></span>
       <span class="dwhy">This direction never needed step 2: a relation among the recipes is carried by \(B\) into the same relation among the dishes, and the dishes forbid non-trivial relations.</span></div></div>
   </div>
-  <figure class="fig">
+  <figure class="fig reveal">
     <div class="scroll">
     <svg viewBox="0 0 560 200" role="img" aria-label="Three recipe cards trying to fit into two pantry slots: one card must be a blend of the others">
       <defs><marker id="ah9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-muted)"/></marker></defs>
       <text x="20" y="26" font-size="12.5" font-weight="700" fill="var(--ink)">m = 3 recipe cards</text>
       <g font-size="11" fill="var(--ink-2)">
-        <rect x="20" y="40" width="96" height="120" rx="8" fill="var(--surface)" stroke="var(--s1)" stroke-width="1.6"/>
+        <rect class="glow-1" x="20" y="40" width="96" height="120" rx="8" fill="var(--surface)" stroke="var(--s1)" stroke-width="1.6"/>
         <text x="30" y="60" font-weight="700" fill="var(--s1)">x₁</text><text x="30" y="82">b₁ : 1</text><text x="30" y="100">b₂ : 0.5</text>
-        <rect x="128" y="40" width="96" height="120" rx="8" fill="var(--surface)" stroke="var(--s2)" stroke-width="1.6"/>
+        <rect class="glow-2" x="128" y="40" width="96" height="120" rx="8" fill="var(--surface)" stroke="var(--s2)" stroke-width="1.6"/>
         <text x="138" y="60" font-weight="700" fill="var(--s2)">x₂</text><text x="138" y="82">b₁ : −1</text><text x="138" y="100">b₂ : 1.5</text>
-        <rect x="236" y="40" width="96" height="120" rx="8" fill="var(--surface)" stroke="var(--s3)" stroke-width="1.6"/>
+        <rect class="glow-3" x="236" y="40" width="96" height="120" rx="8" fill="var(--surface)" stroke="var(--s3)" stroke-width="1.6"/>
         <text x="246" y="60" font-weight="700" fill="var(--s3)">x₃</text><text x="246" y="82">b₁ : −1</text><text x="246" y="100">b₂ : 1</text>
         <text x="30" y="126" fill="var(--ink-muted)" font-size="10.5">= a vector in ℝ²</text>
       </g>
       <line x1="345" y1="100" x2="395" y2="100" stroke="var(--ink-muted)" stroke-width="2" marker-end="url(#ah9)"/>
       <text x="410" y="26" font-size="12.5" font-weight="700" fill="var(--ink)">k = 2 pantry slots</text>
-      <rect x="410" y="40" width="130" height="52" rx="8" fill="color-mix(in srgb,var(--s7) 12%,transparent)" stroke="var(--s7)" stroke-width="1.6"/>
+      <rect class="glow-7 draw" x="410" y="40" width="130" height="52" rx="8" fill="color-mix(in srgb,var(--s7) 12%,transparent)" stroke="var(--s7)" stroke-width="1.6"/>
       <text x="422" y="72" font-size="12.5" font-weight="700" fill="var(--s7)">slot b₁</text>
-      <rect x="410" y="108" width="130" height="52" rx="8" fill="color-mix(in srgb,var(--s7) 12%,transparent)" stroke="var(--s7)" stroke-width="1.6"/>
+      <rect class="glow-7 draw" x="410" y="108" width="130" height="52" rx="8" fill="color-mix(in srgb,var(--s7) 12%,transparent)" stroke="var(--s7)" stroke-width="1.6"/>
       <text x="422" y="140" font-size="12.5" font-weight="700" fill="var(--s7)">slot b₂</text>
       <text x="20" y="188" font-size="11.5" fill="var(--critical)" font-weight="700">3 cards but only 2 slots: at least one card is a blend of the others.</text>
     </svg>
@@ -940,19 +1095,11 @@ main:focus{outline:none}
   </figure>
   <div class="prose"><p>Watch the mirror operate — the two panels are different spaces, yet they always agree:</p></div>
 
-  <div class="widget" id="w-rec">
-    <div class="widget-head"><span class="w-title">The mirror</span><span class="w-sub">dishes on the left, recipe cards on the right — dependence strikes both or neither</span></div>
+  <div class="widget reveal" id="w-rec">
+    <div class="widget-head"><span class="w-title">The mirror</span><span class="w-sub">dishes on the left, recipe cards on the right — dependence strikes both or neither · drag to orbit</span></div>
     <p class="try-line"><b>Try:</b> slide x₂'s recipe to (2, 1) — twice x₁'s card — and watch both panels flag dependence at the same instant. The faint slanted grid on the left is the recipe grid seen through the mirror.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:1 1 290px">
-        <div style="font-weight:700;font-size:.85rem;margin-bottom:.3rem">DISH SPACE — x = Bλ</div>
-        <svg id="rec-real" viewBox="0 0 420 330" class="svg-lab" role="img" aria-label="Vectors built from a basis"></svg>
-      </div>
-      <div class="wcol" style="flex:1 1 290px">
-        <div style="font-weight:700;font-size:.85rem;margin-bottom:.3rem">RECIPE SPACE — the λ coordinates</div>
-        <svg id="rec-lam" viewBox="0 0 420 330" class="svg-lab" role="img" aria-label="The corresponding recipe vectors"></svg>
-      </div>
-    </div>
+    <div id="rec-real" class="stage3d tall" role="img" aria-label="Orbitable 3D view of two glass floors: on the left the dish space, gridded by the sheared basis B, with the dishes x1, x2 as glowing arrows; on the right the recipe space with the standard grid and the recipe vectors lambda; a translucent mirror pane stands between them and glowing threads carry each recipe to its dish"></div>
+    <p class="stage-tap">drag the picture to orbit</p>
     <div class="wrow" style="margin-top:.6rem;align-items:flex-start">
       <div class="controls" style="flex:1 1 260px;max-width:23rem">
         <div class="ctl"><label>x₂ recipe: λ₁₂</label><input type="range" id="rec-a" min="-3" max="3" step="0.1" value="-1"><output id="rec-ao">−1</output></div>
@@ -973,7 +1120,7 @@ main:focus{outline:none}
       \quad\Longrightarrow\quad 7\mathbf{x}_1+15\mathbf{x}_2+18\mathbf{x}_3+\mathbf{x}_4=\mathbf{0}\]
     <p>by the mirror — the four dishes are dependent, redundancy named exactly. (Feed preset 3 of the detector above and read it off yourself.)</p>
   </div>
-  <div class="check" data-check="c8">
+  <div class="check reveal" data-check="c8">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Someone hands you 50 word-embedding vectors that live in a 32-dimensional space. Independent or not?</p>
     <div class="opts">
@@ -987,13 +1134,13 @@ main:focus{outline:none}
 
 <!-- ================= 10 · BASIS ================= -->
 <section class="unit" id="s10">
-  <div class="sec-head"><span class="sec-num">10</span><h2>Basis — the just-right toolkit</h2></div>
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Basis — the just-right toolkit</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>You're at the origin of a flat city and want to reach <em>every</em> address by chaining straight walks. Knowing only <strong>north</strong>: you cover one avenue — not enough. <strong>North + east</strong>: the whole city — a <em>generating set</em>. <strong>North + east + north-east</strong>: still the whole city, but the third direction is a blend of the first two — generating, yet wasteful. <strong>North + east, nothing more:</strong> reaches everything, wastes nothing. <em>That</em> is a <strong>basis</strong>: a linearly independent generating set — the smallest toolkit that still reaches every square.</p>
   </div>
   <div class="prose">
     <p>Four portraits of the same object, all provably equivalent. A basis of \(V\) is:</p>
-    <ul class="axlist">
+    <ul class="axlist reveal-stagger">
       <li><span class="ak">①</span><span>a generating set that is linearly independent.<span class="ag">The textbook line: reaches everything, no redundancy.</span></span></li>
       <li><span class="ak">②</span><span>a <strong>minimal</strong> generating set.<span class="ag">Remove any one vector and some part of the space becomes unreachable.</span></span></li>
       <li><span class="ak">③</span><span>a <strong>maximal</strong> independent set.<span class="ag">Add any vector of \(V\) and redundancy appears.</span></span></li>
@@ -1001,7 +1148,7 @@ main:focus{outline:none}
     </ul>
     <p>The fourth is the money view, and "exactly one" is the part that needs a reason. <strong>No redundancy in the toolkit ⟺ no ambiguity in the addresses:</strong></p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · a basis gives unique coordinates — derived</span>
     <p class="dgoal"><b>Claim.</b> If \(\mathbf{b}_1,\dots,\mathbf{b}_k\) is a basis of \(V\), every \(\mathbf{x}\in V\) has one and only one list of coordinates.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">At least one recipe exists: \(\mathbf{x}=\lambda_1\mathbf{b}_1+\cdots+\lambda_k\mathbf{b}_k\) for some \(\lambda_i\).
@@ -1016,7 +1163,7 @@ main:focus{outline:none}
     <p>And a basis is thoroughly <em>non-unique</em> — \(\mathbb{R}^3\) is happy with the canonical \(\mathbf{e}_1,\mathbf{e}_2,\mathbf{e}_3\), or the staircase \((1,0,0),(1,1,0),(1,1,1)\), or any three independent vectors whatsoever. Same space, different address books:</p>
   </div>
 
-  <div class="widget" id="w-basis">
+  <div class="widget reveal" id="w-basis">
     <div class="widget-head"><span class="w-title">The address-book remix</span><span class="w-sub">same vector v, new basis, new coordinates — never two addresses in one book</span></div>
     <p class="try-line"><b>Try:</b> keep v where it is and switch between <em>Canonical</em>, <em>Staircase</em> and <em>Rotated</em> — the arrow never moves, only its address changes. Then press <em>Broken</em>.</p>
     <div class="presets" id="bas-presets">
@@ -1027,7 +1174,7 @@ main:focus{outline:none}
       <button class="preset" data-p="dep">Broken: b₂ ∥ b₁</button>
     </div>
     <div class="wrow">
-      <div class="wcol" style="flex:2 1 320px"><svg id="bas-svg" viewBox="0 0 560 390" class="svg-lab" role="img" aria-label="The plane gridded by a chosen basis, with one vector's coordinates shown"></svg></div>
+      <div class="wcol" style="flex:2.6 1 380px"><svg id="bas-svg" viewBox="0 0 640 460" class="svg-lab" role="img" aria-label="The plane gridded by a chosen basis, with one vector's coordinates shown"></svg></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls">
           <div class="ctl"><label for="bas-vx">v (standard x)</label><input type="range" id="bas-vx" min="-3" max="4" step="0.1" value="2.4"><output id="bas-vxo">2.4</output></div>
@@ -1040,10 +1187,10 @@ main:focus{outline:none}
     </div>
   </div>
 
-  <div class="callout watch"><span class="tag">Watch out — why "change of basis" runs half of ML</span>
+  <div class="callout watch reveal"><span class="tag">Watch out — why "change of basis" runs half of ML</span>
     <p>PCA is "find a new basis for the data, ordered by variance." The Fourier transform is "re-express the signal in the basis of sines and cosines." Autoencoders <em>learn</em> a basis where structure becomes obvious. The data never changes — the address book does, and in the right book the pattern you're hunting becomes a one-liner. Choosing bases well is much of the art of representation learning.</p>
   </div>
-  <div class="check" data-check="c9">
+  <div class="check reveal" data-check="c9">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Three linearly independent vectors in \(\mathbb{R}^4\). Do they form a basis of \(\mathbb{R}^4\)?</p>
     <div class="opts">
@@ -1057,12 +1204,12 @@ main:focus{outline:none}
 
 <!-- ================= 11 · DIMENSION ================= -->
 <section class="unit" id="s11">
-  <div class="sec-head"><span class="sec-num">11</span><h2>Dimension — how big is the board, really?</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Dimension — how big is the board, really?</h2></div>
   <div class="prose">
     <p>Here is a fact you can lean on forever: pick <em>any</em> basis of a space and count its vectors; pick a completely different basis and count again — <strong>you always get the same number</strong>. That invariant count is the <strong>dimension</strong>, \(\dim(V)\): the number of independent directions the space truly has. So \(\dim(\mathbb{R}^n)=n\), and \(\dim(\mathbb{R}^{m\times n})=mn\) — a basis for matrix-space is the family of one-hot matrices \(E_{ij}\), one per cell. For subspaces: \(\dim(U)\le\dim(V)\), with equality only when \(U\) <em>is</em> \(V\).</p>
     <p>Why must two bases agree on their size? The recipes theorem and the pigeonhole law do it in four lines:</p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · all bases have the same size — derived</span>
     <p class="dgoal"><b>Claim.</b> If \(\mathcal{B}=\{\mathbf{b}_1,\dots,\mathbf{b}_m\}\) and \(\mathcal{C}=\{\mathbf{c}_1,\dots,\mathbf{c}_k\}\) are both bases of \(V\), then \(m=k\).</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Write each \(\mathbf{b}_j\) as a recipe over \(\mathcal{C}\): \(\mathbf{b}_j=C\boldsymbol{\lambda}_j\) with \(C=[\mathbf{c}_1\cdots\mathbf{c}_k]\) and \(\boldsymbol{\lambda}_j\in\mathbb{R}^k\).
@@ -1077,10 +1224,10 @@ main:focus{outline:none}
   <div class="prose">
     <p><strong>So what for ML:</strong> an embedding matrix \(E\in\mathbb{R}^{V\times d}\) (one row per token) can have rank at most \(d\); if it is trained with a low-rank factorisation, \(\dim\) of the row space drops further. "How many independent directions does this representation really have?" is a dimension question, and the answer is the rank.</p>
   </div>
-  <div class="callout watch"><span class="tag">Watch out — components ≠ dimension</span>
+  <div class="callout watch reveal"><span class="tag">Watch out — components ≠ dimension</span>
     <p>Take \(V=\operatorname{span}\!\big(\binom{0}{1}\big)\). Every vector in it has <strong>2 components</strong>, but the space is a line: \(\dim(V)=1\). Components count the <em>ambient</em> space you're written in; dimension counts the <em>intrinsic</em> space you actually occupy. A road on a 2-D map is a 1-D world ("how far along?"). ML has a name for this gap — <strong>intrinsic dimensionality</strong> — and a famous bet about it, the <em>manifold hypothesis</em>: real data (faces, speech, text) tends to occupy a low-dimensional surface curled inside its huge ambient space. Representation learning is largely the hunt for that small true dimension.</p>
   </div>
-  <figure class="fig">
+  <figure class="fig reveal">
     <div class="scroll">
     <svg viewBox="0 0 560 230" role="img" aria-label="Left: a line inside the plane, two components but dimension one. Right: a curled surface inside a big box, the manifold hypothesis">
       <!-- LEFT -->
@@ -1090,7 +1237,7 @@ main:focus{outline:none}
         <line x1="80" y1="40" x2="80" y2="200"/><line x1="120" y1="40" x2="120" y2="200"/><line x1="200" y1="40" x2="200" y2="200"/><line x1="240" y1="40" x2="240" y2="200"/>
       </g>
       <line x1="40" y1="140" x2="245" y2="140" stroke="var(--axis)" stroke-width="1.3"/>
-      <line x1="160" y1="40" x2="160" y2="205" stroke="var(--s1)" stroke-width="4" opacity=".9"/>
+      <line class="draw glow-1" x1="160" y1="40" x2="160" y2="205" stroke="var(--s1)" stroke-width="4" opacity=".9"/>
       <circle cx="160" cy="140" r="3.5" fill="var(--ink)"/>
       <circle cx="160" cy="80" r="4" fill="var(--s1)"/><text x="168" y="76" font-size="11" fill="var(--s1)" font-weight="700">(0, 1.5)</text>
       <circle cx="160" cy="180" r="4" fill="var(--s1)"/><text x="168" y="185" font-size="11" fill="var(--s1)" font-weight="700">(0, −1)</text>
@@ -1103,8 +1250,8 @@ main:focus{outline:none}
       <rect x="300" y="40" width="240" height="165" rx="6" fill="none" stroke="var(--axis)" stroke-width="1.3" stroke-dasharray="4 3"/>
       <text x="308" y="200" font-size="11" fill="var(--ink-muted)">ambient: ℝ^150528 (pixels)</text>
       <path d="M320,150 C350,60 380,180 420,110 S480,60 520,120" fill="none" stroke="var(--s2)" stroke-width="12" opacity=".25" stroke-linecap="round"/>
-      <path d="M320,150 C350,60 380,180 420,110 S480,60 520,120" fill="none" stroke="var(--s2)" stroke-width="2.4" stroke-linecap="round"/>
-      <g fill="var(--s2)">
+      <path class="draw glow-2" d="M320,150 C350,60 380,180 420,110 S480,60 520,120" fill="none" stroke="var(--s2)" stroke-width="2.4" stroke-linecap="round"/>
+      <g fill="var(--s2)" class="fade glow-2">
         <circle cx="332" cy="118" r="3"/><circle cx="352" cy="96" r="3"/><circle cx="376" cy="120" r="3"/><circle cx="398" cy="130" r="3"/><circle cx="430" cy="100" r="3"/><circle cx="462" cy="82" r="3"/><circle cx="494" cy="97" r="3"/><circle cx="512" cy="112" r="3"/>
       </g>
       <text x="396" y="160" font-size="11" fill="var(--s2)" font-weight="700">data lives on a thin,</text>
@@ -1113,7 +1260,7 @@ main:focus{outline:none}
     </div>
     <p class="cap"><b>Components ≠ dimension.</b> Left: vectors on the \(y\)-axis are written with two numbers, but one number locates them — the space is 1-dimensional. Right: an image is written with 150,528 numbers, yet natural images cluster on a thin curled surface whose intrinsic dimension is far smaller. Finding a coordinate system for that surface is what representation learning tries to do.</p>
   </figure>
-  <div class="check" data-check="c10">
+  <div class="check reveal" data-check="c10">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">\(V=\operatorname{span}\!\big(\binom{0}{1}\big)\subseteq\mathbb{R}^2\). What is \(\dim(V)\)?</p>
     <div class="opts">
@@ -1127,23 +1274,23 @@ main:focus{outline:none}
 
 <!-- ================= 12 · FINDING A BASIS ================= -->
 <section class="unit" id="s12">
-  <div class="sec-head"><span class="sec-num">12</span><h2>Finding a basis — the algorithm</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>Finding a basis — the algorithm</h2></div>
   <div class="prose">
     <p>Handed a pile of vectors that span some subspace \(U=\operatorname{span}(\mathbf{x}_1,\dots,\mathbf{x}_m)\subseteq\mathbb{R}^n\), how do you shrink the pile to a basis? Three steps you can now guess: <strong>① stack them as columns of \(A\); ② row-reduce to echelon form; ③ keep the <em>original</em> vectors sitting over the pivot columns.</strong> Those survivors are independent (pivots certify it), and they span everything the pile spanned (each discarded vector is a recipe of survivors — the RREF column says exactly which recipe). Basis found; count it and you've measured \(\dim(U)\) too.</p>
   </div>
-  <div class="callout watch"><span class="tag">Watch out — the classic exam slip</span>
+  <div class="callout watch reveal"><span class="tag">Watch out — the classic exam slip</span>
     <p>The basis is the <strong>original</strong> pivot columns of \(A\), <em>not</em> the tidy columns of the reduced matrix. Row operations change what each column looks like while preserving every linear relation among the columns (Section 8 derived why). Read the pivot <em>positions</em> off the reduced matrix; take the <em>vectors</em> from \(A\).</p>
   </div>
-  <figure class="fig">
+  <figure class="fig reveal">
     <div class="scroll">
     <svg viewBox="0 0 560 240" role="img" aria-label="Side by side: the original matrix A with kept columns 1, 2 and 4 highlighted, and rref(A) with its columns crossed out as not the basis">
       <text x="20" y="22" font-size="12.5" font-weight="700" fill="var(--ink)">A — keep these columns</text>
       <text x="320" y="22" font-size="12.5" font-weight="700" fill="var(--ink)">rref(A) — read positions only</text>
       <!-- A columns -->
       <g font-size="13" font-family="ui-monospace,Menlo,monospace" fill="var(--ink)" text-anchor="middle">
-        <rect x="26" y="34" width="44" height="150" rx="6" fill="color-mix(in srgb,var(--s1) 16%,transparent)" stroke="var(--s1)" stroke-width="1.5"/>
-        <rect x="76" y="34" width="44" height="150" rx="6" fill="color-mix(in srgb,var(--s1) 16%,transparent)" stroke="var(--s1)" stroke-width="1.5"/>
-        <rect x="176" y="34" width="44" height="150" rx="6" fill="color-mix(in srgb,var(--s1) 16%,transparent)" stroke="var(--s1)" stroke-width="1.5"/>
+        <rect class="glow-1 draw" x="26" y="34" width="44" height="150" rx="6" fill="color-mix(in srgb,var(--s1) 16%,transparent)" stroke="var(--s1)" stroke-width="1.5"/>
+        <rect class="glow-1 draw" x="76" y="34" width="44" height="150" rx="6" fill="color-mix(in srgb,var(--s1) 16%,transparent)" stroke="var(--s1)" stroke-width="1.5"/>
+        <rect class="glow-1 draw" x="176" y="34" width="44" height="150" rx="6" fill="color-mix(in srgb,var(--s1) 16%,transparent)" stroke="var(--s1)" stroke-width="1.5"/>
         <rect x="126" y="34" width="44" height="150" rx="6" fill="none" stroke="var(--ink-muted)" stroke-width="1" stroke-dasharray="3 3"/>
         <text x="48" y="58">1</text><text x="48" y="84">2</text><text x="48" y="110">−1</text><text x="48" y="136">−1</text><text x="48" y="162">−1</text>
         <text x="98" y="58">2</text><text x="98" y="84">−1</text><text x="98" y="110">1</text><text x="98" y="136">2</text><text x="98" y="162">−2</text>
@@ -1162,7 +1309,7 @@ main:focus{outline:none}
         <text x="448" y="58">−1</text><text x="448" y="84">2</text><text x="448" y="110">0</text><text x="448" y="136">0</text><text x="448" y="162">0</text>
         <text x="498" y="58">0</text><text x="498" y="84">0</text><text x="498" y="110" fill="var(--s1)" font-weight="700">1</text><text x="498" y="136">0</text><text x="498" y="162">0</text>
       </g>
-      <g stroke="var(--critical)" stroke-width="1.6" opacity=".7">
+      <g class="fade" stroke="var(--critical)" stroke-width="1.6" opacity=".7">
         <line x1="330" y1="40" x2="366" y2="176"/><line x1="380" y1="40" x2="416" y2="176"/><line x1="430" y1="40" x2="466" y2="176"/><line x1="480" y1="40" x2="516" y2="176"/>
       </g>
       <text x="423" y="204" font-size="11" fill="var(--critical)" font-weight="700" text-anchor="middle">not the basis — but the pivots say 1, 2, 4</text>
@@ -1178,10 +1325,10 @@ main:focus{outline:none}
     \[\operatorname{rref}(A)=\begin{pmatrix}1&0&-1&0\\0&1&2&0\\0&0&0&1\\0&0&0&0\\0&0&0&0\end{pmatrix}\]
     <p>Pivots in columns <strong>1, 2 and 4</strong>. Column 3 is the only redundant one, and its RREF entries \((-1,2)\) name the recipe: \(\mathbf{x}_3=-\mathbf{x}_1+2\mathbf{x}_2\) (check it — it works on all five components). So:</p>
   </div>
-  <div class="callout remember"><span class="tag">The result</span>
+  <div class="callout remember reveal"><span class="tag">The result</span>
     <p>A basis of \(U\) is \(\{\mathbf{x}_1,\mathbf{x}_2,\mathbf{x}_4\}\) and \(\dim(U)=3\): a 3-D flat through the origin of \(\mathbb{R}^5\). Four vectors walked in; one was a blend; three genuine directions remain.</p>
   </div>
-  <details><summary>Note for companion-PDF readers — a discrepancy in this example</summary>
+  <details class="reveal"><summary>Note for companion-PDF readers — a discrepancy in this example</summary>
     <p>The companion's version of this example reports basis \(\{\mathbf{x}_1,\mathbf{x}_2\}\) and \(\dim=2\), via \(\mathbf{x}_4=3\mathbf{x}_1-2\mathbf{x}_2\). Check the fourth component: \(3(-1)-2(2)=-7\), but \(\mathbf{x}_4\)'s fourth component is \(-6\). The combination fails, \(\mathbf{x}_4\) earns its pivot, and the numbers above (three pivots, \(\dim U=3\)) are machine-verified — the detector's preset 4 reproduces them.</p>
   </details>
   <div class="prose">
@@ -1191,9 +1338,9 @@ main:focus{outline:none}
 
 <!-- ================= 13 · SUMMARY ================= -->
 <section class="unit" id="s13">
-  <div class="sec-head"><span class="sec-num">13</span><h2>The whole story, in six lines</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>The whole story, in six lines</h2></div>
   <div class="prose">
-    <ul class="axlist">
+    <ul class="axlist reveal-stagger">
       <li><span class="ak">①</span><span>A <strong>group</strong> is combining-with-guarantees; add scaling and you get a <strong>vector space</strong> — the board every ML object lives on.</span></li>
       <li><span class="ak">②</span><span>A <strong>subspace</strong> is a flat world through the origin inside a bigger one — null space and column space are the star citizens.</span></li>
       <li><span class="ak">③</span><span>The <strong>span</strong> is everywhere your vectors can reach; it never grows when you add a redundant vector.</span></li>
@@ -1202,10 +1349,10 @@ main:focus{outline:none}
       <li><span class="ak">⑥</span><span><strong>Dimension</strong> — the size of any basis — is the board's true size, and it polices everything: more vectors than dimensions ⇒ redundancy, guaranteed.</span></li>
     </ul>
   </div>
-  <div class="callout remember"><span class="tag">The one thing to remember</span>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
     <p><strong>Four questions to run on any vector or matrix you meet in ML:</strong> What space does it live in? Is this set independent or redundant? What's the span / column space / null space? Is there a smarter basis? That loop is most of the geometric reasoning behind classical ML — and a surprising amount of deep learning.</p>
   </div>
-  <details><summary>Take these home — the companion's five practice problems (with answer keys)</summary>
+  <details class="reveal"><summary>Take these home — the companion's five practice problems (with answer keys)</summary>
     <p><strong>P1.</strong> Which are subspaces of \(\mathbb{R}^3\)? (a) \(x+y+z=0\) (b) \(x+y+z=1\) (c) \(x\ge0\) (d) \(x=2y\). <em>Key: (a) and (d) — flat, through the origin. (b) misses 0; (c) dies under λ = −1.</em></p>
     <p><strong>P2.</strong> Express \(\mathbf{b}=(4,3,1,2)^T\) in terms of \(\mathbf{v}_1=(1,-1,0,1)^T,\ \mathbf{v}_2=(0,1,-2,2)^T,\ \mathbf{v}_3=(3,-1,0,1)^T,\ \mathbf{v}_4=(1,1,1,1)^T\). <em>Key: row-reduce \([\,\mathbf{v}_1\,\mathbf{v}_2\,\mathbf{v}_3\,\mathbf{v}_4\,|\,\mathbf{b}\,]\): unique solution \(\mathbf{b}=-\tfrac{15}{7}\mathbf{v}_1+\tfrac{3}{7}\mathbf{v}_2+\tfrac{10}{7}\mathbf{v}_3+\tfrac{13}{7}\mathbf{v}_4\).</em></p>
     <p><strong>P3.</strong> \(\mathbf{b}_1,\mathbf{b}_2,\mathbf{b}_3\) independent; \(\mathbf{x}_1=\mathbf{b}_1+\mathbf{b}_2,\ \mathbf{x}_2=\mathbf{b}_2+\mathbf{b}_3,\ \mathbf{x}_3=\mathbf{b}_1+\mathbf{b}_3\). Independent? <em>Key: check the recipes \((1,1,0),(0,1,1),(1,0,1)\) — three pivots, independent. The mirror does the rest; the \(\mathbf{b}_i\) never had to be seen.</em></p>
@@ -1498,26 +1645,43 @@ main:focus{outline:none}
 </section>
 </main>
 
+<!--@cinema-js-->
 <script>
 (function(){
 "use strict";
 /* ---------- shared helpers (same design system as Unit 1) ---------- */
 const store={mem:{},get(k){try{return localStorage.getItem(k)??this.mem[k]??null}catch(e){return this.mem[k]??null}},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}}};
-const themeBtn=document.getElementById('theme-btn');const modes=['auto','light','dark'];let mode=store.get('mfml-theme')||'auto';
-function applyTheme(){if(mode==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',mode);themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;}
-themeBtn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%3];store.set('mfml-theme',mode);applyTheme();});applyTheme();
+const themeBtn=document.getElementById('theme-btn');const modes=['dark','light'];let mode=store.get('mfml-theme')==='light'?'light':'dark';
+function applyTheme(){document.documentElement.setAttribute('data-theme',mode);themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;}
+themeBtn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%2];store.set('mfml-theme',mode);applyTheme();});applyTheme();
 const rail=document.getElementById('read-progress');
 addEventListener('scroll',()=>{const h=document.documentElement;rail.style.width=((h.scrollTop/(h.scrollHeight-h.clientHeight))*100).toFixed(2)+'%';},{passive:true});
 const NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,parent){const n=document.createElementNS(NS,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(parent)parent.appendChild(n);return n;}
-function txt(parent,x,y,s,style,anchor){const t=el('text',{x,y,'text-anchor':anchor||'start'},parent);t.setAttribute('style',style||'font:600 11px system-ui;fill:var(--ink-muted)');t.textContent=s;return t;}
+function txt(parent,x,y,s,style,anchor){const t=el('text',{x,y,'text-anchor':anchor||'start'},parent);t.setAttribute('style',(style||'font:600 11px system-ui;fill:var(--ink-muted)').replace(/system-ui/g,'Inter,system-ui'));t.textContent=s;return t;}
+/* ---- cinema helpers: SVG glow (dropped in the light theme) + theme probe ---- */
+const CIN=window.Cinema||null;
+const isLight=()=>document.documentElement.getAttribute('data-theme')==='light';
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+/* palette lookup that also knows the status colours */
+const colOf=(colors,k)=>k==='critical'?cssv('--critical'):colors[k];
+function glo(svg,blur){ if(!CIN||isLight()) return null; return CIN.glowFilter(svg,'g-'+(svg.id||'x'),blur||2.4); }
+const G=(p,attrs)=>{ if(p&&p.glow) attrs.filter=p.glow; return attrs; };
 function plane(svg,X0,X1,Y0,Y1,opts){opts=opts||{};svg.innerHTML='';
   const W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height,pad=opts.pad||26;
   const sx=(W-2*pad)/(X1-X0),sy=(H-2*pad)/(Y1-Y0),s=Math.min(sx,sy);
   /* aspect fit: widen the range on the roomier axis so the plot fills the whole viewBox */
   if(sx>sy){const ex=((W-2*pad)/s-(X1-X0))/2;X0-=ex;X1+=ex;}else{const ey=((H-2*pad)/s-(Y1-Y0))/2;Y0-=ey;Y1+=ey;}
   const cx=pad,cy=pad;
-  const px=x=>cx+(x-X0)*s,py=y=>H-cy-(y-Y0)*s,g=el('g',{},svg),step=opts.step||1;
+  const px=x=>cx+(x-X0)*s,py=y=>H-cy-(y-Y0)*s,step=opts.step||1;
+  /* the grid fades toward the edges (radial mask) and the key strokes glow */
+  const glow=glo(svg);
+  const defs=svg.querySelector('defs')||el('defs',{},svg);
+  const mid='m-'+(svg.id||'p');
+  const rg=el('radialGradient',{id:mid+'-g',cx:'50%',cy:'50%',r:'62%'},defs);
+  el('stop',{offset:'0','stop-color':'#fff'},rg); el('stop',{offset:'.72','stop-color':'#fff','stop-opacity':'.8'},rg); el('stop',{offset:'1','stop-color':'#fff','stop-opacity':'.05'},rg);
+  const mk=el('mask',{id:mid},defs); el('rect',{x:0,y:0,width:W,height:H,fill:`url(#${mid}-g)`},mk);
+  const g=el('g',{mask:`url(#${mid})`},svg);
   for(let x=Math.ceil(X0);x<=X1;x+=step)el('line',{x1:px(x),y1:py(Y0),x2:px(x),y2:py(Y1),stroke:'var(--grid)','stroke-width':x===0?0:1},g);
   for(let y=Math.ceil(Y0);y<=Y1;y+=step)el('line',{x1:px(X0),y1:py(y),x2:px(X1),y2:py(y),stroke:'var(--grid)','stroke-width':y===0?0:1},g);
   el('line',{x1:px(X0),y1:py(0),x2:px(X1),y2:py(0),stroke:'var(--axis)','stroke-width':1.5},g);
@@ -1525,8 +1689,8 @@ function plane(svg,X0,X1,Y0,Y1,opts){opts=opts||{};svg.innerHTML='';
   if(!opts.noticks){const te=opts.tickEvery||1;
     for(let x=Math.ceil(X0);x<=X1;x+=step)if(x!==0&&Math.abs(x)%te===0)txt(svg,px(x),py(0)+15,x,'font:500 10px system-ui;fill:var(--ink-muted)','middle');
     for(let y=Math.ceil(Y0);y<=Y1;y+=step)if(y!==0&&Math.abs(y)%te===0)txt(svg,px(0)-7,py(y)+3.5,y,'font:500 10px system-ui;fill:var(--ink-muted)','end');}
-  return {px,py,svg,X0,X1,Y0,Y1};}
-function arrow(p,x0,y0,x1,y1,color,w,label,lblStyle){const g=el('g',{},p.svg);
+  return {px,py,svg,X0,X1,Y0,Y1,glow,grid:g};}
+function arrow(p,x0,y0,x1,y1,color,w,label,lblStyle){const g=el('g',G(p,{}),p.svg);
   const X0=p.px(x0),Y0=p.py(y0),X1=p.px(x1),Y1=p.py(y1),dx=X1-X0,dy=Y1-Y0,L=Math.hypot(dx,dy)||1;
   const hx=X1-dx/L*10,hy=Y1-dy/L*10;
   el('line',{x1:X0,y1:Y0,x2:hx,y2:hy,stroke:color,'stroke-width':w||2.5,'stroke-linecap':'round'},g);
@@ -1535,6 +1699,59 @@ function arrow(p,x0,y0,x1,y1,color,w,label,lblStyle){const g=el('g',{},p.svg);
   if(label)txt(p.svg,X1+dx/L*8+(dx>=0?2:-2),Y1+dy/L*8,label,lblStyle||`font:700 12px system-ui;fill:${color}`,dx>=0?'start':'end');
   return g;}
 const fmt=(v,d=2)=>(+v).toFixed(d).replace(/\.?0+$/,'').replace(/^-0$/,'0');
+/* ---- three.js stage registry: every stage rebuilds itself when the theme flips, so colours are always the live palette ---- */
+const STAGES=[];
+function mountStage(box, build){ const S={box,build,handle:null}; STAGES.push(S); remount(S);
+  if('IntersectionObserver' in window) new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting&&S.handle) S.handle.requestRender(); }),{threshold:.02}).observe(box);  /* a canvas the browser discarded off-screen gets repainted on return */
+  return S; }
+function remount(S){
+  if(S.handle){ const h=S.handle; try{ h.ctx.dead=true; const R=h.ctx.renderer; R.render=()=>{}; R.setSize=()=>{}; h.dispose(); R.forceContextLoss(); }catch(e){} S.handle=null; }  /* give the GL context back — browsers cap live contexts and silently kill the oldest */
+  S.box.innerHTML=''; if(CIN&&window.THREE){ try{ S.handle=S.build(); S.box.__stage=S; }catch(e){ console.warn('stage failed', e); } }
+  setTimeout(()=>S.box.querySelectorAll('.ctx-lost').forEach(d=>d.remove()),700); }  /* the discarded context's loss event lands in this box a beat later — it is not a real loss */
+function hud(box, cls){ const d=document.createElement('div'); d.className='hud'+(cls?' '+cls:''); box.appendChild(d); return d; }
+function hint(box, text){ const d=document.createElement('div'); d.className='hint'; d.textContent=text||'drag to orbit'; box.appendChild(d); return d; }
+new MutationObserver(()=>STAGES.forEach(remount)).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+const T3=v=>[v[0],v[2],-v[1]];   /* math (x, y, z-up) → three.js (x, y-up, z toward the camera): a rotation, so handedness stays honest */
+const F3=(x,y)=>[x,0,-y];        /* a 2D math point laid on the floor */
+/* re-aim an arrow built by Cinema.prim.arrow without rebuilding its geometry (head keeps its size) */
+function aim3(THREE,g,a,b){ const A=a.isVector3?a:new THREE.Vector3(...a), B=b.isVector3?b:new THREE.Vector3(...b); const d=B.clone().sub(A), len=d.length();
+  const shaft=g.children[0], head=g.children[1]; if(!shaft||len<1e-3){ g.visible=false; return; } g.visible=true;
+  const hl=Math.min(g.userData.head||.28,len*.5), base=shaft.geometry.parameters.height;
+  shaft.scale.y=Math.max(1e-3,len-hl)/base; shaft.position.y=(len-hl)/2; head.position.y=len-hl/2;
+  g.position.copy(A); g.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize()); }
+function mkArrow(ctx,color,opts){ opts=opts||{}; const g=CIN.prim.arrow(ctx,[0,0,0],[0,1,0],color,Object.assign({head:.26},opts)); g.userData.head=opts.head||.26; return g; }
+/* a glowing tube between two points */
+function tube(ctx,a,b,color,r,opacity){ const T=ctx.THREE; const A=new T.Vector3(...a), B=new T.Vector3(...b); const d=B.clone().sub(A), L=d.length()||1e-4;
+  const m=new T.Mesh(new T.CylinderGeometry(r,r,L,12),new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:ctx.isLight?.15:.7,roughness:.3,transparent:true,opacity:opacity==null?1:opacity}));
+  m.position.copy(A).add(d.clone().multiplyScalar(.5)); m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize()); return m; }
+/* fading trail of the last N positions (three.js coords) */
+function mkTrail(ctx,color,N){ const T=ctx.THREE; const tp=new Float32Array(N*3), tc=new Float32Array(N*3), base=new T.Color(color);
+  for(let k=0;k<N;k++){ const f=Math.pow(k/(N-1),1.6); const c=ctx.isLight?new T.Color(1-(1-base.r)*f,1-(1-base.g)*f,1-(1-base.b)*f):base.clone().multiplyScalar(f); c.convertSRGBToLinear(); tc[3*k]=c.r; tc[3*k+1]=c.g; tc[3*k+2]=c.b; }
+  const g=new T.BufferGeometry(); g.setAttribute('position',new T.BufferAttribute(tp,3)); g.setAttribute('color',new T.BufferAttribute(tc,3));
+  const line=new T.Line(g,new T.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.95,blending:ctx.isLight?T.NormalBlending:T.AdditiveBlending,depthWrite:false})); line.frustumCulled=false;
+  let n=0; line.userData.push=(x,y,z)=>{ if(n<N){ for(let k=0;k<N;k++){ tp[3*k]=x; tp[3*k+1]=y; tp[3*k+2]=z; } n=N; g.attributes.position.needsUpdate=true; return; }
+    for(let k=0;k<N-1;k++){ tp[3*k]=tp[3*k+3]; tp[3*k+1]=tp[3*k+4]; tp[3*k+2]=tp[3*k+5]; } tp[3*(N-1)]=x; tp[3*(N-1)+1]=y; tp[3*(N-1)+2]=z; g.attributes.position.needsUpdate=true; };
+  line.userData.reset=()=>{ n=0; }; return line; }
+/* a starfield for the deep-space stages (dark theme only) */
+function stars(ctx,n,R,size){ const T=ctx.THREE; if(ctx.isLight) return null; const sp=new Float32Array(n*3); for(let k=0;k<n;k++){ let x,y,z; do{ x=(Math.random()*2-1)*R; y=(Math.random()*2-1)*R*.6; z=(Math.random()*2-1)*R; }while(Math.hypot(x,z)<R*.28&&Math.abs(y)<R*.14); sp[3*k]=x; sp[3*k+1]=y; sp[3*k+2]=z; }
+  const sg=new T.BufferGeometry(); sg.setAttribute('position',new T.BufferAttribute(sp,3));
+  const pts=new T.Points(sg,new T.PointsMaterial({color:CIN.hex(ctx.colors.ink2),size:size||.06,transparent:true,opacity:.75,blending:T.AdditiveBlending,depthWrite:false})); ctx.root.add(pts); return pts; }
+/* polygon where the plane through the origin with normal n cuts the cube [-L,L]^3 (math coords), sorted around its centre */
+function planeInBox(n,L){ const corners=[]; for(let i=0;i<8;i++) corners.push([i&1?L:-L,(i>>1)&1?L:-L,(i>>2)&1?L:-L]);
+  const edges=[]; for(let i=0;i<8;i++) for(let j=i+1;j<8;j++){ const x=i^j; if(x===1||x===2||x===4) edges.push([i,j]); }
+  const pts=[]; edges.forEach(([i,j])=>{ const P=corners[i],Q=corners[j]; const fP=n[0]*P[0]+n[1]*P[1]+n[2]*P[2], fQ=n[0]*Q[0]+n[1]*Q[1]+n[2]*Q[2];
+    if((fP<=0&&fQ>=0)||(fP>=0&&fQ<=0)){ if(Math.abs(fP-fQ)<1e-12) return; const t=fP/(fP-fQ); const p=[P[0]+t*(Q[0]-P[0]),P[1]+t*(Q[1]-P[1]),P[2]+t*(Q[2]-P[2])];
+      if(!pts.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2])<1e-6)) pts.push(p); } });
+  if(pts.length<3) return null;
+  const cen=pts.reduce((s,p)=>[s[0]+p[0],s[1]+p[1],s[2]+p[2]],[0,0,0]).map(v=>v/pts.length);
+  const nn=norm3v(n), nu=[n[0]/nn,n[1]/nn,n[2]/nn], e=Math.abs(nu[0])<.9?[1,0,0]:[0,1,0];
+  let u=cross3(nu,e); const un=norm3v(u); u=u.map(c=>c/un); const w=cross3(nu,u);
+  const ang=p=>Math.atan2((p[0]-cen[0])*w[0]+(p[1]-cen[1])*w[1]+(p[2]-cen[2])*w[2],(p[0]-cen[0])*u[0]+(p[1]-cen[1])*u[1]+(p[2]-cen[2])*u[2]);
+  pts.sort((p,q)=>ang(p)-ang(q)); return {pts,cen,u,w,nu}; }
+/* glass polygon mesh (fan) from sorted 3D points (three.js coords) */
+function glassPoly(ctx,pts,cen,color,opacity){ const T=ctx.THREE; const pos=[]; for(let k=0;k<pts.length;k++){ const a=pts[k], b=pts[(k+1)%pts.length]; pos.push(...cen,...a,...b); }
+  const g=new T.BufferGeometry(); g.setAttribute('position',new T.BufferAttribute(new Float32Array(pos),3)); g.computeVertexNormals();
+  const m=new T.Mesh(g,new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:ctx.isLight?.05:.22,roughness:.12,metalness:.05,transparent:true,opacity:opacity==null?(ctx.isLight?.22:.28):opacity,side:T.DoubleSide,depthWrite:false})); m.frustumCulled=false; return m; }
 function engine3d(svg,opts){opts=opts||{};
   const W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
   let yaw=opts.yaw??-0.62,pitch=opts.pitch??0.40,scale=opts.scale||70;
@@ -1639,10 +1856,10 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
     stateEl.textContent='state: '+L.show(st);doB.textContent='do: '+L.doL;undoB.textContent='undo: '+L.undoL;
     labMsg.className='verdict info';labMsg.innerHTML='Press <b>do</b>, then <b>undo</b>.';}
   function show(i){const c=CAND[i];ci=i;
-    cards.innerHTML=c.ax.map((a,j)=>`<div style="border:1px solid var(--ring);border-radius:12px;padding:.6rem .7rem;background:var(--page)">
-      <div style="font-size:.72rem;font-weight:750;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted)">${NAMES[j]}</div>
-      <div style="font-weight:750;font-size:1rem;color:${a[0]?'var(--good-text)':'var(--critical)'}">${a[0]?'✓ holds':'✗ fails'}</div>
-      <div style="font-size:.8rem;color:var(--ink-2);margin-top:.15rem">${a[1]}</div></div>`).join('');
+    cards.innerHTML=c.ax.map((a,j)=>`<div class="gcard${a[0]?'':' fail'}" style="animation:cardIn .5s var(--ease-out) ${j*70}ms backwards">
+      <div class="gk">${NAMES[j]}</div>
+      <div class="gv">${a[0]?'✓ holds':'✗ fails'}</div>
+      <div class="gw">${a[1]}</div></div>`).join('');
     verd.className='verdict '+c.v[0];verd.textContent=c.v[1];note.textContent=c.note;
     ccol.style.display=c.id==='clock'?'block':'none';
     if(c.id==='clock')drawClock();
@@ -1657,206 +1874,303 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
   resetB.addEventListener('click',labReset);
   let hour=0,shown=0,anim=null;
   const csvg=document.getElementById('grp-clock'),cread=document.getElementById('clock-read');
-  function drawClock(){csvg.innerHTML='';const C=130,R=100;
-    el('circle',{cx:C,cy:C,r:R,fill:'var(--page)',stroke:'var(--axis)','stroke-width':2},csvg);
-    for(let h=0;h<12;h++){const a=h/12*2*Math.PI-Math.PI/2;
-      txt(csvg,C+Math.cos(a)*(R-16),C+Math.sin(a)*(R-16)+4,h,'font:700 12px system-ui;fill:var(--ink-2)','middle');
-      el('line',{x1:C+Math.cos(a)*(R-4),y1:C+Math.sin(a)*(R-4),x2:C+Math.cos(a)*R,y2:C+Math.sin(a)*R,stroke:'var(--axis)','stroke-width':2},csvg);}
+  let sweep=null; /* [from, to] hours of the move being animated — drawn as a glowing arc */
+  function drawClock(){csvg.innerHTML='';const C=150,R=116;const glow=glo(csvg,3);
+    el('circle',{cx:C,cy:C,r:R+8,fill:'none',stroke:'var(--s1)','stroke-width':1,opacity:.25},csvg);
+    el('circle',{cx:C,cy:C,r:R,fill:'color-mix(in srgb,var(--surface) 70%,transparent)',stroke:'var(--axis)','stroke-width':2},csvg);
+    for(let h=0;h<12;h++){const a=h/12*2*Math.PI-Math.PI/2;const on=h===Math.round(shown)%12;
+      txt(csvg,C+Math.cos(a)*(R-20),C+Math.sin(a)*(R-20)+4.5,h,`font:700 13px system-ui;fill:${on?'var(--s4)':'var(--ink-2)'}`,'middle');
+      el('line',{x1:C+Math.cos(a)*(R-6),y1:C+Math.sin(a)*(R-6),x2:C+Math.cos(a)*R,y2:C+Math.sin(a)*R,stroke:on?'var(--s4)':'var(--axis)','stroke-width':on?3:2},csvg);}
+    if(sweep){const a0=sweep[0]/12*2*Math.PI-Math.PI/2,a1=shown/12*2*Math.PI-Math.PI/2,r=R-38;let d=a1-a0;while(d<0)d+=2*Math.PI;
+      if(d>.02){const x0=C+Math.cos(a0)*r,y0=C+Math.sin(a0)*r,x1=C+Math.cos(a1)*r,y1=C+Math.sin(a1)*r;
+        el('path',G({glow},{d:`M${x0},${y0} A${r},${r} 0 ${d>Math.PI?1:0} 1 ${x1},${y1}`,fill:'none',stroke:'var(--s2)','stroke-width':10,'stroke-linecap':'round',opacity:.45}),csvg);}}
     const a=shown/12*2*Math.PI-Math.PI/2;
-    el('line',{x1:C,y1:C,x2:C+Math.cos(a)*(R-30),y2:C+Math.sin(a)*(R-30),stroke:'var(--s1)','stroke-width':4,'stroke-linecap':'round'},csvg);
-    el('circle',{cx:C,cy:C,r:5,fill:'var(--s1)'},csvg);}
+    /* hand + tip share one glowing group (a lone axis-aligned line has a zero-height bbox and the filter would swallow it) */
+    const hand=el('g',G({glow},{}),csvg);
+    el('line',{x1:C,y1:C,x2:C+Math.cos(a)*(R-34),y2:C+Math.sin(a)*(R-34),stroke:'var(--s1)','stroke-width':5,'stroke-linecap':'round'},hand);
+    el('circle',{cx:C+Math.cos(a)*(R-34),cy:C+Math.sin(a)*(R-34),r:6,fill:'var(--s4)'},hand);
+    el('circle',{cx:C,cy:C,r:6,fill:'var(--s1)'},csvg);}
   document.querySelectorAll('#grp-clockcol .preset').forEach(b=>b.addEventListener('click',()=>{
     if(b.dataset.c==='reset'){hour=0;cread.textContent='hand at 0';}
     else{const k=+b.dataset.c,raw=hour+k,nw=raw%12;
       cread.textContent=`${hour} + ${k} = ${raw}${raw>=12?' → wraps to '+nw:''}`;
       hour=nw;}
     if(anim)anim.stop();
-    const from=shown,to=(hour<from)?hour+12:hour;
-    anim=tween(380,e=>{shown=(from+(to-from)*e)%12;drawClock();},()=>{shown=hour;anim=null;drawClock();});
+    const from=shown,to=(hour<from)?hour+12:hour;sweep=b.dataset.c==='reset'?null:[from,to];
+    anim=tween(520,e=>{shown=(from+(to-from)*e)%12;drawClock();},()=>{shown=hour;anim=null;drawClock();setTimeout(()=>{sweep=null;drawClock();},900);});
   }));
   pres.children[0].setAttribute('aria-pressed','true');show(0);
 })();
-/* ================= W2 · SUBSPACE TESTER ================= */
+/* ================= W2 · SUBSPACE TESTER (three.js) ================= */
 (function(){
-  const svg=document.getElementById('sub-svg'),verd=document.getElementById('sub-verdict'),note=document.getElementById('sub-note');
+  const box=document.getElementById('sub-svg'),verd=document.getElementById('sub-verdict'),note=document.getElementById('sub-note');if(!box)return;
   const tS=document.getElementById('sub-t'),tO=document.getElementById('sub-to');
+  /* every candidate set lives in ℝ³ (math coords, z up); the classic four lie flat on the floor z = 0 */
   const SETS={
-    yaxis:{zero:true,mem:p=>Math.abs(p[0])<1e-9,u:t=>[0,2.4*t],draw:(p)=>{el('line',{x1:p.px(0),y1:p.py(-3),x2:p.px(0),y2:p.py(3),stroke:'var(--s1)','stroke-width':4,opacity:.85},svg);txt(svg,p.px(0)+8,p.py(2.7),'the set: x = 0','font:700 12px system-ui;fill:var(--s1)');},sub:true,
+    yaxis:{zero:true,col:'s1',name:'the y-axis',mem:p=>Math.abs(p[0])<1e-9&&Math.abs(p[2])<1e-9,u:t=>[0,2.4*t,0],v:[0,-1.5,0],sub:true,
+      geom:'line',line:[[0,-3.1,0],[0,3.1,0]],lab:'the set: x = 0 (a line through 0)',
       note:'Both closure tests pass for every choice — and 0 is in the set. A line through the origin is a self-contained 1-D world: a subspace.'},
-    x1:{zero:false,mem:p=>Math.abs(p[0]-1)<1e-9,u:t=>[1,2.4*t],draw:(p)=>{el('line',{x1:p.px(1),y1:p.py(-3),x2:p.px(1),y2:p.py(3),stroke:'var(--s2)','stroke-width':4,opacity:.85},svg);txt(svg,p.px(1)+8,p.py(2.7),'the set: x = 1','font:700 12px system-ui;fill:var(--s2)');},sub:false,
+    x1:{zero:false,col:'s2',name:'the line x = 1',mem:p=>Math.abs(p[0]-1)<1e-9&&Math.abs(p[2])<1e-9,u:t=>[1,2.4*t,0],v:[1,-1.5,0],sub:false,
+      geom:'line',line:[[1,-3.1,0],[1,3.1,0]],lab:'the set: x = 1 (shifted off 0)',
       note:'Shifted off the origin: S1 already fails (0 ∉ set), and almost any scaling escapes. Same disease as Unit 1\'s solution sets — flat, but not through 0.'},
-    square:{zero:true,mem:p=>Math.abs(p[0])<=1+1e-9&&Math.abs(p[1])<=1+1e-9,u:t=>[0.85*Math.cos(Math.PI*t),0.55*Math.sin(Math.PI*t)+0.2],draw:(p)=>{
-      el('rect',{x:p.px(-1),y:p.py(1),width:p.px(1)-p.px(-1),height:p.py(-1)-p.py(1),fill:'var(--wash-1)',stroke:'var(--s1)','stroke-width':2},svg);txt(svg,p.px(-1)+6,p.py(1)+16,'the set: |x| ≤ 1, |y| ≤ 1','font:700 12px system-ui;fill:var(--s1)');},sub:false,
+    square:{zero:true,col:'s1',name:'the unit square',mem:p=>Math.abs(p[0])<=1+1e-9&&Math.abs(p[1])<=1+1e-9&&Math.abs(p[2])<1e-9,u:t=>[0.85*Math.cos(Math.PI*t),0.55*Math.sin(Math.PI*t)+0.2,0],v:null,sub:false,
+      geom:'square',lab:'the set: |x| ≤ 1, |y| ≤ 1 (a fenced yard)',
       note:'Bounded sets always lose: contains 0, fine under small moves, but a big enough scaling escapes every time. Subspaces are infinite flats through the origin, never fenced yards.'},
-    diag:{zero:true,mem:p=>Math.abs(p[1]-p[0]/2)<1e-9,u:t=>[2.6*t,1.3*t],draw:(p)=>{el('line',{x1:p.px(-3),y1:p.py(-1.5),x2:p.px(3),y2:p.py(1.5),stroke:'var(--s3)','stroke-width':4,opacity:.85},svg);txt(svg,p.px(1.9),p.py(0.95)-8,'the set: y = x/2','font:700 12px system-ui;fill:var(--s3)');},sub:true,
-      note:'Any line through the origin passes all three tests — the y-axis story, just tilted. These lines (and planes, higher up) are exactly what spans and null spaces look like.'}
+    diag:{zero:true,col:'s3',name:'the line y = x/2',mem:p=>Math.abs(p[1]-p[0]/2)<1e-9&&Math.abs(p[2])<1e-9,u:t=>[2.6*t,1.3*t,0],v:[-1.6,-0.8,0],sub:true,
+      geom:'line',line:[[-3.1,-1.55,0],[3.1,1.55,0]],lab:'the set: y = x/2 (a tilted line through 0)',
+      note:'Any line through the origin passes all three tests — the y-axis story, just tilted. These lines (and planes, higher up) are exactly what spans and null spaces look like.'},
+    plane0:{zero:true,col:'s7',name:'the plane x + y + z = 0',mem:p=>Math.abs(p[0]+p[1]+p[2])<1e-9,u:t=>[1.5*t+.4,.9-.5*t,-(1.3+t)],v:[-1.2,.5,.7],sub:true,
+      geom:'plane',n:[1,1,1],c:0,lab:'the set: x + y + z = 0 (a plane through 0)',
+      note:'A flat sheet of glass through the origin — the ants\' universe from the scenario. Sums and scalings of vectors with zero coordinate-sum keep a zero coordinate-sum: every test passes. This is the plane from the check below.'},
+    plane1:{zero:false,col:'s2',name:'the plane x + y + z = 1',mem:p=>Math.abs(p[0]+p[1]+p[2]-1)<1e-9,u:t=>[1.5*t+.6,.9-.5*t,-(.5+t)],v:[-.8,.6,1.2],sub:false,
+      geom:'plane',n:[1,1,1],c:1,lab:'the set: x + y + z = 1 (misses 0)',
+      note:'The same sheet of glass, lifted off the origin. 0 is not on it (0 + 0 + 0 ≠ 1), so S1 fails at once — and u × 0 lands on the origin, outside the set. Shifted flats are affine, never subspaces.'}
   };
-  let cur='yaxis',last=null,prog=1,anim=null;
+  /* v for the square is the sample point at t = −0.62, as before */
+  SETS.square.v=SETS.square.u(-0.62);
+  let cur='yaxis',last=null,prog=1,anim=null,sc=null,hudEl=null,hudSet=null,fade=null,burst=null,wantTheta=null,wantR=7.8,grabbed=false;
+  const LO=-3.2,HI=3.2;
+  function buildSet(){
+    if(!sc)return; const {THREE,ctx,root,colors}=sc,hx=k=>CIN.hex(colors[k]);
+    if(sc.grp)root.remove(sc.grp);
+    const grp=new THREE.Group();root.add(grp);sc.grp=grp;
+    const S=SETS[cur],col=hx(S.col),fades=[];
+    if(S.geom==='line'){
+      const t=tube(ctx,T3(S.line[0]),T3(S.line[1]),col,.035,0);grp.add(t);fades.push([t.material,1]);
+      const halo=tube(ctx,T3(S.line[0]),T3(S.line[1]),col,.12,0);halo.material.depthWrite=false;halo.material.emissiveIntensity=ctx.isLight?.1:.9;grp.add(halo);fades.push([halo.material,ctx.isLight?.08:.14]);
+      for(let k=-3;k<=3;k++){const a=S.line[0],b=S.line[1];const q=(k-(-3.1))/6.2;const p=[a[0]+(b[0]-a[0])*q,a[1]+(b[1]-a[1])*q,a[2]+(b[2]-a[2])*q];const d=CIN.prim.dot(ctx,T3(p),col,.045);d.material.transparent=true;d.material.opacity=0;grp.add(d);fades.push([d.material,.9]);}
+    } else if(S.geom==='square'){
+      const g=CIN.prim.glass(ctx,2,2,col,0);g.rotation.x=-Math.PI/2;g.position.y=.003;grp.add(g);fades.push([g.material,ctx.isLight?.22:.26]);
+      const pts=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([x,y])=>new THREE.Vector3(...F3(x,y)));
+      const loop=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0}));loop.position.y=.006;grp.add(loop);fades.push([loop.material,1]);
+      /* fence posts */
+      pts.forEach(p=>{const post=tube(ctx,[p.x,0,p.z],[p.x,.35,p.z],col,.02,0);grp.add(post);fades.push([post.material,.9]);});
+    } else if(S.geom==='plane'){
+      const P=planeInBox(S.n,HI);
+      if(P){const off=S.c/ (S.n[0]*S.n[0]+S.n[1]*S.n[1]+S.n[2]*S.n[2]);const sh=S.n.map(c=>c*off);
+        const pts=P.pts.map(p=>T3([p[0]+sh[0],p[1]+sh[1],p[2]+sh[2]])),cen=T3([P.cen[0]+sh[0],P.cen[1]+sh[1],P.cen[2]+sh[2]]);
+        const m=glassPoly(ctx,pts,cen,col,0);grp.add(m);fades.push([m.material,ctx.isLight?.22:.28]);
+        const lm=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0});grp.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(...p))),lm));fades.push([lm,.95]);
+        /* in-plane graph paper */
+        const gp=[];for(let i=-6;i<=6;i++){[[P.u,P.w],[P.w,P.u]].forEach(([da,db])=>{const p0=[i*.8*da[0]+sh[0],i*.8*da[1]+sh[1],i*.8*da[2]+sh[2]];
+          const t=lineInBox(p0,db,LO,HI);if(!t)return;const A=T3([p0[0]+t[0]*db[0],p0[1]+t[0]*db[1],p0[2]+t[0]*db[2]]),B=T3([p0[0]+t[1]*db[0],p0[1]+t[1]*db[1],p0[2]+t[1]*db[2]]);gp.push(...A,...B);});}
+        const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(gp),3));
+        const gm=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false});grp.add(new THREE.LineSegments(gg,gm));fades.push([gm,ctx.isLight?.35:.28]);}
+    }
+    /* the origin: green when it belongs, red when it doesn't */
+    const oc=CIN.hex(colOf(colors,S.zero?'s3':'critical'));const o=CIN.prim.dot(ctx,[0,0,0],oc,.075);o.material.transparent=true;o.material.opacity=0;grp.add(o);fades.push([o.material,1]);
+    const ol=CIN.prim.label(ctx,S.zero?'0 ∈ set ✓':'0 ∉ set ✗ (S1 fails)',[.1,-.34,.6],{size:22,color:colOf(colors,S.zero?'s3':'critical'),bg:false,depthTest:false});ol.material.opacity=0;grp.add(ol);fades.push([ol.material,1]);
+    if(hudSet){hudSet.innerHTML=S.lab;hudSet.style.color='var(--'+S.col+')';}
+    if(fade)fade.stop();
+    fade=tween(650,u=>{fades.forEach(([m,t])=>m.opacity=t*u);if(ctx.requestRender)ctx.requestRender();},()=>fade=null);
+  }
+  function build(){
+    sc=null;
+    return CIN.stage3d(box,{fill:true,camera:{pos:[4.7,3.5,5.5],look:[0,.3,0],fov:34},autoRotate:.09,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors}=ctx,hx=k=>CIN.hex(colors[k]);
+        stars(ctx,360,16);
+        const grid=CIN.prim.grid(ctx,HI-LO,16,hx('grid'),{opacity:ctx.isLight?.55:.4});root.add(grid);
+        const ap=new Float32Array([LO,0,0,HI,0,0, 0,0,-LO,0,0,-HI, 0,-.6,0,0,HI,0]);const ag=new THREE.BufferGeometry();ag.setAttribute('position',new THREE.BufferAttribute(ap,3));
+        root.add(new THREE.LineSegments(ag,new THREE.LineBasicMaterial({color:hx('axis'),transparent:true,opacity:.9})));
+        [['x',[HI+.3,0,0]],['y',[0,HI+.3,0]],['z',[0,0,HI+.3]]].forEach(([t,v])=>root.add(CIN.prim.label(ctx,t,T3(v),{size:28,color:colors.muted,bg:false,depthTest:false})));
+        const uA=mkArrow(ctx,hx('s4'),{radius:.04,head:.26});root.add(uA);
+        const uL=CIN.prim.label(ctx,'u',[0,0,0],{size:30,color:colors.s4,bg:false,depthTest:false,weight:700});root.add(uL);
+        const vD=CIN.prim.dot(ctx,[0,0,0],hx('s2'),.08);root.add(vD);
+        const vL=CIN.prim.label(ctx,'v (also in the set)',[0,0,0],{size:22,color:colors.s2,bg:false,depthTest:false});root.add(vL);
+        const rA=mkArrow(ctx,hx('s3'),{radius:.036,head:.24});rA.visible=false;root.add(rA);
+        const rD=CIN.prim.dot(ctx,[0,0,0],hx('s3'),.1);rD.visible=false;root.add(rD);
+        const ring=new THREE.Mesh(new THREE.RingGeometry(.86,1,56),new THREE.MeshBasicMaterial({color:CIN.hex(cssv('--critical')),transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));root.add(ring);
+        const path=CIN.prim.path(ctx,[[0,0,0],[0,0,0]],hx('s3'),{opacity:.8});root.add(path);
+        const rL=CIN.prim.label(ctx,'',[0,0,0],{size:22,color:colors.s3,bg:true,depthTest:false});rL.visible=false;root.add(rL);
+        sc={THREE,ctx,root,colors,uA,uL,vD,vL,rA,rD,ring,path,rL};
+        hudEl=hud(box);hudSet=hud(box,'hud-b');hint(box,'drag to orbit · grabbing pauses the spin');
+        buildSet();draw();
+      },
+      update(ctx,t,dt){ if(ctx.dead)return false; let ch=false;
+        if(burst){burst.t+=dt;const k=burst.t/.7;if(k>=1){sc.ring.material.opacity=0;burst=null;}else{const s=.15+k*1.3;sc.ring.scale.set(s,s,s);sc.ring.quaternion.copy(ctx.camera.quaternion);sc.ring.material.opacity=(1-k)*.8;}ch=true;}
+        /* glide the camera round so a plane is never seen edge-on */
+        {const sp=ctx.orbit.sph;if(Math.abs(sp.radius-wantR)>.004){sp.radius+=(wantR-sp.radius)*Math.min(1,dt*3);ctx.orbit.place();ch=true;}}
+        if(wantTheta!=null){const sp=ctx.orbit.sph;let d=wantTheta-sp.theta;d=Math.atan2(Math.sin(d),Math.cos(d));if(Math.abs(d)<.01){wantTheta=null;}else{sp.theta+=d*Math.min(1,dt*2.6);ctx.orbit.place();ch=true;}}
+        return ch; }
+    });
+  }
   function draw(){
-    fitVB(svg,560,420);
     const S=SETS[cur],t=+tS.value;tO.value=fmt(t,2);
-    const p=plane(svg,-3.2,3.2,-3.2,3.2,{});
-    S.draw(p);
-    const u=S.u(t),v=S.u(-0.62);
-    el('circle',{cx:p.px(0),cy:p.py(0),r:4,fill:S.zero?'var(--good)':'var(--critical)',stroke:'var(--surface)','stroke-width':1.5},svg);
-    txt(svg,p.px(0)+8,p.py(0)+16,S.zero?'0 ∈ set ✓':'0 ∉ set ✗ (S1 fails)',`font:700 11px system-ui;fill:${S.zero?'var(--good-text)':'var(--critical)'}`);
-    arrow(p,0,0,u[0],u[1],'var(--s1)',2.5,'u');
-    el('circle',{cx:p.px(v[0]),cy:p.py(v[1]),r:5,fill:'var(--s2)',stroke:'var(--surface)','stroke-width':1.5},svg);
-    txt(svg,p.px(v[0])+8,p.py(v[1])-8,'v (also in the set)','font:700 11.5px system-ui;fill:var(--s2)');
-    if(last){
-      const w=last.w,ok=S.mem(w);
-      const cl=x=>Math.max(-3.05,Math.min(3.05,x));
-      const ex=cl(w[0]),ey=cl(w[1]);
-      const from=last.from;
-      const gx=from[0]+(ex-from[0])*prog,gy=from[1]+(ey-from[1])*prog;
-      el('line',{x1:p.px(from[0]),y1:p.py(from[1]),x2:p.px(gx),y2:p.py(gy),stroke:ok?'var(--good)':'var(--critical)','stroke-width':2,'stroke-dasharray':'4 4'},svg);
-      if(last.label.startsWith('u ×'))arrow(p,0,0,gx,gy,ok?'var(--good)':'var(--critical)',2.2);
-      el('circle',{cx:p.px(gx),cy:p.py(gy),r:7,fill:ok?'var(--good)':'var(--critical)',stroke:'var(--surface)','stroke-width':2},svg);
-      if(prog>=1){
-        txt(svg,p.px(ex)+10,p.py(ey)-10,last.label+' = ('+fmt(w[0],2)+', '+fmt(w[1],2)+')'+(ok?' — inside ✓':' — ESCAPED ✗'),`font:700 11.5px system-ui;fill:${ok?'var(--good-text)':'var(--critical)'}`,ex>1.4?'end':'start');
-        if(ok){verd.className='verdict '+(S.sub?'good':'info');
-          verd.textContent=S.sub?'✓ Still inside — this set passes every test: subspace.':(cur==='square'?'Inside this time — the fence is finite: scale bigger (u × 2 with u near an edge) and it must escape.':'Inside this time — keep pushing; something will escape.');}
-        else{verd.className='verdict bad';verd.textContent='✗ '+last.label+' left the set — closure fails: NOT a subspace.';}
-      } else {verd.className='verdict info';verd.textContent='Applying '+last.label+' …';}
-    } else {verd.className='verdict info';verd.textContent='Apply an operation and watch where the result lands.';}
+    const u=S.u(t),v=S.v;
+    if(sc){
+      const {THREE,ctx}=sc;
+      const mkL=(m,txt,col,bg)=>{const L=CIN.prim.label(ctx,txt,[0,0,0],{size:22,color:col,bg:bg,depthTest:false});L.position.copy(m.position);sc.root.remove(m);sc.root.add(L);return L;};
+      aim3(THREE,sc.uA,[0,0,0],T3(u));
+      const ut=T3(u);sc.uL.position.set(ut[0]+.18,ut[1]+.22,ut[2]);
+      const vt=T3(v);sc.vD.position.set(...vt);sc.vL.position.set(vt[0],vt[1]+.28,vt[2]);
+      if(last){
+        const w=last.w,ok=S.mem(w);
+        const cl=x=>Math.max(LO+.1,Math.min(HI-.1,x));
+        const ex=cl(w[0]),ey=cl(w[1]),ez=cl(w[2]);
+        const from=last.from;
+        const g=[from[0]+(ex-from[0])*prog,from[1]+(ey-from[1])*prog,from[2]+(ez-from[2])*prog];
+        const col=CIN.hex(colOf(sc.colors,ok?'s3':'critical'));
+        const gt=T3(g);
+        sc.path.geometry.setFromPoints([new THREE.Vector3(...T3(from)),new THREE.Vector3(...gt)]);sc.path.material.color.set(col);sc.path.visible=true;
+        if(last.label.startsWith('u ×')){sc.rA.visible=true;aim3(THREE,sc.rA,[0,0,0],gt);sc.rA.children.forEach(m=>{m.material.color.set(col);m.material.emissive.set(col);});}else sc.rA.visible=false;
+        sc.rD.visible=true;sc.rD.position.set(...gt);sc.rD.material.color.set(col);sc.rD.material.emissive.set(col);
+        if(prog>=1){
+          const txtL=last.label+' = ('+w.map(x=>fmt(x,2)).join(', ')+')'+(ok?' — inside ✓':' — ESCAPED ✗');
+          sc.rL=mkL(sc.rL,txtL,colOf(sc.colors,ok?'s3':'critical'),true);sc.rL.visible=true;sc.rL.position.set(gt[0],gt[1]+.34,gt[2]);
+          if(!ok&&!last.burst){last.burst=true;sc.ring.position.set(...gt);sc.ring.scale.set(1,1,1);burst={t:0};}
+          if(ok){verd.className='verdict '+(S.sub?'good':'info');
+            verd.textContent=S.sub?'✓ Still inside — this set passes every test: subspace.':(cur==='square'?'Inside this time — the fence is finite: scale bigger (u × 2 with u near an edge) and it must escape.':'Inside this time — keep pushing; something will escape.');}
+          else{verd.className='verdict bad';verd.textContent='✗ '+last.label+' left the set — closure fails: NOT a subspace.';}
+          if(hudEl){hudEl.className='hud '+(ok?'good':'bad');hudEl.innerHTML=(ok?'inside ✓':'escaped ✗')+' · <b>'+last.label+'</b>';}
+        } else {verd.className='verdict info';verd.textContent='Applying '+last.label+' …';sc.rL.visible=false;}
+      } else {
+        sc.rA.visible=false;sc.rD.visible=false;sc.rL.visible=false;sc.path.visible=false;
+        verd.className='verdict info';verd.textContent='Apply an operation and watch where the result lands.';
+        if(hudEl){hudEl.className='hud';hudEl.innerHTML=S.name+' · '+(S.zero?'0 ∈ set':'<span style="color:var(--critical)">0 ∉ set</span>');}
+      }
+      if(ctx.requestRender)ctx.requestRender();
+    } else {
+      if(last&&prog>=1){const ok=S.mem(last.w);verd.className='verdict '+(ok?(S.sub?'good':'info'):'bad');verd.textContent=ok?'Inside.':'✗ '+last.label+' left the set — closure fails: NOT a subspace.';}
+      else{verd.className='verdict info';verd.textContent='Apply an operation and watch where the result lands.';}
+    }
     note.textContent=SETS[cur].note;
   }
   document.querySelectorAll('#sub-presets .preset').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#sub-presets .preset').forEach(x=>x.setAttribute('aria-pressed','false'));
-    b.setAttribute('aria-pressed','true');cur=b.dataset.p;last=null;draw();}));
+    b.setAttribute('aria-pressed','true');cur=b.dataset.p;last=null;if(anim){anim.stop();anim=null;}prog=1;buildSet();draw();
+    const g=SETS[cur].geom;wantR=g==='square'?5.0:g==='plane'?9.4:7.6;if(!grabbed&&!RM)wantTheta=g==='plane'?.98:.72;}));
+  box.addEventListener('pointerdown',()=>{grabbed=true;wantTheta=null;});
   document.querySelectorAll('#w-sub .presets [data-op]').forEach(b=>b.addEventListener('click',()=>{
-    const S=SETS[cur],t=+tS.value,u=S.u(t),v=S.u(-0.62);
-    if(b.dataset.op==='add')last={w:[u[0]+v[0],u[1]+v[1]],label:'u + v',from:u};
-    else{const k=+b.dataset.op;last={w:[k*u[0],k*u[1]],label:'u × '+fmt(k,1),from:u};}
+    const S=SETS[cur],t=+tS.value,u=S.u(t),v=S.v;
+    if(b.dataset.op==='add')last={w:[u[0]+v[0],u[1]+v[1],u[2]+v[2]],label:'u + v',from:u};
+    else{const k=+b.dataset.op;last={w:[k*u[0],k*u[1],k*u[2]],label:'u × '+fmt(k,1),from:u};}
     if(anim)anim.stop();prog=0;
-    anim=tween(520,e=>{prog=e;draw();},()=>{prog=1;anim=null;draw();});}));
+    anim=tween(620,e=>{prog=e;draw();},()=>{prog=1;anim=null;draw();});}));
   tS.addEventListener('input',()=>{last=null;draw();});
   document.querySelector('#sub-presets [data-p="yaxis"]').setAttribute('aria-pressed','true');
-  onResize.push(draw);draw();
+  mountStage(box,build);draw();
 })();
-/* ================= W3 · SPAN MACHINE 3D ================= */
+/* ================= W3 · SPAN MACHINE 3D (three.js) ================= */
 (function(){
-  const svg=document.getElementById('span-svg');if(!svg)return;
-  const E=engine3d(svg,{scale:96,cy:-4,pitch:0.33});
-  const COLS=['var(--s1)','var(--s2)','var(--s3)'];
+  const box=document.getElementById('span-svg');if(!box)return;
+  const COLS=['var(--s1)','var(--s2)','var(--s3)'],CK=['s1','s2','s3'];
   const SUBS=['₁','₂','₃'];
-  const PLANE='var(--s7)';
   let V=[[2,1,0.3],[-0.8,1.6,0.5],[1.2,2.6,0.8]],inc=[true,true,false];
-  let lam=[1.1,0.7,0.6],spinOn=true,userHolds=false,animId=null,trip=null;
+  let lam=[1.1,0.7,0.6],spinOn=true,trip=null,morph=null,sc=null,hudEl=null,handle=null,wantR=10.6,shapeKey='',fade=null;
   const eds=document.getElementById('span-eds');
   eds.innerHTML=[0,1,2].map(i=>`<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem">
     <input type="checkbox" id="span-c${i}" ${inc[i]?'checked':''} aria-label="include vector ${i+1}">
-    <b style="color:${COLS[i]};min-width:1.4rem">v${SUBS[i]}</b>
+    <b style="color:${COLS[i]};min-width:1.4rem;text-shadow:var(--glow-${i===2?3:i+1})">v${SUBS[i]}</b>
     <span class="mx-edit" style="grid-template-columns:auto auto auto;padding:.3rem .5rem">
       ${[0,1,2].map(j=>`<input type="number" step="0.1" min="-10" max="10" value="${V[i][j]}" data-i="${i}" data-j="${j}" style="width:2.9rem" aria-label="v${i+1} component ${j+1}">`).join('')}
     </span></div>`).join('');
   const lamBox=document.getElementById('span-lams');
   lamBox.innerHTML=[0,1,2].map(i=>`<div class="ctl" id="span-lr${i}"><label for="span-l${i}" style="color:${COLS[i]}">λ${SUBS[i]}</label><input type="range" id="span-l${i}" min="-2" max="2" step="0.05" value="${lam[i]}"><output id="span-lo${i}">${lam[i]}</output></div>`).join('');
   const kEl=document.getElementById('span-k'),dEl=document.getElementById('span-dim'),verd=document.getElementById('span-verdict'),eqEl=document.getElementById('span-eq');
-  function boxGeom(L){const corners=[];for(let i=0;i<8;i++)corners.push([i&1?L:-L,(i>>1)&1?L:-L,(i>>2)&1?L:-L]);
-    const edges=[];for(let i=0;i<8;i++)for(let j=i+1;j<8;j++){const x=i^j;if(x===1||x===2||x===4)edges.push([i,j]);}
-    return {corners,edges};}
-  function depthEdges(corners,edges,stroke,width,base,spread,dash){
-    const gp=corners.map(c=>E.proj(c));
-    const ds=edges.map(([i,j])=>(gp[i].d+gp[j].d)/2),dmin=Math.min(...ds),dmax=Math.max(...ds);
-    edges.forEach(([i,j],k)=>{const o=base+spread*(1-((ds[k]-dmin)/((dmax-dmin)||1)));
-      const at={x1:gp[i].x,y1:gp[i].y,x2:gp[j].x,y2:gp[j].y,stroke,'stroke-width':width,opacity:o};
-      if(dash)at['stroke-dasharray']=dash;
-      el('line',at,svg);});}
-  function arrow3(from,to,color,w,dash,label){
-    const o=E.proj(from),t=E.proj(to);
-    const dx=t.x-o.x,dy=t.y-o.y,Lp=Math.hypot(dx,dy)||1;
-    if(Lp<3)return;
-    const hx=t.x-dx/Lp*10,hy=t.y-dy/Lp*10;
-    const at={x1:o.x,y1:o.y,x2:hx,y2:hy,stroke:color,'stroke-width':w,'stroke-linecap':'round'};
-    if(dash)at['stroke-dasharray']=dash;
-    el('line',at,svg);
-    el('polygon',{points:`${t.x},${t.y} ${hx-dy/Lp*4.5},${hy+dx/Lp*4.5} ${hx+dy/Lp*4.5},${hy-dx/Lp*4.5}`,fill:color},svg);
-    if(label)txt(svg,t.x+8,t.y-6,label,`font:700 13px system-ui;fill:${color}`);
-    return t;}
   /* express vector c as a·A + b·B (least squares, exact when c lies in their plane) */
   function solve2(A,B,c){const aa=A[0]*A[0]+A[1]*A[1]+A[2]*A[2],bb=B[0]*B[0]+B[1]*B[1]+B[2]*B[2],ab=A[0]*B[0]+A[1]*B[1]+A[2]*B[2];
     const ac=A[0]*c[0]+A[1]*c[1]+A[2]*c[2],bc=B[0]*c[0]+B[1]*c[1]+B[2]*c[2],d=aa*bb-ab*ab;if(Math.abs(d)<1e-9)return null;
     return [(ac*bb-bc*ab)/d,(aa*bc-ab*ac)/d];}
-  function draw(){
-    svg.innerHTML='';
-    const act=[0,1,2].filter(i=>inc[i]);
-    const vecs=act.map(i=>V[i]);
-    // trip endpoint
-    const P=[0,0,0];act.forEach(i=>{for(let k=0;k<3;k++)P[k]+=lam[i]*V[i][k];});
-    const ext=Math.max(2.4,...(vecs.flat().map(Math.abs).concat(P.map(Math.abs))).concat([1]))*1.12;
-    const L=ext;E.setScale(Math.min(115,235/ext));
-    const r=vecs.length?rrefOf(vecs.map(v=>v.slice())).rank:0;
-    [[[L*0.85,0,0],'x'],[[0,L*0.85,0],'y'],[[0,0,L*0.85],'z']].forEach(([a,lb])=>{
-      const o=E.proj([0,0,0]),t=E.proj(a);
-      el('line',{x1:o.x,y1:o.y,x2:t.x,y2:t.y,stroke:'var(--axis)','stroke-width':1.2},svg);
-      txt(svg,t.x+4,t.y+4,lb);});
+  const AX=3.4;
+  function build(){
+    sc=null;shapeKey='';
+    handle=CIN.stage3d(box,{fill:true,camera:{pos:[6.2,4.4,7.4],look:[0,.3,0],fov:36},autoRotate:spinOn?.22:0,autoRotateStopsOnUser:false,
+      build(ctx){
+        const {THREE,root,colors}=ctx,hx=k=>CIN.hex(colors[k]);
+        stars(ctx,420,18);
+        const grid=CIN.prim.grid(ctx,2*AX,14,hx('grid'),{opacity:ctx.isLight?.5:.34});grid.position.y=-AX;root.add(grid);
+        const ap=new Float32Array([-AX,0,0,AX,0,0, 0,0,AX,0,0,-AX, 0,-AX,0,0,AX,0]);const ag=new THREE.BufferGeometry();ag.setAttribute('position',new THREE.BufferAttribute(ap,3));
+        root.add(new THREE.LineSegments(ag,new THREE.LineBasicMaterial({color:hx('axis'),transparent:true,opacity:.9})));
+        [['x',[AX+.3,0,0]],['y',[0,AX+.3,0]],['z',[0,0,AX+.3]]].forEach(([t,v])=>root.add(CIN.prim.label(ctx,t,T3(v),{size:28,color:colors.muted,bg:false,depthTest:false})));
+        const arrows=CK.map(k=>{const a=mkArrow(ctx,hx(k),{radius:.045,head:.3});root.add(a);return a;});
+        const labels=CK.map((k,i)=>{const l=CIN.prim.label(ctx,'v'+SUBS[i],[0,0,0],{size:30,color:colors[k],bg:false,depthTest:false,weight:700,scale:.0085});root.add(l);return l;});
+        const legs=CK.map(k=>{const a=mkArrow(ctx,hx(k),{radius:.02,head:.18});a.children.forEach(m=>{m.material=m.material.clone();m.material.transparent=true;m.material.opacity=.7;});root.add(a);return a;});
+        const tripD=CIN.prim.dot(ctx,[0,0,0],hx('s4'),.09);root.add(tripD);
+        const halo=CIN.prim.dot(ctx,[0,0,0],hx('s4'),.2);halo.material.transparent=true;halo.material.opacity=ctx.isLight?.15:.22;halo.material.depthWrite=false;root.add(halo);
+        const tripL=CIN.prim.label(ctx,'your trip',[0,0,0],{size:24,color:colors.s4,bg:false,depthTest:false,weight:700,scale:.0085});root.add(tripL);
+        const trail=mkTrail(ctx,hx('s4'),110);root.add(trail);
+        root.add(CIN.prim.dot(ctx,[0,0,0],hx('ink2'),.04));
+        sc={THREE,ctx,root,colors,arrows,labels,legs,tripD,halo,tripL,trail,grp:null};
+        hudEl=hud(box);hint(box,'drag to orbit · grabbing pauses the spin');
+        draw(true);
+      },
+      update(ctx,t,dt){ if(ctx.dead)return false; let ch=false; const s=ctx.orbit.sph; if(Math.abs(s.radius-wantR)>.004){s.radius+=(wantR-s.radius)*Math.min(1,dt*3.5);ctx.orbit.place();ch=true;}
+        if(sc&&sc.halo.visible){const k=1+.16*Math.sin(t*2.6);sc.halo.scale.set(k,k,k);ch=true;} return ch; }
+    });
+    return handle;
+  }
+  function buildShape(r,vecs,L){
+    const {THREE,ctx,root,colors}=sc,hx=k=>CIN.hex(colors[k]);
+    if(sc.grp)root.remove(sc.grp);
+    const grp=new THREE.Group();root.add(grp);sc.grp=grp;const fades=[];const PL=hx('s7');
     if(r===1){
       const d=vecs.find(v=>norm3v(v)>1e-9),dn=norm3v(d),du=d.map(c=>c/dn);
       const t=lineInBox([0,0,0],du,-L,L);
-      if(t){const A=E.proj(du.map(c=>c*t[0])),B=E.proj(du.map(c=>c*t[1]));
-        el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:PLANE,'stroke-width':9,opacity:.15},svg);
-        el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:PLANE,'stroke-width':2.5},svg);
-        for(let k=Math.ceil(t[0]);k<=Math.floor(t[1]);k++){if(k===0)continue;
-          const q=E.proj(du.map(c=>c*k));
-          el('circle',{cx:q.x,cy:q.y,r:2.4,fill:PLANE,opacity:.7},svg);}}
+      if(t){const A=T3(du.map(c=>c*t[0])),B=T3(du.map(c=>c*t[1]));
+        const tb=tube(ctx,A,B,PL,.03,0);grp.add(tb);fades.push([tb.material,1]);
+        const hl=tube(ctx,A,B,PL,.11,0);hl.material.depthWrite=false;hl.material.emissiveIntensity=ctx.isLight?.1:.9;grp.add(hl);fades.push([hl.material,ctx.isLight?.08:.14]);
+        for(let k=Math.ceil(t[0]);k<=Math.floor(t[1]);k++){if(k===0)continue;const q=CIN.prim.dot(ctx,T3(du.map(c=>c*k)),PL,.04);q.material.transparent=true;q.material.opacity=0;grp.add(q);fades.push([q.material,.85]);}
+        const lb=CIN.prim.label(ctx,'span = a line through 0',[A[0]*.5+B[0]*.5,L*.92,0],{size:24,color:colors.s7,bg:true,depthTest:false,scale:.0085});lb.material.opacity=0;grp.add(lb);fades.push([lb.material,1]);}
     }
     if(r===2){
-      let n=null,ua=null;
-      for(let a=0;a<vecs.length&&!n;a++)for(let b=a+1;b<vecs.length;b++){const c=cross3(vecs[a],vecs[b]);if(norm3v(c)>1e-6){n=c;ua=vecs[a];break;}}
-      if(n){
-        const {corners,edges}=boxGeom(L),pts=[];
-        edges.forEach(([i,j])=>{const Pp=corners[i],Q=corners[j];
-          const fP=n[0]*Pp[0]+n[1]*Pp[1]+n[2]*Pp[2],fQ=n[0]*Q[0]+n[1]*Q[1]+n[2]*Q[2];
-          if((fP<=0&&fQ>=0)||(fP>=0&&fQ<=0)){if(Math.abs(fP-fQ)<1e-12)return;
-            const t=fP/(fP-fQ),p=[Pp[0]+t*(Q[0]-Pp[0]),Pp[1]+t*(Q[1]-Pp[1]),Pp[2]+t*(Q[2]-Pp[2])];
-            if(!pts.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2])<1e-6))pts.push(p);}});
-        if(pts.length>=3){
-          const cen=pts.reduce((sm,p)=>[sm[0]+p[0],sm[1]+p[1],sm[2]+p[2]],[0,0,0]).map(v=>v/pts.length);
-          const nn=norm3v(n),nu=[n[0]/nn,n[1]/nn,n[2]/nn];
-          const un=norm3v(ua),uu=[ua[0]/un,ua[1]/un,ua[2]/un];
-          const w=cross3(nu,uu);
-          const ang=p=>Math.atan2((p[0]-cen[0])*w[0]+(p[1]-cen[1])*w[1]+(p[2]-cen[2])*w[2],(p[0]-cen[0])*uu[0]+(p[1]-cen[1])*uu[1]+(p[2]-cen[2])*uu[2]);
-          pts.sort((p,q)=>ang(p)-ang(q));
-          el('polygon',{points:pts.map(p=>{const q=E.proj(p);return q.x+','+q.y;}).join(' '),fill:PLANE,'fill-opacity':.12,stroke:PLANE,'stroke-width':1.8,'stroke-opacity':.8,'stroke-linejoin':'round'},svg);
-          // in-plane graph paper
-          const sp=L/3;
-          for(let i=-4;i<=4;i++){
-            [[uu,w],[w,uu]].forEach(([da,db])=>{
-              const p0=[i*sp*da[0],i*sp*da[1],i*sp*da[2]];
-              const t=lineInBox(p0,db,-L,L);if(!t)return;
-              const A=E.proj([p0[0]+t[0]*db[0],p0[1]+t[0]*db[1],p0[2]+t[0]*db[2]]);
-              const B=E.proj([p0[0]+t[1]*db[0],p0[1]+t[1]*db[1],p0[2]+t[1]*db[2]]);
-              el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:PLANE,'stroke-width':.6,opacity:i===0?.5:.28},svg);});}
-        }}
+      let n=null;
+      for(let a=0;a<vecs.length&&!n;a++)for(let b=a+1;b<vecs.length;b++){const c=cross3(vecs[a],vecs[b]);if(norm3v(c)>1e-6){n=c;break;}}
+      const P=n&&planeInBox(n,L);
+      if(P){const pts=P.pts.map(T3),cen=T3(P.cen);
+        const m=glassPoly(ctx,pts,cen,PL,0);grp.add(m);fades.push([m.material,ctx.isLight?.2:.26]);
+        const lm=new THREE.LineBasicMaterial({color:PL,transparent:true,opacity:0});grp.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(...p))),lm));fades.push([lm,.9]);
+        /* in-plane graph paper, spaced like the axes */
+        const gp=[],sp=Math.max(.5,Math.round(L/3*2)/2);
+        for(let i=-8;i<=8;i++){[[P.u,P.w],[P.w,P.u]].forEach(([da,db])=>{const p0=[i*sp*da[0],i*sp*da[1],i*sp*da[2]];
+          const t=lineInBox(p0,db,-L,L);if(!t)return;const A=T3([p0[0]+t[0]*db[0],p0[1]+t[0]*db[1],p0[2]+t[0]*db[2]]),B=T3([p0[0]+t[1]*db[0],p0[1]+t[1]*db[1],p0[2]+t[1]*db[2]]);gp.push(...A,...B);});}
+        const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(gp),3));
+        const gm=new THREE.LineBasicMaterial({color:PL,transparent:true,opacity:0,depthWrite:false});grp.add(new THREE.LineSegments(gg,gm));fades.push([gm,ctx.isLight?.4:.42]);
+        const lb=CIN.prim.label(ctx,'span = a plane through 0',[0,L*.92,0],{size:24,color:colors.s7,bg:true,depthTest:false,scale:.0085});lb.material.opacity=0;grp.add(lb);fades.push([lb.material,1]);}
     }
     if(r===3){
-      const {corners,edges}=boxGeom(L);
-      depthEdges(corners,edges,PLANE,1.4,.2,.5);
-      txt(svg,320,24,'span = ALL of ℝ³ — every point is reachable','font:750 13px system-ui;fill:'+PLANE,'middle');
+      const bx=new THREE.Mesh(new THREE.BoxGeometry(2*L,2*L,2*L),new THREE.MeshStandardMaterial({color:PL,emissive:PL,emissiveIntensity:ctx.isLight?.04:.25,transparent:true,opacity:0,side:THREE.BackSide,depthWrite:false,roughness:.3}));grp.add(bx);fades.push([bx.material,ctx.isLight?.08:.12]);
+      const eg=new THREE.EdgesGeometry(new THREE.BoxGeometry(2*L,2*L,2*L));const em=new THREE.LineBasicMaterial({color:PL,transparent:true,opacity:0});grp.add(new THREE.LineSegments(eg,em));fades.push([em,.95]);
+      /* faint inner lattice: the whole room is reachable */
+      const gp=[];for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++){const a=i*L/2,b=j*L/2;gp.push(-L,a,b,L,a,b, a,-L,b,a,L,b, a,b,-L,a,b,L);}
+      const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(gp),3));
+      const gm=new THREE.LineBasicMaterial({color:PL,transparent:true,opacity:0,depthWrite:false});grp.add(new THREE.LineSegments(gg,gm));fades.push([gm,ctx.isLight?.14:.12]);
+      const lb=CIN.prim.label(ctx,'span = ALL of ℝ³ — every point is reachable',[0,L*1.12,0],{size:24,color:colors.s7,bg:true,depthTest:false,scale:.0085});lb.material.opacity=0;grp.add(lb);fades.push([lb.material,1]);
     }
-    if(r===0){const o=E.proj([0,0,0]);el('circle',{cx:o.x,cy:o.y,r:6,fill:PLANE},svg);}
-    // the vectors
-    act.forEach(i=>{arrow3([0,0,0],V[i],COLS[i],3.5,null,'v'+SUBS[i]);});
-    // the trip, leg by leg
-    if(act.length){
+    if(r===0){const o=CIN.prim.dot(ctx,[0,0,0],PL,.14);o.material.transparent=true;o.material.opacity=0;grp.add(o);fades.push([o.material,1]);
+      const lb=CIN.prim.label(ctx,'span = {0}',[0,.5,0],{size:24,color:colors.s7,bg:true,depthTest:false,scale:.0085});lb.material.opacity=0;grp.add(lb);fades.push([lb.material,1]);}
+    if(fade)fade.stop();
+    fade=tween(600,u=>{fades.forEach(([m,t])=>m.opacity=t*u);if(ctx.requestRender)ctx.requestRender();},()=>fade=null);
+  }
+  function draw(force){
+    const act=[0,1,2].filter(i=>inc[i]);
+    const vecs=act.map(i=>V[i]);
+    const P=[0,0,0];act.forEach(i=>{for(let k=0;k<3;k++)P[k]+=lam[i]*V[i][k];});
+    const ext=Math.max(2.4,...(vecs.flat().map(Math.abs).concat(P.map(Math.abs))).concat([1]))*1.12;
+    const L=Math.min(6,ext);wantR=Math.max(9.6,3.5*ext);
+    const r=vecs.length?rrefOf(vecs.map(v=>v.slice())).rank:0;
+    if(sc){
+      const {THREE,ctx}=sc;
+      const key=r+'|'+act.join('')+'|'+(r===1?vecs.map(v=>v.map(c=>fmt(c,2)).join(',')).join(';'):'')+'|'+(r===2?vecs.map(v=>v.map(c=>fmt(c,2)).join(',')).join(';'):'')+'|'+fmt(L,2);
+      if(key!==shapeKey||force){shapeKey=key;buildShape(r,vecs,L);}
+      [0,1,2].forEach(i=>{const on=inc[i];sc.arrows[i].visible=on;sc.labels[i].visible=on;if(on){const t=T3(V[i]);aim3(THREE,sc.arrows[i],[0,0,0],t);const n=Math.hypot(t[0],t[1],t[2])||1;sc.labels[i].position.set(t[0]*(1+.42/n),t[1]*(1+.42/n)+.1,t[2]*(1+.42/n));}});
+      /* the trip, leg by leg: each leg starts where the previous one ended */
       let cur=[0,0,0];
-      act.forEach(i=>{
+      [0,1,2].forEach(i=>{const leg=sc.legs[i];if(!inc[i]){leg.visible=false;return;}
         const nxt=[cur[0]+lam[i]*V[i][0],cur[1]+lam[i]*V[i][1],cur[2]+lam[i]*V[i][2]];
-        if(Math.abs(lam[i])>0.04)arrow3(cur,nxt,COLS[i],2,'5 5');
-        cur=nxt;});
-      const q=E.proj(cur);
-      el('circle',{cx:q.x,cy:q.y,r:9,fill:'none',stroke:'var(--ink)','stroke-width':1.5,opacity:.4},svg);
-      el('circle',{cx:q.x,cy:q.y,r:5.5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':2},svg);
-      txt(svg,q.x+12,q.y+4,'your trip','font:700 12px system-ui;fill:var(--ink)');
+        if(Math.abs(lam[i])>0.04)aim3(THREE,leg,T3(cur),T3(nxt));else leg.visible=false;cur=nxt;});
+      const q=T3(cur);const show=act.length>0;
+      sc.tripD.visible=show;sc.halo.visible=show;sc.tripL.visible=show;sc.trail.visible=show;
+      if(show){sc.tripD.position.set(...q);sc.halo.position.set(...q);sc.tripL.position.set(q[0]+.16,q[1]+.3,q[2]);
+        const last=sc.trail.userData.last;if(!last||Math.hypot(last[0]-q[0],last[1]-q[1],last[2]-q[2])>.012){sc.trail.userData.push(q[0],q[1],q[2]);sc.trail.userData.last=q;}}
+      if(hudEl)hudEl.innerHTML=`vectors <b>${act.length}</b> · dim span <b>${r}</b>${act.length>r?' · <span style="color:var(--critical)">'+(act.length-r)+' redundant</span>':''}`;
+      if(ctx.requestRender)ctx.requestRender();
     }
-    const o=E.proj([0,0,0]);el('circle',{cx:o.x,cy:o.y,r:3,fill:'var(--ink-muted)'},svg);
     kEl.textContent=act.length;dEl.textContent=r;
     const shape=r===0?'just the origin {0}':r===1?'a line through 0':r===2?'a plane through 0':'all of ℝ³';
     if(act.length===0){verd.className='verdict info';verd.textContent='No vectors — span is {0}, the smallest subspace.';}
     else if(r===act.length){verd.className='verdict good';verd.textContent=`✓ ${act.length} vector(s), ${r} direction(s) — no redundancy. Span: ${shape}.`;}
     else{verd.className='verdict bad';verd.textContent=`✗ ${act.length} vectors but only ${r} direction(s) — ${act.length-r} add(s) nothing. Span: ${shape}.`;}
-    // live equation readout
     let eq='';
     if(act.length){
       eq='trip = '+act.map(i=>`${fmt(lam[i],2)}·v${SUBS[i]}`).join(' + ').replace(/\+ -/g,'− ')+` = <b>(${P.map(x=>fmt(x,2)).join(', ')})</b>`;
@@ -1891,22 +2205,23 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
     cop:{V:[[2,1,0.3],[-0.8,1.6,0.5],[1.2,2.6,0.8]],inc:[true,true,true]}};
   document.querySelectorAll('#span-presets .preset').forEach(b=>b.addEventListener('click',()=>{
     clearP();b.setAttribute('aria-pressed','true');
-    const p=P[b.dataset.p];V=p.V.map(r=>r.slice());inc=p.inc.slice();syncEds();syncLamUI();draw();}));
+    const p=P[b.dataset.p];const from=V.map(r=>r.slice()),to=p.V;inc=p.inc.slice();syncLamUI();
+    if(morph)morph.stop();
+    /* the vectors glide to their new places — the span re-shapes itself as they go */
+    morph=tween(700,e=>{V=from.map((row,i)=>row.map((v,j)=>v+(to[i][j]-v)*e));syncEds();draw();},()=>{morph=null;V=to.map(r=>r.slice());syncEds();draw();});}));
   document.querySelector('#span-presets [data-p="two"]').setAttribute('aria-pressed','true');
   /* --- dice trip --- */
   document.getElementById('span-dice').addEventListener('click',()=>{
     const from=lam.slice(),to=lam.map((v,i)=>inc[i]?(Math.random()*3.6-1.8):v);
     if(trip)trip.stop();
-    trip=tween(750,e=>{lam=from.map((v,i)=>v+(to[i]-v)*e);syncLams();draw();},()=>{trip=null;});});
+    trip=tween(900,e=>{lam=from.map((v,i)=>v+(to[i]-v)*e);syncLams();draw();},()=>{trip=null;});});
   /* --- auto-spin (off under reduced motion) --- */
   const spinBtn=document.getElementById('span-spin');
   if(RM){spinOn=false;spinBtn.setAttribute('aria-pressed','false');}
-  spinBtn.addEventListener('click',()=>{spinOn=!spinOn;spinBtn.setAttribute('aria-pressed',spinOn?'true':'false');});
-  svg.addEventListener('pointerdown',()=>{spinOn=false;spinBtn.setAttribute('aria-pressed','false');});
-  (function spinLoop(){
-    if(spinOn&&!document.hidden){E.rot(0.0026);draw();}
-    requestAnimationFrame(spinLoop);})();
-  E.drag(draw);syncLamUI();draw();
+  function setSpin(v){spinOn=v;spinBtn.setAttribute('aria-pressed',v?'true':'false');if(handle)handle.setAutoRotate(v?.22:0);}
+  spinBtn.addEventListener('click',()=>setSpin(!spinOn));
+  box.addEventListener('pointerdown',()=>setSpin(false));
+  mountStage(box,build);syncLamUI();draw();
 })();
 /* ================= W4 · REDUNDANCY DETECTOR (with elimination stepper) ================= */
 (function(){
@@ -1958,7 +2273,7 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
     prevB.disabled=k===0;nextB.disabled=k===last;
     log.innerHTML=steps.map((s,i)=>`<div class="${i===k?'cur':''}" data-k="${i}">${i}. ${s.op.replace(/^([^(]*?)(\s\s\(.*\))?$/,(m,a,b)=>`<span class="op">${a}</span>${b||''}`)}</div>`).join('');
     const cur=log.querySelector('.cur');if(cur&&cur.scrollIntoView&&log.scrollHeight>log.clientHeight)log.scrollTop=cur.offsetTop-log.offsetTop-30;
-    if(anim&&k===last){anim=null;playB.textContent='▶ play';}
+    if(anim&&k===last){anim.stop();anim=null;playB.textContent='▶ play';}  /* reaching the end (by ⇥ or ›) ends the play — and kills its tween, so it cannot outlive a later recompute */
   }
   function compute(){
     const res=rrefSteps(M);steps=res.steps;k=steps.length-1;
@@ -1985,7 +2300,7 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
     if(anim){anim.stop();anim=null;playB.textContent='▶ play';return;}
     const last=steps.length-1;if(k>=last)k=0;
     const from=k,n=last-from;playB.textContent='⏸ pause';
-    anim=tween(Math.max(900,520*n),u=>{const want=from+Math.floor(u*n+1e-9);if(want!==k){k=Math.min(last,want);showStep();}},()=>{k=last;anim=null;playB.textContent='▶ play';showStep();});});
+    anim=tween(Math.max(900,520*n),u=>{const want=from+Math.floor(u*n+1e-9);if(want!==k){k=Math.min(last,want,steps.length-1);showStep();}},()=>{k=last;anim=null;playB.textContent='▶ play';showStep();});});
   log.addEventListener('click',e=>{const d=e.target.closest('[data-k]');if(d){k=+d.dataset.k;showStep();}});
   document.querySelectorAll('#ind-presets .preset').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#ind-presets .preset').forEach(x=>x.setAttribute('aria-pressed','false'));
@@ -1993,45 +2308,113 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
   document.querySelector('#ind-presets [data-p="p2"]').setAttribute('aria-pressed','true');
   buildEditor();compute();
 })();
-/* ================= W5 · RECIPES MIRROR ================= */
+/* ================= W5 · RECIPES MIRROR (three.js: two glass floors + a mirror pane) ================= */
 (function(){
-  const sr=document.getElementById('rec-real'),sl=document.getElementById('rec-lam');if(!sr)return;
+  const box=document.getElementById('rec-real');if(!box)return;
   const aS=document.getElementById('rec-a'),bS=document.getElementById('rec-b'),aO=document.getElementById('rec-ao'),bO=document.getElementById('rec-bo');
   const verd=document.getElementById('rec-verdict'),third=document.getElementById('rec-third'),eqEl=document.getElementById('rec-eq');
   const B=[[2,0.7],[0.6,1.8]],l1=[1,0.5],l3=[-1,1];
-  let showThird=false;
+  let showThird=false,sc=null,hudL=null,hudR=null,hudD=null,floorKey='',thirdFade=0,fadeAnim=null,userMoved=false;
   const mul=l=>[B[0][0]*l[0]+B[0][1]*l[1],B[1][0]*l[0]+B[1][1]*l[1]];
   const b1=[B[0][0],B[1][0]],b2=[B[0][1],B[1][1]];
-  function shearGrid(p,R){ // the recipe grid seen through B: lines i·b1 + t·b2 and t·b1 + i·b2
-    const g=el('g',{},p.svg);
-    const cp=el('clipPath',{id:'rec-clip'},g);el('rect',{x:p.px(p.X0),y:p.py(p.Y1),width:p.px(p.X1)-p.px(p.X0),height:p.py(p.Y0)-p.py(p.Y1)},cp);
-    const gg=el('g',{'clip-path':'url(#rec-clip)'},g);
-    for(let i=-8;i<=8;i++){[[b1,b2],[b2,b1]].forEach(([da,db],w)=>{
-      const A=[i*da[0]-12*db[0],i*da[1]-12*db[1]],Bp=[i*da[0]+12*db[0],i*da[1]+12*db[1]];
-      el('line',{x1:p.px(A[0]),y1:p.py(A[1]),x2:p.px(Bp[0]),y2:p.py(Bp[1]),stroke:'var(--s7)','stroke-width':i===0?1.4:.8,opacity:i===0?.55:.3},gg);});}
+  const D=3.55, HF=2.9, HL=2.4;           /* floor centres at x = ∓D; half-sizes of the dish / recipe floors */
+  const CKS=['s1','s2','s3'];
+  /* a floor point: (math x, math y) on the floor centred at cx, scaled by s */
+  const fp=(cx,s,x,y)=>[cx+x*s,0,-y*s];
+  function buildFloors(Rr,Rl){
+    const {THREE,ctx,root,colors}=sc,hx=k=>CIN.hex(colors[k]);
+    if(sc.floors)root.remove(sc.floors);
+    const g=new THREE.Group();root.add(g);sc.floors=g;
+    const sD=HF/Rr,sL=HL/Rl;sc.sD=sD;sc.sL=sL;
+    const mkFloor=(cx,half,col)=>{const gl=CIN.prim.glass(ctx,2*half,2*half,col,ctx.isLight?.12:.13);gl.rotation.x=-Math.PI/2;gl.position.set(cx,-.004,0);g.add(gl);
+      const eg=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[-half,-half],[half,-half],[half,half],[-half,half]].map(([x,z])=>new THREE.Vector3(cx+x,0,z))),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:.7}));g.add(eg);};
+    mkFloor(-D,HF,hx('s1'));mkFloor(D,HL,hx('s7'));
+    /* recipe floor: the standard grid (every integer) */
+    const gp=[];const clipSeg=(cx,half,s,A,Bp)=>{ /* clip a floor segment (math coords) to the floor square */
+      const lo=-half/s,hi=half/s;let t0=0,t1=1;const d=[Bp[0]-A[0],Bp[1]-A[1]];
+      for(let k=0;k<2;k++){if(Math.abs(d[k])<1e-12){if(A[k]<lo||A[k]>hi)return;continue;}let a=(lo-A[k])/d[k],b=(hi-A[k])/d[k];if(a>b){const t=a;a=b;b=t;}t0=Math.max(t0,a);t1=Math.min(t1,b);}
+      if(t0>=t1)return;const P=[A[0]+d[0]*t0,A[1]+d[1]*t0],Q=[A[0]+d[0]*t1,A[1]+d[1]*t1];gp.push(...fp(cx,s,P[0],P[1]),...fp(cx,s,Q[0],Q[1]));};
+    for(let i=-Math.ceil(Rl);i<=Math.ceil(Rl);i++){clipSeg(D,HL,sL,[i,-20],[i,20]);clipSeg(D,HL,sL,[-20,i],[20,i]);}
+    const mkLines=(arr,col,op)=>{const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(arr),3));const m=new THREE.LineSegments(gg,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op,depthWrite:false}));m.position.y=.002;g.add(m);};
+    mkLines(gp.slice(),hx('grid'),ctx.isLight?.9:.75);gp.length=0;
+    /* dish floor: the standard grid faintly, and the recipe grid seen through the mirror (lines i·b1 + t·b2 and t·b1 + i·b2) */
+    for(let i=-Math.ceil(Rr);i<=Math.ceil(Rr);i++){clipSeg(-D,HF,sD,[i,-40],[i,40]);clipSeg(-D,HF,sD,[-40,i],[40,i]);}
+    mkLines(gp.slice(),hx('grid'),ctx.isLight?.7:.55);gp.length=0;
+    for(let i=-9;i<=9;i++){[[b1,b2],[b2,b1]].forEach(([da,db])=>{clipSeg(-D,HF,sD,[i*da[0]-30*db[0],i*da[1]-30*db[1]],[i*da[0]+30*db[0],i*da[1]+30*db[1]]);});}
+    mkLines(gp.slice(),hx('s7'),ctx.isLight?.45:.42);gp.length=0;
+    /* axes on both floors */
+    const ax=[...fp(-D,sD,-Rr,0),...fp(-D,sD,Rr,0),...fp(-D,sD,0,-Rr),...fp(-D,sD,0,Rr),...fp(D,sL,-Rl,0),...fp(D,sL,Rl,0),...fp(D,sL,0,-Rl),...fp(D,sL,0,Rl)];
+    mkLines(ax,hx('axis'),.95);
+    /* basis arrows on each floor */
+    const mk=(cx,s,v,col,txt)=>{const a=fp(cx,s,v[0],v[1]);const ar=mkArrow(ctx,hx(col),{radius:.03,head:.2});aim3(THREE,ar,[cx,.01,0],a);g.add(ar);const n=Math.hypot(a[0]-cx,a[2])||1;
+      g.add(CIN.prim.label(ctx,txt,[cx+(a[0]-cx)*(1+.32/n),.16,a[2]*(1+.32/n)],{size:24,color:colors[col],bg:false,depthTest:false,weight:700,scale:.0095}));};
+    mk(-D,sD,b1,'s7','b₁');mk(-D,sD,b2,'s7','b₂');mk(D,sL,[1,0],'s7','e₁');mk(D,sL,[0,1],'s7','e₂');
+    g.add(CIN.prim.dot(ctx,[-D,0,0],hx('ink2'),.04));g.add(CIN.prim.dot(ctx,[D,0,0],hx('ink2'),.04));
+    /* the mirror pane between the two worlds */
+    const pane=CIN.prim.glass(ctx,2.1,HF*2.05,hx('s6'),ctx.isLight?.1:.12);pane.rotation.y=Math.PI/2;pane.position.set(0,1.05,0);g.add(pane);sc.pane=pane;
+    const pe=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[0,0,-HF],[0,2.1,-HF],[0,2.1,HF],[0,0,HF]].map(p=>new THREE.Vector3(...p))),new THREE.LineBasicMaterial({color:hx('s6'),transparent:true,opacity:.55}));g.add(pe);
+    g.add(CIN.prim.label(ctx,'the mirror · x = Bλ',[0,2.75,0],{size:26,color:colors.s6,bg:true,depthTest:false,weight:700,scale:.0095}));
+    g.add(CIN.prim.label(ctx,'DISH SPACE — x = Bλ',[-D,.25,-(HF+.35)],{size:22,color:colors.s1,bg:false,depthTest:false,weight:700,scale:.0095}));
+    g.add(CIN.prim.label(ctx,'RECIPE SPACE — the λ coordinates',[D,.25,-(HL+.35)],{size:22,color:colors.s7,bg:false,depthTest:false,weight:700,scale:.0095}));
+  }
+  function build(){
+    sc=null;floorKey='';
+    return CIN.stage3d(box,{fill:true,camera:{pos:[3.6,6.8,10.6],look:[0,.4,0],fov:36},autoRotate:0,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors}=ctx,hx=k=>CIN.hex(colors[k]);
+        stars(ctx,400,22);
+        const big=CIN.prim.grid(ctx,24,24,hx('grid'),{opacity:ctx.isLight?.25:.16});big.position.y=-.02;root.add(big);
+        const xs=CKS.map(k=>{const a=mkArrow(ctx,hx(k),{radius:.045,head:.28});root.add(a);return a;});
+        const ls=CKS.map(k=>{const a=mkArrow(ctx,hx(k),{radius:.045,head:.28});root.add(a);return a;});
+        const xl=CKS.map((k,i)=>{const l=CIN.prim.label(ctx,'x'+['₁','₂','₃'][i],[0,0,0],{size:28,color:colors[k],bg:false,depthTest:false,weight:700,scale:.0095});root.add(l);return l;});
+        const ll=CKS.map((k,i)=>{const l=CIN.prim.label(ctx,'λ'+['₁','₂','₃'][i],[0,0,0],{size:28,color:colors[k],bg:false,depthTest:false,weight:700,scale:.0095});root.add(l);return l;});
+        const threads=CKS.map(k=>{const geo=new THREE.BufferGeometry().setFromPoints(new Array(26).fill(0).map(()=>new THREE.Vector3()));const m=new THREE.Line(geo,new THREE.LineBasicMaterial({color:hx(k),transparent:true,opacity:.55,blending:ctx.isLight?THREE.NormalBlending:THREE.AdditiveBlending,depthWrite:false}));root.add(m);return m;});
+        const sparks=CKS.map(k=>{const d=CIN.prim.dot(ctx,[0,0,0],hx(k),.05);root.add(d);return d;});
+        const depL=tube(ctx,[0,0,0],[0,0,1],CIN.hex(cssv('--critical')),.022,0);depL.material.depthWrite=false;root.add(depL);
+        const depR=tube(ctx,[0,0,0],[0,0,1],CIN.hex(cssv('--critical')),.022,0);depR.material.depthWrite=false;root.add(depR);
+        sc={THREE,ctx,root,colors,xs,ls,xl,ll,threads,sparks,depL,depR,floors:null};
+        hudL=hud(box);hudL.innerHTML='dish space';hudR=hud(box,'hud-r');hudR.innerHTML='recipe space';hudD=hud(box,'hud-b');hint(box,'drag to orbit');
+        draw();
+      },
+      update(ctx,t,dt){ if(ctx.dead||!sc)return false; let ch=false;
+        if(!userMoved&&!CIN.reduced){if(sc.theta0==null)sc.theta0=ctx.orbit.sph.theta;ctx.orbit.sph.theta=sc.theta0+.14*Math.sin(t*.28);ctx.orbit.place();ch=true;}
+        /* sparks travel along the threads: recipe → mirror → dish */
+        sc.threads.forEach((th,i)=>{if(!th.visible)return;const P=th.geometry.attributes.position.array;const u=((t*.35+i*.33)%1);const k=u*25,k0=Math.floor(k),f=k-k0,k1=Math.min(25,k0+1);
+          sc.sparks[i].position.set(P[3*k0]+(P[3*k1]-P[3*k0])*f,P[3*k0+1]+(P[3*k1+1]-P[3*k0+1])*f,P[3*k0+2]+(P[3*k1+2]-P[3*k0+2])*f);sc.sparks[i].visible=!CIN.reduced;ch=true;});
+        if(sc.pane){const base=ctx.isLight?.1:.12;const want=sc.dep?base+.07+.07*Math.sin(t*4):base;if(Math.abs(sc.pane.material.opacity-want)>1e-3){sc.pane.material.opacity=want;ch=true;}}
+        return ch; }
+    });
   }
   function draw(){
-    fitVB(sr,420,330);fitVB(sl,420,330);
     const l2=[+aS.value,+bS.value];aO.value=fmt(l2[0],1);bO.value=fmt(l2[1],1);
     const x1=mul(l1),x2=mul(l2),x3=mul(l3);
-    // dish panel: range fitted to whatever is drawn
     const pts=[x1,x2,b1,b2].concat(showThird?[x3]:[]);
     const Rr=Math.max(3,Math.ceil(Math.max(...pts.flat().map(Math.abs))*1.15));
-    const p=plane(sr,-Rr,Rr,-Rr,Rr,{tickEvery:Rr>4?2:1});
-    shearGrid(p,Rr);
-    arrow(p,0,0,b1[0],b1[1],'var(--s7)',2.6,'b₁','font:700 12px system-ui;fill:var(--s7)');
-    arrow(p,0,0,b2[0],b2[1],'var(--s7)',2.6,'b₂','font:700 12px system-ui;fill:var(--s7)');
-    arrow(p,0,0,x1[0],x1[1],'var(--s1)',3,'x₁');
-    arrow(p,0,0,x2[0],x2[1],'var(--s2)',3,'x₂');
-    if(showThird)arrow(p,0,0,x3[0],x3[1],'var(--s3)',3,'x₃');
     const Rl=Math.max(2,Math.ceil(Math.max(...[l1,l2].concat(showThird?[l3]:[]).flat().map(Math.abs))*1.15));
-    const q=plane(sl,-Rl,Rl,-Rl,Rl,{});
-    arrow(q,0,0,1,0,'var(--s7)',2.2,'e₁','font:700 11px system-ui;fill:var(--s7)');
-    arrow(q,0,0,0,1,'var(--s7)',2.2,'e₂','font:700 11px system-ui;fill:var(--s7)');
-    arrow(q,0,0,l1[0],l1[1],'var(--s1)',3,'λ₁');
-    arrow(q,0,0,l2[0],l2[1],'var(--s2)',3,'λ₂');
-    if(showThird)arrow(q,0,0,l3[0],l3[1],'var(--s3)',3,'λ₃');
     const det=l1[0]*l2[1]-l1[1]*l2[0];
+    const dep=!showThird&&Math.abs(det)<0.08;
+    if(sc){
+      const {THREE,ctx}=sc;
+      const key=Rr+'|'+Rl;if(key!==floorKey){floorKey=key;buildFloors(Rr,Rl);}
+      const sD=sc.sD,sL=sc.sL;
+      const X=[x1,x2,x3],Lm=[l1,l2,l3];
+      [0,1,2].forEach(i=>{const on=i<2||showThird;[sc.xs[i],sc.ls[i],sc.xl[i],sc.ll[i],sc.threads[i]].forEach(o=>o.visible=on);if(!on){sc.sparks[i].visible=false;return;}
+        const a=fp(-D,sD,X[i][0],X[i][1]),b=fp(D,sL,Lm[i][0],Lm[i][1]);
+        aim3(THREE,sc.xs[i],[-D,.012,0],[a[0],.012,a[2]]);aim3(THREE,sc.ls[i],[D,.012,0],[b[0],.012,b[2]]);
+        sc.xl[i].position.set(a[0],.3,a[2]);sc.ll[i].position.set(b[0],.3,b[2]);
+        /* thread: recipe tip → through the pane → dish tip (a smooth arc) */
+        const P=sc.threads[i].geometry.attributes.position.array;const mid=[0,1.0+.3*i,(a[2]+b[2])/2];
+        for(let k=0;k<=25;k++){const u=k/25;const w0=(1-u)*(1-u),w1=2*u*(1-u),w2=u*u;P[3*k]=w0*b[0]+w1*mid[0]+w2*a[0];P[3*k+1]=w0*.02+w1*mid[1]+w2*.02;P[3*k+2]=w0*b[2]+w1*mid[2]+w2*a[2];}
+        sc.threads[i].geometry.attributes.position.needsUpdate=true;
+        const op=(i===2)?thirdFade:1;sc.threads[i].material.opacity=.55*op;sc.xs[i].children.forEach(m=>{m.material.transparent=true;m.material.opacity=op;});sc.ls[i].children.forEach(m=>{m.material.transparent=true;m.material.opacity=op;});sc.xl[i].material.opacity=op;sc.ll[i].material.opacity=op;});
+      /* the alignment line on both floors */
+      sc.dep=dep;sc.depL.visible=dep;sc.depR.visible=dep;
+      const place=(m,a,b)=>{const A=new THREE.Vector3(...a),Bv=new THREE.Vector3(...b),d=Bv.clone().sub(A),L=d.length()||1e-4;m.position.copy(A).add(d.clone().multiplyScalar(.5));m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());m.scale.y=L;m.material.opacity=.9;};
+      if(dep){const reach=(v,R)=>R/Math.max(Math.abs(v[0]),Math.abs(v[1]),1e-9);const f=reach(x1,Rr);place(sc.depL,fp(-D,sD,-x1[0]*f,-x1[1]*f),fp(-D,sD,x1[0]*f,x1[1]*f));
+        const f2=reach(l1,Rl);place(sc.depR,fp(D,sL,-l1[0]*f2,-l1[1]*f2),fp(D,sL,l1[0]*f2,l1[1]*f2));}
+      if(hudD){hudD.className='hud hud-b '+(showThird||dep?'bad':'good');hudD.innerHTML=showThird?'3 recipes in ℝ² · <b>pigeonhole</b>':`det[λ₁ λ₂] = <b>${fmt(det,2)}</b>${dep?' · aligned':''}`;}
+      if(ctx.requestRender)ctx.requestRender();
+    }
     let eq=`x₂ = ${fmt(l2[0],1)}·b₁ + ${fmt(l2[1],1)}·b₂ = <b>(${fmt(x2[0],2)}, ${fmt(x2[1],2)})</b>  ·  x₁ = 1·b₁ + 0.5·b₂ = (${fmt(x1[0],2)}, ${fmt(x1[1],2)})`.replace(/\+ -/g,'− ');
     if(showThird){
       let msg='3 recipes in ℝ² — pigeonhole: dependent, no matter what.';
@@ -2042,17 +2425,17 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
       verd.className='verdict bad';verd.textContent='✗ '+msg;
       eq+=`<br>x₃ = −1·b₁ + 1·b₂ = (${fmt(x3[0],2)}, ${fmt(x3[1],2)})`;
     }
-    else if(Math.abs(det)<0.08){
-      [[p,x1,Rr],[q,l1,Rl]].forEach(([pl,d,Rx])=>{const n=Math.hypot(d[0],d[1])||1,f=Rx*1.5/n;
-        el('line',{x1:pl.px(-d[0]*f),y1:pl.py(-d[1]*f),x2:pl.px(d[0]*f),y2:pl.py(d[1]*f),stroke:'var(--critical)','stroke-width':1.5,'stroke-dasharray':'6 5'},pl.svg);});
-      verd.className='verdict bad';verd.textContent='✗ Aligned! Recipes dependent ⇒ dishes dependent — the mirror strikes both panels at once.';
-    }
+    else if(dep){verd.className='verdict bad';verd.textContent='✗ Aligned! Recipes dependent ⇒ dishes dependent — the mirror strikes both panels at once.';}
     else{verd.className='verdict good';verd.textContent='✓ Recipes independent ⇔ dishes independent. Move the sliders — the panels always agree.';}
     eq+=`<br>det[λ₁ λ₂] = ${fmt(det,2)}${Math.abs(det)<0.08?' ≈ 0':''}`;
     eqEl.innerHTML=eq;
   }
-  third.addEventListener('click',()=>{showThird=!showThird;third.setAttribute('aria-pressed',showThird?'true':'false');draw();});
-  aS.addEventListener('input',draw);bS.addEventListener('input',draw);onResize.push(draw);draw();
+  third.addEventListener('click',()=>{showThird=!showThird;third.setAttribute('aria-pressed',showThird?'true':'false');
+    if(fadeAnim)fadeAnim.stop();const from=thirdFade,to=showThird?1:0;
+    if(showThird){fadeAnim=tween(500,u=>{thirdFade=from+(to-from)*u;draw();},()=>{fadeAnim=null;});}else{thirdFade=0;draw();}});
+  aS.addEventListener('input',draw);bS.addEventListener('input',draw);
+  box.addEventListener('pointerdown',()=>{userMoved=true;});
+  mountStage(box,build);draw();
 })();
 /* ================= W6 · BASIS REMIX ================= */
 (function(){
@@ -2073,6 +2456,8 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
     const cp=el('clipPath',{id:'bas-clip'},svg);el('rect',{x:p.px(p.X0),y:p.py(p.Y1),width:p.px(p.X1)-p.px(p.X0),height:p.py(p.Y0)-p.py(p.Y1)},cp);
     const gg=el('g',{'clip-path':'url(#bas-clip)'},svg);
     if(Math.abs(det)>1e-6){
+      /* the parallelogram cell (b₁, b₂) lit as the unit of the new graph paper */
+      el('polygon',{points:[[0,0],b1,[b1[0]+b2[0],b1[1]+b2[1]],b2].map(q=>p.px(q[0])+','+p.py(q[1])).join(' '),fill:'var(--s7)','fill-opacity':.14,stroke:'none'},gg);
       for(let i=-9;i<=9;i++){
         [[b1,b2,'var(--s2)'],[b2,b1,'var(--s1)']].forEach(([da,db,col])=>{
           const A=[i*da[0]-12*db[0],i*da[1]-12*db[1]],Bp=[i*da[0]+12*db[0],i*da[1]+12*db[1]];
@@ -2094,20 +2479,120 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
         if(L<40)return;const nx=-dy/L*13,ny=dx/L*13;
         const t=txt(svg,p.px(mx)+nx,p.py(my)+ny+4,s,`font:700 11.5px system-ui;fill:${col};paint-order:stroke;stroke:var(--surface);stroke-width:3px`,'middle');};
       lab([0,0],mid,`${fmt(c1,2)}·b₁`,'var(--s1)');lab(mid,v,`${fmt(c2,2)}·b₂`,'var(--s2)');
-      arrow(p,0,0,v[0],v[1],'var(--ink)',3.5,'v','font:750 13px system-ui;fill:var(--ink)');
+      arrow(p,0,0,v[0],v[1],'var(--s4)',3.5,'v','font:750 13px system-ui;fill:var(--s4)');
       coords.innerHTML=`v itself: <b>(${fmt(v[0],1)}, ${fmt(v[1],1)})</b> — the same arrow in every book<br>address in the <em>${curName}</em> book:<br><b style="color:var(--s1)">${fmt(c1,2)}</b> · b₁ &nbsp;+&nbsp; <b style="color:var(--s2)">${fmt(c2,2)}</b> · b₂ &nbsp;=&nbsp; v`;
       verd.className='verdict good';verd.textContent='✓ Exactly one address — independence forbids a second recipe.';
     } else {
-      arrow(p,0,0,v[0],v[1],'var(--ink)',3.5,'v','font:750 13px system-ui;fill:var(--ink)');
+      arrow(p,0,0,v[0],v[1],'var(--s4)',3.5,'v','font:750 13px system-ui;fill:var(--s4)');
       coords.innerHTML=`v itself: <b>(${fmt(v[0],1)}, ${fmt(v[1],1)})</b><br>address of v: <b>undefined</b> — v is off the line b₁ spans`;
       verd.className='verdict bad';verd.textContent='✗ b₂ ∥ b₁ — the grid collapsed to a line (det = 0). A dependent pair can\'t address the plane.';
     }
   }
+  let morph=null;
   document.querySelectorAll('#bas-presets .preset').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#bas-presets .preset').forEach(x=>x.setAttribute('aria-pressed','false'));
-    b.setAttribute('aria-pressed','true');Bm=P[b.dataset.p].map(r=>r.slice());curName=NAMES[b.dataset.p];draw();}));
+    b.setAttribute('aria-pressed','true');curName=NAMES[b.dataset.p];
+    /* the graph paper re-rules itself: b₁, b₂ glide to the new basis while v stays put */
+    const from=Bm.map(r=>r.slice()),to=P[b.dataset.p];if(morph)morph.stop();
+    morph=tween(750,e=>{Bm=from.map((row,i)=>row.map((v,j)=>v+(to[i][j]-v)*e));draw();},()=>{morph=null;Bm=to.map(r=>r.slice());draw();});}));
   document.querySelector('#bas-presets [data-p="tri"]').setAttribute('aria-pressed','true');
   vx.addEventListener('input',draw);vy.addEventListener('input',draw);onResize.push(draw);draw();
+})();
+/* ================= FIGURE · NULL SPACE + SHIFT (three.js) ================= */
+(function(){
+  const box=document.getElementById('ns-3d');if(!box||!CIN)return;
+  const reduced=CIN.reduced;
+  /* A = [1 2], b = 4: null direction n = (−2, 1), particular solution x_p = (2, 1) */
+  const n=[-2,1],xp=[2,1];
+  function build(){
+    let probe=null,twin=null,carry=null,hudEl=null;
+    return CIN.stage3d(box,{fill:true,camera:{pos:[4.2,6.2,8.6],look:[.6,0,-.5],fov:34},autoRotate:.06,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors}=ctx,hx=k=>CIN.hex(colors[k]);
+        stars(ctx,300,16);
+        const grid=CIN.prim.grid(ctx,10,10,hx('grid'),{opacity:ctx.isLight?.55:.4});grid.position.set(.5,-.004,-.5);root.add(grid);
+        const ap=new Float32Array([-4.5,0,0,5.5,0,0, 0,0,4.5,0,0,-5.5]);const ag=new THREE.BufferGeometry();ag.setAttribute('position',new THREE.BufferAttribute(ap,3));
+        root.add(new THREE.LineSegments(ag,new THREE.LineBasicMaterial({color:hx('axis'),transparent:true,opacity:.95})));
+        root.add(CIN.prim.label(ctx,'x',[5.8,0,0],{size:26,color:colors.muted,bg:false,depthTest:false,scale:.0095}));root.add(CIN.prim.label(ctx,'y',[0,0,-5.8],{size:26,color:colors.muted,bg:false,depthTest:false,scale:.0095}));
+        const rail=(p0,d,col,lo,hi)=>{const t=lineInBox([p0[0],p0[1],0],[d[0],d[1],0],lo,hi)||[-2,2];const A=F3(p0[0]+t[0]*d[0],p0[1]+t[0]*d[1]),B=F3(p0[0]+t[1]*d[0],p0[1]+t[1]*d[1]);
+          root.add(tube(ctx,A,B,col,.035));const h=tube(ctx,A,B,col,.09,ctx.isLight?.07:.11);h.material.depthWrite=false;h.material.emissiveIntensity=ctx.isLight?.1:.9;root.add(h);};
+        rail([0,0],n,hx('s1'),-4.4,4.4);      /* N(A): x + 2y = 0 */
+        rail(xp,n,hx('s2'),-4.4,4.4);         /* solutions: x + 2y = 4 */
+        /* glass strip between the rails: the shift x_p carries one line onto the other */
+        const P=[F3(-4,2),F3(-2,3),F3(4,0),F3(2,-1)];const g=new THREE.BufferGeometry().setFromPoints([P[0],P[1],P[2],P[0],P[2],P[3]].map(p=>new THREE.Vector3(...p)));g.computeVertexNormals();
+        const strip=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:hx('s7'),emissive:hx('s7'),emissiveIntensity:ctx.isLight?.03:.15,transparent:true,opacity:ctx.isLight?.08:.1,side:THREE.DoubleSide,depthWrite:false}));root.add(strip);
+        const nA=mkArrow(ctx,hx('s1'),{radius:.04,head:.26});aim3(THREE,nA,[0,.01,0],F3(n[0],n[1]));root.add(nA);
+        const xA=mkArrow(ctx,hx('s4'),{radius:.045,head:.28});aim3(THREE,xA,[0,.012,0],F3(xp[0],xp[1]));root.add(xA);
+        [[1,1],[-1,-1]].forEach(([sgn])=>{const a=mkArrow(ctx,hx('s1'),{radius:.022,head:.2});a.children.forEach(m=>{m.material=m.material.clone();m.material.transparent=true;m.material.opacity=.7;});aim3(THREE,a,F3(xp[0],xp[1]),F3(xp[0]+sgn*n[0],xp[1]+sgn*n[1]));root.add(a);});
+        root.add(CIN.prim.dot(ctx,[0,0,0],hx('ink2'),.06));root.add(CIN.prim.dot(ctx,F3(xp[0],xp[1]),hx('s4'),.08));
+        root.add(CIN.prim.dot(ctx,F3(xp[0]+n[0],xp[1]+n[1]),hx('s2'),.06));root.add(CIN.prim.dot(ctx,F3(xp[0]-n[0],xp[1]-n[1]),hx('s2'),.06));
+        const L=(t,p,col,size)=>root.add(CIN.prim.label(ctx,t,p,{size:size||22,color:col,bg:false,depthTest:false,weight:700,scale:.0095}));
+        L('0',[.2,.22,.3],colors.muted,20);L('xₚ = (2, 1)',[2.35,.34,-1.2],colors.s4);L('n = (−2, 1)',[-2.3,.34,-1.35],colors.s1);
+        L('N(A): x + 2y = 0',[3.4,.3,2.7],colors.s1);L('solutions of Ax = 4: x + 2y = 4',[-2.2,.32,-3.55],colors.s2);
+        L('xₚ + n',[0,.3,-2.3],colors.s2,19);L('xₚ − n',[4.1,.3,-.3],colors.s2,19);
+        /* the moving pair: a null vector and its carried twin */
+        probe=CIN.prim.dot(ctx,[0,0,0],hx('s1'),.09);twin=CIN.prim.dot(ctx,[0,0,0],hx('s2'),.09);root.add(probe,twin);
+        carry=tube(ctx,[0,0,0],[0,0,1],hx('s7'),.018,.8);root.add(carry);
+        const set=(s)=>{const a=F3(s*n[0],s*n[1]),b=F3(xp[0]+s*n[0],xp[1]+s*n[1]);probe.position.set(...a);twin.position.set(...b);
+          const A=new THREE.Vector3(...a),Bv=new THREE.Vector3(...b),d=Bv.clone().sub(A),Ln=d.length();carry.position.copy(A).add(d.clone().multiplyScalar(.5));carry.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());carry.scale.y=Ln;};
+        ctx.ns={set};set(reduced?.7:0);
+        hudEl=hud(box);hudEl.innerHTML='A = [1 2], b = 4 · every solution is <b>xₚ + n</b>';hint(box,'drag to orbit');
+      },
+      update(ctx,t){ if(ctx.dead||reduced)return false; ctx.ns.set(1.55*Math.sin(t*.55)); return true; }
+    });
+  }
+  mountStage(box,build);
+})();
+/* ================= OPENING SHOT · two vectors sweep out a glass plane ================= */
+(function(){
+  const box=document.getElementById('hero-3d');if(!box||!CIN)return;
+  const reduced=CIN.reduced;
+  function build(){
+    const wide=innerWidth>=760,fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+    return CIN.stage3d(box,{fill:true,orbit:fine,zoom:false,autoRotate:.035,autoRotateStopsOnUser:true,
+      camera:{pos:wide?[4.4,3.4,7.4]:[1.6,4.8,7.8],look:wide?[-2.4,.8,0]:[0,1.0,.4],fov:36},
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx,hx=k=>CIN.hex(colors[k]);
+        stars(ctx,800,24,.085);
+        const floor=CIN.prim.grid(ctx,18,24,hx('grid'),{opacity:isLight?.35:.22});floor.position.y=-1.9;root.add(floor);
+        const R=2.9;
+        /* the glass plane: a disc with graph paper that fades toward the rim */
+        const pg=new THREE.Group();root.add(pg);
+        const glass=new THREE.Mesh(new THREE.CircleGeometry(R,72),new THREE.MeshStandardMaterial({color:hx('s7'),emissive:hx('s7'),emissiveIntensity:isLight?.04:.2,transparent:true,opacity:isLight?.16:.2,side:THREE.DoubleSide,roughness:.15,metalness:.05,depthWrite:false}));pg.add(glass);
+        const rim=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new Array(96).fill(0).map((_,k)=>{const a=k/96*Math.PI*2;return new THREE.Vector3(Math.cos(a)*R,Math.sin(a)*R,0);})),new THREE.LineBasicMaterial({color:hx('s7'),transparent:true,opacity:.75}));pg.add(rim);
+        const gp=[],gc=[],base=new THREE.Color(hx('s7')),SEG=18;
+        const paint=(x,y)=>{const f=1-Math.pow(Math.hypot(x,y)/R,3);const c=isLight?new THREE.Color(1-(1-base.r)*f,1-(1-base.g)*f,1-(1-base.b)*f):base.clone().multiplyScalar(Math.max(0,f)*.9);c.convertSRGBToLinear();gc.push(c.r,c.g,c.b);};
+        for(let i=-5;i<=5;i++){const c=i*R/5.2;const h=Math.sqrt(Math.max(0,R*R-c*c));for(let s=0;s<SEG;s++){const p0=-h+s*2*h/SEG,p1=-h+(s+1)*2*h/SEG;gp.push(c,p0,0,c,p1,0);paint(c,p0);paint(c,p1);gp.push(p0,c,0,p1,c,0);paint(p0,c);paint(p1,c);}}
+        const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(gp),3));gg.setAttribute('color',new THREE.BufferAttribute(new Float32Array(gc),3));
+        pg.add(new THREE.LineSegments(gg,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:isLight?.9:1,blending:isLight?THREE.NormalBlending:THREE.AdditiveBlending,depthWrite:false})));
+        const v1A=mkArrow(ctx,hx('s1'),{radius:.05,head:.36}),v2A=mkArrow(ctx,hx('s2'),{radius:.05,head:.36});root.add(v1A,v2A);
+        const l1=CIN.prim.label(ctx,'v₁',[0,0,0],{bg:false,color:colors.s1,size:34,weight:700,depthTest:false}),l2=CIN.prim.label(ctx,'v₂',[0,0,0],{bg:false,color:colors.s2,size:34,weight:700,depthTest:false});root.add(l1,l2);
+        const probe=CIN.prim.dot(ctx,[0,0,0],hx('s4'),.09);root.add(probe);const halo=CIN.prim.dot(ctx,[0,0,0],hx('s4'),.22);halo.material.transparent=true;halo.material.opacity=isLight?.14:.22;halo.material.depthWrite=false;root.add(halo);
+        const trail=mkTrail(ctx,hx('s4'),170);root.add(trail);
+        root.add(CIN.prim.dot(ctx,[0,0,0],hx('ink2'),.05));
+        const v1=new THREE.Vector3(2.4,.3,-.7),v20=new THREE.Vector3(-.75,1.9,.55);
+        const e1=v1.clone().normalize();
+        const apply=(t)=>{
+          /* v₂ swings slowly around the axis of v₁; the plane they span tilts with it */
+          const ang=reduced?.25:.6*Math.sin(.33*t);const v2=v20.clone().applyAxisAngle(e1,ang);
+          const e2=v2.clone().sub(e1.clone().multiplyScalar(v2.dot(e1))).normalize();const nrm=new THREE.Vector3().crossVectors(e1,e2);
+          pg.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(e1,e2,nrm));
+          aim3(THREE,v1A,[0,0,0],v1);aim3(THREE,v2A,[0,0,0],v2);
+          l1.position.copy(v1).multiplyScalar(1.13).add(new THREE.Vector3(0,.25,0));l2.position.copy(v2).multiplyScalar(1.13).add(new THREE.Vector3(0,.25,0));
+          /* the probe rides the plane; the trail is sampled finely so it stays a curve even at a low frame rate */
+          const at=(tt)=>{const a=tt*.75,r=R*(.62+.16*Math.sin(tt*.31));return e1.clone().multiplyScalar(r*Math.cos(a)).add(e2.clone().multiplyScalar(r*Math.sin(a)*.8)).add(nrm.clone().multiplyScalar(.05));};
+          const t0=ctx.hero.lastT==null?t-.03:ctx.hero.lastT;const steps=Math.min(24,Math.max(1,Math.ceil((t-t0)/.03)));
+          for(let k=1;k<=steps;k++){const q=at(reduced?1.2+k*.06:t0+(t-t0)*k/steps);trail.userData.push(q.x,q.y,q.z);}
+          ctx.hero.lastT=t;const p=at(reduced?1.2+steps*.06:t);probe.position.copy(p);halo.position.copy(p);
+        };
+        ctx.hero={apply,lastT:null};apply(0);
+        if(reduced){for(let k=0;k<30;k++)apply(k*.7);}
+      },
+      update(ctx,t){ if(reduced||ctx.dead)return false; ctx.hero.apply(t); return true; }
+    });
+  }
+  const S=mountStage(box,build);
+  let rw=innerWidth;addEventListener('resize',()=>{const wide=innerWidth>=760;if(wide!==(rw>=760))remount(S);rw=innerWidth;});
 })();
 })();
 
@@ -2195,7 +2680,8 @@ addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>onResize.for
       requestAnimationFrame(function(){ pill.classList.add('on'); });
       var hide = function(){ pill.classList.remove('on'); setTimeout(function(){ pill.remove(); }, 320); };
       pill.querySelector('.rgo').addEventListener('click', function(){
-        target.scrollIntoView({behavior:'smooth', block:'start'});
+        var far = Math.abs(target.getBoundingClientRect().top) > 3500;   /* a long jump across heavy 3-D stages lands instantly; short ones glide */
+        target.scrollIntoView({behavior: far ? 'auto' : 'smooth', block:'start'});
         hide();
       });
       pill.querySelector('.rx').addEventListener('click', hide);

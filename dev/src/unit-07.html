@@ -13,7 +13,7 @@
 <meta property="og:url" content="https://linearalgebra.info/unit-07.html">
 <meta property="og:image" content="https://linearalgebra.info/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f9f9f7">
+<meta name="theme-color" content="#070a12">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
 <style>
 /* ============ design tokens (dataviz reference palette) ============ */
@@ -335,7 +335,7 @@ button.preset:hover{border-color:var(--s1);color:var(--s1)}
 /* ---- polish pass (2026-09) ---- */
 .widget .katex svg{display:inline;width:auto;height:auto}
 .svgwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-@media (max-width:640px){ #gr-svg,#ly-svg{min-width:560px} }
+@media (max-width:640px){ #ly-svg{min-width:560px} }
 .try{font-family:var(--sans);font-size:.82rem;color:var(--ink-2);margin:-.2rem 0 .6rem}
 .try b{color:var(--s2)}
 figure.fig{max-width:var(--prose);margin:1.4rem auto;padding:0}
@@ -344,6 +344,171 @@ figure.fig figcaption{font-family:var(--sans);font-size:.84rem;color:var(--ink-2
 figure.fig text{font-family:var(--sans)}
 @media (max-width:640px){ figure.fig .scroll{overflow-x:auto} figure.fig .scroll svg{min-width:520px} }
 .plain-first{font-family:var(--sans);font-size:.95rem;color:var(--ink-2);border-left:3px solid var(--s3);padding:.35rem .9rem;margin:.9rem 0;background:var(--surface);border-radius:0 10px 10px 0}
+</style>
+<!--@cinema-css-->
+<style id="u7-cinema">
+/* ================= CINEMA-U7 · round 8 · "math as cinema" ================= */
+html{overflow-x:hidden}
+body{overflow-x:hidden}
+body::before{display:none}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;z-index:60;pointer-events:none;opacity:.85;
+  background:linear-gradient(90deg,var(--s3),var(--s1) 34%,var(--s7) 67%,var(--s2))}
+main{padding-top:0}
+.topbar a.home{font-family:var(--ui);font-weight:800;color:var(--ink)}
+.topbar a.home::before{content:"Σ";display:inline-grid;place-items:center;width:1.45rem;height:1.45rem;margin-right:.5rem;border-radius:6px;
+  background:linear-gradient(135deg,var(--s1),var(--s7));color:#fff;font-family:var(--display);font-weight:600;font-size:.9rem;vertical-align:-.3rem;box-shadow:var(--glow-1)}
+#score-chip b{color:var(--s4)}
+
+/* --- opening shot --- */
+.hero-stage{position:relative;min-height:clamp(540px,76vh,740px);display:flex;align-items:center;isolation:isolate;overflow:hidden;background:var(--canvas)}
+#hero-3d{position:absolute;inset:0;z-index:0;border-radius:0;background:none}
+#hero-3d canvas{display:block;width:100%;height:100%}
+.hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--page) 92%,transparent) 0%,color-mix(in srgb,var(--page) 78%,transparent) 30%,color-mix(in srgb,var(--page) 40%,transparent) 56%,transparent 76%),
+    linear-gradient(180deg,transparent 0%,transparent 66%,color-mix(in srgb,var(--page) 70%,transparent) 88%,var(--page) 100%)}
+.hero-stage>.wrap{position:relative;z-index:2;width:100%;max-width:var(--maxw);margin:0 auto;padding:4.4rem 1.25rem 3.2rem;pointer-events:none}
+.hero-stage .chip{pointer-events:auto}
+.hero-stage header.hero{max-width:46rem;margin:0;padding:0}
+.hero .kicker{color:var(--s3);text-shadow:0 0 18px color-mix(in srgb,var(--s3) 50%,transparent);font-family:var(--ui);letter-spacing:.2em}
+:root[data-theme="light"] .hero .kicker{text-shadow:none}
+.hero h1{font-family:var(--display);font-variation-settings:"opsz" 144,"SOFT" 40,"WONK" 1;font-weight:640;font-size:clamp(2.4rem,5.6vw,4.4rem);line-height:1.02;letter-spacing:-.03em;margin:.55rem 0 1rem;text-wrap:balance}
+.hero .lede{font-family:var(--body);font-size:1.16rem;line-height:1.55;color:var(--ink-2);max-width:41rem}
+.hero .lede strong{color:var(--ink)}
+.hero .meta{margin-top:1.4rem;gap:.45rem}
+.hero .meta .chip{font-size:.76rem;padding:.26rem .8rem;background:color-mix(in srgb,var(--surface) 55%,transparent);border-color:var(--line);color:var(--ink-2);backdrop-filter:blur(8px)}
+.hero-hint{position:absolute;right:1.2rem;bottom:1.1rem;z-index:2;font-family:var(--ui);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);pointer-events:none;display:none}
+@media (hover:hover) and (pointer:fine){.hero-hint{display:block}}
+.hero-hint::before{content:"";display:inline-block;width:.45rem;height:.45rem;border-radius:50%;background:var(--s2);box-shadow:0 0 10px var(--s2);margin-right:.5rem;vertical-align:.05rem;animation:pulse 2.4s var(--ease) infinite}
+
+/* --- sections & rhythm --- */
+section.unit{margin-top:4.8rem;scroll-margin-top:4.5rem}
+.sec-head{gap:1.1rem;margin-bottom:1.1rem;align-items:baseline}
+.sec-num{font-size:2.8rem;color:color-mix(in srgb,var(--s1) 55%,transparent);text-shadow:var(--glow-1);padding:0;flex:none}
+:root[data-theme="light"] .sec-num{text-shadow:none}
+h3{font-family:var(--display);font-variation-settings:"opsz" 48,"SOFT" 30;font-size:1.35rem;font-weight:600;letter-spacing:-.01em;margin:1.8rem 0 .5rem}
+.callout .tag{font-family:var(--ui);letter-spacing:.18em;font-size:.68rem}
+.callout.scenario{border-left-color:var(--s6);box-shadow:-6px 0 24px -18px var(--s6)} .callout.scenario .tag{color:var(--s6)}
+.callout.remember{border-left-color:var(--s4);box-shadow:-6px 0 24px -18px var(--s4)} .callout.remember .tag{color:var(--s4)}
+.callout.try{box-shadow:-6px 0 24px -18px var(--s2)}
+.callout.intuition{border-left-color:var(--s3);box-shadow:-6px 0 24px -18px var(--s3)} .callout.intuition .tag{color:var(--s3)}
+details{background:color-mix(in srgb,var(--surface) 75%,transparent);border-color:var(--line);border-radius:var(--r-md)}
+details summary{font-family:var(--ui)}
+.derive .tag{color:var(--s7)}
+.derive .dn{background:color-mix(in srgb,var(--s7) 22%,transparent);color:var(--ink);border:1px solid color-mix(in srgb,var(--s7) 55%,transparent);box-shadow:var(--glow-7)}
+.derive .dqed{text-shadow:var(--glow-7)}
+.onesent{background:color-mix(in srgb,var(--surface) 70%,transparent);border-left-color:var(--s1);border-radius:0 var(--r-md) var(--r-md) 0;box-shadow:-6px 0 24px -18px var(--s1);font-family:var(--ui)}
+.plain-first{background:color-mix(in srgb,var(--surface) 70%,transparent);border-radius:0 var(--r-md) var(--r-md) 0;box-shadow:-6px 0 24px -18px var(--s3);font-family:var(--ui)}
+.next-card{margin-top:3.6rem}
+.next-card .kicker{color:var(--s6)!important}
+
+/* --- stages (widgets) --- */
+.widget{padding:1.3rem 1.4rem 1.4rem;margin:2rem auto;max-width:70rem;font-family:var(--ui)}
+.widget-head{margin-bottom:.5rem}
+.widget-head .w-title{font-size:1.08rem;font-weight:750;letter-spacing:-.012em}
+.widget-head .w-sub{font-size:.84rem}
+.widget svg.svg-lab{background:radial-gradient(70% 70% at 50% 45%,color-mix(in srgb,var(--s1) 9%,transparent),transparent 72%);border-radius:var(--r-md)}
+.wrow{gap:1.4rem}
+.controls .ctl{grid-template-columns:6.2rem 1fr 3.6rem}
+.controls output{color:var(--s4);font-size:.82rem}
+.chip b{font-family:var(--mono);color:var(--s4)}
+.verdict{font-family:var(--ui)}
+.verdict.bad{border-color:color-mix(in srgb,var(--critical) 45%,transparent);box-shadow:none}
+.verdict.info{border-color:color-mix(in srgb,var(--s1) 40%,transparent)}
+.readout{font-size:.88rem;color:var(--ink-2);padding:.5rem .75rem;border-radius:var(--r-sm);background:color-mix(in srgb,var(--surface) 70%,transparent);border:1px solid var(--line)}
+.readout b{color:var(--ink)}
+.note{font-size:.86rem;line-height:1.55}
+.try{font-family:var(--ui);color:var(--ink-2)}
+.try b{color:var(--s4);letter-spacing:.06em;text-transform:uppercase;font-size:.72rem}
+button.ghost{font-family:var(--ui)}
+button.ghost:disabled{opacity:.4}
+.drag-hint{font-family:var(--ui)}
+.stagebar button{font-family:var(--ui);font-weight:600;background:color-mix(in srgb,var(--surface-2) 80%,transparent);border:1px solid var(--line);color:var(--ink-2);border-radius:999px;padding:.34rem .8rem;transition:all .18s var(--ease)}
+.stagebar button:hover{color:var(--ink);border-color:color-mix(in srgb,var(--s1) 50%,transparent)}
+.stagebar button[aria-selected="true"]{background:color-mix(in srgb,var(--s1) 22%,transparent);border-color:color-mix(in srgb,var(--s1) 70%,transparent);color:var(--ink);box-shadow:var(--glow-1)}
+.tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--s1) 22%,transparent);border-color:color-mix(in srgb,var(--s1) 70%,transparent);color:var(--ink);box-shadow:var(--glow-1)}
+button.preset[aria-pressed="true"]{color:var(--ink)}
+.stage-rail{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.2rem;margin:.7rem 0 .2rem;font-size:.84rem}
+.stage-rail .ctl{display:grid;grid-template-columns:5.2rem 9rem 3rem;align-items:center;gap:.5rem}
+.stage-rail .ctl label{font-family:var(--ui);color:var(--ink-2);font-weight:600}
+.stage-rail .ctl output{font-family:var(--mono);color:var(--s4);font-size:.82rem;text-align:right}
+.substage{margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--line)}
+.substage .w-sub2{font-family:var(--ui);font-weight:700;font-size:.98rem;margin:0 0 .5rem}
+.substage .w-sub2 span{color:var(--ink-muted);font-weight:500;font-size:.84rem;margin-left:.5rem}
+/* 3D stage containers */
+.stage3d{position:relative;height:460px;border-radius:var(--r-md);overflow:hidden;background:radial-gradient(80% 80% at 50% 40%,color-mix(in srgb,var(--s1) 8%,transparent),transparent 70%)}
+.stage3d canvas{display:block;width:100%;height:100%}
+.stage3d.short{height:400px}
+@media (max-width:640px){.stage3d,.stage3d.short{height:300px}}
+.stage-canvas .hud{font-size:.76rem;padding:.24rem .7rem}
+.stage-canvas .hud b{font-family:var(--mono);color:var(--s4);font-weight:700}
+.stage-canvas .hud.hud-b{top:auto;bottom:.6rem}
+.stage-canvas .hud.hud-r{left:auto;right:.7rem}
+.stage-canvas .hud.hud-g b{color:var(--s3)}
+.stage-canvas .hud.hud-o b{color:var(--s2)}
+.stage-canvas .hint{display:none}
+@media (hover:hover) and (pointer:fine){.stage-canvas .hint{display:block}}
+.stage-tap{display:none;font-size:.74rem;color:var(--ink-muted);margin:.35rem 0 0}
+@media (hover:none){.stage-tap{display:block}}
+/* the neuron's circuit strip */
+.circuit{margin:.6rem 0 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:640px){.circuit svg{min-width:540px}}
+.circuit svg{display:block;width:100%;height:auto;background:color-mix(in srgb,var(--surface) 55%,transparent);border:1px solid var(--line);border-radius:var(--r-md)}
+/* checks */
+.check{font-family:var(--ui)}
+.check .tag{color:var(--s2);letter-spacing:.18em}
+.check .opts button{background:color-mix(in srgb,var(--surface-2) 75%,transparent);border-color:var(--line);border-radius:var(--r-sm);transition:all .18s var(--ease)}
+.check .opts button:hover{border-color:color-mix(in srgb,var(--s1) 60%,transparent);transform:translateX(3px)}
+.check .opts button.picked-good{box-shadow:var(--glow-3);border-color:var(--s3)}
+.check .opts button.picked-bad{border-color:var(--critical)}
+.check .why.good{background:color-mix(in srgb,var(--s3) 12%,transparent);border:1px solid color-mix(in srgb,var(--s3) 40%,transparent)}
+.check .why.bad{background:color-mix(in srgb,var(--critical) 10%,transparent);border:1px solid color-mix(in srgb,var(--critical) 35%,transparent)}
+/* static figures */
+figure.fig{background:color-mix(in srgb,var(--surface) 60%,transparent);border:1px solid var(--line);border-radius:var(--r-lg);padding:1rem 1rem .8rem;max-width:48rem;position:relative;overflow:hidden}
+figure.fig::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--s7) 60%,transparent) 50%,transparent);opacity:.7}
+figure.fig figcaption{font-family:var(--ui);color:var(--ink-2);font-size:.84rem}
+figure.fig svg{background:radial-gradient(70% 70% at 50% 45%,color-mix(in srgb,var(--s1) 7%,transparent),transparent 72%);border-radius:var(--r-md)}
+figure.fig svg .draw{stroke-dasharray:1200;stroke-dashoffset:1200}
+figure.fig.in svg .draw{animation:drawOn 1.9s var(--ease-out) .25s forwards}
+figure.fig svg .draw2{stroke-dasharray:400;stroke-dashoffset:400}
+figure.fig.in svg .draw2{animation:drawOn 1.2s var(--ease-out) .6s forwards}
+@keyframes drawOn{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){figure.fig svg .draw,figure.fig svg .draw2{stroke-dashoffset:0;animation:none}}
+figure.fig svg text{font-family:var(--ui)!important}
+/* the cost triangle: blocks light up row by row */
+#ct-svg rect.blk{animation:blkIn .55s var(--ease-out) backwards;animation-delay:calc(var(--k,0)*45ms)}
+@keyframes blkIn{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#ct-svg rect.blk{animation:none}}
+/* practice */
+.prob{font-family:var(--body)}
+.ptag{color:var(--s2);letter-spacing:.18em}
+.pdiff.easy{background:color-mix(in srgb,var(--s3) 16%,transparent);color:var(--good-text)}
+.pdiff.medium{background:color-mix(in srgb,var(--s1) 16%,transparent)}
+.pdiff.hard{background:color-mix(in srgb,var(--s2) 18%,transparent)}
+details.sol{background:color-mix(in srgb,var(--surface-2) 60%,transparent)}
+.pstep{border-left-color:color-mix(in srgb,var(--s7) 45%,transparent)}
+.pans{background:color-mix(in srgb,var(--s3) 14%,transparent);border:1px solid color-mix(in srgb,var(--s3) 40%,transparent)}
+.sol-bulk{font-family:var(--ui)}
+.toc{background:color-mix(in srgb,var(--surface) 92%,transparent)}
+.toc a.on{background:color-mix(in srgb,var(--s1) 14%,transparent)}
+.resume{background:color-mix(in srgb,var(--surface) 92%,transparent);border-color:var(--line);backdrop-filter:blur(10px);font-family:var(--ui)}
+table.plain th{background:color-mix(in srgb,var(--surface-2) 80%,transparent)}
+table.plain{background:color-mix(in srgb,var(--surface) 60%,transparent);border-radius:var(--r-md)}
+@media (max-width:640px){ #ly-svg{min-width:560px} }
+@media (max-width:760px){
+  .hero-stage{min-height:auto}
+  .hero-stage>.wrap{padding-top:14.5rem;padding-bottom:2.2rem}
+  #hero-3d{height:340px;bottom:auto}
+  .hero-scrim{background:linear-gradient(180deg,color-mix(in srgb,var(--page) 30%,transparent) 0px,transparent 80px,transparent 160px,color-mix(in srgb,var(--page) 82%,transparent) 260px,var(--page) 340px)}
+  .hero h1{font-size:clamp(2.1rem,9vw,3rem)}
+  .hero .lede{font-size:1.06rem}
+  .hero-hint{display:none!important}
+  .widget{padding:1rem 1rem 1.1rem}
+  .sec-num{font-size:2.2rem}
+  .stage-rail .ctl{grid-template-columns:4.6rem 1fr 3rem;width:100%}
+}
+@media (prefers-reduced-motion:reduce){.hero-hint::before{animation:none}}
+@media print{.hero-stage{min-height:auto}#hero-3d,.hero-scrim,.hero-hint,.stage3d{display:none!important}figure.fig svg .draw,figure.fig svg .draw2{stroke-dashoffset:0}}
 </style>
 
 </head>
@@ -354,34 +519,41 @@ figure.fig text{font-family:var(--sans)}
   <span class="spacer"></span>
   <span class="chip" id="score-chip"><span class="txs">Checks </span><b id="score">0</b>/<span id="score-total">16</span></span>
   <button class="ghost" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc" title="Sections in this unit">☰ <span class="tw">Contents</span></button>
-  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: auto</button>
+  <button class="ghost" id="theme-btn" title="Toggle theme">Theme: dark</button>
 </div><div class="progress-rail"><i id="read-progress"></i></div></div>
 <nav class="toc" id="toc" aria-label="On this page"><div class="toc-t">On this page</div></nav>
 <div class="toc-backdrop" id="toc-backdrop"></div>
 
 
-<main id="main-content" tabindex="-1">
-
-<header class="hero">
-  <div class="kicker">Unit 7 of 16 · by Prof. Saurabh</div>
-  <h1>Backpropagation &amp; Automatic Differentiation</h1>
-  <p class="lede">Unit 6 ended with a promise: <em>the chain rule becomes matrix multiplication, and that is backpropagation</em>. This unit keeps the promise. You will watch a value flow forward through a graph and its error flow backward; train a single neuron with your own hands and see the loss actually drop; then do a whole layer at once, in matrix form — the exact four formulas inside every deep-learning framework. One backward sweep, and <strong>every</strong> knob in the network knows which way to turn. And nothing here is taken on faith: every rule the unit leans on is proved on the page, step by step, in plain language.</p>
-  <div class="meta">
-    <span class="chip">≈ 80 min read + play</span>
-    <span class="chip">7 interactive widgets · train a neuron live</span>
-    <span class="chip">16 inline checks</span>
-    <span class="chip">🧾 13 proofs, step by step — chain rule, layer formulas, cookbook, checker</span>
-    <span class="chip">✍ 11 solved practice problems</span>
+<section class="hero-stage">
+  <div id="hero-3d" role="img" aria-label="A layered computation graph floating in space: green pulses of value flow forward through its edges, then orange pulses of blame flow backward through the same edges, lighting each node as they pass."></div>
+  <div class="hero-scrim"></div>
+  <div class="wrap">
+  <header class="hero">
+    <div class="kicker reveal">Unit 7 of 16 · by Prof. Saurabh</div>
+    <h1 class="reveal">Backpropagation &amp; Automatic Differentiation</h1>
+    <p class="lede reveal">Unit 6 ended with a promise: <em>the chain rule becomes matrix multiplication, and that is backpropagation</em>. This unit keeps the promise. You will watch a value flow forward through a graph and its error flow backward; train a single neuron with your own hands and see the loss actually drop; then do a whole layer at once, in matrix form — the exact four formulas inside every deep-learning framework. One backward sweep, and <strong>every</strong> knob in the network knows which way to turn. And nothing here is taken on faith: every rule the unit leans on is proved on the page, step by step, in plain language.</p>
+    <div class="meta reveal-stagger">
+      <span class="chip">≈ 80 min read + play</span>
+      <span class="chip">7 interactive widgets · 3 in 3D · train a neuron live</span>
+      <span class="chip">16 inline checks</span>
+      <span class="chip">🧾 13 proofs, step by step — chain rule, layer formulas, cookbook, checker</span>
+      <span class="chip">✍ 11 solved practice problems</span>
+    </div>
+  </header>
   </div>
-</header>
+  <div class="hero-hint">drag the graph to orbit</div>
+</section>
+
+<main id="main-content" tabindex="-1">
 
 <!-- ================= 1 · THE MILLION-KNOB PROBLEM ================= -->
 <section class="unit" id="s1">
-  <div class="sec-head"><span class="sec-num">1</span><h2>The million-knob problem</h2></div>
-  <div class="callout scenario"><span class="tag">Imagine this</span>
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>The million-knob problem</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>You are playing darts. Your first throw misses. Your brain notes <em>how far</em> off you were and <em>in which direction</em> — that is the error — and quietly adjusts your stance, grip, and force for the next throw. You learn from the miss. A neural network learns the same way: it makes a prediction (the throw), a <strong>loss function</strong> measures the miss (the error), and then every parameter gets adjusted to shrink that miss. The question this unit answers: with a million knobs, <em>how does each one find out its own share of the blame — and how can that possibly be cheap?</em></p>
   </div>
-  <div class="prose">
+  <div class="prose reveal">
     <p>From Unit 6 you already know what each knob needs: the partial derivative of the loss with respect to that knob. Gradient descent does the rest. So the whole problem is <strong>computing a million derivatives, fast</strong>.</p>
     <p>Try the honest way first, on one small function from the lecture:</p>
     \[f(x)=\sqrt{x^2+e^{x^2}}+\cos\!\big(x^2+e^{x^2}\big)\]
@@ -390,7 +562,7 @@ figure.fig text{font-family:var(--sans)}
     <p>One input, and the expression is already a mouthful — long to write, slow to evaluate, easy to get wrong. Now scale the ambition: a modern network has <em>billions</em> of parameters, and we need the derivative with respect to <em>every one of them, at every training step</em>. Writing formulas by hand is not just impractical — it is impossible.</p>
     <p>Backpropagation is the way out, and its two ideas fit in one breath: <strong>break the function into baby steps, and send the error backwards through them</strong>. Everything else in this unit is those two ideas, carefully.</p>
   </div>
-  <div class="check" data-check="c1">
+  <div class="check reveal" data-check="c1">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">A network has a million parameters. Estimating each gradient separately by nudging one parameter and re-running the network would cost about how much?</p>
     <div class="opts">
@@ -400,28 +572,28 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> Training needs the derivative of the loss with respect to every knob, every step — and computing them one at a time would cost a forward pass per knob.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> Training needs the derivative of the loss with respect to every knob, every step — and computing them one at a time would cost a forward pass per knob.</div>
 </section>
 
 <!-- ================= 2 · THE COMPUTATION GRAPH ================= -->
 <section class="unit" id="s2">
-  <div class="sec-head"><span class="sec-num">2</span><h2>Baby steps — the computation graph</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>Baby steps — the computation graph</h2></div>
+  <div class="prose reveal">
     <p>Here is the monster function again — but this time we refuse to differentiate it. Instead we just <em>compute</em> it, one baby step at a time, giving each intermediate result a name:</p>
     \[a=x^2,\quad b=e^{a},\quad c=a+b,\quad d=\sqrt{c},\quad e=\cos(c),\quad f=d+e\]
     <p>Each step is trivial — a square, an exponential, an addition. Drawn with arrows showing who feeds whom, this is a <strong>computation graph</strong>, and it is the single most important picture in modern machine learning. Push a number through it, then watch the error walk home:</p>
   </div>
 
-  <div class="widget" id="w-graph">
+  <div class="widget reveal" id="w-graph">
     <div class="widget-head"><span class="w-title">The graph machine</span><span class="w-sub">forward: values flow right · backward: blame flows left — press both</span></div>
     <p class="try"><b>Try:</b> press ▶ forward, then use <em>step once</em> to walk the blame back one node at a time — and pause at \(c\), where two pieces of blame add.</p>
     <div class="wrow">
-      <div class="wcol svgwrap" style="flex:1.9 1 350px"><svg id="gr-svg" viewBox="0 0 620 330" class="svg-lab" role="img" aria-label="The computation graph of the lecture's function with values flowing forward and gradients flowing backward"></svg></div>
+      <div class="wcol" style="flex:2.2 1 380px"><div id="gr-svg" class="stage3d" role="img" aria-label="The computation graph of the lecture's function drawn as glowing spheres in 3D: values flow forward along the edges as green pulses, blame flows backward as orange pulses, and each node shows its value and its blame"></div><p class="stage-tap">drag the graph to orbit it</p></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls">
           <div class="ctl"><label for="gr-x">input x</label><input id="gr-x" type="range" min="0.2" max="2" step="0.05" value="1"><output id="gr-x-o">1</output></div>
         </div>
-        <div class="presets"><button class="preset" id="gr-fwd">▶ forward pass</button><button class="preset" id="gr-bwd">◀ backward pass</button><button class="preset" id="gr-step" title="advance one node">step once</button></div>
+        <div class="presets"><button class="play" id="gr-fwd">▶ forward pass</button><button class="preset" id="gr-bwd">◀ backward pass</button><button class="preset" id="gr-step" title="advance one node">step once</button></div>
         <div class="readout" id="gr-read" style="margin-top:.6rem;line-height:1.9"></div>
         <div id="gr-verdict" class="verdict info" style="margin-top:.6rem">—</div>
         <p class="note">Forward, every node computes one baby step and remembers its value. Backward, every node receives its <em>blame</em> \(\bar v = \partial f/\partial v\) — starting from \(\bar f = 1\) — and passes blame to its parents by multiplying with a <em>local</em> derivative. Watch node \(c\): it feeds two children, so its blame arrives in <b>two pieces that add</b>. At the far left, \(\bar x\) is the answer \(df/dx\) — and the chip checks it against a numerical nudge.</p>
@@ -429,11 +601,11 @@ figure.fig text{font-family:var(--sans)}
     </div>
   </div>
 
-  <div class="callout watch"><span class="tag">Errata — check this against your companion doc</span>
+  <div class="callout watch reveal"><span class="tag">Errata — check this against your companion doc</span>
     <p>The companion's worked run of this graph at \(x=2\) reports \(e=\cos(58.6)\approx 0.83\) and ends with \(df/dx\approx-2.224\). But \(58.6\) here is in <em>radians</em>: \(\cos(58.6)\approx-0.46\) and \(\sin(58.6)\approx 0.89\), so \(\bar c=\tfrac{1}{2\sqrt c}-\sin(c)\approx 0.065-0.888=-0.822\) (not \(-0.01\)), and the true answer is \(df/dx\big|_{x=2}\approx\mathbf{-182.87}\) — the \(e^{x^2}\) term makes it huge. The <em>method</em> in the companion is exactly right; only the arithmetic slipped. Every number on this page is machine-verified.</p>
   </div>
 
-  <div class="check" data-check="c2">
+  <div class="check reveal" data-check="c2">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">In the graph, node \(a=x^2\) feeds <em>both</em> \(b=e^a\) and \(c=a+b\). When blame flows backward, what does \(a\) receive?</p>
     <div class="opts">
@@ -443,21 +615,21 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> Rewrite any function as baby steps in a graph; then the forward pass computes values, and the backward pass hands every node its blame \(\bar v=\partial f/\partial v\).</div>
+  <div class="onesent reveal"><b>In one sentence:</b> Rewrite any function as baby steps in a graph; then the forward pass computes values, and the backward pass hands every node its blame \(\bar v=\partial f/\partial v\).</div>
 </section>
 
 <!-- ================= 3 · THE TWO RULES ================= -->
 <section class="unit" id="s3">
-  <div class="sec-head"><span class="sec-num">3</span><h2>The whole algorithm is two rules</h2></div>
-  <div class="callout intuition"><span class="tag">In plain words</span>
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>The whole algorithm is two rules</h2></div>
+  <div class="callout intuition reveal"><span class="tag">In plain words</span>
     <p><strong>Rule 1 — along a path, multiply.</strong> Each edge of the graph has a local derivative (how much the child moves per unit of parent). Following a path from \(x\) to \(f\), the sensitivities multiply — Unit 6's amplifiers in series.
     <strong>Rule 2 — where paths merge, add.</strong> If \(x\) can reach \(f\) by several routes, each route contributes its product, and the contributions add. That is all backpropagation is: multiply along paths, add across paths — organised so no path is ever walked twice.</p>
   </div>
-  <div class="prose">
+  <div class="prose reveal">
     <p>See both rules in the smallest graph that has two paths — the practice set's own example: \(f=uv\) with \(u=x^2+y\) and \(v=x-y\). The input \(x\) reaches \(f\) through \(u\) and through \(v\); click each path and watch its product, then their sum:</p>
   </div>
 
-  <div class="widget" id="w-paths">
+  <div class="widget reveal" id="w-paths">
     <div class="widget-head"><span class="w-title">Paths multiply, forks add</span><span class="w-sub">f = uv,&nbsp; u = x² + y,&nbsp; v = x − y — two routes from x to f</span></div>
     <p class="try"><b>Try:</b> click <em>route via u</em>, then <em>route via v</em>, then <em>both</em> — and slide \(x\) to \(0\) to see one whole route switch off.</p>
     <div class="tabs" id="pt-tabs">
@@ -467,7 +639,7 @@ figure.fig text{font-family:var(--sans)}
       <button data-t="3">now for y</button>
     </div>
     <div class="wrow">
-      <div class="wcol" style="flex:1.8 1 330px"><svg id="pt-svg" viewBox="0 0 600 300" class="svg-lab" role="img" aria-label="A small computation graph with two paths from x to f, highlighting products along paths and their sum"></svg></div>
+      <div class="wcol" style="flex:2.2 1 380px"><svg id="pt-svg" viewBox="0 0 600 300" class="svg-lab" role="img" aria-label="A small computation graph with two paths from x to f, highlighting products along paths and their sum"></svg></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls">
           <div class="ctl"><label for="pt-x">x</label><input id="pt-x" type="range" min="-2" max="2" step="0.1" value="1"><output id="pt-x-o">1</output></div>
@@ -480,7 +652,7 @@ figure.fig text{font-family:var(--sans)}
     </div>
   </div>
 
-  <div class="check" data-check="c3">
+  <div class="check reveal" data-check="c3">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Still at \((x,y)=(1,1)\): what is \(\partial f/\partial y\)? (Routes: \(y\to u\to f\) with \(\partial u/\partial y=1\), and \(y\to v\to f\) with \(\partial v/\partial y=-1\).)</p>
     <div class="opts">
@@ -490,27 +662,27 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> Backpropagation is exactly two rules — multiply local derivatives along each path, add the paths — applied without ever walking a path twice.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> Backpropagation is exactly two rules — multiply local derivatives along each path, add the paths — applied without ever walking a path twice.</div>
 </section>
 
 <!-- ================= 4 · THE CHAIN RULE, PROVED ================= -->
 <section class="unit" id="sproof">
-  <div class="sec-head"><span class="sec-num">4</span><h2>Why you can trust the rules — the chain rule, proved</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>Why you can trust the rules — the chain rule, proved</h2></div>
+  <div class="prose reveal">
     <p>"Multiply along paths, add across paths" has been doing a lot of work, so it had better be <em>true</em> — a theorem, not a slogan. The proof needs exactly one idea, and it is the idea this course keeps returning to: <strong>a derivative is a promise about a straight line.</strong> Saying "\(g\) has slope \(g'(x_0)\) at \(x_0\)" means precisely this:</p>
     \[g(x_0+h)=g(x_0)+g'(x_0)\,h+r(h),\qquad\text{where }\ \frac{r(h)}{h}\to 0\ \text{ as }h\to 0.\]
     <p>In words: near \(x_0\) the function is a straight line plus a leftover \(r(h)\) so small that <em>even after dividing by the tiny number \(h\)</em>, it still shrinks to nothing. That last clause is the entire content of differentiability. Hold on to it — both rules fall out of it in a few lines each.</p>
   </div>
-<figure class="fig" role="img" aria-label="A curve near a point with its tangent line; at three shrinking nudges h the vertical gap between curve and tangent shrinks, and the gap divided by h shrinks too">
+<figure class="fig reveal" role="img" aria-label="A curve near a point with its tangent line; at three shrinking nudges h the vertical gap between curve and tangent shrinks, and the gap divided by h shrinks too">
 <div class="scroll"><svg viewBox="0 0 600 276" width="100%">
   <line x1="40" y1="232" x2="440" y2="232" stroke="var(--axis)" stroke-width="1.3"/>
-  <polyline points="40.0,193.2 43.2,194.1 46.5,194.9 49.8,195.7 53.0,196.4 56.2,197.1 59.5,197.7 62.8,198.3 66.0,198.8 69.2,199.4 72.5,199.8 75.8,200.2 79.0,200.6 82.2,200.9 85.5,201.2 88.8,201.5 92.0,201.7 95.2,201.8 98.5,201.9 101.8,202.0 105.0,202.0 108.2,202.0 111.5,201.9 114.8,201.8 118.0,201.7 121.2,201.5 124.5,201.2 127.8,200.9 131.0,200.6 134.2,200.2 137.5,199.8 140.8,199.4 144.0,198.8 147.2,198.3 150.5,197.7 153.8,197.1 157.0,196.4 160.2,195.7 163.5,194.9 166.8,194.1 170.0,193.2 173.2,192.4 176.5,191.4 179.8,190.4 183.0,189.4 186.2,188.3 189.5,187.2 192.8,186.1 196.0,184.9 199.2,183.6 202.5,182.3 205.8,181.0 209.0,179.6 212.2,178.2 215.5,176.7 218.8,175.2 222.0,173.7 225.2,172.1 228.5,170.4 231.8,168.7 235.0,167.0 238.2,165.2 241.5,163.4 244.8,161.6 248.0,159.6 251.2,157.7 254.5,155.7 257.8,153.7 261.0,151.6 264.2,149.5 267.5,147.3 270.8,145.1 274.0,142.9 277.2,140.6 280.5,138.2 283.8,135.8 287.0,133.4 290.2,130.9 293.5,128.4 296.8,125.9 300.0,123.3 303.2,120.6 306.5,117.9 309.8,115.2 313.0,112.4 316.2,109.6 319.5,106.7 322.8,103.8 326.0,100.8 329.2,97.9 332.5,94.8 335.8,91.7 339.0,88.6 342.2,85.4 345.5,82.2 348.8,79.0 352.0,75.7 355.2,72.3 358.5,68.9 361.8,65.5 365.0,62.0 368.2,58.5 371.5,54.9 374.8,51.3 378.0,47.6 381.2,44.0 384.5,40.2 387.8,36.4 391.0,32.6 394.2,28.7 397.5,24.8 400.8,20.9 404.0,16.9" fill="none" stroke="var(--s1)" stroke-width="2.6"/>
-  <line x1="118.0" y1="230.0" x2="423.5" y2="65.5" stroke="var(--s2)" stroke-width="2" stroke-dasharray="7 4"/>
-  <line x1="365.0" y1="97.0" x2="365.0" y2="62.0" stroke="var(--critical)" stroke-width="3" stroke-linecap="round"/>
+  <polyline points="40.0,193.2 43.2,194.1 46.5,194.9 49.8,195.7 53.0,196.4 56.2,197.1 59.5,197.7 62.8,198.3 66.0,198.8 69.2,199.4 72.5,199.8 75.8,200.2 79.0,200.6 82.2,200.9 85.5,201.2 88.8,201.5 92.0,201.7 95.2,201.8 98.5,201.9 101.8,202.0 105.0,202.0 108.2,202.0 111.5,201.9 114.8,201.8 118.0,201.7 121.2,201.5 124.5,201.2 127.8,200.9 131.0,200.6 134.2,200.2 137.5,199.8 140.8,199.4 144.0,198.8 147.2,198.3 150.5,197.7 153.8,197.1 157.0,196.4 160.2,195.7 163.5,194.9 166.8,194.1 170.0,193.2 173.2,192.4 176.5,191.4 179.8,190.4 183.0,189.4 186.2,188.3 189.5,187.2 192.8,186.1 196.0,184.9 199.2,183.6 202.5,182.3 205.8,181.0 209.0,179.6 212.2,178.2 215.5,176.7 218.8,175.2 222.0,173.7 225.2,172.1 228.5,170.4 231.8,168.7 235.0,167.0 238.2,165.2 241.5,163.4 244.8,161.6 248.0,159.6 251.2,157.7 254.5,155.7 257.8,153.7 261.0,151.6 264.2,149.5 267.5,147.3 270.8,145.1 274.0,142.9 277.2,140.6 280.5,138.2 283.8,135.8 287.0,133.4 290.2,130.9 293.5,128.4 296.8,125.9 300.0,123.3 303.2,120.6 306.5,117.9 309.8,115.2 313.0,112.4 316.2,109.6 319.5,106.7 322.8,103.8 326.0,100.8 329.2,97.9 332.5,94.8 335.8,91.7 339.0,88.6 342.2,85.4 345.5,82.2 348.8,79.0 352.0,75.7 355.2,72.3 358.5,68.9 361.8,65.5 365.0,62.0 368.2,58.5 371.5,54.9 374.8,51.3 378.0,47.6 381.2,44.0 384.5,40.2 387.8,36.4 391.0,32.6 394.2,28.7 397.5,24.8 400.8,20.9 404.0,16.9" fill="none" stroke="var(--s1)" stroke-width="2.8" class="draw glow-1"/>
+  <line x1="118.0" y1="230.0" x2="423.5" y2="65.5" stroke="var(--s2)" stroke-width="2" stroke-dasharray="7 4" class="glow-2"/>
+  <line x1="365.0" y1="97.0" x2="365.0" y2="62.0" stroke="var(--critical)" stroke-width="3" stroke-linecap="round" class="glow-2"/>
   <text x="365.0" y="248" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink-2)">h = 1</text>
-  <line x1="300.0" y1="132.0" x2="300.0" y2="123.3" stroke="var(--critical)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="300.0" y1="132.0" x2="300.0" y2="123.3" stroke="var(--critical)" stroke-width="3" stroke-linecap="round" class="glow-2"/>
   <text x="306.0" y="248" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink-2)">h = ½</text>
-  <line x1="267.5" y1="149.5" x2="267.5" y2="147.3" stroke="var(--critical)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="267.5" y1="149.5" x2="267.5" y2="147.3" stroke="var(--critical)" stroke-width="3" stroke-linecap="round" class="glow-2"/>
   <text x="267.5" y="266" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink-2)">h = ¼</text>
   <circle cx="235.0" cy="167.0" r="5" fill="var(--ink)"/>
   <text x="232.0" y="248" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">x₀</text>
@@ -530,7 +702,7 @@ figure.fig text{font-family:var(--sans)}
 </svg></div>
 <figcaption><b>Line plus dying leftover.</b> Near \(x_0\) the curve \(g\) (blue) and its tangent (orange) differ by the red gap \(r(h)\). Halve the nudge and the gap does not merely shrink — it shrinks <em>faster than \(h\)</em> (here \(r(h)=0.35\,h^2\)), so \(r(h)/h\) itself goes to zero. That is the whole content of "has a derivative".</figcaption>
 </figure>
-  <div class="check" data-check="c13">
+  <div class="check reveal" data-check="c13">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">The promise demands \(r(h)/h\to0\), not merely \(r(h)\to0\). What would go wrong if we only asked for \(r(h)\to0\)?</p>
     <div class="opts">
@@ -541,7 +713,7 @@ figure.fig text{font-family:var(--sans)}
     <div class="why"></div>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · Rule 1 — along a path, multiply</span>
     <p class="dgoal"><b>Claim.</b> If \(u=g(x)\) and \(y=f(u)\), then at \(x_0\) (writing \(u_0=g(x_0)\)): \(\ \dfrac{dy}{dx}=f'(u_0)\,g'(x_0)\) — the two slopes multiply.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Nudge the input by \(h\) and ask how much \(u\) moves. That is \(g\)'s own promise:
@@ -567,7 +739,7 @@ figure.fig text{font-family:var(--sans)}
     <p>Now the second rule. Suppose \(f\) reaches the output through <em>several</em> intermediates at once — \(f\) is a function of \(u_1,\dots,u_m\), and each \(u_k\) is a function of \(x\). This is precisely the fork situation in the graph: one input, many routes.</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · Rule 2 — across paths, add</span>
     <p class="dgoal"><b>Claim.</b> \(\ \dfrac{df}{dx}=\displaystyle\sum_{k=1}^{m}\frac{\partial f}{\partial u_k}\,\frac{du_k}{dx}\) — each route contributes its product, and the contributions add.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">The many-input promise (Unit 6's total derivative): nudging all inputs at once,
@@ -589,12 +761,12 @@ figure.fig text{font-family:var(--sans)}
       <span class="dwhy">"Add across paths" is not a new fact about graphs. It is what a multi-input derivative <em>means</em>, read one route at a time.</span></div></div>
   </div>
 
-  <div class="callout aha"><span class="tag">The bridge</span>
+  <div class="callout aha reveal"><span class="tag">The bridge</span>
     <p><strong>The two rules are matrix multiplication in disguise.</strong> For vector maps \(\mathbf x\xrightarrow{F}\mathbf u\xrightarrow{G}\mathbf y\), the chain rule reads \(J_{G\circ F}=J_G\,J_F\) — Jacobians multiply. Now look at one entry of that product, using the row-times-column rule:</p>
     \[\big(J_G J_F\big)_{ij}=\sum_{k}\big(J_G\big)_{ik}\big(J_F\big)_{kj}\]
     <p>Each term is one path: input \(j\) nudges intermediate \(k\) (that is \((J_F)_{kj}\)), which nudges output \(i\) (that is \((J_G)_{ik}\)) — <em>multiply along the path</em>. The \(\sum_k\) adds one product per intermediate stop — <em>add across paths</em>. The row-times-column rule you have used since Unit 1 is literally the two rules of backpropagation, written at once. Unit 6 promised "the chain rule becomes matrix multiplication"; you have now watched the promise come true, entry by entry.</p>
   </div>
-<figure class="fig" role="img" aria-label="Three columns of nodes: inputs j, intermediates k, outputs i. Every path from one input j through some k to one output i is one term of the sum over k">
+<figure class="fig reveal" role="img" aria-label="Three columns of nodes: inputs j, intermediates k, outputs i. Every path from one input j through some k to one output i is one term of the sum over k">
 <div class="scroll"><svg viewBox="0 0 600 262" width="100%">
   <text x="110" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink-2)">inputs x (index j)</text>
   <text x="300" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink-2)">intermediates u (index k)</text>
@@ -602,19 +774,19 @@ figure.fig text{font-family:var(--sans)}
   <line x1="132" y1="70" x2="278" y2="70" stroke="var(--grid)" stroke-width="1.2"/>
   <line x1="132" y1="70" x2="278" y2="130" stroke="var(--grid)" stroke-width="1.2"/>
   <line x1="132" y1="70" x2="278" y2="190" stroke="var(--grid)" stroke-width="1.2"/>
-  <line x1="132" y1="130" x2="278" y2="70" stroke="var(--s2)" stroke-width="2.4"/>
-  <line x1="132" y1="130" x2="278" y2="130" stroke="var(--s2)" stroke-width="2.4"/>
-  <line x1="132" y1="130" x2="278" y2="190" stroke="var(--s2)" stroke-width="2.4"/>
+  <line x1="132" y1="130" x2="278" y2="70" stroke="var(--s2)" stroke-width="2.4" class="draw2 glow-2"/>
+  <line x1="132" y1="130" x2="278" y2="130" stroke="var(--s2)" stroke-width="2.4" class="draw2 glow-2"/>
+  <line x1="132" y1="130" x2="278" y2="190" stroke="var(--s2)" stroke-width="2.4" class="draw2 glow-2"/>
   <line x1="132" y1="190" x2="278" y2="70" stroke="var(--grid)" stroke-width="1.2"/>
   <line x1="132" y1="190" x2="278" y2="130" stroke="var(--grid)" stroke-width="1.2"/>
   <line x1="132" y1="190" x2="278" y2="190" stroke="var(--grid)" stroke-width="1.2"/>
-  <line x1="322" y1="70" x2="468" y2="70" stroke="var(--s2)" stroke-width="2.4"/>
+  <line x1="322" y1="70" x2="468" y2="70" stroke="var(--s2)" stroke-width="2.4" class="draw2 glow-2"/>
   <line x1="322" y1="70" x2="468" y2="130" stroke="var(--grid)" stroke-width="1.2"/>
   <line x1="322" y1="70" x2="468" y2="190" stroke="var(--grid)" stroke-width="1.2"/>
-  <line x1="322" y1="130" x2="468" y2="70" stroke="var(--s2)" stroke-width="2.4"/>
+  <line x1="322" y1="130" x2="468" y2="70" stroke="var(--s2)" stroke-width="2.4" class="draw2 glow-2"/>
   <line x1="322" y1="130" x2="468" y2="130" stroke="var(--grid)" stroke-width="1.2"/>
   <line x1="322" y1="130" x2="468" y2="190" stroke="var(--grid)" stroke-width="1.2"/>
-  <line x1="322" y1="190" x2="468" y2="70" stroke="var(--s2)" stroke-width="2.4"/>
+  <line x1="322" y1="190" x2="468" y2="70" stroke="var(--s2)" stroke-width="2.4" class="draw2 glow-2"/>
   <line x1="322" y1="190" x2="468" y2="130" stroke="var(--grid)" stroke-width="1.2"/>
   <line x1="322" y1="190" x2="468" y2="190" stroke="var(--grid)" stroke-width="1.2"/>
   <circle cx="110" cy="70" r="20" fill="var(--surface)" stroke="var(--ring)" stroke-width="1.3"/>
@@ -642,7 +814,7 @@ figure.fig text{font-family:var(--sans)}
 <figcaption><b>One entry of a Jacobian product, drawn.</b> The sensitivity of output \(y_1\) to input \(x_2\) is \(\sum_k (J_G)_{1k}(J_F)_{k2}\). Each orange route \(x_2\to u_k\to y_1\) is one term: multiply its two edge slopes (Rule 1); the three routes add (Rule 2). The row-times-column rule is those two rules at once.</figcaption>
 </figure>
 
-  <div class="check" data-check="c14">
+  <div class="check reveal" data-check="c14">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">In \(\big(J_G J_F\big)_{ij}=\sum_k (J_G)_{ik}(J_F)_{kj}\), what is one single term \((J_G)_{ik}(J_F)_{kj}\) of the sum, in graph language?</p>
     <div class="opts">
@@ -652,13 +824,13 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> A derivative is a "line plus dying leftover" promise; composing promises multiplies slopes (Rule 1), parallel routes add their products (Rule 2), and matrix multiplication's row-times-column formula is both rules written at once.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> A derivative is a "line plus dying leftover" promise; composing promises multiplies slopes (Rule 1), parallel routes add their products (Rule 2), and matrix multiplication's row-times-column formula is both rules written at once.</div>
 </section>
 
 <!-- ================= 5 · THE GENERAL RECIPE ================= -->
 <section class="unit" id="s4">
-  <div class="sec-head"><span class="sec-num">5</span><h2>The recipe, written once and for all</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>The recipe, written once and for all</h2></div>
+  <div class="prose reveal">
     <p>The lecture states the two rules formally, and it is worth reading slowly because this half-line <em>is</em> automatic differentiation. Number every quantity in the graph: \(x_1,\dots,x_d\) are the inputs, \(x_{d+1},\dots,x_{D-1}\) the intermediate baby steps, \(x_D\) the output. Each is computed from its parents by an elementary function:</p>
     \[x_i = g_i\big(x_{\mathrm{Pa}(x_i)}\big)\]
     <p>Now walk backwards. The output blames itself fully, and every other node collects blame from the nodes it feeds — its <em>children</em>:</p>
@@ -666,7 +838,7 @@ figure.fig text{font-family:var(--sans)}
     <p>Read it like a postal system: node \(j\) already knows its own blame \(\partial f/\partial x_j\). It mails each parent \(i\) a copy, <em>scaled by the local derivative</em> \(\partial g_j/\partial x_i\) of its own baby step. A parent with several children just adds up its mail. One sweep from right to left and every node in the graph — every input, every weight — holds its derivative.</p>
     <p>Two things make this cheap. Each blame \(\partial f/\partial x_j\) is computed <strong>once</strong> and reused by all of \(j\)'s parents. And each local derivative \(\partial g_j/\partial x_i\) is trivial, because each baby step is trivial — the derivative of \(e^a\) or \(\sqrt c\) or \(a+b\), never of the whole monster. This is why the lecture can conclude: <em>computing all the derivatives costs about the same as computing the function itself.</em></p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · the recipe is correct</span>
     <p class="dgoal"><b>Claim.</b> Process the nodes from right to left; then the recipe's \(\bar x_i\) equals the true \(\partial f/\partial x_i\) for <em>every</em> node in the graph.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Base case.</b> The rightmost node: \(\bar x_D=1=\partial f/\partial f\) — the output's sensitivity to itself.
@@ -678,7 +850,7 @@ figure.fig text{font-family:var(--sans)}
       — and every factor on the right is one the recipe possesses: the child's (already correct) blame, times the local slope of the child's baby step. So the value the recipe writes into \(\bar x_i\) is the true derivative. Right-to-left induction covers the whole <span class="nw">graph. <span class="dqed">∎</span></span>
       <span class="dwhy">The recipe is not a new algorithm to take on trust — it is Rule 2, applied once per node, in an order that guarantees the mail is always ready.</span></div></div>
   </div>
-  <div class="check" data-check="c4">
+  <div class="check reveal" data-check="c4">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">In the recipe, the sum for \(\partial f/\partial x_i\) runs over the <em>children</em> of \(x_i\) — the nodes that use it. Why children, not parents?</p>
     <div class="opts">
@@ -688,29 +860,33 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> Set \(\bar f=1\), then let every node mail each parent its own blame times a local derivative — one right-to-left sweep prices every knob.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> Set \(\bar f=1\), then let every node mail each parent its own blame times a local derivative — one right-to-left sweep prices every knob.</div>
 </section>
 
 <!-- ================= 6 · ONE NEURON, TRAINED BY HAND ================= -->
 <section class="unit" id="s5">
-  <div class="sec-head"><span class="sec-num">6</span><h2>One neuron, trained by your own hands</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>One neuron, trained by your own hands</h2></div>
+  <div class="prose reveal">
     <p>Time to point this machinery at something that <em>learns</em>. The smallest possible network: one neuron with one weight \(w\) and one bias \(b\), one input \(x\), one target \(y\):</p>
     \[z=wx+b,\qquad a=\tanh(z),\qquad L=\tfrac12\,(a-y)^2\]
     <p>Forward: three baby steps to the loss. Backward: the blame walks home through the same three steps. The key arrival is \(\delta=\partial L/\partial z\) — the blame reaching the pre-activation — because <em>every parameter feeding \(z\) then reads its gradient straight off \(\delta\)</em>: \(\partial L/\partial w=\delta\,x\), \(\partial L/\partial b=\delta\), \(\partial L/\partial x=\delta\,w\). Compute \(\delta\) once, hand out copies. Then take an actual gradient step and watch the loss fall:</p>
   </div>
 
-  <div class="widget" id="w-neuron">
+  <div class="widget reveal" id="w-neuron">
     <div class="widget-head"><span class="w-title">The learning neuron</span><span class="w-sub">forward → backward → step, repeat — this is training, complete</span></div>
     <p class="try"><b>Try:</b> predict the sign of \(\delta\) before each step; then set the target to \(y=-1\) and watch the same machinery push \(w\) the other way.</p>
     <div class="wrow">
-      <div class="wcol" style="flex:1.9 1 350px"><svg id="nr-svg" viewBox="0 0 620 300" class="svg-lab" role="img" aria-label="A single neuron with forward values, backward blame, and a loss meter that falls as gradient steps are taken"></svg></div>
+      <div class="wcol" style="flex:2.2 1 380px">
+        <div id="nr-svg" class="stage3d" role="img" aria-label="The loss surface over the weight w and bias b as a lit 3D landscape; a glowing dot marks the current neuron, an arrow points downhill, and every gradient step leaves a glowing trail down into the valley"></div>
+        <p class="stage-tap">drag the landscape to orbit it</p>
+        <div class="circuit"><svg id="nr-circuit" viewBox="0 0 620 118" role="img" aria-label="The neuron as a circuit: weight, input and bias feed z, tanh gives a, and the loss compares a with the target; the blame δ flows back along the same wires"></svg></div>
+      </div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls">
           <div class="ctl"><label for="nr-x">input x</label><input id="nr-x" type="range" min="-2" max="2" step="0.1" value="1"><output id="nr-x-o">1</output></div>
           <div class="ctl"><label for="nr-y">target y</label><input id="nr-y" type="range" min="-1" max="1" step="0.05" value="1"><output id="nr-y-o">1</output></div>
         </div>
-        <div class="presets"><button class="preset" id="nr-step">▼ take a gradient step (η = 0.5)</button><button class="preset" id="nr-auto">▶ train (20 steps)</button><button class="preset" id="nr-reset">reset w, b</button></div>
+        <div class="presets"><button class="preset" id="nr-step">▼ take a gradient step (η = 0.5)</button><button class="play" id="nr-auto">▶ train (20 steps)</button><button class="preset" id="nr-reset">reset w, b</button></div>
         <div class="readout" id="nr-read" style="margin-top:.6rem;line-height:1.9"></div>
         <div id="nr-verdict" class="verdict info" style="margin-top:.6rem">—</div>
         <p class="note">Starting point is the practice set's own numbers: \(w=0.5,\ b=0,\ x=1,\ y=1\), so \(z=0.5\), \(a=\tanh 0.5=0.4621\), \(L=0.1447\), and the backward pass gives \(\delta=(a-y)(1-a^2)=-0.4230\), hence \(\partial L/\partial w=-0.4230\), \(\partial L/\partial b=-0.4230\). Both gradients are negative — the loss wants \(w\) and \(b\) <em>bigger</em>. Press the step button and watch it happen; press train and watch the loss meter dive.</p>
@@ -718,7 +894,7 @@ figure.fig text{font-family:var(--sans)}
     </div>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · every number in the widget, from scratch</span>
     <p class="dgoal"><b>Claim.</b> \(\delta=(a-y)(1-a^2)\). Nothing to memorise — derive each local slope, then chain them with Rule 1.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>The loss.</b> \(L(a)=\tfrac12(a-y)^2\). Nudge \(a\) by \(\Delta\) and expand the square:
@@ -737,7 +913,7 @@ figure.fig text{font-family:var(--sans)}
       then \(\ \partial L/\partial w=\delta\,x,\ \ \partial L/\partial b=\delta,\ \ \partial L/\partial x=\delta\,w\)<span class="nw">. <span class="dqed">∎</span></span>
       <span class="dwhy">Every figure the widget displays is these four lines evaluated — press the buttons above and check any of them by hand.</span></div></div>
   </div>
-  <div class="check" data-check="c5">
+  <div class="check reveal" data-check="c5">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">At the starting numbers, \(\partial L/\partial w\) and \(\partial L/\partial b\) are both exactly \(\delta\cdot x\) and \(\delta\cdot 1\) with \(\delta=-0.423\). What made them so cheap to get?</p>
     <div class="opts">
@@ -747,7 +923,7 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="check" data-check="c6">
+  <div class="check reveal" data-check="c6">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Set the target to \(y=-1\) instead. Before pressing anything: which way will the gradient step now push \(w\)?</p>
     <div class="opts">
@@ -757,13 +933,13 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> Compute the blame \(\delta=\partial L/\partial z\) once, and every parameter feeding \(z\) reads its gradient off it — then step downhill and the loss actually falls.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> Compute the blame \(\delta=\partial L/\partial z\) once, and every parameter feeding \(z\) reads its gradient off it — then step downhill and the loss actually falls.</div>
 </section>
 
 <!-- ================= 7 · A WHOLE LAYER ================= -->
 <section class="unit" id="s6">
-  <div class="sec-head"><span class="sec-num">7</span><h2>A whole layer at once — backprop in matrix form</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>A whole layer at once — backprop in matrix form</h2></div>
+  <div class="prose reveal">
     <p>A real layer is the same neuron, vectorised: \(m\) neurons share the input vector \(\mathbf{x}\in\mathbb{R}^n\),</p>
     \[Z=A\mathbf{x}+\mathbf{b},\qquad \mathbf{a}=\sigma(Z)\]
     <p>with \(A\in\mathbb{R}^{m\times n}\) the weights, \(\mathbf b\in\mathbb{R}^m\) the biases, and the sigmoid \(\sigma(z)=\tfrac{1}{1+e^{-z}}\) applied entry by entry. The blame arriving from above is \(\boldsymbol\delta^{(a)}=\partial\mathrm{Loss}/\partial \mathbf a\), one entry per neuron.</p>
@@ -775,7 +951,7 @@ figure.fig text{font-family:var(--sans)}
     <p><strong>The weights:</strong> \(\boldsymbol\delta^{(Z)}\mathbf x^\top\) is an outer product — blame of my row, times activity of my column. <strong>The biases:</strong> the blame itself. <strong>The input:</strong> \(A^\top\boldsymbol\delta^{(Z)}\) re-mixes the blame back through the transposed weights — and this vector is precisely the \(\boldsymbol\delta^{(a)}\) the <em>previous</em> layer receives as its mail. Layer after layer, the same four lines: that is deep learning's inner loop.</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · where σ(1−σ) comes from</span>
     <p class="dgoal"><b>Claim.</b> \(\sigma(z)=\dfrac{1}{1+e^{-z}}\) satisfies \(\sigma'=\sigma(1-\sigma)\) — so the backward pass needs no new function evaluations.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">Differentiate with Rule 1: \(\sigma=(1+e^{-z})^{-1}\), outer slope \(-(1+e^{-z})^{-2}\), inner slope \(-e^{-z}\!:\)
@@ -788,7 +964,7 @@ figure.fig text{font-family:var(--sans)}
       <span class="dwhy">Output in, derivative out: \(\mathbf a\odot(1-\mathbf a)\) uses only the \(\mathbf a\) the forward pass cached. This is why frameworks store activations — the way back is pure arithmetic.</span></div></div>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · why the sigmoid step is entrywise — the Jacobian is diagonal</span>
     <p class="dgoal"><b>Claim.</b> \(\dfrac{\partial\mathbf a}{\partial Z}=\operatorname{diag}\!\big(\mathbf a\odot(1-\mathbf a)\big)\), and therefore \(\boldsymbol\delta^{(Z)}=\boldsymbol\delta^{(a)}\odot\mathbf a\odot(1-\mathbf a)\) — a multiplication per neuron, no matrix at all.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Who depends on whom.</b> \(a_i=\sigma(Z_i)\) reads exactly one input, \(Z_i\). Nudge a <em>different</em> \(Z_j\) and \(a_i\) does not move:
@@ -806,7 +982,7 @@ figure.fig text{font-family:var(--sans)}
       <span class="dwhy">Neuron 2 sits at \(a=0.953\), nearly saturated, so its factor \(0.045\) throttles almost all of its blame. That is the vanishing-gradient mechanism, in one entry of a diagonal matrix.</span></div></div>
   </div>
 
-  <div class="widget" id="w-layer">
+  <div class="widget reveal" id="w-layer">
     <div class="widget-head"><span class="w-title">Backprop through a layer</span><span class="w-sub">the four formulas with real numbers — step through them</span></div>
     <p class="try"><b>Try:</b> reach stage 4, then slide \(\delta^{(a)}_1\) — the top row of the outer product and the mail \(A^{\top}\boldsymbol\delta^{(Z)}\) react; row 2 does not.</p>
     <div class="stagebar" id="ly-stages">
@@ -816,7 +992,7 @@ figure.fig text{font-family:var(--sans)}
       <button data-s="3">4 · the three gradients</button>
     </div>
     <div class="wrow">
-      <div class="wcol svgwrap" style="flex:1.9 1 350px"><svg id="ly-svg" viewBox="0 0 620 330" class="svg-lab" role="img" aria-label="A two-neuron layer showing the forward pass and the four backprop formulas evaluated with numbers"></svg></div>
+      <div class="wcol svgwrap" style="flex:2.2 1 380px"><svg id="ly-svg" viewBox="0 0 620 330" class="svg-lab" role="img" aria-label="A two-neuron layer showing the forward pass and the four backprop formulas evaluated with numbers"></svg></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls" style="margin-bottom:.6rem">
           <div class="ctl"><label for="ly-d1" title="blame arriving on neuron 1">δ⁽ᵃ⁾₁ from above</label><input id="ly-d1" type="range" min="-1" max="1" step="0.1" value="0.6"><output id="ly-d1-o">0.6</output></div>
@@ -828,7 +1004,7 @@ figure.fig text{font-family:var(--sans)}
     </div>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · the three matrix formulas, entry by entry</span>
     <p class="dgoal"><b>Claim.</b> The matrix formulas hide no new laws — they are Rule 1 and Rule 2 aimed at each entry, then reassembled into matrix shape. Write \(\boldsymbol\delta=\boldsymbol\delta^{(Z)}\) for short.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>A weight \(A_{ij}\).</b> Scan the forward pass \(Z_k=\sum_p A_{kp}x_p+b_k\): the entry \(A_{ij}\) appears in exactly <em>one</em> place — the row \(k=i\), multiplied by \(x_j\). One appearance means one path, so Rule 1 alone:
@@ -845,7 +1021,7 @@ figure.fig text{font-family:var(--sans)}
     <div class="dstep"><span class="dn">5</span><div class="dbody">All three formulas recovered from two rules and one scan of where each variable <span class="nw">appears. <span class="dqed">∎</span></span>
       <span class="dwhy">This "find every appearance, add a term per appearance" habit is the entire skill of differentiating matrix expressions. The very next section runs on it.</span></div></div>
   </div>
-  <div class="check" data-check="c7">
+  <div class="check reveal" data-check="c7">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">A layer has \(A\in\mathbb{R}^{100\times 300}\). What is the shape of \(\partial\mathrm{Loss}/\partial A=\boldsymbol\delta^{(Z)}\mathbf{x}^{\top}\), and why was that inevitable?</p>
     <div class="opts">
@@ -856,7 +1032,7 @@ figure.fig text{font-family:var(--sans)}
     <div class="why"></div>
   </div>
 
-  <figure class="fig" role="img" aria-label="A weight matrix drawn as a grid: each row is one neuron reading all its inputs (used in the forward pass), each column is one input feeding all neurons (used by the transpose in the backward pass)">
+  <figure class="fig reveal" role="img" aria-label="A weight matrix drawn as a grid: each row is one neuron reading all its inputs (used in the forward pass), each column is one input feeding all neurons (used by the transpose in the backward pass)">
   <div class="scroll"><svg viewBox="0 0 600 200" width="100%">
   <text x="300" y="24" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-2)">A has m = 2 rows (neurons) and n = 3 columns (inputs)</text>
   <text x="233" y="52" text-anchor="middle" font-size="10.5" fill="var(--ink-muted)">x₁</text>
@@ -864,13 +1040,13 @@ figure.fig text{font-family:var(--sans)}
   <text x="373" y="52" text-anchor="middle" font-size="10.5" fill="var(--ink-muted)">x₃</text>
   <rect x="200" y="70" width="66" height="40" rx="7" fill="color-mix(in srgb, var(--s1) 14%, var(--surface))" stroke="var(--ring)"/>
   <text x="233.0" y="94.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">A₁₁</text>
-  <rect x="270" y="70" width="66" height="40" rx="7" fill="color-mix(in srgb, var(--s2) 30%, var(--surface))" stroke="var(--ring)"/>
+  <rect x="270" y="70" width="66" height="40" rx="7" fill="color-mix(in srgb, var(--s2) 30%, var(--surface))" stroke="var(--s2)" class="glow-2"/>
   <text x="303.0" y="94.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">A₁₂</text>
   <rect x="340" y="70" width="66" height="40" rx="7" fill="color-mix(in srgb, var(--s1) 14%, var(--surface))" stroke="var(--ring)"/>
   <text x="373.0" y="94.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">A₁₃</text>
   <rect x="200" y="114" width="66" height="40" rx="7" fill="var(--surface)" stroke="var(--ring)"/>
   <text x="233.0" y="138.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">A₂₁</text>
-  <rect x="270" y="114" width="66" height="40" rx="7" fill="color-mix(in srgb, var(--s2) 22%, var(--surface))" stroke="var(--ring)"/>
+  <rect x="270" y="114" width="66" height="40" rx="7" fill="color-mix(in srgb, var(--s2) 22%, var(--surface))" stroke="var(--s2)" class="glow-2"/>
   <text x="303.0" y="138.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">A₂₂</text>
   <rect x="340" y="114" width="66" height="40" rx="7" fill="var(--surface)" stroke="var(--ring)"/>
   <text x="373.0" y="138.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">A₂₃</text>
@@ -882,7 +1058,7 @@ figure.fig text{font-family:var(--sans)}
   </svg></div>
   <figcaption><b>Why the transpose.</b> Forward, neuron \(i\) reads along <em>row</em> \(i\) — that is what \(A\mathbf x\) does. Backward, input \(j\) must collect blame from every neuron it fed, which means reading down <em>column</em> \(j\) — and reading columns of \(A\) is reading rows of \(A^{\top}\). Same numbers, opposite direction.</figcaption>
   </figure>
-  <div class="check" data-check="c8">
+  <div class="check reveal" data-check="c8">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Why does the blame leave through \(A^{\top}\) — the <em>transpose</em> — rather than through \(A\) itself?</p>
     <div class="opts">
@@ -892,16 +1068,16 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> \(\boldsymbol\delta^{(Z)}=\boldsymbol\delta^{(a)}\!\odot\mathbf a\odot(1-\mathbf a)\), then weights get \(\boldsymbol\delta^{(Z)}\mathbf x^{\top}\), biases get \(\boldsymbol\delta^{(Z)}\), and the layer below gets \(A^{\top}\boldsymbol\delta^{(Z)}\) — four lines, all of deep learning's inner loop.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> \(\boldsymbol\delta^{(Z)}=\boldsymbol\delta^{(a)}\!\odot\mathbf a\odot(1-\mathbf a)\), then weights get \(\boldsymbol\delta^{(Z)}\mathbf x^{\top}\), biases get \(\boldsymbol\delta^{(Z)}\), and the layer below gets \(A^{\top}\boldsymbol\delta^{(Z)}\) — four lines, all of deep learning's inner loop.</div>
 </section>
 
 <!-- ================= 8 · THE GRADIENT COOKBOOK ================= -->
 <section class="unit" id="s7">
-  <div class="sec-head"><span class="sec-num">8</span><h2>The gradient cookbook — five identities you'll use forever</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The gradient cookbook — five identities you'll use forever</h2></div>
+  <div class="prose reveal">
     <p>Backprop needs local derivatives, and in matrix land a handful of them cover almost everything. The lecture lists five; learn them as sentences, not just symbols. (Gradients here are rows, Unit 6's convention.)</p>
   </div>
-  <div class="svgwrap"><table class="plain">
+  <div class="svgwrap reveal"><table class="plain">
     <thead><tr><th>Identity</th><th>Say it in words</th></tr></thead>
     <tbody>
       <tr><td>\(\dfrac{\partial\, \mathbf{x}^{\top}\mathbf{a}}{\partial \mathbf{x}}=\mathbf{a}^{\top}\)</td><td>a dot product's sensitivity to \(\mathbf x\) is just the other vector</td></tr>
@@ -914,7 +1090,7 @@ figure.fig text{font-family:var(--sans)}
   <div class="prose">
     <p>Notice the family resemblance to Section 7: the third identity <em>is</em> why \(\partial\mathrm{Loss}/\partial A\) came out as an outer product, and the last one is the loss \(\|\mathbf y-A\mathbf s\|^2\) that trains linear models — you will meet it again the moment optimisation starts in Unit 9. Below, every identity is derived in full — the whole cookbook takes four short arguments. The arena's Problem 7 re-checks two of them with concrete numbers, and Problem 10 puts the cookbook to work on a real model.</p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · the whole cookbook, four short derivations</span>
     <p class="dgoal"><b>Claim.</b> Every identity in the table is entry-wise differentiation, organised. The method is always the same: <em>find every appearance of the variable, add one term per appearance.</em></p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Dot product.</b> \(\mathbf x^{\top}\mathbf a=\sum_i x_i a_i\). Differentiate with respect to one coordinate \(x_k\!:\) every term is constant except \(x_k a_k\), whose slope is \(a_k\). Collect the coordinates into a row:
@@ -932,7 +1108,7 @@ figure.fig text{font-family:var(--sans)}
       &=2\,\mathbf r^{\top}W\cdot(-A)=-2(\mathbf x-A\mathbf s)^{\top}WA\end{aligned}\]
       <span class="dwhy">The \(2\) came from \(W+W^{\top}\) under symmetry; the minus came from the \(-A\mathbf s\) inside the residual. Nothing to memorise once you can rebuild it in two <span class="nw">lines. <span class="dqed">∎</span></span></span></div></div>
   </div>
-  <div class="check" data-check="c9">
+  <div class="check reveal" data-check="c9">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">With \(B=\)<span class="mx"><i>1</i><i>2</i><i>3</i><i>4</i></span> (not symmetric), what is \(\dfrac{\partial\,\mathbf x^{\top}B\mathbf x}{\partial \mathbf x}\) at \(\mathbf x=(x_1,x_2)\)?</p>
     <div class="opts">
@@ -942,7 +1118,7 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="check" data-check="c15">
+  <div class="check reveal" data-check="c15">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">In the least-squares gradient \(-2(\mathbf x-A\mathbf s)^{\top}WA\), where exactly did the factor \(2\) come from?</p>
     <div class="opts">
@@ -952,13 +1128,13 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> Five identities — dot product, outer product, the \(B+B^\top\) doubling, and least squares — supply nearly every local derivative a real model needs.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> Five identities — dot product, outer product, the \(B+B^\top\) doubling, and least squares — supply nearly every local derivative a real model needs.</div>
 </section>
 
 <!-- ================= 9 · WHY SO CHEAP ================= -->
 <section class="unit" id="s8">
-  <div class="sec-head"><span class="sec-num">9</span><h2>Why it's so cheap — one sweep, everything reused</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>Why it's so cheap — one sweep, everything reused</h2></div>
+  <div class="prose reveal">
     <p>Stack \(K\) layers, \(f_i=\sigma_i(A_{i-1}f_{i-1}+b_{i-1})\), and put a loss at the end: \(L=\|\mathbf y-f_K\|^2\). Every layer's parameters \(\theta_i=\{A_i,b_i\}\) need a gradient, and the chain rule writes each one as a product that reaches from the loss back to that layer:</p>
     \[\begin{aligned}\frac{\partial L}{\partial\theta_{K-1}}&=\frac{\partial L}{\partial f_K}\frac{\partial f_K}{\partial\theta_{K-1}}\\[.35em]
       \frac{\partial L}{\partial\theta_{K-2}}&=\frac{\partial L}{\partial f_K}\frac{\partial f_K}{\partial f_{K-1}}\frac{\partial f_{K-1}}{\partial\theta_{K-2}}\\[.35em]
@@ -966,7 +1142,7 @@ figure.fig text{font-family:var(--sans)}
     <p>Look at the shape of those formulas: each one is the <em>previous one's product, extended by one factor</em>. Computed naively, left to right every time, you would rebuild the same long prefix over and over. Computed once from the loss end — keeping the running product as the \(\boldsymbol\delta\) that Section 7 handed backwards — every factor in the whole triangle is touched exactly once:</p>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · the stacked formula is the recipe of §5, unrolled</span>
     <p class="dgoal"><b>Claim.</b> \(\dfrac{\partial L}{\partial\theta_i}=\dfrac{\partial L}{\partial f_K}\,\dfrac{\partial f_K}{\partial f_{K-1}}\cdots\dfrac{\partial f_{i+2}}{\partial f_{i+1}}\,\dfrac{\partial f_{i+1}}{\partial\theta_i}\) — no new chain rule, just the postal recipe on a graph that happens to be a line.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Draw the graph.</b> \(f_{i+1}=\sigma_{i+1}(A_if_i+b_i)\) means node \(f_{i+1}\) has exactly two parents, \(f_i\) and \(\theta_i=\{A_i,b_i\}\), and node \(f_i\) has exactly <em>one</em> child, \(f_{i+1}\). The loss \(L\) is the single child of \(f_K\).
@@ -983,11 +1159,11 @@ figure.fig text{font-family:var(--sans)}
       <span class="dwhy">Every layer's gradient is the same prefix \(\bar f_{i+1}\) times one local factor — which is exactly why computing the prefixes once, from the loss end, prices the whole stack.</span></div></div>
   </div>
 
-  <div class="widget" id="w-cost">
+  <div class="widget reveal" id="w-cost">
     <div class="widget-head"><span class="w-title">The reuse triangle</span><span class="w-sub">every gradient shares its prefix with the next — slide the depth</span></div>
     <p class="try"><b>Try:</b> read one row left to right — it is the stacked formula above with real indices; then slide K to 8 and count grey versus blue.</p>
     <div class="wrow">
-      <div class="wcol" style="flex:1.9 1 350px"><svg id="ct-svg" viewBox="0 0 620 320" class="svg-lab" role="img" aria-label="For each layer, its gradient's chain of factors drawn as blocks; shared prefixes are highlighted to show reuse"></svg></div>
+      <div class="wcol" style="flex:2.2 1 380px"><svg id="ct-svg" viewBox="0 0 620 320" class="svg-lab" role="img" aria-label="For each layer, its gradient's chain of factors drawn as blocks; shared prefixes are highlighted to show reuse"></svg></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls">
           <div class="ctl"><label for="ct-k">layers K</label><input id="ct-k" type="range" min="2" max="8" step="1" value="4"><output id="ct-k-o">4</output></div>
@@ -999,7 +1175,7 @@ figure.fig text{font-family:var(--sans)}
     </div>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · why the sweep must start at the loss</span>
     <p class="dgoal"><b>Claim.</b> The chain \(\dfrac{\partial L}{\partial f_1}=\dfrac{\partial L}{\partial f_K}\,\dfrac{\partial f_K}{\partial f_{K-1}}\cdots\dfrac{\partial f_2}{\partial f_1}\) can be multiplied in either order. One order is about \(m\) times cheaper — count it.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Shapes first</b> (Unit 6's rule: outputs × inputs). \(L\) is a scalar, so \(\partial L/\partial f_K\) is a \(1\times m\) <em>row</em>. Each layer-to-layer Jacobian \(\partial f_{i}/\partial f_{i-1}\) is a full \(m\times m\) matrix, for layers of width \(m\).
@@ -1013,7 +1189,7 @@ figure.fig text{font-family:var(--sans)}
     <div class="dstep"><span class="dn">4</span><div class="dbody">Same factors, same answer, wildly different bill. Keeping the scalar-loss end first means every step is a cheap row-times-matrix product. That choice of order <em>is</em> reverse-mode automatic <span class="nw">differentiation. <span class="dqed">∎</span></span>
       <span class="dwhy">And it explains the fine print to come: reverse mode wins because training has ONE output (the loss) and millions of inputs. Flip that ratio and the other order — forward mode — wins instead.</span></div></div>
   </div>
-  <div class="check" data-check="c10">
+  <div class="check reveal" data-check="c10">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Rule of thumb: one full backward pass costs about as much as the forward pass itself. What single fact makes that possible?</p>
     <div class="opts">
@@ -1023,19 +1199,19 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> All the gradient formulas share their long prefix — carry it once, from the loss end, and the whole triangle of factors costs one sweep.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> All the gradient formulas share their long prefix — carry it once, from the loss end, and the whole triangle of factors costs one sweep.</div>
 </section>
 
 <!-- ================= 10 · LINEARIZATION ================= -->
 <section class="unit" id="s9">
-  <div class="sec-head"><span class="sec-num">10</span><h2>Linearization — the gradient as a stand-in for the function</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Linearization — the gradient as a stand-in for the function</h2></div>
+  <div class="prose reveal">
     <p>The companion closes with the other reason gradients matter. Once you own \(\nabla f(\mathbf x_0)\), you own the best <em>linear stand-in</em> for \(f\) near \(\mathbf x_0\):</p>
     \[L(\mathbf x)\;\approx\;f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}(\mathbf x-\mathbf x_0)\]
     <p>This is Unit 6's tangent line in vector form — the first two terms of the Taylor series (derived below). It is accurate near \(\mathbf x_0\), drifts as you leave, and it is the reason gradient descent works at all: each step trusts the linear stand-in for one small hop. Try the companion's own example — \(f(x)=\sqrt{x^2+9}\) around \(x_0=-4\), where \(f(-4)=5\) and \(f'(-4)=-\tfrac45\):</p>
   </div>
 
-  <div class="widget" id="w-lin">
+  <div class="widget reveal" id="w-lin">
     <div class="widget-head"><span class="w-title">The stand-in line</span><span class="w-sub">drag the anchor, drag the probe — watch the honest error of the linear guess</span></div>
     <p class="try"><b>Try:</b> put the probe at twice the distance from the anchor and check that the error roughly quadruples.</p>
     <div class="tabs" id="ln-tabs">
@@ -1044,7 +1220,7 @@ figure.fig text{font-family:var(--sans)}
       <button data-t="2">sin x + ½x</button>
     </div>
     <div class="wrow">
-      <div class="wcol" style="flex:1.8 1 330px"><svg id="ln-svg" viewBox="0 0 600 340" class="svg-lab grabbable" role="img" aria-label="A curve with its tangent line at a draggable anchor and a probe point comparing the linear estimate with the true value"></svg>
+      <div class="wcol" style="flex:2 1 360px"><svg id="ln-svg" viewBox="0 0 600 340" class="svg-lab grabbable" role="img" aria-label="A curve with its tangent line at a draggable anchor and a probe point comparing the linear estimate with the true value"></svg>
       <span class="drag-hint">✋ drag near the dot to move the anchor · elsewhere to move the probe</span></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="readout" id="ln-read" style="line-height:2"></div>
@@ -1052,9 +1228,21 @@ figure.fig text{font-family:var(--sans)}
         <p class="note">At anchor \(-4\): \(L(x)=5-\tfrac45(x+4)\), the companion's answer. Slide the probe to \(-3.5\) and the stand-in guesses \(4.6\) against a true \(4.61\) — near the anchor the line is almost the function. Push the probe far away and watch the error column grow: a linearization is a <em>local</em> promise, exactly like Unit 6's Taylor windows.</p>
       </div>
     </div>
+    <div class="substage">
+      <p class="w-sub2">…and in two variables: the stand-in plane<span>f(x, y) = eˣ cos y — the companion's second example, with its tangent plane at the anchor</span></p>
+      <div id="ln-3d" class="stage3d short" role="img" aria-label="The surface z equals e to the x times cos y as a lit 3D landscape, with a glowing glass tangent plane touching it at the anchor; a probe circles the anchor and a red vertical gap shows how far the plane is from the surface"></div>
+      <p class="stage-tap">drag the surface to orbit it</p>
+      <div class="stage-rail">
+        <div class="ctl"><label for="ln-ax">anchor x₀</label><input id="ln-ax" type="range" min="-1" max="0.7" step="0.05" value="0"><output id="ln-ax-o">0</output></div>
+        <div class="ctl"><label for="ln-ay">anchor y₀</label><input id="ln-ay" type="range" min="-1.2" max="1.2" step="0.05" value="0"><output id="ln-ay-o">0</output></div>
+        <div class="ctl"><label for="ln-r">probe radius</label><input id="ln-r" type="range" min="0.1" max="0.9" step="0.05" value="0.5"><output id="ln-r-o">0.5</output></div>
+        <div id="ln-3d-read" class="readout" style="flex:1 1 16rem"></div>
+      </div>
+      <p class="note">At the origin the gradient is \((1,0)\), so the plane is \(L(x,y)=1+x\) — tilted along \(x\), flat along \(y\), exactly the check below. Drag the anchor away from the origin and the plane re-tilts to whatever the gradient says there. Shrink the probe radius and the red gap collapses like the radius <em>squared</em>.</p>
+    </div>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · the stand-in is the first two Taylor terms</span>
     <p class="dgoal"><b>Claim.</b> The linearization \(L(x)=f(x_0)+f'(x_0)(x-x_0)\) is what is left of the Taylor series when every term with \((x-x_0)^2\) or higher is dropped — and the first dropped term tells you the error.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Taylor at \(x_0\)</b> (Unit 8's subject, used once here): with \(h=x-x_0\),
@@ -1067,7 +1255,7 @@ figure.fig text{font-family:var(--sans)}
       \[\tfrac12\cdot0.072\cdot0.5^2=0.009\qquad\text{vs. the widget's}\quad 4.6098-4.6=0.0098\]
       <span class="dwhy">The prediction is off only by the \(h^3\) crumbs. So a gradient does more than point downhill — with \(f''\) it also prices how far the linear stand-in can be <span class="nw">trusted. <span class="dqed">∎</span></span></span></div></div>
   </div>
-  <div class="check" data-check="c11">
+  <div class="check reveal" data-check="c11">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">The companion also linearizes \(f(x,y)=e^x\cos y\) at \((0,0)\): value \(1\), gradient \((1,0)\). What is the stand-in plane?</p>
     <div class="opts">
@@ -1077,22 +1265,22 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> \(f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}(\mathbf x-\mathbf x_0)\) is the best linear stand-in near \(\mathbf x_0\) — the first two Taylor terms, and the promise each gradient-descent step relies on.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> \(f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}(\mathbf x-\mathbf x_0)\) is the best linear stand-in near \(\mathbf x_0\) — the first two Taylor terms, and the promise each gradient-descent step relies on.</div>
 </section>
 
 <!-- ================= 11 · FINE PRINT ================= -->
 <section class="unit" id="s10">
-  <div class="sec-head"><span class="sec-num">11</span><h2>Fine print worth knowing</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Fine print worth knowing</h2></div>
+  <div class="prose reveal">
     <p><strong>Three ways to differentiate, only one scales.</strong> <em>Symbolic</em> differentiation (what you do on paper, what algebra systems do) produces exact formulas — which explode in size for deep compositions. <em>Numerical</em> differentiation nudges the input and divides — one pass per parameter, plus a precision trap you can see below. <em>Automatic</em> differentiation — this unit — is a third thing: exact like symbolic, cheap like a function call, because it differentiates the <em>program</em>, step by step, instead of the formula.</p>
     <p><strong>The precision trap.</strong> A finite difference \(\tfrac{f(x+h)-f(x-h)}{2h}\) has two enemies. Big \(h\): the secant misses the tangent (Unit 6's curvature gap). Tiny \(h\): the computer subtracts two nearly equal numbers and the difference drowns in rounding error. Squeeze \(h\) yourself:</p>
   </div>
 
-  <div class="widget" id="w-check">
+  <div class="widget reveal" id="w-check">
     <div class="widget-head"><span class="w-title">The gradient checker</span><span class="w-sub">finite differences vs. the exact answer — there is a best h, and it is not 0</span></div>
     <p class="try"><b>Try:</b> slide \(h\) down one decade at a time and watch the error fall 100× per decade — until, near \(10^{-6}\), it stops and turns.</p>
     <div class="wrow">
-      <div class="wcol" style="flex:1.8 1 330px"><svg id="ck-svg" viewBox="0 0 600 330" class="svg-lab" role="img" aria-label="Error of the finite-difference derivative versus step size on log axes, showing the V shape of truncation versus rounding error"></svg></div>
+      <div class="wcol" style="flex:2.2 1 380px"><svg id="ck-svg" viewBox="0 0 600 330" class="svg-lab" role="img" aria-label="Error of the finite-difference derivative versus step size on log axes, showing the V shape of truncation versus rounding error"></svg></div>
       <div class="wcol" style="flex:1 1 250px">
         <div class="controls">
           <div class="ctl"><label for="ck-h">step h = 10^</label><input id="ck-h" type="range" min="-12" max="-1" step="0.1" value="-3"><output id="ck-h-o">−3</output></div>
@@ -1104,7 +1292,7 @@ figure.fig text{font-family:var(--sans)}
     </div>
   </div>
 
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · the V-shape has a formula</span>
     <p class="dgoal"><b>Claim.</b> The checker's error falls like \(h^2\), rises like \(1/h\), and bottoms out at a best step \(h_*\) of order \(10^{-6}\)–\(10^{-5}\) — all three facts derived, not observed.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Taylor both evaluations</b> around \(x\) (Unit 6's tool, Unit 8's whole subject):
@@ -1130,80 +1318,80 @@ figure.fig text{font-family:var(--sans)}
     <p><strong>Vanishing gradients, revisited.</strong> Each sigmoid layer multiplies the blame by \(\mathbf a\odot(1-\mathbf a)\le\tfrac14\). Fifty layers deep, the blame arriving at layer one has passed fifty such factors — Unit 6's gears compounding — which is why early deep networks would not train, and why ReLU (slope 1 where active) took over.</p>
     <p><strong>Reverse is for losses; forward exists too.</strong> Everything here swept blame <em>backwards</em>, which prices all inputs of <em>one</em> output — perfect for a scalar loss. There is a mirror-image <em>forward mode</em> that prices all outputs of one input; it wins only when outputs vastly outnumber inputs, which training never is. That is why every deep-learning framework is a reverse-mode machine.</p>
   </div>
-  <figure class="fig" role="img" aria-label="Ten sigmoid layers in a row; the blame arriving at each earlier layer is at most a quarter of the one after it, so after ten layers it is about a millionth">
+  <figure class="fig reveal" role="img" aria-label="Ten sigmoid layers in a row; the blame arriving at each earlier layer is at most a quarter of the one after it, so after ten layers it is about a millionth">
   <div class="scroll"><svg viewBox="0 0 600 180" width="100%">
   <text x="40" y="18" font-size="11" font-weight="700" fill="var(--ink-2)">blame reaching each layer, walking back from the loss through ten sigmoids (log scale)</text>
   <text x="40" y="32" font-size="10" fill="var(--ink-muted)">← blame flows this way · each step multiplies by a⊙(1−a) ≤ ¼, at best</text>
-  <rect x="508" y="50.0" width="46" height="100.0" rx="5" fill="color-mix(in srgb, var(--s2) 60%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="508" y="50.0" width="46" height="100.0" rx="5" fill="color-mix(in srgb, var(--s2) 60%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="531.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 10</text>
   <text x="531.0" y="44.0" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">1</text>
-  <rect x="456" y="59.2" width="46" height="90.8" rx="5" fill="color-mix(in srgb, var(--s2) 54%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="456" y="59.2" width="46" height="90.8" rx="5" fill="color-mix(in srgb, var(--s2) 54%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="479.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 9</text>
   <text x="479.0" y="53.2" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">¼</text>
-  <rect x="404" y="68.5" width="46" height="81.5" rx="5" fill="color-mix(in srgb, var(--s2) 48%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="404" y="68.5" width="46" height="81.5" rx="5" fill="color-mix(in srgb, var(--s2) 48%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="427.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 8</text>
   <text x="427.0" y="62.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">1/16</text>
-  <rect x="352" y="77.8" width="46" height="72.2" rx="5" fill="color-mix(in srgb, var(--s2) 43%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="352" y="77.8" width="46" height="72.2" rx="5" fill="color-mix(in srgb, var(--s2) 43%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="375.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 7</text>
   <text x="375.0" y="71.8" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">1/64</text>
-  <rect x="300" y="87.1" width="46" height="62.9" rx="5" fill="color-mix(in srgb, var(--s2) 37%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="300" y="87.1" width="46" height="62.9" rx="5" fill="color-mix(in srgb, var(--s2) 37%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="323.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 6</text>
   <text x="323.0" y="81.1" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">1/256</text>
-  <rect x="248" y="96.3" width="46" height="53.7" rx="5" fill="color-mix(in srgb, var(--s2) 32%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="248" y="96.3" width="46" height="53.7" rx="5" fill="color-mix(in srgb, var(--s2) 32%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="271.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 5</text>
   <text x="271.0" y="90.3" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">≈10⁻³</text>
-  <rect x="196" y="105.6" width="46" height="44.4" rx="5" fill="color-mix(in srgb, var(--s2) 26%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="196" y="105.6" width="46" height="44.4" rx="5" fill="color-mix(in srgb, var(--s2) 26%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="219.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 4</text>
   <text x="219.0" y="99.6" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">≈2·10⁻⁴</text>
-  <rect x="144" y="114.8" width="46" height="35.2" rx="5" fill="color-mix(in srgb, var(--s2) 21%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="144" y="114.8" width="46" height="35.2" rx="5" fill="color-mix(in srgb, var(--s2) 21%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="167.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 3</text>
   <text x="167.0" y="108.8" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">≈6·10⁻⁵</text>
-  <rect x="92" y="124.1" width="46" height="25.9" rx="5" fill="color-mix(in srgb, var(--s2) 15%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="92" y="124.1" width="46" height="25.9" rx="5" fill="color-mix(in srgb, var(--s2) 15%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="115.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 2</text>
   <text x="115.0" y="118.1" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">≈2·10⁻⁵</text>
-  <rect x="40" y="133.3" width="46" height="16.7" rx="5" fill="color-mix(in srgb, var(--s2) 9%, var(--surface))" stroke="var(--s2)" stroke-width="1"/>
+  <rect x="40" y="133.3" width="46" height="16.7" rx="5" fill="color-mix(in srgb, var(--s2) 9%, var(--surface))" stroke="var(--s2)" stroke-width="1" class="glow-2"/>
   <text x="63.0" y="166" text-anchor="middle" font-size="10" font-weight="650" fill="var(--ink-2)">layer 1</text>
   <text x="63.0" y="127.3" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--s2)">≈4·10⁻⁶</text>
   </svg></div>
   <figcaption><b>Vanishing gradients, drawn.</b> The loss sits to the right of layer 10. Every sigmoid the blame crosses scales it by \(a(1-a)\le\tfrac14\), so by layer 1 the strongest possible signal is \(4^-9\approx4\times10^-6\) of what left the loss — and saturated neurons (\(a\approx0.95\), factor \(0.045\)) make it far worse. The early layers barely learn. ReLU's slope of \(1\) where active is the fix.</figcaption>
   </figure>
-  <figure class="fig" role="img" aria-label="Two small graphs: reverse mode fans many inputs into one output and one backward sweep prices all inputs; forward mode fans one input out to many outputs and one forward sweep prices all outputs">
+  <figure class="fig reveal" role="img" aria-label="Two small graphs: reverse mode fans many inputs into one output and one backward sweep prices all inputs; forward mode fans one input out to many outputs and one forward sweep prices all outputs">
   <div class="scroll"><svg viewBox="0 0 600 190" width="100%">
   <text x="150" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--s2)">reverse mode — training's shape</text>
   <text x="150" y="36" text-anchor="middle" font-size="10" fill="var(--ink-muted)">many inputs (the weights) → one output (the loss)</text>
   <text x="450" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--s1)">forward mode — the mirror image</text>
   <text x="450" y="36" text-anchor="middle" font-size="10" fill="var(--ink-muted)">one input → many outputs</text>
-  <line x1="72" y1="60" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8"/>
+  <line x1="72" y1="60" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8" class="draw2 glow-2"/>
   <circle cx="60" cy="60" r="8" fill="var(--surface)" stroke="var(--s2)" stroke-width="1.6"/>
   <text x="42" y="64" text-anchor="end" font-size="10" fill="var(--ink-2)">θ₁</text>
-  <line x1="72" y1="82" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8"/>
+  <line x1="72" y1="82" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8" class="draw2 glow-2"/>
   <circle cx="60" cy="82" r="8" fill="var(--surface)" stroke="var(--s2)" stroke-width="1.6"/>
   <text x="42" y="86" text-anchor="end" font-size="10" fill="var(--ink-2)">θ₂</text>
-  <line x1="72" y1="104" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8"/>
+  <line x1="72" y1="104" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8" class="draw2 glow-2"/>
   <circle cx="60" cy="104" r="8" fill="var(--surface)" stroke="var(--s2)" stroke-width="1.6"/>
   <text x="42" y="108" text-anchor="end" font-size="10" fill="var(--ink-2)">θ₃</text>
-  <line x1="72" y1="126" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8"/>
+  <line x1="72" y1="126" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8" class="draw2 glow-2"/>
   <circle cx="60" cy="126" r="8" fill="var(--surface)" stroke="var(--s2)" stroke-width="1.6"/>
   <text x="42" y="130" text-anchor="end" font-size="10" fill="var(--ink-2)">θ₄</text>
-  <line x1="72" y1="148" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8"/>
+  <line x1="72" y1="148" x2="228" y2="104" stroke="var(--s2)" stroke-width="1.8" class="draw2 glow-2"/>
   <circle cx="60" cy="148" r="8" fill="var(--surface)" stroke="var(--s2)" stroke-width="1.6"/>
   <text x="42" y="152" text-anchor="end" font-size="10" fill="var(--ink-2)">θ₅</text>
   <circle cx="240" cy="104" r="11" fill="color-mix(in srgb, var(--s2) 18%, var(--surface))" stroke="var(--s2)" stroke-width="2"/>
   <text x="240" y="108" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink)">L</text>
   <text x="150" y="172" text-anchor="middle" font-size="10.5" font-weight="650" fill="var(--s2)">one sweep ← from L prices all five θ's</text>
-  <line x1="372" y1="104" x2="528" y2="60" stroke="var(--s1)" stroke-width="1.8"/>
+  <line x1="372" y1="104" x2="528" y2="60" stroke="var(--s1)" stroke-width="1.8" class="draw2 glow-1"/>
   <circle cx="540" cy="60" r="8" fill="var(--surface)" stroke="var(--s1)" stroke-width="1.6"/>
   <text x="558" y="64" font-size="10" fill="var(--ink-2)">y₁</text>
-  <line x1="372" y1="104" x2="528" y2="82" stroke="var(--s1)" stroke-width="1.8"/>
+  <line x1="372" y1="104" x2="528" y2="82" stroke="var(--s1)" stroke-width="1.8" class="draw2 glow-1"/>
   <circle cx="540" cy="82" r="8" fill="var(--surface)" stroke="var(--s1)" stroke-width="1.6"/>
   <text x="558" y="86" font-size="10" fill="var(--ink-2)">y₂</text>
-  <line x1="372" y1="104" x2="528" y2="104" stroke="var(--s1)" stroke-width="1.8"/>
+  <line x1="372" y1="104" x2="528" y2="104" stroke="var(--s1)" stroke-width="1.8" class="draw2 glow-1"/>
   <circle cx="540" cy="104" r="8" fill="var(--surface)" stroke="var(--s1)" stroke-width="1.6"/>
   <text x="558" y="108" font-size="10" fill="var(--ink-2)">y₃</text>
-  <line x1="372" y1="104" x2="528" y2="126" stroke="var(--s1)" stroke-width="1.8"/>
+  <line x1="372" y1="104" x2="528" y2="126" stroke="var(--s1)" stroke-width="1.8" class="draw2 glow-1"/>
   <circle cx="540" cy="126" r="8" fill="var(--surface)" stroke="var(--s1)" stroke-width="1.6"/>
   <text x="558" y="130" font-size="10" fill="var(--ink-2)">y₄</text>
-  <line x1="372" y1="104" x2="528" y2="148" stroke="var(--s1)" stroke-width="1.8"/>
+  <line x1="372" y1="104" x2="528" y2="148" stroke="var(--s1)" stroke-width="1.8" class="draw2 glow-1"/>
   <circle cx="540" cy="148" r="8" fill="var(--surface)" stroke="var(--s1)" stroke-width="1.6"/>
   <text x="558" y="152" font-size="10" fill="var(--ink-2)">y₅</text>
   <circle cx="360" cy="104" r="11" fill="color-mix(in srgb, var(--s1) 18%, var(--surface))" stroke="var(--s1)" stroke-width="2"/>
@@ -1213,7 +1401,7 @@ figure.fig text{font-family:var(--sans)}
   <figcaption><b>Which sweep to run.</b> A sweep costs about one pass either way; the question is what one sweep <em>buys</em>. Reverse mode starts at one output and prices every input — millions of weights for one loss. Forward mode starts at one input and prices every output. Training has one output and millions of inputs, so every framework runs reverse.</figcaption>
   </figure>
 
-  <div class="check" data-check="c12">
+  <div class="check reveal" data-check="c12">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">In the gradient checker, why does making \(h\) ever smaller eventually make the estimate <em>worse</em>?</p>
     <div class="opts">
@@ -1226,7 +1414,7 @@ figure.fig text{font-family:var(--sans)}
   <div class="prose">
     <p><strong>Forward mode you can hold in your hand — dual numbers.</strong> Reverse mode swept blame backwards. Forward mode has an algebraic form so tidy you can run it with pencil and paper: carry every quantity as a <em>pair</em> — its value and its derivative — and teach ordinary arithmetic to update both at once.</p>
   </div>
-  <div class="derive">
+  <div class="derive reveal">
     <span class="tag">Prove it · arithmetic that differentiates itself</span>
     <p class="dgoal"><b>Claim.</b> Write each pair \((v,\dot v)\) as \(v+\dot v\,\varepsilon\), where \(\varepsilon\) is a new symbol with one rule: \(\varepsilon^{2}=0\). Then ordinary algebra on these "dual numbers" performs <em>exact</em> differentiation.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Sums.</b> \((a+\dot a\varepsilon)+(b+\dot b\varepsilon)=(a+b)+(\dot a+\dot b)\varepsilon\).
@@ -1241,7 +1429,7 @@ figure.fig text{font-family:var(--sans)}
       So \(f(1)=e\) and \(f'(1)=2e\approx5.4366\) — exact, and no derivative formula was ever written <span class="nw">down. <span class="dqed">∎</span></span>
       <span class="dwhy">Check: \(f'=e^{x}(1+x)\) gives \(2e\). ✓ This is forward-mode autodiff: one sweep prices <em>all outputs of one input</em> — the mirror image of backprop, and the winner when inputs are few and outputs many.</span></div></div>
   </div>
-  <div class="check" data-check="c16">
+  <div class="check reveal" data-check="c16">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">The single rule \(\varepsilon^{2}=0\) makes the product rule appear on its own. What is \(\varepsilon^{2}=0\) really encoding?</p>
     <div class="opts">
@@ -1251,16 +1439,16 @@ figure.fig text{font-family:var(--sans)}
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent"><b>In one sentence:</b> Autodiff is exact like symbolic and cheap like numerical with neither one's flaw — and the finite-difference valley is why "just use tiny h" was never an option.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> Autodiff is exact like symbolic and cheap like numerical with neither one's flaw — and the finite-difference valley is why "just use tiny h" was never an option.</div>
 </section>
 
 <!-- ================= 12 · SUMMARY ================= -->
 <section class="unit" id="s11">
-  <div class="sec-head"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
     <p>One picture generated this entire unit: <strong>a function drawn as a graph of baby steps, with values flowing right and blame flowing left.</strong> Everything else was careful bookkeeping on that picture.</p>
   </div>
-  <div class="svgwrap"><table class="plain">
+  <div class="svgwrap reveal"><table class="plain">
     <thead><tr><th>Idea</th><th>The one-line version</th><th>Where it returns</th></tr></thead>
     <tbody>
       <tr><td>Computation graph</td><td>Any function as baby steps with arrows</td><td>every framework's autograd tape</td></tr>
@@ -1272,21 +1460,21 @@ figure.fig text{font-family:var(--sans)}
       <tr><td>Linearization</td><td>\(f(\mathbf x_0)+\nabla f^{\top}(\mathbf x-\mathbf x_0)\) — the local stand-in</td><td>Unit 8 · Taylor; Unit 9 · each descent step</td></tr>
     </tbody>
   </table></div>
-  <div class="callout remember"><span class="tag">The one thing to remember</span>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
     <p><strong>Blame flows backwards through the same graph that computed the value.</strong> Multiply along paths, add at forks, reuse every partial product — and a million derivatives cost one sweep. When a framework call like <code>loss.backward()</code> feels like magic, it is exactly this unit, executed by a for-loop.</p>
   </div>
 </section>
 
 <!-- ================= 13 · PRACTICE ARENA ================= -->
 <section class="unit" id="spractice">
-  <div class="sec-head"><span class="sec-num">13</span><h2>Practice arena — the unit's problem set, solved in full</h2></div>
-  <div class="prose">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Practice arena — the unit's problem set, solved in full</h2></div>
+  <div class="prose reveal">
     <p>Eleven problems: three from Part C of Prof. Saurabh's practice set (Parts A and B — Taylor series and the Hessian — belong to Unit 8's territory and wait there), three from his companion guide, and five written for this arena — the identity drill (Problem 7), the complete numeric backward pass (Problem 8), and three <em>proof workouts</em> (Problems 9–11) that derive from scratch the rules this unit leaned on. Every solution below is machine-verified.</p>
     <p>One habit does most of the work: <strong>draw the graph first, then walk it backwards</strong> — multiply along paths, add at forks, and check every shape before trusting any algebra.</p>
   </div>
 
   <!-- ===== Problem 1 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff medium">medium</span></div>
     <p class="pq">A one-layer network computes \(\mathbf z=W\mathbf x\) and the loss \(g(\mathbf z)=\tfrac12\|\mathbf z-\mathbf t\|^2\) against a target \(\mathbf t\), with
     \[W=\begin{bmatrix}1&2\\0&1\\-1&1\end{bmatrix},\qquad \mathbf x=\begin{bmatrix}1\\1\end{bmatrix},\qquad \mathbf t=\begin{bmatrix}1\\0\\2\end{bmatrix}.\]
@@ -1299,12 +1487,12 @@ figure.fig text{font-family:var(--sans)}
       \[\nabla_{\mathbf x}\,g=J^{\top}\nabla_{\mathbf z}\,g=W^{\top}\mathbf r=\begin{bmatrix}1&0&-1\\2&1&1\end{bmatrix}\begin{bmatrix}2\\1\\-2\end{bmatrix}=\begin{bmatrix}1\cdot2+0\cdot1+(-1)(-2)\\2\cdot2+1\cdot1+1\cdot(-2)\end{bmatrix}=\begin{bmatrix}4\\3\end{bmatrix}\]
       <em>Dimension check:</em> \(\nabla_{\mathbf z}g\) is \(3\times1\), \(W^{\top}\) is \(2\times3\), product \(2\times1\) — the shape of \(\mathbf x\), as a gradient must be. ✓</div>
       <p class="pans">\(\nabla_{\mathbf z}g=(2,1,-2)^{\top}\) (3×1), \(J=W\) (3×2), \(\nabla_{\mathbf x}g=(4,3)^{\top}\) (2×1), loss \(=4.5\).</p>
-      <div class="callout remember"><span class="tag">Remember</span><p>"Backprop through a linear layer" = "multiply the incoming gradient by \(W^{\top}\)". You can also check by substituting first: \(g(\mathbf x)=\tfrac12\|W\mathbf x-\mathbf t\|^2\) has gradient \(W^{\top}(W\mathbf x-\mathbf t)=W^{\top}\mathbf r\) — same answer, one line.</p></div>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>"Backprop through a linear layer" = "multiply the incoming gradient by \(W^{\top}\)". You can also check by substituting first: \(g(\mathbf x)=\tfrac12\|W\mathbf x-\mathbf t\|^2\) has gradient \(W^{\top}(W\mathbf x-\mathbf t)=W^{\top}\mathbf r\) — same answer, one line.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 2 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">medium</span></div>
     <p class="pq">A neuron computes \(z=wx+b,\ a=\tanh(z)\), and the loss \(L=\tfrac12(a-y)^2\). Using \(\tanh'(z)=1-\tanh^2(z)\) and the values \(w=0.5,\ x=1,\ b=0,\ y=1\): <b>(a)</b> do the forward pass \((z,a,L)\); <b>(b)</b> backpropagate to obtain \(\partial L/\partial w,\ \partial L/\partial b,\ \partial L/\partial x\).</p>
     <p class="ptest"><b>What this tests.</b> The full forward–backward cycle on a single neuron, and the shared blame \(\delta\) that Section 6 trains with.</p>
@@ -1316,12 +1504,12 @@ figure.fig text{font-family:var(--sans)}
       <div class="pstep"><b>Step 2 — hand out copies.</b> \(z=wx+b\) gives \(\partial z/\partial w=x=1\), \(\partial z/\partial b=1\), \(\partial z/\partial x=w=0.5\):
       \[\frac{\partial L}{\partial w}=\delta\cdot x=-0.4230,\qquad \frac{\partial L}{\partial b}=\delta=-0.4230,\qquad \frac{\partial L}{\partial x}=\delta\cdot w=-0.2115\]</div>
       <p class="pans">\(z=0.5,\ a=0.4621,\ L=0.1447\); \(\ \partial L/\partial w=-0.4230,\ \partial L/\partial b=-0.4230,\ \partial L/\partial x=-0.2115\).</p>
-      <div class="callout remember"><span class="tag">Remember</span><p>\(\delta\) is computed <em>once</em> and reused three times — the whole economy of backprop in miniature. Both parameter gradients are negative, so a descent step raises \(w\) and \(b\), pushing \(a\) toward the target \(1\). Section 6's widget runs exactly these numbers.</p></div>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>\(\delta\) is computed <em>once</em> and reused three times — the whole economy of backprop in miniature. Both parameter gradients are negative, so a descent step raises \(w\) and \(b\), pushing \(a\) toward the target \(1\). Section 6's widget runs exactly these numbers.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 3 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span></div>
     <p class="pq">A scalar function is built from two intermediates: \(f=uv\), \(\ u=x^2+y\), \(\ v=x-y\). <b>(a)</b> Write \(\partial f/\partial u,\ \partial f/\partial v\) and the four partials of \(u,v\) with respect to \(x,y\). <b>(b)</b> Using the chain rule, assemble \(\partial f/\partial x\) and \(\partial f/\partial y\), and evaluate both at \((x,y)=(1,1)\).</p>
     <p class="ptest"><b>What this tests.</b> Multiply along paths, add across paths — the two rules of Section 3, by hand.</p>
@@ -1338,7 +1526,7 @@ figure.fig text{font-family:var(--sans)}
   </div>
 
   <!-- ===== Problem 4 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff hard">hard</span></div>
     <p class="pq">Define \(g(\mathbf z,\boldsymbol\nu):=\log p(\mathbf x,\mathbf z)-\log q(\mathbf z,\boldsymbol\nu)\) with \(\mathbf z:=t(\boldsymbol\epsilon,\boldsymbol\nu)\), for differentiable functions \(p,q,t\) and \(\mathbf x\in\mathbb{R}^D,\ \mathbf z\in\mathbb{R}^E,\ \boldsymbol\nu\in\mathbb{R}^F,\ \boldsymbol\epsilon\in\mathbb{R}^G\). Using the chain rule, compute the total derivative \(\dfrac{d}{d\boldsymbol\nu}g(\mathbf z,\boldsymbol\nu)\).</p>
     <p class="ptest"><b>What this tests.</b> Direct and indirect paths of influence — the multivariate chain rule when a variable appears both explicitly and through an intermediate. (This is the gradient inside variational autoencoders.)</p>
@@ -1352,12 +1540,12 @@ figure.fig text{font-family:var(--sans)}
       \[\frac{d g}{d\boldsymbol\nu}=-\frac{\partial \log q}{\partial\boldsymbol\nu}\;+\;\left(\frac{\partial \log p}{\partial\mathbf z}-\frac{\partial \log q}{\partial\mathbf z}\right)\frac{\partial t}{\partial\boldsymbol\nu}\]
       <em>Dimension check:</em> \((1\times F)+(1\times E)(E\times F)=(1\times F)\) ✓.</div>
       <p class="pans">\(\dfrac{dg}{d\boldsymbol\nu}=-\dfrac{\partial\log q}{\partial\boldsymbol\nu}+\Big(\dfrac{\partial\log p}{\partial\mathbf z}-\dfrac{\partial\log q}{\partial\mathbf z}\Big)\dfrac{\partial t}{\partial\boldsymbol\nu}\).</p>
-      <div class="callout remember"><span class="tag">Remember</span><p>Write \(d/d\boldsymbol\nu\) (total) for "all routes", \(\partial/\partial\boldsymbol\nu\) (partial) for "this slot only, everything else frozen". The whole problem is Section 3's fork rule wearing research-paper notation.</p></div>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Write \(d/d\boldsymbol\nu\) (total) for "all routes", \(\partial/\partial\boldsymbol\nu\) (partial) for "this slot only, everything else frozen". The whole problem is Section 3's fork rule wearing research-paper notation.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 5 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">medium</span></div>
     <p class="pq">Compute \(\dfrac{df}{d\mathbf x}\) for \(f(z)=\log(1+z)\), \(\ z=\mathbf x^{\top}\mathbf x\), \(\ \mathbf x\in\mathbb{R}^D\). State the dimension of every partial derivative involved.</p>
     <p class="ptest"><b>What this tests.</b> A two-step graph \(\mathbf x\to z\to f\) where the middle is a scalar — plus the cookbook's dot-product identity applied to \(\mathbf x^{\top}\mathbf x\).</p>
@@ -1374,7 +1562,7 @@ figure.fig text{font-family:var(--sans)}
   </div>
 
   <!-- ===== Problem 6 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span></div>
     <p class="pq">Compute \(\dfrac{d\mathbf f}{d\mathbf x}\) for \(\mathbf f(\mathbf z)=\sin(\mathbf z)\) applied entrywise, \(\ \mathbf z=A\mathbf x+\mathbf b\), with \(A\in\mathbb{R}^{E\times D},\ \mathbf x\in\mathbb{R}^{D},\ \mathbf b\in\mathbb{R}^{E}\). State every dimension.</p>
     <p class="ptest"><b>What this tests.</b> The Jacobian chain rule with an entrywise nonlinearity — the exact structure of Section 7's layer, with \(\sin\) in place of \(\sigma\).</p>
@@ -1391,7 +1579,7 @@ figure.fig text{font-family:var(--sans)}
   </div>
 
   <!-- ===== Problem 7 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span></div>
     <p class="pq">Verify two cookbook identities the honest way, entry by entry. <b>(a)</b> For \(B=\begin{bmatrix}1&2\\3&4\end{bmatrix}\), expand \(\mathbf x^{\top}B\mathbf x\) and confirm \(\partial(\mathbf x^{\top}B\mathbf x)/\partial\mathbf x=\mathbf x^{\top}(B+B^{\top})\). <b>(b)</b> For \(\mathbf a=(1,2)^{\top},\ \mathbf b=(3,1)^{\top}\), expand \(\mathbf a^{\top}X\mathbf b\) and confirm \(\partial(\mathbf a^{\top}X\mathbf b)/\partial X=\mathbf a\mathbf b^{\top}\).</p>
     <p class="ptest"><b>What this tests.</b> That the identities are nothing but organised entry-wise differentiation — once verified by hand, you may use them forever with a clear conscience.</p>
@@ -1409,7 +1597,7 @@ figure.fig text{font-family:var(--sans)}
   </div>
 
   <!-- ===== Problem 8 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff hard">hard</span></div>
     <p class="pq">Run the full backward pass on the lecture's function \(f(x)=\sqrt{x^2+e^{x^2}}+\cos(x^2+e^{x^2})\) at \(x=1\), using the graph \(a=x^2,\ b=e^a,\ c=a+b,\ d=\sqrt c,\ e=\cos c,\ f=d+e\). <b>(a)</b> Forward pass: all six values to 4 decimals. <b>(b)</b> Backward pass: all the blames \(\bar f,\bar d,\bar e,\bar c,\bar b,\bar a,\bar x\). <b>(c)</b> Confirm \(\bar x\) against the closed-form derivative.</p>
     <p class="ptest"><b>What this tests.</b> The complete algorithm of Sections 2–5, executed by hand with real numbers — including the fork at \(c\) and the fork at \(a\).</p>
@@ -1429,12 +1617,12 @@ figure.fig text{font-family:var(--sans)}
       \[\frac{df}{dx}=\Big(\frac{1}{2\sqrt{x^2+e^{x^2}}}-\sin(x^2+e^{x^2})\Big)\big(2x+2xe^{x^2}\big)\Big|_{x=1}=0.8045\times7.4366=5.9831\ \checkmark\]
       Notice the factor \(0.8045\) <em>is</em> \(\bar c\), and \(2x+2xe^{x^2}=7.4366\) is what the graph assembled as \(\bar a\cdot2x/\bar c\) — the closed form and the graph are the same computation, differently organised.</div>
       <p class="pans">Forward: \(1,\ 2.7183,\ 3.7183,\ 1.9283,\ -0.8383,\ 1.0900\). Backward: \(\bar f=1,\ \bar d=\bar e=1,\ \bar c=\bar b=0.8045,\ \bar a=2.9915,\ \bar x=5.9831=df/dx\). ✓</p>
-      <div class="callout watch"><span class="tag">Watch out</span><p>Run the same pass at \(x=2\) and \(e^{x^2}=e^4=54.6\) dominates everything: \(\bar c=-0.8223\) and \(df/dx=-182.87\). The companion doc's printed run at \(x=2\) uses \(\cos(58.6)\approx0.83\), but the true value in radians is \(-0.46\) — a calculator slip that flips the final answer completely (see the errata note in §2). The habit that catches such slips: always confirm a hand-computed derivative with a small numerical nudge.</p></div>
+      <div class="callout watch reveal"><span class="tag">Watch out</span><p>Run the same pass at \(x=2\) and \(e^{x^2}=e^4=54.6\) dominates everything: \(\bar c=-0.8223\) and \(df/dx=-182.87\). The companion doc's printed run at \(x=2\) uses \(\cos(58.6)\approx0.83\), but the true value in radians is \(-0.46\) — a calculator slip that flips the final answer completely (see the errata note in §2). The habit that catches such slips: always confirm a hand-computed derivative with a small numerical nudge.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 9 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span></div>
     <p class="pq">The activation family, from first principles. <b>(a)</b> Show that the <em>softplus</em> \(s(z)=\ln(1+e^{z})\) has derivative \(s'(z)=\sigma(z)\) — the sigmoid is softplus's slope. <b>(b)</b> Prove the bridge \(\tanh(z)=2\,\sigma(2z)-1\). <b>(c)</b> Using (b) and \(\sigma'=\sigma(1-\sigma)\), derive \(\tanh'=1-\tanh^{2}\) <em>without</em> a quotient rule.</p>
     <p class="ptest"><b>What this tests.</b> That the activation identities frameworks hard-code are a small connected family — one proof engine (find the appearances, chain the slopes) generates them all.</p>
@@ -1451,12 +1639,12 @@ figure.fig text{font-family:var(--sans)}
       \[\tanh'(z)=2\cdot\sigma'(2z)\cdot 2=4\,\sigma(2z)\big(1-\sigma(2z)\big)=4\cdot\frac{1+t}{2}\cdot\frac{1-t}{2}=(1+t)(1-t)=1-t^{2}\ \checkmark\]
       — the factor \(2\) outside is the bridge's scaling, the factor \(2\) inside is the chain rule through \(2z\).</div>
       <p class="pans">\(s'=\sigma\); \(\ \tanh z=2\sigma(2z)-1\); \(\ \tanh'=1-\tanh^{2}\), derived purely from \(\sigma'=\sigma(1-\sigma)\).</p>
-      <div class="callout remember"><span class="tag">Remember</span><p>All three facts are one family portrait: softplus's slope is \(\sigma\), \(\tanh\) is a rescaled \(\sigma\), and both backward-pass identities (\(\sigma(1-\sigma)\) and \(1-a^2\)) are the same identity seen through the bridge. Knowing one buys you the others.</p></div>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>All three facts are one family portrait: softplus's slope is \(\sigma\), \(\tanh\) is a rescaled \(\sigma\), and both backward-pass identities (\(\sigma(1-\sigma)\) and \(1-a^2\)) are the same identity seen through the bridge. Knowing one buys you the others.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 10 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff hard">hard</span></div>
     <p class="pq">The cookbook earns its keep: <em>ridge regression solved by pure algebra.</em> Consider the regularised least-squares loss
     \[E(\mathbf s)=\|\mathbf x-A\mathbf s\|^{2}+\lambda\|\mathbf s\|^{2}\]
@@ -1481,12 +1669,12 @@ figure.fig text{font-family:var(--sans)}
       Solve \(\begin{bmatrix}6&2\\2&11\end{bmatrix}\mathbf s=\begin{bmatrix}5\\2\end{bmatrix}\): determinant \(66-4=62\), so by Cramer (or elimination)
       \[s_1=\frac{5\cdot11-2\cdot2}{62}=\frac{51}{62}\approx0.8226,\qquad s_2=\frac{6\cdot2-2\cdot5}{62}=\frac{2}{62}=\frac{1}{31}\approx0.0323\]</div>
       <p class="pans">\(\nabla_{\mathbf s}E=-2(\mathbf x-A\mathbf s)^{\top}A+2\lambda\mathbf s^{\top}\); minimiser \((A^{\top}A+\lambda I)\mathbf s=A^{\top}\mathbf x\); numerically \(\mathbf s\approx(0.8226,\ 0.0323)^{\top}\).</p>
-      <div class="callout remember"><span class="tag">Remember</span><p>Gradient \(\to\) zero \(\to\) linear system: for quadratic losses, "training" is one solve. Unit 9 begins exactly where this stops — with losses whose gradients <em>cannot</em> be set to zero in closed form, so we must walk downhill instead.</p></div>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Gradient \(\to\) zero \(\to\) linear system: for quadratic losses, "training" is one solve. Unit 9 begins exactly where this stops — with losses whose gradients <em>cannot</em> be set to zero in closed form, so we must walk downhill instead.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 11 ===== -->
-  <div class="prob">
+  <div class="prob reveal">
     <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">medium</span></div>
     <p class="pq">Differentiate a <em>program</em> with dual numbers (Section 11), seeding \(x=x_0+1\cdot\varepsilon\). <b>(a)</b> \(f(x)=x^{2}e^{x}\) at \(x_0=1\). <b>(b)</b> \(f(x)=\sqrt{x^{2}+9}\) at \(x_0=-4\) — then compare with Section 10's stand-in line. <b>(c)</b> In one sentence: why are these results <em>exact</em>, where the gradient checker's finite differences never are?</p>
     <p class="ptest"><b>What this tests.</b> Forward-mode autodiff executed by hand: the \(\varepsilon^{2}=0\) algebra runs the chain rule mechanically — you only ever do arithmetic on pairs.</p>
@@ -1501,11 +1689,11 @@ figure.fig text{font-family:var(--sans)}
       So \(f(-4)=5\) and \(f'(-4)=-0.8=-\tfrac45\) — precisely the anchor value and slope of Section 10's stand-in line. The widget's tangent line and this pencil-and-paper pair computation are the same mathematics arriving by two roads.</div>
       <div class="pstep"><b>(c) Why exact.</b> No step ever subtracts two nearly equal numbers or divides by a small \(h\) — each rule (sum, product, \(g'(a)\dot a\)) <em>is</em> the corresponding calculus rule, applied with ordinary arithmetic — so the only error anywhere is standard floating-point rounding of the values themselves.</div>
       <p class="pans">(a) \((e,\,3e)\): \(f'(1)=3e\approx8.1548\). (b) \((5,\,-0.8)\): \(f'(-4)=-\tfrac45\). (c) The algebra rules are the calculus rules — nothing is approximated, so nothing needs a step size.</p>
-      <div class="callout remember"><span class="tag">Remember</span><p>Reverse mode (this unit's hero) and dual numbers (its mirror) bracket the field: backward for one output and many inputs, forward for one input and many outputs. Both differentiate the <em>program</em>, both are exact — and neither ever writes a derivative formula.</p></div>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Reverse mode (this unit's hero) and dual numbers (its mirror) bracket the field: backward for one output and many inputs, forward for one input and many outputs. Both differentiate the <em>program</em>, both are exact — and neither ever writes a derivative formula.</p></div>
     </details>
   </div>
 
-  <div class="next-card">
+  <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
     <p style="margin:.35rem 0 .6rem"><strong>Unit 8 · Taylor &amp; MacLaurin Series</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
     <p style="margin:0 0 .6rem;font-family:var(--serif)">Linearization kept one derivative and got a line. Unit 8 keeps them all: rebuilding functions from their derivatives at a point, with the error terms that say exactly how far each cut can be trusted — the mathematics behind every "local approximation" the rest of the course will make.</p>
@@ -1515,24 +1703,58 @@ figure.fig text{font-family:var(--sans)}
 
 </main>
 
+<!--@cinema-js-->
 <script>
 (function(){
 "use strict";
 /* ---------- shared helpers (house runtime) ---------- */
 const store={mem:{},get(k){try{return localStorage.getItem(k)??this.mem[k]??null}catch(e){return this.mem[k]??null}},set(k,v){this.mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}}};
-const themeBtn=document.getElementById('theme-btn');const modes=['auto','light','dark'];let mode=store.get('mfml-theme')||'auto';
-function applyTheme(){if(mode==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',mode);themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;}
-themeBtn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%3];store.set('mfml-theme',mode);applyTheme();});applyTheme();
+const themeBtn=document.getElementById('theme-btn');const modes=['dark','light'];let mode=store.get('mfml-theme')==='light'?'light':'dark';
+function applyTheme(){document.documentElement.setAttribute('data-theme',mode);themeBtn.innerHTML = '<span class="tw">Theme: </span>' + mode;}
+themeBtn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%2];store.set('mfml-theme',mode);applyTheme();});applyTheme();
 const rail=document.getElementById('read-progress');
 addEventListener('scroll',()=>{const h=document.documentElement;rail.style.width=((h.scrollTop/(h.scrollHeight-h.clientHeight))*100).toFixed(2)+'%';},{passive:true});
 const NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,parent){const n=document.createElementNS(NS,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(parent)parent.appendChild(n);return n;}
-function txt(parent,x,y,s,style,anchor){const t=el('text',{x,y,'text-anchor':anchor||'start'},parent);t.setAttribute('style',style||'font:600 11px system-ui;fill:var(--ink-muted)');t.textContent=s;return t;}
+function txt(parent,x,y,s,style,anchor){const t=el('text',{x,y,'text-anchor':anchor||'start'},parent);t.setAttribute('style',(style||'font:600 11px system-ui;fill:var(--ink-muted)').replace(/system-ui/g,'Inter,system-ui'));t.textContent=s;return t;}
+/* ---- cinema helpers: SVG glow (dropped in the light theme) + theme probe ---- */
+const CIN=window.Cinema||null;
+const isLight=()=>document.documentElement.getAttribute('data-theme')==='light';
+function glo(svg,blur){ if(!CIN||isLight()) return null; return CIN.glowFilter(svg,'g-'+(svg.id||'x'),blur||2.4); }
+const G=(p,attrs)=>{ if(p&&p.glow) attrs.filter=p.glow; return attrs; };
+/* ---- three.js stage registry: every stage rebuilds itself when the theme flips, so colours are always the live palette ---- */
+const STAGES=[];
+function mountStage(box, build){ const S={box,build,handle:null}; STAGES.push(S); remount(S);
+  if('IntersectionObserver' in window) new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting&&S.handle) S.handle.requestRender(); }),{threshold:.02}).observe(box);  /* a canvas the browser discarded off-screen gets repainted on return */
+  return S; }
+function remount(S){
+  if(S.handle){ const h=S.handle; try{ h.ctx.dead=true; const R=h.ctx.renderer; R.render=()=>{}; R.setSize=()=>{}; h.dispose(); R.forceContextLoss(); }catch(e){} S.handle=null; }  /* give the GL context back — browsers cap live contexts and silently kill the oldest; the old loop may be woken again by its observers: make it inert */
+  S.box.innerHTML=''; if(CIN&&window.THREE){ try{ S.handle=S.build(); }catch(e){ console.warn('stage failed', e); } } }
+function hud(box, cls){ const d=document.createElement('div'); d.className='hud'+(cls?' '+cls:''); box.appendChild(d); return d; }
+function hint(box, text){ const d=document.createElement('div'); d.className='hint'; d.textContent=text||'drag to orbit'; box.appendChild(d); return d; }
+new MutationObserver(()=>STAGES.forEach(remount)).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+/* a lit tube between two points (three.js coords) — the glowing-edge primitive */
+function tube(ctx,a,b,color,r,opacity){ const T=ctx.THREE; const A=new T.Vector3(...a), B=new T.Vector3(...b); const d=B.clone().sub(A), L=Math.max(1e-4,d.length());
+  const m=new T.Mesh(new T.CylinderGeometry(r,r,L,12),new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:ctx.isLight?.15:.7,roughness:.3,transparent:true,opacity:opacity==null?1:opacity}));
+  m.position.copy(A).add(d.clone().multiplyScalar(.5)); m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize()); return m; }
+/* a sprite label that only re-renders when its text changes */
+function slot(ctx,root){ return {sp:null,key:'',set(text,pos,opts){ if(text!==this.key){ if(this.sp) root.remove(this.sp); this.key=text; this.sp=text?CIN.prim.label(ctx,text,pos,opts):null; if(this.sp){ this.sp.material.depthWrite=false; this.sp.renderOrder=999; root.add(this.sp);} } else if(this.sp){ this.sp.position.set(...pos); this.sp.visible=true; } },
+  hide(){ if(this.sp) this.sp.visible=false; }}; }
+/* a soft round sprite for glowing pulses (a bare Points material draws squares) */
+let _spark=null; function sparkTex(THREE){ if(_spark) return _spark; const c=document.createElement('canvas'); c.width=c.height=64; const g=c.getContext('2d'); const r=g.createRadialGradient(32,32,0,32,32,32); r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(.3,'rgba(255,255,255,.85)'); r.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=r; g.fillRect(0,0,64,64); _spark=new THREE.CanvasTexture(c); return _spark; }
 function plane(svg,X0,X1,Y0,Y1,opts){opts=opts||{};svg.innerHTML='';
   const W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height,pad=opts.pad||26;
   const s=Math.min((W-2*pad)/(X1-X0),(H-2*pad)/(Y1-Y0));
   const cx=pad+((W-2*pad)-s*(X1-X0))/2,cy=pad+((H-2*pad)-s*(Y1-Y0))/2;
-  const px=x=>cx+(x-X0)*s,py=y=>H-cy-(y-Y0)*s,g=el('g',{},svg),step=opts.step||1;
+  const px=x=>cx+(x-X0)*s,py=y=>H-cy-(y-Y0)*s,step=opts.step||1;
+  /* the grid fades toward the edges (radial mask) and the key strokes glow */
+  const glow=glo(svg);
+  const defs=svg.querySelector('defs')||el('defs',{},svg);
+  const mid='m-'+(svg.id||'p');
+  const rg=el('radialGradient',{id:mid+'-g',cx:'50%',cy:'50%',r:'62%'},defs);
+  el('stop',{offset:'0','stop-color':'#fff'},rg); el('stop',{offset:'.72','stop-color':'#fff','stop-opacity':'.8'},rg); el('stop',{offset:'1','stop-color':'#fff','stop-opacity':'.05'},rg);
+  const mk=el('mask',{id:mid},defs); el('rect',{x:0,y:0,width:W,height:H,fill:`url(#${mid}-g)`},mk);
+  const g=el('g',{mask:`url(#${mid})`},svg);
   for(let x=Math.ceil(X0);x<=X1;x+=step)el('line',{x1:px(x),y1:py(Y0),x2:px(x),y2:py(Y1),stroke:'var(--grid)','stroke-width':x===0?0:1},g);
   for(let y=Math.ceil(Y0);y<=Y1;y+=step)el('line',{x1:px(X0),y1:py(y),x2:px(X1),y2:py(y),stroke:'var(--grid)','stroke-width':y===0?0:1},g);
   el('line',{x1:px(X0),y1:py(0),x2:px(X1),y2:py(0),stroke:'var(--axis)','stroke-width':1.5},g);
@@ -1540,8 +1762,8 @@ function plane(svg,X0,X1,Y0,Y1,opts){opts=opts||{};svg.innerHTML='';
   if(!opts.noticks){const te=opts.tickEvery||1;
     for(let x=Math.ceil(X0);x<=X1;x+=step)if(x!==0&&Math.abs(x)%te===0)txt(svg,px(x),py(0)+15,x,'font:500 10px system-ui;fill:var(--ink-muted)','middle');
     for(let y=Math.ceil(Y0);y<=Y1;y+=step)if(y!==0&&Math.abs(y)%te===0)txt(svg,px(0)-7,py(y)+3.5,y,'font:500 10px system-ui;fill:var(--ink-muted)','end');}
-  return {px,py,svg};}
-function arrow(p,x0,y0,x1,y1,color,w,label,lblStyle){const g=el('g',{},p.svg);
+  return {px,py,svg,grid:g,glow};}
+function arrow(p,x0,y0,x1,y1,color,w,label,lblStyle){const g=el('g',G(p,{}),p.svg);
   const X0=p.px(x0),Y0=p.py(y0),X1=p.px(x1),Y1=p.py(y1),dx=X1-X0,dy=Y1-Y0,L=Math.hypot(dx,dy)||1;
   const hx=X1-dx/L*10,hy=Y1-dy/L*10;
   el('line',{x1:X0,y1:Y0,x2:hx,y2:hy,stroke:color,'stroke-width':w||2.5,'stroke-linecap':'round'},g);
@@ -1550,23 +1772,16 @@ function arrow(p,x0,y0,x1,y1,color,w,label,lblStyle){const g=el('g',{},p.svg);
   if(label)txt(p.svg,X1+dx/L*8+(dx>=0?2:-2),Y1+dy/L*8,label,lblStyle||`font:700 12px system-ui;fill:${color}`,dx>=0?'start':'end');
   return g;}
 const fmt=(v,d=2)=>(+v).toFixed(d).replace(/\.?0+$/,'').replace(/^-0$/,'0');
-function engine3d(svg,opts){opts=opts||{};
-  const W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
-  let yaw=opts.yaw??-0.62,pitch=opts.pitch??0.40,scale=opts.scale||70;
-  const cx=W/2+(opts.cx||0),cy=H/2+(opts.cy||0),origin=opts.origin||[0,0,0];
-  function proj(v){const x=v[0]-origin[0],y=v[1]-origin[1],z=v[2]-origin[2];
-    const c=Math.cos(yaw),s=Math.sin(yaw),X=x*c+y*s,Y=-x*s+y*c;
-    const cp=Math.cos(pitch),sp=Math.sin(pitch);
-    return {x:cx+X*scale,y:cy-(Y*sp+z*cp)*scale,d:Y*cp-z*sp};}
-  function drag(redraw){let last=null;
-    svg.addEventListener('pointerdown',e=>{last=[e.clientX,e.clientY];try{svg.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();});
-    svg.addEventListener('pointermove',e=>{if(!last)return;yaw+=(e.clientX-last[0])*0.008;pitch=Math.max(-1.45,Math.min(1.45,pitch+(e.clientY-last[1])*0.008));last=[e.clientX,e.clientY];redraw();});
-    ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>last=null));}
-  return {proj,drag};}
 function planePt(svg,p,e){const r=svg.getBoundingClientRect(),W=+svg.viewBox.baseVal.width,H=+svg.viewBox.baseVal.height;
   const sx=(e.clientX-r.left)/r.width*W,sy=(e.clientY-r.top)/r.height*H;
   const x0=p.px(0),y0=p.py(0),ux=p.px(1)-x0,uy=p.py(1)-y0;
   return [(sx-x0)/ux,(sy-y0)/uy];}
+/* a straight SVG edge with an arrowhead, optionally glowing */
+function edge(svg,sx,sy,ex,ey,color,w,glow,op){const dx=ex-sx,dy=ey-sy,L=Math.hypot(dx,dy)||1;
+  const g=el('g',glow?{filter:glow,opacity:op==null?1:op}:{opacity:op==null?1:op},svg);
+  el('line',{x1:sx,y1:sy,x2:ex,y2:ey,stroke:color,'stroke-width':w,'stroke-linecap':'round'},g);
+  el('polygon',{points:`${ex},${ey} ${ex-dx/L*8-dy/L*3.5},${ey-dy/L*8+dx/L*3.5} ${ex-dx/L*8+dy/L*3.5},${ey-dy/L*8-dx/L*3.5}`,fill:color},g);
+  return g;}
 
 /* ---------- checks ---------- */
 const solved=new Set((store.get('mfml-u7-checks')||'').split(',').filter(Boolean));
@@ -1598,83 +1813,42 @@ updScore();
     links.forEach((l,j)=>l.classList.toggle('on',j===i));}
   addEventListener('scroll',spy,{passive:true});spy();
 })();
-const mul2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
 
-/* ---------- unit-6 local helpers ---------- */
+/* ---------- local helpers ---------- */
 function bindCtl(id,fn,fmtr){const r=document.getElementById(id),o=document.getElementById(id+'-o');
   const upd=()=>{if(o)o.textContent=fmtr?fmtr(+r.value):fmt(+r.value,2);fn(+r.value);};
   r.addEventListener('input',upd);return upd;}
 function tabs(bar,onSwitch){bar.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
   bar.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
   onSwitch(b.dataset.t);}));}
-/* marching-squares contour lines for f on [X0,X1]x[Y0,Y1] */
-function contours(p,f,levels,X0,X1,Y0,Y1,color,N){
-  N=N||44;const g=el('g',{},p.svg);
-  const hx=(X1-X0)/N,hy=(Y1-Y0)/N,V=[];
-  for(let i=0;i<=N;i++){V[i]=[];for(let j=0;j<=N;j++)V[i][j]=f(X0+i*hx,Y0+j*hy);}
-  const ip=(a,b,va,vb,L)=>a+(b-a)*((L-va)/((vb-va)||1e-9));
-  levels.forEach(L=>{let d='';
-    for(let i=0;i<N;i++)for(let j=0;j<N;j++){
-      const x0=X0+i*hx,x1=x0+hx,y0=Y0+j*hy,y1=y0+hy;
-      const v=[V[i][j],V[i+1][j],V[i+1][j+1],V[i][j+1]];
-      const cs=[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
-      const pts=[];
-      for(let k=0;k<4;k++){const a=v[k],b=v[(k+1)%4];
-        if((a<L)!==(b<L)){const A=cs[k],B=cs[(k+1)%4];
-          pts.push([ip(A[0],B[0],a,b,L),ip(A[1],B[1],a,b,L)]);}}
-      for(let k=0;k+1<pts.length;k+=2)
-        d+=`M${p.px(pts[k][0]).toFixed(1)},${p.py(pts[k][1]).toFixed(1)}L${p.px(pts[k+1][0]).toFixed(1)},${p.py(pts[k+1][1]).toFixed(1)}`;
-    }
-    if(d)el('path',{d,stroke:color||'var(--grid)','stroke-width':1.1,fill:'none'},g);});
-  return g;}
 /* ---------- tiny animation runtime (respects reduced motion) ---------- */
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const easeIO=u=>u<0.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
-const mx=(a,b,c,d)=>'<span class="mx"><i>'+a+'</i><i>'+b+'</i><i>'+c+'</i><i>'+d+'</i></span>';
 function tween(dur,step,done){
   if(RM){step(1);done&&done();return {stop(){}};}
   let dead=false;const t0=performance.now();
   (function fr(t){if(dead)return;const u=Math.min(1,(t-t0)/dur);step(easeIO(u));
     if(u<1)requestAnimationFrame(fr);else done&&done();})(t0);
   return {stop(){dead=true;}};}
-/* ---------- terrain: filled height wash + contour lines, built once as a static layer.
-   Moving parts go into the returned dyn group (clear it, redraw it — the landscape stays). */
-function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
-  opts=opts||{};
-  const p=plane(svg,X0,X1,Y0,Y1,opts.plane||{step:1,tickEvery:1,pad:26});
-  const NX=56,NY=40,V=[];let mn=1e9,mx=-1e9;
-  for(let i=0;i<=NX;i++){V[i]=[];for(let j=0;j<=NY;j++){
-    const v=f(X0+(X1-X0)*i/NX,Y0+(Y1-Y0)*j/NY);V[i][j]=v;if(v<mn)mn=v;if(v>mx)mx=v;}}
-  const heat=el('g',{},svg);
-  const cw=(X1-X0)/NX,ch=(Y1-Y0)/NY,rw=p.px(X0+cw)-p.px(X0)+0.6,rh=p.py(Y0)-p.py(Y0+ch)+0.6;
-  for(let i=0;i<NX;i++)for(let j=0;j<NY;j++){
-    const v=(V[i][j]+V[i+1][j]+V[i][j+1]+V[i+1][j+1])/4;
-    const t=(v-mn)/((mx-mn)||1);
-    const pc=Math.round(Math.pow(1-t,1.5)*32); // valley floor wears the deepest wash
-    if(pc<2)continue;
-    el('rect',{x:p.px(X0+i*cw).toFixed(1),y:p.py(Y0+(j+1)*ch).toFixed(1),width:rw.toFixed(1),height:rh.toFixed(1),
-      fill:`color-mix(in srgb, var(--s1) ${pc}%, transparent)`},heat);}
-  svg.insertBefore(heat,svg.firstChild); // under the grid lines
-  contours(p,f,levels,X0,X1,Y0,Y1,'var(--axis)',52);
-  const dyn=el('g',{},svg);
-  return {p,dyn,pd:{px:p.px,py:p.py,svg:dyn}};}
+const clamp01=v=>Math.max(0,Math.min(1,v));
 
-/* ================= W1 · THE GRAPH MACHINE ================= */
+/* ================= W1 · THE GRAPH MACHINE (three.js) ================= */
 (function(){
-  const svg=document.getElementById('gr-svg'),read=document.getElementById('gr-read'),verd=document.getElementById('gr-verdict');
-  if(!svg)return;
-  // nodes: id, pretty label, position
+  const box=document.getElementById('gr-svg'),read=document.getElementById('gr-read'),verd=document.getElementById('gr-verdict');
+  if(!box)return;
+  // nodes: id, pretty label, 3D position (x = depth in the graph)
   const NODES=[
-    {id:'x', lab:'x',      x:48,  y:168},
-    {id:'a', lab:'a = x²', x:158, y:168},
-    {id:'b', lab:'b = eᵃ', x:268, y:88},
-    {id:'c', lab:'c = a+b',x:352, y:168},
-    {id:'d', lab:'d = √c', x:462, y:98},
-    {id:'e', lab:'e = cos c',x:462,y:238},
-    {id:'f', lab:'f = d+e',x:566, y:168}];
+    {id:'x', lab:'x',        p:[-3.35, 0,   0]},
+    {id:'a', lab:'a = x²',   p:[-2.05, 0,   0]},
+    {id:'b', lab:'b = eᵃ',   p:[-0.8,  1.2,-0.55]},
+    {id:'c', lab:'c = a + b',p:[ 0.45, 0,   0]},
+    {id:'d', lab:'d = √c',   p:[ 1.75, 0.95, 0.75]},
+    {id:'e', lab:'e = cos c',p:[ 1.75,-0.95,-0.75]},
+    {id:'f', lab:'f = d + e',p:[ 3.1,  0,   0]}];
   const EDGES=[['x','a'],['a','b'],['a','c'],['b','c'],['c','d'],['c','e'],['d','f'],['e','f']];
   const FWD=['x','a','b','c','d','e','f'], BWD=['f','d','e','c','b','a','x'];
   let xv=1,fp=99,bp=-1,animH=null; // fp: forward progress index, bp: backward progress index
+  let sc=null,hudEl=null,pulse={kind:null,u:0},LSC=.0062;
   function calc(x){
     const a=x*x,b=Math.exp(a),c=a+b,d=Math.sqrt(c),e=Math.cos(c),f=d+e;
     const fb=1,db=1,eb=1,cb=db/(2*d)+eb*(-Math.sin(c)),bb=cb,ab=bb*b+cb,xb=ab*2*x;
@@ -1684,27 +1858,73 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     'x→a':'2x = '+fmt(2*V.x,2), 'a→b':'eᵃ = '+fmt(V.b,2), 'a→c':'1', 'b→c':'1',
     'c→d':'1/2√c = '+fmt(1/(2*V.d),3), 'c→e':'−sin c = '+fmt(-Math.sin(V.c),3), 'd→f':'1', 'e→f':'1'};}
   const pos=id=>NODES.find(n=>n.id===id);
-  function draw(){
-    const V=calc(xv);svg.innerHTML='';
-    const EL=edgeLab(V);
-    EDGES.forEach(([p,q])=>{
-      const P=pos(p),Q=pos(q);
-      const on=bp>=0&&bp>=BWD.indexOf(p);
-      const dx=Q.x-P.x,dy=Q.y-P.y,L=Math.hypot(dx,dy);
-      const sx=P.x+dx/L*30,sy=P.y+dy/L*30,ex=Q.x-dx/L*30,ey=Q.y-dy/L*30;
-      el('line',{x1:sx,y1:sy,x2:ex,y2:ey,stroke:on?'var(--s2)':'var(--axis)','stroke-width':on?2.4:1.6},svg);
-      el('polygon',{points:`${ex},${ey} ${ex-dx/L*8-dy/L*3.5},${ey-dy/L*8+dx/L*3.5} ${ex-dx/L*8+dy/L*3.5},${ey-dy/L*8-dx/L*3.5}`,fill:on?'var(--s2)':'var(--axis)'},svg);
-      if(on){const OFF={'x→a':[0,-8],'a→b':[12,-13],'a→c':[0,14],'b→c':[26,-2],'c→d':[12,-14],'c→e':[10,26],'d→f':[6,-10],'e→f':[-8,22]};
-        const o=OFF[p+'→'+q]||[0,-7];
-        txt(svg,(sx+ex)/2+o[0],(sy+ey)/2+o[1],EL[p+'→'+q],'font:600 9.5px system-ui;fill:var(--s2)','middle');}});
+  const lerp=(A,B,s)=>[A[0]+(B[0]-A[0])*s,A[1]+(B[1]-A[1])*s,A[2]+(B[2]-A[2])*s];
+  function build(){
+    sc=null; const narrow=box.clientWidth<560; LSC=narrow?.0084:.0062;
+    return CIN.stage3d(box,{fill:true,camera:{pos:narrow?[0.3,2.4,10.8]:[0.5,2.3,8.3],look:[0,-.15,0],fov:34},autoRotate:.06,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx, hx=k=>CIN.hex(colors[k]);
+        const grid=CIN.prim.grid(ctx,12,24,hx('grid'),{opacity:isLight?.5:.35}); grid.position.y=-1.9; root.add(grid);
+        if(!isLight){ const n=260, sp=new Float32Array(n*3); for(let k=0;k<n;k++){ sp[3*k]=(Math.random()*2-1)*12; sp[3*k+1]=(Math.random()*2-1)*6; sp[3*k+2]=(Math.random()*2-1)*12-4; }
+          const sg=new THREE.BufferGeometry(); sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+          root.add(new THREE.Points(sg,new THREE.PointsMaterial({color:hx('ink2'),size:.05,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false}))); }
+        /* edges: glowing arrows, recoloured by the story */
+        const arrows=EDGES.map(([p,q])=>{ const P=pos(p).p,Q=pos(q).p; const d=Math.hypot(Q[0]-P[0],Q[1]-P[1],Q[2]-P[2]); const A=lerp(P,Q,.3/d), B=lerp(P,Q,1-.32/d);
+          const a=CIN.prim.arrow(ctx,A,B,hx('axis'),{radius:.022,head:.18}); a.children[0].material.transparent=true; root.add(a); return a; });
+        /* nodes: a lit core + a blame halo */
+        const cores=NODES.map(n=>{ const m=new THREE.Mesh(new THREE.SphereGeometry(.24,28,22),new THREE.MeshStandardMaterial({color:hx('grid'),emissive:hx('s3'),emissiveIntensity:0,roughness:.35,metalness:.1})); m.position.set(...n.p); root.add(m); return m; });
+        const halos=NODES.map(n=>{ const m=new THREE.Mesh(new THREE.SphereGeometry(.34,28,22),new THREE.MeshStandardMaterial({color:hx('s2'),emissive:hx('s2'),emissiveIntensity:isLight?.4:1.6,transparent:true,opacity:0,depthWrite:false})); m.position.set(...n.p); root.add(m); return m; });
+        /* name labels, value labels, blame labels, edge labels */
+        NODES.forEach(n=>root.add(CIN.prim.label(ctx,n.lab,[n.p[0],n.p[1]+.5,n.p[2]],{size:24,color:colors.ink2,bg:false,depthTest:false,scale:LSC})));
+        const vals=NODES.map(()=>slot(ctx,root)), bars=NODES.map(()=>slot(ctx,root)), elab=EDGES.map(()=>slot(ctx,root));
+        /* pulses: one glowing point per edge, two colours */
+        const mkPts=(col,size,op)=>{ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(EDGES.length*3).fill(999),3));
+          const m=new THREE.Points(g,new THREE.PointsMaterial({color:col,size,map:sparkTex(THREE),transparent:true,opacity:op,blending:isLight?THREE.NormalBlending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true})); m.frustumCulled=false; root.add(m); return m; };
+        const pf=[mkPts(hx('s3'),.3,1),mkPts(hx('s3'),.8,.4)], pb=[mkPts(hx('s2'),.3,1),mkPts(hx('s2'),.85,.4)];
+        sc={THREE,ctx,root,colors,arrows,cores,halos,vals,bars,elab,pf,pb,hx};
+        hudEl=hud(box,'hud-g'); hint(box,'drag to orbit · values → in green, ← blame in orange');
+        paint();
+      },
+      update(ctx,t){ if(ctx.dead||!sc) return false; let dirty=false;
+        /* halos breathe on the nodes that hold blame */
+        sc.halos.forEach((h,i)=>{ if(h.material.opacity>0){ const k=1+.06*Math.sin(t*3+i); h.scale.set(k,k,k); dirty=true; } });
+        return dirty; }
+    });
+  }
+  function paintPulses(){
+    if(!sc) return;
+    const F=sc.pf.map(p=>p.geometry.attributes.position.array), B=sc.pb.map(p=>p.geometry.attributes.position.array);
+    EDGES.forEach(([p,q],i)=>{ const P=pos(p).p,Q=pos(q).p; let f=null,b=null;
+      if(pulse.kind==='f'){ const ip=FWD.indexOf(p),iq=FWD.indexOf(q),s=(pulse.u*6.99-ip)/(iq-ip); if(s>0&&s<1) f=lerp(P,Q,s); }
+      if(pulse.kind==='b'){ const jq=BWD.indexOf(q),jp=BWD.indexOf(p),s=(pulse.u*6.99-jq)/(jp-jq); if(s>0&&s<1) b=lerp(Q,P,s); }
+      F.forEach(A=>{ A[3*i]=f?f[0]:999; A[3*i+1]=f?f[1]:999; A[3*i+2]=f?f[2]:999; });
+      B.forEach(A=>{ A[3*i]=b?b[0]:999; A[3*i+1]=b?b[1]:999; A[3*i+2]=b?b[2]:999; }); });
+    sc.pf.concat(sc.pb).forEach(p=>p.geometry.attributes.position.needsUpdate=true);
+  }
+  function paint(){
+    if(!sc) return; const V=calc(xv), EL=edgeLab(V), {hx,ctx}=sc, light=ctx.isLight;
+    EDGES.forEach(([p,q],i)=>{
+      const on=bp>=0&&bp>=BWD.indexOf(p), fon=FWD.indexOf(q)<=fp;
+      const m=sc.arrows[i].children[0].material, col=on?hx('s2'):(fon?hx('s3'):hx('axis'));
+      m.color.setHex(col); m.emissive.setHex(col); m.emissiveIntensity=(on||fon)?(light?.2:.7):(light?0:.15); m.opacity=(on||fon)?1:.75;
+      const P=pos(p).p,Q=pos(q).p, mid=lerp(P,Q,.5);
+      const OFF={'x→a':[0,-.3,0],'a→b':[-.32,.22,0],'a→c':[0,-.3,0],'b→c':[.34,.2,0],'c→d':[-.2,.36,0],'c→e':[-.05,-.62,0],'d→f':[.2,.3,0],'e→f':[.22,-.3,0]}[p+'→'+q]||[0,-.3,0];
+      if(on) sc.elab[i].set(EL[p+'→'+q],[mid[0]+OFF[0],mid[1]+OFF[1],mid[2]+OFF[2]],{size:19,color:sc.colors.s2,bg:false,depthTest:false,scale:LSC}); else sc.elab[i].hide();
+    });
     NODES.forEach((n,i)=>{
       const fon=FWD.indexOf(n.id)<=fp, bon=BWD.indexOf(n.id)<=bp;
-      el('circle',{cx:n.x,cy:n.y,r:27,fill:fon?'var(--wash-1)':'var(--surface)',stroke:bon?'var(--s2)':(fon?'var(--s1)':'var(--ring)'),'stroke-width':bon||fon?2.2:1.4},svg);
-      txt(svg,n.x,n.y-34,n.lab,'font:650 11px system-ui;fill:var(--ink-2)','middle');
-      txt(svg,n.x,n.y+4,fon?fmt(V[n.id],Math.abs(V[n.id])>=100?1:2):'·',`font:700 12px system-ui;fill:${fon?'var(--s1)':'var(--ink-muted)'}`,'middle');
-      if(bon)txt(svg,n.x,n.y+48,(n.id==='x'?'x̄ = ':n.id+'̄ = ')+fmt(V.bars[n.id],Math.abs(V.bars[n.id])>=100?1:3),'font:700 10.5px system-ui;fill:var(--s2)','middle');});
-    txt(svg,48,24,'values →','font:700 11px system-ui;fill:var(--s1)');
-    txt(svg,566,24,'← blame','font:700 11px system-ui;fill:var(--s2)','end');
+      const core=sc.cores[i].material; core.color.setHex(fon?hx('s3'):hx('grid')); core.emissiveIntensity=fon?(light?.55:.85):0;
+      sc.halos[i].material.opacity=bon?(light?.35:.2):0;
+      if(fon) sc.vals[i].set(fmt(V[n.id],Math.abs(V[n.id])>=100?1:2),[n.p[0],n.p[1]-.42,n.p[2]],{size:22,color:sc.colors.s3,bg:false,depthTest:false,scale:LSC}); else sc.vals[i].set('·',[n.p[0],n.p[1]-.42,n.p[2]],{size:22,color:sc.colors.muted,bg:false,depthTest:false,scale:LSC});
+      if(bon) sc.bars[i].set((n.id==='x'?'x̄ = ':n.id+'̄ = ')+fmt(V.bars[n.id],Math.abs(V.bars[n.id])>=100?1:3),[n.p[0],n.p[1]-.7,n.p[2]],{size:21,color:sc.colors.s2,bg:false,depthTest:false,scale:LSC}); else sc.bars[i].hide();
+    });
+    paintPulses();
+    if(hudEl){ const done=bp>=6, mid=bp>=0; hudEl.className='hud '+(mid?'hud-o':'hud-g');
+      hudEl.innerHTML=done?`x̄ = df/dx = <b>${fmt(V.bars.x,4)}</b>`:(mid?`blame at <b>${BWD[bp]}</b> · ${BWD[bp]==='x'?'x̄':BWD[bp]+'̄'} = <b>${fmt(V.bars[BWD[bp]],3)}</b>`:(fp>=6?`f(${fmt(xv,2)}) = <b>${fmt(V.f,4)}</b>`:`values forward · node <b>${FWD[Math.max(0,fp)]}</b>`)); }
+    if(ctx.requestRender) ctx.requestRender();
+  }
+  function draw(){
+    const V=calc(xv);
     const num=(calc(xv+1e-6).f-calc(xv-1e-6).f)/2e-6;
     read.innerHTML=`f(${fmt(xv,2)}) = <b>${fp>=6?fmt(V.f,4):'—'}</b><br>`
       +`x̄ = df/dx = <b style="color:var(--s2)">${bp>=6?fmt(V.bars.x,4):'—'}</b><br>`
@@ -1714,14 +1934,15 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     else if(fp>=6){verd.className='verdict info';verd.textContent='Forward done — every node holds its value. Now press ◀ and watch the blame walk home.';}
     else if(fp<6&&fp<99){verd.className='verdict info';verd.textContent='Values flowing forward, one baby step at a time…';}
     else{verd.className='verdict info';verd.textContent='Press ▶ to push '+fmt(xv,2)+' through the graph, then ◀ to send the blame back.';}
+    paint();
   }
-  function stopAnim(){if(animH){animH.stop();animH=null;}}
+  function stopAnim(){if(animH){animH.stop();animH=null;} pulse.kind=null;}
   document.getElementById('gr-fwd').addEventListener('click',()=>{
-    stopAnim();bp=-1;fp=0;draw();
-    animH=tween(2000,u=>{fp=Math.floor(u*6.99);draw();},()=>{fp=99;draw();});});
+    stopAnim();bp=-1;fp=0;pulse.kind='f';draw();
+    animH=tween(2000,u=>{fp=Math.floor(u*6.99);pulse.u=u;draw();},()=>{fp=99;pulse.kind=null;draw();});});
   document.getElementById('gr-bwd').addEventListener('click',()=>{
-    stopAnim();fp=99;bp=0;draw();
-    animH=tween(2400,u=>{bp=Math.floor(u*6.99);draw();},()=>{bp=6;draw();});});
+    stopAnim();fp=99;bp=0;pulse.kind='b';draw();
+    animH=tween(2400,u=>{bp=Math.floor(u*6.99);pulse.u=u;draw();},()=>{bp=6;pulse.kind=null;draw();});});
   document.getElementById('gr-step').addEventListener('click',()=>{
     stopAnim();
     if(fp<6){fp++;if(fp>=6)fp=99;}          // still walking forward
@@ -1729,6 +1950,8 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     else{fp=0;bp=-1;}                        // finished both: start over
     draw();});
   bindCtl('gr-x',v=>{xv=v;stopAnim();fp=99;bp=bp>=6?6:-1;draw();})();
+  const S=mountStage(box,build);
+  let rw=box.clientWidth; addEventListener('resize',()=>{ const w=box.clientWidth; if((w<560)!==(rw<560)) remount(S); rw=w; });
   fp=99;bp=-1;draw();
 })();
 
@@ -1736,28 +1959,34 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
 (function(){
   const svg=document.getElementById('pt-svg'),read=document.getElementById('pt-read'),verd=document.getElementById('pt-verdict');
   if(!svg)return;
-  let mode=2,xv=1,yv=1;
+  let mode=2,xv=1,yv=1,animH=null;
   const N={x:{x:70,y:85,lab:'x'},y:{x:70,y:215,lab:'y'},u:{x:290,y:85,lab:'u = x²+y'},v:{x:290,y:215,lab:'v = x−y'},f:{x:510,y:150,lab:'f = uv'}};
   const EDG=[['x','u'],['x','v'],['y','u'],['y','v'],['u','f'],['v','f']];
   function draw(){
     const u=xv*xv+yv,v=xv-yv,f=u*v;svg.innerHTML='';
+    const glow=glo(svg);
     const lab={'x→u':'∂u/∂x = 2x = '+fmt(2*xv,2),'x→v':'∂v/∂x = 1','y→u':'∂u/∂y = 1','y→v':'∂v/∂y = −1',
                'u→f':'∂f/∂u = v = '+fmt(v,2),'v→f':'∂f/∂v = u = '+fmt(u,2)};
     const hot=mode===0?['x→u','u→f']:(mode===1?['x→v','v→f']:(mode===2?['x→u','u→f','x→v','v→f']:['y→u','u→f','y→v','v→f']));
+    const hotPts=[];
     EDG.forEach(([p,q])=>{
       const P=N[p],Q=N[q],key=p+'→'+q,on=hot.includes(key);
       const dx=Q.x-P.x,dy=Q.y-P.y,L=Math.hypot(dx,dy);
       const sx=P.x+dx/L*34,sy=P.y+dy/L*20,ex=Q.x-dx/L*36,ey=Q.y-dy/L*20;
-      el('line',{x1:sx,y1:sy,x2:ex,y2:ey,stroke:on?'var(--s2)':'var(--axis)','stroke-width':on?2.8:1.4,opacity:on?1:.6},svg);
-      el('polygon',{points:`${ex},${ey} ${ex-dx/L*8-dy/L*3.5},${ey-dy/L*8+dx/L*3.5} ${ex-dx/L*8+dy/L*3.5},${ey-dy/L*8-dx/L*3.5}`,fill:on?'var(--s2)':'var(--axis)',opacity:on?1:.6},svg);
-      if(on){ // labels sit beside their edge, never on it: [fraction along edge, dx, dy, anchor]
+      edge(svg,sx,sy,ex,ey,on?'var(--s2)':'var(--axis)',on?3:1.4,on?glow:null,on?1:.55);
+      if(on){ hotPts.push([sx,sy,ex,ey]); // labels sit beside their edge, never on it: [fraction along edge, dx, dy, anchor]
         const LP={'x→u':[.5,0,-10,'middle'],'y→v':[.5,0,18,'middle'],'x→v':[.3,-10,8,'end'],'y→u':[.3,-10,-4,'end'],'u→f':[.5,0,-22,'middle'],'v→f':[.5,0,30,'middle']}[key]||[.5,0,-8,'middle'];
         txt(svg,sx+(ex-sx)*LP[0]+LP[1],sy+(ey-sy)*LP[0]+LP[2],lab[key],'font:650 10px system-ui;fill:var(--s2)',LP[3]);}});
     Object.entries(N).forEach(([id,n])=>{
       const val=id==='x'?xv:(id==='y'?yv:(id==='u'?u:(id==='v'?v:f)));
-      el('rect',{x:n.x-46,y:n.y-22,width:92,height:44,rx:11,fill:'var(--surface)',stroke:'var(--s1)','stroke-width':1.8},svg);
+      const lit=hot.some(k=>k.split('→').includes(id));
+      el('rect',{x:n.x-46,y:n.y-22,width:92,height:44,rx:11,fill:lit?'color-mix(in srgb, var(--s1) 16%, var(--surface))':'var(--surface)',stroke:lit?'var(--s1)':'var(--line, var(--ring))','stroke-width':lit?2:1.4,filter:lit&&glow?glow:'none'},svg);
       txt(svg,n.x,n.y-6,n.lab,'font:650 10.5px system-ui;fill:var(--ink-2)','middle');
       txt(svg,n.x,n.y+11,'= '+fmt(val,2),'font:700 11.5px system-ui;fill:var(--s1)','middle');});
+    /* a spark rides every hot route, so the eye follows the product edge by edge */
+    if(hotPts.length&&!RM){ const sparks=hotPts.map(()=>el('circle',G({glow},{r:4.5,fill:'var(--s4)',opacity:0}),svg));
+      if(animH)animH.stop();
+      animH=tween(1400,t=>{ sparks.forEach((c,i)=>{ const [sx,sy,ex,ey]=hotPts[i]; c.setAttribute('cx',sx+(ex-sx)*t); c.setAttribute('cy',sy+(ey-sy)*t); c.setAttribute('opacity',t<.05||t>.97?0:.95); }); },()=>{animH=null;sparks.forEach(c=>c.remove());}); }
     const viaU_x=v*2*xv, viaV_x=u*1, viaU_y=v*1, viaV_y=u*(-1);
     if(mode===0){read.innerHTML=`route x→u→f:<br>(∂f/∂u)(∂u/∂x) = ${fmt(v,2)} × ${fmt(2*xv,2)} = <b>${fmt(viaU_x,2)}</b>`;
       verd.className='verdict info';verd.textContent='One route, one product. But x has another way to reach f — this alone is not ∂f/∂x.';}
@@ -1774,55 +2003,107 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
   draw();
 })();
 
-/* ================= W3 · THE LEARNING NEURON ================= */
+/* ================= W3 · THE LEARNING NEURON (three.js loss landscape + circuit strip) ================= */
 (function(){
-  const svg=document.getElementById('nr-svg'),read=document.getElementById('nr-read'),verd=document.getElementById('nr-verdict');
-  if(!svg)return;
-  let w=0.5,b=0,xv=1,yv=1,hist=[],animH=null;
+  const box=document.getElementById('nr-svg'),circ=document.getElementById('nr-circuit'),read=document.getElementById('nr-read'),verd=document.getElementById('nr-verdict');
+  if(!box)return;
+  let w=0.5,b=0,xv=1,yv=1,hist=[],animH=null,trail=[[0.5,0]];
   const ETA=0.5;
+  const WR=[-2.2,3.2],BR=[-2.7,2.7],CW=(WR[0]+WR[1])/2,CB=(BR[0]+BR[1])/2,ZS=1.15;
+  const Lf=(W,B)=>{const a=Math.tanh(W*xv+B);return .5*(a-yv)*(a-yv);};
+  const P3=(W,B,L)=>[W-CW,L*ZS,-(B-CB)];
+  let sc=null,hudEl=null,LSC=.0062;
   function calc(){
     const z=w*xv+b,a=Math.tanh(z),L=0.5*(a-yv)*(a-yv);
     const dLda=a-yv,dadz=1-a*a,del=dLda*dadz;
     return {z,a,L,del,gw:del*xv,gb:del,gx:del*w};}
-  function box(X,Y,W2,H,title,val,col){
-    el('rect',{x:X,y:Y,width:W2,height:H,rx:10,fill:'var(--surface)',stroke:col,'stroke-width':2},svg);
-    txt(svg,X+W2/2,Y+18,title,`font:650 11px system-ui;fill:${col}`,'middle');
-    txt(svg,X+W2/2,Y+36,val,'font:700 12px system-ui;fill:var(--ink)','middle');}
-  function draw(){
-    const C=calc();svg.innerHTML='';
-    box(28,52,92,48,'weight w',fmt(w,3),'var(--s7)');
-    box(28,126,92,48,'input x',fmt(xv,2),'var(--s1)');
-    box(28,200,92,48,'bias b',fmt(b,3),'var(--s7)');
-    box(215,126,110,48,'z = wx+b',fmt(C.z,3),'var(--s1)');
-    box(400,126,110,48,'a = tanh z',fmt(C.a,3),'var(--s3)');
-    box(400,214,110,44,'target y',fmt(yv,2),'var(--ink-2)');
-    box(538,126,74,48,'loss L',fmt(C.L,4),'var(--s2)');
-    [[120,76,215,142],[120,150,215,150],[120,224,215,158],[325,150,400,150],[510,150,538,150],[455,214,545,176]].forEach(([x1,y1,x2,y2])=>{
-      el('line',{x1,y1,x2,y2,stroke:'var(--axis)','stroke-width':1.8},svg);});
-    // backward blame labels
-    txt(svg,270,196,'δ = ∂L/∂z = '+fmt(C.del,4),'font:700 10.5px system-ui;fill:var(--s2)','middle');
-    txt(svg,74,116,'∂L/∂w = δ·x = '+fmt(C.gw,4),'font:650 9.5px system-ui;fill:var(--s2)','middle');
-    txt(svg,74,264,'∂L/∂b = δ = '+fmt(C.gb,4),'font:650 9.5px system-ui;fill:var(--s2)','middle');
-    // loss history meter
-    txt(svg,28,290,hist.length?'loss over your steps:':'loss meter — press “take a gradient step”','font:600 9.5px system-ui;fill:var(--ink-muted)');
+  function build(){
+    sc=null; const narrow=box.clientWidth<560; LSC=narrow?.0085:.0062;
+    return CIN.stage3d(box,{fill:true,camera:{pos:narrow?[6.2,5.4,8.6]:[5.5,4.6,7.4],look:[0,.5,0],fov:34},autoRotate:.08,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx, hx=k=>CIN.hex(colors[k]);
+        const grid=CIN.prim.grid(ctx,7,14,hx('grid'),{opacity:isLight?.5:.35}); grid.position.y=-.04; root.add(grid);
+        const surf=CIN.prim.surface(ctx,Lf,{x:WR,y:BR,res:84,zscale:ZS,ramp:[colors.s3,colors.s7,colors.s2],opacity:isLight?.96:.93}); root.add(surf);
+        [['w →',[WR[1]-CW+.35,0,-(BR[0]-CB)+.1]],['b →',[WR[0]-CW-.2,0,-(BR[1]-CB)-.3]],['loss ↑',[WR[0]-CW+.2,ZS*1.9,-(BR[1]-CB)-.2]]].forEach(([t,p])=>root.add(CIN.prim.label(ctx,t,p,{size:24,color:colors.muted,bg:false,depthTest:false})));
+        const dot=CIN.prim.dot(ctx,[0,0,0],hx('s4'),.11); root.add(dot);
+        const halo=CIN.prim.dot(ctx,[0,0,0],hx('s4'),.22); halo.material.transparent=true; halo.material.opacity=isLight?.2:.25; halo.material.depthWrite=false; root.add(halo);
+        const arr=CIN.prim.arrow(ctx,[0,0,0],[0,0,1],hx('s2'),{radius:.035,head:.22}); root.add(arr);
+        const trailGrp=new THREE.Group(); root.add(trailGrp);
+        const lab=slot(ctx,root);
+        sc={THREE,ctx,root,colors,surf,dot,halo,arr,trailGrp,lab,hx,trailN:0};
+        hudEl=hud(box,'hud-o'); hint(box,'drag to orbit · the trail is your descent');
+        reshape(); paint();
+      },
+      update(ctx,t){ if(ctx.dead||!sc) return false; const k=1+.15*Math.sin(t*3.2); sc.halo.scale.set(k,k,k); return true; }
+    });
+  }
+  /* x or y moved: the landscape itself changes — rewrite heights and colours in place */
+  function reshape(){
+    if(!sc) return; const {surf,ctx}=sc, T=ctx.THREE, geo=surf.userData.geo, pos=geo.attributes.position, col=geo.attributes.color;
+    let zmin=Infinity,zmax=-Infinity; const zs=new Float32Array(pos.count);
+    for(let i=0;i<pos.count;i++){ const W=pos.getX(i)+CW, B=-pos.getZ(i)+CB; const z=Lf(W,B); zs[i]=z; zmin=Math.min(zmin,z); zmax=Math.max(zmax,z); }
+    const c=sc.colors, white=new T.Color(1,1,1); for(let i=0;i<pos.count;i++){ pos.setY(i,zs[i]*ZS); const t=(zs[i]-zmin)/((zmax-zmin)||1); const k=new T.Color(CIN.ramp(t,c.s3,c.s7,c.s2)); if(ctx.isLight) k.lerp(white,.42); k.convertSRGBToLinear(); col.setXYZ(i,k.r,k.g,k.b); }
+    pos.needsUpdate=true; col.needsUpdate=true; geo.computeVertexNormals();
+  }
+  function paint(){
+    if(!sc) return; const C=calc(), {hx,ctx}=sc;
+    const p=P3(w,b,C.L); sc.dot.position.set(p[0],p[1]+.02,p[2]); sc.halo.position.copy(sc.dot.position);
+    /* the arrow is the very next step: (w,b) − η∇ — where "press step" will land */
+    const nw=w-ETA*C.gw, nb=b-ETA*C.gb, q=P3(nw,nb,Lf(nw,nb)); const len=Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2]);
+    sc.arr.visible=len>.05; if(sc.arr.visible) sc.arr.userData.set([p[0],p[1]+.02,p[2]],[q[0],q[1]+.02,q[2]]);
+    sc.lab.set('(w, b) = ('+fmt(w,2)+', '+fmt(b,2)+')',[p[0],p[1]+.5,p[2]],{size:21,color:sc.colors.s4,bg:false,depthTest:false,scale:LSC});
+    /* rebuild the glowing trail only when it grew or was reset */
+    if(sc.trailN!==trail.length){ sc.trailGrp.clear(); sc.trailN=trail.length;
+      const pts=trail.map(([W,B])=>{ const r=P3(W,B,Lf(W,B)); return [r[0],r[1]+.03,r[2]]; });
+      for(let i=1;i<pts.length;i++){ sc.trailGrp.add(tube(ctx,pts[i-1],pts[i],hx('s4'),.024)); sc.trailGrp.add(CIN.prim.dot(ctx,pts[i-1],hx('s4'),.045)); } }
+    if(hudEl) hudEl.innerHTML=`L = <b>${fmt(C.L,4)}</b> · δ = <b>${fmt(C.del,3)}</b> · step <b>${hist.length}</b>`;
+    if(ctx.requestRender) ctx.requestRender();
+  }
+  /* the circuit strip: the neuron's wiring with live numbers, blame in orange along the same wires */
+  function boxS(X,Y,W2,H,title,val,col,glow){
+    el('rect',{x:X,y:Y,width:W2,height:H,rx:8,fill:'color-mix(in srgb, '+col+' 10%, var(--surface))',stroke:col,'stroke-width':1.6,filter:glow||'none'},circ);
+    txt(circ,X+W2/2,Y+11,title,`font:650 9px system-ui;fill:${col}`,'middle');
+    txt(circ,X+W2/2,Y+23,val,'font:700 10.5px system-ui;fill:var(--ink)','middle');}
+  function drawCirc(){
+    if(!circ) return; const C=calc(); circ.innerHTML=''; const glow=glo(circ,2);
+    [[94,21,190,52],[94,59,190,59],[94,97,190,66],[290,59,330,59],[430,59,470,59],[560,97,520,73]].forEach(([x1,y1,x2,y2])=>el('line',{x1,y1,x2,y2,stroke:'var(--axis)','stroke-width':1.8},circ));
+    boxS(14,8,80,28,'weight w',fmt(w,3),'var(--s7)',glow);
+    boxS(14,46,80,28,'input x',fmt(xv,2),'var(--s1)');
+    boxS(14,84,80,28,'bias b',fmt(b,3),'var(--s7)',glow);
+    boxS(190,46,100,28,'z = wx + b',fmt(C.z,3),'var(--s1)');
+    boxS(330,46,100,28,'a = tanh z',fmt(C.a,3),'var(--s3)',glow);
+    boxS(470,46,74,28,'loss L',fmt(C.L,4),'var(--s2)',glow);
+    boxS(560,84,52,28,'target',fmt(yv,2),'var(--ink-2)');
+    txt(circ,240,96,'δ = ∂L/∂z = '+fmt(C.del,4),'font:700 10px system-ui;fill:var(--s2)','middle');
+    txt(circ,142,14,'∂L/∂w = δ·x = '+fmt(C.gw,4),'font:650 8.5px system-ui;fill:var(--s2)','middle');
+    txt(circ,142,112,'∂L/∂b = δ = '+fmt(C.gb,4),'font:650 8.5px system-ui;fill:var(--s2)','middle');
+    txt(circ,380,20,'← blame walks the same wires','font:600 8.5px system-ui;fill:var(--s2)','middle');
+    /* loss meter */
+    txt(circ,330,92,hist.length?'loss over your steps':'loss meter','font:600 8.5px system-ui;fill:var(--ink-muted)');
     const H0=Math.max(0.02,...hist,C.L);
-    [...hist,C.L].slice(-34).forEach((Lv,i)=>{const h=Math.max(1.5,Lv/H0*36);
-      el('rect',{x:150+i*12,y:296-h,width:9,height:h,rx:2,fill:i===Math.min(hist.length,33)?'var(--s2)':'var(--s1)',opacity:.85},svg);});
+    [...hist,C.L].slice(-22).forEach((Lv,i)=>{const h=Math.max(1.5,Lv/H0*16);
+      el('rect',{x:330+i*6,y:112-h,width:4.5,height:h,rx:1,fill:i===Math.min(hist.length,21)?'var(--s2)':'var(--s1)',opacity:.9,filter:glow||'none'},circ);});
+  }
+  function draw(){
+    const C=calc();
     read.innerHTML=`z = ${fmt(C.z,3)} · a = <b>${fmt(C.a,3)}</b> · L = <b style="color:var(--s2)">${fmt(C.L,4)}</b><br>`
       +`δ = <b style="color:var(--s2)">${fmt(C.del,4)}</b><br>∂L/∂w = ${fmt(C.gw,4)} · ∂L/∂b = ${fmt(C.gb,4)}<br>steps taken: <b>${hist.length}</b>`;
     if(C.L<0.0005){verd.className='verdict good';verd.textContent='✓ Trained: the output a sits on the target, the loss is ≈ 0, and δ has nothing left to complain about. That is what "learning converged" means.';}
     else if(hist.length===0){verd.className='verdict info';verd.textContent='Both gradients are '+(C.gw<0?'negative — the loss wants w and b bigger':'positive — the loss wants w and b smaller')+'. One step with η = '+ETA+' will move w by '+fmt(-ETA*C.gw,3)+' and b by '+fmt(-ETA*C.gb,3)+'. Press step and watch.';}
     else{verd.className='verdict info';verd.textContent='Loss '+fmt(C.L,4)+(hist[hist.length-1]>C.L?' and falling':' — not falling: the step overshot (η = '+ETA+' is large for this x); keep going or reset')+'. Each press: w ← w − η·δ·x = w − '+ETA+'·('+fmt(C.del,3)+')·('+fmt(xv,2)+'),  b ← b − η·δ.';}
+    drawCirc(); paint();
   }
-  function step(){const C=calc();hist.push(C.L);w-=ETA*C.gw;b-=ETA*C.gb;draw();}
+  function step(){const C=calc();hist.push(C.L);w-=ETA*C.gw;b-=ETA*C.gb;trail.push([w,b]);if(trail.length>80)trail.shift();draw();}
   document.getElementById('nr-step').addEventListener('click',()=>{if(animH){animH.stop();animH=null;}step();});
   document.getElementById('nr-auto').addEventListener('click',()=>{
     if(animH){animH.stop();animH=null;return;}
     let done=0;
     animH=tween(2600,u=>{const want=Math.floor(u*20);while(done<want){step();done++;}},()=>{animH=null;});});
-  document.getElementById('nr-reset').addEventListener('click',()=>{if(animH){animH.stop();animH=null;}w=0.5;b=0;hist=[];draw();});
-  bindCtl('nr-x',v=>{xv=v;draw();})();
-  bindCtl('nr-y',v=>{yv=v;draw();})();
+  document.getElementById('nr-reset').addEventListener('click',()=>{if(animH){animH.stop();animH=null;}w=0.5;b=0;hist=[];trail=[[0.5,0]];draw();});
+  bindCtl('nr-x',v=>{xv=v;reshape();draw();})();
+  bindCtl('nr-y',v=>{yv=v;reshape();draw();})();
+  const S=mountStage(box,build);
+  let rw=box.clientWidth; addEventListener('resize',()=>{ const W=box.clientWidth; if((W<560)!==(rw<560)) remount(S); rw=W; });
   draw();
 })();
 
@@ -1842,16 +2123,18 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     dA=[[dz[0]*xv[0],dz[0]*xv[1]],[dz[1]*xv[0],dz[1]*xv[1]]];
     dxv=[A[0][0]*dz[0]+A[1][0]*dz[1], A[0][1]*dz[0]+A[1][1]*dz[1]];}
   recompute();
-  let stage=0;
+  let stage=0,glow=null,fresh=null,lastStage=-1;
   function pending(X,Y,W2,H,title){ // a greyed placeholder for a stage not reached yet
-    el('rect',{x:X,y:Y,width:W2,height:H,rx:11,fill:'none',stroke:'var(--ring)','stroke-width':1.2,'stroke-dasharray':'5 4',opacity:.7},svg);
+    el('rect',{x:X,y:Y,width:W2,height:H,rx:11,fill:'none',stroke:'var(--line, var(--ring))','stroke-width':1.2,'stroke-dasharray':'5 4',opacity:.7},svg);
     txt(svg,X+W2/2,Y+H/2+4,title,'font:600 10px system-ui;fill:var(--ink-muted)','middle');}
-  function card(X,Y,W2,H,title,col,on){
-    el('rect',{x:X,y:Y,width:W2,height:H,rx:11,fill:on?'var(--surface)':'var(--page)',stroke:on?col:'var(--ring)','stroke-width':on?2.2:1.3},svg);
-    txt(svg,X+W2/2,Y+17,title,`font:650 10.5px system-ui;fill:${on?col:'var(--ink-muted)'}`,'middle');}
+  function card(X,Y,W2,H,title,col,on,hot){
+    const g=el('g',hot?{class:'ly-fresh'}:{},svg);
+    el('rect',{x:X,y:Y,width:W2,height:H,rx:11,fill:on?'color-mix(in srgb, '+col+' 9%, var(--surface))':'color-mix(in srgb, var(--surface) 70%, transparent)',stroke:on?col:'var(--line, var(--ring))','stroke-width':on?2:1.3,filter:on&&glow?glow:'none'},g);
+    txt(g,X+W2/2,Y+17,title,`font:650 10.5px system-ui;fill:${on?col:'var(--ink-muted)'}`,'middle');
+    return g;}
   const vstr=(v,d)=>'('+fmt(v[0],d)+', '+fmt(v[1],d)+')';
   function draw(){
-    svg.innerHTML='';
+    svg.innerHTML=''; glow=glo(svg,2);
     // forward row
     card(20,60,96,58,'input x','var(--s1)',true);
     txt(svg,68,95,vstr(xv,2),'font:700 11.5px system-ui;fill:var(--ink)','middle');
@@ -1859,29 +2142,37 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     txt(svg,210,95,vstr(Z,2),'font:700 11.5px system-ui;fill:var(--ink)','middle');
     card(304,60,110,58,'a = σ(Z)','var(--s3)',stage>=0);
     txt(svg,359,95,vstr(av,3),'font:700 11px system-ui;fill:var(--ink)','middle');
-    card(448,60,150,58,'…the loss, above','var(--s2)',stage>=1);
+    card(448,60,150,58,'…the loss, above','var(--s2)',stage>=1,stage===1);
     txt(svg,523,95,stage>=1?('δ⁽ᵃ⁾ = '+vstr(da,2)):'·','font:700 11px system-ui;fill:var(--s2)','middle');
-    [[116,89,150,89],[270,89,304,89],[414,89,448,89]].forEach(([x1,y1,x2,y2])=>el('line',{x1,y1,x2,y2,stroke:'var(--axis)','stroke-width':1.8},svg));
+    [[116,89,150,89],[270,89,304,89],[414,89,448,89]].forEach(([x1,y1,x2,y2])=>edge(svg,x1,y1,x2-6,y2,'var(--s1)',1.8,glow,.9));
+    if(stage>=1) [[448,100,414,100],[304,100,270,100]].forEach(([x1,y1,x2,y2])=>edge(svg,x1,y1,x2+6,y2,'var(--s2)',1.8,glow,stage>=2?.9:.35));
     // backward story
     if(stage>=2){
-      txt(svg,359,150,'through σ, entrywise: δ⁽ᶻ⁾ = δ⁽ᵃ⁾ ⊙ a ⊙ (1−a)','font:650 11px system-ui;fill:var(--s2)','middle');
-      txt(svg,359,170,'a⊙(1−a) = '+vstr(s,3)+'  →  δ⁽ᶻ⁾ = '+vstr(dz,3),'font:700 11px system-ui;fill:var(--ink)','middle');
+      const g=el('g',{class:'ly-fresh'},svg);
+      el('rect',{x:150,y:138,width:420,height:42,rx:11,fill:'color-mix(in srgb, var(--s2) 8%, var(--surface))',stroke:'var(--s2)','stroke-width':1.6,filter:glow||'none'},g);
+      txt(g,359,154,'through σ, entrywise: δ⁽ᶻ⁾ = δ⁽ᵃ⁾ ⊙ a ⊙ (1−a)','font:650 11px system-ui;fill:var(--s2)','middle');
+      txt(g,359,172,'a⊙(1−a) = '+vstr(s,3)+'  →  δ⁽ᶻ⁾ = '+vstr(dz,3),'font:700 11px system-ui;fill:var(--ink)','middle');
     } else pending(150,138,420,42,'stage 3 · through σ: δ⁽ᶻ⁾ = δ⁽ᵃ⁾ ⊙ a ⊙ (1−a)');
     if(stage<3){pending(20,196,190,110,'stage 4 · ∂L/∂A');pending(232,196,150,64,'stage 4 · ∂L/∂b');pending(404,196,194,64,'stage 4 · ∂L/∂x');}
     if(stage>=3){
       // the three gradient cards
-      card(20,196,190,110,'∂L/∂A = δ⁽ᶻ⁾ xᵀ  (outer product)','var(--s2)',true);
+      const g=card(20,196,190,110,'∂L/∂A = δ⁽ᶻ⁾ xᵀ  (outer product)','var(--s2)',true,true);
       const gx0=52,gy0=228,cw=64,ch=30;
       for(let i2=0;i2<2;i2++)for(let j=0;j<2;j++){
-        el('rect',{x:gx0+j*cw,y:gy0+i2*ch,width:cw-4,height:ch-4,rx:5,fill:'color-mix(in srgb, var(--s2) '+Math.round(Math.abs(dA[i2][j])/0.15*30+6)+'%, var(--surface))'},svg);
-        txt(svg,gx0+j*cw+cw/2-2,gy0+i2*ch+ch/2+2,fmt(dA[i2][j],3),'font:700 10px system-ui;fill:var(--ink)','middle');}
+        el('rect',{x:gx0+j*cw,y:gy0+i2*ch,width:cw-4,height:ch-4,rx:5,fill:'color-mix(in srgb, var(--s2) '+Math.round(Math.abs(dA[i2][j])/0.15*40+6)+'%, var(--surface))',stroke:'color-mix(in srgb, var(--s2) '+Math.round(Math.abs(dA[i2][j])/0.15*60+10)+'%, transparent)'},g);
+        txt(g,gx0+j*cw+cw/2-2,gy0+i2*ch+ch/2+2,fmt(dA[i2][j],3),'font:700 10px system-ui;fill:var(--ink)','middle');}
       txt(svg,20,322,'row = which neuron was blamed · column = which input was active','font:600 9px system-ui;fill:var(--ink-muted)');
-      card(232,196,150,64,'∂L/∂b = δ⁽ᶻ⁾','var(--s2)',true);
-      txt(svg,307,232,vstr(dz,3),'font:700 11px system-ui;fill:var(--ink)','middle');
-      card(404,196,194,64,'∂L/∂x = Aᵀδ⁽ᶻ⁾ → mail down','var(--s2)',true);
-      txt(svg,501,232,vstr(dxv,3),'font:700 11px system-ui;fill:var(--ink)','middle');
+      const g2=card(232,196,150,64,'∂L/∂b = δ⁽ᶻ⁾','var(--s2)',true,true);
+      txt(g2,307,232,vstr(dz,3),'font:700 11px system-ui;fill:var(--ink)','middle');
+      const g3=card(404,196,194,64,'∂L/∂x = Aᵀδ⁽ᶻ⁾ → mail down','var(--s2)',true,true);
+      txt(g3,501,232,vstr(dxv,3),'font:700 11px system-ui;fill:var(--ink)','middle');
       txt(svg,501,276,'this becomes the previous layer’s δ⁽ᵃ⁾','font:600 9px system-ui;fill:var(--ink-muted)','middle');
+      edge(svg,501,262,501,290,'var(--s2)',1.8,glow,.8);
     }
+    /* the newly-revealed cards fade up */
+    if(!RM&&stage!==lastStage){ const fr=[...svg.querySelectorAll('.ly-fresh')]; if(fr.length){ if(fresh)fresh.stop(); fr.forEach(e=>e.setAttribute('opacity',0));
+      fresh=tween(520,u=>fr.forEach(e=>{e.setAttribute('opacity',u);e.setAttribute('transform',`translate(0,${(1-u)*8})`);}),()=>{fresh=null;}); } }
+    lastStage=stage;
     const RD=[
       'Forward: Z = ('+fmt(Z[0],2)+', '+fmt(Z[1],2)+'), a = '+vstr(av,3)+'.',
       'The loss above computes its own gradient and mails it down: δ⁽ᵃ⁾ = '+vstr(da,2)+'.',
@@ -1908,11 +2199,11 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
   let K=4;
   const SUB=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
   function draw(){
-    svg.innerHTML='';
+    svg.innerHTML=''; const glow=glo(svg,2);
     const x0=118,y0=34,bh=24;
     const bw=Math.min(64,Math.floor((620-x0-12)/(K+1))-4);
     txt(svg,x0-8,y0-12,'each row = one layer’s gradient · blocks = chain-rule factors','font:600 10px system-ui;fill:var(--ink-muted)');
-    let naive=0;
+    let naive=0,k=0;
     for(let i=0;i<K;i++){ // row i computes ∂L/∂θ_{K-1-i}: (i+1) chain factors + 1 parameter tap
       const y=y0+i*(bh+9);
       const li=K-1-i; // this row: ∂L/∂θ_li
@@ -1920,8 +2211,8 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
       const n=i+2;naive+=n;
       for(let j=0;j<n;j++){
         const reused=j<n-2; // everything but the newest chain factor and the parameter tap is inherited
-        el('rect',{x:x0+j*(bw+4),y,width:bw,height:bh,rx:6,
-          fill:reused?'var(--surface)':'var(--wash-1)',stroke:reused?'var(--ring)':'var(--s1)','stroke-width':reused?1.2:1.8},svg);
+        el('rect',{x:x0+j*(bw+4),y,width:bw,height:bh,rx:6,class:'blk',style:'--k:'+(k++),
+          fill:reused?'color-mix(in srgb, var(--surface-2, var(--surface)) 70%, transparent)':'color-mix(in srgb, var(--s1) 22%, var(--surface))',stroke:reused?'var(--line, var(--ring))':'var(--s1)','stroke-width':reused?1.2:1.8,filter:!reused&&glow?glow:'none'},svg);
         // factor j: ∂L/∂f_K, then ∂f_{K-j+1}/∂f_{K-j}, …, last is ∂f_{li+1}/∂θ_li
         const t=j===0?'∂L/∂f'+SUB(K):(j<n-1?'∂f'+SUB(K-j+1)+'/∂f'+SUB(K-j):'∂f'+SUB(li+1)+'/∂θ'+SUB(li));
         txt(svg,x0+j*(bw+4)+bw/2,y+bh/2+3.5,t,'font:600 '+(bw<44?'8':'9.5')+'px system-ui;fill:'+(reused?'var(--ink-muted)':'var(--s1)'),'middle');
@@ -1937,7 +2228,7 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
   draw();
 })();
 
-/* ================= W6 · THE STAND-IN LINE ================= */
+/* ================= W6 · THE STAND-IN LINE (+ the stand-in plane, three.js) ================= */
 (function(){
   const svg=document.getElementById('ln-svg'),read=document.getElementById('ln-read'),verd=document.getElementById('ln-verdict');
   if(!svg)return;
@@ -1951,17 +2242,18 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     p=plane(svg,F.X[0],F.X[1],F.Y[0],F.Y[1],{step:1,tickEvery:2,pad:26});
     let d='';for(let i=0;i<=300;i++){const x=F.X[0]+(F.X[1]-F.X[0])*i/300,y=F.f(x);
       d+=(i?'L':'M')+p.px(x).toFixed(1)+','+p.py(Math.max(F.Y[0],Math.min(F.Y[1],y))).toFixed(1);}
-    el('path',{d,stroke:'var(--s1)','stroke-width':2.8,fill:'none'},svg);
+    el('path',G(p,{d,stroke:'var(--s1)','stroke-width':3,fill:'none','stroke-linecap':'round'}),svg);
     const f0=F.f(x0),m=F.d(x0);
     const Lof=x=>f0+m*(x-x0);
-    el('path',{d:`M${p.px(F.X[0])},${p.py(Lof(F.X[0]))}L${p.px(F.X[1])},${p.py(Lof(F.X[1]))}`,stroke:'var(--s2)','stroke-width':2.2,'stroke-dasharray':'7 4'},svg);
+    el('path',G(p,{d:`M${p.px(F.X[0])},${p.py(Lof(F.X[0]))}L${p.px(F.X[1])},${p.py(Lof(F.X[1]))}`,stroke:'var(--s2)','stroke-width':2.4,'stroke-dasharray':'7 4'}),svg);
     // probe: true vs stand-in
     const ft=F.f(xp),fl=Lof(xp);
-    el('line',{x1:p.px(xp),y1:p.py(ft),x2:p.px(xp),y2:p.py(fl),stroke:'var(--critical)','stroke-width':2.6,opacity:.85},svg);
-    el('circle',{cx:p.px(xp),cy:p.py(ft),r:5,fill:'var(--s1)'},svg);
-    el('circle',{cx:p.px(xp),cy:p.py(fl),r:5,fill:'var(--s2)'},svg);
-    el('circle',{cx:p.px(x0),cy:p.py(f0),r:6.5,fill:'var(--ink)',stroke:'var(--surface)','stroke-width':1.5},svg);
-    txt(svg,p.px(x0),p.py(f0)-14,'anchor x₀','font:700 10.5px system-ui;fill:var(--ink-2)','middle');
+    el('line',G(p,{x1:p.px(xp),y1:p.py(ft),x2:p.px(xp),y2:p.py(fl),stroke:'var(--critical)','stroke-width':3,opacity:.9,'stroke-linecap':'round'}),svg);
+    el('circle',G(p,{cx:p.px(xp),cy:p.py(ft),r:5.5,fill:'var(--s1)'}),svg);
+    el('circle',G(p,{cx:p.px(xp),cy:p.py(fl),r:5.5,fill:'var(--s2)'}),svg);
+    el('circle',G(p,{cx:p.px(x0),cy:p.py(f0),r:11,fill:'var(--s4)',opacity:.25}),svg);
+    el('circle',G(p,{cx:p.px(x0),cy:p.py(f0),r:6.5,fill:'var(--s4)',stroke:'var(--page)','stroke-width':1.5}),svg);
+    txt(svg,p.px(x0),p.py(f0)-16,'anchor x₀','font:700 10.5px system-ui;fill:var(--s4)','middle');
     txt(svg,p.px(xp)+8,p.py((ft+fl)/2)+3,'error','font:650 10px system-ui;fill:var(--critical)');
     read.innerHTML=`anchor: f(${fmt(x0,2)}) = <b>${fmt(f0,3)}</b>, slope f′ = <b>${fmt(m,3)}</b><br>`
       +`stand-in: L(x) = ${fmt(f0,2)} ${m>=0?'+':'−'} ${fmt(Math.abs(m),2)}(x ${x0>=0?'−':'+'} ${fmt(Math.abs(x0),2)})<br>`
@@ -1984,6 +2276,67 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
   ['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>mode=null));
   tabs(document.getElementById('ln-tabs'),t=>{k=+t;x0=FS[k].a0;xp=FS[k].p0;draw();});
   draw();
+
+  /* ---- part two: the stand-in plane on f(x,y) = eˣ cos y ---- */
+  const box=document.getElementById('ln-3d'),read3=document.getElementById('ln-3d-read'); if(!box) return;
+  const f2=(x,y)=>Math.exp(x)*Math.cos(y), fx=(x,y)=>Math.exp(x)*Math.cos(y), fy=(x,y)=>-Math.exp(x)*Math.sin(y);
+  const XR=[-1.2,0.9],YR=[-1.5,1.5],ZS=.5;
+  const pm=(v,name)=>name+(v<0?' + ':' − ')+fmt(Math.abs(v),2);
+  let ax=0,ay=0,pr=.5,sc=null,hudEl=null,theta=.7;
+  const P3=(x,y,z)=>[x,z*ZS,-y];
+  function build(){
+    sc=null; const narrow=box.clientWidth<560;
+    return CIN.stage3d(box,{fill:true,camera:{pos:narrow?[3.4,3.4,4.2]:[2.4,2.8,3.2],look:[0,.45,0],fov:34},autoRotate:.08,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx, hx=k=>CIN.hex(colors[k]);
+        const grid=CIN.prim.grid(ctx,4.4,11,hx('grid'),{opacity:isLight?.5:.35}); grid.position.y=-.12; root.add(grid);
+        const surf=CIN.prim.surface(ctx,f2,{x:XR,y:YR,res:80,zscale:ZS,ramp:[colors.s1,colors.s7,colors.s2],opacity:isLight?.96:.9}); root.add(surf);
+        { /* recolour on a softened scale so the low plateau is not one flat blue */ const geo=surf.userData.geo,pos=geo.attributes.position,col=geo.attributes.color,{zmin,zmax}=surf.userData; for(let i=0;i<pos.count;i++){ const t=Math.pow((pos.getY(i)/ZS-zmin)/((zmax-zmin)||1),.55); const k=new THREE.Color(CIN.ramp(t,colors.s1,colors.s7,colors.s2)); if(isLight) k.lerp(new THREE.Color(1,1,1),.42); k.convertSRGBToLinear(); col.setXYZ(i,k.r,k.g,k.b); } col.needsUpdate=true; surf.userData.mesh.material.transparent=false; surf.userData.mesh.material.opacity=1; }
+        [['x →',[XR[1]+.3,0,-YR[0]]],['y →',[XR[0]-.2,0,-YR[1]-.3]]].forEach(([t,p])=>root.add(CIN.prim.label(ctx,t,p,{size:24,color:colors.muted,bg:false,depthTest:false})));
+        const glass=CIN.prim.glass(ctx,2.0,2.0,hx('s4'),isLight?.3:.3); glass.material.emissiveIntensity=isLight?.1:.4; glass.renderOrder=10; root.add(glass);
+        const rim=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>new THREE.Vector3(q[0],q[1],0))),new THREE.LineBasicMaterial({color:hx('s4'),transparent:true,opacity:.9})); glass.add(rim);
+        const anchor=CIN.prim.dot(ctx,[0,0,0],hx('s4'),.075); root.add(anchor);
+        const grad=CIN.prim.arrow(ctx,[0,0,0],[0,0,1],hx('s4'),{radius:.028,head:.18}); root.add(grad);
+        const pt=CIN.prim.dot(ctx,[0,0,0],hx('s1'),.09), pl=CIN.prim.dot(ctx,[0,0,0],hx('s2'),.09); root.add(pt,pl);
+        const crit=CIN.hex(getComputedStyle(document.documentElement).getPropertyValue('--critical').trim()); const gap=tube(ctx,[0,0,0],[0,.1,0],crit,.045); root.add(gap);
+        const orbit=new THREE.Line(new THREE.BufferGeometry().setFromPoints(new Array(65).fill(0).map(()=>new THREE.Vector3())),new THREE.LineDashedMaterial({color:hx('ink2'),dashSize:.06,gapSize:.04,transparent:true,opacity:.7})); root.add(orbit);
+        const lab=slot(ctx,root);
+        sc={THREE,ctx,root,colors,glass,anchor,grad,pt,pl,gap,orbit,lab,hx};
+        hudEl=hud(box,'hud-o'); hint(box,'drag to orbit · the probe circles the anchor');
+        paint();
+      },
+      update(ctx,t,dt){ if(ctx.dead||!sc) return false; if(CIN.reduced) return false; theta+=dt*.9; probe(); return true; }
+    });
+  }
+  function probe(){
+    if(!sc) return; const px=ax+pr*Math.cos(theta), py=ay+pr*Math.sin(theta);
+    const zt=f2(px,py), zl=f2(ax,ay)+fx(ax,ay)*(px-ax)+fy(ax,ay)*(py-ay);
+    const T=P3(px,py,zt), L=P3(px,py,zl); sc.pt.position.set(...T); sc.pl.position.set(...L);
+    const g=sc.gap, A=new sc.THREE.Vector3(...T), B=new sc.THREE.Vector3(...L), d=B.clone().sub(A), len=Math.max(1e-4,d.length());
+    g.scale.set(1,len/.1,1); g.position.copy(A).add(d.clone().multiplyScalar(.5)); g.quaternion.setFromUnitVectors(new sc.THREE.Vector3(0,1,0),d.normalize());
+    if(hudEl) hudEl.innerHTML=`${sc.eq||''} · gap at the probe: <b>${Math.abs(zt-zl).toFixed(3)}</b>`;
+  }
+  function paint(){
+    if(!sc) return; const {THREE}=sc;
+    const z0=f2(ax,ay), gx=fx(ax,ay), gy=fy(ax,ay), A=P3(ax,ay,z0);
+    sc.anchor.position.set(...A);
+    /* the tangent plane: normal ∝ (−ZS·fx, 1, ZS·fy) in three.js coordinates */
+    const n=new THREE.Vector3(-ZS*gx,1,ZS*gy).normalize(); sc.glass.position.set(...A); sc.glass.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),n);
+    /* the gradient, drawn lying in the plane: climb the steepest way */
+    const gl=Math.hypot(gx,gy); if(gl>1e-6){ const ux=gx/gl,uy=gy/gl,s=.5; const tip=P3(ax+s*ux,ay+s*uy,z0+s*gl); sc.grad.visible=true; sc.grad.userData.set(A,tip); } else sc.grad.visible=false;
+    /* the probe's orbit ring, drawn on the surface */
+    const pts=sc.orbit.geometry.attributes.position; for(let i=0;i<65;i++){ const th=i/64*Math.PI*2, qx=ax+pr*Math.cos(th), qy=ay+pr*Math.sin(th); const q=P3(qx,qy,f2(qx,qy)+.02); pts.setXYZ(i,q[0],q[1],q[2]); } pts.needsUpdate=true; sc.orbit.computeLineDistances();
+    sc.eq='L = '+fmt(z0,2)+' + '+fmt(gx,2)+'·('+pm(ax,'x')+') '+(gy<0?'− ':'+ ')+fmt(Math.abs(gy),2)+'·('+pm(ay,'y')+')';
+    probe();
+    if(read3) read3.innerHTML=`anchor (${fmt(ax,2)}, ${fmt(ay,2)}): f = <b>${fmt(z0,3)}</b>, ∇f = (<b>${fmt(gx,3)}</b>, <b>${fmt(gy,3)}</b>)<br>stand-in plane L(x, y) = ${fmt(z0,2)} + ${fmt(gx,2)}·(${pm(ax,'x')}) ${gy<0?'−':'+'} ${fmt(Math.abs(gy),2)}·(${pm(ay,'y')})`;
+    if(sc.ctx.requestRender) sc.ctx.requestRender();
+  }
+  bindCtl('ln-ax',v=>{ax=v;paint();})();
+  bindCtl('ln-ay',v=>{ay=v;paint();})();
+  bindCtl('ln-r',v=>{pr=v;paint();})();
+  const S=mountStage(box,build);
+  let rw=box.clientWidth; addEventListener('resize',()=>{ const W=box.clientWidth; if((W<560)!==(rw<560)) remount(S); rw=W; });
+  paint();
 })();
 
 /* ================= W7 · THE GRADIENT CHECKER ================= */
@@ -1996,12 +2349,18 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
   let lh=-3;
   const err=le=>{const h=Math.pow(10,le);const est=(f(X0+h)-f(X0-h))/(2*h);return Math.max(1e-17,Math.abs(est-EXACT));};
   function draw(){
-    svg.innerHTML='';
+    svg.innerHTML=''; const glow=glo(svg);
     const W=600,H=330,padL=64,padR=18,padT=34,padB=44;
     const LX0=-12,LX1=-1,LY0=-13,LY1=2;
     const px=le=>padL+(le-LX0)/(LX1-LX0)*(W-padL-padR);
     const py=lv=>H-padB-(lv-LY0)/(LY1-LY0)*(H-padT-padB);
-    el('rect',{x:padL,y:padT,width:W-padL-padR,height:H-padT-padB,rx:8,fill:'none',stroke:'var(--ring)'},svg);
+    /* the two enemies as washes: curvature on the right, rounding on the left */
+    const defs=el('defs',{},svg);
+    const g1=el('linearGradient',{id:'ck-wl',x1:'0',x2:'1',y1:'0',y2:'0'},defs); el('stop',{offset:'0','stop-color':'var(--critical)','stop-opacity':'.16'},g1); el('stop',{offset:'1','stop-color':'var(--critical)','stop-opacity':'0'},g1);
+    const g2=el('linearGradient',{id:'ck-wr',x1:'0',x2:'1',y1:'0',y2:'0'},defs); el('stop',{offset:'0','stop-color':'var(--s1)','stop-opacity':'0'},g2); el('stop',{offset:'1','stop-color':'var(--s1)','stop-opacity':'.16'},g2);
+    el('rect',{x:padL,y:padT,width:px(-7)-padL,height:H-padT-padB,fill:'url(#ck-wl)'},svg);
+    el('rect',{x:px(-4.5),y:padT,width:W-padR-px(-4.5),height:H-padT-padB,fill:'url(#ck-wr)'},svg);
+    el('rect',{x:padL,y:padT,width:W-padL-padR,height:H-padT-padB,rx:8,fill:'none',stroke:'var(--line, var(--ring))'},svg);
     for(let e2=LX0;e2<=LX1;e2+=1){el('line',{x1:px(e2),y1:H-padB,x2:px(e2),y2:H-padB+4,stroke:'var(--axis)'},svg);
       if(e2%2===0||e2===LX1)txt(svg,px(e2),H-padB+16,'10'+sup(e2),'font:600 9px system-ui;fill:var(--ink-muted)','middle');}
     for(let e2=LY0;e2<=LY1;e2+=3){txt(svg,padL-6,py(e2)+3,'10'+sup(e2),'font:600 9px system-ui;fill:var(--ink-muted)','end');
@@ -2010,12 +2369,14 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
     txt(svg,14,padT-16,'|estimate − exact|','font:650 10.5px system-ui;fill:var(--ink-2)');
     let d='';for(let i=0;i<=220;i++){const le=LX0+(LX1-LX0)*i/220;
       d+=(i?'L':'M')+px(le).toFixed(1)+','+py(Math.max(LY0,Math.min(LY1,Math.log10(err(le))))).toFixed(1);}
-    el('path',{d,stroke:'var(--s2)','stroke-width':2.4,fill:'none'},svg);
+    el('path',{d,stroke:'var(--s2)','stroke-width':2.8,fill:'none',filter:glow||'none','stroke-linejoin':'round'},svg);
     // zones
-    txt(svg,px(-2.6),py(0.8),'truncation ↑ (h too big)','font:650 9.5px system-ui;fill:var(--ink-muted)','middle');
-    txt(svg,px(-10.4),py(0.8),'rounding noise ↑ (h too small)','font:650 9.5px system-ui;fill:var(--ink-muted)','middle');
-    const E=err(lh);
-    el('circle',{cx:px(lh),cy:py(Math.max(LY0,Math.min(LY1,Math.log10(E)))),r:6,fill:'var(--warning)',stroke:'var(--ink)','stroke-width':1.2},svg);
+    txt(svg,px(-2.6),py(0.8),'truncation ↑ (h too big)','font:650 9.5px system-ui;fill:var(--s1)','middle');
+    txt(svg,px(-10.4),py(0.8),'rounding noise ↑ (h too small)','font:650 9.5px system-ui;fill:var(--critical)','middle');
+    const E=err(lh), cy=py(Math.max(LY0,Math.min(LY1,Math.log10(E))));
+    el('line',{x1:px(lh),y1:cy,x2:px(lh),y2:H-padB,stroke:'var(--s4)','stroke-width':1,'stroke-dasharray':'3 3',opacity:.7},svg);
+    el('circle',{cx:px(lh),cy,r:12,fill:'var(--s4)',opacity:.22,filter:glow||'none'},svg);
+    el('circle',{cx:px(lh),cy,r:6,fill:'var(--s4)',stroke:'var(--page)','stroke-width':1.5,filter:glow||'none'},svg);
     const h=Math.pow(10,lh),est=(f(X0+h)-f(X0-h))/(2*h);
     read.innerHTML=`h = 10<sup>${fmt(lh,1)}</sup><br>finite-difference estimate = <b>${est.toFixed(7)}</b><br>exact (autodiff) = <b>${EXACT.toFixed(7)}</b><br>error = <b style="color:var(--s2)">${E.toExponential(1)}</b>`;
     const Etxt='error ≈ '+E.toExponential(1).replace('e-','×10⁻').replace('e+','×10');
@@ -2025,8 +2386,71 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
   }
   function sup(n){const M={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
     return String(n).split('').map(c=>M[c]||c).join('');}
-  bindCtl('ck-h',v=>{lh=v;draw();},v=>{const M={'-':'−'};return (v<0?'−':'')+Math.abs(v).toFixed(1).replace(/\.0$/,'');})();
+  bindCtl('ck-h',v=>{lh=v;draw();},v=>{return (v<0?'−':'')+Math.abs(v).toFixed(1).replace(/\.0$/,'');})();
   draw();
+})();
+
+/* ================= OPENING SHOT · a layered graph, values forward, blame backward ================= */
+(function(){
+  const box=document.getElementById('hero-3d'); if(!box||!CIN) return;
+  const reduced=CIN.reduced;
+  const smooth=(a,b,x)=>{ const t=Math.max(0,Math.min(1,(x-a)/(b-a))); return t*t*(3-2*t); };
+  /* the network: five layers of nodes spread in y and z */
+  const LAY=[[-4.6,4],[-2.3,6],[0,7],[2.3,5],[4.6,1]];
+  const nodes=[]; LAY.forEach(([x,n],li)=>{ for(let i=0;i<n;i++){ const a=(i+.5)/n*Math.PI*2+li*.7, r=n===1?0:1.15+.35*(i%2); nodes.push({x,y:r*Math.sin(a)*.95,z:r*Math.cos(a),li}); } });
+  const edges=[]; nodes.forEach((p,i)=>nodes.forEach((q,j)=>{ if(q.li===p.li+1) edges.push([i,j]); }));
+  const FWD=3.2, BWD=3.4, HOLD=.9, CYCLE=FWD+HOLD+BWD+HOLD;
+  function build(){
+    const wide=innerWidth>=760, fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+    return CIN.stage3d(box,{fill:true,orbit:fine,zoom:false,autoRotate:.05,autoRotateStopsOnUser:true,
+      camera:{pos:wide?[2.2,3.0,13.6]:[1.2,4.2,11.5],look:wide?[-1.9,.1,0]:[0,0,0],fov:30},
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx, hx=k=>CIN.hex(colors[k]);
+        const blend=isLight?THREE.NormalBlending:THREE.AdditiveBlending;
+        /* edges as faint lines */
+        const ep=new Float32Array(edges.length*6); edges.forEach(([i,j],k)=>{ const P=nodes[i],Q=nodes[j]; ep.set([P.x,P.y,P.z,Q.x,Q.y,Q.z],k*6); });
+        const eg=new THREE.BufferGeometry(); eg.setAttribute('position',new THREE.BufferAttribute(ep,3));
+        const ec=new Float32Array(edges.length*6); eg.setAttribute('color',new THREE.BufferAttribute(ec,3));
+        const lines=new THREE.LineSegments(eg,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:isLight?.9:.85,blending:blend,depthWrite:false})); lines.frustumCulled=false; root.add(lines);
+        /* nodes as lit spheres */
+        const spheres=nodes.map(n=>{ const m=new THREE.Mesh(new THREE.SphereGeometry(n.li===4?.36:.2,20,16),new THREE.MeshStandardMaterial({color:hx(isLight?'grid':'axis'),emissive:hx('s3'),emissiveIntensity:0,roughness:.4})); m.position.set(n.x,n.y,n.z); root.add(m); return m; });
+        /* pulses */
+        const mk=(col,size,op)=>{ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(edges.length*3).fill(999),3));
+          const m=new THREE.Points(g,new THREE.PointsMaterial({color:col,size,map:sparkTex(THREE),transparent:true,opacity:op,blending:blend,depthWrite:false})); m.frustumCulled=false; root.add(m); return m; };
+        const pg=[mk(hx('s3'),.26,1),mk(hx('s3'),.8,.35)], po=[mk(hx('s2'),.26,1),mk(hx('s2'),.85,.35)];
+        /* starfield + faded floor */
+        if(!isLight){ const n=600, sp=new Float32Array(n*3); for(let k=0;k<n;k++){ sp[3*k]=(Math.random()*2-1)*26; sp[3*k+1]=(Math.random()*2-1)*14; sp[3*k+2]=(Math.random()*2-1)*26-6; }
+          const sg=new THREE.BufferGeometry(); sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+          root.add(new THREE.Points(sg,new THREE.PointsMaterial({color:hx('ink2'),size:.06,transparent:true,opacity:.7,blending:THREE.AdditiveBlending,depthWrite:false}))); }
+        const grid=CIN.prim.grid(ctx,24,30,hx('grid'),{opacity:isLight?.35:.22}); grid.position.y=-3.2; root.add(grid);
+        const cG=new THREE.Color(hx('s3')).convertSRGBToLinear(), cO=new THREE.Color(hx('s2')).convertSRGBToLinear(), cA=new THREE.Color(hx('axis')).convertSRGBToLinear();
+        const base=isLight?cA.clone():cA.clone().multiplyScalar(.9);
+        ctx.hero={apply(t){
+          const u=((t%CYCLE)+CYCLE)%CYCLE; let kind=null,F=0;
+          if(u<FWD){ kind='f'; F=-5.6+(u/FWD)*11.2; } else if(u<FWD+HOLD){ kind='hf'; } else if(u<FWD+HOLD+BWD){ kind='b'; F=5.6-((u-FWD-HOLD)/BWD)*11.2; }
+          const G=pg.map(p=>p.geometry.attributes.position.array), O=po.map(p=>p.geometry.attributes.position.array);
+          edges.forEach(([i,j],k)=>{ const P=nodes[i],Q=nodes[j]; let g=null,o=null;
+            if(kind==='f'){ const s=(F-P.x)/(Q.x-P.x); if(s>0&&s<1) g=[P.x+(Q.x-P.x)*s,P.y+(Q.y-P.y)*s,P.z+(Q.z-P.z)*s]; }
+            if(kind==='b'){ const s=(Q.x-F)/(Q.x-P.x); if(s>0&&s<1) o=[Q.x-(Q.x-P.x)*s,Q.y-(Q.y-P.y)*s,Q.z-(Q.z-P.z)*s]; }
+            G.forEach(A=>{ A[3*k]=g?g[0]:999; A[3*k+1]=g?g[1]:999; A[3*k+2]=g?g[2]:999; });
+            O.forEach(A=>{ A[3*k]=o?o[0]:999; A[3*k+1]=o?o[1]:999; A[3*k+2]=o?o[2]:999; });
+            /* edge colour: lit green once the value has crossed it, orange once the blame has */
+            let col=base; if(kind==='f'||kind==='hf'){ const done=kind==='hf'?1:smooth(Q.x-.3,Q.x+.3,F); col=base.clone().lerp(cG,done*(isLight?.9:.7)); }
+            else { const done=kind==='b'?smooth(P.x+.3,P.x-.3,F):1; col=base.clone().lerp(cO,done*(isLight?.9:.75)); if(kind==='b') col.lerp(cG,(1-done)*.4); }
+            ec[6*k]=col.r; ec[6*k+1]=col.g; ec[6*k+2]=col.b; ec[6*k+3]=col.r; ec[6*k+4]=col.g; ec[6*k+5]=col.b; });
+          eg.attributes.color.needsUpdate=true; pg.concat(po).forEach(p=>p.geometry.attributes.position.needsUpdate=true);
+          nodes.forEach((n,i)=>{ const m=spheres[i].material; let gI=0,oI=0;
+            if(kind==='f'){ gI=smooth(n.x-.6,n.x+.2,F); } else if(kind==='hf'){ gI=1; } else if(kind==='b'){ oI=smooth(n.x+.6,n.x-.2,F); gI=1-oI; } else { oI=1; }
+            const flash=kind==='f'?Math.exp(-Math.abs(F-n.x)*1.6):(kind==='b'?Math.exp(-Math.abs(F-n.x)*1.6):0);
+            m.emissive.setHex(oI>gI?hx('s2'):hx('s3')); m.emissiveIntensity=(isLight?.25:.55)*Math.max(gI,oI)+flash*(isLight?.4:1.2); m.color.setHex(oI>gI?hx('s2'):(gI>.5?hx('s3'):hx(isLight?'grid':'axis'))); });
+        }};
+        ctx.hero.apply(reduced?FWD+HOLD+BWD*.55:0);
+      },
+      update(ctx,t){ if(reduced||ctx.dead) return false; ctx.hero.apply(t); return true; }
+    });
+  }
+  const S=mountStage(box,build);
+  let rw=innerWidth; addEventListener('resize',()=>{ const wide=innerWidth>=760; if(wide!==(rw>=760)) remount(S); rw=innerWidth; });
 })();
 
 })();
@@ -2114,7 +2538,8 @@ function terrain(svg,f,levels,X0,X1,Y0,Y1,opts){
       requestAnimationFrame(function(){ pill.classList.add('on'); });
       var hide = function(){ pill.classList.remove('on'); setTimeout(function(){ pill.remove(); }, 320); };
       pill.querySelector('.rgo').addEventListener('click', function(){
-        target.scrollIntoView({behavior:'smooth', block:'start'});
+        var far = Math.abs(target.getBoundingClientRect().top) > 3500;   /* a long jump across heavy 3-D stages lands instantly; short ones glide */
+        target.scrollIntoView({behavior: far ? 'auto' : 'smooth', block:'start'});
         hide();
       });
       pill.querySelector('.rx').addEventListener('click', hide);
