@@ -1,0 +1,352 @@
+              MFML AND MFDS
+                       MFML and MFDS Team
+BITS Pilani                   WILPD - CSIS
+                                            BITS Pilani
+
+
+
+
+         *
+             ZC416 Mathematical Foundations for
+              Machine Learning / Data Science
+             Topic: # 8 Taylor/MacLaurin series
+1 / 19
+  I NTRODUCTION
+
+
+         We introduced the Taylor/MacLaurin series, partial
+         derivatives and gradients.
+         We are interested now in some aspects of Taylor’s series
+         which we have not discussed.
+         Specifically, we will delve into the theory of Taylor series
+         and derive the remainder term for a truncated Taylor series.
+         We shall also develop the Taylor’s series in two variables
+         and motivate the derivation of the Hessian matrix which
+         plays a huge role in data science, especially in neural
+         network cost function minimization.
+
+
+
+2 / 19
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  W HERE DOES THE TAYLOR SERIES COME FROM ?
+         Our development of the Taylor series will mirror the
+         argument given in the document ”Proof of Taylor’s theorem”
+         which will also be uploaded as class material.
+         Theorem: Suppose f : (a, b) → R is a function on
+         (a, b), where a, b in R with a < b. Assume that f is
+         n-times differentiable in the open interval (a, b) and
+         f , f ′ , f ′′ , . . . f n−1 all extend continuously to the closed
+         interval [a, b], such that the extended functions are still
+         called f , f ′′ . . . f n−1 . Then there exists c ∈ (a, b) such
+         that
+                           k =n−1
+                           X f k (a)                          f n (c )
+                 f (b) =                 (b − a)k +                      (b − a)n               (1)
+                                    k!                          n!
+                            k =0
+
+
+
+3 / 19
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M EAN - VALUE THEOREM
+
+         For n = 1, the statement of Taylor’s theorem boils down to
+         the mean-value theorem which is that if a function f is
+         continuous on [a, b] and differentiable on the interval (a, b),
+         then there exists a value c ∈ (a, b) such that
+                   f (b)−f (a)
+         f ′ (c ) = b−a as in the following figure:
+
+
+
+
+4 / 19
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M EAN - VALUE THEOREM
+
+
+         Note that the requirement that f be a differentiable function
+         in the mean-value theorem is needed as the theorem is not
+         valid for functions f that are not differentiable as in the
+         example below:
+
+
+
+
+5 / 19
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M EAN - VALUE THEOREM
+
+
+
+         The proof of the mean-value theorem comes from Rolle’s
+         theorem whose statement follows. We shall show that the
+         development of Taylor’s series involves the repeated
+         application of Rolle’s theorem below:
+         Theorem: If f is a continuous function on [a, b] and
+         differentiable on (a, b) with f (a) = f (b) = 0, then there
+         exists some c in (a, b) such that f ′ (c ) = 0.
+
+
+
+
+6 / 19
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D EVELOPMENT OF TAYLOR ’ S SERIES
+
+         Let F (x ) be a function over the region (a, b) ∈ R such that
+         F (a) = F ′ (a) = F n−1 (a) = 0, and F (b) = 0. Then there
+         exists a c ∈ (a, b) such that F n (c ) = 0. Let us call this
+         Proposition P.
+         Proposition P follows from an n-fold application of Rolle’s
+         theorem as follows: since F (a) = F (b) = 0, an application
+         of Rolle’s theorem tells us that there is a c1 ∈ (a, b) such
+         that F ′ (c1 ) = 0.
+         Now since F ′ (a) = F ′ (c1 ) = 0, there exists c2 ∈ (a, c1 )
+         such that F ′′ (c2 ) = 0.
+         Continuing this argument we get
+         a < cn < cn−1 < . . . < c1 < b such that F k (ck ) = 0 for
+         k = 1, 2, . . . n.
+
+7 / 19
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D EVELOPMENT OF TAYLOR ’ S SERIES
+         Thus we have F n (c ) = 0 for c = cn ∈ (a, b).
+         To construct a polynomial that approximates a function f we
+         use the ideas of the previous slide.
+         Let the polynomial used to approximate the function f be of
+                             Pk =n
+         the form P (x ) = k =0 ak (x − a)k . We will now find the
+         coefficients a0 , a1 , a2 , . . . an such that F (x ) = f (x ) − P (x )
+         satisfies F (a) = F (b) and F (a) = F ′ (a) = F n−1 (a) = 0 of
+         the previous slide. Then we have F n (c ) = 0 for c ∈ (a, b).
+         We can see that
+         F k (a) = f k (a) − k !ak , k = 0, 1, 2, . . . n − 1, and to satisfy
+         the requirements of the function F defined on the previous
+         slide we need to set F (a) = F ′ (a) = F n−1 (a) = 0, and
+                                          f k (a)
+         F (b) = 0. This gives ak =          k!
+                                                    , k = 0, 1, 2, . . . n − 1.
+8 / 19
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D EVELOPMENT OF TAYLOR ’ S SERIES
+
+
+         We finally need to determine an . To do so, we note that
+                        Pk =n
+         F (b) = f (b) − k =0 ak (b − a)k = 0. This becomes
+                           Pk =n−1 f k (a)
+         F (b) = f (b) −      k =0  (b − a)k − an (b − a)n = 0
+                                      k!
+                                    f k (a)
+         once we substitute for ak = k ! , for k = 1, 2, . . . n − 1.
+         We can then solve for an to get
+                              Pk =n−1 f k (a)
+         an = (b−1a)n (f (b) − k =0      k!
+                                              (b − a)k ).
+         Our function F satisfies the requirements of proposition P,
+         i.e (F (a) = F (b) and F ′ (a) = F ′′ (a) = . . . F n−1 (a) = 0).
+         Therefore there exists a point c, according to proposition P
+         such that F n (c ) = 0.
+
+
+
+9 / 19
+                                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D EVELOPMENT OF TAYLOR ’ S SERIES
+
+
+          Since F n (c ) = f n (c ) − P n (c ), we have
+          F n (c ) = f n (c ) − n!an =
+                                         Pk =n−1 f k (a)
+          f n (c ) − (b−n!a)n (f (b) −      k =0       k!
+                                                            (b − a)k ) = 0,
+          Rearranging the above we have the final Taylor’s series
+          expansion with a remainder term:
+                 Pk =n−1 f k (a)               n
+          f (b) = k =0      k!
+                                 (b − a)k ) + f n(!c ) (b − a)n .
+          The last term in the expression above is the remainder term
+          which should be used when the series is truncated at a
+          certain number of terms.
+
+
+
+
+10 / 19
+                                              BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  TAYLOR ’ S SERIES IN TWO VARIABLES
+
+          How do we develop Taylor’s series in two variables?
+          Let f (x , y ) be a function in two variables with continuous
+          partial derivatives in an open region R containing the point
+          P (a, b) where the partial derivates fx and fy are both zero.
+          Note that fx and fy are zero because the gradient vanishes
+          at critical points, and (a, b) is a critical point.
+          Let h and k be increments small enough to put the point
+          S (a + h, b + k ) in the region R. We parameterise the line
+          segment PS as x = a + th, y = b + tk , t ∈ [0, 1].
+          Now let F (t ) = f (a + th, b + tk ). F is now a function of
+          only one variable. We can compute
+          F ′ (t ) = fx dx
+                        dt
+                           + fy dy
+                                dt
+                                   = hfx + kfy .
+
+11 / 19
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  TAYLOR ’ S SERIES IN TWO VARIABLES
+          Now fx and fy are differentiable functions, F ′ is a
+          differentiable function of t and we can write
+                          ′          ′
+          F ′′ (t ) = ∂∂Fx dx
+                            dt
+                               + ∂∂Fy dy
+                                       dt
+                                          .
+          Since x = a + th and y = b + tk , and F ′ = hfx + kfy , we
+          can write
+                      ∂(hfx +kfy )    ∂(hfx +kfy )
+          F ′′ (t ) =     ∂x
+                                   h+     ∂y
+                                                   k = h2 fxx + 2hkfxy + k 2 fyy .
+          Since F and F ′ are continuous on [0, 1] and F ′ is
+          differentiable on (0, 1) we can apply Taylor’s theorem and
+          obtain F (1) = F (0) + F ′ (0)(1 − 0) + 12 F ”(c ) for some c
+          between 0 and 1.
+          Rewriting this in terms of x , y , we have
+          f (a + h, b + k ) = f (a, b) + hfx (a, b) + kfy (a, b) + 12 (h2 fxx +
+          2hkfxy + k 2 fyy )|a+ch,b+ck
+
+12 / 19
+                                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  TAYLOR ’ S SERIES IN TWO VARIABLES
+
+
+          Since fx (a, b) = fy (a, b) = 0, the expression for
+          f (a + h, b + k ) simplifies to
+          f (a + h, b + k ) − f (a, b) = 12 (h2 fxx + 2hkfxy + k 2 fyy )|a+ch,b+ck
+          The presence of an extremum at f (a, b) is dependent on
+          the sign of f (a + h, b + k ) − f (a, b) for arbitrary h and k .
+          This is the same as the sign of
+          Q (c ) = (h2 fxx + 2hkfxy + k 2 fyy )|a+ch,b+ck .
+          We shall now study the sign of Q (c ).
+
+
+
+
+13 / 19
+                                          BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  H ESSIAN MATRIX
+
+
+          If Q (0) ̸= 0, the sign of Q (c ) for small c will be the same as
+          the sign of Q (0) for sufficiently small values of h and k .
+          We can predict the sign of
+          Q (0) = (h2 fxx (a, b) + 2hkfxy (a, b) + k 2 fyy (a, b)) from the
+                                      2
+          signs of fxx and fxx fyy − fxy evaluated at (a, b).
+          Multiply both sides of the equation for Q (0) by fxx , and
+          rearrange the right hand side to get
+          fxx Q (0) = (hfxx + kfxy )2 + (fxx fyy − fxy
+                                                    2
+                                                       )k 2 .
+          What can we now conclude about the nature of the
+          neighbourhood of the function at (a, b)?
+
+
+
+14 / 19
+                                        BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  H ESSIAN MATRIX
+
+                                    2
+          If fxx < 0 and fxx fyy − fxy > 0 at (a, b) then Q (0) < 0 for all
+          sufficiently small non-zero values of h and k , then f has a
+          local maximum value at (a, b).
+                                    2
+          If fxx > 0 and fxx fyy − fxy > 0 at (a, b) then Q (0) > 0 for all
+          sufficiently small non-zero values of h and k , then f has a
+          local minimum value at (a, b).
+                        2
+          If fxx fyy − fxy < 0 at (a, b) there are combinations of small
+          values for h and k for which Q (0) > 0 and other
+          combinations of h and k for which Q (0) < 0. This means
+          that f has a saddle point at (a, b).
+                        2
+          If fxx fyy − fxy = 0 at (a, b) another test is needed.
+
+
+15 / 19
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  H ESSIAN MATRIX
+
+
+
+          The considerations of the previous slide show that
+          determining whether there is a minimum or maximum at the
+          point (a, b) boils down to looking at the following matrix and
+          asking if it is positive-definite or not. This is the Hessian
+          matrix.                               
+                                         fxx fxy
+                                                                        (2)
+                                        fxy fyy
+
+
+
+
+16 / 19
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  H ESSIAN MATRIX
+
+
+          A necessary and sufficient criterion of positive-definiteness
+          for a Hermitian matrix (such as the Hessian matrix) is
+          Sylvester’s criterion - the determinant of every upper left
+          m × m submatrix should be positive which means that
+                                 2
+          fxx > 0 and fxx fyy − fxy > 0 at (a, b). This condition
+          corresponds to bullet point 2 on Slide 15.
+          Note that the Hessian matrix is symmetric, so that in case
+          of a local minimum it is a symmetric, positive-definite matrix
+          which we know from the linear algebra part of this course is
+          one that has positive eigenvalues.
+
+
+
+17 / 19
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  H ESSIAN M ATRIX
+
+          For a local maximum we need to have a negative-definite
+                                                          2
+          matrix which means that fxx < 0 and fxx fyy − fxy > 0 at
+          (a, b). In this case, the determinant of every upper left
+          m × m submatrix is negative if m is odd, and positive if m is
+          even. The eigenvalues of the Hessian matrix are all
+          negative in this case.
+          The Hessian is the collection of all second-order partial
+          derivatives. If f(x, y) is a twice (continuously) differentiable
+          function, then
+           ∂2f       2
+
+          ∂x ∂y
+                = ∂∂y ∂fx i.e., the order of differentiation does not matter,
+          and the corresponding Hessian matrix is symmetric. The
+          Hessian is denoted as ∇2x ,y f (x , y )
+
+
+18 / 19
+                                        BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+                      BITS Pilani
+
+
+
+
+          Thank you
+
+19 / 19
+
