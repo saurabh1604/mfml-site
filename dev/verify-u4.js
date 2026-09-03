@@ -49,9 +49,10 @@ const { chromium } = require('playwright');
   await page.locator('#w-cof').screenshot({ path: 'shots/u4-cof.png' });
 
   // ---- w-eig : drive the probe to the 45° eigendirection of [[2,1],[1,2]]
+  // (round 8: the finder is a WebGL stage; the probe is set through its programmatic hook — pointer drags raycast to the floor)
   const eb = await page.locator('#eig-svg').boundingBox();
-  const ew = eb.width, eh = eb.height;
-  await svgDrag('#eig-svg', ew / 2 + 10, eh / 2 - 5, ew / 2 + ew * 0.14, eh / 2 - ew * 0.14);
+  console.log('eig stage box:', Math.round(eb.width) + 'x' + Math.round(eb.height));
+  await page.evaluate(() => document.getElementById('eig-svg').u4probe([1, 1]));
   await page.waitForTimeout(150);
   console.log('eig @45°:', await page.locator('#eig-align').textContent(), 'λ =', await page.locator('#eig-lam').textContent(), '|', (await page.locator('#eig-verdict').textContent()).slice(0, 60));
   await page.locator('#w-eig').screenshot({ path: 'shots/u4-eig.png' });
@@ -59,7 +60,7 @@ const { chromium } = require('playwright');
   console.log('eig rot:', (await page.locator('#eig-verdict').textContent()).slice(0, 90));
   await page.locator('#eig-tabs [data-t="data"]').click(); await page.waitForTimeout(100);
   // drive to (1,1) direction → λ=7
-  await svgDrag('#eig-svg', ew / 2 + 10, eh / 2 - 5, ew / 2 + ew * 0.1, eh / 2 - ew * 0.1);
+  await page.evaluate(() => document.getElementById('eig-svg').u4probe([1, 1]));
   await page.waitForTimeout(120);
   console.log('eig data @45°: λ =', await page.locator('#eig-lam').textContent());
   await page.locator('#eig-tabs [data-t="sym"]').click(); await page.waitForTimeout(100);

@@ -29,6 +29,28 @@ function katexCss() {
   return fs.readFileSync(path.join(KDIST, 'katex.min.css'), 'utf8').replace(/@font-face\{[^}]*\}/g, '');
 }
 
+/* ---- CINEMA skin: <!--@cinema-css--> → fonts + tpl/cinema.css ; <!--@cinema-js--> → three.js tag + tpl/cinema.js ---- */
+const WEB_FONTS = [
+  ['Fraunces', 'node_modules/@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2', '300 900', 'normal'],
+  ['Newsreader', 'node_modules/@fontsource/newsreader/files/newsreader-latin-400-normal.woff2', 400, 'normal'],
+  ['Newsreader', 'node_modules/@fontsource/newsreader/files/newsreader-latin-400-italic.woff2', 400, 'italic'],
+  ['Newsreader', 'node_modules/@fontsource/newsreader/files/newsreader-latin-600-normal.woff2', 600, 'normal'],
+  ['Inter', 'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2', '100 900', 'normal'],
+];
+function webFontCss() {
+  return WEB_FONTS.map(([fam, file, w, style]) => {
+    const b64 = fs.readFileSync(path.join(ROOT, file)).toString('base64');
+    return `@font-face{font-family:'${fam}';src:url(data:font/woff2;base64,${b64}) format('woff2');font-weight:${w};font-style:${style};font-display:swap}`;
+  }).join('\n');
+}
+function cinema(html) {
+  if (html.includes('<!--@cinema-css-->'))
+    html = html.replace('<!--@cinema-css-->', '<style id="cinema-fonts">' + webFontCss() + '</style>\n<style id="cinema-css">' + fs.readFileSync(path.join(ROOT, 'tpl/cinema.css'), 'utf8') + '</style>');
+  if (html.includes('<!--@cinema-js-->'))
+    html = html.replace('<!--@cinema-js-->', '<script src="vendor/three.min.js"></script>\n<script id="cinema-js">' + fs.readFileSync(path.join(ROOT, 'tpl/cinema.js'), 'utf8') + '</script>');
+  return html;
+}
+
 /* ---- math replacement (outside <script> only) ---- */
 const unesc = s => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 let nDisp = 0, nInline = 0, errs = [];
@@ -51,11 +73,13 @@ function transform(html) {
 }
 
 fs.mkdirSync(OUT, { recursive: true });
+fs.mkdirSync(path.join(OUT, 'vendor'), { recursive: true });
+fs.copyFileSync(path.join(ROOT, '../vendor/three.min.js'), path.join(OUT, 'vendor/three.min.js'));
 const ONLY = process.argv.slice(2);
 for (const f of fs.readdirSync(SRC).filter(f => f.endsWith('.html') && (ONLY.length === 0 || ONLY.includes(f)))) {
   const src = fs.readFileSync(path.join(SRC, f), 'utf8');
   nDisp = 0; nInline = 0;
-  const out = src.includes('\\(') || src.includes('\\[') ? transform(src) : src;
+  const out = cinema(src.includes('\\(') || src.includes('\\[') ? transform(src) : src);
   fs.writeFileSync(path.join(OUT, f), out);
   console.log(`${f}: display=${nDisp} inline=${nInline} bytes=${out.length}`);
 }

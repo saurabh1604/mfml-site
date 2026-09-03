@@ -32,11 +32,12 @@ const { chromium } = require('playwright');
   console.log('diag u+v:', await page.locator('#sub-verdict').textContent());
 
   // W3 span
+  // round 8: presets glide the vectors into place over 700ms (the span re-shapes as they move) — read the verdict after the morph
   for (const p of ['one', 'coll', 'three', 'cop']) {
-    await page.locator(`#span-presets [data-p="${p}"]`).click(); await page.waitForTimeout(200);
+    await page.locator(`#span-presets [data-p="${p}"]`).click(); await page.waitForTimeout(1000);
     console.log('span', p, '→ k:', await page.locator('#span-k').textContent(), 'dim:', await page.locator('#span-dim').textContent(), '|', (await page.locator('#span-verdict').textContent()).slice(0, 62));
   }
-  await page.locator('#span-presets [data-p="cop"]').click(); await page.waitForTimeout(200);
+  await page.locator('#span-presets [data-p="cop"]').click(); await page.waitForTimeout(1000);
   await page.screenshot({ path: 'shots/v2-span.png', clip: await clip(page, '#w-span') });
   const sb = await page.locator('#span-svg').boundingBox();
   await page.mouse.move(sb.x + sb.width / 2, sb.y + sb.height / 2);
@@ -61,11 +62,12 @@ const { chromium } = require('playwright');
   await page.locator('#rec-third').click();
 
   // W6 basis
-  await page.locator('#bas-presets [data-p="skew"]').click(); await page.waitForTimeout(200);
+  // round 8: the basis grid morphs over 750ms — read coordinates after the glide
+  await page.locator('#bas-presets [data-p="skew"]').click(); await page.waitForTimeout(1000);
   console.log('basis skew coords:', (await page.locator('#bas-coords').textContent()).replace(/\s+/g, ' '));
-  await page.locator('#bas-presets [data-p="dep"]').click(); await page.waitForTimeout(200);
+  await page.locator('#bas-presets [data-p="dep"]').click(); await page.waitForTimeout(1000);
   console.log('basis dep:', await page.locator('#bas-verdict').textContent());
-  await page.locator('#bas-presets [data-p="tri"]').click(); await page.waitForTimeout(200);
+  await page.locator('#bas-presets [data-p="tri"]').click(); await page.waitForTimeout(1000);
   await page.screenshot({ path: 'shots/v2-basis.png', clip: await clip(page, '#w-basis') });
 
   // checks

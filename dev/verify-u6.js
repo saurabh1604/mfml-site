@@ -107,12 +107,14 @@ const num = async (page, sel, re) => {
   near(await num(page, '#ps-read', /∂f\/∂x = 2x \+ ½y = ([-\d.]+)/), 1.3, 0.005, '∂f/∂x');
   near(await num(page, '#ps-read', /∂f\/∂y = −2y \+ ½x = ([-\d.]+)/), 1.6, 0.005, '∂f/∂y');
   {
-    const before = await page.locator('#ps-svg').innerHTML();
+    // round 8: the slicer is a real three.js stage; the orbit angle is mirrored on data-view while the user drags
+    if (!(await page.locator('#ps-svg canvas').count())) fail('the 3D slicer has no WebGL canvas');
+    const before = await page.locator('#ps-svg').getAttribute('data-view');
     await page.locator('#ps-svg').hover();
     await page.mouse.down(); await page.mouse.move(700, 400, { steps: 6 }); await page.mouse.up();
     await page.waitForTimeout(250);
-    if ((await page.locator('#ps-svg').innerHTML()) === before) fail('dragging did not re-render the 3D surface');
-    else console.log('  ok   drag re-renders the surface');
+    if ((await page.locator('#ps-svg').getAttribute('data-view')) === before) fail('dragging did not orbit the 3D surface');
+    else console.log('  ok   drag orbits the surface');
   }
 
   console.log('\n— W6 · gradient compass —');

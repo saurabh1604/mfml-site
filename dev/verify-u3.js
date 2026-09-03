@@ -72,6 +72,15 @@ const { chromium } = require('playwright');
   console.log('c6:', await c6.locator('.why').getAttribute('class'), '| score:', await page.locator('#score-chip').textContent());
   console.log('toc links:', await page.locator('#toc a').count());
 
+  // round 8 (cinema): the 3D stages are three.js containers now — their controls must still drive the readouts without WebGL
+  console.log('stages:', await page.evaluate(() => ['norm-svg','eng-svg','sh-svg','gs-svg','hero-3d'].map(id => { const e = document.getElementById(id); return id + ':' + (e ? (e.classList.contains('stage-canvas') || e.classList.contains('stage3d') ? 'stage' : 'div') : 'MISSING'); }).join(' ')));
+  await page.evaluate(() => { const s = document.getElementById('norm-z'); s.value = '2'; s.dispatchEvent(new Event('input')); });
+  console.log('norm x3=2 → l2:', await page.locator('#norm-l2').textContent(), 'l1:', await page.locator('#norm-l1').textContent());
+  await page.evaluate(() => { const s = document.getElementById('sh-el'); s.value = '0'; s.dispatchEvent(new Event('input')); const t = document.getElementById('sh-ta'); t.value = '64'; t.dispatchEvent(new Event('input')); });
+  console.log('shadow flat (64°, lift 0):', await page.locator('#sh-al').textContent(), '| perp:', await page.locator('#sh-perp').textContent());
+  await page.locator('#gs-play').click(); await page.waitForTimeout(400);
+  console.log('gs play running:', await page.locator('#gs-play').textContent());
+  await page.locator('#gs-play').click();
   await page.screenshot({ path: 'shots/u3-full.png', fullPage: true });
   console.log('\nERRORS (' + errors.length + '):'); errors.slice(0, 10).forEach(e => console.log(' ', e));
   await browser.close();
