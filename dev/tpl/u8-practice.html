@@ -1,0 +1,331 @@
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Let \(f(x)=\ln x\). <b>(a)</b> Compute \(f\) and its first four derivatives at \(x=1\). <b>(b)</b> Write the fourth-order Taylor polynomial \(P_4(x)\) of \(f\) about the point \(a=1\). <b>(c)</b> Use \(P_4\) to estimate \(\ln 1.1\) and compare with the true value.</p>
+    <p class="ptest"><b>What this tests.</b> The recipe itself — differentiate, evaluate at the centre, divide by \(k!\), attach \((x-a)^k\). <b>Plan.</b> Make a small table of derivatives first and evaluate every one at the centre before assembling anything; then look for the pattern in the coefficients, and finish by plugging in a nearby \(x\) to see the polynomial earn its keep.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — differentiate four times.</b> Each derivative of \(\ln x\) is a power of \(x\), so the pattern is easy to carry:
+      \[\begin{aligned}
+      f&=\ln x, & f'&=x^{-1}, & f''&=-x^{-2},\\
+      f'''&=2x^{-3}, & f^{(4)}&=-6x^{-4}.
+      \end{aligned}\]
+      At the centre \(x=1\) every power of \(x\) is \(1\):
+      \[f(1)=0,\quad f'(1)=1,\quad f''(1)=-1,\quad f'''(1)=2,\quad f^{(4)}(1)=-6.\]</div>
+      <div class="pstep"><b>(b) Step 2 — divide by \(k!\) and attach the powers of \((x-1)\).</b> The coefficient of \((x-1)^k\) is \(f^{(k)}(1)/k!\):
+      \[\begin{aligned}
+      \frac{f'(1)}{1!}&=1, & \frac{f''(1)}{2!}&=-\frac12, & \frac{f'''(1)}{3!}&=\frac26=\frac13, & \frac{f^{(4)}(1)}{4!}&=-\frac{6}{24}=-\frac14,
+      \end{aligned}\]
+      so
+      \[P_4(x)=(x-1)-\tfrac12(x-1)^2+\tfrac13(x-1)^3-\tfrac14(x-1)^4.\]
+      The coefficients are \((-1)^{k+1}/k\) — the \(k!\) in the denominator has eaten the \((k-1)!\) that the derivatives produced.</div>
+      <div class="pstep"><b>Step 3 — the quicker route.</b> Put \(u=x-1\). Then \(\ln x=\ln(1+u)\), whose MacLaurin series is a standard one:
+      \[\ln(1+u)=u-\frac{u^2}{2}+\frac{u^3}{3}-\frac{u^4}{4}+\cdots\]
+      Truncate at degree 4 and write \(u=x-1\) back: the same \(P_4\), in one line, with no differentiation at all. Expanding about \(a\) is always the same as expanding about \(0\) in the shifted variable \(x-a\).</div>
+      <div class="pstep"><b>(c) Step 4 — check at \(x=1.1\)</b>, where \(u=0.1\):
+      \[\begin{aligned}
+      P_4(1.1)&=0.1-\frac{0.01}{2}+\frac{0.001}{3}-\frac{0.0001}{4}\\
+      &=0.1-0.005+0.000333-0.000025=0.095308.
+      \end{aligned}\]
+      The true value is \(\ln 1.1=0.095310\); the error is \(1.8\times10^{-6}\), about the size of the first term we dropped, \(u^5/5=2.0\times10^{-6}\). Four terms, six correct decimals.</div>
+      <p class="pans">(a) \(f(1)=0,\ f'(1)=1,\ f''(1)=-1,\ f'''(1)=2,\ f^{(4)}(1)=-6\). (b) \(P_4(x)=(x-1)-\tfrac12(x-1)^2+\tfrac13(x-1)^3-\tfrac14(x-1)^4\). (c) \(P_4(1.1)=0.095308\) against \(\ln1.1=0.095310\), error \(1.8\times10^{-6}\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The coefficient is \(f^{(k)}(a)/k!\), never \(f^{(k)}(a)\) alone, and the variable is \((x-a)\), never \(x\). Those two slips lose most of the marks on this type. When the function is a shifted standard one — \(\ln(1+u)\), \(e^{u}\), \(\sqrt{1+u}\) — substitute first and copy the known series.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Let \(f(x)=\sqrt{x}\), expanded about the point \(a=4\). <b>(a)</b> Find the first-order (linear) polynomial \(P_1(x)\) and the second-order (quadratic) polynomial \(P_2(x)\). <b>(b)</b> Use each to estimate \(\sqrt{4.2}\). <b>(c)</b> Explain why the quadratic estimate is the better one.</p>
+    <p class="ptest"><b>What this tests.</b> That \(P_1\) is the tangent line, that \(P_2\) adds the curvature, and that the sign of \(f''\) tells you on which side of the curve the tangent sits. <b>Plan.</b> Compute \(f,f',f''\) at the centre; halve \(f''\) when it becomes a coefficient; plug in the increment \(x-4=0.2\) rather than \(x\) itself; compare both estimates with the true value at the end.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — derivatives at the centre.</b> With \(f=x^{1/2}\):
+      \[\begin{aligned}
+      f(4)&=2, & f'(x)&=\tfrac12x^{-1/2} &&\Rightarrow f'(4)=\tfrac14,\\
+      && f''(x)&=-\tfrac14x^{-3/2} &&\Rightarrow f''(4)=-\tfrac14\cdot\tfrac18=-\tfrac1{32}.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 2 — assemble.</b> The quadratic coefficient is \(f''(4)/2!=-\tfrac1{64}\), so
+      \[P_1(x)=2+\tfrac14(x-4),\qquad P_2(x)=2+\tfrac14(x-4)-\tfrac1{64}(x-4)^2.\]</div>
+      <div class="pstep"><b>(b) Step 3 — plug in the increment \(h=x-4=0.2\).</b>
+      \[\begin{aligned}
+      P_1(4.2)&=2+\tfrac14(0.2)=2.05,\\
+      P_2(4.2)&=2.05-\tfrac{1}{64}(0.2)^2=2.05-0.000625=2.049375.
+      \end{aligned}\]
+      The true value is \(\sqrt{4.2}=2.0493902\). So \(P_1\) is off by \(+6.1\times10^{-4}\) and \(P_2\) by \(-1.5\times10^{-5}\) — about forty times closer.</div>
+      <div class="pstep"><b>(c) Step 4 — why the quadratic wins.</b> \(P_1\) is the tangent line at \(x=4\): it matches the height and the slope there but knows nothing about bending. Since \(f''(4)=-\tfrac1{32}<0\), the curve bends <em>downward</em>, so the tangent rides <em>above</em> it and drifts away — that is why \(P_1\)'s error is positive. The remainder formula says how far: with \(n=2\) the error is \(\tfrac12 f''(c)\,h^2\) for some \(c\) between \(4\) and \(4.2\), and \(\tfrac12\cdot\tfrac1{32}\cdot0.04=6.25\times10^{-4}\) — almost exactly the \(6.1\times10^{-4}\) we found. \(P_2\) puts that missing bend back in with the term \(-\tfrac1{64}h^2\), so what remains is the third-order piece
+      \[\frac{f'''(4)}{3!}h^3=\frac{3/256}{6}\,(0.008)=\frac{0.008}{512}=1.56\times10^{-5},\]
+      which matches \(P_2\)'s leftover error to two figures (and its sign explains why \(P_2\) now sits just <em>below</em> the curve).</div>
+      <div class="pstep"><b>Step 5 — the binomial shortcut.</b> Factor out the centre and use \((1+t)^{1/2}=1+\tfrac12t-\tfrac18t^2+\cdots\) with \(t=h/4\):
+      \[\sqrt{4+h}=2\sqrt{1+\tfrac h4}=2\Big(1+\tfrac12\cdot\tfrac h4-\tfrac18\cdot\tfrac{h^2}{16}+\cdots\Big)=2+\tfrac h4-\tfrac{h^2}{64}+\cdots\]
+      Both polynomials fall out at once.</div>
+      <p class="pans">(a) \(P_1(x)=2+\tfrac14(x-4)\), \(P_2(x)=2+\tfrac14(x-4)-\tfrac1{64}(x-4)^2\). (b) \(P_1(4.2)=2.05\), \(P_2(4.2)=2.049375\), true \(2.0493902\); errors \(6.1\times10^{-4}\) and \(1.5\times10^{-5}\). (c) \(f''<0\): the tangent sits above a curve that bends down; the quadratic term restores the bend.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>\(f''(a)\) is not the coefficient — \(f''(a)/2\) is. Writing \(-\tfrac1{32}(x-4)^2\) instead of \(-\tfrac1{64}(x-4)^2\) is the classic lost mark here. And always substitute the <em>increment</em> \(x-a\), not \(x\): \(P_1(4.2)\) uses \(0.2\), not \(4.2\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Let \(f(x,y)=e^{x}\sin y\). <b>(a)</b> Compute \(\nabla f\) and the Hessian \(H\) at \((0,0)\). <b>(b)</b> Write the second-order Taylor polynomial \(Q(x,y)\) of \(f\) about \((0,0)\). <b>(c)</b> Use \(Q\) to approximate \(f(0.1,0.2)\), compare with the exact value, and say where the error comes from.</p>
+    <p class="ptest"><b>What this tests.</b> The two-variable quadratic clone — five partial derivatives, the \(\tfrac12\) in front and the \(2\) on the cross term — and reading the Hessian as a shape. <b>Plan.</b> List all five partials before evaluating any; substitute the centre; assemble \(Q\) in the form value + gradient term + half the quadratic form; then evaluate and compare, and name the order of the first neglected term.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the five partials.</b> The exponential survives every \(x\)-derivative; the sine cycles under \(y\)-derivatives:
+      \[\begin{aligned}
+      f_x&=e^{x}\sin y, & f_y&=e^{x}\cos y,\\
+      f_{xx}&=e^{x}\sin y, & f_{xy}&=e^{x}\cos y, & f_{yy}&=-e^{x}\sin y.
+      \end{aligned}\]
+      At \((0,0)\), \(e^{0}=1,\ \sin0=0,\ \cos0=1\), so \(f=0,\ f_x=0,\ f_y=1,\ f_{xx}=0,\ f_{xy}=1,\ f_{yy}=0\):
+      \[\nabla f(0,0)=\begin{bmatrix}0\\1\end{bmatrix},\qquad H(0,0)=\begin{bmatrix}0&1\\1&0\end{bmatrix}.\]</div>
+      <div class="pstep"><b>(b) Step 2 — assemble the clone.</b> With centre \((0,0)\) the increments are \(h=x,\ k=y\):
+      \[\begin{aligned}
+      Q(x,y)&=f+\big(f_x\,x+f_y\,y\big)+\tfrac12\big(f_{xx}x^2+2f_{xy}xy+f_{yy}y^2\big)\\
+      &=0+(0\cdot x+1\cdot y)+\tfrac12\,(0+2\cdot1\cdot xy+0)\\
+      &=y+xy.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(c) Step 3 — the numbers.</b> \(Q(0.1,0.2)=0.2+(0.1)(0.2)=0.22\). Exactly,
+      \[f(0.1,0.2)=e^{0.1}\sin0.2=1.105171\times0.198669=0.2195636,\]
+      so \(Q\) overshoots by \(4.4\times10^{-4}\).</div>
+      <div class="pstep"><b>Step 4 — where the error comes from.</b> Multiply the one-variable series and keep track of total degree:
+      \[\begin{aligned}
+      e^{x}\sin y&=\Big(1+x+\tfrac{x^2}{2}+\tfrac{x^3}{6}+\cdots\Big)\Big(y-\tfrac{y^3}{6}+\cdots\Big)\\
+      &=y+xy+\underbrace{\tfrac12x^2y-\tfrac16y^3}_{\text{degree }3}+\cdots
+      \end{aligned}\]
+      This is the product-of-series shortcut: \(Q=y+xy\) appears with no Hessian at all. The first neglected terms are cubic, and at \((0.1,0.2)\) they give \(0.001-0.001333=-3.3\times10^{-4}\); the quartic terms \(\tfrac16x^3y-\tfrac16xy^3\) add \(-1.0\times10^{-4}\), and together they account for almost the whole gap of \(-4.4\times10^{-4}\). Doubling the step to \((0.2,0.4)\) gives \(f=0.475637\) against \(Q=0.48\), a gap of \(-4.4\times10^{-3}\) — ten times larger for a step twice as long, exactly what a cubic-led error (\(2^3=8\), plus the quartic share) predicts.</div>
+      <div class="pstep"><b>Step 5 — read the Hessian as a shape.</b> \(H=\begin{bmatrix}0&1\\1&0\end{bmatrix}\) has trace \(0\) and determinant \(-1\), so its eigenvalues solve \(\lambda^2-1=0\): \(\lambda=\pm1\). The pure curvatures \(f_{xx},f_{yy}\) vanish and all the bending lives in the cross term — the quadratic part \(xy\) is a saddle, rising along \(y=x\) and falling along \(y=-x\). (The origin is not a critical point, since \(f_y=1\), so this is a statement about the clone's shape, not a classification of an extremum.)</div>
+      <p class="pans">(a) \(\nabla f(0,0)=(0,1)^{\top}\), \(H(0,0)=\begin{bmatrix}0&1\\1&0\end{bmatrix}\). (b) \(Q(x,y)=y+xy\). (c) \(Q(0.1,0.2)=0.22\) against \(f=0.2195636\); error \(4.4\times10^{-4}\), third order, mostly \(\tfrac12x^2y-\tfrac16y^3\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The quadratic term is \(\tfrac12\big(f_{xx}h^2+2f_{xy}hk+f_{yy}k^2\big)\) — a \(\tfrac12\) outside and a \(2\) on the cross term. Dropping either is where this problem sheds marks. When both functions have known series, multiply them and truncate by total degree: it is faster and it also shows you the size of the next term.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">medium</span><span class="chip" style="font-size:.68rem">added — covers the remainder bound</span></div>
+    <p class="pq">Bound the lie. <b>(a)</b> The small-angle rule \(\cos x\approx1-\tfrac{x^2}{2}\) is used at \(x=0.5\). Using the remainder formula, bound the error <em>before</em> computing anything; then compute the actual error and compare. <b>(b)</b> How many terms of the MacLaurin series of \(e^{x}\) are needed at \(x=1\) to guarantee an error below \(10^{-6}\)? Confirm by summing.</p>
+    <p class="ptest"><b>What this tests.</b> Using \(R_n=f^{(n)}(c)(x-a)^n/n!\) as a guarantee: choosing \(n\), bounding \(|f^{(n)}(c)|\) over the whole interval, and reading "how many terms" off a factorial. <b>Plan.</b> First decide which \(n\) the remainder formula should carry (count a zero coefficient as a kept term); replace the unknown \(c\) by the worst case on the interval; only then compute the true value and check that it sits inside the bound.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — pick \(n\) honestly.</b> The MacLaurin coefficients of \(\cos\) are \(1,\ 0,\ -\tfrac12,\ 0,\ \tfrac1{24},\dots\) because \(f'''(0)=\sin0=0\). So \(1-\tfrac{x^2}{2}\) is not only \(P_2\) but also \(P_3\): the degree-3 term is present and equals zero. The remainder formula therefore applies with \(n=4\):
+      \[R_4(x)=\frac{f^{(4)}(c)}{4!}\,x^4=\frac{\cos c}{24}\,x^4,\qquad c\ \text{between}\ 0\ \text{and}\ x.\]</div>
+      <div class="pstep"><b>Step 2 — bound the unknown \(c\) away.</b> Whatever \(c\) is, \(|\cos c|\le1\), so
+      \[|R_4(0.5)|\le\frac{0.5^4}{24}=\frac{0.0625}{24}=0.0026042.\]
+      That is a promise made before any cosine was evaluated: the rule cannot lie by more than \(0.0026\).</div>
+      <div class="pstep"><b>Step 3 — the actual error.</b> \(\cos0.5=0.8775826\) and \(1-\tfrac{0.25}{2}=0.875\), so the error is \(0.0025826\) — inside the bound, and almost equal to it (ratio \(0.99\)). The bound is nearly tight because \(\cos c\approx1\) for every \(c\) in \((0,0.5)\): the next term of the series, \(x^4/24\), <em>is</em> essentially the error. Had we lazily used \(n=3\), the bound \(|\sin c|\,0.5^3/6\le0.0208\) would still be true, but eight times looser.</div>
+      <div class="pstep"><b>(b) Step 4 — write the bound.</b> Keeping the terms \(k=0,\dots,n-1\) of \(e^{x}=\sum x^k/k!\) leaves the remainder \(R_n=e^{c}x^n/n!\) with \(c\in(0,1)\). At \(x=1\), \(e^{c}\le e<3\), so
+      \[|R_n|\le\frac{e}{n!}<\frac{3}{n!}.\]</div>
+      <div class="pstep"><b>Step 5 — find the first \(n\) that works.</b>
+      \[\frac{3}{9!}=\frac{3}{362\,880}=8.27\times10^{-6}\ (\text{too big}),\qquad \frac{3}{10!}=8.27\times10^{-7}<10^{-6}.\]
+      So \(n=10\): keep the terms \(k=0,1,\dots,9\) — ten terms, up to \(x^9/9!\).</div>
+      <div class="pstep"><b>Step 6 — confirm by summing.</b>
+      \[\sum_{k=0}^{9}\frac1{k!}=2.7182815\quad\text{against}\quad e=2.7182818,\]
+      an error of \(3.0\times10^{-7}\), below \(10^{-6}\) as promised. And nine terms genuinely fail: \(\sum_{k\le8}1/k!=2.7182788\), error \(3.1\times10^{-6}\). The bound was honest, not lazy.</div>
+      <p class="pans">(a) \(n=4\): \(|R_4|\le0.5^4/24=0.0026042\); actual error \(\cos0.5-0.875=0.0025826\), inside the bound. (b) \(3/n!<10^{-6}\) first at \(n=10\): ten terms (\(k=0,\dots,9\)); the sum is \(2.7182815\), error \(3.0\times10^{-7}\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>In the remainder formula \(n\) is one more than the highest degree you kept — and a zero coefficient still counts as kept, which is why \(1-x^2/2\) earns the \(x^4\) bound. Two habits lose marks: bounding \(f^{(n)}(c)\) by its value <em>at</em> \(a\) instead of its maximum over the interval, and confusing "number of terms" with "degree".</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff easy">easy</span><span class="chip" style="font-size:.68rem">added — covers the secret c</span></div>
+    <p class="pq">Find the secret \(c\). Take \(f(x)=x^3\) on \([0,2]\), anchored at \(a=0\). Taylor's theorem promises a \(c\in(0,2)\) with \(f(2)=P_{n-1}(2)+\dfrac{f^{(n)}(c)}{n!}\,2^n\). <b>(a)</b> For \(n=1\) (the mean value theorem), find \(c\). <b>(b)</b> For \(n=2\), find \(c\). <b>(c)</b> For \(n=3\), what happens?</p>
+    <p class="ptest"><b>What this tests.</b> That the \(c\) in the remainder is a definite number fixed by \(f\), \(a\), \(x\) and \(n\) — not a free parameter — and that it moves when \(n\) moves. <b>Plan.</b> Write the theorem with the given \(n\), fill in every known value (\(f\) and its derivatives at the anchor, the power of \(x-a\)), and solve the one equation left for \(c\); check it lands strictly inside the interval.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — \(n=1\) is the mean value theorem.</b> \(f(2)-f(0)=f'(c)(2-0)\) with \(f'(x)=3x^2\):
+      \[8-0=3c^2\cdot2=6c^2\ \Rightarrow\ c^2=\tfrac43\ \Rightarrow\ c=\tfrac{2}{\sqrt3}=1.1547.\]
+      The negative root \(-1.1547\) lies outside \([0,2]\); the positive one is inside, as promised. Check: the chord has slope \(8/2=4\), and \(f'(1.1547)=3\cdot\tfrac43=4\). ✓</div>
+      <div class="pstep"><b>(b) Step 2 — \(n=2\).</b> Now \(P_1(x)=f(0)+f'(0)\,x=0+0\cdot x=0\): at the anchor the cubic is flat, so its tangent line is the \(x\)-axis and the <em>whole</em> of \(f(2)\) is remainder. With \(f''(x)=6x\):
+      \[8=\frac{f''(c)}{2!}\,2^2=\frac{6c}{2}\cdot4=12c\ \Rightarrow\ c=\tfrac23.\]
+      Again \(c\in(0,2)\). The curvature that explains the climb to height \(8\) is the curvature measured at \(x=\tfrac23\).</div>
+      <div class="pstep"><b>(c) Step 3 — \(n=3\).</b> \(f'''(x)\equiv6\), so
+      \[R_3(x)=\frac{f'''(c)}{3!}\,x^3=\frac66\,x^3=x^3=f(x)\]
+      for <em>every</em> \(c\). The remainder is the entire function: a cubic is its own degree-3 Taylor polynomial, so \(P_3=f\), \(R_4\equiv0\) and \(f^{(4)}\equiv0\). The theorem is true for all \(c\) at once and stops telling you anything.</div>
+      <div class="pstep"><b>Step 4 — \(c\) depends on \(n\) and on \(x\).</b> Redo (a) and (b) with a general endpoint \(x\) instead of \(2\): \(x^3=3c^2x\) gives \(c=x/\sqrt3\), and \(x^3=3c\,x^2\) gives \(c=x/3\). At \(x=2\) these are \(1.1547\) and \(0.6667\); at \(x=1\) they would be \(0.5774\) and \(0.3333\). The secret point slides with the endpoint and jumps when the order changes.</div>
+      <p class="pans">(a) \(c=2/\sqrt3=1.1547\). (b) \(c=2/3\). (c) \(f'''\equiv6\) makes \(R_3=x^3=f(x)\): every \(c\) works, because a cubic equals its own \(P_3\). In general \(c=x/\sqrt3\) for \(n=1\) and \(c=x/3\) for \(n=2\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The theorem promises that some \(c\) strictly between \(a\) and \(x\) makes the formula exact; it does not tell you which one, and it changes with \(n\) and \(x\). Marks go when a student sets \(c=a\) or \(c=x\) "for simplicity", or forgets the \((x-a)^n\) factor next to \(f^{(n)}(c)/n!\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Let \(f(x,y)=x^3-3xy+3y^2\). <b>(a)</b> Find all critical points. <b>(b)</b> Form the Hessian and classify each point with the second-derivative test. <b>(c)</b> State the local-minimum value, and confirm the classification by the eigenvalue route.</p>
+    <p class="ptest"><b>What this tests.</b> The full routine — solve \(\nabla f=0\), build \(H\), read \(D=f_{xx}f_{yy}-f_{xy}^2\) and then \(f_{xx}\) — at two points where the Hessian is <em>not</em> constant. <b>Plan.</b> Use the simpler gradient equation to eliminate a variable; keep \(H\) symbolic and only then substitute each point; write \(D\)'s sign before \(f_{xx}\)'s; finish with trace and determinant for the eigenvalues as an independent check.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — solve \(\nabla f=\mathbf 0\).</b> \(\nabla f=\big(3x^2-3y,\ -3x+6y\big)\). The second component gives \(x=2y\); substitute into the first:
+      \[3(2y)^2-3y=12y^2-3y=3y(4y-1)=0\ \Rightarrow\ y=0\ \text{or}\ y=\tfrac14.\]
+      Then \(x=2y\) gives the critical points \((0,0)\) and \(\big(\tfrac12,\tfrac14\big)\).</div>
+      <div class="pstep"><b>(b) Step 2 — the Hessian, kept symbolic.</b> \(f_{xx}=6x,\ f_{xy}=-3,\ f_{yy}=6\):
+      \[H=\begin{bmatrix}6x&-3\\-3&6\end{bmatrix},\qquad D=f_{xx}f_{yy}-f_{xy}^2=36x-9.\]</div>
+      <div class="pstep"><b>Step 3 — the verdicts.</b> At \((0,0)\): \(D=-9<0\) ⇒ <em>saddle</em> (no need to look at \(f_{xx}\)). At \(\big(\tfrac12,\tfrac14\big)\): \(D=36\cdot\tfrac12-9=9>0\) and \(f_{xx}=3>0\) ⇒ <em>local minimum</em>.</div>
+      <div class="pstep"><b>(c) Step 4 — the value.</b>
+      \[f\big(\tfrac12,\tfrac14\big)=\tfrac18-3\cdot\tfrac12\cdot\tfrac14+3\cdot\tfrac1{16}=\tfrac{2}{16}-\tfrac{6}{16}+\tfrac{3}{16}=-\tfrac1{16}.\]</div>
+      <div class="pstep"><b>Step 5 — the eigenvalue route.</b> At the minimum \(H=\begin{bmatrix}3&-3\\-3&6\end{bmatrix}\) has trace \(9\) and determinant \(18-9=9\), so its eigenvalues solve \(\lambda^2-9\lambda+9=0\):
+      \[\lambda=\frac{9\pm\sqrt{81-36}}{2}=\frac{9\pm\sqrt{45}}{2}=\frac{9\pm6.708}{2}=7.854,\ 1.146,\]
+      both positive ⇒ positive-definite ⇒ a bowl. At the origin \(H=\begin{bmatrix}0&-3\\-3&6\end{bmatrix}\) has determinant \(-9\), so \(\lambda=3\pm\sqrt{18}=7.243,\ -1.243\): opposite signs ⇒ indefinite ⇒ saddle. For a symmetric \(2\times2\) matrix \(\det H=\lambda_1\lambda_2\), which is exactly why \(D<0\) forces a saddle.</div>
+      <p class="pans">(a) \((0,0)\) and \(\big(\tfrac12,\tfrac14\big)\). (b) \((0,0)\): \(D=-9\), saddle; \(\big(\tfrac12,\tfrac14\big)\): \(D=9,\ f_{xx}=3\), local minimum. (c) \(f_{\min}=-\tfrac1{16}\); eigenvalues there \((9\pm\sqrt{45})/2\approx7.854,\ 1.146\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Ask \(D\)'s sign first, then \(f_{xx}\)'s — a saddle needs no second question. The mark most often lost here: evaluating \(H\) once and reusing it, when \(f_{xx}=6x\) changes from point to point. And \(f_{xx}=0\) at the origin does not make it "neither"; \(D=-9\) already says saddle.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">A model is trained by minimising the quadratic loss \(f(x,y)=2x^2+2xy+3y^2-4x-2y\). <b>(a)</b> Find the unique critical point. <b>(b)</b> Show in two ways — Sylvester's criterion and the eigenvalues — that the Hessian is positive-definite, and conclude the point is the global minimum. <b>(c)</b> State the minimum value.</p>
+    <p class="ptest"><b>What this tests.</b> That "positive-definite Hessian" can be certified by leading minors or by eigenvalue signs, and that for a quadratic a constant positive-definite Hessian makes the local minimum global. <b>Plan.</b> Solve the linear gradient system; write the constant \(H\); check \(\Delta_1=f_{xx}\) and \(\Delta_2=\det H\); get the eigenvalues from trace and determinant; evaluate \(f\) at the point, and if time allows complete the square to prove the minimum is global.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the critical point.</b> \(\nabla f=(4x+2y-4,\ 2x+6y-2)=\mathbf 0\), i.e. \(2x+y=2\) and \(x+3y=1\). From the first, \(y=2-2x\); substitute:
+      \[x+3(2-2x)=1\ \Rightarrow\ -5x=-5\ \Rightarrow\ x=1,\ y=0.\]
+      The critical point is \((1,0)\).</div>
+      <div class="pstep"><b>(b) Step 2 — Sylvester.</b> Because \(f\) is quadratic the Hessian is the same everywhere:
+      \[H=\begin{bmatrix}4&2\\2&6\end{bmatrix},\qquad \Delta_1=4>0,\quad \Delta_2=\det H=24-4=20>0.\]
+      Both leading principal minors are positive ⇒ \(H\) is positive-definite.</div>
+      <div class="pstep"><b>Step 3 — eigenvalues.</b> Trace \(10\), determinant \(20\):
+      \[\lambda=\frac{10\pm\sqrt{100-80}}{2}=5\pm\sqrt5=7.236,\ 2.764,\]
+      both positive ⇒ positive-definite again. Since \(H\succ0\) at every point, \(f\) is strictly convex: it has exactly one stationary point and that point is the global minimum.</div>
+      <div class="pstep"><b>(c) Step 4 — the value.</b> \(f(1,0)=2-4=-2\).</div>
+      <div class="pstep"><b>Step 5 — completing the square proves "global" by hand.</b> Shift to the critical point with \(x=1+u,\ y=v\):
+      \[\begin{aligned}
+      f&=2(1+u)^2+2(1+u)v+3v^2-4(1+u)-2v\\
+      &=-2+\big(2u^2+2uv+3v^2\big)\\
+      &=-2+2\big(u+\tfrac v2\big)^2+\tfrac52v^2\ \ \ge\ -2,
+      \end{aligned}\]
+      with equality only at \(u=v=0\). One manoeuvre certifies definiteness <em>and</em> pins the value.</div>
+      <div class="pstep"><b>Step 6 — how elongated is the bowl?</b> The condition number \(\lambda_{\max}/\lambda_{\min}=7.236/2.764=2.618\) (exactly \((3+\sqrt5)/2\)). The contours are ellipses whose axes are in the ratio \(\sqrt{2.618}\approx1.62\): steepest along the \(\lambda\approx7.24\) eigenvector, gentlest along the \(\lambda\approx2.76\) one. The larger this ratio, the more gradient descent zig-zags before it settles.</div>
+      <p class="pans">(a) \((1,0)\). (b) \(H=\begin{bmatrix}4&2\\2&6\end{bmatrix}\): minors \(4>0,\ 20>0\); eigenvalues \(5\pm\sqrt5\approx7.236,\ 2.764\); \(H\succ0\) everywhere ⇒ global minimum. (c) \(f_{\min}=-2\); condition number \(\approx2.618\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Sylvester uses the <em>leading</em> minors: the top-left \(1\times1\) entry and then the full determinant. Checking \(f_{yy}>0\) instead of \(f_{xx}>0\) is not the criterion (it happens to agree here). For a quadratic, \(H\) is constant, so positive-definite once means convex everywhere — and "local" upgrades to "global" for free.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Consider \(g(x,y)=x^4+y^4\) and \(h(x,y)=x^4-y^4\). <b>(a)</b> Show that for both, the origin is a critical point and the Hessian there is the zero matrix, so the second-derivative test is inconclusive. <b>(b)</b> Determine the true nature of the origin for each by a direct argument. <b>(c)</b> In one line, say why the Hessian could not tell them apart.</p>
+    <p class="ptest"><b>What this tests.</b> What \(D=0\) actually means — "no verdict", not "flat" — and how to classify a point when the quadratic clone is silent. <b>Plan.</b> Compute gradient and Hessian at the origin for both; when the test is silent, argue directly from the sign of the function (a global inequality, or two directions with opposite signs); the ray slice \((t\cos\theta,t\sin\theta)\) is the systematic version of that.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — gradients and Hessians.</b>
+      \[\begin{aligned}
+      \nabla g&=(4x^3,\ 4y^3), & H_g&=\begin{bmatrix}12x^2&0\\0&12y^2\end{bmatrix},\\
+      \nabla h&=(4x^3,\ -4y^3), & H_h&=\begin{bmatrix}12x^2&0\\0&-12y^2\end{bmatrix}.
+      \end{aligned}\]
+      At the origin both gradients vanish (critical point) and both Hessians are the zero matrix, so \(D=\det H=0\) for each: the test says nothing.</div>
+      <div class="pstep"><b>(b) Step 2 — \(g\) by a global inequality.</b> \(g(x,y)=x^4+y^4\ge0\) for every \((x,y)\), with equality only at the origin ⇒ a strict local (indeed global) <em>minimum</em>.</div>
+      <div class="pstep"><b>Step 3 — \(h\) by two directions.</b> Along the \(x\)-axis, \(h(t,0)=t^4>0\); along the \(y\)-axis, \(h(0,t)=-t^4<0\). A point that is a minimum in one direction and a maximum in another is a <em>saddle</em>.</div>
+      <div class="pstep"><b>Step 4 — the ray slice does both at once.</b> Put \((x,y)=t(\cos\theta,\sin\theta)\):
+      \[\begin{aligned}
+      g&=t^4\big(\cos^4\theta+\sin^4\theta\big)=t^4\big(1-\tfrac12\sin^2 2\theta\big)\ \ge\ \tfrac12t^4>0,\\
+      h&=t^4\big(\cos^4\theta-\sin^4\theta\big)=t^4\cos2\theta,
+      \end{aligned}\]
+      using \(\cos^4+\sin^4=(\cos^2+\sin^2)^2-2\sin^2\cos^2\) and \(\cos^4-\sin^4=(\cos^2-\sin^2)(\cos^2+\sin^2)\). Every ray of \(g\) climbs; the rays of \(h\) climb for \(|\theta|<45^\circ\) and fall for \(45^\circ<\theta<135^\circ\). A sign that changes with direction is the signature of a saddle.</div>
+      <div class="pstep"><b>(c) Step 5 — why the Hessian was blind.</b> The Hessian records second-order behaviour only; here the first non-zero behaviour is <em>fourth</em> order, and the quadratic clone of both functions is the same flat plane \(z=0\).</div>
+      <p class="pans">(a) Both have \(\nabla=\mathbf 0\) and \(H=0\) at the origin, so \(D=0\). (b) \(g\ge0\) ⇒ minimum; \(h=t^4\) along \(x\) and \(-t^4\) along \(y\) ⇒ saddle (ray slice: \(g=t^4(1-\tfrac12\sin^22\theta)\), \(h=t^4\cos2\theta\)). (c) The difference is quartic; a second-order test cannot see it.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>\(D=0\) is a refusal to judge, not a verdict of "flat" or "neither". Writing "inconclusive" and stopping loses the marks: the question asks for the true nature, which needs a direct argument — an inequality, two opposite directions, or a ray slice.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Find the local extreme values of \(f(x,y)=xy-x^2-y^2-2x-2y+4\).</p>
+    <p class="ptest"><b>What this tests.</b> The three-step routine on a function whose Hessian is constant: critical point, \(D\), verdict, value. <b>Plan.</b> Solve the two linear gradient equations by substitution; write the three second partials (they are numbers here); compute \(D\) and then look at \(f_{xx}\); substitute back to get the value, and cross-check with the eigenvalues.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — critical points.</b> \(f_x=y-2x-2=0\) and \(f_y=x-2y-2=0\). From the first, \(y=2x+2\); into the second:
+      \[\begin{aligned}
+      x-2(2x+2)-2=0\ &\Rightarrow\ -3x-6=0\ \Rightarrow\ x=-2,\\
+      y&=2(-2)+2=-2.
+      \end{aligned}\]
+      The only critical point is \((-2,-2)\).</div>
+      <div class="pstep"><b>Step 2 — second partials and \(D\).</b> \(f_{xx}=-2,\ f_{yy}=-2,\ f_{xy}=1\), constants:
+      \[D=f_{xx}f_{yy}-f_{xy}^2=(-2)(-2)-1^2=4-1=3>0.\]</div>
+      <div class="pstep"><b>Step 3 — verdict and value.</b> \(D>0\) and \(f_{xx}=-2<0\) ⇒ <em>local maximum</em>. Its value:
+      \[f(-2,-2)=4-4-4+4+4+4=8.\]</div>
+      <div class="pstep"><b>Step 4 — cross-check by eigenvalues.</b> \(H=\begin{bmatrix}-2&1\\1&-2\end{bmatrix}\) has trace \(-4\) and determinant \(3\), so \(\lambda^2+4\lambda+3=0\) gives \(\lambda=-1,\ -3\): both negative ⇒ negative-definite ⇒ a dome. Because \(H\) is constant, \(f\) is concave everywhere and \(8\) is in fact the global maximum.</div>
+      <p class="pans">One critical point \((-2,-2)\); \(D=3>0\), \(f_{xx}=-2<0\): a local (indeed global) maximum with \(f(-2,-2)=8\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A maximum needs <em>both</em> \(D>0\) and \(f_{xx}<0\); a negative \(f_{xx}\) with \(D<0\) is a saddle, not a maximum. The marks that go missing here are almost always a sign slip in the two-line linear system — substitute your point back into both gradient equations before moving on.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Find the local extreme values of \(f(x,y)=x^3+y^3-3xy+1\).</p>
+    <p class="ptest"><b>What this tests.</b> A nonlinear gradient system with a real-root argument, and a Hessian that must be re-evaluated at each point. <b>Plan.</b> Turn each gradient equation into a substitution, reduce to one polynomial equation, keep only the real roots; evaluate \(f_{xx},f_{yy},f_{xy}\) separately at each point; give both the verdict and the value, and say whether the minimum is global.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — critical points.</b>
+      \[f_x=3x^2-3y=0\ \Rightarrow\ y=x^2,\qquad f_y=3y^2-3x=0\ \Rightarrow\ x=y^2.\]
+      Substituting \(y=x^2\) into the second: \(x=x^4\), so \(x(x^3-1)=0\). The real roots are \(x=0\) and \(x=1\) (the other two roots of \(x^3=1\) are complex). Hence the critical points are \((0,0)\) and \((1,1)\).</div>
+      <div class="pstep"><b>Step 2 — the Hessian entries.</b> \(f_{xx}=6x,\ f_{yy}=6y,\ f_{xy}=-3\) — the diagonal changes from point to point, the off-diagonal does not.</div>
+      <div class="pstep"><b>Step 3 — at \((0,0)\).</b> \(f_{xx}=0,\ f_{yy}=0,\ f_{xy}=-3\):
+      \[D=0\cdot0-(-3)^2=-9<0\ \Rightarrow\ \text{saddle},\qquad f(0,0)=1.\]</div>
+      <div class="pstep"><b>Step 4 — at \((1,1)\).</b> \(f_{xx}=6,\ f_{yy}=6,\ f_{xy}=-3\):
+      \[\begin{aligned}
+      D&=6\cdot6-(-3)^2=36-9=27>0,\quad f_{xx}=6>0\\
+      &\Rightarrow\ \text{local minimum},\qquad f(1,1)=1+1-3+1=0.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 5 — eigenvalue check, and local versus global.</b> At \((1,1)\), \(H=\begin{bmatrix}6&-3\\-3&6\end{bmatrix}\) has eigenvalues \(6\pm3=9,\ 3\) (both positive: bowl); at \((0,0)\), \(H=\begin{bmatrix}0&-3\\-3&0\end{bmatrix}\) has eigenvalues \(\pm3\) (saddle). The minimum value \(0\) is local only: \(f(-2,0)=-8+1=-7\), and a cubic runs to \(-\infty\) — the test describes a neighbourhood, nothing more.</div>
+      <p class="pans">\((0,0)\): \(D=-9\), saddle, \(f=1\). \((1,1)\): \(D=27,\ f_{xx}=6\), local minimum, \(f=0\) (not global: \(f(-2,0)=-7\)).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>\(f_{xx}=f_{yy}=0\) at the origin does <em>not</em> make \(D=0\): the cross term \(f_{xy}=-3\) gives \(D=-9\) and a clear saddle. And for cubics, local is not global — say so when you report a minimum.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">Find the absolute maximum and minimum of \(f(x,y)=x^2+y^2-x-y\) on the region \(D=\{(x,y):x^2\le y\le1\}\).</p>
+    <p class="ptest"><b>What this tests.</b> Absolute extrema on a closed, bounded region: interior critical points <em>and</em> every piece of the boundary <em>and</em> the corners, then a comparison. <b>Plan.</b> Draw the region first; collect the interior critical points that lie inside it; reduce each boundary curve to a one-variable function and find its critical points; add the corners; make one list of values and pick the largest and smallest — the second-derivative test is not needed for any of this.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — draw the region in words.</b> \(D\) is the set of points above the parabola \(y=x^2\) and below the line \(y=1\): a parabolic bowl with a flat lid, meeting at the corners \((-1,1)\) and \((1,1)\). It is closed and bounded, so an absolute maximum and minimum exist, and each lives either at an interior critical point or somewhere on the boundary. The second-derivative test can only classify flat points in the open interior; on the boundary the gradient need not vanish at all, so the boundary must be searched separately.</div>
+      <div class="pstep"><b>Step 2 — interior critical points.</b> \(f_x=2x-1=0\) and \(f_y=2y-1=0\) give \(\big(\tfrac12,\tfrac12\big)\). Is it inside \(D\)? \(\big(\tfrac12\big)^2=\tfrac14\le\tfrac12\le1\), yes. Its value:
+      \[f\big(\tfrac12,\tfrac12\big)=\tfrac14+\tfrac14-\tfrac12-\tfrac12=-\tfrac12.\]
+      (Here \(H=2I\), a bowl, so this is a local minimum — but that says nothing about the boundary.)</div>
+      <div class="pstep"><b>Step 3 — the parabola arc \(y=x^2\), \(-1\le x\le1\).</b> Substitute:
+      \[\begin{aligned}
+      g(x)&=f(x,x^2)=x^2+x^4-x-x^2=x^4-x,\\
+      g'(x)&=4x^3-1=0\ \Rightarrow\ x=\big(\tfrac14\big)^{1/3}=0.62996.
+      \end{aligned}\]
+      Then \(y=x^2=0.39685\), and since \(4x^3=1\) we have \(x^4=x/4\), so \(g=\tfrac x4-x=-\tfrac34x=-0.47247\). The arc's endpoints are the corners:
+      \[f(-1,1)=1+1+1-1=2,\qquad f(1,1)=1+1-1-1=0.\]</div>
+      <div class="pstep"><b>Step 4 — the lid \(y=1\), \(-1\le x\le1\).</b> \(h(x)=f(x,1)=x^2+1-x-1=x^2-x\), with \(h'(x)=2x-1=0\) at \(x=\tfrac12\):
+      \[f\big(\tfrac12,1\big)=\tfrac14+1-\tfrac12-1=-\tfrac14.\]
+      Its endpoints are the same two corners, already counted.</div>
+      <div class="pstep"><b>Step 5 — compare.</b> The candidate values are \(\{-\tfrac12,\ -0.47247,\ 2,\ 0,\ -\tfrac14\}\). The absolute maximum is \(2\) at the corner \((-1,1)\); the absolute minimum is \(-\tfrac12\) at the interior point \(\big(\tfrac12,\tfrac12\big)\).</div>
+      <div class="pstep"><b>Step 6 — a geometric cross-check.</b> Completing squares, \(f=\big(x-\tfrac12\big)^2+\big(y-\tfrac12\big)^2-\tfrac12\): \(f\) is the squared distance from \(\big(\tfrac12,\tfrac12\big)\), minus \(\tfrac12\). The minimum is at that centre, which lies in \(D\); the maximum is at the point of \(D\) farthest from it — the corner \((-1,1)\), at squared distance \(1.5^2+0.5^2=2.5\), giving \(2.5-0.5=2\). ✓ The arc point \((0.63,0.40)\) is merely the foot of the perpendicular from the centre to the parabola — the closest point of the arc, never a contender for either extreme. Note \(\nabla f(-1,1)=(-3,1)\neq\mathbf 0\): the maximum sits where the gradient does not vanish, which is exactly why the boundary must be checked by hand.</div>
+      <p class="pans">Interior: \(f(\tfrac12,\tfrac12)=-\tfrac12\). Parabola: \(f(0.62996,0.39685)=-0.47247\), corners \(f(-1,1)=2\), \(f(1,1)=0\). Lid: \(f(\tfrac12,1)=-\tfrac14\). Absolute maximum \(2\) at \((-1,1)\); absolute minimum \(-\tfrac12\) at \((\tfrac12,\tfrac12)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>On a closed, bounded region keep three lists — interior critical points, each boundary piece reduced to one variable, and the corners — and only then compare. The marks vanish when the corners are skipped (that is where the maximum lives here) or when the arc's \(-0.47\) is reported as the minimum without checking it against \(-\tfrac12\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff hard">hard</span><span class="chip" style="font-size:.68rem">added — covers the judge's identity</span></div>
+    <p class="pq">The judge's identity, proved and used. Let \(Q(h,k)=h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\) with the partials taken at a critical point, and \(D=f_{xx}f_{yy}-f_{xy}^2\). <b>(a)</b> Prove that \(f_{xx}\,Q=(hf_{xx}+kf_{xy})^2+D\,k^2\) by expanding the right-hand side. <b>(b)</b> Deduce the three verdicts: \(D>0,\ f_{xx}>0\) ⇒ \(Q>0\) for all \((h,k)\neq\mathbf 0\); \(D>0,\ f_{xx}<0\) ⇒ \(Q<0\); \(D<0\) ⇒ \(Q\) takes both signs. <b>(c)</b> For a symmetric \(H=\begin{bmatrix}a&b\\b&c\end{bmatrix}\), show \(\lambda_1\lambda_2=ac-b^2=D\) and \(\lambda_1+\lambda_2=a+c\); hence \(D<0\) exactly when the eigenvalues have opposite signs, and \(D>0\) with \(a>0\) forces \(c>0\) and both eigenvalues positive. <b>(d)</b> Apply (c) to \(H=\begin{bmatrix}3&-3\\-3&6\end{bmatrix}\).</p>
+    <p class="ptest"><b>What this tests.</b> The one identity behind the whole second-derivative test, and why the discriminant \(D\) and the eigenvalue signs are the same criterion in two languages. <b>Plan.</b> Expand, cancel, factor; for each verdict start from the sign of the right-hand side and divide by \(f_{xx}\) with the correct flip; for the saddle, exhibit two explicit directions; for (c) write the characteristic polynomial and read off sum and product of roots; finish with the numbers.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — expand the right-hand side.</b>
+      \[\begin{aligned}
+      (hf_{xx}+kf_{xy})^2&=h^2f_{xx}^2+2hk\,f_{xx}f_{xy}+k^2f_{xy}^2,\\
+      D\,k^2&=f_{xx}f_{yy}\,k^2-f_{xy}^2\,k^2.
+      \end{aligned}\]
+      Adding, the two \(k^2f_{xy}^2\) terms cancel and what is left has a common factor \(f_{xx}\):
+      \[h^2f_{xx}^2+2hk\,f_{xx}f_{xy}+k^2f_{xx}f_{yy}=f_{xx}\big(h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\big)=f_{xx}\,Q.\ \ \blacksquare\]
+      The identity is nothing more than completing the square in \(h\), with everything multiplied by \(f_{xx}\) so that no fractions appear.</div>
+      <div class="pstep"><b>(b) Step 2 — verdict 1: \(D>0\) and \(f_{xx}>0\).</b> The right-hand side is a square plus \(D\,k^2\), so it is \(\ge0\). It can be \(0\) only if \(k=0\) <em>and</em> \(hf_{xx}+kf_{xy}=0\), i.e. \(hf_{xx}=0\), i.e. \(h=0\). So for \((h,k)\neq\mathbf 0\) we have \(f_{xx}Q>0\), and dividing by \(f_{xx}>0\) gives \(Q>0\): uphill in every direction — a bowl, a local minimum.</div>
+      <div class="pstep"><b>Step 3 — verdict 2: \(D>0\) and \(f_{xx}<0\).</b> The same right-hand side is still strictly positive for \((h,k)\neq\mathbf 0\) — its sign never depended on the sign of \(f_{xx}\). Dividing by \(f_{xx}<0\) flips the inequality: \(Q<0\) in every direction — a dome, a local maximum. (Note that \(D>0\) forces \(f_{xx}\neq0\), since \(f_{xx}f_{yy}>f_{xy}^2\ge0\), so the division is always legal in verdicts 1 and 2.)</div>
+      <div class="pstep"><b>Step 4 — verdict 3: \(D<0\).</b> Test two explicit directions. Along \((h,k)=(1,0)\):
+      \[Q(1,0)=f_{xx}.\]
+      Along \((h,k)=(-f_{xy},\,f_{xx})\):
+      \[\begin{aligned}
+      Q(-f_{xy},f_{xx})&=f_{xy}^2f_{xx}-2f_{xy}f_{xx}f_{xy}+f_{xx}^2f_{yy}\\
+      &=f_{xx}\big(f_{xx}f_{yy}-f_{xy}^2\big)=f_{xx}\,D,
+      \end{aligned}\]
+      so \(f_{xx}\cdot Q(-f_{xy},f_{xx})=f_{xx}^2D<0\) whenever \(f_{xx}\neq0\): the two values \(Q(1,0)=f_{xx}\) and \(Q(-f_{xy},f_{xx})=f_{xx}D\) have opposite signs — up one way, down another, a saddle. If \(f_{xx}=0\), then \(D=-f_{xy}^2<0\) means \(f_{xy}\neq0\), and along \((h,k)=(1,t)\):
+      \[Q(1,t)=2t\,f_{xy}+t^2f_{yy}=t\,(2f_{xy}+t\,f_{yy}),\]
+      which for small \(t\) has the sign of \(t\,f_{xy}\) — opposite signs at \(t=\pm\varepsilon\). (When \(f_{yy}\neq0\) one can instead swap the roles of \(x\) and \(y\) and run the identity with \(f_{yy}\).) Either way \(Q\) changes sign: saddle.</div>
+      <div class="pstep"><b>(c) Step 5 — eigenvalues of a symmetric \(2\times2\).</b>
+      \[\det(H-\lambda I)=(a-\lambda)(c-\lambda)-b^2=\lambda^2-(a+c)\lambda+(ac-b^2).\]
+      For a monic quadratic with roots \(\lambda_1,\lambda_2\), the sum of the roots is the negated middle coefficient and the product is the constant term:
+      \[\lambda_1+\lambda_2=a+c=\operatorname{tr}H,\qquad \lambda_1\lambda_2=ac-b^2=\det H=D.\]
+      (The roots are real because the discriminant \((a+c)^2-4(ac-b^2)=(a-c)^2+4b^2\ge0\).) Hence \(D<0\iff\lambda_1\lambda_2<0\iff\) the eigenvalues have opposite signs. And if \(D>0\) with \(a>0\): \(ac>b^2\ge0\) with \(a>0\) forces \(c>0\), so the sum \(a+c>0\) and the product \(D>0\) — two real numbers with positive sum and positive product are both positive. (By the same token \(a<0\) forces \(c<0\) and both eigenvalues negative.) This is why "\(D\) and \(f_{xx}\)" and "eigenvalue signs" are one criterion in two languages.</div>
+      <div class="pstep"><b>(d) Step 6 — the numbers.</b> \(H=\begin{bmatrix}3&-3\\-3&6\end{bmatrix}\): trace \(9\), determinant \(18-9=9=D\). So \(\lambda^2-9\lambda+9=0\):
+      \[\lambda=\frac{9\pm\sqrt{81-36}}{2}=\frac{9\pm\sqrt{45}}{2}=7.854,\ 1.146.\]
+      Check: sum \(9\), product \(9\). ✓ Both positive ⇒ positive-definite ⇒ a bowl — this is the Hessian of Problem 6 at its minimum \(\big(\tfrac12,\tfrac14\big)\). Sylvester says the same in one line (\(3>0,\ 9>0\)), and the identity of part (a) shows it explicitly: \(3Q=(3h-3k)^2+9k^2>0\) for \((h,k)\neq\mathbf 0\).</div>
+      <p class="pans">(a) Expanding gives \(f_{xx}(h^2f_{xx}+2hkf_{xy}+k^2f_{yy})=f_{xx}Q\). (b) \(D>0\): the right side is positive for \((h,k)\neq\mathbf 0\), so \(Q\) has the sign of \(f_{xx}\); \(D<0\): \(Q(1,0)=f_{xx}\) and \(Q(-f_{xy},f_{xx})=f_{xx}D\) have opposite signs (or \(Q(1,\pm\varepsilon)\) when \(f_{xx}=0\)). (c) \(\lambda_1\lambda_2=D\), \(\lambda_1+\lambda_2=a+c\). (d) \(\lambda=(9\pm\sqrt{45})/2\approx7.854,\ 1.146\), both positive: bowl.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The whole test is one line of completed square: \(f_{xx}Q=(hf_{xx}+kf_{xy})^2+Dk^2\). Read it as "a square plus \(D\) times a square" and the three verdicts follow, and \(D=\det H=\lambda_1\lambda_2\) is why the discriminant's sign is the eigenvalue story in disguise. Marks are lost by forgetting the \(f_{xx}=0\) case in the saddle argument, or by claiming \(D>0\) alone gives a minimum.</p></div>
+    </details>
+  </div>

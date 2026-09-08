@@ -1,0 +1,98 @@
+<!-- ================= 10 · TAYLOR IN MATRIX FORM ================= -->
+<section class="unit" id="smat">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Taylor in matrix form — and how to remember it</h2></div>
+  <div class="prose reveal">
+    <p>Three numbers decided everything in the last section, so give them a home. Pack the second partials into a matrix and the walk's second derivative becomes a <em>sandwich</em>:</p>
+    \[H=\nabla^2 f=\begin{bmatrix}f_{xx} & f_{xy}\\ f_{xy} & f_{yy}\end{bmatrix}\]
+    \[\mathbf h^{\top}H\,\mathbf h=\begin{bmatrix}h & k\end{bmatrix}\begin{bmatrix}f_{xx} & f_{xy}\\ f_{xy} & f_{yy}\end{bmatrix}\begin{bmatrix}h\\ k\end{bmatrix}=h^2f_{xx}+2hk\,f_{xy}+k^2f_{yy}.\]
+    <p>(Multiply it out: the two diagonal entries give \(h^2f_{xx}\) and \(k^2f_{yy}\); the two off-diagonal entries each give \(hk\,f_{xy}\), and together they are the \(2hkf_{xy}\) from the walk.) The matrix \(H\) is the <strong>Hessian</strong> — every second partial derivative in one place, symmetric because \(f_{xy}=f_{yx}\). With it, the whole two-variable expansion of the previous sections — first-order term included — collapses into one line that looks exactly like the one-variable formula:</p>
+    <div class="callout remember"><span class="tag">Taylor's theorem in matrix form</span>
+      <p>For \(f:\mathbb R^n\to\mathbb R\), a base point \(\mathbf x_0\) and a step \(\mathbf h\), with \(\nabla f\) the gradient (a column of the \(n\) first partials) and \(H\) the Hessian (the \(n\times n\) matrix \(H_{ij}=\partial^2 f/\partial x_i\partial x_j\)):</p>
+      \[f(\mathbf x_0+\mathbf h)=f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}\mathbf h+\tfrac12\,\mathbf h^{\top}H(\mathbf x_0+c\,\mathbf h)\,\mathbf h\qquad\text{for some }c\in(0,1),\]
+      <p>and, evaluating \(H\) at \(\mathbf x_0\) instead, the <em>quadratic clone</em> \(Q(\mathbf h)=f(\mathbf x_0)+\nabla f^{\top}\mathbf h+\tfrac12\mathbf h^{\top}H\mathbf h\) with a third-order leftover.</p>
+    </div>
+  </div>
+  <div class="callout aha reveal"><span class="tag">How to remember it — the rank ladder</span>
+    <p>Write the one-variable formula and <strong>promote each derivative by one rank</strong>:</p>
+    \[\begin{array}{rcccccc}
+      \text{one variable:} & f(a) & + & f'(a)\,h & + & \tfrac12\,f''(a)\,h^2 \\[.5em]
+      \text{many variables:} & f(\mathbf x_0) & + & \nabla f^{\top}\mathbf h & + & \tfrac12\,\mathbf h^{\top}H\,\mathbf h
+    \end{array}\]
+    <p><strong>The value</strong> is a number in both worlds — nothing to promote. <strong>The first derivative</strong> becomes a list of \(n\) slopes, the gradient; a list needs exactly one step to turn into a number, so it is <em>dotted</em> with \(\mathbf h\): one \(h\), one index. <strong>The second derivative</strong> becomes an \(n\times n\) table of curvatures, the Hessian; a table needs two steps to become a number, one for each index, so \(\mathbf h\) is fed in from both sides: the sandwich. <strong>The \(\tfrac12\)</strong> is \(1/2!\) and stays exactly where it was — the first-order term's \(1/1!\) is invisible for the same reason it was invisible in one variable. Two habits make it stick: <em>each derivative index eats one copy of \(\mathbf h\)</em> (\(\sum_i f_i h_i\), then \(\sum_{i}\sum_j f_{ij}h_ih_j\)), and <em>every term must be a plain number</em> — check the shapes: \((1\times n)(n\times1)\) is a number, \((1\times n)(n\times n)(n\times1)\) is a number. If you ever write \(H\mathbf h^2\) or \(\nabla f\,\mathbf h\) without a transpose, the shapes refuse to multiply, and that refusal is the formula correcting you.</p>
+  </div>
+<figure class="fig reveal" role="img" aria-label="The one-variable Taylor formula written above its matrix-form counterpart, term by term, with each derivative's shape drawn as a box: a single cell for f, a row of cells for the gradient dotted with a column for h, and an n-by-n grid for the Hessian sandwiched between a row h-transpose and a column h">
+<div class="scroll"><svg viewBox="0 0 600 250" width="100%">
+  <text x="20" y="34" font-size="12" font-weight="700" fill="var(--ink-2)">one variable</text>
+  <text x="150" y="40" text-anchor="middle" font-size="15" font-weight="700" fill="var(--ink)">f(a)</text>
+  <text x="222" y="40" text-anchor="middle" font-size="15" fill="var(--ink-muted)">+</text>
+  <text x="300" y="40" text-anchor="middle" font-size="15" font-weight="700" fill="var(--s1)">f′(a) · h</text>
+  <text x="392" y="40" text-anchor="middle" font-size="15" fill="var(--ink-muted)">+</text>
+  <text x="495" y="40" text-anchor="middle" font-size="15" font-weight="700" fill="var(--s2)">½ · f″(a) · h²</text>
+  <g stroke="var(--ink-muted)" stroke-width="1" stroke-dasharray="3 3"><line x1="150" y1="50" x2="150" y2="66"/><line x1="300" y1="50" x2="300" y2="66"/><line x1="495" y1="50" x2="495" y2="66"/><line x1="150" y1="90" x2="150" y2="104"/><line x1="300" y1="90" x2="300" y2="104"/><line x1="495" y1="90" x2="495" y2="104"/></g>
+  <text x="150" y="80" text-anchor="middle" font-size="10" fill="var(--ink-muted)">stays a number</text>
+  <text x="300" y="80" text-anchor="middle" font-size="10" fill="var(--ink-muted)">one index → one h</text>
+  <text x="495" y="80" text-anchor="middle" font-size="10" fill="var(--ink-muted)">two indices → two h's</text>
+  <text x="20" y="150" font-size="12" font-weight="700" fill="var(--ink-2)">n variables</text>
+  <!-- f(x0): one cell -->
+  <rect x="139" y="128" width="22" height="22" rx="4" fill="color-mix(in srgb, var(--ink) 14%, transparent)" stroke="var(--ink)" stroke-width="1.4"/>
+  <text x="150" y="176" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">f(x₀)</text>
+  <text x="222" y="145" text-anchor="middle" font-size="15" fill="var(--ink-muted)">+</text>
+  <!-- gradient row · h column -->
+  <g fill="color-mix(in srgb, var(--s1) 22%, transparent)" stroke="var(--s1)" stroke-width="1.4">
+    <rect x="248" y="128" width="16" height="16" rx="3"/><rect x="266" y="128" width="16" height="16" rx="3"/><rect x="284" y="128" width="16" height="16" rx="3"/>
+  </g>
+  <g fill="color-mix(in srgb, var(--s4) 22%, transparent)" stroke="var(--s4)" stroke-width="1.4">
+    <rect x="316" y="118" width="16" height="16" rx="3"/><rect x="316" y="136" width="16" height="16" rx="3"/><rect x="316" y="154" width="16" height="16" rx="3"/>
+  </g>
+  <text x="274" y="120" text-anchor="middle" font-size="10" font-weight="700" fill="var(--s1)">∇fᵀ (1×n)</text>
+  <text x="324" y="182" text-anchor="middle" font-size="10" font-weight="700" fill="var(--s4)">h (n×1)</text>
+  <text x="300" y="206" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--s1)">∇fᵀh</text>
+  <text x="392" y="145" text-anchor="middle" font-size="15" fill="var(--ink-muted)">+</text>
+  <!-- ½ hᵀ H h -->
+  <text x="424" y="146" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">½</text>
+  <g fill="color-mix(in srgb, var(--s4) 22%, transparent)" stroke="var(--s4)" stroke-width="1.4">
+    <rect x="436" y="128" width="14" height="14" rx="3"/><rect x="452" y="128" width="14" height="14" rx="3"/><rect x="468" y="128" width="14" height="14" rx="3"/>
+  </g>
+  <g fill="color-mix(in srgb, var(--s2) 22%, transparent)" stroke="var(--s2)" stroke-width="1.4">
+    <rect x="490" y="112" width="14" height="14" rx="3"/><rect x="506" y="112" width="14" height="14" rx="3"/><rect x="522" y="112" width="14" height="14" rx="3"/>
+    <rect x="490" y="128" width="14" height="14" rx="3"/><rect x="506" y="128" width="14" height="14" rx="3"/><rect x="522" y="128" width="14" height="14" rx="3"/>
+    <rect x="490" y="144" width="14" height="14" rx="3"/><rect x="506" y="144" width="14" height="14" rx="3"/><rect x="522" y="144" width="14" height="14" rx="3"/>
+  </g>
+  <g fill="color-mix(in srgb, var(--s4) 22%, transparent)" stroke="var(--s4)" stroke-width="1.4">
+    <rect x="546" y="112" width="14" height="14" rx="3"/><rect x="546" y="128" width="14" height="14" rx="3"/><rect x="546" y="144" width="14" height="14" rx="3"/>
+  </g>
+  <text x="459" y="120" text-anchor="middle" font-size="10" font-weight="700" fill="var(--s4)">hᵀ</text>
+  <text x="513" y="104" text-anchor="middle" font-size="10" font-weight="700" fill="var(--s2)">H (n×n)</text>
+  <text x="553" y="172" text-anchor="middle" font-size="10" font-weight="700" fill="var(--s4)">h</text>
+  <text x="495" y="206" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--s2)">½ hᵀHh</text>
+  <text x="300" y="238" text-anchor="middle" font-size="10.5" fill="var(--ink-2)">every term collapses to a single number: (1×n)(n×1) and (1×n)(n×n)(n×1) are both 1×1</text>
+</svg></div>
+<figcaption><b>The rank ladder.</b> Promote each derivative by one rank — number, list, table — and feed it as many copies of the step \(\mathbf h\) as it has indices. The shapes do the remembering for you.</figcaption>
+</figure>
+<!--@W9-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the matrix form, from the line trick, for any number of variables</span>
+    <p class="dgoal"><b>Claim.</b> For \(F(t)=f(\mathbf x_0+t\mathbf h)\): \(\ F'(t)=\nabla f^{\top}\mathbf h\) and \(F''(t)=\mathbf h^{\top}H\mathbf h\), both evaluated at \(\mathbf x_0+t\mathbf h\). Hence \(f(\mathbf x_0+\mathbf h)=f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}\mathbf h+\tfrac12\mathbf h^{\top}H(\mathbf x_0+c\mathbf h)\mathbf h\) for some \(c\in(0,1)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Along the walk the \(i\)-th coordinate is \(x_i(t)=x_{0,i}+t\,h_i\), so \(dx_i/dt=h_i\). The chain rule with \(n\) routes (Unit 7's add-across-paths, one path per coordinate):
+      \[F'(t)=\sum_{i=1}^{n}\frac{\partial f}{\partial x_i}\,\frac{dx_i}{dt}=\sum_{i=1}^{n}f_i\,h_i=\nabla f^{\top}\mathbf h.\]
+      <span class="dwhy">A sum of (partial) × (step component) over one index is exactly a dot product — a row times a column.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Differentiate again. Each \(f_i\) is itself a function of position on the walk, so it gets its own chain rule with the same constant velocities:
+      \[F''(t)=\sum_{i=1}^{n}h_i\,\frac{d}{dt}f_i=\sum_{i=1}^{n}h_i\sum_{j=1}^{n}\frac{\partial f_i}{\partial x_j}\,h_j=\sum_{i=1}^{n}\sum_{j=1}^{n}h_i\,H_{ij}\,h_j=\mathbf h^{\top}H\,\mathbf h.\]
+      <span class="dwhy">A double sum of (entry) × (left step component) × (right step component) is exactly a row × matrix × column. Here \(H_{ij}=\partial^2 f/\partial x_j\partial x_i=\partial^2 f/\partial x_i\partial x_j\) by Clairaut, which is why \(H\) is symmetric and why the two cross terms \(h_1h_2H_{12}\) and \(h_2h_1H_{21}\) merge into \(2h_1h_2H_{12}\) in two variables.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Apply one-variable Taylor with \(n=2\) to \(F\) on \([0,1]\): \(F(1)=F(0)+F'(0)+\tfrac12F''(c)\) for some \(c\in(0,1)\). Substitute steps 1 and 2:
+      \[f(\mathbf x_0+\mathbf h)=f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}\mathbf h+\tfrac12\,\mathbf h^{\top}H(\mathbf x_0+c\mathbf h)\,\mathbf h.\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">Nothing about the argument used \(n=2\). The matrix form is not a new theorem — it is the one-variable theorem read along a line, with the chain rule turning derivatives into a gradient and a Hessian. Keep going and the third derivative would be an \(n\times n\times n\) cube of numbers eating three copies of \(\mathbf h\); linear algebra stops being comfortable there, which is exactly why "second-order" is where most of optimisation stops too.</span></div></div>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You remember \(f(a)+f'(a)h+\tfrac12f''(a)h^2\) and want its many-variable form. Which promotion is right — and why do the others fail before you even think about calculus?</p>
+    <div class="opts">
+      <button data-correct data-why="Gradient (n×1) transposed against the step (n×1) is a dot product — one number. Step-transpose (1×n) times Hessian (n×n) times step (n×1) is one number. The ½ is 1/2!, unchanged. Every term is a scalar, as f itself is.">\(f(\mathbf x_0)+\nabla f^{\top}\mathbf h+\tfrac12\,\mathbf h^{\top}H\mathbf h\)</button>
+      <button data-why="Shapes refuse: ∇f h is (n×1)(n×1), which is not a legal product, and h² has no meaning for a vector — nor does H h² (a matrix, not a number). The formula must add numbers to a number. The fix is the transpose on the left of each product: ∇fᵀh and hᵀHh.">\(f(\mathbf x_0)+\nabla f\,\mathbf h+\tfrac12\,H\mathbf h^2\)</button>
+      <button data-why="The shapes are fine here — every term is a number — but the halves are on the wrong terms. The ½ is 1/2! and belongs with the SECOND derivative; the first-order term carries 1/1! = 1. Swap them and the quadratic clone would have the wrong slope at x₀ and twice the true curvature.">\(f(\mathbf x_0)+\tfrac12\,\nabla f^{\top}\mathbf h+\mathbf h^{\top}H\mathbf h\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> \(f(\mathbf x_0+\mathbf h)\approx f(\mathbf x_0)+\nabla f^{\top}\mathbf h+\tfrac12\mathbf h^{\top}H\mathbf h\) is the one-variable formula with each derivative promoted one rank and fed one copy of \(\mathbf h\) per index — and it falls straight out of the line trick.</div>
+</section>

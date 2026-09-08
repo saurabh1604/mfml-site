@@ -1,0 +1,159 @@
+<section class="hero-stage">
+  <div id="hero-3d" role="img" aria-label="A lit landscape floating in space. Over one point of it a glowing polynomial clone grows in three acts — first a flat dot of height, then the tangent plane, then a curved quadratic shell that hugs the true surface — before it fades and the anchor drifts to a new spot to begin again."></div>
+  <div class="hero-scrim"></div>
+  <div class="wrap">
+  <header class="hero">
+    <div class="kicker reveal">Unit 8 of 16 · by Prof. Saurabh</div>
+    <h1 class="reveal">Taylor &amp; MacLaurin Series</h1>
+    <p class="lede reveal">Unit 6 showed you how to build a polynomial impostor of any smooth function, one derivative at a time. This unit asks the two questions that make the impostor <em>trustworthy</em>: <strong>where does the formula come from</strong> — proved, from a single flat spot on a hiking trail — and <strong>exactly how big is the lie</strong> when you cut the series short. Then the story turns to two variables, where the second-order term becomes a matrix, the <strong>Hessian</strong>, and that matrix becomes the judge that decides whether a flat point is a bowl, a dome, or a saddle — the question every learning algorithm asks at the bottom of its valley.</p>
+    <div class="meta reveal-stagger">
+      <span class="chip">≈ 90 min read + play</span>
+      <span class="chip">9 interactive widgets · 3 in 3D · a judge you can dial</span>
+      <span class="chip">17 inline checks</span>
+      <span class="chip">🧾 17 proofs, step by step — Rolle, the mean value theorem, Taylor's remainder, the matrix form, the Hessian test</span>
+      <span class="chip">✍ 12 solved practice problems</span>
+    </div>
+  </header>
+  </div>
+  <div class="hero-hint">drag the landscape to orbit</div>
+</section>
+
+<main id="main-content" tabindex="-1">
+
+<!-- ================= 1 · THE IMPOSTOR ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>Every smooth curve is secretly a polynomial — up close</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A master forger wants to copy a signature. She cannot see all of it at once, but she can study it closely at one point. First she puts a dot in the right place. Then she draws a short straight stroke at the right angle. Then she bends the stroke to match the curve. Each extra piece of information — position, slope, bend, the change in the bend — makes the copy hug the original for longer. The Taylor polynomial is that forger: it copies a function's value and its first few derivatives at one point, and out comes a polynomial that is almost indistinguishable from the function <em>nearby</em>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>You built that impostor in Unit 6. Anchor at a point \(a\), copy the derivatives, and divide each by \(k!\) so the copies do not disturb each other:</p>
+    \[P_{n}(x)=f(a)+f'(a)(x-a)+\frac{f''(a)}{2!}(x-a)^2+\cdots+\frac{f^{(n)}(a)}{n!}(x-a)^n\]
+    <p>Two questions were left open, and they are the whole of this unit. <strong>First: why does this work at all?</strong> Matching derivatives at one point is a plausible idea, but plausible is not the same as proved — what guarantees that the copy is close to the original one step away from the anchor? <strong>Second: how big is the lie?</strong> If you cut the series after a few terms, you have made an error. A formula for that error — not an estimate, an exact expression — is the difference between an approximation you hope is good and one you know is good.</p>
+    <p>Both answers come from the same humble place: a flat spot on a hiking trail. From that flat spot we will climb a ladder of derivatives and arrive at Taylor's theorem with its <em>remainder</em>. Then we take the theorem into two variables, where the second-derivative term turns into a small matrix — and that matrix turns out to be the judge of hills and valleys.</p>
+  </div>
+  <div class="check reveal" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You approximate \(\sqrt{4.2}\) with the tangent line of \(\sqrt{x}\) at \(x=4\) and get \(2.05\). The true value is \(2.0494\). What should the <em>next</em> term of the polynomial do?</p>
+    <div class="opts">
+      <button data-correct data-why="√x bends downward (f″ < 0), so the tangent line rides above the curve and overshoots. The quadratic term carries the sign of f″: it is negative, and it pulls the estimate down to 2.049375 — within 0.000015 of the truth. Each new term corrects the shape the previous ones could not see.">Pull the estimate <em>down</em> — the curve bends below its tangent</button>
+      <button data-why="The tangent already overshoots (2.05 > 2.0494). A term that pushed the estimate up would make it worse. The sign of the correction is the sign of f″ at the anchor, and for √x that is negative.">Push the estimate up — more terms always add</button>
+      <button data-why="Extra terms do change the value: the degree-2 term is (f″(4)/2)(0.2)² = −0.000625, not zero. The correction is small because 0.2² is small, but it is exactly the size needed to land within 0.000015 of the truth.">Nothing — the linear estimate is already the best possible</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> A Taylor polynomial copies a function's derivatives at one point; this unit proves why that works and measures exactly how far the copy can be trusted.</div>
+</section>
+
+<!-- ================= 2 · ROLLE ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>The flat spot — Rolle's theorem</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The mountain trail</span>
+    <p>You hike a smooth trail. You start at 1000 m and, hours later, you finish at 1000 m again. Somewhere in between — at the top of a climb, or the bottom of a dip, or on a level stretch — the ground under your feet was <em>perfectly flat</em>. Not approximately. Exactly. You may not know where, but you know it happened, because you cannot go up and come back down without, at some instant, going neither up nor down.</p>
+  </div>
+  <div class="prose reveal">
+    <p>That is Rolle's theorem, and it is the seed from which everything in this unit grows:</p>
+    <div class="callout remember"><span class="tag">Rolle's theorem</span>
+      <p>If \(f\) is continuous on \([a,b]\) (no gaps), differentiable on \((a,b)\) (no sharp corners), and \(f(a)=f(b)\) (same height at both ends), then there is at least one \(c\) strictly between \(a\) and \(b\) with</p>
+      \[f'(c)=0.\]
+    </div>
+    <p>Each hypothesis is a real part of the promise. Drop <em>continuous</em> and the trail can jump over the flat spot. Drop <em>differentiable</em> and the trail can turn around at a sharp corner — a kink like \(|x|\) has a lowest point but no tangent there, so no \(c\) with \(f'(c)=0\) exists. The lecture's warning is exactly this: Rolle's theorem is <em>not valid</em> for functions with a kink. Hunt for the flat spot yourself, and then try the trail that breaks the rule:</p>
+  </div>
+<!--@W1-->
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(f(x)=|x|\) on \([-1,1]\): continuous, \(f(-1)=f(1)=1\), and it clearly has a lowest point at \(0\). Why does Rolle's theorem <em>not</em> hand you a \(c\) with \(f'(c)=0\)?</p>
+    <div class="opts">
+      <button data-correct data-why="At x = 0 the slope from the left is −1 and from the right is +1: no single tangent, so f is not differentiable there. Rolle's theorem asks for differentiability on the whole open interval; the one point where a flat tangent could live is exactly the point where no tangent exists. Everywhere else f′ = ±1 ≠ 0.">The function is not differentiable at \(0\) — the one place a flat tangent could be, there is no tangent at all</button>
+      <button data-why="The endpoints are fine: f(−1) = f(1) = 1 exactly. Rolle's hypothesis on the ends is satisfied. It is the smoothness hypothesis in the middle that fails.">The endpoints are not at the same height</button>
+      <button data-why="A minimum at 0 is exactly where you would expect f′ = 0 — for a smooth function. The theorem's conclusion fails because its hypothesis fails: |x| has a corner at 0, and a corner has no derivative to be zero.">The minimum at \(0\) does not count because it is a minimum, not a maximum</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> Same height at both ends plus a smooth trail guarantees a flat spot somewhere strictly in between — and a kink voids the guarantee.</div>
+</section>
+
+<!-- ================= 3 · MVT ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Average equals instantaneous — the mean value theorem</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The highway trip</span>
+    <p>You drive 200 km in 2 hours. Your average speed was 100 km/h. At some moment your speedometer must have read <em>exactly</em> 100 km/h — you cannot average 100 by always being faster, nor by always being slower. The mean value theorem is this sentence, written for any smooth function: somewhere in the interval, the instantaneous slope equals the average slope.</p>
+  </div>
+  <div class="prose reveal">
+    <div class="callout remember"><span class="tag">Mean value theorem</span>
+      <p>If \(f\) is continuous on \([a,b]\) and differentiable on \((a,b)\), there is a \(c\) in \((a,b)\) with</p>
+      \[f'(c)=\frac{f(b)-f(a)}{b-a}.\]
+    </div>
+    <p>Rolle is the special case where the average slope is zero. The surprise is that the general case is <em>also</em> Rolle — tilted. Subtract the chord from the function and the two ends line up:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the mean value theorem, from Rolle</span>
+    <p class="dgoal"><b>Claim.</b> If \(f\) is continuous on \([a,b]\) and differentiable on \((a,b)\), some \(c\in(a,b)\) has \(f'(c)=\dfrac{f(b)-f(a)}{b-a}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Name the average slope and build the chord — the straight line through the two endpoints:
+      \[m=\frac{f(b)-f(a)}{b-a},\qquad \ell(x)=f(a)+m\,(x-a)\]
+      <span class="dwhy">\(\ell\) is a straight line with slope \(m\) that passes through \((a,f(a))\); by the choice of \(m\) it also passes through \((b,f(b))\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Subtract the chord from the function:
+      \[g(x)=f(x)-\ell(x)=f(x)-f(a)-m\,(x-a)\]
+      <span class="dwhy">\(g\) is "how far \(f\) sits above its own chord". It inherits continuity and differentiability from \(f\), because \(\ell\) is as smooth as anything can be.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Check the two ends:
+      \[g(a)=f(a)-f(a)-0=0,\qquad g(b)=f(b)-f(a)-m\,(b-a)=f(b)-f(a)-\big(f(b)-f(a)\big)=0\]
+      <span class="dwhy">The chord meets the curve at both ends, so the gap is zero at both ends. That is exactly Rolle's "same height" hypothesis — for \(g\).</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Apply Rolle to \(g\): some \(c\in(a,b)\) has \(g'(c)=0\). But \(g'(x)=f'(x)-m\), so
+      \[0=g'(c)=f'(c)-m\quad\Longrightarrow\quad f'(c)=m=\frac{f(b)-f(a)}{b-a}.\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">Tilting the picture by a straight line does not change where tangents are parallel to it. So the general theorem is the flat one in disguise.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>Now rearrange the mean value theorem and read it again, slowly:</p>
+    \[f(b)=f(a)+f'(c)\,(b-a)\]
+    <p>This says: <em>the value at \(b\) equals the value at \(a\), plus a correction — the distance travelled times a slope taken somewhere in between.</em> That is a first-order Taylor expansion with the error built in. The tangent-line estimate would use \(f'(a)\); the theorem says that if you are willing to use the slope at a secret point \(c\) instead, the estimate becomes <strong>exact</strong>. Taylor's theorem is what you get when you ask the same question with more derivatives: copy \(f\)'s slope, bend, and higher derivatives at \(a\), and let one secret \(c\) absorb everything you left out.</p>
+  </div>
+  <div class="check reveal" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(f(x)=x^3\) on \([0,2]\). The mean value theorem promises a \(c\) with \(f'(c)=\dfrac{f(2)-f(0)}{2-0}=4\). Where is it?</p>
+    <div class="opts">
+      <button data-correct data-why="f′(x) = 3x², so 3c² = 4 and c = 2/√3 ≈ 1.155 — comfortably inside (0, 2). Notice it is not the midpoint: the theorem promises existence, and the location depends on the function's shape. Practice Problem 5 hunts this c for several n.">\(c=2/\sqrt3\approx1.155\)</button>
+      <button data-why="The midpoint is a tempting guess, but f′(1) = 3 ≠ 4. The chord's slope is 4, and the tangent has slope 4 only where 3c² = 4. Symmetric-looking intervals do not make c sit in the middle.">\(c=1\), the midpoint</button>
+      <button data-why="c = 2 is an endpoint, and the theorem explicitly places c strictly inside (a, b). Also f′(2) = 12, nowhere near 4.">\(c=2\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> Subtract the chord and the mean value theorem <em>is</em> Rolle; rearranged, it is already a first-order Taylor formula with an exact error term.</div>
+</section>
+
+<!-- ================= 4 · THE ROLLE LADDER ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>The Rolle ladder — one flat spot per rung</h2></div>
+  <div class="prose reveal">
+    <p>Here is the idea that turns one flat spot into a whole theorem. Suppose a function \(F\) is very flat at \(a\) — its value <em>and</em> its first \(n-1\) derivatives all vanish there — and suppose it also vanishes at some \(b>a\):</p>
+    \[F(a)=F'(a)=F''(a)=\cdots=F^{(n-1)}(a)=0,\qquad F(b)=0.\]
+    <p>Then \(F\) and \(F'\) and \(F''\)… each get a Rolle argument in turn, and the flat spots nest inward like Russian dolls. The lecture calls the conclusion <strong>Proposition P</strong>: <em>there is a \(c\) in \((a,b)\) with \(F^{(n)}(c)=0\).</em> Climb the ladder and watch it happen:</p>
+  </div>
+<!--@W2-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · Proposition P — n flat spots, nested</span>
+    <p class="dgoal"><b>Claim.</b> If \(F(a)=F'(a)=\cdots=F^{(n-1)}(a)=0\) and \(F(b)=0\), with \(F\) \(n\)-times differentiable on \((a,b)\) and the lower derivatives continuous on \([a,b]\), then some \(c\in(a,b)\) has \(F^{(n)}(c)=0\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Rung 1.</b> \(F(a)=0=F(b)\): Rolle gives \(c_1\in(a,b)\) with \(F'(c_1)=0\).
+      <span class="dwhy">Two zeros of \(F\) at the ends, one flat spot of \(F\) in between. Standard Rolle.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>Rung 2.</b> Now look at \(F'\). It vanishes at \(a\) (given) and at \(c_1\) (rung 1). Rolle on \([a,c_1]\) gives \(c_2\in(a,c_1)\) with \(F''(c_2)=0\).
+      <span class="dwhy">The zero handed down from rung 1 plus the zero we were given at \(a\) are the two ends Rolle needs. The interval has shrunk: \(c_2<c_1\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>Rung \(k\), in general.</b> Suppose \(F^{(k-1)}(c_{k-1})=0\) with \(c_{k-1}\in(a,b)\), and \(k-1\le n-1\) so that \(F^{(k-1)}(a)=0\) too. Rolle on \([a,c_{k-1}]\) gives
+      \[c_k\in(a,c_{k-1})\quad\text{with}\quad F^{(k)}(c_k)=0.\]
+      <span class="dwhy">Same move each time: the zero at \(a\) is <em>free</em> (it was assumed), the other zero is <em>inherited</em> from the rung above. That is why we needed \(n-1\) vanishing derivatives at \(a\) — one for each rung after the first.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">After \(n\) rungs:
+      \[a<c_n<c_{n-1}<\cdots<c_1<b,\qquad F^{(n)}(c_n)=0.\]
+      Set \(c=c_n\). <span class="nw">Done. <span class="dqed">∎</span></span>
+      <span class="dwhy">Each rung uses one Rolle and shrinks the interval toward \(a\). The last rung needs no zero at \(a\) for \(F^{(n)}\) — it only needs the inherited \(c_{n-1}\) and the free zero of \(F^{(n-1)}\) at \(a\).</span></div></div>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the ladder, why must the derivatives of \(F\) vanish at \(a\) up to order \(n-1\) — why not just \(F(a)=0\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Rolle needs two zeros. At each rung one zero is inherited from the rung above (c_{k−1}); the other must come from somewhere, and that somewhere is the assumption F^{(k−1)}(a) = 0. Rung 1 uses F(a) = 0, rung 2 uses F′(a) = 0, …, rung n uses F^{(n−1)}(a) = 0. Drop one assumption and the ladder breaks at that rung.">Each rung needs a second zero, and the vanishing derivative at \(a\) supplies it</button>
+      <button data-why="The derivatives vanishing at a is not decoration — it is load-bearing. Without F′(a) = 0, rung 2 has only one known zero of F′ (at c₁) and Rolle cannot be applied.">It is a technical convenience; the theorem holds without it</button>
+      <button data-why="The condition at a is about F being flat at the anchor, not about how far b is. b is free (any b > a with F(b) = 0 works); the nesting shrinks toward a regardless of where b sits.">Because \(b\) must be close to \(a\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> A function that is \(n\)-fold flat at \(a\) and zero at \(b\) has its \(n\)-th derivative vanishing somewhere in between — one Rolle per rung, nesting inward.</div>
+</section>

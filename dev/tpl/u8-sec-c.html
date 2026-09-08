@@ -1,0 +1,230 @@
+<!-- ================= 8 · TWO VARIABLES: THE LINE TRICK ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>Two variables — walk along a line and it is one variable again</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The hilly landscape</span>
+    <p>Now the function is a landscape, \(z=f(x,y)\). You stand at \(P=(a,b)\) and want to know the height at a nearby point \(S=(a+h,\,b+k)\). Everything you have built so far is about <em>one</em> variable. So do the simplest possible thing: <strong>walk from \(P\) to \(S\) in a straight line</strong>, and record your height as you go. Height-versus-time on that walk is an ordinary one-variable function — and one-variable Taylor applies to it, ladder, remainder and all.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Parameterise the segment by a clock \(t\) running from \(0\) at \(P\) to \(1\) at \(S\): \(x=a+th,\ y=b+tk\). The height along the walk is</p>
+    \[F(t)=f(a+th,\;b+tk),\qquad F(0)=f(a,b),\quad F(1)=f(a+h,b+k).\]
+    <p>Two derivatives of \(F\) are all we need, and the chain rule delivers both:</p>
+  </div>
+<!--@W4-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the first derivative along the walk</span>
+    <p class="dgoal"><b>Claim.</b> \(F'(t)=h\,f_x+k\,f_y\), the partials evaluated at the current point \((a+th,\,b+tk)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(F\) is \(f\) composed with the straight-line map \(t\mapsto(x(t),y(t))\). Unit 6's chain rule for a path says
+      \[F'(t)=f_x\,\frac{dx}{dt}+f_y\,\frac{dy}{dt}.\]
+      <span class="dwhy">Two routes from \(t\) to \(F\) — through \(x\) and through \(y\) — multiply along each route and add across them (Unit 7's two rules).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">On a straight line the velocities are constants: \(dx/dt=h\), \(dy/dt=k\). So
+      \[F'(t)=h\,f_x(a+th,\,b+tk)+k\,f_y(a+th,\,b+tk).\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">This is the directional derivative of Unit 6 in the direction \((h,k)\): steepness of the landscape as felt by a walker moving with velocity \((h,k)\).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the second derivative along the walk</span>
+    <p class="dgoal"><b>Claim.</b> \(F''(t)=h^2f_{xx}+2hk\,f_{xy}+k^2f_{yy}\), again at the current point.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(F'=hf_x+kf_y\) is itself a function of the position on the walk, so apply the same chain rule to it:
+      \[F''(t)=\frac{\partial F'}{\partial x}\frac{dx}{dt}+\frac{\partial F'}{\partial y}\frac{dy}{dt}=\frac{\partial(hf_x+kf_y)}{\partial x}\,h+\frac{\partial(hf_x+kf_y)}{\partial y}\,k.\]
+      <span class="dwhy">Same two routes, same two constant velocities \(h\) and \(k\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Differentiate inside the brackets, \(h\) and \(k\) being constants:
+      \[\frac{\partial(hf_x+kf_y)}{\partial x}=hf_{xx}+kf_{yx},\qquad \frac{\partial(hf_x+kf_y)}{\partial y}=hf_{xy}+kf_{yy}.\]
+      <span class="dwhy">\(f_{yx}\) means "first \(y\), then \(x\)". For a twice continuously differentiable \(f\), Clairaut's theorem says the order does not matter: \(f_{yx}=f_{xy}\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Multiply out and collect, using \(f_{yx}=f_{xy}\):
+      \[F''(t)=h\,(hf_{xx}+kf_{xy})+k\,(hf_{xy}+kf_{yy})=h^2f_{xx}+2hk\,f_{xy}+k^2f_{yy}.\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">A <em>quadratic form</em> in \((h,k)\): the three second partials are its coefficients. This single line is the birthplace of the Hessian.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>\(F\) is an ordinary function on \([0,1]\), continuous with a continuous derivative and twice differentiable inside, so Taylor's theorem with \(n=2\), \(a=0\), \(b=1\) applies to it word for word. Translate back to \(x\) and \(y\) and the two-variable expansion appears:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · Taylor in two variables, with its remainder</span>
+    <p class="dgoal"><b>Claim.</b> For some \(c\in(0,1)\),
+    \[f(a+h,\,b+k)=f(a,b)+h\,f_x(a,b)+k\,f_y(a,b)+\tfrac12\big(h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\big)\Big|_{(a+ch,\ b+ck)}.\]</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">One-variable Taylor for \(F\) on \([0,1]\) with \(n=2\):
+      \[F(1)=F(0)+F'(0)\,(1-0)+\frac{F''(c)}{2!}\,(1-0)^2,\qquad c\in(0,1).\]
+      <span class="dwhy">The theorem of the previous sections, applied to the walk. The remainder is evaluated at a secret clock-time \(c\) — i.e. at a secret point <em>on the segment</em>.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Substitute the three ingredients: \(F(1)=f(a+h,b+k)\), \(F(0)=f(a,b)\), \(F'(0)=hf_x(a,b)+kf_y(a,b)\), and \(F''(c)=(h^2f_{xx}+2hkf_{xy}+k^2f_{yy})\) evaluated at \((a+ch,\,b+ck)\).
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">The first-order part is Unit 6's tangent plane. The second-order part is new: the landscape's curvature, packed into three numbers and one quadratic form. Replace the secret point by \((a,b)\) and you get the <em>quadratic clone</em> \(Q\) — the glass surface in the widget — with a third-order leftover, exactly as in one variable.</span></div></div>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On the widget's surface \(f=e^x\sin y\), start at \(P=(0,0)\) and take the step \((h,k)=(0.1,0.2)\). The quadratic clone gives \(Q=0.22\); the truth is \(0.21956\), a gap of \(4.4\times10^{-4}\). Double the step to \((0.2,0.4)\). Roughly what happens to the gap?</p>
+    <div class="opts">
+      <button data-correct data-why="The clone matches value, slope and curvature, so the first thing it misses is third order — it scales like the cube of the step. Doubling the step multiplies a cubic by 8; the actual ratio is about 10 (4.36e−3 / 4.36e−4), because fourth-order crumbs also grow. Halving the step would divide the gap by about 8.">It grows about eightfold — the leftover is third order in the step</button>
+      <button data-why="Doubling would apply to a first-order error, but the clone already copies the slope correctly. The tangent plane alone (order 1) would have an error growing fourfold (second order); the quadratic clone's error grows like the cube.">It doubles</button>
+      <button data-why="The clone is exact only at P itself. Away from P it is an approximation whose error grows with the step — that is precisely why it is called a local approximation.">It stays the same — the clone is exact</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why does the cross term appear as \(2hk\,f_{xy}\) — with a \(2\) — while the pure terms are \(h^2f_{xx}\) and \(k^2f_{yy}\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Differentiating hf_x + kf_y along the walk produces h·(h f_xx + k f_xy) + k·(h f_xy + k f_yy). The mixed partial shows up twice — once from differentiating the h f_x piece in y, once from the k f_y piece in x — and Clairaut says the two are equal, so they merge into 2hk f_xy. In the Hessian matrix that same number sits in both off-diagonal slots.">The mixed partial arises twice, once from each route, and Clairaut makes the two copies equal</button>
+      <button data-why="There is no arbitrary convention here: the 2 is forced by the chain-rule calculation. Write the second derivative out and you will find f_xy appearing in two places.">It is a convention to make the formula look symmetric</button>
+      <button data-why="The 2 is not a binomial afterthought — it comes from the same place as the 2ab in (a+b)²: two cross products that happen to be equal. Without Clairaut's theorem you would have hk f_xy + hk f_yx, which only becomes 2hk f_xy because the two mixed partials agree.">The \(2\) comes from \(2!\) in the Taylor formula</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> Along a straight line the landscape is a one-variable function \(F(t)\); its second derivative \(h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\) is where the Hessian is born.</div>
+</section>
+
+<!-- ================= 9 · AT A FLAT POINT ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>At a flat point, the second-order term decides</h2></div>
+  <div class="prose reveal">
+    <p>Optimisation lives at flat points. A <strong>critical point</strong> \((a,b)\) is one where the gradient vanishes, \(f_x(a,b)=f_y(a,b)=0\) — the tangent plane is level, and the first-order term of the expansion is <em>zero</em>. Every step you take from there changes the height only through the second-order term:</p>
+    \[f(a+h,\,b+k)-f(a,b)=\tfrac12\,\underbrace{\big(h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\big)\Big|_{(a+ch,\,b+ck)}}_{Q(c)}\]
+    <p>Read the left side: it is <em>how much higher or lower you are after the step</em>. If it is positive for every small step, you were at the bottom of a bowl — a local minimum. Negative for every small step: the top of a dome — a local maximum. Positive for some steps and negative for others: a saddle. So the whole question is the <strong>sign of \(Q\)</strong>.</p>
+  </div>
+<figure class="fig reveal" role="img" aria-label="Top-down view of the plane: the base point P at (a, b) with a level tangent plane, a step of h in x and k in y to the point S, and the secret point at fraction c along the segment where the second derivative is evaluated">
+<div class="scroll"><svg viewBox="0 0 600 236" width="100%">
+  <g stroke="var(--grid)" stroke-width="1">
+    <line x1="60" y1="40" x2="60" y2="200"/><line x1="140" y1="40" x2="140" y2="200"/><line x1="220" y1="40" x2="220" y2="200"/><line x1="300" y1="40" x2="300" y2="200"/><line x1="380" y1="40" x2="380" y2="200"/><line x1="460" y1="40" x2="460" y2="200"/><line x1="540" y1="40" x2="540" y2="200"/>
+    <line x1="60" y1="40" x2="540" y2="40"/><line x1="60" y1="80" x2="540" y2="80"/><line x1="60" y1="120" x2="540" y2="120"/><line x1="60" y1="160" x2="540" y2="160"/><line x1="60" y1="200" x2="540" y2="200"/>
+  </g>
+  <line x1="140" y1="160" x2="380" y2="160" stroke="var(--s1)" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <line x1="380" y1="160" x2="380" y2="80" stroke="var(--s3)" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <line x1="140" y1="160" x2="380" y2="80" stroke="var(--s4)" stroke-width="3" stroke-linecap="round" class="draw glow-1"/>
+  <circle cx="140" cy="160" r="6" fill="var(--s4)"/>
+  <circle cx="380" cy="80" r="6" fill="var(--s1)"/>
+  <circle cx="284" cy="112" r="5" fill="var(--s2)"/>
+  <text x="140" y="184" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink)">P = (a, b)</text>
+  <text x="140" y="199" text-anchor="middle" font-size="10" fill="var(--ink-muted)">gradient = 0 here</text>
+  <text x="380" y="66" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink)">S = (a + h, b + k)</text>
+  <text x="260" y="177" text-anchor="middle" font-size="11" font-weight="600" fill="var(--s1)">h</text>
+  <text x="394" y="124" font-size="11" font-weight="600" fill="var(--s3)">k</text>
+  <text x="296" y="106" font-size="10.5" font-weight="600" fill="var(--s2)">(a + ch, b + ck)</text>
+  <text x="296" y="120" font-size="10" fill="var(--ink-muted)">the secret point, 0 &lt; c &lt; 1</text>
+  <text x="60" y="224" font-size="10.5" fill="var(--ink-2)">t = 0 at P, t = 1 at S; the walk is x = a + th, y = b + tk. Height change = ½ Q evaluated at the orange point.</text>
+</svg></div>
+<figcaption><b>The step, seen from above.</b> From a flat point \(P\), a step \((h,k)\) to \(S\) changes the height by \(\tfrac12Q\), where the quadratic form is evaluated at a secret point on the segment. Whether that is up or down is the question the Hessian will answer.</figcaption>
+</figure>
+  <div class="prose reveal">
+    <p>One subtlety before the judge takes the stand. \(Q\) is evaluated at the secret point, not at \((a,b)\) itself. The lecture's resolution is exactly right: if \(Q(0)\) — the form evaluated at \((a,b)\) — is not zero, then for small enough steps \(Q(c)\) has the same sign as \(Q(0)\). So the sign of the change is decided by the three numbers \(f_{xx},f_{xy},f_{yy}\) <em>at the critical point</em>. Here is why the "small enough" is not a loophole:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the secret point cannot flip the sign</span>
+    <p class="dgoal"><b>Claim.</b> Suppose the second partials are continuous and \(Q_0(h,k)=h^2f_{xx}(a,b)+2hkf_{xy}(a,b)+k^2f_{yy}(a,b)\) is positive for every direction \((h,k)\ne(0,0)\). Then for all sufficiently small steps, \(f(a+h,b+k)-f(a,b)>0\). (The negative case is identical with signs flipped.)</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Scale out the step size. Write \((h,k)=r(u,v)\) with \(u^2+v^2=1\) and \(r>0\). Then \(Q_0(h,k)=r^2\,Q_0(u,v)\), and \(Q_0(u,v)\) is a continuous function on the unit circle, which is closed and bounded, so it attains a minimum \(m\). Because \(Q_0>0\) at every point of the circle, \(m>0\).
+      <span class="dwhy">A quadratic form's sign does not depend on the length of the step, only on its direction. The minimum over directions exists and is positive — that is the number the argument hangs on.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Compare the secret point with the anchor. The coefficients \(f_{xx},f_{xy},f_{yy}\) are continuous, so there is a radius \(\rho\) such that within distance \(\rho\) of \((a,b)\) each coefficient differs from its value at \((a,b)\) by less than \(m/4\). For the form at the secret point this gives, for any unit direction,
+      \[\big|Q_{c}(u,v)-Q_0(u,v)\big|\le|u^2|\tfrac m4+|2uv|\tfrac m4+|v^2|\tfrac m4\le\tfrac m4(1+1+1)<m.\]
+      <span class="dwhy">Using \(u^2\le1\), \(v^2\le1\), \(|2uv|\le u^2+v^2=1\). The secret point lies on the segment, hence within \(r<\rho\) of the anchor, so the estimate applies to it.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Hence \(Q_c(u,v)>Q_0(u,v)-m\ge m-m=0\) for every direction, and so
+      \[f(a+h,b+k)-f(a,b)=\tfrac12\,r^2\,Q_c(u,v)>0\qquad\text{whenever }0<r<\rho.\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">"Sufficiently small" means \(r<\rho\), a definite radius that depends only on how fast the second partials change. Inside that radius, the anchor's three numbers rule.</span></div></div>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At a critical point, why can the <em>first</em>-order term never help you decide between a minimum and a maximum?</p>
+    <div class="opts">
+      <button data-correct data-why="Critical means f_x = f_y = 0, so h f_x + k f_y = 0 for every step: the first-order term is identically zero there. The tangent plane is level and says nothing about which way the ground curves — only the second-order term (or, if that is zero too, higher ones) can.">Because it is exactly zero there — the gradient vanishes, so \(hf_x+kf_y=0\) for every step</button>
+      <button data-why="The first-order term is not small at a critical point; it is exactly zero. Away from a critical point it is the dominant term and the tangent plane tells you which way is down — that is the whole of gradient descent.">Because it is too small to measure</button>
+      <button data-why="Sign is not the issue; existence is. h f_x + k f_y takes both signs at an ordinary point (walk uphill or downhill), but at a critical point both coefficients are zero and the term disappears entirely.">Because it always has the same sign as the second-order term</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> At a flat point the height change after a small step is \(\tfrac12Q\), and continuity lets the three second partials <em>at the point</em> decide its sign.</div>
+</section>
+
+<!-- ================= 11 · THE HESSIAN AS JUDGE ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>The judge of extrema — the Hessian</h2></div>
+  <div class="prose reveal">
+    <p>Put the two previous sections together. At a critical point the gradient term of the matrix form vanishes, so the height change after a step is</p>
+    \[f(\mathbf x_0+\mathbf h)-f(\mathbf x_0)=\tfrac12\,\mathbf h^{\top}H\,\mathbf h\quad(\text{at the secret point}),\qquad Q(h,k)=\mathbf h^{\top}H\mathbf h=h^2f_{xx}+2hkf_{xy}+k^2f_{yy}.\]
+    <p>The question "bowl, dome or saddle?" is now the question "is \(\mathbf h^{\top}H\mathbf h\) positive for all \(\mathbf h\), negative for all \(\mathbf h\), or both?" — in Unit 4's words, is \(H\) <strong>positive-definite</strong>, <strong>negative-definite</strong>, or <strong>indefinite</strong>. A matrix has become a judge. Put it on the stand:</p>
+  </div>
+<!--@W5-->
+  <div class="prose reveal">
+    <p>The judge's ruling rests on one algebraic identity, and it is worth seeing exactly how three coefficients get squeezed into two signs. The trick is completing the square — multiply \(Q\) by \(f_{xx}\) so that the \(h\)-terms fold into a perfect square, and watch what is left over:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the judge's identity</span>
+    <p class="dgoal"><b>Claim.</b> \(f_{xx}\,Q=(h\,f_{xx}+k\,f_{xy})^2+\big(f_{xx}f_{yy}-f_{xy}^2\big)\,k^2\). Writing \(D=f_{xx}f_{yy}-f_{xy}^2\) (the <em>discriminant</em>, which is \(\det H\)): \(\ f_{xx}Q=(hf_{xx}+kf_{xy})^2+Dk^2\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Multiply the form by \(f_{xx}\):
+      \[f_{xx}Q=h^2f_{xx}^2+2hk\,f_{xx}f_{xy}+k^2f_{xx}f_{yy}.\]
+      <span class="dwhy">Every term picks up one factor \(f_{xx}\). The first two now look like the start of \((hf_{xx}+kf_{xy})^2\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Expand the square that those two terms suggest:
+      \[(hf_{xx}+kf_{xy})^2=h^2f_{xx}^2+2hk\,f_{xx}f_{xy}+k^2f_{xy}^2.\]
+      <span class="dwhy">It matches step 1 in the first two terms; the third term is \(k^2f_{xy}^2\) instead of \(k^2f_{xx}f_{yy}\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Subtract step 2 from step 1; only the \(k^2\) terms survive:
+      \[f_{xx}Q-(hf_{xx}+kf_{xy})^2=k^2f_{xx}f_{yy}-k^2f_{xy}^2=\big(f_{xx}f_{yy}-f_{xy}^2\big)k^2=Dk^2.\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">The right side is a square plus \(D\) times another square. Squares are never negative — so the sign of \(f_{xx}Q\) is controlled by the sign of \(D\).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the three verdicts</span>
+    <p class="dgoal"><b>Claim.</b> At a critical point: \(D>0,\ f_{xx}>0\Rightarrow\) local minimum; \(D>0,\ f_{xx}<0\Rightarrow\) local maximum; \(D<0\Rightarrow\) saddle. \(D=0\): no verdict.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>\(D>0\).</b> Then \(f_{xx}\ne0\) (otherwise \(D=-f_{xy}^2\le0\)). By the identity, \(f_{xx}Q=(\text{square})+D\,k^2\ge0\), with equality only if both \(k=0\) and \(hf_{xx}=0\), i.e. \(h=k=0\). So for every non-zero step, \(f_{xx}Q>0\): \(Q\) has the sign of \(f_{xx}\).
+      <span class="dwhy">\(f_{xx}>0\): \(Q>0\) for all steps — every small step goes up — a bowl, a local minimum. \(f_{xx}<0\): \(Q<0\) for all steps — a dome, a local maximum.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>\(D<0\), with \(f_{xx}\ne0\).</b> Step along the \(x\)-axis, \((h,k)=(1,0)\): \(Q=f_{xx}\). Step along \((h,k)=(-f_{xy},\,f_{xx})\): the square in the identity vanishes (\(-f_{xy}f_{xx}+f_{xx}f_{xy}=0\)), leaving \(f_{xx}Q=Df_{xx}^2<0\), so \(Q\) has the sign <em>opposite</em> to \(f_{xx}\).
+      <span class="dwhy">Two directions, two opposite signs: up one way, down another. That is a saddle. (If \(f_{xx}=0\) but \(f_{yy}\ne0\), run the same argument with the roles of \(h\) and \(k\) swapped; if both vanish, \(D=-f_{xy}^2<0\) means \(f_{xy}\ne0\) and \(Q=2hkf_{xy}\) already changes sign between \((1,1)\) and \((1,-1)\).)</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>\(D=0\).</b> The identity reads \(f_{xx}Q=(hf_{xx}+kf_{xy})^2\ge0\): \(Q\) never changes sign, but it <em>is zero</em> along a whole direction, and there the second-order term says nothing — the decision passes to third- and fourth-order terms, which this test does not see. Practice Problem 8 shows \(x^4+y^4\) (a minimum) and \(x^4-y^4\) (a saddle) with the same zero <span class="nw">Hessian. <span class="dqed">∎</span></span>
+      <span class="dwhy">Inconclusive is an honest verdict, not a failure: the judge only hears second-order evidence.</span></div></div>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At a critical point you find \(f_{xx}=-2,\ f_{yy}=-2,\ f_{xy}=1\). What kind of point is it?</p>
+    <div class="opts">
+      <button data-correct data-why="D = (−2)(−2) − 1² = 3 > 0 and f_xx = −2 < 0: every small step goes down — a dome, a local maximum. This is the companion's first worked problem, f = xy − x² − y² − 2x − 2y + 4 at (−2, −2), where f = 8. Note f_xy = 1 tilts the dome but does not tear it: it would need f_xy² > 4 to do that.">A local maximum — \(D=3>0\) and \(f_{xx}<0\)</button>
+      <button data-why="A saddle needs D < 0. Here D = 4 − 1 = 3 > 0, so the surface curves the same way in every direction; the sign of f_xx then says which way — down.">A saddle — the mixed partial is non-zero</button>
+      <button data-why="D > 0 does mean bowl-or-dome, but the sign of f_xx picks which: f_xx = −2 < 0 means the x-slice curves downward, and with D > 0 every other slice does too. Maximum, not minimum.">A local minimum — \(D>0\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="prose reveal">
+    <p>The discriminant is one reading of \(H\). Unit 4 taught two more, and the lecture connects all three. <strong>Sylvester's criterion</strong>: a symmetric matrix is positive-definite exactly when every leading principal minor — the determinants of the top-left \(1\times1\), \(2\times2\), … blocks — is positive. For our \(2\times2\) Hessian the minors are \(f_{xx}\) and \(\det H=D\), so Sylvester's condition <em>is</em> the minimum verdict, word for word. <strong>Eigenvalues</strong>: a symmetric matrix is positive-definite exactly when all its eigenvalues are positive. The compass below shows why that is the same statement again, and why the eigenvectors are the directions of greatest and least curvature:</p>
+  </div>
+<!--@W6-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · eigenvalues are the extreme curvatures, and their signs are the verdict</span>
+    <p class="dgoal"><b>Claim.</b> Let \(H\) be symmetric with eigenvalues \(\lambda_1\ge\lambda_2\) and orthonormal eigenvectors \(\mathbf e_1,\mathbf e_2\). Then for every unit direction \(\mathbf u\), \(\ \lambda_2\le\mathbf u^{\top}H\mathbf u\le\lambda_1\), with equality along \(\mathbf e_2\) and \(\mathbf e_1\). Consequently \(H\) is positive-definite \(\iff\lambda_1,\lambda_2>0\), negative-definite \(\iff\) both negative, indefinite \(\iff\) opposite signs; and \(D=\det H=\lambda_1\lambda_2\), \(f_{xx}+f_{yy}=\lambda_1+\lambda_2\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Unit 4's spectral theorem: \(H=Q\Lambda Q^{\top}\) with \(Q=[\mathbf e_1\ \mathbf e_2]\) orthogonal and \(\Lambda=\mathrm{diag}(\lambda_1,\lambda_2)\). Write any direction in the eigenbasis, \(\mathbf u=\alpha\mathbf e_1+\beta\mathbf e_2\), i.e. \(Q^{\top}\mathbf u=(\alpha,\beta)^{\top}\). Then
+      \[\mathbf u^{\top}H\mathbf u=(Q^{\top}\mathbf u)^{\top}\Lambda(Q^{\top}\mathbf u)=\lambda_1\alpha^2+\lambda_2\beta^2.\]
+      <span class="dwhy">In the eigenbasis the cross term disappears: the quadratic form is just two squares, each weighted by an eigenvalue.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">For a unit direction \(\alpha^2+\beta^2=1\), so \(\lambda_1\alpha^2+\lambda_2\beta^2\) is a weighted average of \(\lambda_1\) and \(\lambda_2\) with non-negative weights summing to \(1\). It therefore lies between them:
+      \[\lambda_2\le\mathbf u^{\top}H\mathbf u\le\lambda_1,\]
+      with \(\lambda_1\) reached at \(\alpha=1\) (direction \(\mathbf e_1\)) and \(\lambda_2\) at \(\beta=1\) (direction \(\mathbf e_2\)).
+      <span class="dwhy">The compass rose is exactly this: the needle's reading swings between the two eigenvalues, touching them along the eigenvectors.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Signs. \(Q>0\) for every direction \(\iff\) the minimum reading \(\lambda_2>0\) \(\iff\) both eigenvalues positive. \(Q<0\) for every direction \(\iff\lambda_1<0\). Opposite signs \(\iff\) the needle crosses zero \(\iff\) saddle.
+      <span class="dwhy">Definiteness is a statement about the smallest (or largest) curvature, and those are eigenvalues.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Bridge to the discriminant: \(\det H=\det(Q\Lambda Q^{\top})=\det\Lambda=\lambda_1\lambda_2=D\), and \(\operatorname{tr}H=f_{xx}+f_{yy}=\lambda_1+\lambda_2\). So \(D<0\iff\) opposite signs \(\iff\) saddle; and \(D>0\) with \(f_{xx}>0\) forces \(f_{yy}>f_{xy}^2/f_{xx}\ge0\), hence \(\lambda_1+\lambda_2>0\) with \(\lambda_1\lambda_2>0\): both positive. The three readings of \(H\) — discriminant, Sylvester, eigenvalues — are one <span class="nw">verdict. <span class="dqed">∎</span></span>
+      <span class="dwhy">Which reading to use is a matter of convenience: \(D\) is fastest by hand; eigenvalues also tell you <em>how</em> bowl-shaped (their ratio is the condition number that will govern gradient descent in Unit 9); Sylvester scales to \(n\times n\) Hessians where "\(D\)" no longer exists.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · negative-definite means the minors alternate</span>
+    <p class="dgoal"><b>Claim.</b> \(H\) is negative-definite \(\iff\) \(f_{xx}<0\) and \(D>0\) — the leading minors alternate in sign, starting negative.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(H\) is negative-definite exactly when \(-H\) is positive-definite (multiply \(\mathbf h^{\top}H\mathbf h<0\) by \(-1\)).
+      <span class="dwhy">A dome flipped upside down is a bowl.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Apply Sylvester to \(-H=\begin{bmatrix}-f_{xx}&-f_{xy}\\-f_{xy}&-f_{yy}\end{bmatrix}\): its minors are \(-f_{xx}\) and \(\det(-H)=(-1)^2\det H=D\). Both must be positive: \(f_{xx}<0\) and \(D>0\).
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">Flipping the sign of a \(k\times k\) block multiplies its determinant by \((-1)^k\) — that is why, for a larger Hessian, the minors of a negative-definite matrix alternate: negative for odd \(k\), positive for even \(k\). The eigenvalues are all negative, as the lecture says.</span></div></div>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A Hessian has eigenvalues \(\lambda_1=7.24\) and \(\lambda_2=2.76\) at a critical point (Practice Problem 7). Without computing anything else, what do you know?</p>
+    <div class="opts">
+      <button data-correct data-why="Both positive ⇒ positive-definite ⇒ every direction curves up ⇒ a local minimum. And D = λ₁λ₂ = 20 > 0, trace = 10. The ratio 7.24/2.76 ≈ 2.6 says the bowl is about 2.6 times steeper along one eigenvector than along the other — the elongation that makes gradient descent zig-zag.">A local minimum, with \(D=\lambda_1\lambda_2=20\) and the bowl \(2.6\times\) steeper in one direction than the other</button>
+      <button data-why="A saddle needs eigenvalues of opposite sign (D < 0). Both eigenvalues here are positive: the curvature is positive in every direction, so it is a bowl.">A saddle — two different eigenvalues</button>
+      <button data-why="The eigenvalues alone settle it: the quadratic form lies between λ₂ = 2.76 and λ₁ = 7.24 in every direction, so it is always positive. No further computation is needed for the verdict.">Nothing until \(f_{xx}\) is known</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(f=e^x\sin y\) at \((0,0)\) the Hessian is \(\begin{bmatrix}0&1\\1&0\end{bmatrix}\): both pure curvatures are zero. Is the origin flat, or a saddle?</p>
+    <div class="opts">
+      <button data-correct data-why="D = 0·0 − 1² = −1 < 0: a saddle, even though f_xx = f_yy = 0. The whole second-order behaviour lives in the cross term Q = 2hk: positive along h = k (the diagonal), negative along h = −k. Eigenvalues ±1 with eigenvectors along the diagonals. (The origin is not a critical point of this f — f_y = 1 there — but the form itself is a perfect little saddle, as Practice Problem 3 notes.)">A saddle — \(D=-1<0\); the curvature hides in the cross term, up along one diagonal and down along the other</button>
+      <button data-why="Zero pure curvatures do not mean zero curvature. Q = 2hk is not identically zero: walk along the diagonal h = k and Q = 2h² > 0; along h = −k it is negative. That is a saddle, and D = −1 confirms it.">Flat — both second partials are zero</button>
+      <button data-why="The verdict only needs D = f_xx f_yy − f_xy² = −1 < 0. A negative discriminant is a saddle regardless of what the diagonal entries are — indeed here the diagonal entries are zero and it is still a saddle.">Inconclusive — \(f_{xx}=0\) means the test is silent</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> The Hessian is the matrix of the walk's second derivative; \(D=\det H\) with the sign of \(f_{xx}\), Sylvester's minors, and the eigenvalue signs are three readings of the same verdict — bowl, dome, or saddle.</div>
+</section>

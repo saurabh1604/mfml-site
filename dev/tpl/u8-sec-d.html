@@ -1,0 +1,116 @@
+<!-- ================= 12 · THE JUDGE AT WORK ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>The judge at work — six landscapes</h2></div>
+  <div class="prose reveal">
+    <p>The procedure is always the same three moves, and it is worth saying them plainly before the widget does them for you. <strong>One:</strong> solve \(\nabla f=\mathbf 0\) — two equations, two unknowns — to find every flat point. <strong>Two:</strong> compute \(f_{xx},f_{xy},f_{yy}\) and evaluate them <em>at each flat point separately</em> (for anything beyond a quadratic they change from point to point). <strong>Three:</strong> read \(D\) and \(f_{xx}\) and pronounce the verdict. The companion's two worked examples and the practice set's landscapes are all here; so are the two where the judge must stay silent.</p>
+  </div>
+<!--@W7-->
+  <div class="callout intuition reveal"><span class="tag">Reading the two cubic landscapes</span>
+    <p>\(f=x^3+y^3-3xy+1\): \(\nabla f=(3x^2-3y,\ 3y^2-3x)=\mathbf 0\) gives \(y=x^2\) and \(x=y^2\), so \(x=x^4\), i.e. \(x\in\{0,1\}\). Two flat points. At \((0,0)\): \(f_{xx}=f_{yy}=0\), \(f_{xy}=-3\), \(D=-9\) — a saddle. At \((1,1)\): \(f_{xx}=f_{yy}=6\), \(D=36-9=27\), \(f_{xx}>0\) — a local minimum, value \(0\). Same function, same formula for \(H\), two different verdicts, because \(f_{xx}=6x\) and \(f_{yy}=6y\) are different numbers at the two points. <em>Local</em> minimum, too: walk to \((-2,0)\) and \(f=-7\), lower than \(0\). The judge only rules on the immediate neighbourhood.</p>
+  </div>
+  <div class="prose reveal">
+    <p>And the two landscapes where it cannot rule. \(g=x^4+y^4\) and \(h=x^4-y^4\) both have the origin as their only flat point, and both have \(f_{xx}=12x^2\), \(f_{yy}=\pm12y^2\), \(f_{xy}=0\) — all zero there, \(D=0\). The second-derivative test sees two identical (empty) Hessians. Yet \(g\ge0\) everywhere with equality only at the origin (a minimum), while \(h=t^4\) along the \(x\)-axis and \(-t^4\) along the \(y\)-axis (a saddle). The difference is <em>fourth</em> order — invisible to a test that only hears second-order evidence. The lecture's instruction is the right one: when \(D=0\), <strong>another test is needed</strong>: look at the higher-order terms of the expansion, or argue about the function's shape directly.</p>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(f=x^3-3xy+3y^2\) (Practice Problem 6) the flat points are \((0,0)\) and \((\tfrac12,\tfrac14)\), with \(f_{xx}=6x\), \(f_{xy}=-3\), \(f_{yy}=6\). Which verdict goes where?</p>
+    <div class="opts">
+      <button data-correct data-why="D = f_xx f_yy − f_xy² = 36x − 9. At (0, 0): D = −9 < 0, saddle. At (½, ¼): D = 18 − 9 = 9 > 0 with f_xx = 3 > 0, a local minimum, value −1/16. The same H formula, evaluated at two points, gives two verdicts — evaluating H at each critical point separately is where marks are won or lost.">Saddle at \((0,0)\), minimum at \((\tfrac12,\tfrac14)\)</button>
+      <button data-why="At (0, 0), D = 0·6 − 9 = −9 < 0: that is a saddle, not a minimum. The minimum is at the other point, where f_xx = 3 lifts D to +9.">Minimum at \((0,0)\), saddle at \((\tfrac12,\tfrac14)\)</button>
+      <button data-why="D = 36x − 9 depends on x, so the two points get different D's: −9 and +9. Only for a quadratic f is the Hessian the same everywhere.">Both are minima — \(f_{yy}=6>0\) at both</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> Solve \(\nabla f=\mathbf 0\), evaluate \(H\) at <em>each</em> flat point, read \(D\) and \(f_{xx}\) — and when \(D=0\), the second-order evidence has run out and you must look further.</div>
+</section>
+
+<!-- ================= 13 · WHY ML CARES ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Why a learning machine cares — curvature, conditioning, and the saddle problem</h2></div>
+  <div class="prose reveal">
+    <p>The lecture opened by saying the Hessian "plays a huge role in neural network cost function minimisation". Here is that role, in three sentences that the coming units will turn into whole stories.</p>
+    <p><strong>Training is descending a landscape.</strong> The loss \(L(\mathbf w)\) is a function of a million weights, and every step of gradient descent (Unit 9) is a step on that landscape. At the bottom of a valley the gradient vanishes — and the Hessian, now a million-by-million matrix of second partials, is exactly the judge of this unit: positive-definite means a true minimum, opposite-sign eigenvalues mean a saddle you can still slide off.</p>
+    <p><strong>Curvature sets the speed limit.</strong> Near a minimum the loss is its own quadratic clone, \(L\approx L_0+\tfrac12\mathbf h^{\top}H\mathbf h\). The compass showed the curvature ranging from \(\lambda_{\min}\) to \(\lambda_{\max}\). Gradient descent must take steps small enough for the steepest direction (\(\lambda_{\max}\)) yet then crawls along the flattest (\(\lambda_{\min}\)); the ratio \(\lambda_{\max}/\lambda_{\min}\), the <em>condition number</em>, is how elongated the valley is and how badly plain descent zig-zags. Momentum, RMSProp and Adam (Unit 11) are all ways of coping with a bad Hessian without ever computing it.</p>
+    <p><strong>The clone suggests a jump.</strong> If you trusted the quadratic clone completely, you would not step downhill — you would jump straight to the clone's own bottom. That is Newton's method, and it falls out of this unit in two lines:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · Newton's step is the bottom of the quadratic clone</span>
+    <p class="dgoal"><b>Claim.</b> The quadratic clone of \(f\) at \(\mathbf x_0\), \(\ Q(\mathbf h)=f(\mathbf x_0)+\nabla f^{\top}\mathbf h+\tfrac12\mathbf h^{\top}H\mathbf h\), is minimised (when \(H\) is positive-definite) at \(\mathbf h^{\star}=-H^{-1}\nabla f\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Differentiate \(Q\) with respect to \(\mathbf h\), using Unit 7's cookbook (\(\nabla_{\mathbf h}(\mathbf a^{\top}\mathbf h)=\mathbf a\), \(\ \nabla_{\mathbf h}(\tfrac12\mathbf h^{\top}H\mathbf h)=H\mathbf h\) for symmetric \(H\)):
+      \[\nabla_{\mathbf h}Q=\nabla f+H\mathbf h.\]
+      <span class="dwhy">The clone is a quadratic, so its gradient is linear in \(\mathbf h\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Set it to zero and solve: \(H\mathbf h^{\star}=-\nabla f\), so \(\mathbf h^{\star}=-H^{-1}\nabla f\). The clone's Hessian is \(H\) itself, positive-definite, so this flat point of \(Q\) is its minimum — by this unit's own <span class="nw">verdict. <span class="dqed">∎</span></span>
+      <span class="dwhy">Gradient descent moves along \(-\nabla f\), scaled by a step size you must guess. Newton moves along \(-H^{-1}\nabla f\): the curvature rescales every direction — big steps where the valley is flat, small where it is steep. For a true quadratic it lands on the minimum in one jump. The price is \(H\): for a million weights it is unaffordable, which is why the whole optimiser zoo exists.</span></div></div>
+  </div>
+<figure class="fig reveal" role="img" aria-label="Contour map of an elongated bowl: a gradient-descent path zig-zags across the narrow valley in many short steps, while a single Newton step goes straight from the start to the minimum">
+<div class="scroll"><svg viewBox="0 0 600 250" width="100%">
+  <g fill="none" stroke="var(--s1)" stroke-width="1.2" opacity=".55" transform="translate(300 125) rotate(-18)">
+    <ellipse rx="50" ry="17"/><ellipse rx="100" ry="33"/><ellipse rx="150" ry="50"/><ellipse rx="200" ry="67"/><ellipse rx="250" ry="83"/>
+  </g>
+  <polyline points="518,117 445,27 440,120 393,63 389,122 359,85 357,123 338,99 337,124 324,109 323,124 316,115 315,124 310,118" fill="none" stroke="var(--s2)" stroke-width="2.2" stroke-linejoin="round" class="draw glow-2"/>
+  <line x1="518" y1="117" x2="300" y2="125" stroke="var(--s3)" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="8 5" class="draw2 glow-3"/>
+  <circle cx="518" cy="117" r="5" fill="var(--s4)"/>
+  <circle cx="300" cy="125" r="5.5" fill="var(--ink)"/>
+  <text x="528" y="112" font-size="11" font-weight="700" fill="var(--s4)">start</text>
+  <text x="300" y="150" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">minimum</text>
+  <text x="36" y="222" font-size="11" font-weight="700" fill="var(--s2)">orange · gradient descent: 14 zig-zag steps, still not there</text>
+  <text x="36" y="240" font-size="11" font-weight="700" fill="var(--s3)">green · Newton: one jump to the clone's bottom</text>
+</svg></div>
+<figcaption><b>Two ways down an elongated bowl.</b> Contours of \(\tfrac12(9u^2+v^2)\), condition number \(\lambda_1/\lambda_2=9\). Gradient descent (orange, step size \(0.2\)) must keep its steps short for the steep axis, so it bounces between the walls and crawls along the valley; Newton's step (green) uses \(H^{-1}\) to rescale every direction and lands on the minimum at once. Unit 9 begins where the orange path does.</figcaption>
+</figure>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Gradient descent takes the step \(-\eta\nabla f\); Newton takes \(-H^{-1}\nabla f\). For a quadratic bowl with eigenvalues \(\lambda_1\gg\lambda_2\), why does Newton not zig-zag?</p>
+    <div class="opts">
+      <button data-correct data-why="In the eigenbasis H⁻¹ divides each component of the gradient by its own eigenvalue: the steep direction (large λ₁) gets a small step, the flat direction (small λ₂) a large one — each exactly what that direction needs. The result points straight at the minimum. Gradient descent uses one η for both, so it overshoots across the steep axis while barely moving along the flat one.">Because \(H^{-1}\) rescales each eigen-direction by \(1/\lambda\) — short steps where steep, long where flat</button>
+      <button data-why="Newton steps are usually LONGER than descent steps in the flat direction (divided by a small λ₂). Taking smaller steps everywhere would only slow the crawl along the valley; the cure is direction-dependent scaling, which is what H⁻¹ provides.">Because it takes smaller steps</button>
+      <button data-why="Newton uses the gradient too — the step is −H⁻¹∇f, and it is zero exactly when the gradient is. The difference is what multiplies the gradient: a scalar η versus the inverse Hessian.">Because it does not use the gradient at all</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> A loss surface near its bottom is its own quadratic clone; the Hessian's eigenvalues say how hard descent will be, and its inverse turns the clone's bottom into Newton's one-step jump.</div>
+</section>
+
+<!-- ================= 14 · CARRY FORWARD ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>One flat spot on a trail generated this unit. Everything else was the same move — Rolle — applied again, then tilted, then stacked, then walked along a line.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>Idea</th><th>The one-line version</th><th>Where it returns</th></tr></thead>
+    <tbody>
+      <tr><td>Rolle</td><td>Same height at both ends + smooth ⇒ a flat spot between</td><td>every existence argument in calculus</td></tr>
+      <tr><td>Mean value theorem</td><td>\(f(b)=f(a)+f'(c)(b-a)\) — Rolle, tilted</td><td>Unit 9 · why a descent step works</td></tr>
+      <tr><td>Taylor with remainder</td><td>\(f(x)=P_{n-1}(x)+\dfrac{f^{(n)}(c)}{n!}(x-a)^n\), \(c\) between \(a\) and \(x\)</td><td>every "local approximation" from here on</td></tr>
+      <tr><td>The bound</td><td>\(|R_n|\le M|x-a|^n/n!\) — you never need \(c\)</td><td>numerical methods, error budgets</td></tr>
+      <tr><td>MacLaurin</td><td>Taylor at \(0\); \(e^x,\sin,\cos\) converge everywhere because \(n!\) wins</td><td>how your computer evaluates functions</td></tr>
+      <tr><td>The line trick</td><td>\(F(t)=f(a+th,b+tk)\): two variables become one</td><td>directional derivatives; convexity proofs (Unit 14)</td></tr>
+      <tr><td>The Hessian</td><td>\(H=\begin{bmatrix}f_{xx}&f_{xy}\\f_{xy}&f_{yy}\end{bmatrix}\); \(Q=\mathbf h^{\top}H\mathbf h\)</td><td>Units 9–11 · the shape of every loss valley</td></tr>
+      <tr><td>The verdict</td><td>\(D>0,f_{xx}>0\) min · \(D>0,f_{xx}<0\) max · \(D<0\) saddle · \(D=0\) silent</td><td>classifying critical points, always</td></tr>
+      <tr><td>Three readings</td><td>\(D=\det H=\lambda_1\lambda_2\); Sylvester's minors; eigenvalue signs</td><td>Unit 14 · positive-definite kernels and convexity</td></tr>
+      <tr><td>Newton's step</td><td>\(-H^{-1}\nabla f\): jump to the clone's bottom</td><td>Units 10–11 · second-order methods and why we avoid them</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
+    <p><strong>Every smooth function is, up close, a polynomial — and Taylor's theorem tells you exactly how far "up close" reaches.</strong> The remainder \(f^{(n)}(c)(x-a)^n/n!\) is not a hand-wave; it came from a ladder of flat spots. And in two variables, the second-order term of that polynomial is a matrix whose signs decide whether a flat point is the bottom of a bowl. When a training loop reports that it has found a minimum, this unit is how anyone could ever check.</p>
+  </div>
+</section>
+
+<!-- ================= 15 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head reveal"><span class="sec-num">15</span><h2>Practice arena — the unit's problem set, solved in full</h2></div>
+  <div class="prose reveal">
+    <p>Twelve problems: three from Part A (Taylor) and three from Part B (the Hessian) of Prof. Saurabh's practice set, three from his companion guide, and three written for this arena — a remainder-bound workout (Problem 4), an explicit hunt for the secret \(c\) (Problem 5), and a proof workout that derives the judge's identity and connects it to eigenvalues (Problem 12). Every number below is machine-verified.</p>
+    <p>Two habits do most of the work: <strong>for a Taylor polynomial, write the derivatives at the anchor in a column before touching the formula</strong>, and keep the \(k!\); <strong>for a critical point, evaluate the Hessian at each point separately</strong>, then read \(D\) first and \(f_{xx}\) second.</p>
+  </div>
+<!--@PRACTICE-->
+  <div class="next-card reveal">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 9 · Gradient Descent</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">You now know what a landscape looks like near a flat point and how to tell a bowl from a saddle. Unit 9 starts walking: step sizes, why the mean value theorem guarantees a descent step, how the Hessian's eigenvalues set the speed limit, and what happens in the fog of a million dimensions.</p>
+    <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
+  </div>
+</section>
+
+</main>

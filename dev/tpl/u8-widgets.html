@@ -1,0 +1,188 @@
+<!--@W1-->
+  <div class="widget reveal" id="w-flat">
+    <div class="widget-head"><span class="w-title">The flat-spot hunter</span><span class="w-sub">Rolle, the mean value theorem, and the one curve that breaks them — drag the endpoints, then hunt for c</span></div>
+    <p class="try"><b>Try:</b> press ▶ hunt for c and watch the tangent slide until it is parallel to the chord. Then open the <em>broken</em> tab: same heights at both ends, and no flat spot anywhere.</p>
+    <div class="tabs" id="fl-tabs">
+      <button data-t="rolle" aria-selected="true">Rolle · same height at both ends</button>
+      <button data-t="mvt">Mean value · any heights</button>
+      <button data-t="broken">Broken · a kink in the trail</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="fl-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A smooth curve between two endpoints a and b with the chord joining them; a tangent slides along the curve and lights up where it is parallel to the chord, at the point c the mean value theorem promises"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="fl-a">left end a</label><input id="fl-a" type="range" min="-2.4" max="1.2" step="0.05" value="-1.6"><output id="fl-a-o">-1.6</output></div>
+          <div class="ctl"><label for="fl-b">right end b</label><input id="fl-b" type="range" min="-1" max="2.6" step="0.05" value="1.8"><output id="fl-b-o">1.8</output></div>
+        </div>
+        <div class="presets"><button class="play" id="fl-play">▶ hunt for c</button></div>
+        <div class="readout" id="fl-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The chord's slope is the <em>average</em> rate of change over \([a,b]\); the tangent's slope is the <em>instantaneous</em> rate at one point. The theorem says the two must agree somewhere strictly inside. In the Rolle tab the right end is pinned to the same height as the left, so the chord is level and the promised tangent is flat.</p>
+      </div>
+    </div>
+  </div>
+<!--@W2-->
+  <div class="widget reveal" id="w-ladder">
+    <div class="widget-head"><span class="w-title">The Rolle ladder</span><span class="w-sub">F, F′, F″, … each rung inherits two zeros from the rung above and hands one down — climb it</span></div>
+    <p class="try"><b>Try:</b> press ▶ climb and watch the zeros nest: \(a<c_3<c_2<c_1<b\). Then move \(b\) closer to \(a\) and see every \(c_k\) get squeezed toward \(a\).</p>
+    <div class="wrow">
+      <div class="wcol svgwrap" style="flex:2.3 1 400px"><svg id="ld-svg" viewBox="0 0 600 400" class="svg-lab" role="img" aria-label="Stacked panels showing a function F and its first three derivatives; each panel marks the zeros the previous one guarantees, and the zeros nest inward from b toward a"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="tabs" id="ld-tabs">
+          <button data-t="exp" aria-selected="true">f = eˣ</button>
+          <button data-t="sin">f = sin x</button>
+        </div>
+        <div class="controls">
+          <div class="ctl"><label for="ld-b">target b</label><input id="ld-b" type="range" min="0.6" max="2.6" step="0.05" value="2"><output id="ld-b-o">2</output></div>
+          <div class="ctl"><label for="ld-n">rungs n</label><input id="ld-n" type="range" min="2" max="4" step="1" value="3"><output id="ld-n-o">3</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ld-play">▶ climb</button><button class="preset" id="ld-step">one rung</button><button class="preset" id="ld-reset">reset</button></div>
+        <div class="readout" id="ld-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="ld-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Here \(F(x)=f(x)-P(x)\), where \(P\) copies \(f\)'s value and first \(n-1\) derivatives at \(a=0\), and its last coefficient is chosen so that \(F(b)=0\). Every rung starts with two zeros and Rolle plants one more, one level down — until the bottom rung reports \(F^{(n)}(c_n)=0\). That single zero is where the remainder formula comes from.</p>
+      </div>
+    </div>
+  </div>
+<!--@W3-->
+  <div class="widget reveal" id="w-rem">
+    <div class="widget-head"><span class="w-title">The remainder detective</span><span class="w-sub">Cut the series, measure the lie, and find the secret point c that explains it exactly</span></div>
+    <p class="try"><b>Try:</b> load <em>√4.2 (Problem A3)</em>, then slide the order from 2 to 3 (the tangent line becomes the parabola) and watch the gap collapse from \(0.0006\) to \(0.000015\). Then push \(x\) far from the anchor and watch the bound balloon.</p>
+    <div class="tabs" id="rm-tabs">
+      <button data-t="exp" aria-selected="true">eˣ about 0</button>
+      <button data-t="cos">cos x about 0</button>
+      <button data-t="ln">ln x about 1</button>
+      <button data-t="sqrt">√x about 4</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="rm-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A function, its truncated Taylor polynomial, the red gap between them at a chosen x, a translucent band showing the guaranteed error bound, and the point c between the anchor and x at which the remainder formula is exact"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="rm-n">order n</label><input id="rm-n" type="range" min="1" max="5" step="1" value="2"><output id="rm-n-o">2</output></div>
+          <div class="ctl"><label for="rm-x">evaluate at x</label><input id="rm-x" type="range" min="-1.5" max="2.5" step="0.05" value="1"><output id="rm-x-o">1</output></div>
+        </div>
+        <div class="presets"><button class="preset" data-p="a3">√4.2 (Problem A3)</button><button class="preset" data-p="cos05">cos 0.5 small angle</button><button class="preset" data-p="ln15">ln 1.5</button><button class="preset" data-p="e1">e at x = 1</button></div>
+        <div class="readout" id="rm-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="rm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Keep the terms up to degree \(n-1\); the lie is exactly \(\dfrac{f^{(n)}(c)}{n!}(x-a)^n\) for one secret \(c\) between \(a\) and \(x\). The detective solves for that \(c\) numerically and marks it. The translucent band is the guarantee you can compute <em>without</em> knowing \(c\): the worst \(|f^{(n)}|\) on the interval, times \(|x-a|^n/n!\).</p>
+      </div>
+    </div>
+  </div>
+<!--@W4-->
+  <div class="widget reveal" id="w-walk">
+    <div class="widget-head"><span class="w-title">The line trick</span><span class="w-sub">Walk from P to S along a straight line and the surface becomes a one-variable curve — drag to orbit</span></div>
+    <p class="try"><b>Try:</b> load <em>Problem A2</em> and read the gap between the true height and the quadratic clone at \(S=(0.1,0.2)\): it is \(0.00044\). Then double \(h\) and \(k\) — the gap grows about tenfold: eightfold from the third-order leftover, the rest from fourth-order crumbs.</p>
+    <div class="tabs" id="wk-tabs">
+      <button data-t="walk" aria-selected="true">the walk F(t)</button>
+      <button data-t="clone">the quadratic clone Q</button>
+      <button data-t="both">both</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="wk-3d" class="stage3d" role="img" aria-label="Orbitable 3D surface z = e^x sin y with a straight segment on the floor from a base point P to a target S; the lifted curve over the segment glows, and a translucent quadratic surface — the second-order Taylor clone at P — hugs the true surface near P"></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="wk-a">base a</label><input id="wk-a" type="range" min="-0.8" max="0.8" step="0.05" value="0"><output id="wk-a-o">0</output></div>
+          <div class="ctl"><label for="wk-b">base b</label><input id="wk-b" type="range" min="-0.8" max="0.8" step="0.05" value="0"><output id="wk-b-o">0</output></div>
+          <div class="ctl"><label for="wk-h">step h</label><input id="wk-h" type="range" min="-0.8" max="0.8" step="0.05" value="0.5"><output id="wk-h-o">0.5</output></div>
+          <div class="ctl"><label for="wk-k">step k</label><input id="wk-k" type="range" min="-0.8" max="0.8" step="0.05" value="0.6"><output id="wk-k-o">0.6</output></div>
+        </div>
+        <div class="presets"><button class="preset" data-p="a2">Problem A2 · (0,0) → (0.1, 0.2)</button><button class="preset" data-p="a2x2">double the step</button></div>
+        <svg id="wk-side" viewBox="0 0 300 150" class="svg-lab" role="img" aria-label="The walk unrolled: F(t) = f(a+th, b+tk) for t from 0 to 1, with its quadratic Taylor approximation in t" style="margin-top:.4rem"></svg>
+        <div class="readout" id="wk-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="wk-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The surface is \(f(x,y)=e^x\sin y\). Along the segment, \(F(t)=f(a+th,\,b+tk)\) is an ordinary one-variable function of \(t\), so one-variable Taylor applies to it — and its second derivative is exactly \(h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\). The glass surface is the quadratic clone \(Q\) built from those three numbers.</p>
+      </div>
+    </div>
+  </div>
+<!--@W5-->
+  <div class="widget reveal" id="w-judge">
+    <div class="widget-head"><span class="w-title">The judge</span><span class="w-sub">Three numbers — f<sub>xx</sub>, f<sub>xy</sub>, f<sub>yy</sub> — decide bowl, dome, or saddle. Turn the dials and watch the landscape rule.</span></div>
+    <p class="try"><b>Try:</b> start from the <em>bowl</em>, then raise \(f_{xy}\) slowly. The bowl tilts and stretches; the moment \(f_{xy}^2\) passes \(f_{xx}f_{yy}\), one direction gives way and the bowl tears open into a saddle.</p>
+    <div class="presets" id="jd-presets"><button class="preset" data-p="bowl" aria-pressed="true">bowl</button><button class="preset" data-p="dome">dome</button><button class="preset" data-p="saddle">saddle</button><button class="preset" data-p="twist">twisted saddle (Problem A2)</button><button class="preset" data-p="trough">trough · D = 0</button><button class="preset" data-p="b2">Problem B2's Hessian</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="jd-3d" class="stage3d" role="img" aria-label="Orbitable 3D quadratic surface z = ½(A x² + 2B xy + C y²) with lifted contour rings; two glowing arrows on the floor show the eigen-directions of the Hessian, and a probe dot circles the flat point reporting whether the surface is above or below it"></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="jd-a">f<sub>xx</sub></label><input id="jd-a" type="range" min="-3" max="3" step="0.1" value="2"><output id="jd-a-o">2</output></div>
+          <div class="ctl"><label for="jd-b">f<sub>xy</sub></label><input id="jd-b" type="range" min="-3" max="3" step="0.1" value="0"><output id="jd-b-o">0</output></div>
+          <div class="ctl"><label for="jd-c">f<sub>yy</sub></label><input id="jd-c" type="range" min="-3" max="3" step="0.1" value="2"><output id="jd-c-o">2</output></div>
+        </div>
+        <div class="tabs" id="jd-tabs" style="margin-top:.5rem">
+          <button data-t="disc" aria-selected="true">discriminant D</button>
+          <button data-t="sylv">Sylvester's minors</button>
+          <button data-t="eig">eigenvalues</button>
+        </div>
+        <div class="readout" id="jd-read" style="margin-top:.4rem;line-height:1.9"></div>
+        <div id="jd-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The surface is \(z=\tfrac12\,(h,k)\,H\,(h,k)^{\top}=\tfrac12(f_{xx}h^2+2f_{xy}hk+f_{yy}k^2)\) — the second-order term of Taylor at a flat point, with nothing else in the way. The three tabs are three ways of reading the same matrix: they always agree, and the widget shows why.</p>
+      </div>
+    </div>
+  </div>
+<!--@W6-->
+  <div class="widget reveal" id="w-rose">
+    <div class="widget-head"><span class="w-title">The curvature compass</span><span class="w-sub">Point in a direction θ and read the curvature there — the compass rose that tells bowls from saddles</span></div>
+    <p class="try"><b>Try:</b> press ▶ sweep. On a saddle the needle crosses zero four times per turn; on a bowl it never does. Then drag \(f_{xy}\) and watch the eigen-directions (the longest and shortest spokes) rotate.</p>
+    <div class="presets" id="rs-presets"><button class="preset" data-p="bowl">bowl</button><button class="preset" data-p="dome">dome</button><button class="preset" data-p="saddle" aria-pressed="true">saddle</button><button class="preset" data-p="twist">twisted saddle</button><button class="preset" data-p="trough">trough · D = 0</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="rs-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A polar plot of the directional curvature Q(θ) = fxx cos²θ + 2 fxy sinθ cosθ + fyy sin²θ: positive lobes and negative lobes, with the eigen-directions drawn as the longest and shortest spokes, and a sweeping needle"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="rs-a">f<sub>xx</sub></label><input id="rs-a" type="range" min="-3" max="3" step="0.1" value="2"><output id="rs-a-o">2</output></div>
+          <div class="ctl"><label for="rs-b">f<sub>xy</sub></label><input id="rs-b" type="range" min="-3" max="3" step="0.1" value="0"><output id="rs-b-o">0</output></div>
+          <div class="ctl"><label for="rs-c">f<sub>yy</sub></label><input id="rs-c" type="range" min="-3" max="3" step="0.1" value="-2"><output id="rs-c-o">-2</output></div>
+          <div class="ctl"><label for="rs-th">direction θ</label><input id="rs-th" type="range" min="0" max="360" step="1" value="30"><output id="rs-th-o">30°</output></div>
+        </div>
+        <div class="presets"><button class="play" id="rs-play">▶ sweep</button></div>
+        <div class="readout" id="rs-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="rs-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Walk away from the flat point in direction \(\theta\) with unit speed; the surface's height grows like \(\tfrac12 Q(\theta)\,r^2\) where \(Q(\theta)=\mathbf u^{\top}H\mathbf u\) for \(\mathbf u=(\cos\theta,\sin\theta)\). The largest and smallest values of \(Q\) over all directions are the eigenvalues \(\lambda_1,\lambda_2\) of \(H\), reached along its eigenvectors — Unit 4's spectral theorem, standing on a hilltop.</p>
+      </div>
+    </div>
+  </div>
+<!--@W7-->
+  <div class="widget reveal" id="w-hunt">
+    <div class="widget-head"><span class="w-title">The critical-point hunter</span><span class="w-sub">Six landscapes from the companion and the practice set: find every flat point, then let the Hessian judge it — drag to orbit</span></div>
+    <p class="try"><b>Try:</b> load <em>x³ + y³ − 3xy + 1</em>. Two flat points: one is a saddle, one a minimum — click each dot and compare their Hessians. Then load the two \(x^4\) landscapes, where the Hessian is all zeros and has nothing to say.</p>
+    <div class="presets" id="ht-presets"><button class="preset" data-p="p1" aria-pressed="true">xy − x² − y² − 2x − 2y + 4</button><button class="preset" data-p="p2">x³ + y³ − 3xy + 1</button><button class="preset" data-p="b1">x³ − 3xy + 3y²</button><button class="preset" data-p="b2">2x² + 2xy + 3y² − 4x − 2y</button><button class="preset" data-p="g">x⁴ + y⁴</button><button class="preset" data-p="h">x⁴ − y⁴</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="ht-3d" class="stage3d" role="img" aria-label="Orbitable 3D landscape with lifted contour rings; every critical point glows — green for a minimum, orange for a maximum, purple for a saddle, grey when the test is inconclusive — and the selected point wears a translucent quadratic clone"></div><p class="stage-tap">drag the picture to orbit · tap a dot to select it</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="stagebar" id="ht-points" role="tablist" aria-label="critical points"></div>
+        <div class="presets"><button class="preset" id="ht-clone" aria-pressed="true">show the quadratic clone</button></div>
+        <div class="readout" id="ht-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="ht-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">For each landscape the widget solves \(\nabla f=\mathbf 0\), evaluates the Hessian at every solution and applies the second-derivative test. The glass surface at the selected point is the quadratic clone \(f(P)+\tfrac12\,\mathbf h^{\top}H\mathbf h\) — the local bowl, dome or saddle that the Hessian <em>is</em>.</p>
+      </div>
+    </div>
+  </div>
+<!--@W8-->
+  <div class="widget reveal" id="w-fact">
+    <div class="widget-head"><span class="w-title">The factorial wins</span><span class="w-sub">Why the series for eˣ, sin x and cos x can be trusted at every x — the hump, then the crash</span></div>
+    <p class="try"><b>Try:</b> push \(x\) to 5. The terms <em>grow</em> for a while (the hump), then \(n!\) overtakes \(5^n\) and they crash to nothing. Compare with ln(1+x): past \(x=1\) the bars never come down.</p>
+    <div class="tabs" id="fc-tabs">
+      <button data-t="exp" aria-selected="true">eˣ</button>
+      <button data-t="cos">cos x</button>
+      <button data-t="ln">ln(1 + x)</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="fc-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A bar chart of the size of each Taylor term at a chosen x, on a logarithmic scale, with the actual truncation error after n terms drawn as a glowing line; for the exponential the bars rise then fall factorially, for the logarithm past x = 1 they never fall"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="fc-x">x</label><input id="fc-x" type="range" min="0.1" max="5" step="0.1" value="2"><output id="fc-x-o">2</output></div>
+          <div class="ctl"><label for="fc-n">terms kept</label><input id="fc-n" type="range" min="1" max="14" step="1" value="4"><output id="fc-n-o">4</output></div>
+        </div>
+        <div class="readout" id="fc-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fc-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Term \(n\) has size \(|x|^n/n!\) (times a bounded derivative). A power \(|x|^n\) multiplies by the same \(|x|\) every step; a factorial multiplies by \(n\), which eventually dwarfs any fixed \(|x|\). That race is the whole reason the exponential and trigonometric series converge everywhere — and \(\ln(1+x)\), whose terms shrink only like \(|x|^n/n\), loses the race the moment \(|x|>1\).</p>
+      </div>
+    </div>
+  </div>
+<!--@W9-->
+  <div class="widget reveal" id="w-sand">
+    <div class="widget-head"><span class="w-title">The sandwich, unwrapped</span><span class="w-sub">hᵀHh looks compact — hover an entry of H to see exactly which term of the sum it feeds</span></div>
+    <p class="try"><b>Try:</b> hover the two off-diagonal entries: they feed the same product \(h_1h_2\), which is where the \(2\) in \(2hk\,f_{xy}\) comes from. Switch to three variables and count — 9 entries, 6 distinct numbers, and every term still a plain number.</p>
+    <div class="tabs" id="sd-tabs"><button data-t="2" aria-selected="true">two variables</button><button data-t="3">three variables</button><button data-t="num">with numbers · Problem 7's Hessian</button></div>
+    <div class="sand" id="sd-box"></div>
+    <div class="readout" id="sd-read" style="margin-top:.6rem;line-height:1.9"></div>
+    <div id="sd-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+    <p class="note">Row × matrix × column is a double sum: \(\mathbf h^{\top}H\mathbf h=\sum_i\sum_j h_i\,H_{ij}\,h_j\). Each entry of \(H\) feeds one term, and each term uses the step component of its <em>row</em> and of its <em>column</em>. Because \(H\) is symmetric, the mirror-image entries \(H_{ij}\) and \(H_{ji}\) feed the same product and merge — for two variables that merge is the familiar \(h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\).</p>
+  </div>

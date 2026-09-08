@@ -1,0 +1,175 @@
+<!-- ================= 5 · TAYLOR'S THEOREM, BUILT BY HAND ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>Taylor's theorem, built by hand</h2></div>
+  <div class="prose reveal">
+    <p>Proposition P wants a function that is \(n\)-fold flat at \(a\) and zero at \(b\). We have a function \(f\) and a polynomial we would like to be its impostor,</p>
+    \[P(x)=\sum_{k=0}^{n}a_k\,(x-a)^k,\]
+    <p>with the coefficients \(a_0,\dots,a_n\) still to be chosen. So the plan is: build the <strong>gap</strong> \(F(x)=f(x)-P(x)\), choose the coefficients so that \(F\) satisfies Proposition P, and read off what the last flat spot tells us. Three moves. Each one is short.</p>
+    <p class="plain-first">The first \(n\) coefficients make \(F\) flat at \(a\). The last coefficient makes \(F\) zero at \(b\). Proposition P then delivers a \(c\) — and that \(c\) is the remainder.</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · move 1 — flattening the gap at a fixes the first n coefficients</span>
+    <p class="dgoal"><b>Claim.</b> \(F^{(k)}(a)=f^{(k)}(a)-k!\,a_k\) for \(k=0,1,\dots,n\). So \(F^{(k)}(a)=0\) exactly when \(a_k=\dfrac{f^{(k)}(a)}{k!}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Differentiate one power \(j\) times and evaluate at \(a\):
+      \[\frac{d^{\,j}}{dx^{j}}(x-a)^k\Big|_{x=a}=\begin{cases}0 & j<k\\[.2em] k! & j=k\\[.2em] 0 & j>k\end{cases}\]
+      <span class="dwhy">Fewer differentiations than the power (\(j<k\)): a positive power of \((x-a)\) survives, and it is \(0\) at \(a\). Exactly \(k\) differentiations: the power is used up and leaves \(k(k-1)\cdots1=k!\). More than \(k\): a constant differentiated again is \(0\). Only the term whose power matches the number of differentiations survives at \(a\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">So the \(k\)-th derivative of \(P\) at \(a\) picks out one term:
+      \[P^{(k)}(a)=\sum_{j=0}^{n}a_j\,\frac{d^{\,k}}{dx^{k}}(x-a)^j\Big|_{a}=a_k\cdot k!\]
+      <span class="dwhy">Every other term in the sum is killed by step 1 — either it still has a factor \((x-a)\), or it has already been differentiated to zero.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Therefore \(F^{(k)}(a)=f^{(k)}(a)-P^{(k)}(a)=f^{(k)}(a)-k!\,a_k\), and demanding \(F^{(k)}(a)=0\) for \(k=0,\dots,n-1\) forces
+      \[a_k=\frac{f^{(k)}(a)}{k!},\qquad k=0,1,\dots,n-1.\ \]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">This is where the Taylor coefficients come from — not from a formula handed down, but from the demand that the gap be flat. The \(k!\) is the factorial left behind by differentiating \((x-a)^k\) \(k\) times.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>Move 1 has spent \(n\) of the \(n+1\) coefficients. One is left, \(a_n\), and Proposition P still wants \(F(b)=0\). That is one equation in one unknown:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · move 2 — the last coefficient makes the gap vanish at b</span>
+    <p class="dgoal"><b>Claim.</b> With \(a_0,\dots,a_{n-1}\) fixed by move 1, \(F(b)=0\) holds exactly when
+    \(a_n=\dfrac{1}{(b-a)^n}\Big(f(b)-\displaystyle\sum_{k=0}^{n-1}\frac{f^{(k)}(a)}{k!}(b-a)^k\Big).\)</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write out \(F(b)\), separating the last term:
+      \[F(b)=f(b)-\sum_{k=0}^{n-1}\frac{f^{(k)}(a)}{k!}(b-a)^k-a_n(b-a)^n\]
+      <span class="dwhy">The first \(n\) coefficients are already known from move 1; only \(a_n\) is free.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Set \(F(b)=0\) and solve for \(a_n\):
+      \[\begin{aligned}a_n(b-a)^n&=f(b)-\sum_{k=0}^{n-1}\frac{f^{(k)}(a)}{k!}(b-a)^k\\[.35em] a_n&=\frac{1}{(b-a)^n}\Big(f(b)-\sum_{k=0}^{n-1}\frac{f^{(k)}(a)}{k!}(b-a)^k\Big).\end{aligned}\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">Divide by \((b-a)^n\), which is not zero because \(b\ne a\). Read it in words: \(a_n\) is "the gap left by the first \(n\) terms, per unit of \((b-a)^n\)". We do not yet know what \(a_n\) has to do with \(f\)'s derivatives — that is move 3.</span></div></div>
+  </div>
+<figure class="fig reveal" role="img" aria-label="The gap function F = f − P for f = e^x with n = 3 and b = 2: it leaves zero at a = 0 perfectly flat, dips below the axis, and returns to zero at b = 2. Three nested flat spots c3 < c2 < c1 are marked on the axis">
+<div class="scroll"><svg viewBox="0 0 600 260" width="100%">
+  <line x1="40" y1="100.8" x2="560" y2="100.8" stroke="var(--axis)" stroke-width="1.3"/>
+  <polyline points="70.0,100.7 74.6,100.8 79.2,100.8 83.8,100.8 88.4,100.8 93.0,100.8 97.6,100.8 102.2,100.8 106.8,100.8 111.4,100.8 116.0,100.9 120.6,100.9 125.2,100.9 129.8,101.0 134.4,101.0 139.0,101.1 143.6,101.2 148.2,101.3 152.8,101.5 157.4,101.6 162.0,101.8 166.6,102.1 171.2,102.3 175.8,102.6 180.4,102.9 185.0,103.3 189.6,103.7 194.2,104.1 198.8,104.6 203.4,105.1 208.0,105.6 212.6,106.2 217.2,106.8 221.8,107.4 226.4,108.1 231.0,108.8 235.6,109.6 240.2,110.4 244.8,111.2 249.4,112.1 254.0,113.0 258.6,114.0 263.2,114.9 267.8,115.9 272.4,117.0 277.0,118.0 281.6,119.1 286.2,120.2 290.8,121.3 295.4,122.4 300.0,123.6 304.6,124.8 309.2,125.9 313.8,127.1 318.4,128.3 323.0,129.5 327.6,130.6 332.2,131.8 336.8,132.9 341.4,134.0 346.0,135.1 350.6,136.2 355.2,137.2 359.8,138.1 364.4,139.1 369.0,139.9 373.6,140.7 378.2,141.4 382.8,142.1 387.4,142.6 392.0,143.1 396.6,143.5 401.2,143.7 405.8,143.9 410.4,143.9 415.0,143.7 419.6,143.4 424.2,143.0 428.8,142.3 433.4,141.5 438.0,140.5 442.6,139.3 447.2,137.8 451.8,136.2 456.4,134.2 461.0,132.1 465.6,129.6 470.2,126.8 474.8,123.8 479.4,120.4 484.0,116.7 488.6,112.6 493.2,108.1 497.8,103.3 502.4,98.0 507.0,92.3 511.6,86.2 516.2,79.6 520.8,72.5 525.4,64.9 530.0,56.7" fill="none" stroke="var(--s7)" stroke-width="2.8" class="draw glow-7"/>
+  <line x1="100" y1="100.8" x2="160" y2="100.8" stroke="var(--s4)" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+  <circle cx="100" cy="100.8" r="5" fill="var(--s4)"/>
+  <circle cx="500" cy="100.8" r="5" fill="var(--s4)"/>
+  <line x1="408" y1="143.9" x2="408" y2="100.8" stroke="var(--s1)" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <circle cx="408" cy="100.8" r="4" fill="var(--s1)"/>
+  <circle cx="314.3" cy="100.8" r="4" fill="var(--s1)"/>
+  <circle cx="216.6" cy="100.8" r="4" fill="var(--s1)"/>
+  <text x="100" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">a = 0</text>
+  <text x="500" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">b = 2</text>
+  <text x="130" y="128" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--s4)">flat here: F = F′ = F″ = 0</text>
+  <text x="408" y="164" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--s1)">c₁ = 1.54</text>
+  <text x="314" y="88" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--s1)">c₂ = 1.07</text>
+  <text x="216" y="88" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--s1)">c₃ = 0.58</text>
+  <text x="440" y="176" font-size="11" font-weight="700" fill="var(--s7)">F(x) = eˣ − P(x)</text>
+  <text x="40" y="236" font-size="10.5" fill="var(--ink-2)">P copies e⁰, its slope and its bend at 0; the last coefficient a₃ = (e² − 5)/8 is chosen so that F(2) = 0.</text>
+  <text x="40" y="252" font-size="10.5" fill="var(--ink-2)">F′ vanishes at c₁, F″ at c₂, and F‴ at c₃ = ln(6a₃) — where exp(c₃) = 3!·a₃, the remainder formula in the flesh.</text>
+</svg></div>
+<figcaption><b>The gap function, pinned.</b> For \(f=e^x\), \(a=0\), \(n=3\), \(b=2\): the gap \(F=f-P\) leaves \(0\) perfectly flat (value, slope and bend all zero), dips, and returns to zero at \(b\). The three nested flat spots are exactly where the ladder puts them.</figcaption>
+</figure>
+  <div class="prose reveal">
+    <p>Now the payoff. \(F\) satisfies everything Proposition P asks for: flat to order \(n-1\) at \(a\) (move 1) and zero at \(b\) (move 2). So there is a \(c\in(a,b)\) with \(F^{(n)}(c)=0\). Unpack that one equation and the remainder falls out:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · move 3 — Taylor's theorem with the remainder</span>
+    <p class="dgoal"><b>Claim.</b> There is a \(c\) strictly between \(a\) and \(b\) such that
+    \[f(b)=\sum_{k=0}^{n-1}\frac{f^{(k)}(a)}{k!}(b-a)^k+\frac{f^{(n)}(c)}{n!}(b-a)^n.\]</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Differentiate \(F=f-P\) exactly \(n\) times. By step 1 of move 1, the \(n\)-th derivative of \(P\) is the constant \(n!\,a_n\) (every lower power has been differentiated away, and there are no higher ones):
+      \[F^{(n)}(x)=f^{(n)}(x)-n!\,a_n\qquad\text{for every }x.\]
+      <span class="dwhy">A degree-\(n\) polynomial differentiated \(n\) times is a constant: its leading coefficient times \(n!\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Proposition P gives \(c\in(a,b)\) with \(F^{(n)}(c)=0\). At that \(c\):
+      \[f^{(n)}(c)-n!\,a_n=0\quad\Longrightarrow\quad a_n=\frac{f^{(n)}(c)}{n!}.\]
+      <span class="dwhy">The last coefficient — which move 2 defined as "the gap per unit \((b-a)^n\)" — is revealed to be the \(n\)-th derivative at a secret point, divided by \(n!\). It has the same <em>shape</em> as every other coefficient; only the point where the derivative is taken has moved from \(a\) to \(c\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Substitute this \(a_n\) into move 2's equation \(F(b)=0\), i.e. \(f(b)=\sum_{k<n}\frac{f^{(k)}(a)}{k!}(b-a)^k+a_n(b-a)^n\):
+      \[f(b)=\underbrace{\sum_{k=0}^{n-1}\frac{f^{(k)}(a)}{k!}(b-a)^k}_{\text{Taylor polynomial }P_{n-1}(b)}+\underbrace{\frac{f^{(n)}(c)}{n!}(b-a)^n}_{\text{remainder }R_n}.\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">The polynomial part uses derivatives at \(a\) — things you can compute. The remainder uses one derivative at an unknown \(c\) — which you cannot compute, but can <em>bound</em>. For \(n=1\) this is the mean value theorem, \(f(b)=f(a)+f'(c)(b-a)\); the whole construction is that theorem, repeated up a ladder.</span></div></div>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Read it as a promise</span>
+    <p>Replace \(b\) by any \(x\) in the interval and the theorem reads: <strong>\(f(x)=P_{n-1}(x)+R_n(x)\), exactly, for every \(x\)</strong> — the impostor plus a lie whose size is \(\dfrac{f^{(n)}(c)}{n!}(x-a)^n\) for some \(c\) between \(a\) and \(x\). The lie has two parts you can see: \((x-a)^n\), which is tiny close to the anchor and grows fast away from it; and \(1/n!\), which shrinks ferociously as you keep more terms. The one part you cannot see, \(f^{(n)}(c)\), is trapped between the smallest and largest values of \(f^{(n)}\) on the interval. That is enough to put a number on it, and the next section does.</p>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the construction, \(a_n\) was first defined (move 2) as a quotient involving \(f(b)\), then revealed (move 3) to equal \(f^{(n)}(c)/n!\). What did the theorem actually <em>prove</em>?</p>
+    <div class="opts">
+      <button data-correct data-why="Move 2 defines a_n as exactly the number that closes the gap at b — that is what 'the remainder' means. Move 3 shows that this number has the form f^{(n)}(c)/n! for some c strictly between a and b. Existence of c is the theorem; its location is not given, and in general depends on f, a, b and n.">That the gap at \(b\) left by \(P_{n-1}\) has the form \(f^{(n)}(c)(b-a)^n/n!\) for <em>some</em> \(c\) strictly between \(a\) and \(b\)</button>
+      <button data-why="Nothing in the proof locates c. Proposition P only guarantees that a flat spot exists in (a, b); for f = x³ on [0, 2] with n = 2 it sits at c = 2/3, nowhere near the middle (Practice Problem 5).">That \(c\) is the midpoint of \([a,b]\)</button>
+      <button data-why="The remainder is zero only when f^{(n)}(c) = 0, which happens for polynomials of degree below n — not in general. The theorem says the remainder is small in a precise sense, not absent.">That the remainder is zero</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Take \(f(x)=x^3\), \(a=0\), \(n=2\) (keep only \(P_1\)), and \(b=2\). Since \(f(0)=f'(0)=0\), \(P_1\equiv0\) and the whole value \(f(2)=8\) is remainder: \(8=\dfrac{f''(c)}{2!}\cdot2^2\). What is \(c\)?</p>
+    <div class="opts">
+      <button data-correct data-why="f″(x) = 6x, so 8 = (6c/2)·4 = 12c and c = 2/3. It lies strictly inside (0, 2), as promised — and it is a different c from the mean value theorem's 2/√3 for the same function and interval. The secret point depends on how many terms you kept.">\(c=2/3\)</button>
+      <button data-why="That is the c of the mean value theorem (n = 1): 8 = f′(c)·2 gives 3c² = 4. With n = 2 the remainder uses f″, and the equation is 8 = (6c/2)·4, so c = 2/3. Different n, different secret point.">\(c=2/\sqrt3\)</button>
+      <button data-why="c = 1 would give (6·1/2)·4 = 12 ≠ 8. Check the arithmetic: the remainder is f″(c)/2! times (b−a)² = 4, so 12c = 8.">\(c=1\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> Choose the polynomial so the gap is flat at \(a\) and zero at \(b\); Proposition P then forces the last coefficient to be \(f^{(n)}(c)/n!\), which is Taylor's remainder.</div>
+</section>
+
+<!-- ================= 6 · HOW BIG IS THE LIE ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>How big is the lie? — the remainder in your hands</h2></div>
+  <div class="prose reveal">
+    <p>You will never know \(c\). But you do not need to. If \(|f^{(n)}|\) never exceeds some number \(M\) on the stretch between \(a\) and \(x\), then whatever \(c\) is,</p>
+    \[|R_n(x)|=\frac{|f^{(n)}(c)|}{n!}\,|x-a|^n\ \le\ \frac{M}{n!}\,|x-a|^n.\]
+    <p>That is a guarantee you can compute before you trust an approximation — and it is usually pessimistic by only a little, because the true \(f^{(n)}(c)\) tends to sit close to the values at the ends. The detective below does both jobs: it computes the guaranteed band, and then it hunts down the actual \(c\) that makes the formula exact.</p>
+  </div>
+<!--@W3-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the remainder bound</span>
+    <p class="dgoal"><b>Claim.</b> If \(|f^{(n)}(t)|\le M\) for every \(t\) between \(a\) and \(x\), then \(|f(x)-P_{n-1}(x)|\le\dfrac{M}{n!}|x-a|^n\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Taylor's theorem (with \(b=x\)) gives a \(c\) between \(a\) and \(x\) with
+      \[f(x)-P_{n-1}(x)=\frac{f^{(n)}(c)}{n!}(x-a)^n.\]
+      <span class="dwhy">This is an equality, not an estimate. Everything uncertain is inside \(f^{(n)}(c)\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Take absolute values; \(c\) is between \(a\) and \(x\), so the hypothesis applies to it:
+      \[|f(x)-P_{n-1}(x)|=\frac{|f^{(n)}(c)|}{n!}|x-a|^n\le\frac{M}{n!}|x-a|^n.\]
+      That is the <span class="nw">claim. <span class="dqed">∎</span></span>
+      <span class="dwhy">The only information used about \(c\) is <em>where</em> it lives. Whatever it is, the derivative there is at most \(M\) in size.</span></div></div>
+  </div>
+  <div class="callout intuition reveal"><span class="tag">Two examples worth memorising</span>
+    <p><strong>Small angles.</strong> \(\cos x=1-\dfrac{x^2}{2}+R_4\), with \(|R_4|\le\dfrac{x^4}{24}\) because every derivative of \(\cos\) is bounded by \(1\). At \(x=0.5\) the bound is \(0.0026\); the actual error is \(0.00258\). (Why \(n=4\) and not \(3\)? The \(x^3\) term of \(\cos\) is zero, so \(1-x^2/2\) is really \(P_3\), and the first thing left out is order \(4\).) <strong>The number \(e\).</strong> \(e=\sum_{k<n}\dfrac{1}{k!}+R_n\) with \(|R_n|\le\dfrac{e}{n!}<\dfrac{3}{n!}\). Ten terms (\(n=10\)) give \(3/10!\approx8\times10^{-7}\): six correct decimals from a sum you could do by hand. Practice Problem 4 works both in full.</p>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You approximate \(\sin x\) by \(x\) (that is \(P_2\): the \(x^2\) term is zero). For \(x=0.3\), what is the tightest guarantee the remainder bound gives?</p>
+    <div class="opts">
+      <button data-correct data-why="The first omitted term is order 3, so n = 3 and R₃ = f‴(c)x³/3! with |f‴| = |−cos c| ≤ 1. Bound: 0.3³/6 = 0.0045. The true error is 0.3 − sin 0.3 = 0.00448 — the bound is nearly exact, because cos c ≈ 1 near 0.">\(|R|\le 0.3^3/3!=0.0045\)</button>
+      <button data-why="0.3²/2 = 0.045 would be the bound if the x² term were missing from sin — but its coefficient f″(0)/2 = −sin 0/2 = 0 is not missing, it is zero. The approximation x already contains the correct (zero) quadratic term, so the first thing left out is the cubic.">\(|R|\le 0.3^2/2!=0.045\)</button>
+      <button data-why="Every derivative of sin is ± sin or ± cos, all bounded by 1 — so M = 1 is available and the bound is finite and small. 'No guarantee' is never the answer for sin, cos or exp on a bounded interval.">No guarantee — \(c\) is unknown</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> You cannot see \(c\), but \(|f^{(n)}|\le M\) on the interval turns the exact remainder into a computable guarantee, \(|R_n|\le M|x-a|^n/n!\).</div>
+</section>
+
+<!-- ================= 7 · MACLAURIN AND THE FACTORIAL ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>MacLaurin's series — and why the factorial always wins</h2></div>
+  <div class="prose reveal">
+    <p>Anchor the polynomial at \(a=0\) and it is called a <strong>MacLaurin</strong> series. Two functions make the pattern unforgettable. For \(e^x\) every derivative is \(e^x\) again, so every derivative at \(0\) is \(1\):</p>
+    \[e^x=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\cdots=\sum_{k=0}^{\infty}\frac{x^k}{k!}\]
+    <p>For \(\cos x\) the derivatives at \(0\) cycle through \(1,\,0,\,-1,\,0,\,1,\dots\), so only even powers survive and the signs alternate:</p>
+    \[\cos x=1-\frac{x^2}{2!}+\frac{x^4}{4!}-\frac{x^6}{6!}+\cdots\]
+    <p>The word "series" hides a question: does the infinite sum actually reach the function, or only get close and then wander off? The remainder answers it. For \(e^x\) on any interval \(|t|\le|x|\), \(|f^{(n)}(t)|=e^t\le e^{|x|}\), so \(|R_n|\le e^{|x|}\dfrac{|x|^n}{n!}\). Whether that goes to zero is a race between a <em>power</em> \(|x|^n\) and a <em>factorial</em> \(n!\) — and the factorial always wins:</p>
+  </div>
+<!--@W8-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the factorial beats every power</span>
+    <p class="dgoal"><b>Claim.</b> For any fixed \(x\), \(\dfrac{|x|^n}{n!}\to0\) as \(n\to\infty\). Hence the MacLaurin series of \(e^x\), \(\sin x\) and \(\cos x\) converge to the function at <em>every</em> \(x\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Look at how each term grows into the next:
+      \[\frac{|x|^{n+1}/(n+1)!}{|x|^n/n!}=\frac{|x|}{n+1}.\]
+      <span class="dwhy">Going from term \(n\) to term \(n+1\) multiplies the power by \(|x|\) (the same number every time) and the factorial by \(n+1\) (a number that keeps growing).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Once \(n+1\ge2|x|\), each step multiplies the term by at most \(\tfrac12\). So beyond that point the terms shrink at least as fast as \(\tfrac12,\tfrac14,\tfrac18,\dots\) times a fixed number — and that goes to zero.
+      <span class="dwhy">Before the crossover the terms may grow (the "hump" in the widget: for \(x=5\) the largest term is at \(n=4\) or \(5\)); after it they are halved, at least, every step.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">For \(e^x\): \(|R_n|\le e^{|x|}|x|^n/n!\to0\). For \(\sin x\) and \(\cos x\): every derivative is bounded by \(1\), so \(|R_n|\le|x|^n/n!\to0\). In each case \(P_{n-1}(x)\to f(x)\): the series converges to the function <span class="nw">everywhere. <span class="dqed">∎</span></span>
+      <span class="dwhy">Contrast \(\ln(1+x)=x-\tfrac{x^2}{2}+\tfrac{x^3}{3}-\cdots\): its terms shrink only like \(|x|^n/n\) — no factorial in the denominator — and for \(|x|>1\) they grow. Taylor's remainder is what tells you the difference between "trust it everywhere" and "trust it only near the anchor". Unit 6 saw the cliff at \(x=1\); now you know why it is there.</span></div></div>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(e^x\) at \(x=5\), the terms \(5^n/n!\) first grow, then shrink. At which \(n\) is the largest term?</p>
+    <div class="opts">
+      <button data-correct data-why="The ratio of consecutive terms is 5/(n+1): greater than 1 while n+1 < 5, equal to 1 at n+1 = 5, less than 1 after. So terms grow up to n = 4, term 5 equals term 4 (both 5⁴/4! = 5⁵/5! ≈ 26.04), and from n = 6 on they shrink. The hump is at n = 4–5; by n = 20 the term is below 10⁻⁵.">\(n=4\) and \(n=5\) tie — after that every term is smaller</button>
+      <button data-why="The terms do not shrink from the start: 5⁰/0! = 1, 5/1 = 5, 25/2 = 12.5, 125/6 = 20.8, 625/24 = 26 — growing. Only once n+1 exceeds 5 does the factorial take over.">\(n=0\) — the terms only ever shrink</button>
+      <button data-why="They never grow without bound: the ratio 5/(n+1) drops below 1 as soon as n ≥ 5, and from then on every term is smaller than the previous one. Eventually n! crushes 5ⁿ — that is the whole point of the derivation above.">The terms keep growing — the series diverges at \(x=5\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> MacLaurin is Taylor at \(0\); the terms of \(e^x\), \(\sin x\), \(\cos x\) may hump but always crash, because \(n!\) eventually multiplies faster than any fixed \(|x|\) can.</div>
+</section>
