@@ -1,9 +1,9 @@
 /* MFML-UX-V2 verification — navigation drawer, resume, bulk reveal, a11y, print, hub progress */
 const { chromium } = require('playwright');
 const SITE = 'file:///home/claude/mfml-site/site';
-const UNITS = [1, 2, 3, 4, 5, 6, 7];
-const EXPECT_CHECKS = { 1: 11, 2: 11, 3: 13, 4: 13, 5: 17, 6: 17, 7: 16 };
-const EXPECT_PROBS = { 1: 10, 2: 18, 3: 8, 4: 5, 5: 12, 6: 10, 7: 11 };
+const UNITS = process.env.ONLY ? process.env.ONLY.split(',').map(Number) : [1, 2, 3, 4, 5, 6, 7, 8];
+const EXPECT_CHECKS = { 1: 11, 2: 11, 3: 13, 4: 13, 5: 17, 6: 17, 7: 16, 8: 17 };
+const EXPECT_PROBS = { 1: 10, 2: 18, 3: 8, 4: 5, 5: 12, 6: 10, 7: 11, 8: 12 };
 
 let bad = 0;
 const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
@@ -65,16 +65,16 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
     /* 4 · TOC contents: every section + correct unit switcher */
     const secCount = await page.locator('section.unit').count();
     const tocLinks = await page.locator('#toc a').count();
-    if (tocLinks !== secCount + (u === 1 || u === 7 ? 2 : 3)) {
+    if (tocLinks !== secCount + (u === 1 || u === 8 ? 2 : 3)) {
       fail(tag, `toc links ${tocLinks} vs ${secCount} sections + switcher`);
     }
     const navText = (await page.locator('.toc-nav').textContent()).replace(/\s+/g, ' ').trim();
-    const wantPrev = u > 1 ? `Unit ${u - 1}` : null, wantNext = u < 7 ? `Unit ${u + 1}` : null;
+    const wantPrev = u > 1 ? `Unit ${u - 1}` : null, wantNext = u < 8 ? `Unit ${u + 1}` : null;
     if (wantPrev && !navText.includes(wantPrev)) fail(tag, `switcher missing prev "${wantPrev}" (got "${navText}")`);
     if (wantNext && !navText.includes(wantNext)) fail(tag, `switcher missing next "${wantNext}" (got "${navText}")`);
     if (!navText.includes('All units')) fail(tag, 'switcher missing hub link');
     if (u === 1 && navText.includes('Unit 0')) fail(tag, 'unit 1 offers a previous unit');
-    if (u === 7 && navText.includes('Unit 8')) fail(tag, 'unit 7 offers a nonexistent unit 8');
+    if (u === 8 && navText.includes('Unit 9')) fail(tag, 'unit 8 offers a nonexistent unit 9');
 
     /* 5 · unit publishes its true check total, and the count is right */
     const stored = await page.evaluate(u => localStorage.getItem('mfml-u' + u + '-total'), u);
@@ -84,7 +84,7 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
 
     /* 6 · scrolling records a position for this unit and for the hub */
     await page.evaluate(() => scrollTo(0, document.body.scrollHeight * 0.45));
-    await page.waitForTimeout(1100);
+    await page.waitForTimeout(1800);   /* software-WebGL frames are slow; the 700 ms position timer needs slack */
     const pos = await page.evaluate(u => localStorage.getItem('mfml-u' + u + '-pos'), u);
     const last = await page.evaluate(() => localStorage.getItem('mfml-last'));
     if (!pos) fail(tag, 'no reading position stored after scrolling');
@@ -178,7 +178,7 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
     const want = ['13 widgets · 11 checks · 10 problems', '6 widgets · 11 checks · 18 problems',
                   '8 widgets · 13 checks · 8 problems', '8 widgets · 13 checks · 5 problems',
                   '10 widgets · 17 checks · 12 problems', '13 widgets · 17 checks · 10 problems',
-                  '7 widgets · 16 checks · 11 problems'];
+                  '7 widgets · 16 checks · 11 problems', '9 widgets · 17 checks · 12 problems'];
     feet.forEach((f, i) => { if (f.trim() !== want[i]) fail('hub', `card ${i + 1} reads "${f.trim()}", should be "${want[i]}"`); });
 
     /* returning student: partial on 3, complete on 1, last position in unit 3 */
@@ -194,9 +194,9 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
 
     if (!(await page.locator('#progress-row.on').count())) fail('hub', 'progress row hidden for a returning student');
     const overall = (await page.locator('#overall-txt').textContent()).trim();
-    if (overall !== '15 of 98 checks passed') fail('hub', `overall reads "${overall}", expected "15 of 98 checks passed"`);
+    if (overall !== '15 of 115 checks passed') fail('hub', `overall reads "${overall}", expected "15 of 115 checks passed"`);
     const barW = await page.evaluate(() => document.getElementById('obar-fill').style.width);
-    if (barW !== '15.3%') fail('hub', `overall bar width ${barW}, expected 15.3%`);
+    if (barW !== '13%') fail('hub', `overall bar width ${barW}, expected 13% (13.04 → toFixed(1) → 13.0 → serialised 13%)`);
     const cont = await page.locator('#continue-link');
     if (!(await cont.isVisible())) fail('hub', 'continue button hidden despite a stored position');
     if (await cont.getAttribute('href') !== 'unit-03.html#s7') fail('hub', `continue href = ${await cont.getAttribute('href')}`);
