@@ -2180,8 +2180,8 @@ M834 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
 
   <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
-    <p style="margin:.35rem 0 .6rem"><strong>Unit 8 · Taylor &amp; MacLaurin Series</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
-    <p style="margin:0 0 .6rem;font-family:var(--serif)">Linearization kept one derivative and got a line. Unit 8 keeps them all: rebuilding functions from their derivatives at a point, with the error terms that say exactly how far each cut can be trusted — the mathematics behind every "local approximation" the rest of the course will make.</p>
+    <p style="margin:.35rem 0 .6rem"><strong><a href="unit-08.html">Unit 8 · Taylor &amp; MacLaurin Series →</a></strong></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">Linearization kept one derivative and got a line. Unit 8 keeps them all — and proves, from a single flat spot on a hiking trail, exactly how far each cut of the series can be trusted. Then it takes the second-order term into two variables, where it becomes the Hessian: the judge that tells a bowl from a dome from a saddle at the bottom of every loss valley.</p>
     <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
   </div>
 </section>
@@ -3126,7 +3126,7 @@ const clamp01=v=>Math.max(0,Math.min(1,v));
 /* ================= MBM-UX-V2 · navigation, resume, revision, print ================= */
 (function(){
   var U = 7;
-  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"},{"n":6,"t":"Differentiation"},{"n":7,"t":"Backprop & Auto-diff"}];
+  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"},{"n":6,"t":"Differentiation"},{"n":7,"t":"Backprop & Auto-diff"},{"n":8,"t":"Taylor & MacLaurin"}];
   var st = {get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
             set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   var secs = [].slice.call(document.querySelectorAll('section.unit'));
