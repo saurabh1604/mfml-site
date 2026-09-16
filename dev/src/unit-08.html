@@ -1837,8 +1837,8 @@ table.plain{background:color-mix(in srgb,var(--surface) 60%,transparent);border-
   </div>
   <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
-    <p style="margin:.35rem 0 .6rem"><strong>Unit 9 · Gradient Descent</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
-    <p style="margin:0 0 .6rem;font-family:var(--serif)">You now know what a landscape looks like near a flat point and how to tell a bowl from a saddle. Unit 9 starts walking: step sizes, why the mean value theorem guarantees a descent step, how the Hessian's eigenvalues set the speed limit, and what happens in the fog of a million dimensions.</p>
+    <p style="margin:.35rem 0 .6rem"><strong><a href="unit-09.html">Unit 9 · Gradient Descent →</a></strong></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">You now know what a landscape looks like near a flat point and how to tell a bowl from a saddle. Unit 9 starts walking: the descent rule proved, the step-size speed limit the Hessian's eigenvalues set and the zig-zag it causes, exact line search, learning-rate schedules, gradient checking — and stochastic gradient descent, why a random spoonful of the data points the right way.</p>
     <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
   </div>
 </section>
@@ -2788,7 +2788,7 @@ function selectTab(bar,key){ bar.querySelectorAll('button').forEach(x=>x.setAttr
 /* ================= MBM-UX-V2 · navigation, resume, revision, print ================= */
 (function(){
   var U = 8;
-  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"},{"n":6,"t":"Differentiation"},{"n":7,"t":"Backprop & Auto-diff"},{"n":8,"t":"Taylor & MacLaurin"}];
+  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"},{"n":6,"t":"Differentiation"},{"n":7,"t":"Backprop & Auto-diff"},{"n":8,"t":"Taylor & MacLaurin"},{"n":9,"t":"Gradient Descent"}];
   var st = {get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
             set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   var secs = [].slice.call(document.querySelectorAll('section.unit'));
