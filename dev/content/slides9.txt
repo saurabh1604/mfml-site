@@ -1,0 +1,544 @@
+              MFML AND MFDS
+                       MFML and MFDS Team
+BITS Pilani                   WILPD - CSIS
+                                              BITS Pilani
+
+
+
+
+         *
+             ZC416 Mathematical Foundations for
+              Machine Learning / Data Science
+                Topic: # 9 Gradient Descent
+1 / 31
+  I NTRODUCTION
+
+
+         We will look at continuous optimization concepts in this
+         lecture.
+         There are two main branches of continuous optimization -
+         constrained and unconstrained optimization.
+         We seek the minimum of an objective function which we
+         assume is differentiable.
+         This is like finding the valleys of the objective function, and
+         since the objective function is differentiable, the gradient
+         tells us the direction to move to get the maximum increase
+         in the objective function
+
+
+
+2 / 31
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M OTIVATION
+
+
+         Consider the data in the given table
+
+                                      x     y
+                                      1    3.1
+                                      2    4.9
+                                      3    7.3
+                                      4    9.1
+
+         Easiest model of y one can think of is y = ax + b.
+
+
+
+
+3 / 31
+                                          BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+         Let ŷ = ax + b be the y predicted. Our aim is to find a and b
+         such that the difference between actual y and the predicted y is
+         minimum. So the loss function can be defined as
+                              4                       4
+                              X                       X
+                                            2
+                  L(a, b) =          (y − ŷ ) =              (y − (ax + b))2
+                              i =1                     i =1
+
+
+         Then the problem will be to find a and b such that L(a, b) is mini-
+         mized which is an optimization problem.
+
+
+
+
+4 / 31
+                                                BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  U NCONSTRAINED O PTIMIZATION
+
+
+         We move in the direction of the negative gradient to
+         decrease the objective function.
+         We move until we encounter a point at which the gradient is
+         zero.
+         This constitutes a valley of the objective function, known as
+         a local minimum
+         For unconstrained optimization, this is enough for the big
+         picture.
+
+
+
+
+5 / 31
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E XAMPLE
+
+
+
+
+6 / 31
+             BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E XAMPLE
+
+         Let l (x ) = x 4 + 7x 3 + 5x 2 − 17x + 3.
+                           dl (x )
+         The gradient is    dx
+                                     = 4x 3 + 21x 2 + 10x − 17.
+         Setting the gradient to zero identifies points corresponding
+         to a local minimum or local maximum - there are three such
+         points since this is a cubic equation.
+         How do we check if we are dealing with a local minimum or
+         local maximum? Look at the second derivative!
+         If the second derivative at the point where the gradient
+         vanishes is negative we are talking about a local maximum,
+         otherwise it is a local minimum.
+         The second derivative is 12x 2 + 42x + 10
+
+
+7 / 31
+                                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  O PTIMIZATION USING GRADIENT DESCENT
+
+         For low-order polynomials we can solve the equations
+         analytically and find points at which the gradient is zero.
+         Then we can do the second derivative test and identify
+         whether these points are local minima/local maxima.
+         In general we need to follow the negative gradient.
+         Consider the problem of solving for the minimum of a
+         real-valued function minx f (x ) where f : R d → R is an
+         objective loss function that captures the cost of using the
+         current set of parameters.
+         We assume our function f is differentiable but that the
+         minimum cannot be found analytically in closed form.
+
+
+8 / 31
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  O PTIMIZATION USING GRADIENT DESCENT
+
+         The main idea of gradient-descent, a first-order
+         optimization algorithm, is to take a step from the current
+         point of magnitude proportional to the negative gradient of
+         the function at the current point.
+         In mathematical terms if x1 = x0 − γ((∇f )(x0 ))T for a
+         small step-size γ > 0 then f (x1 ) ≤ f (x0 ).
+         The above suggests that in order to find the optimum of f ,
+         say at f (x∗ ), we can start at some initial point x0 and then
+         iterate according to xi +1 = xi − γi ((∇f )(xi ))T
+         For a suitable step-size γi , the sequence of points
+         f (x0 ) ≥ f (x1 ) ≥ . . . converges to some local minimum.
+
+
+9 / 31
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E XAMPLE OF GRADIENT DESCENT
+
+                                                                                 
+                                             x       2 1
+          Let f =   1 T
+                    2
+                      x Ax   + b x where x = 1 , A =
+                               T
+                                                          and
+                                             x2      1 20
+              
+              −5
+          b=     .
+              −3
+          From a previous lecture on Vector Calculus, we know that
+          ∇f = x T A + b T  
+                            −3
+          Starting at x0 =       and iterating according to the
+                            −1
+          equation given on a previous slide, we will eventually
+          encounter the minimum value. ( Refer the code
+          grad descent1.m.)
+
+
+
+10 / 31
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  C HOOSING STEP - SIZE
+
+          If the step-size is too small, gradient descent will become
+          too slow.
+          If the step-size is too large, gradient descent might
+          overshoot the target, fail to coverge, or even diverge.
+          One way to handle the issue of choosing step-sizes is to
+          choose a different step-size at each step. If a given
+          step-size leads to an increase in the value of the cost
+          function, we have been too aggressive, so a better
+          step-size would be half the current step-size. On the other
+          hand, if the value of the function has decreased, the
+          step-size could be larger. In each case we undo the current
+          step and change the step-size.
+          This heuristic guarantees monotonic convergence.
+
+11 / 31
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E XAMPLE OF GRADIENT DESCENT
+
+          One reasonable way of choosing step size is finding γi = γ such
+          that h(γ) = f (xi +1 ) = f (xi − γ((∇f )(xi ))T ) is minimum. Here h
+          is an univariate function of γ .
+          Consider f (x , y ) = x 2 + 3y 2 . Find minimum using gradient de-
+          scent method with initial point (2,2).
+          Now ∇f (x , y ) = [2x , 6y ]. Then h(γ) = f (x − γ((∇f )(x ))T )
+          = (1 − 2γ)2 x 2 + 3(1 − 6γ)2 y 2 . Differentiating with respect to γ
+          equating it to 0, we get h′ (γ) = −4(1−2γ)x 2 −36(1−6γ)y 2 = 0.
+                                  2
+                                    +9y 2
+          This gives us γ = 2xx 2 +  54y 2
+                                           . ( Refer the code grad descent2.m.)
+          In some case finding step size can be expensive and different
+          methods are used.
+
+
+
+12 / 31
+                                            BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  G RADIENT CORRECTNESS
+
+          Let J (w ) = J (w1 , w2 , . . . wd ).
+          We can compute the gradient of the function via a
+          finite-difference approximation.
+          We sample a few of the parameters w1 , w2 , . . . wd and
+          compute the partial derivative ∂∂wJi using the finite-difference
+          approximation.
+          We compute the partial derivative approximately as follows:
+
+          ∂J     J (w1 , w2 , . . . wi + ∆, . . . wd ) − J (w1 , w2 , . . . , wi , . . . wd )
+               =
+          ∂ wi                                      ∆
+
+
+
+13 / 31
+                                            BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L EARNING RATE DECAY
+
+
+          How are we to decide the value of the learrning rate?
+          What happens if we choose a large value for the learning
+          rate and let it be constant?
+          In this case, the algorithm might come close to the optimal
+          answer in the very first iteration but it will then oscillate
+          around the optimal point.
+          What happens if we choose a small value for the learning
+          rate and let it be constant?
+          In this case, it will take a very long time for the algorithm to
+          converge to the optimal point.
+
+
+
+14 / 31
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L EARNING RATE DECAY
+
+
+          The solution to the learning rate problem is to choose a
+          variable learning-rate - large initially but decaying with time.
+          This will enable the algorithm to make large strides towards
+          the optimal point and then slowly converge.
+          With a learning-rate dependent on time, the update step
+          becomes wn+1 = wn − αt ∇J.
+          The t in the update step is usually measured in terms of the
+          number of cycles over all the training points, so the learning
+          rate remains a constant during a particular cycle.
+
+
+
+
+15 / 31
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L EARNING RATE DECAY
+
+          The two most common decay functions are exponential
+          decay and inverse decay, expressed mathematically as
+          follows:
+
+                      exponential decay: αt = α0 e−kt
+                                                         α0
+                          inverse decay: αt =
+                                                       1 + kt
+
+          In both of the above functions k controls the rate of decay.
+          Another kind of decay function is the step decay where we
+          reduce the learning rate by a constant factor every few
+          steps of gradient descent.
+
+
+16 / 31
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  B OLD - DRIVER ALGORITHM
+          In the bold-driver algorithm, the learning rate changes
+          based on whether the objective function is improving or
+          worsening.
+          The learning rate is increased by a factor of around 5% in
+          each iteration as long as the steps improve the objective
+          function.
+          As soon as the objective function worsens in a given step,
+          the step is undone and the learning rate is reduced by a
+          factor of 50%, and the new learning rate is used in a fresh
+          update step.
+          This process is continued to convergence.
+          When the objective function is estimated using samples of
+          data, we can only get a noisy estimate of the gradient, and
+          the bold driver algorithm may not work properly.
+          In such cases we can test the objective function and adjust
+17 / 31   the learning rate after m steps,    rather
+                                      BITS Pilani, Deemed than     a single
+                                                          to be University         step.
+                                                                           under Section 3 of UGC Act, 1956
+  L INE SEARCH
+
+          Line search uses the optimum step-size directly in order to
+          provide the best improvement.
+          It is rarely used in vanilla gradient descent because of its
+          computational expense, but is helpful in some specialized
+          variations of gradient descent.
+          Let J (w ) be the function being optimized, and let gt be the
+          descent direction at the beginning of the tth step with the
+          parameter vector being wt .
+          In the steepest-descent method, the direction gt is the
+          same as −∇J (wt ).
+          In light of the above the update step is wt +1 = wt + αt gt .
+
+
+18 / 31
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L INE SEARCH
+
+
+          In line search the learning rate αt is chosen at the tth step
+          so as to minimize the value of the objective function at wt +1 .
+          Therefore the step-size αt is computed as
+          αt = minα J (wt + αgt ).
+          After performing this step the gradient is computed at wt +1 .
+          The gradient at wt +1 will be perpendicular to the search
+          direction at gt . Otherwise αt will not be optimal and there
+          will exist another point at which the objective function is
+          minimized.
+
+
+
+
+19 / 31
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L INE SEARCH
+
+
+          To see this result, note that if the gradient at wt +1 is not
+          perpendicular to the search direction gt , we can improve
+          the objective function by moving a further +δ or −δ along
+          gt at wt +1 .
+          Using Taylor’s series expansion we have
+          J (wt + αt gt ± δ gt ) ≈ J (wt + αt gT ) ± δ gtT ∇J (wt + αt gt ).
+          If gtT ∇J (wt + αt gt ) ̸= 0 then depending on its sign we can
+          choose δ to be positive or negative to ensure that
+          J (wt + αt gt + δ gt ) < J (wt + αt gt ).
+
+
+
+
+20 / 31
+                                        BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L INE SEARCH
+
+
+          One question remains - how do we perform the
+          optimization minα J (wt + αgt )?
+          An important property that we exploit of typical line-search
+          settings is that the objective function is a unimodal function
+          of α.
+          This is especially true if we do not use the original objective
+          function but quadratic or convex approximations of it.
+          The first step in optimization is to identify a range [0, αmax ]
+          in which to perform the search for the optimum α.
+
+
+
+
+21 / 31
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L INE SEARCH
+
+          We can sweep evaluate the objective function values at
+          geometrically increasing values of α.
+          It is then possible to narraow the search interval by using
+          binary-search, golden-section search method, or the Armijo
+          rule.
+          The first two of these methods are exact methods and need
+          for the objective function to be unimodal in α, and the last
+          of the methods is an inexact method that does not rely on
+          unimodality.
+          The Armijo rule therefore has broader applicability than
+          either the binary search or golden-section search methods.
+
+
+22 / 31
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  B INARY SEARCH
+
+          We start by initialising the search interval α to
+          [a, b] = [0, αmax ].
+          In binary search over [a, b], we evaluate the objective
+          function at two points close to the midpoint of the interval,
+          ie at a+2 b and a+2b+ϵ and find out whether the function is
+          increasing or decreasing at a+2 b . Here ϵ is a small value
+          such as 10−6 .
+          If the objective function is found to be increasing at a+2 b , we
+          narrow the interval to [a, a+2b+ϵ ] and continue the search.
+          Otherwise we narrow the interval to [ a+2 b , b] and continue
+          the search.
+
+
+23 / 31
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  G OLDEN - SECTION SEARCH
+
+          We initialise the search interval to [a, b] = [0, αmax ].
+          The process of narrowing the search interval is different
+          from the one adopted for binary search - here we use the
+          fact that for any mid-samples m1 , m2 in the region [a, b]
+          where a < m1 < m2 < b, at least one of the intervals
+          [a, m1 ] or [m2 , b] can be dropped. Sometimes we can go so
+          far as to drop [a, m2 ] and [m1 , b].
+          When α = a yields the minimum for the objective function,
+          i.e H (α), we can drop the interval (m1 , b]. Similarly when
+          α = b yields the minimum for H (α) we can drop the interval
+          [a, m2 ). When α = m1 is the value at which the minimum is
+          achieved we can drop (m2 , b]. When α = m2 is the value at
+          which the minimum is achieved we can drop [a, m1 ).
+
+24 / 31
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  G OLDEN - SECTION SEARCH
+          The new bounds on the search interval [a, b] are reset
+          based on the exclusions mentioned in the previous slide.
+          At the end of the process we are left with an interval
+          containing 0 or 1 evaluated point.
+          If we have an interval containing no evaluated point, we
+          select a random point α = p in the reset interval [a, b], and
+          then another point q in the larger of the intervals [a, p] and
+          [p, b].
+          On the other hand if we are left with an interval [a, b]
+          containing a single evaluated point α = p, then we select
+          α = q in the larger of the intervals [a, p] and [p, b].
+          This yields another four points on which to continue the
+          golden-section search. We continue until we achieve the
+          desired accuracy.
+25 / 31
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  W HEN DO WE USE LINE SEARCH ?
+
+          The line-search method can be shown to converge to a
+          local optimum, but it is computationally expensive. For this
+          reason, it is rarely used in vanilla gradient descent.
+          Some methods like Newton’s method, however, require
+          exact line search.
+          Fast inexact methods like Armijo’s rule are used in vanilla
+          gradient descent.
+          One advantage of using exact line search is that fewer
+          steps are needed to achieve convergence to a local
+          optimum. This might more than compensate for the
+          computational expense of individual steps.
+
+
+26 / 31
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  S TOCHASTIC GRADIENT DESCENT
+
+          Let us consider a machine learning problem consisting of
+          loss functions incurred at N data points. Let the loss
+          function at the nth data point be Ln (θ), and let the total loss
+                      Pn=N
+          be L(θ) = n=1 Ln (θ). Here θ is the parameter vector of
+          interest and the goal of machine learning is to find the
+          parameter vector θ that minimizes the loss function.
+          The standard gradient descent procedure is a batch
+          optimization method in that the update step considers the
+          gradient of the entire loss function L(θ)., i,e
+          θi +1 = θi − γi ∇L(θi )T = θi − γi nn=
+                                              P N            T
+                                                 =1 ∇Ln (θi ) .
+          This step is expensive since we may have many data points
+          in the batch.
+
+
+27 / 31
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  S TOCHASTIC GRADIENT DESCENT
+
+          Stochastic gradient descent is especially useful when the
+          data set is very large and one can get good descent
+          directions using modest samples of the data.
+          Let there be n datapoints X1 , X2 . . . Xn and let S be a
+          subset of the indices {1, 2, . . . n}.
+          The set S of data points can be treated as a sample and a
+          sample-centric objective function can be constructed as
+          follows: J (S ) = i ∈S (w T Xi − yi )2
+                           P
+
+          The key idea in stochastic gradient descent is that the
+          gradient of the sample-specific objective function, J (S ) with
+          respect to the parameter vector w is an excellent
+          approximation of the true gradient.
+
+28 / 31
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  S TOCHASTIC GRADIENT DESCENT
+
+          The update equation in case of stochastic gradient descent
+          can be written as
+
+                 [w1 , w2 , . . . wd ]T <= [w1 , w2 , . . . wd ]T −
+                                   ∂ J (S ) ∂ J (S )       ∂ J (S ) T
+                                α[         ,         ,...          ]
+                                    ∂ w1     ∂ w2           ∂ wd
+          This approach is referred to as mini-batch stochastic
+          gradient.
+          In the extreme case S can contain only one index chosen
+          at random, and the approach is then called as stochastic
+          gradient descent.
+
+
+29 / 31
+                                          BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  S TOCHASTIC GRADIENT DESCENT
+          We can perform a mini-batch gradient descent by taking
+          only a small subset of the data points.
+          In the extreme case we can choose only one Ln to estimate
+          the gradient.
+          Why does taking only a subset of data points work? It
+          works because we get an unbiased estimate of the true
+          gradient.
+          We can show that when the learning rate decreases at a
+          suitable rate and some mild assumptions can be made,
+          stochastic gradient descent almost surely converges to a
+          local minimum.
+          Estimating the gradient out of large mini-batches will lead
+          to lower variance in the estimate, in contrast to estimating
+          the gradient from small batch sizes.
+30 / 31
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+                      BITS Pilani
+
+
+
+
+          Thank you
+
+31 / 31
+

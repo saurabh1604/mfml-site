@@ -1,0 +1,794 @@
+ZC416 MFML/MFDS                                               Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+
+                                     Gradient Descent
+               Exam-Pattern Practice Problems – Fully Worked, Step by Step
+                   ZC416 Mathematical Foundations for ML/DS  Lecture 8 (Topic #9)
+  All questions use fresh functions and data in the style typically asked in quizzes, mid-semester and
+              comprehensive exams. Every problem is numerical: compute, derive, or trace.
+
+
+
+
+               #     Skill tested                                         Difficulty   Marks
+              1      Critical points + second-derivative test (1-D)       Easy           4
+              2      Two GD iterations on f (x, y) = x2 + 2y 2            Easy           4
+              3      Learning-rate decay computations                     Easy           4
+              4      Exact minimizer + GD on a shifted bowl               Easy           4
+              5      Critical points in 2-D via the Hessian               Moderate       6
+              6      Quadratic form: fixed step vs. exact line search     Moderate       8
+              7      Derive the optimal step size γ ∗ and iterate         Moderate       8
+              8      Gradient checking by finite differences              Moderate       6
+              9      Exact line-search step on x2 + 4y 2                  Moderate       8
+              10     GD on a coupled quadratic x2 + xy + y 2              Difficult      8
+              11     Train linear regression by GD + step-size limit      Difficult     10
+              12     Binary-search line search: trace + iteration count   Difficult      6
+
+
+
+   Problem 1 (4 marks) EASY COMPUTATION
+
+ Let f (x) = 2x3 − 9x2 + 12x + 5.
+  (a) Find all stationary points of f .                                                             [2]
+  (b) Classify each using the second-derivative test and evaluate f there.                          [1]
+  (c) Does f possess a global minimum over R? Justify.                                              [1]
+
+
+ Step-by-step solution
+
+
+ Step 1 (set the gradient to zero). Differentiate and factor:
+                               f ′ (x) = 6x2 − 18x + 12 = 6(x − 1)(x − 2).
+ So f ′ (x) = 0 at x = 1 and x = 2.
+
+ Step 2 (second-derivative test). Here f ′′ (x) = 12x − 18.
+ f ′′ (1) = −6 < 0 ⇒ local maximum at x = 1,              f ′′ (2) = +6 > 0 ⇒ local minimum at x = 2.
+
+ Step 3 (values).
+                     f (1) = 2 − 9 + 12 + 5 = 10,       f (2) = 16 − 36 + 24 + 5 = 9.
+
+ Step 4 (global check). As x → −∞, f (x) → −∞ (odd degree). The function is unbounded
+ below, so x = 2 is only a local minimum.
+
+  Answer. x = 1: local max, f = 10.            x = 2: local min, f = 9.        No global minimum – a
+  cubic is unbounded.
+
+
+                                               Page 1 of 12
+ZC416 MFML/MFDS                                             Lecture 8 – Gradient Descent: Exam Practice
+
+
+ Intuition & exam tips
+
+ The standard 4-marker: factor the derivative (try integer roots first), test curvature, then – the
+ step students skip – check the behaviour at ±∞ before saying “global”. A cubic never has a
+ global minimum or maximum.
+
+   Problem 2 (4 marks) EASY COMPUTATION
+
+ Apply gradient descent to f (x, y) = x2 + 2y 2 with learning rate γ = 0.1, starting at (x0 , y0 ) =
+ (4, 2).
+   (a) Write the update equations for x and y.                                                    [1]
+   (b) Carry out two iterations, reporting the point and f after each.                            [2]
+   (c) Verify that f decreased monotonically.                                                     [1]
+
+
+ Step-by-step solution
+
+
+ Step 1 (update equations). The gradient is ∇f = (2x, 4y), so
+
+                  xk+1 = xk − γ (2xk ) = 0.8 xk ,     yk+1 = yk − γ (4yk ) = 0.6 yk .
+
+
+ Step 2 (iterate – keep a table).
+
+    k               point (xk , yk )             gradient (2xk , 4yk )         f (xk , yk )
+    0                    (4, 2)                        (8, 8)                 16 + 8 = 24
+    1       (4, 2) − 0.1 (8, 8) = (3.2, 1.2)         (6.4, 4.8)          10.24 + 2.88 = 13.12
+    2 (3.2, 1.2) − 0.1 (6.4, 4.8) = (2.56, 0.72)          –            6.5536 + 1.0368 = 7.5904
+
+
+ Step 3 (monotone decrease).
+
+                                     24 ≥ 13.12 ≥ 7.5904. ✓
+
+ Both coordinates head toward the minimizer (0, 0); y converges faster since its factor 0.6 is
+ smaller than 0.8.
+  Answer. (x1 , y1 ) = (3.2, 1.2) with f = 13.12;     (x2 , y2 ) = (2.56, 0.72) with f = 7.5904;   f
+  strictly decreasing.
+
+ Intuition & exam tips
+
+ “Perform k iterations of GD” is the most frequently asked computation on this topic. Always
+ work in a table – point, gradient, new point, f – so no bookkeeping marks are lost. Each
+ coordinate here shrinks by its own constant factor (1 − γ × curvature); the same observation
+ powers Problem 11(c).
+
+   Problem 3 (4 marks) EASY COMPUTATION
+
+ Training starts with α0 = 0.8 and decay constant k = 0.05.
+  (a) Compute αt at t = 10 and t = 20 under exponential decay αt = α0 e−kt and under inverse
+      decay αt = α0 /(1 + kt).                                                           [2]
+  (b) Under step decay that divides α by 3 every 5 epochs, find α during epoch t = 12.   [1]
+  (c) At what epoch does inverse decay first reach α0 /2?                                [1]
+
+
+
+                                             Page 2 of 12
+ZC416 MFML/MFDS                                                Lecture 8 – Gradient Descent: Exam Practice
+
+
+ Step-by-step solution
+
+
+ Step 1 (exponential vs inverse).
+
+                             t  αt = 0.8 e−0.05t  αt = 0.8/(1 + 0.05t)
+                            10 0.8 e−0.5 = 0.4852  0.8/1.5 = 0.5333
+                                    −1
+                            20 0.8 e = 0.2943        0.8/2 = 0.4000
+
+ Exponential decays faster (geometric vs harmonic shrinkage).
+
+ Step 2 (step decay).        Divisions happen at t = 5 and t = 10, so epoch 12 sits in the third
+ block:
+                                            0.8   0.8
+                                       α=     2
+                                                =     ≈ 0.0889.
+                                            3      9
+
+ Step 3 (half-life of inverse decay).
+                         α0     α0                       1
+                              =    ⇒ 1 + 0.05 t = 2 ⇒ t = = 20 epochs.
+                       1 + kt   2                        k
+
+
+  Answer. (a) 0.4852, 0.2943 (exponential) vs 0.5333, 0.4 (inverse); (b) 0.0889; (c) t = 1/k =
+  20.
+
+ Intuition & exam tips
+
+ Three plug-in formulas – but part (c)’s pattern (t = 1/k halves inverse decay; the same t
+ multiplies exponential decay by 1/e) is what separates a full-marks answer. In the update
+ wn+1 = wn − αt ∇J, the counter t is measured in epochs, so α is constant within an epoch.
+
+   Problem 4 (4 marks) EASY COMPUTATION
+
+ Let f (x, y) = x2 + y 2 − 2x − 4y + 5.
+  (a) Find the exact minimizer (x∗ , y ∗ ) and the minimum value.                                     [1]
+  (b) Run two GD iterations from (0, 0) with γ = 0.25, reporting f each time.                         [3]
+
+
+ Step-by-step solution
+
+
+ Step 1 (complete the square).
+
+                                     f (x, y) = (x − 1)2 + (y − 2)2 ,
+
+ so the minimizer is (x∗ , y ∗ ) = (1, 2) with f ∗ = 0. (Equivalently: ∇f = (2x − 2, 2y − 4) = (0, 0)
+ gives the same point.)
+
+ Step 2 (iteration 1). Gradient at (0, 0): ∇f = (−2, −4).
+
+       (x1 , y1 ) = (0, 0) − 0.25 (−2, −4) = (0.5, 1),       f (x1 , y1 ) = (−0.5)2 + (−1)2 = 1.25.
+
+ (Started from f (0, 0) = 5.)
+
+ Step 3 (iteration 2). Gradient at (0.5, 1): ∇f = (−1, −2).
+
+  (x2 , y2 ) = (0.5, 1) − 0.25 (−1, −2) = (0.75, 1.5),       f (x2 , y2 ) = (−0.25)2 + (−0.5)2 = 0.3125.
+
+
+                                              Page 3 of 12
+ZC416 MFML/MFDS                                              Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+ So f : 5 → 1.25 → 0.3125, closing in on (1, 2).
+
+  Answer. (a) (x∗ , y ∗ ) = (1, 2), f ∗ = 0; (b) (0.5, 1) then (0.75, 1.5), with f : 5 → 1.25 → 0.3125.
+
+ Intuition & exam tips
+
+ Completing the square first tells you the destination, so every GD iterate can be sanity-checked
+ against it – here each iterate lands exactly halfway closer to (1, 2). If an exam asks “how many
+ more iterations until f ≤ 0.01?”, continue the visible pattern: f shrinks by factor 4 per step.
+
+   Problem 5 (6 marks) MODERATE COMPUTATION
+
+ Let f (x, y) = x3 − 3x + y 2 − 2y.
+  (a) Find all critical points (where ∇f = 0).                                                [2]
+  (b) Classify each using the Hessian matrix.                                                 [3]
+  (c) Evaluate f at each critical point and state which one gradient descent can converge to. [1]
+
+
+ Step-by-step solution
+
+
+ Step 1 (solve ∇f = 0).
+
+                       ∇f = 3x2 − 3, 2y − 2 = (0, 0) ⇒ x = ±1,
+                                           
+                                                                           y = 1.
+
+ Critical points: P1 = (1, 1) and P2 = (−1, 1).
+
+ Step 2 (Hessian test).                                 
+                                                    6x 0
+                                         H(x, y) =         .
+                                                     0 2
+                           
+                        6 0
+ At P1 = (1, 1): H =          – both eigenvalues (6, 2) positive ⇒ positive definite ⇒ local
+                        0 2
+ minimum.
+                             
+                         −6 0
+ At P2 = (−1, 1): H =            – eigenvalues (−6, 2) of mixed sign ⇒ indefinite ⇒ saddle
+                          0 2
+ point (neither min nor max).
+
+ Step 3 (values and the reachable point).
+
+                 f (1, 1) = 1 − 3 + 1 − 2 = −3,       f (−1, 1) = −1 + 3 + 1 − 2 = 1.
+
+ GD (with reasonable starts) converges to the local minimum P1 = (1, 1); at the saddle P2
+ the gradient is zero but any perturbation in the x-direction escapes it. Note f has no global
+ minimum: f → −∞ as x → −∞.
+
+  Answer. Critical points (1, 1) and (−1, 1); (1, 1) is a local min (f = −3), (−1, 1) is a saddle
+  (f = 1); GD targets (1, 1).
+
+ Intuition & exam tips
+
+ The 2-D version of Problem 1, and just as common in papers. For a diagonal Hessian the
+ eigenvalues are simply the diagonal entries: all positive = min, all negative = max, mixed signs
+ = saddle. Saddles matter for GD because the gradient vanishes there too – “∇f = 0” alone
+ never proves you found a minimum.
+
+
+                                              Page 4 of 12
+ZC416 MFML/MFDS                                                      Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+   Problem 6 (8 marks) MODERATE COMPUTATION + DERIVATION
+
+ Let f (x) = 21 x⊤ Ax − b⊤ x with
+                                                                    
+                                                4 1                   1
+                                     A=               ,           b=     .
+                                                1 3                   2
+
+  (a) Write ∇f and find the exact minimizer x∗ and f (x∗ ).                         [3]
+                      ⊤
+  (b) From x0 = (0, 0) take one step with fixed γ = 0.1 and evaluate f .           [2]
+  (c) Show that the exact line-search step length from x along −g where g = ∇f (x) is
+            g⊤ g
+      γ∗ = ⊤     , and use it from the same x0 . Compare with (b).                  [3]
+           g Ag
+
+
+ Step-by-step solution
+
+
+ Step 1 (gradient and minimizer). For this quadratic,
+
+                                               ∇f (x) = Ax − b.
+
+ Setting Ax = b gives the linear system
+
+                                      4x + y = 1,               x + 3y = 2.
+
+ From the first equation, y = 1 − 4x. Substitute into the second:
+                                                   1                                      4    7
+               x + 3(1 − 4x) = 2 ⇒ −11x = −1 ⇒ x = 11 ,                           y = 1 − 11 = 11 .
+
+ So                                                     
+                                    x∗ =       1    7
+                                               11 , 11       ≈ (0.091, 0.636).
+
+ (A is positive definite – det A = 11 > 0 and 4 > 0 – so this is the unique global minimum.)
+
+ Step 2 (minimum value). Because Ax∗ = b, we have x∗⊤ Ax∗ = b⊤ x∗ , so
+                                                                 
+           f (x∗ ) = 12 b⊤ x∗ − b⊤ x∗ = − 21 b⊤ x∗ = − 12 11
+                                                           1
+                                                             + 14     15
+                                                               11 = − 22 ≈ −0.682.
+
+
+
+ Step 3 (one fixed step, γ = 0.1). At the origin:
+
+                                    g0 = ∇f (0) = −b = (−1, −2)⊤ .
+
+                               x1 = 0 − 0.1 (−1, −2)⊤ = (0.1, 0.2)⊤ .
+ Evaluate f (x1 ) in pieces:
+
+         Ax1 = (0.6, 0.7)⊤ ,     x⊤
+                                  1 Ax1 = 0.06 + 0.14 = 0.2,                     b⊤ x1 = 0.1 + 0.4 = 0.5.
+
+                                     f (x1 ) = 12 (0.2) − 0.5 = −0.4.
+
+ Step 4 (derive γ ∗ ). Let h(γ) = f (x − γg). By the chain rule and ∇f (z) = Az − b:
+
+            h′ (γ) = −g⊤ ∇f (x − γg) = −g⊤ Ax                      ⊤        ⊤
+                                                            
+                                              | {z− b} −γAg = −g g + γ g Ag.
+                                                               =g
+
+
+
+
+                                                   Page 5 of 12
+ZC416 MFML/MFDS                                                Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+ Setting h′ (γ) = 0:
+                                                      g⊤ g
+                                              γ∗ =
+                                                     g⊤ Ag
+
+ (a true minimum of h, since h′′ = g⊤ Ag > 0 for positive-definite A).
+
+ Step 5 (apply γ ∗ at x0 ). With g0 = (−1, −2)⊤ :
+
+               g0⊤ g0 = 1 + 4 = 5,        Ag0 = (−6, −7)⊤ ,        g0⊤ Ag0 = 6 + 14 = 20.
+                       5
+              γ∗ =        = 0.25      ⇒       xLS                   ⊤             ⊤
+                                               1 = 0 − 0.25 (−1, −2) = (0.25, 0.5) .
+                       20
+ Evaluate:
+                                ⊤
+               AxLS
+                 1 = (1.5, 1.75) ,        x⊤ Ax = 0.375 + 0.875 = 1.25,      b⊤ x = 1.25,
+
+                                   f (xLS    1
+                                       1 ) = 2 (1.25) − 1.25 = −0.625.
+
+
+ Step 6 (compare).
+
+                                                              f after one step
+                             fixed γ = 0.1                        −0.400
+                             exact line search γ ∗ = 0.25         −0.625
+                             optimum f ∗                          −0.682
+
+ Same direction, better length: the line-search step covers most of the way to the optimum in
+ one move.
+  Answer. (a) x∗ = (1/11, 7/11), f ∗ = −15/22 ≈ −0.682; (b) x1 = (0.1, 0.2), f = −0.4; (c)
+  γ ∗ = g⊤ g/g⊤ Ag = 0.25, xLS
+                            1 = (0.25, 0.5), f = −0.625.
+
+
+ Intuition & exam tips
+
+ γ ∗ = g⊤ g/g⊤ Ag is the line-search formula examiners expect for quadratics – the 3-line derivation
+ in Step 4 is the full-credit version; reproduce it rather than quoting. Watch the sign convention:
+ with −b⊤ x in f , the gradient is Ax − b and the optimum solves Ax = b; papers switch freely
+ between ±b versions.
+
+   Problem 7 (8 marks) MODERATE DERIVATION + COMPUTATION
+
+ Gradient descent is applied to f (x, y) = 3x2 + y 2 starting
+                                                             at (x0 , y0 ) = (1, 3), choosing at each
+ step the γ that minimizes h(γ) = f (x, y) − γ∇f (x, y) .
+                                                                            9x2 + y 2
+   (a) Show that h(γ) = 3(1 − 6γ)2 x2 + (1 − 2γ)2 y 2 and derive γ ∗ =                 .            [5]
+                                                                           54x2 + 2y 2
+                 ∗
+   (b) Evaluate γ at (1, 3); compute the new point and the new value of f .                         [3]
+
+
+ Step-by-step solution
+
+
+ Step 1 (build the one-variable function h). The gradient is ∇f = (6x, 2y), so the trial
+ point is                                                       
+                      x − γ 6x, y − γ 2y = (1 − 6γ) x, (1 − 2γ) y .
+
+
+
+
+                                               Page 6 of 12
+ZC416 MFML/MFDS                                                 Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+ Substituting into f :
+                                   h(γ) = 3 (1 − 6γ)2 x2 + (1 − 2γ)2 y 2 .
+
+ Step 2 (minimize h). Differentiate with respect to γ and set to zero:
+
+                               h′ (γ) = −36 x2 (1 − 6γ) − 4 y 2 (1 − 2γ) = 0.
+
+ Expand and collect the γ terms:
+
+                                                               36x2 + 4y 2     9x2 + y 2
+                36x2 + 4y 2 = γ 216x2 + 8y 2        ⇒ γ∗ =
+                                                
+                                                                            =             .
+                                                               216x2 + 8y 2   54x2 + 2y 2
+
+ (It is a minimum because h′′ = 216x2 + 8y 2 > 0.)
+
+ Step 3 (evaluate at (1, 3)).
+
+                                               9(1) + 9     18  1
+                                      γ∗ =                =    = .
+                                             54(1) + 2(9)   72  4
+
+
+ Step 4 (new point and new value).
+
+                  x1 = 1 − 6 · 41 (1) = − 12 ,            y1 = 1 − 2 · 14 (3) = 32 .
+                                                                        
+
+                                                                     
+                 f (x0 , y0 ) = 3 + 9 = 12       −→        f − 12 , 23 = 3 · 14 + 94 = 3.
+
+ One optimally sized step removed 75% of the objective value.
+
+                          9x2 + y 2
+  Answer. (a) γ ∗ =                  ; (b) γ ∗ = 41 at (1, 3), new point     − 12 , 23 , f : 12 → 3.
+                                                                                      
+                         54x2 + 2y 2
+
+ Intuition & exam tips
+
+ The safe routine for any f = ax2 + by 2 : (1) write the trial point with factors (1 − ci γ), where
+ ci is the gradient coefficient of that coordinate; (2) differentiate h; (3) solve the linear equation
+ for γ. Re-derive every time – the derivation itself carries most of the marks, and memorized
+ formulas break when the exam swaps coefficients.
+
+   Problem 8 (6 marks) MODERATE COMPUTATION
+
+ Your code computes gradients of J(w1 , w2 ) = w13 +w1 w22 , and you audit it at (2, 1) with ∆ = 0.1.
+  (a) Compute the analytic gradient at (2, 1).                                                     [2]
+  (b) Estimate both partials with the forward difference J(. . . , wi + ∆, . . .) − J(. . .) /∆; report
+      the absolute errors.                                                                          [2]
+  (c) Re-estimate ∂J/∂w1 with the central difference and compare error orders.                      [2]
+
+
+ Step-by-step solution
+
+
+ Step 1 (analytic gradient).
+
+                ∂J                                                ∂J
+                    = 3w12 + w22       = 12 + 1 = 13,                 = 2w1 w2       = 4.
+                ∂w1              (2,1)                            ∂w2          (2,1)
+
+
+
+
+                                                Page 7 of 12
+ZC416 MFML/MFDS                                             Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+ Step 2 (forward differences). Base value: J(2, 1) = 8 + 2 = 10.
+ For w1 :   J(2.1, 1) = 9.261 + 2.1 = 11.361, so
+                             11.361 − 10
+                                         = 13.61         (error = 0.61).
+                                 0.1
+ For w2 :   J(2, 1.1) = 8 + 2(1.21) = 10.42, so
+                               10.42 − 10
+                                          = 4.20        (error = 0.20).
+                                   0.1
+
+ Step 3 (central difference for w1 ). J(1.9, 1) = 6.859 + 1.9 = 8.759:
+
+                J(2.1, 1) − J(1.9, 1)   11.361 − 8.759
+                                      =                = 13.01        (error = 0.01).
+                       2(0.1)                0.2
+
+ Forward error is O(∆) (about 0.6 here); central error is O(∆2 ) (about 0.01 ≈ ∆2 ) – the sym-
+ metric evaluations cancel the leading Taylor error term. This audit matters because a wrong
+ gradient silently corrupts every GD step; checking a few sampled coordinates is the standard
+ cheap safeguard.
+
+  Answer. Analytic (13, 4); forward (13.61, 4.20), errors (0.61, 0.20); central 13.01, error 0.01.
+
+ Intuition & exam tips
+
+ With a deliberately large ∆ = 0.1 the error orders become visible in your own arithmetic: shrink
+ ∆ tenfold and the forward error drops tenfold, the central error a hundredfold. If asked “why
+ not ∆ = 10−15 ?” – floating-point round-off then dominates the quotient.
+
+   Problem 9 (8 marks) MODERATE DERIVATION + COMPUTATION
+
+ Steepest descent with exact line search is applied to J(x, y) = x2 + 4y 2 at w0 = (2, 1).
+  (a) Write the descent direction at w0 and derive the optimal step γ ∗ by minimizing h(γ) =
+      J w0 − γ∇J(w0 ) .                                                                    [5]
+  (b) Compute w1 and the drop in J.                                                        [3]
+
+ Step-by-step solution
+
+
+ Step 1 (direction at w0 ). ∇J = (2x, 8y), so
+
+                        ∇J(w0 ) = (4, 8),         descent direction = −(4, 8).
+
+                                            
+ Step 2 (build h). The ray is 2 − 4γ, 1 − 8γ , hence
+
+                                  h(γ) = (2 − 4γ)2 + 4 (1 − 8γ)2 .
+
+
+ Step 3 (minimize h).
+
+               h′ (γ) = 2(2 − 4γ)(−4) + 8(1 − 8γ)(−8) = −8(2 − 4γ) − 64(1 − 8γ).
+
+ Expand:
+                           h′ (γ) = −16 + 32γ − 64 + 512γ = 544 γ − 80.
+
+
+                                            Page 8 of 12
+ZC416 MFML/MFDS                                                Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+ Set to zero:
+                           80    5
+                    γ∗ =       =    ≈ 0.147        (h′′ = 544 > 0, a minimum). ✓
+                           544   34
+
+ Step 4 (new point and drop in J).
+                                                             
+                      5            5
+         w1 = 2 − 4 · 34 , 1 − 8 · 34  = 48
+                                          34 , − 6
+                                                 34  =  24
+                                                        17 , −  3
+                                                               17 ≈ (1.412, −0.176).
+
+ Values:
+                                                 2
+                                                 24
+                                                             2
+                                                               3       576 + 36   36
+           J(w0 ) = 4 + 4 = 8,       J(w1 ) =    17    +4     17   =            =    ≈ 2.118.
+                                                                         289      17
+ The single optimal step removed about 74% of the objective.
+
+ Answer. γ ∗ = 5/34; w1 = 24/17, −3/17 ≈ (1.41, −0.18); J : 8 → 36/17 ≈ 2.12.
+                                          
+
+
+ Intuition & exam tips
+
+ Same recipe as Problem 7, dressed in a different quadratic – which is exactly how papers vary
+ it. Note the y-coordinate overshot past 0 (to −3/17): on an elongated bowl even the optimal
+ step along the gradient overshoots in the stiff direction, which is why steepest descent zig-zags
+ on such functions.
+
+   Problem 10 (8 marks) DIFFICULT COMPUTATION
+
+ Consider the coupled quadratic f (x, y) = x2 + xy + y 2 .
+  (a) Find the minimizer analytically and confirm it is a minimum via the Hessian.          [3]
+  (b) From (x0 , y0 ) = (2, 0) with γ = 0.2, perform two GD iterations, reporting the gradient,
+      the new point and f each time.                                                        [4]
+  (c) Explain (with one computed number) why the coordinates can no longer be treated inde-
+      pendently.                                                                            [1]
+
+ Step-by-step solution
+
+ Step 1 (analytic minimizer).
+                                                      
+                                   ∇f = 2x + y, x + 2y = (0, 0).
+ From the two equations: y = −2x and x = −2y; substituting gives x = 4x ⇒ x = 0, then y = 0.
+ So the only critical point is (0, 0), with f (0, 0) = 0. Hessian:
+           
+        2 1
+ H=           ,      eigenvalues 2±1 = {3, 1} > 0 ⇒ positive definite ⇒ global minimum at (0, 0).
+        1 2
+
+ Step 2 (iteration 1). At (2, 0):
+                                                  
+                       ∇f (2, 0) = 2(2) + 0, 2 + 0 = (4, 2),            f (2, 0) = 4.
+                              (x1 , y1 ) = (2, 0) − 0.2 (4, 2) = (1.2, −0.4).
+                f (1.2, −0.4) = 1.44 + (1.2)(−0.4) + 0.16 = 1.44 − 0.48 + 0.16 = 1.12.
+
+ Step 3 (iteration 2). At (1.2, −0.4):
+                                                           
+                           ∇f = 2(1.2) − 0.4, 1.2 + 2(−0.4) = (2.0, 0.4).
+
+
+                                               Page 9 of 12
+ZC416 MFML/MFDS                                               Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+                        (x2 , y2 ) = (1.2, −0.4) − 0.2 (2.0, 0.4) = (0.8, −0.48).
+                          f (0.8, −0.48) = 0.64 − 0.384 + 0.2304 = 0.4864.
+ So f : 4 → 1.12 → 0.4864, heading toward (0, 0).
+
+ Step 4 (why no decoupling). The cross-term xy makes each partial depend on both variables:
+ e.g. at (2, 0) the y-gradient is x + 2y = 2 ̸= 0 even though y is already at its “own” optimal
+ value 0 – the step drags y to −0.4 because of x. Updates of the form xk+1 = (const) xk no
+ longer exist; the coupling is exactly the off-diagonal 1 in H.
+
+  Answer. (a) minimizer (0, 0), H has eigenvalues {3, 1} – positive definite; (b) (1.2, −0.4)
+  with f = 1.12, then (0.8, −0.48) with f = 0.4864; (c) cross-term: at (2, 0), ∂f /∂y = 2 ̸= 0
+  despite y = 0.
+
+ Intuition & exam tips
+
+ Most practice happens on separable bowls (ax2 + by 2 ); exams often add the xy term precisely to
+ test whether you differentiate carefully (∂f /∂x = 2x + y, not 2x). Everything else – the update
+                                                                                               
+ rule, the table discipline – is unchanged. The eigenvalue fact used here (eigenvalues of ab ab are
+ a ± b) is worth memorizing.
+
+   Problem 11 (10 marks) DIFFICULT COMPUTATION
+
+ The line ŷ = ax + b is fitted to
+                                                                      4
+               x 0 1 2 3                                              X                   2
+                                     by minimizing        L(a, b) =         yi − (axi + b) .
+               y 1 3 5 7
+                                                                      i=1
+
+  (a) Find the exact minimizer (a∗ , b∗ ) via the normal equations and interpret L∗ .          [3]
+  (b) From (a0 , b0 ) = (0, 0) with γ = 0.05, perform two GD iterations; report the gradient, the
+      parameters and L after each. P 2 P                                                     [5]
+                                       x       xi
+  (c) The Hessian of L is H = 2 P i                , with eigenvalues λ ≈ 33.6 and ≈ 2.4. Compute
+                                       xi     n
+      the largest usable learning rate γmax = 2/λmax and use it to explain the path seen in (b).
+      [2]
+
+ Step-by-step solution
+
+ Step 1 (the needed sums).
+                                         x2i = 14,
+    P           P                    P                P
+      xi = 6,     yi = 16,                                xi yi = 0 + 3 + 10 + 21 = 34,              n = 4.
+
+ Step 2 (normal equations).
+                                                                                      yi − a∗
+       P       P P                                                                P             P
+  ∗  n x i yi − x i yi    4(34) − 6(16)   136 − 96                          ∗                       xi       16 − 12
+ a =            P 2 =                  =          = 2,                     b =                          =           = 1.
+                            4(14) − 36       20                                           n                     4
+         P 2
+       n x −   i  xi
+ Check the fit: y = 2x + 1 reproduces all four points exactly, so L∗ = 0 – the data are perfectly
+ linear.
+
+ Step 3 (GD iteration 1). The partial derivatives (with residuals ri = yi − (axi + b)):
+                         ∂L      X              ∂L       X
+                            = −2      xi ri ,      = −2      ri .
+                         ∂a                     ∂b
+
+
+                                              Page 10 of 12
+ZC416 MFML/MFDS                                              Lecture 8 – Gradient Descent: Exam Practice
+
+
+
+ At (0, 0): residuals r = (1, 3, 5, 7).
+ P                                    P
+   xi ri = 0+3+10+21 = 34,              ri = 16 ⇒ ∇L = (−68, −32),              L0 = 1+9+25+49 = 84.
+
+ Update:
+                          (a1 , b1 ) = (0, 0) − 0.05 (−68, −32) = (3.4, 1.6).
+ New predictions and residuals:
+
+                   ŷ = (1.6, 5.0, 8.4, 11.8),     r = (−0.6, −2.0, −3.4, −4.8),
+
+                              L1 = 0.36 + 4 + 11.56 + 23.04 = 38.96.
+
+ Step 4 (GD iteration 2). From the residuals above:
+       P                                       P
+         xi ri = 0 − 2.0 − 6.8 − 14.4 = −23.2,   ri = −10.8 ⇒ ∇L = (46.4, 21.6).
+
+ Update:
+                       (a2 , b2 ) = (3.4, 1.6) − 0.05 (46.4, 21.6) = (1.08, 0.52).
+ New predictions and residuals:
+
+                  ŷ = (0.52, 1.60, 2.68, 3.76),        r = (0.48, 1.40, 2.32, 3.24),
+
+                         L2 = 0.2304 + 1.96 + 5.3824 + 10.4976 ≈ 18.07.
+ Pattern: a jumped past the target 2 (to 3.4), then back below it (to 1.08), yet L : 84 → 38.96 →
+ 18.07 keeps falling.
+
+ Step 5 (stability limit).
+                                              2         2
+                                   γmax =          ≈        ≈ 0.0595.
+                                            λmax       33.6
+ Our γ = 0.05 is just below this threshold. The dominant error mode is multiplied by 1−γλmax ≈
+ 1 − 0.05(33.6) = −0.68 each iteration: magnitude < 1, so the loss decreases, but negative, so the
+ parameters flip from one side of the optimum to the other – exactly the overshoot-and-return
+ seen in (b). A smaller γ (say 0.02) would descend smoothly but more slowly.
+
+  Answer. (a) (a∗ , b∗ ) = (2, 1) with L∗ = 0; (b) (3.4, 1.6), L = 38.96, then (1.08, 0.52),
+  L ≈ 18.07 – oscillating but improving; (c) γmax ≈ 0.0595; since 1 − γλmax ≈ −0.68 is negative,
+  iterates alternate sides of the optimum.
+
+ Intuition & exam tips
+
+ The complete exam story in one question: normal equations give the destination, GD gives the
+ journey, the Hessian explains the driving style. The reusable diagnostic is the number 1 − γλ:
+ its magnitude sets the speed, its sign tells you whether the approach is smooth or oscillating.
+
+   Problem 12 (6 marks) DIFFICULT ALGORITHM TRACE
+
+ A line search must minimize the unimodal h(α) = α2 − 5α + 8 over [0, αmax ] = [0, 4].
+  (a) Trace three iterations of binary search: at each midpoint m decide from the sign of the
+       slope (compare h(m) with h(m + ϵ), ϵ = 10−6 ) whether the minimum lies left or right, and
+       give the new interval.                                                                 [4]
+  (b) What is the bracket width after k iterations, and how many iterations guarantee width
+       ≤ 0.01?                                                                                [2]
+
+
+                                             Page 11 of 12
+ZC416 MFML/MFDS                                               Lecture 8 – Gradient Descent: Exam Practice
+
+
+ Step-by-step solution
+
+
+ Step 1 (iteration 1). Interval [0, 4], midpoint m = 2:
+
+                h′ (α) = 2α − 5 ⇒ h′ (2) = −1 < 0
+                                                                                     
+                                                         equivalently h(2 + ϵ) < h(2) .
+
+ h is decreasing at m, so the minimum lies to the right: new interval [2, 4].
+
+ Step 2 (iteration 2). Midpoint m = 3:
+
+           h′ (3) = +1 > 0
+                                             
+                              h(3 + ϵ) > h(3) ⇒ minimum lies left: new interval [2, 3].
+
+
+ Step 3 (iteration 3). Midpoint m = 2.5:
+
+ h′ (2.5) = 0; numerically h(2.5+ϵ) = h(2.5)+ϵ2 > h(2.5) ⇒ treated as increasing: new interval [2, 2.5].
+
+ Sanity check: the true minimizer α∗ = 2.5 lies inside every bracket
+
+                                 [0, 4] ⊃ [2, 4] ⊃ [2, 3] ⊃ [2, 2.5]. ✓
+
+
+ Step 4 (width count). Each iteration halves the bracket:
+                                                                 4
+                                    width after k iterations =      .
+                                                                 2k
+           4
+ Require      ≤ 0.01:
+           2k
+
+               2k ≥ 400 ⇒ k ≥ log2 400 ≈ 8.64 ⇒ k = 9           (width 4/512 ≈ 0.0078).
+
+
+  Answer. [0, 4] → [2, 4] → [2, 3] → [2, 2.5]; width = 4/2k ; k = 9 iterations guarantee ≤ 0.01.
+
+ Intuition & exam tips
+
+ Fix the decision rule before starting – slope negative ⇒ discard the left half, slope positive ⇒
+ discard the right half – and the trace is free marks. The width formula (b − a)/2k plus one log2
+ finishes part (b) in two lines. If the paper swaps in golden-section search, the interval shrinks
+ by factor 0.618 per evaluation instead; if h is not unimodal, the exact bracketing methods fail
+ and the (inexact) Armijo rule is the fallback.
+
+
+
+
+   Highest-yield patterns: Problems 6–7 (line-search step on quadratics), 10 (coupled gradients) and 11
+                      (regression by GD) – most exam variants are re-skins of these.
+
+
+
+
+                                              Page 12 of 12
+
