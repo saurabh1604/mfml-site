@@ -5,12 +5,12 @@
   <header class="hero">
     <div class="kicker reveal">Unit 9 of 16 · by Prof. Saurabh</div>
     <h1 class="reveal">Gradient Descent</h1>
-    <p class="lede reveal">Every learning algorithm you will ever meet is, underneath, a walk downhill. Somewhere there is a number that says how wrong the model is, and training means <strong>making that number smaller</strong>. You cannot see the whole landscape — there are too many dimensions and you are standing in fog — but you <em>can</em> feel the slope under your feet. That slope is the gradient, and the whole of this unit is one idea: <strong>take a step against it, then feel again</strong>. The interesting questions are the practical ones: how long a step, when to stop, what to do when the ground is a narrow trench, and how to walk at all when you cannot even afford to measure the slope exactly.</p>
+    <p class="lede reveal">Every model that learns is a walker on a landscape it cannot see. The ground is "how wrong am I right now", and learning is nothing more than <strong>walking downhill in thick fog</strong> — feel the tilt under your boots, step the other way, feel again. This unit is that walk, told in pictures you can push around: why there is a landscape at all, where the walk stops, how long a step to take (and what goes wrong when you are greedy), how to let the ground choose your stride, and the trick that makes the walk possible when the landscape is built from a million examples — <strong>read a spoonful of the data, not the pot</strong>. The formulas arrive after the pictures, as the sentence you would have written yourself.</p>
     <div class="meta reveal-stagger">
       <span class="chip">≈ 90 min read + play</span>
-      <span class="chip">9 interactive widgets · 3 in 3D · a valley you can walk</span>
-      <span class="chip">13 inline checks</span>
-      <span class="chip">🧾 16 proofs, step by step — the descent rule, the speed limit, exact line search, why minibatches work</span>
+      <span class="chip">11 interactive widgets · 5 in 3D · a fog you can lift, a race you can run</span>
+      <span class="chip">15 inline checks</span>
+      <span class="chip">🧾 16 proofs, folded away — open "if you want the algebra" when you are ready</span>
       <span class="chip">✍ 12 solved practice problems</span>
     </div>
   </header>
@@ -20,127 +20,99 @@
 
 <main id="main-content" tabindex="-1">
 
-<!-- ================= 1 · DOWNHILL IN THE FOG ================= -->
+<!-- ================= 1 · THE FOG ================= -->
 <section class="unit" id="s1">
   <div class="sec-head reveal"><span class="sec-num">1</span><h2>Downhill in the fog</h2></div>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>You are on a mountainside at night, in thick fog, and you want to reach the lowest point of the valley. You cannot see ten metres ahead. But you can do one thing perfectly: you can feel which way the ground tilts under your boots. So you turn to face straight downhill, take a step, stop, feel the tilt again, turn, step. Nobody gave you a map. You never needed one. You only needed the tilt under your feet, over and over.</p>
+    <p>Night, a mountainside, fog so thick you can see one metre of ground around your boots and nothing else. You want the bottom of the valley. No map, no view, no idea where the bottom is. But you have one sense that works perfectly: you can feel which way the ground tilts under your feet. So you face straight downhill, take a step, stop, feel again, turn a little, step again. That is the entire method, and it is enough. Try it — the landscape below is real, and you can only see the lit disc:</p>
   </div>
+<!--@W10-->
   <div class="prose reveal">
-    <p>That is the entire method. What makes it worth a whole unit is that "the lowest point of the valley" is what every machine-learning model is looking for. A model has parameters — the numbers inside it. For any choice of those numbers there is a <strong>loss</strong>: a single number that says how badly the model is doing on the data. The loss depends on the parameters, so it is a landscape over parameter-space, and <em>training</em> means walking down that landscape to a low point.</p>
-    <p>Two words from the lecture before we start walking. Optimization is <strong>unconstrained</strong> when you may put the parameters anywhere — the whole mountainside is yours. It is <strong>constrained</strong> when there are fences: some parameters must stay positive, or add up to one, or lie inside a region. Fences change the game (they get their own unit), so this unit is fence-free: any point is allowed, and we only assume the landscape is smooth enough to have a slope everywhere.</p>
-    <p>And the slope has a name you know from Unit 6. At a point \(\mathbf x\), the <strong>gradient</strong> \(\nabla f(\mathbf x)\) is the vector of partial derivatives. The fact that matters for walking is this one:</p>
-    <div class="callout remember"><span class="tag">The gradient is an uphill compass</span>
-      <p>\(\nabla f(\mathbf x)\) points in the direction in which \(f\) increases <em>fastest</em>, and its length is how fast. So the direction of steepest <em>descent</em> is \(-\nabla f(\mathbf x)\).</p>
+    <p>Three things to take from the fog, because everything else in the unit is a variation on them.</p>
+    <p><strong>You never needed the map.</strong> The walker reached a valley bottom without ever seeing one. All it used, step after step, was the tilt of the ground at its own feet. That matters more than it sounds: a modern model has millions of knobs, so its landscape lives in millions of dimensions — nobody can see it, draw it, or search it. But "tilt under the feet" is a quantity you can compute at any point, in any number of dimensions. The fog is not a limitation we tolerate. It is the situation we are always in, and the method was designed for it.</p>
+    <p><strong>Downhill is a direction, and the tilt tells you which.</strong> Lift the fog and look at the arrows: the orange one points the way the ground rises fastest, and the green step points exactly opposite. In the unit's language the orange arrow is the <em>gradient</em>, written \(\nabla f\); it is the compass needle that always points uphill, and its length says how steep. The walker's whole strategy in one line:</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\text{new position}=\text{position}-\gamma\,\nabla f(\text{position})\]</p>
+      <p>Take the uphill needle, flip it, scale it by a stride \(\gamma\), step. The formula is not a rule imposed on the picture; it <em>is</em> the picture, written down.</p>
     </div>
-    <p>We will prove that in a moment (it is one line of Cauchy–Schwarz). For now, hold the picture: the gradient is a compass needle that points uphill, and we always walk the opposite way.</p>
+    <p><strong>You find the valley downhill from where you started.</strong> Press <em>lift the fog</em> after a walk: there were two valleys all along, and the walker never knew. It went to the one its slope led to. Start on the far side and it goes to the other. Gradient descent finds <em>a</em> low point, the nearest one downhill — not <em>the</em> lowest. Keep this in your pocket; it comes back in Section 3 and again at the very end.</p>
+    <p>One more word, then we start walking for real. The walk assumes there are no fences — you may put your feet anywhere. Real problems sometimes fence you in (parameters that must stay positive, weights that must add to one); that is <em>constrained</em> optimization and it gets its own unit. Here, the whole mountainside is yours.</p>
   </div>
   <div class="check reveal" data-check="c1">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">At your current point the gradient is \(\nabla f=(3,\,-4)\). In which direction should your next step go, and roughly how steep is the ground here?</p>
+    <p class="q">Under your feet the ground tilts so that the uphill needle is \(\nabla f=(3,\,-4)\). Which way is your next step, and how steep is it here?</p>
     <div class="opts">
-      <button data-correct data-why="Descent is against the gradient: the step direction is −∇f = (−3, 4). The steepness in the steepest direction is the gradient's length, √(9+16) = 5 — a rise of 5 units of f per unit of distance if you walked straight uphill.">Toward \((-3,\,4)\); the steepest slope here is \(5\)</button>
-      <button data-why="(3, −4) is the direction of fastest INCREASE — walking that way takes you up the hill. Descent uses the negative gradient, (−3, 4).">Toward \((3,\,-4)\); the steepest slope here is \(5\)</button>
-      <button data-why="The direction is right, but the steepness is the length of the gradient vector, √(3²+4²) = 5, not the sum of its parts. Signs in a vector are directions, not amounts.">Toward \((-3,\,4)\); the steepest slope here is \(-1\)</button>
+      <button data-correct data-why="Flip the needle: the step goes toward (−3, 4). The steepness is the needle's length, √(3²+4²) = 5 — five units of height per unit of distance if you walked straight up.">Toward \((-3,\,4)\); the ground rises \(5\) per unit of distance uphill</button>
+      <button data-why="(3, −4) is the way the ground RISES fastest. Walking that way takes you up. The step is the flipped needle, (−3, 4).">Toward \((3,\,-4)\); the ground rises \(5\) per unit of distance uphill</button>
+      <button data-why="Direction right, steepness wrong: the length of a vector is √(3²+4²) = 5, not 3 + (−4). Signs inside a vector are directions, not amounts.">Toward \((-3,\,4)\); the ground rises \(-1\) per unit of distance</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent reveal"><b>In one sentence:</b> Training is a walk downhill on the loss landscape, done in fog, using the gradient as an uphill compass and stepping the other way.</div>
+  <div class="onesent reveal"><b>In one sentence:</b> Learning is a walk in fog — feel the tilt, step the other way — and that is exactly why it works in a million dimensions and exactly why it only finds the valley downhill from where it starts.</div>
 </section>
 
-<!-- ================= 2 · THE FITTING PROBLEM ================= -->
+<!-- ================= 2 · WHY THERE IS A LANDSCAPE ================= -->
 <section class="unit" id="s2">
-  <div class="sec-head reveal"><span class="sec-num">2</span><h2>Where the landscape comes from — fitting a line</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>Why there is a landscape at all</h2></div>
   <div class="callout scenario reveal"><span class="tag">Four receipts</span>
-    <p>A small print shop keeps four receipts: 1 box of paper cost 3.1, 2 boxes cost 4.9, 3 boxes cost 7.3, 4 boxes cost 9.1 (hundreds of rupees, say). The owner wants a rule of thumb — <em>price ≈ a × boxes + b</em> — so she can quote a customer for any number of boxes. Which \(a\) and which \(b\)? Whichever pair makes the rule's predictions closest to the four receipts she actually has.</p>
+    <p>A print shop has four receipts: 1 box of paper cost 3.1, 2 boxes cost 4.9, 3 boxes cost 7.3, 4 boxes cost 9.1. The owner wants a rule of thumb — <em>price ≈ a × boxes + b</em> — so she can quote any order in her head. Any pair \((a,b)\) is a guess. Some guesses are terrible (a flat line at zero), some are close, one is best. Now ask the question that creates the landscape: <strong>how wrong is each guess, as a single number?</strong></p>
   </div>
   <div class="prose reveal">
-    <p>This is the lecture's opening example, and it is the smallest possible machine-learning problem. The data:</p>
-    <div class="svgwrap"><table class="plain" style="max-width:20rem">
-      <thead><tr><th>\(x\) (boxes)</th><th>\(y\) (price)</th></tr></thead>
-      <tbody><tr><td>1</td><td>3.1</td></tr><tr><td>2</td><td>4.9</td></tr><tr><td>3</td><td>7.3</td></tr><tr><td>4</td><td>9.1</td></tr></tbody>
-    </table></div>
-    <p>The model is a straight line, \(\hat y = ax+b\). The two parameters \(a\) and \(b\) are the knobs. To say how wrong a given pair of knobs is, look at each receipt, compute the miss \(y_i-\hat y_i\), square it (so misses in either direction count, and big misses count a lot), and add up:</p>
-    \[L(a,b)=\sum_{i=1}^{4}\big(y_i-(ax_i+b)\big)^2\]
-    <p>Read \(L(a,b)\) as a landscape: pick any \((a,b)\), and \(L\) tells you the height of the ground there. The best line is the lowest point of that landscape. Walk it:</p>
+    <p>Draw the guess as a line through the four points. Each receipt sits some distance above or below the line — those red sticks in the picture are the misses. Square each miss (so above and below both count, and a big miss counts a lot) and add them up. That total is the guess's <strong>wrongness</strong>, and it is the height of the ground at the point \((a,b)\). Every pair of knob settings has a height; put them all together and you have a landscape. Turn the knobs and watch the line tilt and the ball climb or fall:</p>
   </div>
 <!--@W1-->
   <div class="prose reveal">
-    <p>To walk you need the compass, so you need the gradient of \(L\). It is a chain-rule exercise from Unit 6, and it is worth doing slowly once because <em>every</em> regression gradient has this exact shape:</p>
-  </div>
-  <div class="derive reveal">
-    <span class="tag">Prove it · the gradient of the squared-error loss</span>
-    <p class="dgoal"><b>Claim.</b> With residuals \(r_i=y_i-(ax_i+b)\), \(\ \dfrac{\partial L}{\partial a}=-2\sum_i x_i r_i\ \) and \(\ \dfrac{\partial L}{\partial b}=-2\sum_i r_i\).</p>
-    <div class="dstep"><span class="dn">1</span><div class="dbody">Name the inside of each square: \(r_i=y_i-ax_i-b\). Then \(L=\sum_i r_i^2\).
-      <span class="dwhy">Giving the residual a name turns a messy expression into "a sum of squares of something", which is easy to differentiate.</span></div></div>
-    <div class="dstep"><span class="dn">2</span><div class="dbody">Differentiate one square by the chain rule:
-      \[\frac{\partial}{\partial a}\,r_i^2=2r_i\cdot\frac{\partial r_i}{\partial a}=2r_i\cdot(-x_i)=-2x_ir_i.\]
-      <span class="dwhy">Outer derivative (\(2r_i\)) times inner derivative. Inside \(r_i\), the only place \(a\) appears is \(-ax_i\), whose derivative is \(-x_i\).</span></div></div>
-    <div class="dstep"><span class="dn">3</span><div class="dbody">Same for \(b\): inside \(r_i\), \(b\) appears as \(-b\), so \(\dfrac{\partial r_i}{\partial b}=-1\) and
-      \[\frac{\partial}{\partial b}\,r_i^2=2r_i\cdot(-1)=-2r_i.\]
-      <span class="dwhy">The intercept touches every residual in the same way, so its partial is just the plain sum of residuals.</span></div></div>
-    <div class="dstep"><span class="dn">4</span><div class="dbody">A derivative of a sum is the sum of the derivatives:
-      \[\nabla L=\Big(-2\sum_i x_ir_i,\ \ -2\sum_i r_i\Big).\ \ \text{That is the claim.}\]
-      <span class="nw"><span class="dqed">∎</span></span>
-      <span class="dwhy">Read it: if the residuals are mostly positive (the line sits below the data), both partials are negative, so the descent step \(-\gamma\nabla L\) <em>raises</em> \(a\) and \(b\) — the line tilts up toward the points. The compass agrees with common sense.</span></div></div>
-  </div>
-  <div class="prose reveal">
-    <p>For this tiny problem you do not actually need to walk: set both partials to zero and you get two linear equations in \(a,b\) (the <em>normal equations</em>), and they solve to \(a^*=2.04,\ b^*=1\) with \(L^*=0.072\). Practice Problem 11 does exactly that. So why bother with gradient descent at all? Because the line was the easiest model anyone could think of. Make the model a neural network and \(L\) has millions of knobs and no formula for its bottom — the lecture's phrase is that the minimum <em>cannot be found analytically in closed form</em>. Then the fog-walk is not one option among many. It is the only option there is. That is why we practise it on a problem small enough to check.</p>
-    <p>One more thing the widget shows: the landscape is a bowl, but a <strong>lopsided</strong> one — a long narrow trench. Changing \(a\) a little changes \(L\) a lot (every \(x_i\) multiplies it), changing \(b\) a little barely matters. Keep that trench in mind; it is the reason step sizes are hard, and we will come back to it with numbers.</p>
+    <p>So the landscape is not a metaphor we imported. It is manufactured, automatically, the moment you say what "wrong" means. Any model, any way of scoring it, gives you one — <em>a height for every setting of the knobs</em>. Training a model means walking that landscape down. The fitting bowl here has two knobs so you can see it; a neural network's has millions, and nobody ever sees it, which is why Section 1 mattered.</p>
+    <p>Two things you can read straight off the picture, before any formula.</p>
+    <p><strong>The tilt has an obvious meaning.</strong> Start at \(a=b=0\), the line lying flat on the floor with every receipt above it. Which way is downhill? Obviously "tilt the line up toward the points". And that is what the ball does: the first step raises both \(a\) and \(b\). When the line is <em>above</em> the data, the misses are negative and the tilt points the other way. The gradient of the wrongness is just "which way should the line move to reduce its misses" — the residuals decide the sign, the inputs decide how strongly each knob feels it.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>With misses \(r_i=y_i-(ax_i+b)\), the wrongness is \(L=\sum r_i^2\) and its tilt is \(\nabla L=\big(-2\sum x_ir_i,\;-2\sum r_i\big)\): the intercept feels the plain sum of misses, the slope feels each miss weighted by its \(x\). Positive misses ⇒ push the line up. That is all the formula says.</p>
+    </div>
+    <p><strong>The bowl is a trench, not a dish.</strong> Orbit the stage: the valley is long and narrow. Nudge the slope \(a\) and the wrongness shoots up — a small change of slope moves the far points a lot. Nudge the intercept \(b\) and almost nothing happens. Two knobs, two very different stiffnesses. The number that measures this, the ratio of stiff to soft, is about \(56\) here. Remember the shape: it is the single biggest reason the walk in Section 4 will zig-zag, and the reason step sizes are hard in Section 5.</p>
+    <p>You might object: this bowl has a formula for its bottom (\(a^*=2.04,\ b^*=1\); Practice Problem 11 finds it in three lines). True — and the line is the last model for which that will ever be the case. Make the model any bigger and no formula exists. The walk is not one option among many; it is the only one. That is why we practise it here, where we can check the answer.</p>
   </div>
   <div class="check reveal" data-check="c2">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">Start at \(a=b=0\): the line is flat on the floor and every receipt sits above it, so all four residuals are positive. What does the first descent step do to \(a\)?</p>
+    <p class="q">Start at \(a=b=0\): the line lies flat on the floor and all four receipts sit above it. What does the first descent step do to the slope \(a\)?</p>
     <div class="opts">
-      <button data-correct data-why="With all rᵢ > 0, ∂L/∂a = −2Σxᵢrᵢ is negative. The step is a ← a − γ·(negative) = a + something: the slope rises. Concretely ∇L(0,0) = (−2(3.1+9.8+21.9+36.4), −2(24.4)) = (−142.4, −48.8), so both a and b go up.">It increases — the line tilts up toward the points</button>
-      <button data-why="The line is below every point; making the slope negative would push it further away. The sign of ∂L/∂a is the sign of −Σxᵢrᵢ, and all the rᵢ are positive here, so the partial is negative and the descent step raises a.">It decreases — descent always lowers the parameters</button>
-      <button data-why="Nothing would happen only if ∂L/∂a were zero, i.e. Σxᵢrᵢ = 0. Here every term is positive, so the sum is 71.2 and the partial is −142.4 — far from flat.">Nothing — the gradient is zero at the origin</button>
+      <button data-correct data-why="Every miss is positive (the points are above the line), so the tilt says 'move the line up toward them': the slope rises. In numbers, ∇L(0,0) = (−142.4, −48.8) and the step is minus that — both a and b go up.">It increases — the line tilts up toward the points</button>
+      <button data-why="The line is below every point; a negative slope would swing it further away from three of them. Downhill on the wrongness landscape means 'reduce the misses', and here that means tilting up.">It decreases — descent always lowers the parameters</button>
+      <button data-why="Nothing happens only where the ground is flat, i.e. at the bottom. The origin is far from the bottom (wrongness \(169.7\) versus \(0.072\) at the best line): the tilt there is steep.">Nothing — the gradient is zero at the origin</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent reveal"><b>In one sentence:</b> A model plus a loss turns "which parameters?" into a landscape; the gradient of a squared-error loss is \(-2\sum(\text{input})\times(\text{residual})\), and it points the line toward the data.</div>
+<!--@ALG s2-->
+  <div class="onesent reveal"><b>In one sentence:</b> Say what "wrong" means and a landscape appears by itself — a height for every setting of the knobs — and its tilt is simply "which way should the line move to miss less".</div>
 </section>
 
-<!-- ================= 3 · FLAT SPOTS ================= -->
+<!-- ================= 3 · WHERE THE WALK ENDS ================= -->
 <section class="unit" id="s3">
-  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Where the walk ends — flat spots and the second-derivative test</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Where the walk ends — flat ground comes in three kinds</h2></div>
   <div class="callout scenario reveal"><span class="tag">The marble</span>
-    <p>Drop a marble on a curved floor and it rolls until the floor under it is level. Level floor is where it stops — but level floor is not always the bottom of a bowl. A marble balanced on top of a hill is also on level floor; the slightest breath sends it rolling. And a marble on a saddle-shaped floor is level yet unstable in one direction. So "the walk stopped" and "we found a valley" are two different claims, and telling them apart needs one more measurement: which way the floor <em>bends</em>.</p>
+    <p>Drop a marble on a curved floor: it rolls until the floor under it is level, and there it stops. But level floor is not the same as "the bottom". A marble balanced on top of a hill is on level floor too — one breath and it rolls off. And a marble on a saddle (the middle of a Pringle) is level yet falls if nudged sideways. Flat ground is where the walker <em>stops</em>; whether it stopped somewhere sensible is a second question.</p>
   </div>
   <div class="prose reveal">
-    <p>In the fog-walk, we stop when the gradient is zero — no tilt, nowhere to go. Such a point is a <strong>stationary point</strong>. The lecture's one-variable example makes the point that it might be a minimum <em>or</em> a maximum:</p>
-    \[l(x)=x^4+7x^3+5x^2-17x+3,\qquad l'(x)=4x^3+21x^2+10x-17.\]
-    <p>The gradient is a cubic, so \(l'(x)=0\) has up to three solutions — three flat spots — at \(x\approx-4.480,\ -1.432,\ 0.662\). Which are valleys? Look at the second derivative, \(l''(x)=12x^2+42x+10\): it is positive at the first and third points (valleys, \(l=-47.07\) and \(l=-3.84\)) and negative at the middle one (a hilltop, \(l=21.25\)). Feel it for yourself:</p>
+    <p>Take the smallest landscape that has all three kinds of flat spot — one dimension, a bumpy curve — and put a probe on it. The probe's tangent is the tilt; where the tangent is level the walk would end. Then press ▶ and let it walk:</p>
   </div>
 <!--@W2-->
   <div class="prose reveal">
-    <p>The rule the lecture states — <em>negative second derivative means a local maximum, otherwise a local minimum</em> — is really a statement about the shape of the ground right next to the flat spot. Unit 8 gave us the tool to see why:</p>
-  </div>
-  <div class="derive reveal">
-    <span class="tag">Prove it · the second-derivative test, from Taylor</span>
-    <p class="dgoal"><b>Claim.</b> If \(f'(c)=0\) and \(f''(c)>0\), then \(c\) is a local minimum; if \(f''(c)<0\), a local maximum.</p>
-    <div class="dstep"><span class="dn">1</span><div class="dbody">Write Taylor's formula about \(c\) with the remainder from Unit 8, for a small step \(h\):
-      \[\begin{aligned}f(c+h)&=f(c)+f'(c)\,h+\tfrac12 f''(\xi)\,h^2\\ &\text{for some }\xi\text{ between }c\text{ and }c+h.\end{aligned}\]
-      <span class="dwhy">Value, slope times step, half the bend times step squared — with the bend taken at a secret nearby point so the formula is exact.</span></div></div>
-    <div class="dstep"><span class="dn">2</span><div class="dbody">The slope term dies because \(f'(c)=0\):
-      \[f(c+h)-f(c)=\tfrac12 f''(\xi)\,h^2.\]
-      <span class="dwhy">At a flat spot the only thing left to decide "up or down" is the bend.</span></div></div>
-    <div class="dstep"><span class="dn">3</span><div class="dbody">\(h^2\ge0\) always. If \(f''(c)>0\), then by continuity \(f''(\xi)>0\) for all small enough \(h\), so the right side is \(\ge0\): \(f(c+h)\ge f(c)\) on both sides of \(c\) — a valley. If \(f''(c)<0\) the right side is \(\le0\) — a hilltop.
-      <span class="nw"><span class="dqed">∎</span></span>
-      <span class="dwhy">The sign of \(h\) never mattered: a square erases it. That is exactly why the second derivative alone decides. (If \(f''(c)=0\) the test is silent — the ground is flatter than a parabola and you must look further, as in Unit 8.)</span></div></div>
-  </div>
-  <div class="prose reveal">
-    <p>Two things to carry from this. First, for small problems — a low-degree polynomial — you can skip the walk entirely: solve \(f'=0\), test each root, done. The lecture says so. Second, and this is the part that decides the shape of the unit: <strong>gradient descent stops at the nearest flat spot it rolls into</strong>. In the <em>bumpy</em> tab you can watch the walker settle into a shallow dip while a deeper valley sits a few steps away. Descent finds <em>a</em> local minimum — the one downhill from where you started — not <em>the</em> minimum. With a bowl-shaped loss (like the fitting problem) that is no worry. With a neural network it is a fact of life, and the hero animation at the top of this page has been demonstrating it since you arrived.</p>
+    <p>Watch the probe on the <em>quartic</em> curve. Three flat spots: a deep valley on the left, a hilltop in the middle, a shallow valley on the right. Start the walk anywhere right of the hilltop and it slides into the shallow valley and stops — with a much deeper valley sitting a short distance away behind the hill. It cannot get there. Every step goes downhill from where it is, and getting to the deep valley would mean going <em>up</em> first. Section 1's fog again, now with a number attached: the deep valley is \(43\) units lower, and the walker will never know.</p>
+    <p>How do you tell the three flat spots apart without the picture? By the way the ground <em>curves</em> under your feet. In a valley the ground curls up on both sides of you — like standing in a bowl; on a hilltop it curls down on both sides; on a saddle it curls up one way and down the other. The number that records the curl is the second derivative, and its sign is the whole test:</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>Flat (\(f'=0\)) and curling up (\(f''>0\)) ⇒ a valley, the walk is done. Flat and curling down (\(f''<0\)) ⇒ a hilltop, a nudge sends you rolling. In two or more dimensions the "curl" becomes the Hessian from Unit 8 and the same three verdicts (bowl, dome, saddle) apply. Nothing new — Unit 8's judge was built for exactly this moment.</p>
+    </div>
+    <p>Why does the curl decide? Picture the ground right next to a flat spot as a parabola — the closest simple shape. A parabola that opens up has its bottom at the flat spot; one that opens down has its top there. The second derivative is just "which way, and how tightly, does the parabola open". For the tiny landscapes of a textbook you can skip the walk entirely: find the flat spots by algebra, test the curl at each, done. For anything real you cannot, and the walk plus the test is all you have.</p>
   </div>
   <div class="check reveal" data-check="c3">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">You run gradient descent on \(l(x)=x^4+7x^3+5x^2-17x+3\) starting at \(x_0=0\). Where does it end up?</p>
+    <p class="q">You start the walk on the quartic curve at \(x_0=0\). Where does it end?</p>
     <div class="opts">
-      <button data-correct data-why="At x = 0, l′(0) = −17 < 0: the ground tilts down to the right, so the walker moves right and rolls into the valley at x ≈ 0.662 (l ≈ −3.84). The much deeper valley at x ≈ −4.480 (l ≈ −47.07) is behind the hill at x ≈ −1.432, and descent never climbs a hill to look.">At \(x\approx0.662\), the shallow valley — even though \(x\approx-4.480\) is far deeper</button>
-      <button data-why="The walker only ever goes downhill from where it is. To reach x ≈ −4.480 from 0 it would have to climb over the hilltop at x ≈ −1.432, and a descent step never increases l (for a sensible step size).">At \(x\approx-4.480\), because that is the lowest point</button>
-      <button data-why="It cannot stop at −1.432: that is a hilltop (l″ < 0). Even if a step landed exactly there, any tiny nudge sends it rolling off. Descent settles in valleys, not on peaks.">At \(x\approx-1.432\), the nearest flat spot</button>
+      <button data-correct data-why="At x = 0 the ground tilts down to the right, so the walker moves right and rolls into the shallow valley at x ≈ 0.662 (height ≈ −3.84). The deep valley at x ≈ −4.480 (height ≈ −47.07) is behind the hilltop at x ≈ −1.432, and a downhill walker never climbs a hill to look.">In the shallow valley at \(x\approx0.662\) — even though the valley at \(x\approx-4.48\) is far deeper</button>
+      <button data-why="To reach the deep valley from 0 the walker would have to climb over the hilltop at x ≈ −1.432. Each step goes downhill from where it stands, so it never does.">In the deep valley at \(x\approx-4.48\), because that is the lowest point</button>
+      <button data-why="The hilltop at x ≈ −1.432 is flat, but the ground curls DOWN there: a marble cannot rest on it. Even a step that landed exactly there would be undone by the next tiny tilt.">On the hilltop at \(x\approx-1.43\), the nearest flat spot</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent reveal"><b>In one sentence:</b> The walk stops where the gradient is zero; the sign of the second derivative says whether that is a valley or a hilltop, and descent only ever finds the valley downhill from its start.</div>
+<!--@ALG s3-->
+  <div class="onesent reveal"><b>In one sentence:</b> The walk stops on flat ground; the curl of the ground says whether that is a valley, a hilltop, or a saddle; and the valley you get is the one downhill from where you started.</div>
 </section>

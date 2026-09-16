@@ -1,139 +1,101 @@
 
 <!-- ================= 7 · BRACKETING ================= -->
 <section class="unit" id="s7">
-  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Finding the bottom of h — squeezing a bracket</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Finding the bottom of one line — the radio dial</h2></div>
   <div class="callout scenario reveal"><span class="tag">The radio dial</span>
-    <p>An old radio has a dial, and somewhere on it the station comes in clearest. You cannot see the signal strength — you can only turn the knob and listen. Turn it left of the sweet spot and the hiss grows; turn it right and the hiss grows too. So you play a game: pick a spot, nudge the knob a hair to the right, and ask "did it get better or worse?" Better means the sweet spot is further right; worse means it is to the left. Each answer throws away half the dial. Ten answers and you are within a thousandth of the station.</p>
+    <p>An old radio: somewhere on the dial the station comes in clearest, but you cannot see signal strength, only hear hiss. So you play a game. Pick a spot, nudge the knob a hair to the right, and ask: better or worse? Better means the sweet spot is further right, worse means it is to the left. Each answer throws away half the dial. Ten answers and you are within a thousandth of the station — without ever knowing where it was.</p>
   </div>
   <div class="prose reveal">
-    <p>Line search hands us exactly this problem: minimise the one-variable function \(h(\alpha)=J(\mathbf w_t+\alpha\mathbf g_t)\), where we can <em>evaluate</em> \(h\) at any \(\alpha\) we like but have no formula for its bottom (for a quadratic we do — Section 6 — but a real loss is not a quadratic). The lecture leans on one property that makes the game fair: near a descent direction, \(h\) is usually <strong>unimodal</strong> — it goes down, reaches one bottom, and goes up. One valley, no side dips. Especially true when \(h\) is built from a quadratic or convex stand-in for the real loss.</p>
-    <p>The first step is to find a range \([0,\alpha_{\max}]\) that contains the bottom: try \(\alpha\) at geometrically growing values (\(0.1,\,0.2,\,0.4,\,0.8,\ldots\)) until \(h\) starts rising again. Then squeeze:</p>
+    <p>Section 6 left one job open: on a real loss there is no fraction for the best stride, only the ability to <em>ask the ground its height</em> at any distance along the ray. That is the radio. The curve of height-against-distance usually has one dip — down, bottom, up, no side dips — and a curve like that can be cornered by squeezing a bracket around its bottom. Three ways to squeeze, and one way to cheat:</p>
   </div>
 <!--@W6-->
   <div class="prose reveal">
-    <p>Three ways to squeeze, from the lecture.</p>
-    <p><strong>Binary search.</strong> At the midpoint \(m\) of \([a,b]\), evaluate \(h(m)\) and \(h(m+\epsilon)\) for a tiny \(\epsilon\) (say \(10^{-6}\)) — that is "nudge the knob a hair". If \(h\) is increasing at \(m\), the bottom is to the left: keep \([a,\,m+\epsilon]\). Otherwise keep \([m,\,b]\). Every round halves the bracket.</p>
-    <p><strong>Golden-section search.</strong> Use two interior points \(a<m_1<m_2<b\) instead of one. If \(h\) is unimodal, at least one end-piece can be thrown away: whichever of the four points has the lowest \(h\), the bottom cannot lie in the piece farthest from it. If the lowest is at \(m_1\), drop \((m_2,b]\); if at \(m_2\), drop \([a,m_1)\); if at an endpoint, drop even more. The clever part is <em>where</em> to put \(m_1,m_2\): at the golden fractions \(0.382\) and \(0.618\) of the bracket, because then, after you cut, one of the old interior points is already sitting at a golden fraction of the new bracket — you get the next round's second point for free. One new evaluation per round.</p>
-    <p><strong>The Armijo rule</strong> gives up on exactness. Start with a bold \(\alpha\); accept it if \(h(\alpha)\) is <em>sufficiently</em> below \(h(0)\) — below the line \(h(0)+c\,\alpha\,h'(0)\) with a small \(c\) like \(0.1\) — otherwise halve \(\alpha\) and try again. It does not find the bottom; it finds a step that made honest progress, in a handful of evaluations, and it never needed unimodality at all. That is why the lecture calls it <em>broader in applicability</em> than the two exact methods, and why it is the one vanilla gradient descent actually uses.</p>
-  </div>
-  <div class="derive reveal">
-    <span class="tag">Prove it · how many squeezes, and why the golden ratio</span>
-    <p class="dgoal"><b>Claim.</b> Binary search reaches a bracket of width \(\le w\) from \([a,b]\) in \(k=\lceil\log_2\big((b-a)/w\big)\rceil\) rounds; golden-section search shrinks the bracket by \(\varphi=(\sqrt5-1)/2\approx0.618\) per round and re-uses one point each time.</p>
-    <div class="dstep"><span class="dn">1</span><div class="dbody">Binary: each round halves the width, so after \(k\) rounds the width is \((b-a)/2^k\). Demanding \((b-a)/2^k\le w\):
-      \[2^k\ge\frac{b-a}{w}\iff k\ge\log_2\frac{b-a}{w}.\]
-      For \([0,4]\) and \(w=0.01\): \(\log_2 400\approx8.64\), so \(k=9\) (width \(4/512\approx0.0078\)).
-      <span class="dwhy">Take the logarithm base 2 of both sides; round up because \(k\) counts whole rounds. This is Practice Problem 12.</span></div></div>
-    <div class="dstep"><span class="dn">2</span><div class="dbody">Golden: put \(m_1=b-\varphi(b-a)\) and \(m_2=a+\varphi(b-a)\). Suppose we keep \([a,m_2]\), whose width is \(\varphi(b-a)\). Where does the old \(m_1\) sit inside it, as a fraction from the left?
-      \[\frac{m_1-a}{m_2-a}=\frac{(1-\varphi)(b-a)}{\varphi(b-a)}=\frac{1-\varphi}{\varphi}.\]
-      <span class="dwhy">We want this to equal \(1-\varphi\), the left golden fraction, so that \(m_1\) can serve as the new bracket's left interior point without a fresh evaluation.</span></div></div>
-    <div class="dstep"><span class="dn">3</span><div class="dbody">Demand \(\dfrac{1-\varphi}{\varphi}=1-\varphi\), i.e. \(1-\varphi=\varphi-\varphi^2\), i.e. \(\varphi^2+\varphi-1=0\), whose positive root is
-      \[\varphi=\frac{-1+\sqrt5}{2}\approx0.618.\]
-      <span class="nw"><span class="dqed">∎</span></span>
-      <span class="dwhy">So the golden ratio is not decoration — it is the unique fraction that lets each round re-use a point. Width after \(k\) rounds: \((b-a)\varphi^k\); for \([0,4]\) and \(w=0.01\), \(k=\lceil\ln(0.0025)/\ln0.618\rceil=13\) rounds, but only 13 new evaluations against binary search's 18 (two per round). Fewer evaluations per unit of squeeze — that is the whole point when each \(h\) costs a pass over the data.</span></div></div>
-  </div>
-  <div class="prose reveal">
-    <p>When is all this worth it? The lecture's answer: exact line search provably converges and needs <em>fewer steps</em>, which can outweigh the cost of each step — but each step is expensive, so plain gradient descent rarely bothers, and uses Armijo-style inexact steps instead. Some methods, Newton's among them, require the exact version.</p>
+    <p><strong>Binary</strong> is the radio game exactly: check the slope at the middle of the bracket (compare the height at the midpoint with the height a hair to the right), keep the half that goes down. Every round halves the bracket, so \(9\) rounds take \([0,4]\) to a width under \(0.01\) — you can count the rounds with a logarithm and nothing else. <strong>Golden-section</strong> is the same game for someone who cannot measure slope, only height: put two probes inside the bracket, keep the side with the lower one. Its trick is <em>where</em> to put the probes — at \(38\%\) and \(62\%\) of the bracket — because after the cut, one old probe is already sitting at the right fraction of the new bracket and can be reused. One new height per round instead of two; that is the whole reason the golden ratio shows up. <strong>Armijo</strong> gives up on finding the bottom. It starts with a bold stride and asks only "did the height drop by a decent fraction of what the tilt promised?" — if yes, take it; if no, halve and ask again. It does not need the curve to have one dip, it costs a handful of height checks, and it is what ordinary gradient descent actually uses. The exact squeezes are for the methods that truly need the bottom.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>Bracket width after \(k\) halvings is \((b-a)/2^k\); golden cuts shrink it by \(0.618\) per round and reuse a probe; Armijo accepts any stride with \(h(\alpha)\le h(0)+c\,\alpha\,h'(0)\) for a small \(c\) — "a decent fraction of the promised drop".</p>
+    </div>
   </div>
   <div class="check reveal" data-check="c8">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">Binary search on a unimodal \(h\) over \([0,4]\): at the midpoint \(m=2\) you find \(h(2+\epsilon)<h(2)\). Which half do you keep, and how wide is the bracket after three such rounds?</p>
+    <p class="q">Binary search over \([0,4]\): at the midpoint \(2\) the height a hair to the right is <em>lower</em> than at \(2\). Which half do you keep, and how wide is the bracket after three such rounds?</p>
     <div class="opts">
-      <button data-correct data-why="h(2+ε) < h(2) means h is still going DOWN at 2, so the bottom is to the right: keep [2, 4]. Three halvings turn width 4 into 4/2³ = 0.5. (For h = α² − 5α + 8 the trace is [0,4] → [2,4] → [2,3] → [2,2.5], always containing α* = 2.5.)">Keep \([2,4]\); after three rounds the width is \(0.5\)</button>
-      <button data-why="Decreasing at the midpoint means the valley floor is further right, not left. Keeping [0, 2] would throw the bottom away. Decide the rule before you start: slope negative ⇒ discard the left half.">Keep \([0,2]\); after three rounds the width is \(0.5\)</button>
-      <button data-why="The half is right, but each round halves the width, so three rounds give 4/8 = 0.5, not 4/3. The bracket shrinks geometrically, not by a fixed amount.">Keep \([2,4]\); after three rounds the width is \(4/3\)</button>
+      <button data-correct data-why="Lower to the right means the curve is still going down at 2, so the bottom is to the right: keep [2, 4]. Three halvings: 4 → 2 → 1 → 0.5. (On h = α² − 5α + 8 the trace is [0,4] → [2,4] → [2,3] → [2,2.5], always containing the bottom at 2.5.)">Keep \([2,4]\); after three rounds the width is \(0.5\)</button>
+      <button data-why="Going down at the midpoint means the bottom is further RIGHT. Keeping [0, 2] throws it away. Fix the rule before you start: still dropping ⇒ discard the left half.">Keep \([0,2]\); after three rounds the width is \(0.5\)</button>
+      <button data-why="Right half, but the width halves each round: 4/2³ = 0.5, not 4/3. Brackets shrink by a factor, not by a fixed amount.">Keep \([2,4]\); after three rounds the width is \(4/3\)</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent reveal"><b>In one sentence:</b> To minimise the one-variable \(h(\alpha)\) without a formula, bracket the bottom and squeeze — halving (binary), golden cuts that re-use a point, or Armijo's cheap "good enough" rule that needs no unimodality.</div>
+<!--@ALG s7-->
+  <div class="onesent reveal"><b>In one sentence:</b> With no formula for the bottom of the ray, squeeze a bracket around it — halve it, golden-cut it, or take Armijo's "good enough" stride, which is what real training does.</div>
 </section>
 
 <!-- ================= 8 · SCHEDULES ================= -->
 <section class="unit" id="s8">
-  <div class="sec-head reveal"><span class="sec-num">8</span><h2>Bold early, careful late — learning-rate schedules and the bold driver</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>Bold early, careful late — schedules and the bold driver</h2></div>
   <div class="callout scenario reveal"><span class="tag">Parking the car</span>
-    <p>Nobody parks a car at one speed. On the open road you drive fast because the target is far; as the wall of the garage comes near you slow to a crawl, because a fast car near a wall overshoots and a crawl on the open road takes all day. A learning rate is a speed, and the same logic applies: start large, finish small.</p>
+    <p>Nobody parks at one speed. Far from the wall you drive fast, because the wall is far; as it comes near you slow to a crawl, because a fast car near a wall overshoots. A learning rate is a speed. Section 5's bouncing ball was the car at one fixed speed — fine early, bouncing off the walls later. The cure is obvious the moment you say it: start bold, finish careful.</p>
   </div>
   <div class="prose reveal">
-    <p>The lecture poses the dilemma plainly. A large constant learning rate gets close to the answer in a few steps and then <em>oscillates around it</em> forever — Section 5's negative factor, bouncing across the trench. A small constant rate converges but takes very long. The fix is a rate that <strong>changes with time</strong>: \(\mathbf w_{n+1}=\mathbf w_n-\alpha_t\nabla J\), where \(t\) counts <em>epochs</em> — full passes over the training data — so the rate stays fixed within one pass and drops between passes. Three shapes are common:</p>
-    \[\text{exponential decay: }\alpha_t=\alpha_0e^{-kt},\qquad \text{inverse decay: }\alpha_t=\frac{\alpha_0}{1+kt},\qquad \text{step decay: divide }\alpha\text{ by a constant every few epochs.}\]
-    <p>In each, \(k\) sets how fast the rate falls. Compare them, then watch the <em>bold driver</em> choose its own speed:</p>
+    <p>Three ways to slow down on a timer, and one way to slow down by feel. Compare the timers, then watch the driver find the speed limit on its own:</p>
   </div>
 <!--@W7-->
-  <div class="derive reveal">
-    <span class="tag">Prove it · the two half-way marks</span>
-    <p class="dgoal"><b>Claim.</b> Inverse decay halves the learning rate exactly at \(t=1/k\); exponential decay multiplies it by \(1/e\approx0.37\) at the same \(t\).</p>
-    <div class="dstep"><span class="dn">1</span><div class="dbody">Inverse: set \(\dfrac{\alpha_0}{1+kt}=\dfrac{\alpha_0}{2}\). Cross-multiplying,
-      \[1+kt=2\iff t=\frac1k.\]
-      <span class="dwhy">For \(k=0.05\) that is epoch \(20\): \(0.8/(1+1)=0.4\). Practice Problem 3.</span></div></div>
-    <div class="dstep"><span class="dn">2</span><div class="dbody">Exponential at the same \(t\): \(\alpha_0e^{-k\cdot(1/k)}=\alpha_0e^{-1}\approx0.37\,\alpha_0\). Already below half — and at \(t=2/k\) it is \(e^{-2}\approx0.14\) against inverse decay's \(1/3\).
-      <span class="nw"><span class="dqed">∎</span></span>
-      <span class="dwhy">Exponential decay is geometric (a fixed fraction lost per epoch), inverse decay is harmonic (it loses less and less). Which is right depends on how far the walk still has to go: a rate that dies too fast leaves the walker stranded short of the bottom, one that dies too slowly keeps it jittering. Section 10 shows the second danger with noisy gradients, where decay is not a convenience but a requirement.</span></div></div>
-  </div>
   <div class="prose reveal">
-    <p>The <strong>bold-driver algorithm</strong> replaces a schedule with a reflex. After every step, compare the loss with the step before. If it improved, press the accelerator a little: multiply the rate by about \(1.05\). If it got worse, you overshot: <em>undo</em> the step, halve the rate, and try again from where you were. Kept steps only ever lower the loss, so — like the adaptive rule in Section 5 — descent is monotone, and the rate drifts up until it finds the speed limit and is knocked back down. In the widget it hunts around \(2/\lambda_1\), exactly the number Section 5 predicted.</p>
-    <p>The lecture adds one honest caveat that points at Section 10. When the loss is <em>estimated</em> from a sample of the data rather than computed exactly, it is noisy — it may go "up" by chance, not because the step was bad. Then the driver panics and halves for no reason. The remedy is patience: judge the loss every \(m\) steps, not every step.</p>
+    <p>The timers: <strong>exponential</strong> loses the same fraction every epoch (fast to fall — after \(1/k\) epochs it is at \(37\%\)); <strong>inverse</strong> loses less and less (half at \(1/k\), a third at \(2/k\), a slow tail); <strong>step</strong> holds steady and then drops off a cliff every few epochs. Which is right depends on how far the walk still has to go — a rate that dies too fast leaves the walker stranded above the bottom; one that dies too slowly keeps it jittering. Section 11 will show why, with noisy tilts, the slowing down is not a nicety but the only way the walk ever ends.</p>
+    <p>The <strong>bold driver</strong> replaces the timer with a reflex. After each step, look at the height. Lower than before? Press the accelerator a touch — rate up \(5\%\). Higher? You overshot: <em>undo the step</em>, halve the rate, try again from where you were. Kept steps only ever go down, so the height can never rise; and the rate drifts up until it hits the speed limit of Section 5, gets knocked back, drifts up again. In the widget it hovers around \(2/\lambda_{\text{stiff}}=0.1\) — it has discovered the stiffest spring by bumping into it. One honest caveat, which points at Section 10: if the height you look at is only an <em>estimate</em> (a spoonful of the data, not the pot), it can go up by chance, and the driver panics for no reason. Then judge every few steps, not every step.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\(\alpha_t=\alpha_0e^{-kt}\) (exponential), \(\alpha_t=\alpha_0/(1+kt)\) (inverse), divide-by-a-constant-every-few-epochs (step); \(t\) counts epochs, so the rate is fixed within one pass over the data. Bold driver: \(\times1.05\) on success, undo and \(\times0.5\) on failure.</p>
+    </div>
   </div>
   <div class="check reveal" data-check="c9">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">Training starts at \(\alpha_0=0.8\) with \(k=0.05\). Under <em>step decay</em> that divides the rate by \(3\) every \(5\) epochs, what is the rate during epoch \(12\)?</p>
+    <p class="q">Training starts at \(\alpha_0=0.8\). Under <em>step decay</em> that divides the rate by \(3\) every \(5\) epochs, what is the rate during epoch \(12\)?</p>
     <div class="opts">
-      <button data-correct data-why="Divisions happen at the ends of epochs 5 and 10, so epoch 12 lies in the third block: 0.8/3² = 0.8/9 ≈ 0.0889. Count the cliffs already passed, not the epoch number itself.">\(0.8/9\approx0.089\)</button>
-      <button data-why="0.8/3 is the rate after ONE division — epochs 5 to 9. By epoch 12 a second division (at epoch 10) has happened: 0.8/9.">\(0.8/3\approx0.267\)</button>
-      <button data-why="That would need three divisions, i.e. epoch 15 or later. Epoch 12 has passed only the cliffs at 5 and 10.">\(0.8/27\approx0.030\)</button>
+      <button data-correct data-why="Cliffs at the ends of epochs 5 and 10, so epoch 12 is in the third block: 0.8/3² = 0.8/9 ≈ 0.0889. Count the cliffs already passed, not the epoch number.">\(0.8/9\approx0.089\)</button>
+      <button data-why="0.8/3 is the rate after ONE cliff — epochs 5 to 9. By epoch 12 a second cliff (at 10) has passed: 0.8/9.">\(0.8/3\approx0.267\)</button>
+      <button data-why="Three cliffs would need epoch 15 or later. Epoch 12 has passed only the cliffs at 5 and 10.">\(0.8/27\approx0.030\)</button>
     </div>
     <div class="why"></div>
   </div>
   <div class="check reveal" data-check="c13">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">A bold driver is at rate \(\alpha=0.08\). The next step makes the loss go <em>up</em>. What does it do?</p>
+    <p class="q">A bold driver is at rate \(0.08\). The next step makes the height go <em>up</em>. What does it do?</p>
     <div class="opts">
-      <button data-correct data-why="Worse loss means the step was too bold: the driver UNDOES it (back to the previous point) and halves the rate to 0.04, then steps again from there. Only improving steps are ever kept, which is what guarantees the loss never rises.">Undo the step, set \(\alpha=0.04\), and step again from the old point</button>
-      <button data-why="Keeping a step that raised the loss would break the monotone guarantee. The driver undoes it first, then halves — the failed step is never part of the path.">Keep the step but set \(\alpha=0.04\) for next time</button>
-      <button data-why="Speeding up is the reflex for a SUCCESSFUL step (×1.05). A worse loss is the signal that the rate is already past the speed limit; the right move is to undo and halve.">Increase \(\alpha\) to \(0.084\) — bolder steps escape bad spots</button>
+      <button data-correct data-why="Higher means the stride was too bold: UNDO it (back to the previous point), halve the rate to 0.04, and step again from there. Only steps that go down are ever kept — that is what guarantees the height never rises.">Undo the step, set the rate to \(0.04\), step again from the old point</button>
+      <button data-why="Keeping a step that raised the height breaks the guarantee. The driver undoes first, then halves — the failed step never becomes part of the path.">Keep the step but use \(0.04\) next time</button>
+      <button data-why="Speeding up is the reflex for a SUCCESSFUL step (×1.05). A higher height is the signal that the rate is past the speed limit; the right move is undo and halve.">Raise the rate to \(0.084\) — bolder steps escape bad spots</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent reveal"><b>In one sentence:</b> A learning rate should be a speed that falls as the wall approaches — by schedule (exponential, inverse, step) or by reflex (the bold driver: up 5% on success, halve and undo on failure).</div>
+<!--@ALG s8-->
+  <div class="onesent reveal"><b>In one sentence:</b> A learning rate is a speed that should fall as the wall approaches — on a timer (exponential, inverse, step) or by feel (bold driver: up \(5\%\) on success, undo and halve on failure).</div>
 </section>
 
-<!-- ================= 9 · GRADIENT CHECKING ================= -->
+<!-- ================= 9 · CHECK YOUR COMPASS ================= -->
 <section class="unit" id="s9">
-  <div class="sec-head reveal"><span class="sec-num">9</span><h2>Is my compass even right? — the finite-difference audit</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>Is my compass even right? — the known weight</h2></div>
   <div class="callout scenario reveal"><span class="tag">The known weight</span>
-    <p>Before a market inspector trusts a shopkeeper's scale, she puts a known one-kilogram weight on it. If the needle says 1.0, fine. If it says 1.3, every sale that day was wrong and nobody noticed. A gradient computed by code — by hand-written derivatives or by backpropagation — is that scale. It will confidently steer a million-parameter walk, and if it is wrong by a sign or a factor, the walk goes confidently to the wrong place. So we put a known weight on it.</p>
+    <p>Before an inspector trusts a shopkeeper's scale, she puts a known one-kilogram weight on it. If it reads \(1.0\), fine. If it reads \(1.3\), every sale that day was wrong and nobody noticed. A gradient computed by code — hand-written derivatives, or backprop from Unit 7 — is that scale. It will confidently steer a million-knob walk, and if it is off by a sign or a factor, the walk goes confidently to the wrong place. So you put a known weight on it.</p>
   </div>
   <div class="prose reveal">
-    <p>The known weight is the definition of a derivative itself. For a loss \(J(w_1,\ldots,w_d)\), nudge one parameter by a small \(\Delta\) and see how much \(J\) moves:</p>
-    \[\frac{\partial J}{\partial w_i}\approx\frac{J(w_1,\ldots,w_i+\Delta,\ldots,w_d)-J(w_1,\ldots,w_i,\ldots,w_d)}{\Delta}.\]
-    <p>This is the <strong>forward difference</strong>. It costs one extra evaluation of \(J\) per parameter, so for a big model you audit a few sampled parameters, not all — which is precisely what the lecture prescribes. A slightly smarter version nudges both ways, the <strong>central difference</strong> \(\big(J(w_i+\Delta)-J(w_i-\Delta)\big)/2\Delta\), and it is far more accurate for the same \(\Delta\). Unit 8 tells us exactly how much more:</p>
+    <p>The known weight is the meaning of "tilt" itself: nudge one knob by a tiny \(\Delta\), see how much the height moves, divide. That is the tilt, measured rather than computed, and it should match the code. Two ways to nudge — forward only, or a little each way — and they are <em>not</em> equally good. Slide \(\Delta\) and watch the two error curves:</p>
   </div>
 <!--@W8-->
-  <div class="derive reveal">
-    <span class="tag">Prove it · forward error ∝ Δ, central error ∝ Δ²</span>
-    <p class="dgoal"><b>Claim.</b> For a smooth one-variable \(J\), the forward difference errs by about \(\tfrac12J''\Delta\) and the central difference by about \(\tfrac16J'''\Delta^2\).</p>
-    <div class="dstep"><span class="dn">1</span><div class="dbody">Taylor at \(w\), one step forward and one step back:
-      \[\begin{aligned}J(w+\Delta)&=J+J'\Delta+\tfrac12J''\Delta^2+\tfrac16J'''\Delta^3+\cdots\\ J(w-\Delta)&=J-J'\Delta+\tfrac12J''\Delta^2-\tfrac16J'''\Delta^3+\cdots\end{aligned}\]
-      <span class="dwhy">Same series, with \(\Delta\) replaced by \(-\Delta\): odd powers flip sign, even powers do not.</span></div></div>
-    <div class="dstep"><span class="dn">2</span><div class="dbody">Forward: subtract \(J\) and divide by \(\Delta\):
-      \[\begin{aligned}\frac{J(w+\Delta)-J(w)}{\Delta}&=J'+\tfrac12J''\Delta+\cdots\\ \text{error}&\approx\tfrac12J''\,\Delta.\end{aligned}\]
-      <span class="dwhy">The leading leftover is the bend term; it shrinks only as fast as \(\Delta\).</span></div></div>
-    <div class="dstep"><span class="dn">3</span><div class="dbody">Central: subtract the backward series from the forward one — every even-power term cancels — and divide by \(2\Delta\):
-      \[\begin{aligned}\frac{J(w+\Delta)-J(w-\Delta)}{2\Delta}&=\frac{2J'\Delta+\tfrac13J'''\Delta^3+\cdots}{2\Delta}\\ &=J'+\tfrac16J'''\Delta^2+\cdots\end{aligned}\]
-      <span class="nw"><span class="dqed">∎</span></span>
-      <span class="dwhy">The bend term is gone; the error is \(\Delta^2\)-sized. Halve \(\Delta\) and the forward error halves but the central error quarters. On the widget's example, \(J=w_1^3+w_1w_2^2\) at \((2,1)\) with \(\Delta=0.1\): forward \(13.61\) (error \(0.61\approx\tfrac12\cdot12\cdot0.1\)), central \(13.01\) (error \(0.01=\tfrac16\cdot6\cdot0.01\)). Practice Problem 8.</span></div></div>
-  </div>
   <div class="prose reveal">
-    <p>Why not make \(\Delta\) absurdly tiny, then? Because a computer stores \(J\) to about sixteen digits, and \(J(w+\Delta)-J(w)\) is the difference of two nearly equal numbers: the true digits cancel and only rounding noise survives, which then gets divided by a tiny \(\Delta\) and amplified. Slide \(\Delta\) below about \(10^{-6}\) in the widget and watch the error curves turn back <em>up</em>. The sweet spot is a moderately small \(\Delta\) — and the audit is a spot check, not a way to compute gradients for real.</p>
+    <p>The picture has three regions, and each teaches something. On the right (large \(\Delta\)) both estimates are poor — a wide secant is nowhere near the tangent. In the middle, the two curves are straight lines with different slopes: shrink \(\Delta\) tenfold and the <strong>forward</strong> error drops tenfold, but the <strong>central</strong> error drops a hundredfold. Nudging both ways cancels the ground's curl (the second-derivative term) that the one-sided nudge leaves behind — Unit 8's Taylor lines say exactly which terms survive. On the left (tiny \(\Delta\)) both curves turn back <em>up</em>: the height moves by less than the computer's sixteen digits can tell, the true digits cancel, and what is left is rounding noise divided by a tiny number. The sweet spot is a moderately small \(\Delta\), and the audit is a spot check of a few knobs — never the way you compute gradients for real.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>Forward: \(\dfrac{J(w+\Delta)-J(w)}{\Delta}\), error \(\approx\tfrac12J''\Delta\). Central: \(\dfrac{J(w+\Delta)-J(w-\Delta)}{2\Delta}\), error \(\approx\tfrac16J'''\Delta^2\). On \(J=w_1^3+w_1w_2^2\) at \((2,1)\) with \(\Delta=0.1\): true \(13\), forward \(13.61\), central \(13.01\).</p>
+    </div>
   </div>
   <div class="check reveal" data-check="c10">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">With \(\Delta=0.1\) the central-difference estimate of a partial derivative is off by \(0.01\). You shrink \(\Delta\) to \(0.01\). Roughly what is the new error?</p>
+    <p class="q">With \(\Delta=0.1\) the central estimate of a tilt is off by \(0.01\). You shrink \(\Delta\) to \(0.01\). Roughly what is the new error?</p>
     <div class="opts">
-      <button data-correct data-why="Central error ∝ Δ²: shrinking Δ by 10 shrinks the error by 100, from 0.01 to about 0.0001. (The forward difference, error ∝ Δ, would only improve tenfold.)">About \(0.0001\) — a hundred times smaller</button>
-      <button data-why="Tenfold is the FORWARD difference's behaviour (error ∝ Δ). The central difference's leading error term is ⅙J‴Δ², so a tenfold smaller Δ gives a hundredfold smaller error.">About \(0.001\) — ten times smaller</button>
-      <button data-why="It is still far from the round-off regime: at Δ = 0.01 the cancellation loses only a couple of digits out of sixteen. Round-off dominates around Δ ≈ 10⁻⁶ and below, not at 0.01.">It gets worse — round-off already dominates</button>
+      <button data-correct data-why="Central error shrinks with Δ²: ten times smaller Δ, a hundred times smaller error — about 0.0001. (Forward would improve only tenfold.)">About \(0.0001\) — a hundred times smaller</button>
+      <button data-why="Tenfold is the FORWARD nudge's behaviour (error ∝ Δ). The two-sided nudge cancels the curl term, leaving an error ∝ Δ², so a tenfold smaller Δ gives a hundredfold smaller error.">About \(0.001\) — ten times smaller</button>
+      <button data-why="Δ = 0.01 is still far from the rounding regime: only a couple of the sixteen digits cancel. Rounding takes over around Δ ≈ 10⁻⁶ and below.">It gets worse — rounding already dominates</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="onesent reveal"><b>In one sentence:</b> Audit a coded gradient by nudging a few parameters; the forward difference errs like \(\Delta\), the central one like \(\Delta^2\), and too tiny a \(\Delta\) drowns in round-off.</div>
+<!--@ALG s9-->
+  <div class="onesent reveal"><b>In one sentence:</b> Audit a coded gradient by nudging a few knobs; nudging both ways is a hundred times better for a tenfold smaller nudge, until rounding drowns everything.</div>
 </section>

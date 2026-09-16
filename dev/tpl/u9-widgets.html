@@ -206,3 +206,51 @@
       </div>
     </div>
   </div>
+<!--@W10-->
+  <div class="widget reveal" id="w-fog">
+    <div class="widget-head"><span class="w-title">Walking in the fog</span><span class="w-sub">The whole unit in one picture: a landscape you cannot see, a lit disc of ground you can, and a walker who only knows which way is downhill</span></div>
+    <p class="try"><b>Try:</b> press ▶ walk and watch the lit disc slide downhill until the ground goes flat under the walker. Then press <em>lift the fog</em> — there were two valleys all along, and the walk found the one downhill from where it started.</p>
+    <div class="presets" id="fg-presets"><button class="preset" data-p="ridge" aria-pressed="true">start on the ridge (0.2, 1.9)</button><button class="preset" data-p="slope">on the far slope (2.4, −1.4)</button><button class="preset" data-p="saddleish">near the saddle (−0.2, −0.2)</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="fg-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D landscape with a hill, a deep valley and a shallow valley, hidden in fog except for a glowing disc of ground around a walker; at the walker an orange arrow points uphill along the gradient and a green arrow shows the next step, a green trail records the walk, and a button lifts the fog to reveal the whole landscape"></div><p class="stage-tap">drag the picture to orbit · drag the glowing walker to move it</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="fg-r">fog radius R</label><input id="fg-r" type="range" min="0.35" max="2.5" step="0.05" value="0.9"><output id="fg-r-o">0.9</output></div>
+          <div class="ctl"><label for="fg-g">step size γ</label><input id="fg-g" type="range" min="0.05" max="0.6" step="0.01" value="0.25"><output id="fg-g-o">0.25</output></div>
+        </div>
+        <div class="presets"><button class="play" id="fg-play">▶ walk</button><button class="preset" id="fg-step">one step</button><button class="preset" id="fg-lift">lift the fog</button><button class="preset" id="fg-fog">fog back</button><button class="preset" id="fg-reset">reset</button></div>
+        <div class="readout" id="fg-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fg-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Nothing in the rule \(\mathbf x\leftarrow\mathbf x-\gamma\nabla f(\mathbf x)\) needs the landscape: only the tilt of the ground under your feet, which the gradient gives. That is the whole reason it scales to a million dimensions — and the whole reason it can only find the valley downhill from where it starts. Drag the walker onto the hilltop to feel a flat spot that is not a bottom.</p>
+      </div>
+    </div>
+  </div>
+<!--@W11-->
+  <div class="widget reveal" id="w-race">
+    <div class="widget-head"><span class="w-title">Three ways to walk: batch, minibatch, stochastic</span><span class="w-sub">Same loss bowl, same start, same step size — one walker reads all 40 points before every step, one reads a handful, one reads a single point</span></div>
+    <p class="try"><b>Try:</b> press ▶ in the <em>fair per step</em> view and batch looks best. Switch to <em>fair per data read</em> and press ▶ again: while batch is still reading its first 40 points, the stochastic walker has already sprinted to the bottom — then jitters there until you switch on <em>decay</em>.</p>
+    <div class="presets" id="rc-presets"><button class="preset" data-p="fair-steps" aria-pressed="true">fair per step</button><button class="preset" data-p="fair-cost">fair per data read</button><button class="preset" data-p="cost-decay">per data read + decaying γ</button><button class="preset" data-p="big-batch">big batch |S| = 16</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="rc-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D loss bowl of a line fit over its slope a and intercept b, with lifted contour rings and the minimiser marked; three glowing walkers start together — batch in blue, minibatch in violet, stochastic in gold — each leaving its own coloured trail as it descends"></div><p class="stage-tap">drag the picture to orbit</p>
+        <div id="rc-board" style="display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.55rem" aria-live="polite"></div></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="tabs" id="rc-mode">
+          <button data-t="steps" aria-selected="true">steps · one step each per tick</button>
+          <button data-t="budget">budget · equal data per tick</button>
+        </div>
+        <div class="tabs" id="rc-lr">
+          <button data-t="constant" aria-selected="true">constant γ</button>
+          <button data-t="decay">decay γₜ = γ/(1 + 0.05t)</button>
+        </div>
+        <div class="controls">
+          <div class="ctl"><label for="rc-batch">minibatch |S|</label><input id="rc-batch" type="range" min="0" max="3" step="1" value="2"><output id="rc-batch-o">8</output></div>
+          <div class="ctl"><label for="rc-g">step size γ</label><input id="rc-g" type="range" min="0.02" max="0.35" step="0.005" value="0.04"><output id="rc-g-o">0.04</output></div>
+        </div>
+        <div class="presets"><button class="play" id="rc-play">▶ race</button><button class="preset" id="rc-step">one tick</button><button class="preset" id="rc-reset">reset</button></div>
+        <svg id="rc-curves" viewBox="0 0 320 220" class="svg-lab" role="img" aria-label="Loss on a logarithmic axis against data touched (or steps), one curve per walker in its colour, with the best possible loss drawn as a dashed line: per point of data read the noisy walkers fall far faster, batch is smooth but slow, and with a constant step the stochastic curve never settles" style="margin-top:.4rem"></svg>
+        <div class="readout" id="rc-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="rc-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">A full gradient costs all \(N\) residuals; a minibatch of \(|S|\) costs \(|S|\), with the same expected direction and noise shrinking like \(1/\sqrt{|S|}\). Judged per step, batch wins. Judged per point of data read — the only budget that matters when \(N\) is millions — the noisy walkers are far ahead, and a decaying step size lets them settle at the end.</p>
+      </div>
+    </div>
+  </div>

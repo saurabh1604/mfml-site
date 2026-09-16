@@ -680,6 +680,213 @@ function rootsOf(g,lo,hi,N){ N=N||800; const out=[]; let x0=lo,g0=g(lo); for(let
   draw();
 })();
 
+/* ================= W10 · WALKING IN THE FOG (three.js) ================= */
+(function(){
+  const box=document.getElementById('fg-3d'),read=document.getElementById('fg-read'),verd=document.getElementById('fg-verdict');
+  if(!box) return;
+  /* the landscape: a hill, a deep valley, a shallow valley, and a gentle bowl that keeps everything in view */
+  const f=(x,y)=>1.1*Math.exp(-((x-1.2)*(x-1.2)+(y-.8)*(y-.8))/1.6)-1.6*Math.exp(-((x+1.1)*(x+1.1)+(y+.6)*(y+.6))/2.2)-.9*Math.exp(-((x-.4)*(x-.4)+(y+1.9)*(y+1.9))/1.4)+.06*(x*x+y*y);
+  const grad=(x,y)=>{ const A=1.1*Math.exp(-((x-1.2)*(x-1.2)+(y-.8)*(y-.8))/1.6), B=-1.6*Math.exp(-((x+1.1)*(x+1.1)+(y+.6)*(y+.6))/2.2), C=-.9*Math.exp(-((x-.4)*(x-.4)+(y+1.9)*(y+1.9))/1.4);
+    return [A*(-2*(x-1.2)/1.6)+B*(-2*(x+1.1)/2.2)+C*(-2*(x-.4)/1.4)+.12*x, A*(-2*(y-.8)/1.6)+B*(-2*(y+.6)/2.2)+C*(-2*(y+1.9)/1.4)+.12*y]; };
+  { const h=1e-5, x=.7, y=-.3, n=[(f(x+h,y)-f(x-h,y))/(2*h),(f(x,y+h)-f(x,y-h))/(2*h)], a=grad(x,y); if(Math.hypot(a[0]-n[0],a[1]-n[1])>1e-6) console.warn('fog: analytic gradient disagrees with finite differences',a,n); }
+  const hess=(x,y)=>{ const h=1e-4, c=f(x,y); const fxx=(f(x+h,y)-2*c+f(x-h,y))/(h*h), fyy=(f(x,y+h)-2*c+f(x,y-h))/(h*h), fxy=(f(x+h,y+h)-f(x+h,y-h)-f(x-h,y+h)+f(x-h,y-h))/(4*h*h); return {fxx,fyy,fxy,det:fxx*fyy-fxy*fxy}; };
+  const X=[-3.2,3.2], ZS=.9, FLAT=0.02, PRE={ridge:[0.2,1.9],slope:[2.4,-1.4],saddleish:[-0.2,-0.2]};
+  const clampD=p=>[Math.max(X[0],Math.min(X[1],p[0])),Math.max(X[0],Math.min(X[1],p[1]))];
+  let R=0.9,g=0.25,start=PRE.ridge.slice(),pos=start.slice(),trail=[start.slice()],f0=f(start[0],start[1]),lift=0,story='',anim=null,run=0,sc=null,hudEl=null,hudB=null,ST=null;
+  const P3=(x,y,z)=>[x,z*ZS,-y], at=p=>P3(p[0],p[1],f(p[0],p[1]));
+  function build(){
+    sc=null; const narrow=box.clientWidth<560;
+    const handle=CIN.stage3d(box,{fill:true,camera:{pos:narrow?[5.2,5.5,6.9]:[5.0,5.3,6.6],look:[0,-.2,0],fov:34},autoRotate:.1,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx, hx=k=>CIN.hex(colors[k]);
+        const surf=CIN.prim.surface(ctx,f,{x:X,y:X,res:80,zscale:ZS,ramp:[colors.s1,colors.s7,colors.s2],opacity:1,wire:false}); lightenSurface(ctx,surf,ZS); root.add(surf);
+        const vis=fadeAttr(THREE,surf), vp=surf.userData.geo.attributes.position, n=vp.count, vx=new Float32Array(n), vy=new Float32Array(n), fog=new Float32Array(n);
+        for(let i=0;i<n;i++){ vx[i]=vp.getX(i); vy[i]=-vp.getZ(i); }
+        const floorY=surf.userData.zmin*ZS-.3;
+        const grid=CIN.prim.grid(ctx,7.4,20,hx('grid'),{opacity:isLight?.5:.3}); grid.position.y=floorY; root.add(grid);
+        const lv=[]; for(let i=1;i<=11;i++) lv.push(surf.userData.zmin+(surf.userData.zmax-surf.userData.zmin)*i/12);
+        const rings=liftedContours(ctx,f,lv,X[0],X[1],X[0],X[1],ZS,hx('ink2'),{N:80,opacity:0}); root.add(rings);   /* the rings only exist once the fog lifts */
+        [['x →',[X[1]+.3,floorY,-(X[0]-.1)]],['y →',[X[0]-.3,floorY,-(X[0]+.1)]]].forEach(([t,p])=>root.add(CIN.prim.label(ctx,t,p,{size:24,color:colors.muted,bg:false,depthTest:false})));
+        const walker=overlay(CIN.prim.dot(ctx,[0,0,0],hx('s4'),.1),12); root.add(walker);
+        const halo=haloSprite(ctx,hx('s4'),.95); root.add(halo);
+        const lamp=new THREE.PointLight(hx('s4'),isLight?0:1.6,3,2); root.add(lamp);   /* the hiker's lantern: the disc is lit from where the hiker stands */
+        const gArr=overlay(CIN.prim.arrow(ctx,[0,0,0],[1,0,0],hx('s2'),{radius:.036,head:.2}),11), sArr=overlay(CIN.prim.arrow(ctx,[0,0,0],[1,0,0],hx('s3'),{radius:.036,head:.2}),11); root.add(gArr,sArr);
+        const pole=tube(ctx,[0,0,0],[0,1,0],hx('s4'),.008,.5); root.add(pole);
+        const ringG=new THREE.Group(), trailG=new THREE.Group(); root.add(ringG,trailG); const lab=slot(ctx,root);
+        sc={THREE,ctx,root,colors,isLight,hx,surf,mesh:surf.userData.mesh,vis,vx,vy,fog,n,walker,halo,lamp,gArr,sArr,pole,ringG,trailG,rings,lab,floorY};
+        hudEl=hud(box); hudB=hud(box,'hud-b'); hint(box,'drag to orbit');
+        paint(); paintTrail();
+      },
+      update(){ return false; }
+    });
+    if(handle){ const {THREE,camera,renderer}=handle.ctx, ray=new THREE.Raycaster(), v2=new THREE.Vector2();
+      /* the hiker is claimed by its screen position (it may sit in a valley behind a hill); while dragging, the surface hit nearest the hiker wins */
+      const ndc=e=>{ const r=renderer.domElement.getBoundingClientRect(); if(!r.width||!r.height) return null; return {r,x:((e.clientX-r.left)/r.width)*2-1,y:-((e.clientY-r.top)/r.height)*2+1}; };
+      const pick=e=>{ const n=ndc(e); if(!n||!sc) return null; v2.set(n.x,n.y); ray.setFromCamera(v2,camera); const hits=ray.intersectObject(sc.mesh,false); if(!hits.length) return null; let best=null,bd=Infinity; hits.forEach(h=>{ const d=Math.hypot(h.point.x-pos[0],-h.point.z-pos[1]); if(d<bd){ bd=d; best=h.point; } }); return best; };
+      grab(handle,e=>{ const n=ndc(e); if(!n||!sc) return false; const q=new THREE.Vector3(...at(pos)).project(camera); const dx=(q.x-n.x)*n.r.width/2, dy=(q.y-n.y)*n.r.height/2; return Math.hypot(dx,dy)<34; },
+        e=>{ const h=pick(e); if(!h) return; stop(); pos=clampD([h.x,-h.z]); trail=[pos.slice()]; f0=f(pos[0],pos[1]); story=''; paintTrail(); draw(); }); }
+    return handle;
+  }
+  /* the fog: per-vertex visibility, 1 inside 0.55R, falling smoothly to a floor beyond R; `lift` blends toward a fully lit landscape */
+  function setFog(c){ if(!sc) return; const {vis,vx,vy,fog,n,ctx}=sc, floor=ctx.isLight?.1:.06, r0=.55*R, r1=R;
+    for(let i=0;i<n;i++){ const d=Math.hypot(vx[i]-c[0],vy[i]-c[1]); let v; if(d<=r0) v=1; else if(d>=r1) v=floor; else { const u=(d-r0)/(r1-r0), s=u*u*(3-2*u); v=1-(1-floor)*s; } fog[i]=v; vis.setX(i,v+(1-v)*lift); } vis.needsUpdate=true;
+    sc.rings.material.opacity=(ctx.isLight?.5:.55)*lift; }
+  function paintRing(c){ if(!sc) return; clearGroup(sc.ringG); const pts=[]; for(let k=0;k<=72;k++){ const a=k/72*2*Math.PI, x=c[0]+R*Math.cos(a), y=c[1]+R*Math.sin(a); if(x<X[0]||x>X[1]||y<X[0]||y>X[1]){ pts.push(null); continue; } const q=at([x,y]); q[1]+=.02; pts.push(q); }
+    let seg=[]; const flush=()=>{ if(seg.length>=2){ const l=CIN.prim.path(sc.ctx,seg,sc.hx('s4'),{opacity:.35*(1-lift)+.12*lift}); sc.ringG.add(l); } seg=[]; }; pts.forEach(p=>{ if(p) seg.push(p); else flush(); }); flush(); }
+  function paint(cur){
+    if(!sc) return; const c=cur||pos, {walker,halo,lamp,gArr,sArr,pole,ctx,lab,floorY}=sc; const q=at(c); walker.position.set(q[0],q[1]+.015,q[2]); halo.position.copy(walker.position); lamp.position.set(q[0],q[1]+.7,q[2]);
+    aimTube(ctx.THREE,pole,[q[0],floorY,q[2]],[q[0],q[1],q[2]]);
+    const gr=grad(c[0],c[1]), gn=Math.hypot(gr[0],gr[1]);
+    if(gn>FLAT){ const L=Math.min(1.1,.8*gn), d=[gr[0]/gn*L,gr[1]/gn*L]; gArr.visible=true; gArr.userData.set([q[0],q[1]+.05,q[2]],[q[0]+d[0],q[1]+.05,q[2]-d[1]]);
+      const s=[-g*gr[0],-g*gr[1]], sl=Math.hypot(s[0],s[1]), k=sl>1.1?1.1/sl:(sl<.1?.1/sl:1); sArr.visible=true; sArr.userData.set([q[0],q[1]+.05,q[2]],[q[0]+s[0]*k,q[1]+.05,q[2]-s[1]*k]); }
+    else { gArr.visible=false; sArr.visible=false; }
+    lab.set(`step ${trail.length-1}`,[q[0],q[1]+.3,q[2]],{size:18,color:sc.colors.s4,bg:false,depthTest:false});
+    setFog(c); paintRing(c);
+    if(hudEl) hudEl.innerHTML=`height f = <b>${F(f(c[0],c[1]),3)}</b> · tilt |∇f| = <b>${F(gn,3)}</b> · steps <b>${trail.length-1}</b>`;
+    if(hudB){ const s=story||(lift>.5?'fog lifted — the whole landscape':(gn<=FLAT?'reached a flat spot':'the lit disc is all you can see')); hudB.textContent=s; }
+    RR(ctx);
+  }
+  function paintTrail(){ if(!sc) return; clearGroup(sc.trailG); if(trail.length>=2) sc.trailG.add(ribbon(sc.ctx,trail.map(p=>{ const q=at(p); q[1]+=.015; return q; }),sc.hx('s3'),.024));
+    if(trail.length>=1){ const q=at(trail[0]); q[1]+=.015; sc.trailG.add(overlay(CIN.prim.dot(sc.ctx,q,sc.hx('s3'),.045),9)); } RR(sc.ctx); }
+  function draw(){
+    const gr=grad(pos[0],pos[1]), gn=Math.hypot(gr[0],gr[1]), u=gn>1e-9?[gr[0]/gn,gr[1]/gn]:[0,0], st=[-g*gr[0],-g*gr[1]], k=trail.length-1;
+    read.innerHTML=`position (x, y) = (<b>${F(pos[0],2)}</b>, <b>${F(pos[1],2)}</b>)<br>the ground tilts uphill toward (<b>${F(u[0],2)}</b>, <b>${F(u[1],2)}</b>)<br>next step = −γ∇f = (<b>${F(st[0],3)}</b>, <b>${F(st[1],3)}</b>)<br>steps taken = <b>${k}</b> · height fallen = <b>${F(f0-f(pos[0],pos[1]),3)}</b>`;
+    if(lift>.5){ verd.className='verdict info'; verd.textContent='two valleys — the walk found the one downhill from where it started'; }
+    else if(gn<FLAT){ const H=hess(pos[0],pos[1]);
+      if(H.det>0&&H.fxx>0){ verd.className='verdict good'; verd.textContent='✓ flat ground — the walk is over (a valley bottom)'; }
+      else if(H.fxx<0){ verd.className='verdict bad'; verd.textContent='✗ flat ground on a HILLTOP — a nudge would send you rolling'; }
+      else { verd.className='verdict info'; verd.textContent='flat ground on a saddle — level here, yet downhill exists in one direction'; } }
+    else { verd.className='verdict info'; verd.textContent='you can only feel the tilt under your feet — and that is enough'; }
+    paint();
+  }
+  function stop(){ run++; if(anim){ anim.stop(); anim=null; } }
+  function pulse(tok){ if(!sc) return; anim=tween(700,u=>{ const s=1+.45*Math.abs(Math.sin(Math.PI*u*2)); sc.walker.scale.set(s,s,s); RR(sc.ctx); },()=>{ if(sc) sc.walker.scale.set(1,1,1); if(tok===run) RR(sc.ctx); }); }
+  function stepOnce(dur,done){ const gr=grad(pos[0],pos[1]), gn=Math.hypot(gr[0],gr[1]); if(gn<FLAT){ done&&done(true); return; }
+    const p0=pos.slice(), p1=clampD([pos[0]-g*gr[0],pos[1]-g*gr[1]]);
+    anim=tween(dur,u=>paint([p0[0]+(p1[0]-p0[0])*u,p0[1]+(p1[1]-p0[1])*u]),()=>{ pos=p1; trail.push(p1.slice()); paintTrail(); draw(); done&&done(false); }); }
+  function play(){ stop(); const tok=run; let k=0; story='walking…';
+    const next=()=>{ if(tok!==run) return; if(k>=40){ story=''; draw(); return; } stepOnce(320,flat=>{ if(tok!==run) return; if(flat){ story='reached a flat spot'; draw(); pulse(tok); return; } k++; next(); }); };
+    next(); }
+  function fogTween(to){ stop(); story=''; const tok=run, from=lift; anim=tween(1400,u=>{ if(tok!==run) return; lift=from+(to-from)*u; paint(); },()=>{ lift=to; draw(); }); }
+  function setStart(p){ stop(); start=p.slice(); pos=p.slice(); trail=[p.slice()]; f0=f(p[0],p[1]); story=''; paintTrail(); draw(); }
+  document.getElementById('fg-step').addEventListener('click',()=>{ stop(); story=''; stepOnce(350,flat=>{ if(flat){ story='reached a flat spot'; draw(); pulse(run); } }); });
+  document.getElementById('fg-play').addEventListener('click',play);
+  document.getElementById('fg-lift').addEventListener('click',()=>fogTween(1));
+  document.getElementById('fg-fog').addEventListener('click',()=>fogTween(0));
+  document.getElementById('fg-reset').addEventListener('click',()=>{ lift=0; setStart(start); });
+  bindCtl('fg-r',v=>{ R=v; paint(); })();
+  bindCtl('fg-g',v=>{ g=v; draw(); })();
+  const bar=document.getElementById('fg-presets');
+  bar.querySelectorAll('[data-p]').forEach(btn=>btn.addEventListener('click',()=>{ const P=PRE[btn.dataset.p]; if(!P) return; pressOnly(bar,btn); setStart(P); }));
+  ST=mountStage(box,build);
+  let rw=box.clientWidth; addEventListener('resize',()=>{ const W=box.clientWidth; if((W<560)!==(rw<560)) remount(ST); rw=W; });
+  draw();
+})();
+
+/* ================= W11 · THE RACE · batch vs minibatch vs stochastic (three.js + loss chart + scoreboard) ================= */
+(function(){
+  const box=document.getElementById('rc-3d'),side=document.getElementById('rc-curves'),board=document.getElementById('rc-board'),read=document.getElementById('rc-read'),verd=document.getElementById('rc-verdict');
+  if(!box) return;
+  /* the same 40 points as the noisy-descent stage */
+  const N=40, XS=[], YS=[]; { let s=7; for(let i=0;i<N;i++){ s=(s*1664525+1013904223)%4294967296; const n=(s/4294967296-0.5)*1.4; XS.push(-2+4*i/39); YS.push(1.5*XS[i]+0.5+n); } }
+  const L=(a,b)=>{ let s=0; for(let i=0;i<N;i++){ const r=YS[i]-a*XS[i]-b; s+=r*r; } return s/N; };
+  const gradS=(a,b,S)=>{ let ga=0,gb=0; for(let k=0;k<S.length;k++){ const i=S[k], r=YS[i]-a*XS[i]-b; ga-=2*XS[i]*r; gb-=2*r; } return [ga/S.length,gb/S.length]; };
+  const ALL=[...Array(N).keys()];
+  let Sx=0,Sy=0,Sxx=0,Sxy=0; for(let i=0;i<N;i++){ Sx+=XS[i]; Sy+=YS[i]; Sxx+=XS[i]*XS[i]; Sxy+=XS[i]*YS[i]; }
+  const aS=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx), bS=(Sy-aS*Sx)/N, LS=L(aS,bS);
+  const A0=-1.5,A1=4.5,B0=-2,B1=3, ac=(A0+A1)/2, bc=(B0+B1)/2, SC=3.4/(A1-A0);
+  let Lmax=0; [[A0,B0],[A0,B1],[A1,B0],[A1,B1]].forEach(c=>Lmax=Math.max(Lmax,L(c[0],c[1])));
+  const ZS=1.15/(Lmax-LS), P3=(a,b,z)=>[(a-ac)*SC,(z-LS)*ZS,-(b-bc)*SC];
+  const SIZES=[2,4,8,16], START=[3.6,-1.6], L0=L(START[0],START[1]), TICKS=30, UNIT=40, BUDGET=TICKS*UNIT, CAP=400;
+  const W=[{key:'batch',name:'batch',col:'s1',bs:40,r:.02},{key:'mini',name:'mini',col:'s7',bs:8,r:.017},{key:'sgd',name:'sgd',col:'s4',bs:1,r:.016}];
+  let bi=2,g=0.04,mode='steps',lr='constant',tick=0,anim=null,run=0,sc=null,hudEl=null,ST=null,played=false;
+  function reset(){ W[1].bs=SIZES[bi]; W.forEach((w,i)=>{ w.p=START.slice(); w.t=0; w.d=0; w.credit=0; w.s=9001+i*7919; w.hist=[[0,L0]]; w.pts=[START.slice()]; w.dead=false; w.sub=[START.slice()]; }); tick=0; played=false; }
+  const drawS=w=>{ if(w.bs>=N) return ALL; const S=[]; for(let j=0;j<w.bs;j++){ w.s=(w.s*1664525+1013904223)%4294967296; S.push(Math.floor(w.s/4294967296*N)); } return S; };
+  const rate=w=>lr==='decay'?g/(1+0.05*w.t):g;
+  function stepW(w){ const gr=gradS(w.p[0],w.p[1],drawS(w)), gt=rate(w); const p=[w.p[0]-gt*gr[0],w.p[1]-gt*gr[1]]; w.t++; w.d+=w.bs;
+    if(!isFinite(p[0])||!isFinite(p[1])||Math.abs(p[0])>1e6||Math.abs(p[1])>1e6){ w.dead=true; return; } w.p=p; w.hist.push([mode==='steps'?w.t:w.d,L(p[0],p[1])]); w.pts.push(p.slice()); if(w.pts.length>CAP) w.pts=w.pts.filter((q,i)=>i%2===0||i===w.pts.length-1); w.sub.push(p.slice()); }   /* a long trail is thinned, never cut: the whole route stays */
+  function doTick(){ W.forEach(w=>{ w.sub=[w.p.slice()]; if(w.dead) return; if(mode==='steps') stepW(w); else { w.credit+=UNIT; while(w.credit>=w.bs-1e-9&&!w.dead){ w.credit-=w.bs; stepW(w); } } }); tick++; }
+  reset();
+  function build(){
+    sc=null; const narrow=box.clientWidth<560;
+    const fs=(u,v)=>L(u/SC+ac,v/SC+bc), U0=(A0-ac)*SC,U1=(A1-ac)*SC,V0=(B0-bc)*SC,V1=(B1-bc)*SC, floorY=-.3;
+    const handle=CIN.stage3d(box,{fill:true,camera:{pos:narrow?[2.5,3.3,3.3]:[1.8,2.45,2.4],look:[.42,.22,.48],fov:34},autoRotate:.1,autoRotateStopsOnUser:true,
+      build(ctx){
+        const {THREE,root,colors,isLight}=ctx, hx=k=>CIN.hex(colors[k]);
+        const grid=CIN.prim.grid(ctx,4.6,18,hx('grid'),{opacity:isLight?.5:.3}); grid.position.y=floorY; root.add(grid);
+        const ramp=[isLight?colors.grid:colors.axis,colors.s7,colors.s2];   /* a dark slate floor: the three glowing walkers and their trails are the picture */
+        const surf=CIN.prim.surface(ctx,(u,v)=>fs(u,v)-LS,{x:[U0,U1],y:[V0,V1],res:72,zscale:ZS,ramp,opacity:.94,wire:false}); lightenSurface(ctx,surf,ZS,ramp); root.add(surf);
+        const lv=[]; for(let i=1;i<=10;i++) lv.push((Lmax-LS)*Math.pow(i/11,2)); root.add(liftedContours(ctx,(u,v)=>fs(u,v)-LS,lv,U0,U1,V0,V1,ZS,hx('ink2'),{N:72}));
+        [['a →',[U1+.3,floorY,-V0+.1]],['b →',[U0-.2,floorY,-V1-.3]]].forEach(([t,p])=>root.add(CIN.prim.label(ctx,t,p,{size:24,color:colors.muted,bg:false,depthTest:false,scale:.0045})));
+        const sp=P3(aS,bS,LS); root.add(overlay(CIN.prim.dot(ctx,sp,hx('s3'),.045))); root.add(tube(ctx,[sp[0],floorY,sp[2]],sp,hx('s3'),.006,.6));
+        root.add(CIN.prim.label(ctx,'(a*, b*)',[sp[0],sp[1]+.1,sp[2]],{size:18,color:colors.s3,bg:false,depthTest:false,scale:.0038}));
+        const s0=P3(START[0],START[1],L0); root.add(overlay(CIN.prim.dot(ctx,s0,hx('ink'),.028),9)); root.add(CIN.prim.label(ctx,'start',[s0[0],s0[1]+.1,s0[2]],{size:16,color:colors.muted,bg:false,depthTest:false,scale:.0038}));
+        W.forEach((w,i)=>{ w.dot=overlay(CIN.prim.dot(ctx,[0,0,0],hx(w.col),.05),12+i); root.add(w.dot); w.halo=haloSprite(ctx,hx(w.col),.3); root.add(w.halo); w.trailG=new THREE.Group(); root.add(w.trailG); w.lab=slot(ctx,root); });
+        sc={THREE,ctx,root,colors,isLight,hx,floorY};
+        hudEl=hud(box); hint(box,'drag to orbit');
+        paintDots(); paintTrails();
+      },
+      update(){ return false; }
+    });
+    if(handle) grab(handle,()=>false,()=>{});
+    return handle;
+  }
+  const labelOf=w=>w.key==='mini'?`mini ${w.bs}`:w.name;
+  function placeDot(w,p,i){ const q=P3(p[0],p[1],L(p[0],p[1])); w.dot.position.set(q[0],q[1]+.015,q[2]); w.halo.position.copy(w.dot.position); w.lab.set(labelOf(w),[q[0],q[1]+.13+.07*i,q[2]],{size:17,color:sc.colors[w.col],bg:false,depthTest:false,scale:.0038}); }
+  function paintDots(cur){ if(!sc) return; W.forEach((w,i)=>{ const p=cur?cur[i]:w.p; if(!(Math.abs(p[0])<50&&Math.abs(p[1])<50)){ w.dot.visible=false; w.halo.visible=false; w.lab.hide(); return; } w.dot.visible=true; w.halo.visible=true; placeDot(w,p,i); });
+    if(hudEl){ const d=mode==='budget'?String(W[0].d):`${W[0].d} / ${W[1].d} / ${W[2].d}`; hudEl.innerHTML=`data touched: <b>${d}</b> · batch L = <b>${F(L(W[0].p[0],W[0].p[1]),3)}</b> · mini L = <b>${F(L(W[1].p[0],W[1].p[1]),3)}</b> · sgd L = <b>${F(L(W[2].p[0],W[2].p[1]),3)}</b>`; }
+    RR(sc.ctx); }
+  function paintTrails(){ if(!sc) return; W.forEach((w,i)=>{ clearGroup(w.trailG); const pts=w.pts.filter(p=>Math.abs(p[0])<50&&Math.abs(p[1])<50).map(p=>{ const q=P3(p[0],p[1],L(p[0],p[1])); q[1]+=.012+.02*i; return q; });   /* the noisier trail rides on top where they overlap */ if(pts.length>=2) w.trailG.add(ribbon(sc.ctx,pts,sc.hx(w.col),w.r)); }); RR(sc.ctx); }
+  function drawSide(){
+    const XM=mode==='steps'?TICKS:BUDGET; const lo=Math.log10(LS)-.06, hi=Math.log10(L0)+.15;
+    const p=frame(side,0,XM,lo,hi,{l:36,r:12,t:24,b:26,xs:mode==='steps'?10:400,ys:1,yf:v=>'10'+SUP(v),xf:v=>String(Math.round(v))}); const glow=p.glow;
+    el('line',{x1:p.px(0),y1:p.py(Math.log10(LS)),x2:p.px(XM),y2:p.py(Math.log10(LS)),stroke:'var(--s3)','stroke-width':1.2,'stroke-dasharray':'4 3',opacity:.85},side);
+    txt(side,p.px(XM)-3,p.py(Math.log10(LS))-4,'L*','font:700 9.5px system-ui;fill:var(--s3)','end');
+    const gp=el('g',{'clip-path':p.clip},side);
+    W.forEach(w=>{ let d=''; w.hist.forEach(([x,v],i)=>{ d+=(i?'L':'M')+p.px(Math.min(x,XM)).toFixed(1)+','+p.py(Math.log10(Math.max(1e-6,v))).toFixed(1); }); if(w.hist.length>1) glowPath(gp,d,`var(--${w.col})`,w.key==='sgd'?1.3:1.8,glow,{opacity:.95}); });
+    txt(side,p.L+4,p.T-9,'loss L vs '+(mode==='steps'?'steps (one step per tick)':'data touched (points read)'),'font:600 10px system-ui;fill:var(--ink-muted)');
+    txt(side,p.W-p.R-2,p.H-4,mode==='steps'?'steps →':'data touched →','font:600 9.5px system-ui;fill:var(--ink-muted)','end');
+    W.forEach((w,i)=>{ const x=p.W-p.R-14-(2-i)*62, y=p.T+9; el('rect',{x:x-42,y:y-9,width:60,height:14,rx:7,fill:'var(--surface)',opacity:.85},side); el('line',{x1:x-38,y1:y-2,x2:x-26,y2:y-2,stroke:`var(--${w.col})`,'stroke-width':2.4,'stroke-linecap':'round'},side); txt(side,x-22,y+1.5,labelOf(w),`font:700 9.5px system-ui;fill:var(--${w.col})`); });
+  }
+  function drawBoard(){
+    const Ls=W.map(w=>w.dead?Infinity:L(w.p[0],w.p[1])); let best=-1, bv=Infinity; Ls.forEach((v,i)=>{ if(v<bv){ bv=v; best=i; } });
+    board.innerHTML=W.map((w,i)=>{ const lead=i===best&&(w.t>0), glow=isLight()?'none':`0 0 14px color-mix(in srgb,var(--${w.col}) 55%,transparent),0 0 30px color-mix(in srgb,var(--${w.col}) 22%,transparent)`;
+      return `<div class="rc-cell${lead?' lead':''}" style="flex:1 1 92px;min-width:0;padding:.42rem .55rem;border-radius:9px;font-family:var(--ui);font-size:.76rem;line-height:1.55;color:var(--ink-2);background:color-mix(in srgb,var(--surface-2) 70%,transparent);border:1px solid color-mix(in srgb,var(--${w.col}) ${lead?85:40}%,transparent);box-shadow:${lead?glow:'none'};transition:all .25s var(--ease)"><b style="color:var(--${w.col});font-size:.84rem">${labelOf(w)}</b> <span style="color:var(--ink-muted)">· reads ${w.bs}${lead?' · <b style="color:var(--ink)">leader</b>':''}</span><br>steps <b style="color:var(--ink);font-family:var(--mono)">${w.t}</b> · data <b style="color:var(--ink);font-family:var(--mono)">${w.d}</b><br>L now <b style="color:var(--ink);font-family:var(--mono)">${w.dead?'∞':nm(Ls[i].toFixed(4))}</b><br>to (a*, b*) <b style="color:var(--ink);font-family:var(--mono)">${w.dead?'∞':nm(Math.hypot(w.p[0]-aS,w.p[1]-bS).toFixed(3))}</b></div>`; }).join('');
+  }
+  function readout(){
+    const bs=SIZES[bi];
+    let s=`every step: batch reads 40 points · minibatch reads |S| = <b>${bs}</b> · stochastic reads 1<br>`;
+    if(mode==='budget') s+=`after <b>${W[0].d}</b> data units: batch took <b>${W[0].t}</b> steps, minibatch <b>${W[1].t}</b>, stochastic <b>${W[2].t}</b><br>`;
+    else s+=`after <b>${tick}</b> steps each: batch read <b>${W[0].d}</b> data units, minibatch <b>${W[1].d}</b>, stochastic <b>${W[2].d}</b><br>`;
+    s+=`noise of the gradient estimate ∝ 1/√|S|: batch 0 · mini <b>${F(1/Math.sqrt(bs),2)}</b> · sgd 1 (relative)<br>best: a* = <b>${nm(fmt(aS,4))}</b>, b* = <b>${nm(fmt(bS,4))}</b>, L* = <b>${nm(fmt(LS,4))}</b>`;
+    if(W.some(w=>w.dead)) s+=`<br><span style="color:var(--critical)">a walker passed 10⁶ — γ = ${fmt(g,3)} is too big for its noisy steps; it was stopped</span>`;
+    read.innerHTML=s; }
+  function draw(){ readout();
+    const tail=lr==='decay'?' — and with a decaying γ the jitter dies, so stochastic finally settles':'';
+    if(mode==='budget'){ verd.className='verdict good'; verd.textContent='✓ per point of data read, the noisy walkers get to the bottom first — that is why deep learning trains on minibatches'+tail; }
+    else { verd.className='verdict info'; verd.textContent='per step, batch is the smoothest — but each of its steps costs 40× a stochastic one'+tail; }
+    drawSide(); drawBoard(); paintDots(); paintTrails();
+  }
+  function stop(){ run++; if(anim){ anim.stop(); anim=null; } }
+  const lerpSub=(sub,u)=>{ if(sub.length<2) return sub[0]; const t=u*(sub.length-1), i=Math.min(sub.length-2,Math.floor(t)), k=t-i; return [sub[i][0]+(sub[i+1][0]-sub[i][0])*k,sub[i][1]+(sub[i+1][1]-sub[i][1])*k]; };
+  function animTick(tok,done){ doTick(); anim=tween(100,u=>{ if(tok!==run) return; paintDots(W.map(w=>lerpSub(w.sub,u))); },()=>{ if(tok!==run) return; paintTrails(); drawSide(); drawBoard(); paintDots(); readout(); done&&done(); }); }
+  function play(){ stop(); const tok=run; reset(); played=true; draw(); const next=()=>{ if(tok!==run) return; if(tick>=TICKS){ draw(); return; } animTick(tok,next); }; next(); }
+  function restart(){ stop(); reset(); draw(); }
+  document.getElementById('rc-play').addEventListener('click',play);
+  document.getElementById('rc-step').addEventListener('click',()=>{ stop(); if(tick>=TICKS) return; const tok=run; animTick(tok,()=>draw()); });
+  document.getElementById('rc-reset').addEventListener('click',restart);
+  bindCtl('rc-batch',v=>{ bi=Math.max(0,Math.min(3,v|0)); restart(); },v=>String(SIZES[Math.max(0,Math.min(3,v|0))]))();
+  bindCtl('rc-g',v=>{ g=v; restart(); },v=>fmt(v,3))();
+  const modeBar=document.getElementById('rc-mode'), lrBar=document.getElementById('rc-lr');
+  tabs(modeBar,t=>{ mode=t; restart(); }); tabs(lrBar,t=>{ lr=t; restart(); });
+  const bar=document.getElementById('rc-presets'), PRE={'fair-steps':{mode:'steps',lr:'constant'},'fair-cost':{mode:'budget',lr:'constant'},'cost-decay':{mode:'budget',lr:'decay'},'big-batch':{mode:'budget',lr:'constant',bi:3}};
+  bar.querySelectorAll('[data-p]').forEach(btn=>btn.addEventListener('click',()=>{ const P=PRE[btn.dataset.p]; if(!P) return; pressOnly(bar,btn); mode=P.mode; lr=P.lr; bi=P.bi==null?2:P.bi; g=0.04;
+    selectTab(modeBar,mode); selectTab(lrBar,lr); setCtl('rc-batch',bi,v=>String(SIZES[v])); setCtl('rc-g',g,3); play(); }));
+  ST=mountStage(box,build);
+  let rw=box.clientWidth; addEventListener('resize',()=>{ const W2=box.clientWidth; if((W2<560)!==(rw<560)) remount(ST); rw=W2; });
+  draw();
+})();
+
 /* ================= OPENING SHOT · the descent (five starts, two basins) ================= */
 (function(){
   const box=document.getElementById('hero-3d'); if(!box||!CIN) return;
