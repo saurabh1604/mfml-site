@@ -18,12 +18,12 @@ const okay = m => console.log('  ok   ' + m);
 
   console.log('— page —');
   const counts = await page.evaluate(() => ({ checks: document.querySelectorAll('.check').length, widgets: document.querySelectorAll('.widget').length, derives: document.querySelectorAll('.derive').length, probs: document.querySelectorAll('#spractice .prob').length, stages: document.querySelectorAll('.stage-canvas canvas').length, katex: document.querySelectorAll('.katex-error').length, total: localStorage.getItem('mfml-u9-total') }));
-  if (counts.checks === 13 && counts.total === '13') okay('13 checks, total published'); else fail('checks ' + JSON.stringify(counts));
-  if (counts.widgets === 9 && counts.derives === 16 && counts.probs === 12) okay('9 widgets · 16 derivations · 12 problems'); else fail('counts ' + JSON.stringify(counts));
-  if (counts.stages === 3) okay('3 WebGL stages alive (hero + 2)'); else fail('stages ' + counts.stages);
+  if (counts.checks === 15 && counts.total === '15') okay('15 checks, total published'); else fail('checks ' + JSON.stringify(counts));
+  if (counts.widgets === 11 && counts.derives === 16 && counts.probs === 12) okay('11 widgets · 16 derivations · 12 problems'); else fail('counts ' + JSON.stringify(counts));
+  if (counts.stages === 5) okay('5 WebGL stages alive (hero + 4)'); else fail('stages ' + counts.stages);
   if (!counts.katex) okay('no KaTeX errors'); else fail('katex-error ×' + counts.katex);
   const chips = norm(await text('.hero .meta'));
-  if (/9 interactive widgets/.test(chips) && /13 inline checks/.test(chips) && /16 proofs/.test(chips) && /12 solved practice problems/.test(chips)) okay('hero chips match the counts'); else fail('hero chips: ' + chips);
+  if (/11 interactive widgets/.test(chips) && /15 inline checks/.test(chips) && /16 proofs/.test(chips) && /12 solved practice problems/.test(chips)) okay('hero chips match the counts'); else fail('hero chips: ' + chips);
 
   console.log('— W1 · fitting bowl —');
   let t = norm(await text('#ft-read'));
@@ -57,11 +57,11 @@ const okay = m => console.log('  ok   ' + m);
   await setRange('ds-g', 0.05); await page.waitForTimeout(200);
   t = norm(await text('#ds-verdict'));
   if (/every direction shrinks/.test(t)) okay('γ = 0.05: converging verdict'); else fail('desc 0.05 verdict: ' + t);
-  await page.click('#ds-play'); await page.waitForTimeout(9000);
+  await page.click('#ds-play'); await page.waitForTimeout(18000);
   t = norm(await text('#ds-read'));
   const f20 = +(t.match(/f\(x[₀-₉0-9]*\) = (-?[\d.]+)/) || [])[1];
   if (f20 < -5.5) okay('20 steps at γ=0.05 reach f = ' + f20); else fail('desc run: ' + t);
-  await page.click('#ds-tabs [data-t="exact"]'); await page.click('#ds-reset'); await page.click('#ds-play'); await page.waitForTimeout(9000);
+  await page.click('#ds-tabs [data-t="exact"]'); await page.click('#ds-reset'); await page.click('#ds-play'); await page.waitForTimeout(18000);
   t = norm(await text('#ds-verdict'));
   if (/90°/.test(t)) okay('exact line search: 90° turns'); else fail('desc exact verdict: ' + t);
   await page.click('#ds-tabs [data-t="fixed"]'); await page.click('#ds-reset');
@@ -137,16 +137,41 @@ const okay = m => console.log('  ok   ' + m);
   t = norm(await text('#sg-verdict'));
   if (/decaying γ/.test(t)) okay('decay verdict'); else fail('sgd decay verdict: ' + t);
 
+  console.log('— W10 · fog —');
+  await page.click('#w-fog [data-p="ridge"]'); await page.click('#fg-play'); await page.waitForTimeout(32000);
+  t = norm(await text('#fg-read'));
+  if (/steps taken = 28 · height fallen = 2\.018/.test(t) && /position \(x, y\) = \(-0\.95, -0\.66\)/.test(t)) okay('ridge walk: 28 steps to (−0.95, −0.66), fell 2.018'); else fail('fog readout: ' + t);
+  t = norm(await text('#fg-verdict'));
+  if (/flat ground — the walk is over/.test(t)) okay('fog verdict: valley bottom'); else fail('fog verdict: ' + t);
+  await page.click('#fg-lift'); await page.waitForTimeout(2000);
+  t = norm(await text('#fg-verdict'));
+  if (/two valleys/.test(t)) okay('lift the fog: two valleys verdict'); else fail('fog lift verdict: ' + t);
+  const drawers = await page.evaluate(() => ({ n: document.querySelectorAll('details.algebra').length, open: document.querySelectorAll('details.algebra[open]').length, inside: document.querySelectorAll('details.algebra .derive').length }));
+  if (drawers.n === 9 && drawers.open === 0 && drawers.inside === 16) okay('9 algebra drawers, closed, holding all 16 proofs'); else fail('drawers ' + JSON.stringify(drawers));
+
+  console.log('— W11 · race —');
+  await page.click('#w-race [data-p="fair-cost"]'); await page.waitForTimeout(30000);
+  t = norm(await text('#rc-read'));
+  if (/after 1200 data units: batch took 30 steps, minibatch 150, stochastic 1200/.test(t)) okay('fair-cost: 30 / 150 / 1200 steps'); else fail('race readout: ' + t);
+  const hud = norm(await page.locator('#rc-3d .hud').first().innerText());
+  const m = hud.match(/batch L = ([\d.]+) · mini L = ([\d.]+) · sgd L = ([\d.]+)/);
+  if (m && +m[2] < +m[1] && +m[3] < +m[1]) okay('per data read, mini and sgd beat batch: ' + hud); else fail('race hud: ' + hud);
+  t = norm(await text('#rc-verdict'));
+  if (/noisy walkers get to the bottom first/.test(t)) okay('race verdict (budget)'); else fail('race verdict: ' + t);
+  await page.click('#w-race [data-p="cost-decay"]'); await page.waitForTimeout(20000);
+  t = norm(await text('#rc-verdict'));
+  if (/jitter dies/.test(t)) okay('cost-decay verdict appended'); else fail('race decay verdict: ' + t);
+
   console.log('— checks & score —');
   await page.evaluate(() => document.querySelectorAll('.check').forEach(c => c.querySelector('.opts button[data-correct]').click()));
   await page.waitForTimeout(200);
   const chip = norm(await text('#score-chip'));
-  if (/13\s*\/\s*13/.test(chip)) okay('all 13 checks pass → 13/13'); else fail('score chip: ' + chip);
+  if (/15\s*\/\s*15/.test(chip)) okay('all 15 checks pass → 15/15'); else fail('score chip: ' + chip);
 
   console.log('— theme flip rebuilds stages —');
   await page.click('#theme-btn'); await page.waitForTimeout(9000);
   const light = await page.evaluate(() => ({ theme: document.documentElement.getAttribute('data-theme'), stages: document.querySelectorAll('.stage-canvas canvas').length }));
-  if (light.theme === 'light' && light.stages === 3) okay('light theme: 3 stages rebuilt'); else fail('light theme: ' + JSON.stringify(light));
+  if (light.theme === 'light' && light.stages === 5) okay('light theme: 5 stages rebuilt'); else fail('light theme: ' + JSON.stringify(light));
   await page.click('#theme-btn'); await page.waitForTimeout(2000);
 
   if (errors.length) { errors.forEach(e => fail(e)); } else okay('zero console / page errors');
