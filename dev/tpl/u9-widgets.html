@@ -1,0 +1,208 @@
+<!--@W1-->
+  <div class="widget reveal" id="w-fit">
+    <div class="widget-head"><span class="w-title">The fitting bowl</span><span class="w-sub">Four data points, one line, and the loss surface L(a, b) as a real landscape — drag to orbit, then let the ball roll</span></div>
+    <p class="try"><b>Try:</b> press ▶ descend from the origin and watch the ball zig-zag down the narrow trench before crawling along it. Then push \(\gamma\) past \(0.030\) and press ▶ again — the steps grow instead of shrinking.</p>
+    <div class="presets" id="ft-presets"><button class="preset" data-p="origin" aria-pressed="true">start at the origin (0, 0)</button><button class="preset" data-p="far">far corner (4, −3)</button><button class="preset" data-p="best">the best fit (2.04, 1)</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="ft-3d" class="stage3d" role="img" aria-label="Orbitable 3D bowl: the squared-error loss of a straight line as a function of its slope a and intercept b, with lifted contour rings; a glowing dot marks the current (a, b) on the surface and a trail shows the path gradient descent takes to the bottom at a = 2.04, b = 1"></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="ft-a">slope a</label><input id="ft-a" type="range" min="-1" max="5" step="0.01" value="0"><output id="ft-a-o">0</output></div>
+          <div class="ctl"><label for="ft-b">intercept b</label><input id="ft-b" type="range" min="-4" max="6" step="0.01" value="0"><output id="ft-b-o">0</output></div>
+          <div class="ctl"><label for="ft-g">step size γ</label><input id="ft-g" type="range" min="0.002" max="0.034" step="0.001" value="0.02"><output id="ft-g-o">0.02</output></div>
+          <div class="ctl"><label for="ft-k">steps</label><input id="ft-k" type="range" min="1" max="60" step="1" value="20"><output id="ft-k-o">20</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ft-play">▶ descend</button><button class="preset" id="ft-reset">reset to (0, 0)</button></div>
+        <svg id="ft-svg" viewBox="0 0 320 260" class="svg-lab" role="img" aria-label="The four data points, the current line y = a x + b, and the four vertical residuals whose squares add up to the loss" style="margin-top:.4rem"></svg>
+        <div class="readout" id="ft-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="ft-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The loss \(L(a,b)=\sum_i\big(y_i-(ax_i+b)\big)^2\) is a bowl, but a lopsided one: its Hessian has one stiff eigenvalue (\(\approx 66.8\)) and one flat (\(\approx 1.2\)). Gradient descent must keep \(\gamma<2/66.8\approx0.030\) to survive the stiff direction, and at that speed it barely moves along the flat one — the trench you see the ball crawl along.</p>
+      </div>
+    </div>
+  </div>
+<!--@W2-->
+  <div class="widget reveal" id="w-flat">
+    <div class="widget-head"><span class="w-title">The flat-spot prober</span><span class="w-sub">Slide a probe along a curve, read the slope, and walk downhill — the one-dimensional heart of every optimiser</span></div>
+    <p class="try"><b>Try:</b> put the probe at \(x=-1.3\) and press ▶ walk downhill: it slides into the valley at \(x\approx0.66\). Now start at \(x=-1.6\), one hair to the left of the hilltop, and it falls into the deep valley at \(x\approx-4.48\) instead.</p>
+    <div class="tabs" id="fp-tabs">
+      <button data-t="quartic" aria-selected="true">quartic · x⁴ + 7x³ + 5x² − 17x + 3</button>
+      <button data-t="cubic">cubic · 2x³ − 9x² + 12x + 5</button>
+      <button data-t="bumpy">bumpy · sin 3x + 0.3x²</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="fp-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A curve with its stationary points marked as valleys and hilltops; a glowing probe with its tangent line sits at a chosen x, an arrow under it points uphill, and pressing walk sends the probe sliding downhill step by step"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="fp-x">probe x</label><input id="fp-x" type="range" min="-5.6" max="1.7" step="0.01" value="-1.3"><output id="fp-x-o">-1.3</output></div>
+          <div class="ctl"><label for="fp-g">step size γ</label><input id="fp-g" type="range" min="0.002" max="0.2" step="0.001" value="0.02"><output id="fp-g-o">0.02</output></div>
+        </div>
+        <div class="presets"><button class="play" id="fp-play">▶ walk downhill</button></div>
+        <div class="readout" id="fp-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fp-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The rule is \(x\leftarrow x-\gamma f'(x)\): the slope's <em>sign</em> says which way is downhill, its <em>size</em> says how far to go. At a flat spot the walk stops — but flat is not the same as low: \(f''\) tells a valley from a hilltop, and nothing in the rule can tell a local valley from the global one.</p>
+      </div>
+    </div>
+  </div>
+<!--@W3-->
+  <div class="widget reveal" id="w-desc">
+    <div class="widget-head"><span class="w-title">The descent stage</span><span class="w-sub">Gradient descent on a quadratic valley, in 3D — fixed steps zig-zag, exact line search turns square corners. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> on the lecture's valley set \(\gamma=0.09\) and press ▶: the walker bounces across the steep walls (factor \(-0.81\)) while inching along the floor (factor \(0.82\)). Then switch to <em>exact</em> line search and watch every step turn exactly 90°.</p>
+    <div class="presets" id="ds-presets"><button class="preset" data-p="lecture" aria-pressed="true">lecture · A = [[2,1],[1,20]], b = (−5,−3)</button><button class="preset" data-p="round">round bowl · A = 2I</button><button class="preset" data-p="stretch">stretched · x² + 3y²</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="ds-3d" class="stage3d" role="img" aria-label="Orbitable 3D quadratic valley with lifted contour rings; a glowing walker sits on the surface with an orange arrow pointing uphill along the gradient and a green arrow showing the next step, and a glowing trail records every iterate down to the minimiser"></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="tabs" id="ds-tabs">
+          <button data-t="fixed" aria-selected="true">fixed γ</button>
+          <button data-t="exact">exact line search</button>
+        </div>
+        <div class="controls">
+          <div class="ctl"><label for="ds-g">step size γ</label><input id="ds-g" type="range" min="0.005" max="0.13" step="0.005" value="0.05"><output id="ds-g-o">0.05</output></div>
+          <div class="ctl"><label for="ds-k">steps</label><input id="ds-k" type="range" min="1" max="40" step="1" value="20"><output id="ds-k-o">20</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ds-play">▶ run</button><button class="preset" id="ds-reset">reset to x₀</button></div>
+        <div class="readout" id="ds-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="ds-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">For \(f(\mathbf x)=\tfrac12\mathbf x^{\top}A\mathbf x+\mathbf b^{\top}\mathbf x\) the gradient is \(A\mathbf x+\mathbf b\) and the minimiser is \(\mathbf x^*=-A^{-1}\mathbf b\). Along each eigen-direction of \(A\) a fixed step multiplies the error by \(1-\gamma\lambda\): the stiff direction (big \(\lambda\)) forces \(\gamma\) small, and then the flat direction barely moves. Exact line search picks the \(\gamma\) that minimises \(f\) along the ray — which is exactly why consecutive steps are perpendicular.</p>
+      </div>
+    </div>
+  </div>
+<!--@W4-->
+  <div class="widget reveal" id="w-step">
+    <div class="widget-head"><span class="w-title">The step-size dial</span><span class="w-sub">One number, 1 − γλ, decides everything: crawl, glide, overshoot, bounce forever, or blow up</span></div>
+    <p class="try"><b>Try:</b> press <em>sweet</em> — with \(\gamma\lambda=1\) a single step lands exactly at the bottom. Then press <em>edge</em>: \(\gamma\lambda=2\) bounces between \(\pm x_0\) forever, and one notch more explodes.</p>
+    <div class="tabs" id="st-tabs">
+      <button data-t="one" aria-selected="true">one dimension · f = ½λx²</button>
+      <button data-t="two">two dimensions · f = ½(λ₁x² + λ₂y²)</button>
+    </div>
+    <div class="presets" id="st-presets" data-tab="one"><button class="preset" data-p="crawl">crawl · γλ = 0.1</button><button class="preset" data-p="sweet">sweet · γλ = 1</button><button class="preset" data-p="bounce">bounce · γλ = 1.6</button><button class="preset" data-p="edge">edge · γλ = 2</button><button class="preset" data-p="blow">blow up · γλ = 2.4</button></div>
+    <div class="presets" id="st-presets2" data-tab="two" style="display:none"><button class="preset" data-p="safe">safe · γ = 0.045</button><button class="preset" data-p="zigzag">zig-zag · γ = 0.095</button><button class="preset" data-p="over">over the limit · γ = 0.12</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="st-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A parabola with the iterates of gradient descent drawn as glowing dots joined by bounce segments, green when the step shrinks the distance to the bottom and red when it grows; in the two-dimensional tab, ellipse contours with the zig-zag path across them"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl" data-tab="one"><label for="st-l">curvature λ</label><input id="st-l" type="range" min="0.5" max="4" step="0.1" value="2"><output id="st-l-o">2</output></div>
+          <div class="ctl" data-tab="two" style="display:none"><label for="st-l1">stiff λ₁</label><input id="st-l1" type="range" min="1" max="20" step="0.5" value="20"><output id="st-l1-o">20</output></div>
+          <div class="ctl" data-tab="two" style="display:none"><label for="st-l2">flat λ₂</label><input id="st-l2" type="range" min="0.5" max="5" step="0.1" value="2"><output id="st-l2-o">2</output></div>
+          <div class="ctl"><label for="st-g">step size γ</label><input id="st-g" type="range" min="0.02" max="1.3" step="0.01" value="0.3"><output id="st-g-o">0.3</output></div>
+        </div>
+        <div class="presets"><button class="play" id="st-play">▶ step by step</button></div>
+        <div class="readout" id="st-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="st-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">On \(f=\tfrac12\lambda x^2\) the update is \(x_{k+1}=x_k-\gamma\lambda x_k=(1-\gamma\lambda)\,x_k\): a pure geometric sequence. The factor must sit strictly inside \((-1,1)\) — that is the rule \(\gamma<2/\lambda\). In two dimensions each eigen-direction has its own factor, and the stiffest one (the largest \(\lambda\)) sets the speed limit for all.</p>
+      </div>
+    </div>
+  </div>
+<!--@W5-->
+  <div class="widget reveal" id="w-line">
+    <div class="widget-head"><span class="w-title">The line-search lens</span><span class="w-sub">Slide a bead down the descent ray, watch h(γ) bottom out, and see why the next gradient is perpendicular to the last step</span></div>
+    <p class="try"><b>Try:</b> drag \(\gamma\) slowly and watch the orange gradient arrow at the bead swing round; press <em>snap to γ*</em> and it stands exactly at right angles to the ray, where the ray just kisses a contour. Then <em>take the step</em> and repeat from the new point.</p>
+    <div class="tabs" id="ls-tabs">
+      <button data-t="stretch" aria-selected="true">stretched bowl · x² + 3y² from (2, 2)</button>
+      <button data-t="lecture">lecture's valley · from (−3, −1)</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="ls-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="Contour lines of a quadratic bowl, the current point, a dashed descent ray leaving it opposite to the gradient, a bead sliding along the ray, and at the bead the local gradient arrow — perpendicular to the ray exactly where the ray is tangent to a contour"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="ls-g">bead at γ</label><input id="ls-g" type="range" min="0" max="0.4" step="0.002" value="0.09"><output id="ls-g-o">0.09</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ls-best">snap to γ*</button><button class="preset" id="ls-step">take the step</button><button class="preset" id="ls-reset">reset</button></div>
+        <svg id="ls-h" viewBox="0 0 300 160" class="svg-lab" role="img" aria-label="The one-variable function h of gamma, the height of the bowl along the descent ray, with the bead's height marked and the minimiser gamma-star dropped to the axis" style="margin-top:.4rem"></svg>
+        <div class="readout" id="ls-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="ls-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Along the ray \(\mathbf x_k-\gamma\mathbf g\) the bowl becomes a one-variable function \(h(\gamma)=f(\mathbf x_k-\gamma\mathbf g)\). Its derivative is \(h'(\gamma)=-\mathbf g^{\top}\nabla f(\text{bead})\), so \(h'(\gamma^*)=0\) says precisely that the new gradient has no component along the old direction — the two are perpendicular. For a quadratic, \(\gamma^*=\mathbf g^{\top}\mathbf g/\mathbf g^{\top}A\mathbf g\) in closed form.</p>
+      </div>
+    </div>
+  </div>
+<!--@W6-->
+  <div class="widget reveal" id="w-bracket">
+    <div class="widget-head"><span class="w-title">The bracket squeezer</span><span class="w-sub">Three ways to pick a step along a line: halve the bracket, cut it by the golden ratio, or back off until the drop is good enough</span></div>
+    <p class="try"><b>Try:</b> step the <em>binary</em> search on the practice function and read the brackets: \([0,4]\to[2,4]\to[2,3]\to[2,2.5]\). Then switch to the <em>bumpy</em> function — the bracket can squeeze down on the wrong dip and lose the true minimiser.</p>
+    <div class="tabs" id="br-fn">
+      <button data-t="practice" aria-selected="true">practice · h(α) = α² − 5α + 8</button>
+      <button data-t="bumpy">bumpy · not unimodal</button>
+    </div>
+    <div class="tabs" id="br-m">
+      <button data-t="binary" aria-selected="true">binary (bisect the bracket)</button>
+      <button data-t="golden">golden section</button>
+      <button data-t="armijo">Armijo backtracking</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="br-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A one-variable function h of alpha with the current bracket shown as a translucent band, the points where h was evaluated marked, the true minimiser glowing; in the Armijo tab a dashed sufficient-decrease line with rejected candidates in red and the accepted one in green"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="presets"><button class="play" id="br-play">▶ run 8 iterations</button><button class="preset" id="br-step">one iteration</button><button class="preset" id="br-reset">reset</button></div>
+        <div class="readout" id="br-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="br-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Bracketing methods assume \(h\) is <em>unimodal</em> on \([a,b]\) — one dip, nothing else — and then squeeze: binary search halves the width each time (two evaluations per step), golden section shrinks it by \(0.618\) with only one new evaluation. Armijo asks a humbler question: is \(h(\alpha)\le h(0)+c\,\alpha\,h'(0)\)? If not, halve \(\alpha\) and ask again.</p>
+      </div>
+    </div>
+  </div>
+<!--@W7-->
+  <div class="widget reveal" id="w-decay">
+    <div class="widget-head"><span class="w-title">Schedules and the bold driver</span><span class="w-sub">Three ways to shrink the learning rate on a clock, and one way to let the loss itself drive</span></div>
+    <p class="try"><b>Try:</b> set \(k=0.05\) and read the three rates at \(t=10\): \(0.485\), \(0.533\), \(0.089\). Then open the <em>bold driver</em> tab and press ▶ — the rate climbs 5 % a step until the first overshoot, then halves on the spot.</p>
+    <div class="tabs" id="dc-tabs">
+      <button data-t="schedules" aria-selected="true">schedules · αₜ on a clock</button>
+      <button data-t="bold">bold driver · αₜ from the loss</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="dc-svg" viewBox="0 0 600 320" class="svg-lab" role="img" aria-label="Learning rate against epoch for exponential, inverse and step decay, with a glowing marker on each at the chosen epoch; in the bold-driver tab the rate climbs and halves while the loss falls on a logarithmic axis"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls" id="dc-ctl-s">
+          <div class="ctl"><label for="dc-a0">start α₀</label><input id="dc-a0" type="range" min="0.1" max="1.5" step="0.01" value="0.8"><output id="dc-a0-o">0.8</output></div>
+          <div class="ctl"><label for="dc-k">decay k</label><input id="dc-k" type="range" min="0.01" max="0.3" step="0.005" value="0.05"><output id="dc-k-o">0.05</output></div>
+          <div class="ctl"><label for="dc-T">epochs shown</label><input id="dc-T" type="range" min="10" max="60" step="1" value="30"><output id="dc-T-o">30</output></div>
+          <div class="ctl"><label for="dc-t">read at t</label><input id="dc-t" type="range" min="0" max="30" step="1" value="10"><output id="dc-t-o">10</output></div>
+        </div>
+        <div class="presets" id="dc-ctl-b" style="display:none"><button class="play" id="dc-play">▶ drive</button></div>
+        <div class="readout" id="dc-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="dc-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Exponential decay \(\alpha_0e^{-kt}\) shrinks geometrically, inverse decay \(\alpha_0/(1+kt)\) only harmonically, step decay \(\alpha_0/3^{\lfloor t/5\rfloor}\) drops in cliffs. The bold driver ignores the clock: after every step it looks at the loss — improved? grow \(\alpha\) by 5 %; worse? undo the step and halve \(\alpha\).</p>
+      </div>
+    </div>
+  </div>
+<!--@W8-->
+  <div class="widget reveal" id="w-fd">
+    <div class="widget-head"><span class="w-title">The gradient auditor</span><span class="w-sub">Check a hand-derived gradient against finite differences — and see where round-off wrecks the check</span></div>
+    <p class="try"><b>Try:</b> at \(\Delta=0.1\) read the two estimates of \(\partial J/\partial w_1\): forward \(13.61\), central \(13.01\), truth \(13\). Halve \(\Delta\) and the forward error halves while the central error drops fourfold — then slide below \(10^{-6}\) and watch both curves turn back up.</p>
+    <div class="tabs" id="fd-tabs">
+      <button data-t="w1" aria-selected="true">∂J/∂w₁ (truth 13)</button>
+      <button data-t="w2">∂J/∂w₂ (truth 4)</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="fd-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A log-log chart of the finite-difference error against the step Delta: the forward-difference curve falls with slope one, the central-difference curve with slope two, and both climb back up on the left where floating-point round-off dominates; beads mark the chosen Delta"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="fd-d">log₁₀ Δ</label><input id="fd-d" type="range" min="-9" max="0" step="0.05" value="-1"><output id="fd-d-o">0.1</output></div>
+        </div>
+        <div class="readout" id="fd-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fd-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(J(w_1,w_2)=w_1^3+w_1w_2^2\) at \((2,1)\). Taylor says the forward difference is off by \(\tfrac12\Delta\,J''\) and the central one by \(\tfrac16\Delta^2J'''\) — the slopes 1 and 2 on the log-log chart. But each \(J\) carries a rounding error of about \(10^{-16}\), and dividing that by \(\Delta\) makes it explode as \(\Delta\to0\): the sweet spot is around \(10^{-5}\), not zero.</p>
+      </div>
+    </div>
+  </div>
+<!--@W9-->
+  <div class="widget reveal" id="w-sgd">
+    <div class="widget-head"><span class="w-title">The noisy descent</span><span class="w-sub">Estimate the gradient from a handful of points instead of all 40 — cheaper, noisier, and still it finds the bottom</span></div>
+    <p class="try"><b>Try:</b> set the batch to 1 and press ▶: the walk jitters around the bottom and never settles. Switch to the <em>decay</em> tab — the same noisy steps, shrinking with \(t\), calm down onto the minimiser.</p>
+    <div class="tabs" id="sg-tabs">
+      <button data-t="constant" aria-selected="true">constant γ</button>
+      <button data-t="decay">decaying γₜ = γ/(1 + 0.05t)</button>
+    </div>
+    <div class="presets" id="sg-start"><button class="preset" data-p="origin" aria-pressed="true">start at (0, 0)</button><button class="preset" data-p="far">start far · (3.2, −1.2)</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="sg-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="Contour lines of the mean squared error of a line fit over its slope and intercept, with the minimiser marked; a glowing path shows minibatch gradient descent, and at its current point the true gradient arrow and the noisy minibatch estimate are drawn together so their disagreement is visible"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="sg-batch">batch size</label><input id="sg-batch" type="range" min="0" max="5" step="1" value="2"><output id="sg-batch-o">4</output></div>
+          <div class="ctl"><label for="sg-g">step size γ</label><input id="sg-g" type="range" min="0.01" max="0.3" step="0.005" value="0.1"><output id="sg-g-o">0.1</output></div>
+          <div class="ctl"><label for="sg-T">steps</label><input id="sg-T" type="range" min="10" max="200" step="1" value="80"><output id="sg-T-o">80</output></div>
+        </div>
+        <div class="presets"><button class="play" id="sg-play">▶ run</button><button class="preset" id="sg-reset">reset</button></div>
+        <svg id="sg-loss" viewBox="0 0 300 150" class="svg-lab" role="img" aria-label="The loss after each step of the noisy walk, on a logarithmic axis, with the full-batch loss curve for the same step size drawn thin for comparison" style="margin-top:.4rem"></svg>
+        <div class="readout" id="sg-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="sg-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The full gradient averages a residual term over all \(N=40\) points; a minibatch averages the same term over \(|S|\) of them. The estimate is unbiased — on average it is the true gradient — with variance shrinking like \(1/|S|\). Each step costs \(|S|\) residuals instead of \(N\), so a batch of 4 buys ten steps for the price of one exact one.</p>
+      </div>
+    </div>
+  </div>

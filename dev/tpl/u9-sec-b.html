@@ -1,0 +1,229 @@
+
+<!-- ================= 4 · THE RULE ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>The rule — step against the gradient</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Back in the fog</span>
+    <p>Feel the tilt. Turn to face straight downhill. Take a step whose length is proportional to how steep it is — a big step on a steep slope, a shy one when the ground is nearly level. Stop, feel, repeat. Written as a formula, the hiker's whole strategy is one line.</p>
+  </div>
+  <div class="prose reveal">
+    <div class="callout remember"><span class="tag">Gradient descent</span>
+      <p>From the current point \(\mathbf x_i\), move to</p>
+      \[\mathbf x_{i+1}=\mathbf x_i-\gamma_i\,\big(\nabla f(\mathbf x_i)\big)^{\!\top}\]
+      <p>where \(\gamma_i>0\) is the <strong>step size</strong> (in machine learning, the <em>learning rate</em>). For a suitable step size, \(f(\mathbf x_0)\ge f(\mathbf x_1)\ge f(\mathbf x_2)\ge\cdots\) and the sequence settles into a local minimum.</p>
+    </div>
+    <p>The little transpose is only bookkeeping: in the lecture's convention the gradient is a row vector and the point is a column, so one of them is flipped to make the subtraction legal. The <em>content</em> is two claims that deserve proof. First, that \(-\nabla f\) really is the steepest way down. Second, that a short step that way really does lower \(f\).</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the gradient points the steepest way up</span>
+    <p class="dgoal"><b>Claim.</b> Among all unit directions \(\mathbf u\), the rate of change of \(f\) along \(\mathbf u\) is largest when \(\mathbf u\) points along \(\nabla f\), and that largest rate is \(\|\nabla f\|\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">From Unit 6, the rate of change of \(f\) along a unit direction \(\mathbf u\) (the directional derivative) is a dot product:
+      \[D_{\mathbf u}f=\nabla f\cdot\mathbf u.\]
+      <span class="dwhy">Walk a tiny distance \(t\) along \(\mathbf u\); \(f\) changes by about \(t\,\nabla f\cdot\mathbf u\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Cauchy–Schwarz (Unit 3) bounds any dot product by the product of lengths:
+      \[\nabla f\cdot\mathbf u\le\|\nabla f\|\,\|\mathbf u\|=\|\nabla f\|\cdot1.\]
+      <span class="dwhy">A dot product is \(\|\mathbf a\|\|\mathbf b\|\cos\theta\), and \(\cos\theta\le1\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Equality holds exactly when \(\cos\theta=1\), i.e. \(\mathbf u\) points the same way as \(\nabla f\): \(\mathbf u=\nabla f/\|\nabla f\|\). Then \(D_{\mathbf u}f=\|\nabla f\|\), the largest possible. Turning \(\mathbf u\) the opposite way gives \(\cos\theta=-1\) and the most negative rate, \(-\|\nabla f\|\): the steepest descent.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So the uphill compass is not a metaphor. The gradient direction is the unique winner of "which way is steepest", and its length is the steepness.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · a small step against the gradient lowers f</span>
+    <p class="dgoal"><b>Claim.</b> If \(\mathbf g=\nabla f(\mathbf x)\neq\mathbf 0\), then for all small enough \(\gamma>0\), \(\ f(\mathbf x-\gamma\mathbf g)<f(\mathbf x)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Unroll the step into one variable, the line trick from Unit 8: \(h(\gamma)=f(\mathbf x-\gamma\mathbf g)\). Its derivative at \(\gamma=0\) is, by the chain rule,
+      \[h'(0)=\nabla f(\mathbf x)\cdot(-\mathbf g)=-\mathbf g\cdot\mathbf g=-\|\mathbf g\|^2<0.\]
+      <span class="dwhy">Moving along \(-\mathbf g\) means the directional derivative is the gradient dotted with \(-\mathbf g\). A nonzero vector dotted with itself is strictly positive, so with the minus sign the slope of \(h\) at the start is strictly negative.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Taylor for \(h\) at \(0\) with the remainder:
+      \[\begin{aligned}h(\gamma)&=h(0)+h'(0)\,\gamma+\tfrac12h''(\xi)\,\gamma^2\\ &=f(\mathbf x)-\gamma\|\mathbf g\|^2+\tfrac12h''(\xi)\,\gamma^2.\end{aligned}\]
+      <span class="dwhy">The value, a drop proportional to \(\gamma\), and a correction proportional to \(\gamma^2\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">For small \(\gamma\) the \(\gamma\) term beats the \(\gamma^2\) term: if \(|h''|\le M\) nearby, then
+      \[\begin{aligned}f(\mathbf x-\gamma\mathbf g)&\le f(\mathbf x)-\gamma\|\mathbf g\|^2+\tfrac12M\gamma^2\\ &=f(\mathbf x)-\gamma\Big(\|\mathbf g\|^2-\tfrac12M\gamma\Big),\end{aligned}\]
+      and the bracket is positive as soon as \(\gamma<2\|\mathbf g\|^2/M\). So \(f\) goes down.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Notice what the proof also warns: the guarantee is only for \(\gamma\) <em>small enough</em>, and "small enough" depends on the bend \(M\). Too big a step and the \(\gamma^2\) term wins — the step overshoots and \(f\) can go <em>up</em>. Section 5 turns that warning into an exact number.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>Now the lecture's two-variable example, which will be our test valley for the rest of the unit. Take</p>
+    \[f(\mathbf x)=\tfrac12\mathbf x^{\top}A\mathbf x+\mathbf b^{\top}\mathbf x,\qquad A=\begin{bmatrix}2&1\\1&20\end{bmatrix},\quad \mathbf b=\begin{bmatrix}-5\\-3\end{bmatrix},\quad \mathbf x_0=\begin{bmatrix}-3\\-1\end{bmatrix}.\]
+    <p>The lecture quotes the gradient from Unit 6 as the row \(\mathbf x^{\top}A+\mathbf b^{\top}\) — as a column, \(\nabla f=A\mathbf x+\mathbf b\). Since we lean on it for the rest of the unit, here it is in three lines:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the gradient of a quadratic bowl is Ax + b</span>
+    <p class="dgoal"><b>Claim.</b> For symmetric \(A\), \(f(\mathbf x)=\tfrac12\mathbf x^{\top}A\mathbf x+\mathbf b^{\top}\mathbf x\) has \(\nabla f=A\mathbf x+\mathbf b\), and its only flat point is \(\mathbf x^*=-A^{-1}\mathbf b\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write the two pieces out in coordinates:
+      \[\tfrac12\mathbf x^{\top}A\mathbf x=\tfrac12\sum_{j}\sum_{k}A_{jk}x_jx_k,\qquad \mathbf b^{\top}\mathbf x=\sum_jb_jx_j.\]
+      <span class="dwhy">A quadratic form is a double sum of "entry times two coordinates"; the linear part is a plain dot product.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Differentiate with respect to one coordinate \(x_i\). In the double sum, \(x_i\) appears in the terms with \(j=i\) (giving \(\sum_kA_{ik}x_k\)) and in the terms with \(k=i\) (giving \(\sum_jA_{ji}x_j\)); by symmetry these two are equal, so
+      \[\begin{aligned}\frac{\partial}{\partial x_i}\Big(\tfrac12\mathbf x^{\top}A\mathbf x\Big)&=\tfrac12\Big(\sum_kA_{ik}x_k+\sum_jA_{ji}x_j\Big)\\ &=\sum_kA_{ik}x_k=(A\mathbf x)_i,\\ \frac{\partial}{\partial x_i}\big(\mathbf b^{\top}\mathbf x\big)&=b_i.\end{aligned}\]
+      <span class="dwhy">The \(\tfrac12\) in front was put there precisely to cancel the 2 that symmetry produces — that is why the lecture writes the bowl as \(\tfrac12\mathbf x^{\top}A\mathbf x\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Stack the coordinates: \(\nabla f=A\mathbf x+\mathbf b\). Setting it to zero, \(A\mathbf x=-\mathbf b\), so \(\mathbf x^*=-A^{-1}\mathbf b\). For the lecture's numbers, \(A^{-1}=\tfrac1{39}\begin{bmatrix}20&-1\\-1&2\end{bmatrix}\) and \(-\mathbf b=(5,3)\), giving
+      \[\begin{aligned}\mathbf x^*&=\tfrac1{39}\begin{bmatrix}100-3\\-5+6\end{bmatrix}=\Big(\tfrac{97}{39},\tfrac1{39}\Big)\\ &\approx(2.487,\,0.026),\qquad f^*\approx-6.256.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So for this valley we know exactly where the walk should end, and can watch it get there — or fail to. Run it:</span></div></div>
+  </div>
+<!--@W3-->
+  <div class="prose reveal">
+    <p>Two things you cannot miss in the picture. The valley is a <strong>trench</strong>: the \(20\) in \(A\) makes \(f\) rise steeply as \(y\) moves, while the \(2\) makes it rise gently along \(x\). And the walk <strong>zig-zags</strong>: it bounces from wall to wall of the trench while creeping along its floor. Section 5 explains both with one number.</p>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At the starting point \(\mathbf x_0=(-3,-1)\), what is the gradient \(\nabla f=A\mathbf x_0+\mathbf b\), and which way does the first step go?</p>
+    <div class="opts">
+      <button data-correct data-why="A x₀ = (2·(−3) + 1·(−1), 1·(−3) + 20·(−1)) = (−7, −23); adding b = (−5, −3) gives (−12, −26). The step is −γ(−12, −26) = γ(12, 26): both coordinates increase, and y moves more than twice as fast as x — the 20 in A makes the y-wall steep.">\(\nabla f=(-12,\,-26)\); the step raises both \(x\) and \(y\), \(y\) faster</button>
+      <button data-why="(−7, −23) is A x₀ alone — b has not been added yet. The gradient of ½xᵀAx + bᵀx is Ax + b, so include b: (−12, −26).">\(\nabla f=(-7,\,-23)\); the step raises both \(x\) and \(y\)</button>
+      <button data-why="The step goes AGAINST the gradient. With ∇f = (−12, −26) the step is +γ(12, 26): x and y both go up, toward the bottom at (2.49, 0.03). A step of −γ(12, 26) would walk away from it.">\(\nabla f=(-12,\,-26)\); the step lowers both \(x\) and \(y\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> \(\mathbf x_{i+1}=\mathbf x_i-\gamma\nabla f(\mathbf x_i)\) — the gradient is provably the steepest way up, a small step the other way provably lowers \(f\), and on a trench-shaped valley the walk zig-zags.</div>
+</section>
+
+<!-- ================= 5 · STEP SIZE ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>Goldilocks — how long a step?</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Stairs in the dark</span>
+    <p>You are going down a staircase with the lights off. Shuffle an inch at a time and you will get there — next week. Leap three steps at a time and you will overshoot a landing, stumble, maybe fall back up a flight. There is a stride that is just right, and it depends on the staircase: steep, narrow stairs demand short strides. Gradient descent has exactly this problem, and for a bowl we can say precisely what "just right" means.</p>
+  </div>
+  <div class="prose reveal">
+    <p>The lecture states the two failure modes: a step size that is <em>too small</em> makes descent painfully slow; one that is <em>too large</em> overshoots, fails to converge, or diverges outright. Let us make that exact on the simplest possible valley, \(f(x)=\tfrac12\lambda x^2\) — a parabola whose steepness is set by the single number \(\lambda>0\). Its gradient is \(f'(x)=\lambda x\), so the update is</p>
+    \[x_{k+1}=x_k-\gamma\lambda x_k=(1-\gamma\lambda)\,x_k.\]
+    <p>Every step multiplies the position by the <em>same</em> factor \(1-\gamma\lambda\). That one number decides everything:</p>
+  </div>
+<!--@W4-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the speed limit γ &lt; 2/λ</span>
+    <p class="dgoal"><b>Claim.</b> On \(f=\tfrac12\lambda x^2\), gradient descent converges to \(0\) from any start if and only if \(0<\gamma<2/\lambda\); it lands exactly at \(0\) in one step when \(\gamma=1/\lambda\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Apply the update \(k\) times. The factor is the same each time, so
+      \[x_k=(1-\gamma\lambda)^k\,x_0.\]
+      <span class="dwhy">A geometric sequence: the position after \(k\) steps is the start times the factor to the power \(k\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">A number to the power \(k\) goes to \(0\) exactly when its size is below \(1\):
+      \[\begin{aligned}|1-\gamma\lambda|<1&\iff-1<1-\gamma\lambda<1\\ &\iff0<\gamma\lambda<2\\ &\iff0<\gamma<\frac2\lambda.\end{aligned}\]
+      <span class="dwhy">Subtract 1 from all three parts, multiply by \(-1\) (which flips the inequalities), divide by \(\lambda>0\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Read the four regimes off the factor. \(0<1-\gamma\lambda<1\) (\(\gamma<1/\lambda\)): shrinks, same side each time — smooth descent, slow when the factor is near \(1\). \(1-\gamma\lambda=0\) (\(\gamma=1/\lambda\)): \(x_1=0\), done in one step. \(-1<1-\gamma\lambda<0\) (\(1/\lambda<\gamma<2/\lambda\)): shrinks but flips sign — overshoots the bottom every step, still converging. \(|1-\gamma\lambda|\ge1\) (\(\gamma\ge2/\lambda\)): never shrinks; at exactly \(2/\lambda\) it bounces \(\pm x_0\) forever, beyond that each step is bigger than the last.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Steeper valley (bigger \(\lambda\)) means a lower speed limit \(2/\lambda\). That is the dark staircase: steep stairs, short strides.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>Now the trench. A bowl in two variables, \(f=\tfrac12(\lambda_1x^2+\lambda_2y^2)\), is two parabolas at once — one steep (\(\lambda_1\)), one gentle (\(\lambda_2\)) — and because the gradient splits, \((\lambda_1x,\lambda_2y)\), the update splits too:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · each direction has its own factor — the zig-zag explained</span>
+    <p class="dgoal"><b>Claim.</b> On \(f=\tfrac12(\lambda_1x^2+\lambda_2y^2)\) with \(\lambda_1>\lambda_2>0\), a fixed step \(\gamma\) must satisfy \(\gamma<2/\lambda_1\), and then the \(y\)-direction converges with factor \(1-\gamma\lambda_2\), which is close to \(1\) when \(\lambda_1/\lambda_2\) is large.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The gradient is \((\lambda_1x,\ \lambda_2y)\), so the two coordinates update independently:
+      \[x_{k+1}=(1-\gamma\lambda_1)x_k,\qquad y_{k+1}=(1-\gamma\lambda_2)y_k.\]
+      <span class="dwhy">The bowl has no cross-term, so each coordinate lives on its own parabola and gets its own factor.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Both factors must have size below \(1\). The stricter demand comes from the larger \(\lambda\):
+      \[\gamma<\frac2{\lambda_1}\quad(\text{the steep direction sets the limit}).\]
+      <span class="dwhy">If the stiff direction diverges, the whole walk diverges — one bad coordinate is enough.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">With \(\gamma\) held under that limit, the gentle direction's factor is
+      \[1-\gamma\lambda_2>1-\frac{2\lambda_2}{\lambda_1}.\]
+      For the lecture's valley \(\lambda_1\approx20.06,\ \lambda_2\approx1.94\), so this factor is above \(0.81\) no matter what: at best the \(y\)-error shrinks by a fifth per step while the \(x\)-error, near the limit, flips sign with a factor near \(-1\) — bouncing across the trench while creeping along it.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The ratio \(\lambda_1/\lambda_2\) is the <em>condition number</em>. Big ratio, long trench, slow zig-zag walk. For a general bowl \(\tfrac12\mathbf x^{\top}A\mathbf x\) the same argument runs in the eigenbasis of \(A\) (Unit 4): the eigenvalues of the Hessian are the \(\lambda\)'s.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>So what does a practitioner do without knowing \(\lambda_1\)? The lecture's first answer is a simple <strong>adaptive rule</strong>: after each step, look at the loss. If it went <em>up</em>, you were too bold — undo the step and halve the step size. If it went down, you may be a little bolder next time. Because a step is only kept when it lowers \(f\), the sequence \(f(\mathbf x_0)\ge f(\mathbf x_1)\ge\cdots\) is guaranteed — <em>monotonic</em> convergence. Section 8 turns this into the bold-driver algorithm and into scheduled decay. Section 6 does something cleverer first: it lets the landscape itself choose the stride.</p>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A bowl has Hessian eigenvalues \(\lambda_1=20\) and \(\lambda_2=2\). You choose \(\gamma=0.15\). What happens?</p>
+    <div class="opts">
+      <button data-correct data-why="The stiff factor is 1 − 0.15·20 = −2: every step triples the x-error (and flips its sign). The speed limit is 2/λ₁ = 0.1, and 0.15 is above it. The gentle direction (factor 1 − 0.3 = 0.7) would be fine on its own, but one diverging direction sinks the walk.">Diverges — the stiff direction's factor is \(-2\)</button>
+      <button data-why="0.15 is above the speed limit 2/λ₁ = 0.1. The factor along the stiff axis is 1 − 3 = −2, whose size is 2 > 1: the x-coordinate grows threefold per step. Overshooting is the |factor| < 1 but negative case, e.g. γ = 0.08 gives −0.6.">Converges with some overshoot — the factor is negative but shrinking</button>
+      <button data-why="The gentle direction, factor 0.7, does converge — but convergence needs BOTH factors inside (−1, 1). The stiff factor is −2. Always check the largest eigenvalue first: it sets the limit.">Converges smoothly — \(0.15\) is small</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On the fitting bowl of Section 2 the Hessian eigenvalues are about \(66.8\) and \(1.2\). Roughly what step size is safe, and what happens along the gentle direction at that step size?</p>
+    <div class="opts">
+      <button data-correct data-why="Safe means γ < 2/66.8 ≈ 0.030. Take γ = 0.025: the stiff factor is 1 − 0.025·66.8 = −0.67 (bouncing but shrinking), while the gentle factor is 1 − 0.025·1.2 = 0.97 — the intercept b creeps toward its target losing only 3% of its error per step. Condition number ≈ 56: a long, slow trench.">\(\gamma\) must stay under about \(0.03\); at that stride the gentle direction shrinks by only about \(3\%\) per step</button>
+      <button data-why="γ = 0.5 gives a stiff factor of 1 − 33.4 = −32.4: the slope a explodes after two steps. The limit is 2/λ_max = 2/66.8 ≈ 0.03, not 2/λ_min.">\(\gamma\approx0.5\) is fine; the gentle direction converges in a couple of steps</button>
+      <button data-why="The limit depends only on the eigenvalues, not on where you start: 2/λ_max ≈ 0.03 from every starting point. Starting closer helps the number of steps, not the step size you may use.">Any \(\gamma\) works if you start close enough to the bottom</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> On a bowl each eigen-direction shrinks by \(1-\gamma\lambda\), so the steepest direction sets the speed limit \(\gamma<2/\lambda_{\max}\) and the gentlest one sets the crawl — that gap is the zig-zag.</div>
+</section>
+
+<!-- ================= 6 · EXACT LINE SEARCH ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Let the landscape choose — exact line search</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Sliding the foot</span>
+    <p>Instead of guessing a stride, do this on the dark staircase: point your foot downhill and slide it forward, feeling the floor, until it stops going down and starts coming up. Put your weight there. You have found the lowest point <em>along that line</em>. Then feel the tilt again — it will point somewhere new — and slide again.</p>
+  </div>
+  <div class="prose reveal">
+    <p>That is <strong>line search</strong>. Fix the point \(\mathbf x_i\) and the direction \(-\nabla f(\mathbf x_i)\); the only thing left to choose is how far, \(\gamma\). Along the ray the landscape becomes a function of one variable,</p>
+    \[h(\gamma)=f\big(\mathbf x_i-\gamma\,\nabla f(\mathbf x_i)^{\top}\big),\]
+    <p>and "how far" is simply "where is \(h\) smallest". The lecture works it out for \(f(x,y)=x^2+3y^2\) from \((2,2)\). Every line of that calculation is worth seeing:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the lecture's line search on x² + 3y²</span>
+    <p class="dgoal"><b>Claim.</b> For \(f=x^2+3y^2\) the best step from \((x,y)\) is \(\gamma^*=\dfrac{x^2+9y^2}{2x^2+54y^2}\); from \((2,2)\) it is \(5/28\), landing at \((9/7,\,-1/7)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The gradient is \(\nabla f=(2x,\ 6y)\). The trial point a distance \(\gamma\) down the ray is
+      \[(x-2\gamma x,\ \ y-6\gamma y)=\big((1-2\gamma)x,\ (1-6\gamma)y\big).\]
+      <span class="dwhy">Each coordinate keeps its own factor, exactly as in Section 5 — but now \(\gamma\) is a variable we will choose.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Put the trial point into \(f\):
+      \[h(\gamma)=(1-2\gamma)^2x^2+3(1-6\gamma)^2y^2.\]
+      <span class="dwhy">A quadratic in \(\gamma\) with a positive leading coefficient — a parabola in \(\gamma\) with a single bottom.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Differentiate with respect to \(\gamma\) (chain rule: inner derivatives \(-2\) and \(-6\)) and set to zero:
+      \[h'(\gamma)=-4(1-2\gamma)x^2-36(1-6\gamma)y^2=0.\]
+      <span class="dwhy">\(2(1-2\gamma)\cdot(-2)=-4(1-2\gamma)\) and \(3\cdot2(1-6\gamma)\cdot(-6)=-36(1-6\gamma)\).</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Expand, collect the \(\gamma\) terms, solve:
+      \[\begin{aligned}-4x^2+8\gamma x^2-36y^2+216\gamma y^2&=0\\ \gamma\,(8x^2+216y^2)&=4x^2+36y^2\\ \gamma^*&=\frac{4x^2+36y^2}{8x^2+216y^2}\\ &=\frac{x^2+9y^2}{2x^2+54y^2}.\end{aligned}\]
+      <span class="dwhy">Divide top and bottom by \(4\). It is a minimum because \(h''=8x^2+216y^2>0\).</span></div></div>
+    <div class="dstep"><span class="dn">5</span><div class="dbody">At \((2,2)\): \(\gamma^*=\dfrac{4+36}{8+216}=\dfrac{40}{224}=\dfrac5{28}\). The new point is
+      \[\begin{aligned}&\Big((1-\tfrac{10}{28})\cdot2,\ (1-\tfrac{30}{28})\cdot2\Big)\\ &=\Big(\tfrac{18}{28}\cdot2,\ -\tfrac{2}{28}\cdot2\Big)=\Big(\tfrac97,\ -\tfrac17\Big),\end{aligned}\]
+      and \(f\) drops from \(16\) to \(\tfrac{81}{49}+\tfrac3{49}=\tfrac{12}7\approx1.71\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">One landscape-chosen step removed 89% of the height. Notice \(y\) overshot past \(0\) to \(-1/7\): even the best step along the gradient overshoots in the stiff direction. The next step's \(\gamma^*\) is \(5/12\), landing at \((3/14,3/14)\).</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>For any quadratic bowl the same three moves give a closed formula — the one you will be asked for again and again:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the general line-search step for a quadratic</span>
+    <p class="dgoal"><b>Claim.</b> For \(f=\tfrac12\mathbf x^{\top}A\mathbf x+\mathbf b^{\top}\mathbf x\) with \(A\) symmetric positive-definite and \(\mathbf g=\nabla f(\mathbf x)=A\mathbf x+\mathbf b\), the best step along \(-\mathbf g\) is \(\gamma^*=\dfrac{\mathbf g^{\top}\mathbf g}{\mathbf g^{\top}A\mathbf g}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(h(\gamma)=f(\mathbf x-\gamma\mathbf g)\). By the chain rule, \(h'(\gamma)=\nabla f(\mathbf x-\gamma\mathbf g)\cdot(-\mathbf g)\).
+      <span class="dwhy">Derivative of \(f\) along a moving point = gradient at that point dotted with the point's velocity, which here is \(-\mathbf g\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The gradient at the trial point is \(A(\mathbf x-\gamma\mathbf g)+\mathbf b=(A\mathbf x+\mathbf b)-\gamma A\mathbf g=\mathbf g-\gamma A\mathbf g\). So
+      \[h'(\gamma)=-\mathbf g^{\top}(\mathbf g-\gamma A\mathbf g)=-\mathbf g^{\top}\mathbf g+\gamma\,\mathbf g^{\top}A\mathbf g.\]
+      <span class="dwhy">The gradient of a quadratic is linear in the point, so it splits cleanly into "the old gradient" minus "\(\gamma\) times \(A\mathbf g\)".</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Set \(h'(\gamma)=0\):
+      \[\gamma^*=\frac{\mathbf g^{\top}\mathbf g}{\mathbf g^{\top}A\mathbf g},\]
+      a minimum because \(h''=\mathbf g^{\top}A\mathbf g>0\) for positive-definite \(A\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Check it against the lecture: for \(x^2+3y^2\), \(A=\mathrm{diag}(2,6)\), \(\mathbf g=(2x,6y)\), so \(\mathbf g^{\top}\mathbf g=4x^2+36y^2\) and \(\mathbf g^{\top}A\mathbf g=8x^2+216y^2\) — the same fraction as before. Practice Problems 6, 7 and 9 use this formula.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>Now the beautiful fact, the one the lecture proves with Taylor's series: after an exact line-search step, <strong>the new gradient is perpendicular to the direction you just walked</strong>. Watch the arrow swing to a right angle in the widget, then read why:</p>
+  </div>
+<!--@W5-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · after an exact step, the new gradient is perpendicular to the old direction</span>
+    <p class="dgoal"><b>Claim.</b> If \(\alpha_t\) minimises \(J(\mathbf w_t+\alpha\mathbf g_t)\) over \(\alpha\), then \(\mathbf g_t^{\top}\nabla J(\mathbf w_{t+1})=0\), where \(\mathbf w_{t+1}=\mathbf w_t+\alpha_t\mathbf g_t\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Suppose not: \(\mathbf g_t^{\top}\nabla J(\mathbf w_{t+1})\ne0\). Move a tiny extra \(\pm\delta\) along the same direction and use first-order Taylor at \(\mathbf w_{t+1}\):
+      \[J(\mathbf w_{t+1}\pm\delta\mathbf g_t)\approx J(\mathbf w_{t+1})\pm\delta\,\mathbf g_t^{\top}\nabla J(\mathbf w_{t+1}).\]
+      <span class="dwhy">Value plus (step) dot (gradient). This is exactly the line trick from Unit 8, one derivative deep.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The correction \(\pm\delta\,\mathbf g_t^{\top}\nabla J\) is nonzero, and we get to pick its sign: choose \(+\delta\) if the dot product is negative, \(-\delta\) if it is positive. Either way,
+      \[J(\mathbf w_{t+1}\pm\delta\mathbf g_t)<J(\mathbf w_{t+1}).\]
+      <span class="dwhy">A nonzero slope along the line means one of the two ways along the line goes down.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">But that is a point on the same ray — at \(\alpha=\alpha_t\pm\delta\) — with a lower value of \(J\), contradicting that \(\alpha_t\) was the minimiser. So the dot product must be zero: \(\mathbf g_t\perp\nabla J(\mathbf w_{t+1})\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">In one-variable language: \(h'(\alpha_t)=\mathbf g_t^{\top}\nabla J(\mathbf w_{t+1})\), and the minimiser of a smooth function has zero derivative. Geometrically: the ray stops exactly where it is tangent to a contour, and the gradient is always perpendicular to contours. Consequence: steepest descent with exact line search turns a right angle at every corner — a zig-zag of perfect squares, which on a long trench is still a lot of corners.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>Line search is honest but expensive: every step demands a one-variable minimisation of its own. The lecture is candid that it is <em>rarely used in vanilla gradient descent</em> for that reason; Newton's method (Units 10–11) needs an exact one, and cheap <em>inexact</em> versions — the Armijo rule of the next section — are what ordinary descent actually uses. The compensation is fewer steps: on our stretched bowl, exact search removed 89% of the height in one move where a safe fixed step removed far less.</p>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">From \((2,2)\) on \(f=x^2+3y^2\) the exact step lands at \((9/7,-1/7)\). The gradient there is \((18/7,\,-6/7)\). Dot it with the old gradient \((4,12)\). What do you get, and why?</p>
+    <div class="opts">
+      <button data-correct data-why="(18/7)(4) + (−6/7)(12) = 72/7 − 72/7 = 0. The new gradient is perpendicular to the old descent direction, exactly as the perpendicularity property says — because γ* is where h′(γ) = −gᵀ∇f(new point) vanishes.">\(0\) — the new gradient is perpendicular to the last step</button>
+      <button data-why="Compute it: 72/7 − 72/7 = 0 exactly. A positive dot product would mean the new gradient still has a component along the old direction, i.e. sliding a little further back along the ray would lower f — impossible if γ* was truly the minimiser.">A positive number — gradients of a bowl always point roughly the same way</button>
+      <button data-why="The dot product is zero, but not because either vector is zero: the new gradient (18/7, −6/7) is a perfectly healthy vector. Zero dot product means perpendicular, not 'finished'. The walk continues, turning 90°.">\(0\) — because the new gradient is the zero vector; the walk is over</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> Exact line search minimises \(h(\gamma)=f(\mathbf x-\gamma\nabla f)\) along the ray — for a quadratic \(\gamma^*=\mathbf g^{\top}\mathbf g/\mathbf g^{\top}A\mathbf g\) — and it leaves the new gradient at a right angle to the step just taken.</div>
+</section>

@@ -1,0 +1,131 @@
+
+<!-- ================= 10 · STOCHASTIC GRADIENT DESCENT ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Tasting the soup — stochastic gradient descent</h2></div>
+  <div class="callout scenario reveal"><span class="tag">One spoon, not the pot</span>
+    <p>A cook checking whether the soup needs salt does not drink the whole pot. One spoonful, stirred from anywhere, tells her enough — not exactly, but enough to decide "a little more salt". She adds a pinch, stirs, tastes another spoon. Fifty small, slightly wrong decisions get the soup right faster than one exact measurement that requires drinking the pot. Training on a million examples is the pot. A minibatch is the spoon.</p>
+  </div>
+  <div class="prose reveal">
+    <p>In a real learning problem the loss is a sum over the data points: with \(N\) examples and the loss \(L_n(\boldsymbol\theta)\) of the \(n\)-th,</p>
+    \[L(\boldsymbol\theta)=\sum_{n=1}^{N}L_n(\boldsymbol\theta),\qquad \nabla L=\sum_{n=1}^{N}\nabla L_n.\]
+    <p>The gradient descent we have used so far is <strong>batch</strong> descent: every step computes the whole sum — \(N\) gradients, one per example — before moving. For \(N\) in the millions that is drinking the pot on every step. The lecture's alternative: take a <em>sample</em> \(S\) of the indices, build the sample's own loss</p>
+    \[J(S)=\sum_{i\in S}\big(\mathbf w^{\top}\mathbf X_i-y_i\big)^2\qquad(\text{the lecture's least-squares example}),\]
+    <p>and step against <em>its</em> gradient instead. With \(|S|\) examples in the sample this is <strong>minibatch</strong> stochastic gradient descent; in the extreme case \(|S|=1\) — one example, chosen at random — it is <strong>stochastic gradient descent</strong> proper. The key claim is that the sample's gradient is an <em>excellent approximation</em> of the true gradient's direction. Watch how good, and how noisy:</p>
+  </div>
+<!--@W9-->
+  <div class="prose reveal">
+    <p>Why does a spoonful work? The lecture's answer is one word — <em>unbiased</em> — and it is worth seeing exactly what that word buys and what it does not:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the minibatch gradient is unbiased</span>
+    <p class="dgoal"><b>Claim.</b> If \(S\) is a random sample of \(m\) indices out of \(N\) (each index equally likely to be included), then the scaled sample gradient \(\dfrac Nm\sum_{i\in S}\nabla L_i\) has expected value exactly \(\nabla L\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write the sample sum with an indicator for each example: \(\mathbb 1_n=1\) if \(n\in S\), else \(0\). Then
+      \[\sum_{i\in S}\nabla L_i=\sum_{n=1}^{N}\mathbb 1_n\,\nabla L_n.\]
+      <span class="dwhy">Summing over "the chosen ones" is the same as summing over everyone with a switch that is on only for the chosen.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Take expectations. The gradients \(\nabla L_n\) are fixed numbers; only the switches are random, and each is on with probability \(m/N\):
+      \[\begin{aligned}\mathbb E\Big[\sum_{n}\mathbb 1_n\nabla L_n\Big]&=\sum_n\mathbb E[\mathbb 1_n]\,\nabla L_n\\ &=\sum_n\frac mN\,\nabla L_n=\frac mN\,\nabla L.\end{aligned}\]
+      <span class="dwhy">Expectation of a sum is the sum of expectations; the expectation of a 0/1 switch is the probability it is on. Every example is in the sample with the same chance, \(m/N\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Multiply by \(N/m\): \(\ \mathbb E\big[\tfrac Nm\sum_{i\in S}\nabla L_i\big]=\nabla L\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">"Unbiased" means: on average, over many spoonfuls, the estimate is exactly the true gradient. It does not mean any single spoonful is right — a single one can point well off. The scale factor \(N/m\) is absorbed into the learning rate in practice, which is why the lecture's update simply uses \(\nabla J(S)\).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · bigger spoon, less noise — variance falls like 1/|S|</span>
+    <p class="dgoal"><b>Claim.</b> If the per-example gradients are drawn independently with variance \(\sigma^2\) (per component), the average of \(m\) of them has variance \(\sigma^2/m\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Let \(g_1,\ldots,g_m\) be the sampled gradients (one component) and \(\bar g=\tfrac1m\sum_i g_i\) their average. Pulling the constant out of a variance squares it:
+      \[\operatorname{Var}(\bar g)=\frac1{m^2}\operatorname{Var}\Big(\sum_ig_i\Big).\]
+      <span class="dwhy">\(\operatorname{Var}(cX)=c^2\operatorname{Var}(X)\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">For independent draws the variance of a sum is the sum of variances:
+      \[\operatorname{Var}\Big(\sum_ig_i\Big)=\sum_i\sigma^2=m\sigma^2.\]
+      <span class="dwhy">Independence kills the cross-terms; each draw contributes \(\sigma^2\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">So \(\operatorname{Var}(\bar g)=\dfrac{m\sigma^2}{m^2}=\dfrac{\sigma^2}{m}\), and the typical size of the noise (the standard deviation) is \(\sigma/\sqrt m\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Four times the batch, half the noise. That is the lecture's last line — <em>large minibatches give lower variance</em> — and the trade it names: a bigger spoon is a better estimate but a dearer step. In the widget, \(|S|=4\) out of \(40\) buys ten steps for the price of one exact one, with half the noise of a single example.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>One consequence deserves to be said out loud, because it changes how you set the learning rate. With exact gradients, a fixed small step converges: the walker stops when the gradient does. With a <em>noisy</em> gradient it never stops — near the bottom the true gradient is nearly zero, but the spoonful keeps saying "a bit more salt", "a bit less", and the walker jitters in a cloud. How big a cloud? On the simplest valley we can compute it exactly:</p>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · a constant step leaves a jitter cloud proportional to γ</span>
+    <p class="dgoal"><b>Claim.</b> On \(f=\tfrac12\lambda x^2\) with a noisy gradient \(\lambda x_k+\varepsilon_k\) (noise of mean \(0\), variance \(\sigma^2\), independent step to step) and a constant \(\gamma<2/\lambda\), the iterates settle into a cloud around \(0\) of variance \(\dfrac{\gamma\sigma^2}{\lambda(2-\gamma\lambda)}\approx\dfrac{\gamma\sigma^2}{2\lambda}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The noisy update is
+      \[x_{k+1}=x_k-\gamma(\lambda x_k+\varepsilon_k)=(1-\gamma\lambda)\,x_k-\gamma\varepsilon_k.\]
+      <span class="dwhy">Section 5's factor, plus a random kick of size \(\gamma\varepsilon_k\) every step.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Square and take expectations. The cross-term vanishes because \(\varepsilon_k\) has mean \(0\) and is independent of \(x_k\):
+      \[\mathbb E[x_{k+1}^2]=(1-\gamma\lambda)^2\,\mathbb E[x_k^2]+\gamma^2\sigma^2.\]
+      <span class="dwhy">\((a-b)^2=a^2-2ab+b^2\); the middle term's expectation is \(2(1-\gamma\lambda)\gamma\,\mathbb E[x_k]\mathbb E[\varepsilon_k]=0\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">In the long run the spread stops changing: \(\mathbb E[x_{k+1}^2]=\mathbb E[x_k^2]=V\). Then
+      \[\begin{aligned}V&=(1-\gamma\lambda)^2V+\gamma^2\sigma^2\\ V\big(1-(1-\gamma\lambda)^2\big)&=\gamma^2\sigma^2\\ V&=\frac{\gamma^2\sigma^2}{\gamma\lambda(2-\gamma\lambda)}=\frac{\gamma\sigma^2}{\lambda(2-\gamma\lambda)}.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(1-(1-\gamma\lambda)^2=\gamma\lambda(2-\gamma\lambda)\) (difference of squares). For small \(\gamma\) this is \(\approx\gamma\sigma^2/2\lambda\): the cloud's variance is <em>proportional to \(\gamma\)</em>. Halve the step and you halve the cloud; only \(\gamma\to0\) shrinks it to a point — which is exactly what a decaying schedule does.</span></div></div>
+  </div>
+  <div class="prose reveal">
+    <p>The lecture states the cure and the theorem: <strong>if the learning rate decreases at a suitable rate</strong> — fast enough that the jitter dies, slowly enough that the total distance walked is unbounded (the classic conditions are \(\sum_t\gamma_t=\infty\) and \(\sum_t\gamma_t^2<\infty\), which \(\gamma_t=\gamma_0/(1+kt)\) satisfies) — then under mild assumptions stochastic gradient descent converges to a local minimum <em>almost surely</em>. Section 8's decay schedules were not a luxury after all; with noise, they are what makes the walk end.</p>
+    <p>And one benefit the lecture only hints at with "a little noise": on a bumpy landscape with many shallow dips (Section 3), a noisy step can hop out of a shallow one that exact descent would be stuck in forever. The fog was never the enemy.</p>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You have \(N=1{,}000{,}000\) examples. One step of batch descent costs a million per-example gradients. With minibatches of \(|S|=100\), how many steps do you get for the same cost — and are they as good?</p>
+    <div class="opts">
+      <button data-correct data-why="A million per-example gradients buy 1,000,000/100 = 10,000 minibatch steps. Each one is unbiased — right on average — but noisy, with noise about √100 = 10 times smaller than a single-example step. Ten thousand slightly noisy steps beat one exact step by a mile early in training; near the bottom you shrink γ to tame the jitter.">\(10{,}000\) steps; each is right on average but noisy, with noise about \(1/10\) of a single-example step's</button>
+      <button data-why="The count is right, but unbiased does not mean exact: a sample gradient scatters around the true one. Its noise is σ/√|S| = σ/10 here — a tenth of the single-example noise, not zero.">\(10{,}000\) steps, each exactly as good as a batch step</button>
+      <button data-why="The cost is per example touched, so 100 examples per step gives 10,000 steps, not 100. And the noise of a size-100 average is σ/√100 = σ/10 — better than a single example by a factor of ten, not a hundred (that would need |S| = 10,000).">\(100\) steps; noise a hundredth of a single-example step's</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You run stochastic gradient descent with \(|S|=1\) and a <em>constant</em> learning rate. The loss falls fast and then stops improving, wobbling around a value slightly above the minimum. What is going on, and what fixes it?</p>
+    <div class="opts">
+      <button data-correct data-why="Near the bottom the true gradient is ≈ 0 but each single-example gradient is not, so the walker keeps taking steps of size ≈ γ·(noise) in random directions — a jitter cloud proportional to γ. Decaying γ (e.g. γ₀/(1+kt)) shrinks the cloud to a point; a larger batch also helps, by shrinking the noise itself.">The noise never lets it settle; decay the learning rate (or enlarge the batch)</button>
+      <button data-why="The walk is close to the bottom — the wobble is centred just above the minimum, not on a hilltop. A saddle would show a flat plateau, not a jitter cloud of size ∝ γ. The fix is a smaller (decaying) γ, not a restart.">It is stuck at a saddle; restart from elsewhere</button>
+      <button data-why="A constant γ that was fine early does not stop being safe near the bottom (the Hessian sets the limit, and that has not changed). The wobble is the random-direction jitter of noisy gradients, which is proportional to γ — so the remedy is to shrink γ over time, not to increase it.">The step is too small; increase \(\gamma\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> A minibatch gradient is unbiased and its noise shrinks like \(1/\sqrt{|S|}\), so many cheap noisy steps beat one exact one — and a decaying learning rate is what finally lets the noisy walk stop.</div>
+</section>
+
+<!-- ================= 11 · CARRY FORWARD ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>One reflex generated this unit — feel the tilt, step the other way — and every section was a question about that step: which way, how far, when to stop, how to afford it.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>Idea</th><th>The one-line version</th><th>Where it returns</th></tr></thead>
+    <tbody>
+      <tr><td>The landscape</td><td>model + loss ⇒ \(L(\text{parameters})\); training = walking it down</td><td>every unit from here on</td></tr>
+      <tr><td>The compass</td><td>\(\nabla f\) is the steepest way up (Cauchy–Schwarz); walk \(-\nabla f\)</td><td>Units 10–11 · every first-order method</td></tr>
+      <tr><td>Where it ends</td><td>\(\nabla f=0\); second derivative (Hessian) says valley or hilltop; only the <em>nearest</em> valley</td><td>Unit 8's judge, used daily</td></tr>
+      <tr><td>The rule</td><td>\(\mathbf x_{i+1}=\mathbf x_i-\gamma\nabla f(\mathbf x_i)\); small \(\gamma\) provably lowers \(f\)</td><td>the template every optimiser modifies</td></tr>
+      <tr><td>The speed limit</td><td>factor \(1-\gamma\lambda\) per eigen-direction; need \(\gamma<2/\lambda_{\max}\); crawl at \(\lambda_{\min}\) ⇒ zig-zag</td><td>Unit 10 · momentum and why it exists</td></tr>
+      <tr><td>Exact line search</td><td>minimise \(h(\gamma)\); quadratic: \(\gamma^*=\mathbf g^{\top}\mathbf g/\mathbf g^{\top}A\mathbf g\); new gradient ⟂ old step</td><td>Units 10–11 · conjugate gradients, Newton</td></tr>
+      <tr><td>Bracketing</td><td>binary halves, golden cuts by \(0.618\) and re-uses a point, Armijo accepts "good enough"</td><td>every line search in practice</td></tr>
+      <tr><td>Schedules</td><td>\(\alpha_0e^{-kt}\), \(\alpha_0/(1+kt)\), step cliffs; bold driver ×1.05 / ×0.5 with undo</td><td>Unit 10 · adaptive optimisers</td></tr>
+      <tr><td>The audit</td><td>forward difference errs like \(\Delta\), central like \(\Delta^2\); spot-check a few parameters</td><td>whenever you write a gradient by hand</td></tr>
+      <tr><td>The spoonful</td><td>minibatch gradient is unbiased, noise \(\propto1/\sqrt{|S|}\); decay \(\gamma\) so the walk can stop</td><td>all of deep learning</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
+    <p><strong>Feel the slope, step against it, and let the steepest direction set your stride.</strong> The gradient is the only map you get in the fog; a step of \(\gamma<2/\lambda_{\max}\) is guaranteed to go down; a narrow trench makes that step tiny and the walk a zig-zag; and when the data is too big to touch, a random spoonful of it points the right way on average. Everything the next units add — momentum, Newton, constraints — is a way of walking the same fog more cleverly.</p>
+  </div>
+</section>
+
+<!-- ================= 12 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>Practice arena — twelve problems, solved in full</h2></div>
+  <div class="prose reveal">
+    <p>Twelve problems, easy to hard, covering the whole walk: classifying flat spots, tracing gradient-descent iterations by hand, learning-rate schedules, the line-search formula derived and applied, gradient checking, a coupled quadratic, training a straight line by descent, and a bracketing trace. Every number below is machine-verified.</p>
+    <p>Two habits do most of the work: <strong>trace iterations in a table</strong> — point, gradient, new point, value — so nothing is lost in the bookkeeping; and <strong>for any step-size question, find the largest eigenvalue first</strong>, because \(2/\lambda_{\max}\) is the limit and \(1-\gamma\lambda\) is the whole story of the approach.</p>
+  </div>
+<!--@PRACTICE-->
+  <div class="next-card reveal">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 10 · Optimization I — Gradients that Work</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">You can now walk downhill, choose a stride, and afford the walk on big data. Unit 10 asks why the plain walk is so slow in a trench and fixes it: momentum that remembers the last step, steps that adapt per parameter, and the difference between a landscape that is convex and one that only looks it.</p>
+    <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
+  </div>
+</section>
+
+</main>

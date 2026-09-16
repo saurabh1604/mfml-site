@@ -1,0 +1,491 @@
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Let \(f(x)=2x^3-9x^2+12x+5\). <b>(a)</b> Find every stationary point of \(f\). <b>(b)</b> Classify each one with the second-derivative test and give the value of \(f\) there. <b>(c)</b> Does \(f\) have a global minimum over the whole real line? Say why.</p>
+    <p class="ptest"><b>What this tests.</b> The one-variable routine that every descent method is built on — set the slope to zero, read the curvature, and then ask the question people skip: what happens far away. <b>Plan.</b> Differentiate and factor (try small integers first); evaluate \(f''\) at each root; compute the values; finish by looking at \(x\to\pm\infty\) before saying anything about "global".</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — set the slope to zero.</b> Differentiate term by term and pull out the common factor:
+      \[\begin{aligned}
+      f'(x)&=6x^2-18x+12\\
+      &=6\,(x^2-3x+2)\\
+      &=6\,(x-1)(x-2).
+      \end{aligned}\]
+      So \(f'(x)=0\) exactly at \(x=1\) and \(x=2\). These are the two stationary points.</div>
+      <div class="pstep"><b>(b) Step 2 — read the curvature.</b> The second derivative is \(f''(x)=12x-18\):
+      \[\begin{aligned}
+      f''(1)&=12-18=-6<0 &&\Rightarrow\ \text{local maximum at }x=1,\\
+      f''(2)&=24-18=+6>0 &&\Rightarrow\ \text{local minimum at }x=2.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — the values.</b> Substitute each point into \(f\), one term at a time:
+      \[\begin{aligned}
+      f(1)&=2(1)-9(1)+12(1)+5=2-9+12+5=10,\\
+      f(2)&=2(8)-9(4)+12(2)+5=16-36+24+5=9.
+      \end{aligned}\]
+      The local maximum is \(10\) at \(x=1\); the local minimum is \(9\) at \(x=2\). Notice the hill top is only \(1\) higher than the valley floor — a gentle wobble in the middle of a steep cubic.</div>
+      <div class="pstep"><b>(c) Step 4 — look far away.</b> The leading term \(2x^3\) has odd degree, so as \(x\to-\infty\) the function runs off to \(-\infty\). For instance \(f(-10)=-2000-900-120+5=-3015\), far below \(9\). A function that goes below every level has no global minimum; \(x=2\) is a local minimum only.</div>
+      <p class="pans">(a) \(x=1\) and \(x=2\). (b) \(x=1\): local maximum, \(f=10\) (\(f''=-6\)); \(x=2\): local minimum, \(f=9\) (\(f''=+6\)). (c) No — a cubic is unbounded below, so there is no global minimum.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>"Slope zero" finds candidates; "curvature sign" sorts them; only a look at \(\pm\infty\) earns the word <em>global</em>. The usual slip on this type is stopping after step 2 and calling \(x=2\) the minimum of \(f\), when a cubic has no floor at all — and gradient descent started far to the left would simply run away forever.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Apply gradient descent to \(f(x,y)=x^2+2y^2\) with step size \(\gamma=0.1\), starting at \((x_0,y_0)=(4,2)\). <b>(a)</b> Write the update equations for \(x\) and \(y\). <b>(b)</b> Carry out two iterations, reporting the point and the value of \(f\) after each. <b>(c)</b> Check that \(f\) went down at every step.</p>
+    <p class="ptest"><b>What this tests.</b> The update rule itself on a bowl whose two coordinates do not talk to each other — and the discipline of keeping a table. <b>Plan.</b> Compute the gradient symbolically first, so each coordinate's update becomes "multiply by a constant"; then fill a row per iteration: point, gradient, new point, \(f\); finally read the \(f\) column top to bottom.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the update rule, coordinate by coordinate.</b> The gradient is \(\nabla f=(2x,\,4y)\). The update rule \(\mathbf x_{k+1}=\mathbf x_k-\gamma\nabla f(\mathbf x_k)\) then reads
+      \[\begin{aligned}
+      x_{k+1}&=x_k-0.1\,(2x_k)=x_k-0.2x_k=0.8\,x_k,\\
+      y_{k+1}&=y_k-0.1\,(4y_k)=y_k-0.4y_k=0.6\,y_k.
+      \end{aligned}\]
+      Each coordinate simply shrinks by its own fixed factor, \(1-\gamma\times(\text{its curvature})\): \(1-0.1\cdot2=0.8\) for \(x\) and \(1-0.1\cdot4=0.6\) for \(y\).</div>
+      <div class="pstep"><b>(b) Step 2 — iterate in a table.</b>
+      <table class="plain">
+        <thead><tr><th>\(k\)</th><th>point \((x_k,y_k)\)</th><th>gradient \((2x_k,4y_k)\)</th><th>new point</th><th>\(f(x_k,y_k)\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\((4,\,2)\)</td><td>\((8,\,8)\)</td><td>\((4,2)-0.1(8,8)=(3.2,\,1.2)\)</td><td>\(16+2\cdot4=16+8=24\)</td></tr>
+          <tr><td>1</td><td>\((3.2,\,1.2)\)</td><td>\((6.4,\,4.8)\)</td><td>\((3.2,1.2)-0.1(6.4,4.8)=(2.56,\,0.72)\)</td><td>\(10.24+2\cdot1.44=10.24+2.88=13.12\)</td></tr>
+          <tr><td>2</td><td>\((2.56,\,0.72)\)</td><td>—</td><td>—</td><td>\(6.5536+2\cdot0.5184=6.5536+1.0368=7.5904\)</td></tr>
+        </tbody>
+      </table>
+      The shortcut from part (a) gives the same points with no gradient at all: \(0.8\cdot4=3.2\), \(0.6\cdot2=1.2\); then \(0.8\cdot3.2=2.56\), \(0.6\cdot1.2=0.72\).</div>
+      <div class="pstep"><b>(c) Step 3 — read the \(f\) column.</b>
+      \[24\ >\ 13.12\ >\ 7.5904.\]
+      The value fell at both steps. Both coordinates are heading for the minimiser \((0,0)\), and \(y\) gets there faster because its factor \(0.6\) is smaller than \(0.8\) — the steeper direction is the quicker one when the step size is safely small.</div>
+      <p class="pans">(a) \(x_{k+1}=0.8x_k\), \(y_{k+1}=0.6y_k\). (b) \((3.2,1.2)\) with \(f=13.12\); then \((2.56,0.72)\) with \(f=7.5904\). (c) \(24>13.12>7.5904\): strictly decreasing.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Always work in a table — point, gradient, new point, \(f\) — so no arithmetic goes missing between rows. On a separable bowl each coordinate shrinks by its own factor \(1-\gamma\lambda\); this is the same number that decides stability in Problem 11. The common slip is subtracting the gradient without the \(\gamma\), or evaluating \(f\) at the old point instead of the new one.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Training starts with learning rate \(\alpha_0=0.8\) and decay constant \(k=0.05\). <b>(a)</b> Compute \(\alpha_t\) at \(t=10\) and \(t=20\) under exponential decay \(\alpha_t=\alpha_0e^{-kt}\) and under inverse decay \(\alpha_t=\alpha_0/(1+kt)\). <b>(b)</b> Under step decay that divides \(\alpha\) by \(3\) every \(5\) epochs, what is \(\alpha\) during epoch \(t=12\)? <b>(c)</b> At which epoch does inverse decay first reach \(\alpha_0/2\)?</p>
+    <p class="ptest"><b>What this tests.</b> The three decay schedules as plug-in formulas, plus one small piece of reasoning about how a schedule reads its counter. <b>Plan.</b> Compute \(kt\) once for each \(t\) and reuse it in both formulas; for step decay count how many divisions have happened <em>before</em> epoch 12; for (c) set the formula equal to half and solve for \(t\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — exponential versus inverse.</b> With \(k=0.05\): \(kt=0.5\) at \(t=10\) and \(kt=1\) at \(t=20\).
+      \[\begin{aligned}
+      \text{exponential:}\quad \alpha_{10}&=0.8\,e^{-0.5}=0.8\times0.6065=0.4852,\\
+      \alpha_{20}&=0.8\,e^{-1}=0.8\times0.3679=0.2943;\\[4pt]
+      \text{inverse:}\quad \alpha_{10}&=\frac{0.8}{1+0.5}=\frac{0.8}{1.5}=0.5333,\\
+      \alpha_{20}&=\frac{0.8}{1+1}=\frac{0.8}{2}=0.4.
+      \end{aligned}\]
+      Exponential decay is the more aggressive of the two: geometric shrinking beats the slow \(1/t\) fade of the inverse schedule.</div>
+      <div class="pstep"><b>(b) Step 2 — step decay.</b> The rate is divided by \(3\) at \(t=5\) and again at \(t=10\); the next division is at \(t=15\). So epoch \(12\) sits in the third block, after two divisions:
+      \[\alpha=\frac{0.8}{3^2}=\frac{0.8}{9}\approx0.0889.\]</div>
+      <div class="pstep"><b>(c) Step 3 — when inverse decay halves.</b> Set the formula equal to \(\alpha_0/2\) and cancel \(\alpha_0\):
+      \[\begin{aligned}
+      \frac{\alpha_0}{1+kt}&=\frac{\alpha_0}{2}\\
+      1+kt&=2\\
+      kt&=1\\
+      t&=\frac1k=\frac{1}{0.05}=20\ \text{epochs}.
+      \end{aligned}\]
+      A pleasing pattern: at the same \(t=1/k\), exponential decay has multiplied the rate by \(1/e\) (that is the \(0.2943\) from part (a)).</div>
+      <p class="pans">(a) exponential: \(0.4852\) at \(t=10\), \(0.2943\) at \(t=20\); inverse: \(0.5333\) and \(0.4\). (b) \(0.8/9\approx0.0889\). (c) \(t=1/k=20\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>In the update \(\mathbf w_{t+1}=\mathbf w_t-\alpha_t\nabla J\) the counter \(t\) is in epochs, so \(\alpha\) is constant inside an epoch. The one place this type goes wrong is the step schedule — count the divisions that have <em>already happened</em> (two by epoch 12), not the block number.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Let \(f(x,y)=x^2+y^2-2x-4y+5\). <b>(a)</b> Find the exact minimiser \((x^*,y^*)\) and the minimum value. <b>(b)</b> Run two gradient-descent iterations from \((0,0)\) with \(\gamma=0.25\), reporting \(f\) each time.</p>
+    <p class="ptest"><b>What this tests.</b> Knowing the destination before you start walking — complete the square, then watch every iterate land closer to it. <b>Plan.</b> Rewrite \(f\) as a sum of squares to read off the minimiser (and confirm with \(\nabla f=\mathbf 0\)); then two table rows; finally compare each \(f\) with the previous one and spot the fixed ratio.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — complete the square.</b> Group the \(x\) terms and the \(y\) terms:
+      \[\begin{aligned}
+      f&=(x^2-2x)+(y^2-4y)+5\\
+      &=(x-1)^2-1+(y-2)^2-4+5\\
+      &=(x-1)^2+(y-2)^2.
+      \end{aligned}\]
+      A sum of two squares is smallest when both squares are zero, so the minimiser is \((x^*,y^*)=(1,2)\) with \(f^*=0\). The same point comes from the gradient: \(\nabla f=(2x-2,\ 2y-4)=(0,0)\) gives \(x=1,\ y=2\).</div>
+      <div class="pstep"><b>(b) Step 2 — iteration 1.</b> At \((0,0)\) the value is \(f=1+4=5\) and the gradient is
+      \[\nabla f(0,0)=(2\cdot0-2,\ 2\cdot0-4)=(-2,\,-4).\]
+      Step:
+      \[\begin{aligned}
+      (x_1,y_1)&=(0,0)-0.25\,(-2,-4)=(0.5,\ 1),\\
+      f(x_1,y_1)&=(0.5-1)^2+(1-2)^2\\
+      &=(-0.5)^2+(-1)^2=0.25+1=1.25.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — iteration 2.</b> At \((0.5,1)\):
+      \[\begin{aligned}
+      \nabla f(0.5,1)&=(2\cdot0.5-2,\ 2\cdot1-4)=(-1,\,-2),\\
+      (x_2,y_2)&=(0.5,1)-0.25\,(-1,-2)=(0.75,\ 1.5),\\
+      f(x_2,y_2)&=(0.75-1)^2+(1.5-2)^2\\
+      &=(-0.25)^2+(-0.5)^2=0.0625+0.25=0.3125.
+      \end{aligned}\]
+      So \(f:\ 5\to1.25\to0.3125\), closing in on \((1,2)\).</div>
+      <div class="pstep"><b>Step 4 — the pattern behind the numbers.</b> Both curvatures equal \(2\), so each coordinate's distance to the target is multiplied by \(1-\gamma\cdot2=1-0.5=0.5\) per step: the point moves exactly halfway to \((1,2)\) every time. Since \(f\) is a squared distance, it shrinks by \(0.5^2=\tfrac14\): \(5/4=1.25\), \(1.25/4=0.3125\). If you needed \(f\le0.01\), keep dividing by \(4\): \(0.078,\ 0.0195,\ 0.0049\) — three more steps, five in total.</div>
+      <p class="pans">(a) \((x^*,y^*)=(1,2)\), \(f^*=0\). (b) \((0.5,1)\) with \(f=1.25\), then \((0.75,1.5)\) with \(f=0.3125\); \(f\) is divided by \(4\) at every step.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Completing the square first gives you the answer key: every iterate can be checked against the destination, and the ratio \(1-\gamma\lambda\) tells you how fast you approach it. The slip to watch for here is a sign error when the gradient is negative — subtracting \(\gamma\times(-2)\) <em>adds</em> \(0.5\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Let \(f(x,y)=x^3-3x+y^2-2y\). <b>(a)</b> Find all critical points (where \(\nabla f=\mathbf 0\)). <b>(b)</b> Classify each one using the Hessian. <b>(c)</b> Evaluate \(f\) at each critical point and say which one gradient descent can converge to.</p>
+    <p class="ptest"><b>What this tests.</b> The two-variable version of Problem 1, and the fact that "gradient zero" is where descent <em>stops</em>, not necessarily where it should. <b>Plan.</b> The two gradient equations separate, so solve each on its own; the Hessian is diagonal, so its eigenvalues are just the diagonal entries; evaluate, then ask which point a descent path can actually settle at.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — solve \(\nabla f=\mathbf 0\).</b>
+      \[\nabla f=\big(3x^2-3,\ 2y-2\big)=(0,0).\]
+      The first equation gives \(3x^2=3\), so \(x=\pm1\); the second gives \(2y=2\), so \(y=1\). Two critical points:
+      \[P_1=(1,1),\qquad P_2=(-1,1).\]</div>
+      <div class="pstep"><b>(b) Step 2 — the Hessian.</b> \(f_{xx}=6x,\ f_{yy}=2,\ f_{xy}=0\):
+      \[H(x,y)=\begin{bmatrix}6x&0\\0&2\end{bmatrix}.\]
+      A diagonal matrix has its eigenvalues on the diagonal, so the classification is immediate:
+      \[\begin{aligned}
+      P_1=(1,1):&\quad H=\begin{bmatrix}6&0\\0&2\end{bmatrix},\ \text{eigenvalues }6,2>0\ \Rightarrow\ \text{local minimum};\\
+      P_2=(-1,1):&\quad H=\begin{bmatrix}-6&0\\0&2\end{bmatrix},\ \text{eigenvalues }-6,2\ \Rightarrow\ \text{saddle}.
+      \end{aligned}\]
+      At \(P_2\) the surface curves down along \(x\) and up along \(y\): a mountain pass.</div>
+      <div class="pstep"><b>(c) Step 3 — values and the reachable point.</b>
+      \[\begin{aligned}
+      f(1,1)&=1-3+1-2=-3,\\
+      f(-1,1)&=-1+3+1-2=1.
+      \end{aligned}\]
+      Gradient descent from any sensible start heads for the local minimum \(P_1=(1,1)\). At the saddle \(P_2\) the gradient is also zero, so a path that landed exactly there would stop — but the slightest nudge in \(x\) (either way: \(f(-1.1,1)<1\) and \(f(-0.9,1)<1\)) sends it downhill again. Note also that \(f\) has no global minimum: \(x^3-3x\to-\infty\) as \(x\to-\infty\), so a start far to the left of the saddle slides away forever.</div>
+      <p class="pans">(a) \((1,1)\) and \((-1,1)\). (b) \((1,1)\): eigenvalues \(6,2\), local minimum; \((-1,1)\): eigenvalues \(-6,2\), saddle. (c) \(f(1,1)=-3\), \(f(-1,1)=1\); descent targets \((1,1)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>\(\nabla f=\mathbf 0\) alone never proves a minimum — saddles satisfy it too, and gradient descent is blind to the difference until a nudge comes along. For a diagonal Hessian the eigenvalues are the diagonal entries: all positive is a bowl, mixed signs is a saddle. The slip on this type is forgetting the negative root \(x=-1\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Let \(f(\mathbf x)=\tfrac12\mathbf x^{\top}A\mathbf x-\mathbf b^{\top}\mathbf x\) with
+    \[A=\begin{bmatrix}4&1\\1&3\end{bmatrix},\qquad \mathbf b=\begin{bmatrix}1\\2\end{bmatrix}.\]
+    <b>(a)</b> Write \(\nabla f\) and find the exact minimiser \(\mathbf x^*\) and \(f(\mathbf x^*)\). <b>(b)</b> From \(\mathbf x_0=(0,0)\) take one step with fixed \(\gamma=0.1\) and evaluate \(f\). <b>(c)</b> Show that the exact line-search step from \(\mathbf x\) along \(-\mathbf g\), where \(\mathbf g=\nabla f(\mathbf x)\), is \(\gamma^*=\mathbf g^{\top}\mathbf g/\mathbf g^{\top}A\mathbf g\); use it from the same \(\mathbf x_0\) and compare with (b).</p>
+    <p class="ptest"><b>What this tests.</b> The quadratic model in matrix language — gradient \(A\mathbf x-\mathbf b\), minimiser from a linear system — and the three-line derivation of the line-search formula. <b>Plan.</b> Solve \(A\mathbf x=\mathbf b\) by substitution; use \(A\mathbf x^*=\mathbf b\) to shortcut \(f^*\); do the fixed step in pieces (\(A\mathbf x\), then the two dot products); derive \(\gamma^*\) by differentiating \(h(\gamma)=f(\mathbf x-\gamma\mathbf g)\); then plug the numbers in and line the three values up.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — gradient and minimiser.</b> For this quadratic, \(\nabla f(\mathbf x)=A\mathbf x-\mathbf b\). Setting it to zero means solving \(A\mathbf x=\mathbf b\):
+      \[4x+y=1,\qquad x+3y=2.\]
+      From the first, \(y=1-4x\). Substitute into the second:
+      \[\begin{aligned}
+      x+3(1-4x)&=2\\
+      x+3-12x&=2\\
+      -11x&=-1\\
+      x&=\tfrac1{11},\qquad y=1-\tfrac4{11}=\tfrac7{11}.
+      \end{aligned}\]
+      So \(\mathbf x^*=\big(\tfrac1{11},\tfrac7{11}\big)\approx(0.091,\,0.636)\). Since \(4>0\) and \(\det A=12-1=11>0\), \(A\) is positive-definite and this is the unique global minimum.</div>
+      <div class="pstep"><b>Step 2 — the minimum value, the short way.</b> Because \(A\mathbf x^*=\mathbf b\), we have \(\mathbf x^{*\top}A\mathbf x^*=\mathbf x^{*\top}\mathbf b=\mathbf b^{\top}\mathbf x^*\), so
+      \[\begin{aligned}
+      f(\mathbf x^*)&=\tfrac12\,\mathbf b^{\top}\mathbf x^*-\mathbf b^{\top}\mathbf x^*=-\tfrac12\,\mathbf b^{\top}\mathbf x^*\\
+      &=-\tfrac12\Big(1\cdot\tfrac1{11}+2\cdot\tfrac7{11}\Big)=-\tfrac12\cdot\tfrac{15}{11}=-\tfrac{15}{22}\approx-0.682.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(b) Step 3 — one fixed step, \(\gamma=0.1\).</b> At the origin \(\mathbf g_0=\nabla f(\mathbf 0)=A\mathbf 0-\mathbf b=(-1,-2)\), so
+      \[\mathbf x_1=\mathbf 0-0.1\,(-1,-2)=(0.1,\ 0.2).\]
+      Evaluate \(f(\mathbf x_1)\) in pieces:
+      \[\begin{aligned}
+      A\mathbf x_1&=(4\cdot0.1+0.2,\ 0.1+3\cdot0.2)=(0.6,\ 0.7),\\
+      \mathbf x_1^{\top}A\mathbf x_1&=0.1\cdot0.6+0.2\cdot0.7=0.06+0.14=0.2,\\
+      \mathbf b^{\top}\mathbf x_1&=1\cdot0.1+2\cdot0.2=0.1+0.4=0.5,\\
+      f(\mathbf x_1)&=\tfrac12(0.2)-0.5=0.1-0.5=-0.4.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(c) Step 4 — derive the line-search formula.</b> Let \(h(\gamma)=f(\mathbf x-\gamma\mathbf g)\). By the chain rule, with \(\nabla f(\mathbf z)=A\mathbf z-\mathbf b\),
+      \[\begin{aligned}
+      h'(\gamma)&=-\mathbf g^{\top}\nabla f(\mathbf x-\gamma\mathbf g)\\
+      &=-\mathbf g^{\top}\big(A\mathbf x-\gamma A\mathbf g-\mathbf b\big)\\
+      &=-\mathbf g^{\top}\big(\underbrace{A\mathbf x-\mathbf b}_{=\,\mathbf g}\big)+\gamma\,\mathbf g^{\top}A\mathbf g\\
+      &=-\mathbf g^{\top}\mathbf g+\gamma\,\mathbf g^{\top}A\mathbf g.
+      \end{aligned}\]
+      Setting \(h'(\gamma)=0\):
+      \[\gamma^*=\frac{\mathbf g^{\top}\mathbf g}{\mathbf g^{\top}A\mathbf g}.\]
+      It is a true minimum of \(h\), because \(h''=\mathbf g^{\top}A\mathbf g>0\) for positive-definite \(A\).</div>
+      <div class="pstep"><b>Step 5 — apply it at \(\mathbf x_0\).</b> With \(\mathbf g_0=(-1,-2)\):
+      \[\begin{aligned}
+      \mathbf g_0^{\top}\mathbf g_0&=1+4=5,\\
+      A\mathbf g_0&=(-4-2,\ -1-6)=(-6,\ -7),\\
+      \mathbf g_0^{\top}A\mathbf g_0&=(-1)(-6)+(-2)(-7)=6+14=20,\\
+      \gamma^*&=\tfrac{5}{20}=0.25.
+      \end{aligned}\]
+      The line-search point and its value:
+      \[\begin{aligned}
+      \mathbf x_1^{\mathrm{LS}}&=\mathbf 0-0.25\,(-1,-2)=(0.25,\ 0.5),\\
+      A\mathbf x_1^{\mathrm{LS}}&=(1+0.5,\ 0.25+1.5)=(1.5,\ 1.75),\\
+      \mathbf x^{\top}A\mathbf x&=0.25\cdot1.5+0.5\cdot1.75=0.375+0.875=1.25,\\
+      \mathbf b^{\top}\mathbf x&=0.25+1.0=1.25,\\
+      f(\mathbf x_1^{\mathrm{LS}})&=\tfrac12(1.25)-1.25=-0.625.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 6 — compare.</b>
+      <table class="plain">
+        <thead><tr><th>after one step</th><th>\(f\)</th></tr></thead>
+        <tbody>
+          <tr><td>fixed \(\gamma=0.1\)</td><td>\(-0.400\)</td></tr>
+          <tr><td>exact line search, \(\gamma^*=0.25\)</td><td>\(-0.625\)</td></tr>
+          <tr><td>optimum \(f^*\)</td><td>\(-0.682\)</td></tr>
+        </tbody>
+      </table>
+      Same direction, better length: one line-search step covers most of the way to the bottom, while the fixed step covers about a third of it.</div>
+      <p class="pans">(a) \(\nabla f=A\mathbf x-\mathbf b\); \(\mathbf x^*=(1/11,\,7/11)\), \(f^*=-15/22\approx-0.682\). (b) \(\mathbf x_1=(0.1,0.2)\), \(f=-0.4\). (c) \(\gamma^*=\mathbf g^{\top}\mathbf g/\mathbf g^{\top}A\mathbf g=0.25\), \(\mathbf x_1^{\mathrm{LS}}=(0.25,0.5)\), \(f=-0.625\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>For a quadratic, the line-search formula \(\gamma^*=\mathbf g^{\top}\mathbf g/\mathbf g^{\top}A\mathbf g\) comes from three lines — differentiate \(h\), recognise \(A\mathbf x-\mathbf b\) as \(\mathbf g\), set to zero — so re-derive it rather than recall it. Watch the sign convention: with \(-\mathbf b^{\top}\mathbf x\) in \(f\) the gradient is \(A\mathbf x-\mathbf b\) and the optimum solves \(A\mathbf x=\mathbf b\); with \(+\mathbf b^{\top}\mathbf x\) both signs flip.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Gradient descent is applied to \(f(x,y)=3x^2+y^2\) from \((x_0,y_0)=(1,3)\), choosing at each step the \(\gamma\) that minimises \(h(\gamma)=f\big((x,y)-\gamma\nabla f(x,y)\big)\). <b>(a)</b> Show that \(h(\gamma)=3(1-6\gamma)^2x^2+(1-2\gamma)^2y^2\) and derive \(\gamma^*=\dfrac{9x^2+y^2}{54x^2+2y^2}\). <b>(b)</b> Evaluate \(\gamma^*\) at \((1,3)\); compute the new point and the new value of \(f\).</p>
+    <p class="ptest"><b>What this tests.</b> Building the one-variable function \(h\) by hand and minimising it — the line-search formula derived from scratch on a separable bowl. <b>Plan.</b> Write the trial point with a factor \((1-c_i\gamma)\) on each coordinate, where \(c_i\) is that coordinate's gradient coefficient; substitute into \(f\); differentiate in \(\gamma\); solve the linear equation; then put the numbers in.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — build \(h\).</b> The gradient is \(\nabla f=(6x,\,2y)\), so the trial point is
+      \[\big(x-\gamma\cdot6x,\ y-\gamma\cdot2y\big)=\big((1-6\gamma)\,x,\ (1-2\gamma)\,y\big).\]
+      Substituting into \(f=3x^2+y^2\):
+      \[h(\gamma)=3(1-6\gamma)^2x^2+(1-2\gamma)^2y^2.\]</div>
+      <div class="pstep"><b>Step 2 — minimise \(h\).</b> Differentiate with the chain rule (the inner derivatives are \(-6\) and \(-2\)):
+      \[\begin{aligned}
+      h'(\gamma)&=3\cdot2(1-6\gamma)(-6)\,x^2+2(1-2\gamma)(-2)\,y^2\\
+      &=-36x^2(1-6\gamma)-4y^2(1-2\gamma).
+      \end{aligned}\]
+      Set \(h'(\gamma)=0\), expand, and collect the \(\gamma\) terms:
+      \[\begin{aligned}
+      -36x^2+216\gamma x^2-4y^2+8\gamma y^2&=0\\
+      \gamma\,(216x^2+8y^2)&=36x^2+4y^2\\
+      \gamma^*&=\frac{36x^2+4y^2}{216x^2+8y^2}=\frac{9x^2+y^2}{54x^2+2y^2},
+      \end{aligned}\]
+      dividing top and bottom by \(4\) in the last line. It is a minimum because \(h''(\gamma)=216x^2+8y^2>0\).</div>
+      <div class="pstep"><b>(b) Step 3 — evaluate at \((1,3)\).</b>
+      \[\gamma^*=\frac{9(1)+9}{54(1)+2(9)}=\frac{18}{72}=\frac14.\]</div>
+      <div class="pstep"><b>Step 4 — new point and new value.</b> Use the factors from Step 1 with \(\gamma=\tfrac14\):
+      \[\begin{aligned}
+      x_1&=\big(1-6\cdot\tfrac14\big)\cdot1=\big(1-\tfrac32\big)=-\tfrac12,\\
+      y_1&=\big(1-2\cdot\tfrac14\big)\cdot3=\tfrac12\cdot3=\tfrac32.
+      \end{aligned}\]
+      Before and after:
+      \[\begin{aligned}
+      f(1,3)&=3+9=12,\\
+      f\big(-\tfrac12,\tfrac32\big)&=3\cdot\tfrac14+\tfrac94=\tfrac34+\tfrac94=\tfrac{12}{4}=3.
+      \end{aligned}\]
+      One optimally sized step removed three quarters of the objective. Notice \(x\) overshot past \(0\) to \(-\tfrac12\): the stiff direction (curvature \(6\)) was pushed too far by a step that was right for the whole line.</div>
+      <p class="pans">(a) \(h(\gamma)=3(1-6\gamma)^2x^2+(1-2\gamma)^2y^2\), \(\gamma^*=\dfrac{9x^2+y^2}{54x^2+2y^2}\). (b) \(\gamma^*=\tfrac14\) at \((1,3)\); new point \(\big(-\tfrac12,\tfrac32\big)\); \(f:12\to3\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>For any \(f=ax^2+by^2\) the safe routine is: trial point with factors \((1-c_i\gamma)\), substitute, differentiate, solve the <em>linear</em> equation for \(\gamma\). Re-derive it every time — a memorised formula breaks the moment the coefficients change. The slip to avoid is dropping the inner derivative \((-6)\) or \((-2)\) when differentiating the squares.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Your code computes gradients of \(J(w_1,w_2)=w_1^3+w_1w_2^2\), and you audit it at \((2,1)\) with \(\Delta=0.1\). <b>(a)</b> Compute the analytic gradient at \((2,1)\). <b>(b)</b> Estimate both partials with the forward difference \(\big(J(\dots,w_i+\Delta,\dots)-J(\dots)\big)/\Delta\) and report the absolute errors. <b>(c)</b> Re-estimate \(\partial J/\partial w_1\) with the central difference and compare the orders of the two errors.</p>
+    <p class="ptest"><b>What this tests.</b> The finite-difference audit — the cheap check that catches a wrong gradient before it silently corrupts every descent step — and why the symmetric version is so much better. <b>Plan.</b> Differentiate by hand first; compute the three needed values of \(J\) exactly; form the two quotients; then explain the error sizes with the second and third derivatives.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the analytic gradient.</b>
+      \[\begin{aligned}
+      \frac{\partial J}{\partial w_1}&=3w_1^2+w_2^2 &&\Rightarrow\ 3(4)+1=13\ \text{at }(2,1),\\
+      \frac{\partial J}{\partial w_2}&=2w_1w_2 &&\Rightarrow\ 2(2)(1)=4\ \text{at }(2,1).
+      \end{aligned}\]
+      So \(\nabla J(2,1)=(13,\,4)\).</div>
+      <div class="pstep"><b>(b) Step 2 — forward differences.</b> The base value is \(J(2,1)=8+2=10\).
+      For \(w_1\), nudge to \(2.1\):
+      \[\begin{aligned}
+      J(2.1,1)&=2.1^3+2.1\cdot1^2=9.261+2.1=11.361,\\
+      \frac{J(2.1,1)-J(2,1)}{0.1}&=\frac{11.361-10}{0.1}=\frac{1.361}{0.1}=13.61\qquad(\text{error }0.61).
+      \end{aligned}\]
+      For \(w_2\), nudge to \(1.1\):
+      \[\begin{aligned}
+      J(2,1.1)&=8+2\cdot1.1^2=8+2(1.21)=8+2.42=10.42,\\
+      \frac{J(2,1.1)-J(2,1)}{0.1}&=\frac{10.42-10}{0.1}=\frac{0.42}{0.1}=4.20\qquad(\text{error }0.20).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(c) Step 3 — central difference for \(w_1\).</b> One more value, at \(1.9\):
+      \[\begin{aligned}
+      J(1.9,1)&=1.9^3+1.9=6.859+1.9=8.759,\\
+      \frac{J(2.1,1)-J(1.9,1)}{2(0.1)}&=\frac{11.361-8.759}{0.2}=\frac{2.602}{0.2}=13.01\qquad(\text{error }0.01).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 4 — why the errors are what they are.</b> Taylor-expand \(J\) in \(w_1\) about \(2\). The forward quotient picks up the whole second-order term:
+      \[\text{forward error}\approx\frac{\Delta}{2}\,\frac{\partial^2J}{\partial w_1^2}=\frac{0.1}{2}\cdot6w_1=\frac{0.1}{2}\cdot12=0.6,\]
+      which matches the \(0.61\) we saw (the extra \(0.01\) is the third-order term). In the central quotient the \(\pm\Delta\) evaluations cancel every even-order term, so the first surviving error is third order:
+      \[\text{central error}\approx\frac{\Delta^2}{6}\,\frac{\partial^3J}{\partial w_1^3}=\frac{0.01}{6}\cdot6=0.01,\]
+      exactly what we found. Forward is \(O(\Delta)\), central is \(O(\Delta^2)\): shrink \(\Delta\) tenfold and the forward error drops tenfold (to \(0.0601\)) but the central error drops a hundredfold (to \(0.0001\)). For \(w_2\) the forward error was exactly \(\tfrac{\Delta}{2}\cdot\partial^2J/\partial w_2^2=0.05\cdot4=0.20\), because \(J\) is only quadratic in \(w_2\).</div>
+      <p class="pans">(a) \(\nabla J(2,1)=(13,4)\). (b) Forward \((13.61,\,4.20)\), errors \((0.61,\,0.20)\). (c) Central \(13.01\), error \(0.01\): forward error \(\sim\Delta\cdot6\), central error \(\sim\Delta^2\cdot1\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The central difference costs one extra evaluation and buys an extra order of accuracy — always use it for an audit. A deliberately large \(\Delta\) makes the orders visible in your own arithmetic; a tiny \(\Delta\) like \(10^{-15}\) is worse, not better, because floating-point round-off then swamps the quotient. The usual slip is dividing the central difference by \(\Delta\) instead of \(2\Delta\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Steepest descent with exact line search is applied to \(J(x,y)=x^2+4y^2\) at \(\mathbf w_0=(2,1)\). <b>(a)</b> Write the descent direction at \(\mathbf w_0\) and derive the optimal step \(\gamma^*\) by minimising \(h(\gamma)=J\big(\mathbf w_0-\gamma\nabla J(\mathbf w_0)\big)\). <b>(b)</b> Compute \(\mathbf w_1\) and the drop in \(J\).</p>
+    <p class="ptest"><b>What this tests.</b> The same line-search recipe as Problem 7 on a different bowl, with numbers in place of symbols from the start — and a look at what the optimal step does to the stiff coordinate. <b>Plan.</b> Gradient at the point; write the ray; expand \(h'\) into a linear function of \(\gamma\); solve; substitute; keep everything as exact fractions until the last line.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — direction at \(\mathbf w_0\).</b> \(\nabla J=(2x,\,8y)\), so
+      \[\nabla J(2,1)=(4,\,8),\qquad\text{descent direction }=-(4,8).\]</div>
+      <div class="pstep"><b>Step 2 — the ray and \(h\).</b> The trial point is \((2-4\gamma,\ 1-8\gamma)\), hence
+      \[h(\gamma)=(2-4\gamma)^2+4(1-8\gamma)^2.\]</div>
+      <div class="pstep"><b>Step 3 — minimise \(h\).</b>
+      \[\begin{aligned}
+      h'(\gamma)&=2(2-4\gamma)(-4)+4\cdot2(1-8\gamma)(-8)\\
+      &=-8(2-4\gamma)-64(1-8\gamma)\\
+      &=-16+32\gamma-64+512\gamma\\
+      &=544\gamma-80.
+      \end{aligned}\]
+      Set to zero:
+      \[\gamma^*=\frac{80}{544}=\frac{5}{34}\approx0.147,\]
+      a minimum since \(h''=544>0\).</div>
+      <div class="pstep"><b>(b) Step 4 — new point and drop in \(J\).</b>
+      \[\begin{aligned}
+      \mathbf w_1&=\Big(2-4\cdot\tfrac5{34},\ 1-8\cdot\tfrac5{34}\Big)=\Big(\tfrac{68-20}{34},\ \tfrac{34-40}{34}\Big)\\
+      &=\Big(\tfrac{48}{34},\ -\tfrac{6}{34}\Big)=\Big(\tfrac{24}{17},\ -\tfrac{3}{17}\Big)\approx(1.412,\ -0.176).
+      \end{aligned}\]
+      Values:
+      \[\begin{aligned}
+      J(\mathbf w_0)&=4+4=8,\\
+      J(\mathbf w_1)&=\Big(\tfrac{24}{17}\Big)^2+4\Big(\tfrac{3}{17}\Big)^2=\frac{576+36}{289}=\frac{612}{289}=\frac{36}{17}\approx2.118.
+      \end{aligned}\]
+      The single optimal step removed about \(74\%\) of the objective.</div>
+      <div class="pstep"><b>Step 5 — what the sign of \(y_1\) is telling you.</b> The \(y\)-coordinate overshot past \(0\), to \(-\tfrac3{17}\), while \(x\) is still on its way. On an elongated bowl even the best step <em>along the gradient</em> goes too far in the stiff direction and not far enough in the gentle one. The next gradient, \(\big(\tfrac{48}{17},-\tfrac{24}{17}\big)\), is perpendicular to \((4,8)\) — the perpendicularity property of exact line search — so the path must turn a right angle and zig-zag its way down the valley.</div>
+      <p class="pans">(a) direction \(-(4,8)\); \(h'(\gamma)=544\gamma-80\), so \(\gamma^*=5/34\approx0.147\). (b) \(\mathbf w_1=(24/17,\,-3/17)\approx(1.41,-0.18)\); \(J:8\to36/17\approx2.12\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Keep the fractions: \(80/544\) reduces to \(5/34\), and \(612/289\) to \(36/17\) — decimals hide the check that the two answers are consistent. Overshooting in the stiff coordinate is not a mistake, it is the reason steepest descent zig-zags; every exact line-search step ends where the new gradient is perpendicular to the old one.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">Consider the coupled quadratic \(f(x,y)=x^2+xy+y^2\). <b>(a)</b> Find the minimiser analytically and confirm it is a minimum via the Hessian. <b>(b)</b> From \((x_0,y_0)=(2,0)\) with \(\gamma=0.2\), perform two gradient-descent iterations, reporting the gradient, the new point and \(f\) each time. <b>(c)</b> Explain, with one computed number, why the coordinates can no longer be treated independently.</p>
+    <p class="ptest"><b>What this tests.</b> Careful differentiation when a cross term is present — \(\partial f/\partial x=2x+y\), not \(2x\) — and seeing what the off-diagonal Hessian entry does to a descent path. <b>Plan.</b> Solve the two linear gradient equations; read the Hessian's eigenvalues from the \(a\pm b\) pattern; run the table with the full gradient at every row; then point at the one number that shows the coupling.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the analytic minimiser.</b>
+      \[\nabla f=\big(2x+y,\ x+2y\big)=(0,0).\]
+      From the first equation \(y=-2x\); from the second \(x=-2y\). Substituting one into the other, \(x=-2(-2x)=4x\), so \(3x=0\), \(x=0\), and then \(y=0\). The only critical point is \((0,0)\), with \(f(0,0)=0\). The Hessian is constant:
+      \[H=\begin{bmatrix}2&1\\1&2\end{bmatrix},\qquad\text{eigenvalues }2\pm1=3\ \text{and}\ 1,\]
+      both positive, so \(H\) is positive-definite and \((0,0)\) is the global minimum. (For any matrix \(\begin{bmatrix}a&b\\b&a\end{bmatrix}\) the eigenvalues are \(a\pm b\), with eigenvectors \((1,1)\) and \((1,-1)\).)</div>
+      <div class="pstep"><b>(b) Step 2 — iteration 1.</b> At \((2,0)\):
+      \[\begin{aligned}
+      \nabla f(2,0)&=\big(2(2)+0,\ 2+2(0)\big)=(4,\ 2),\\
+      f(2,0)&=4+0+0=4,\\
+      (x_1,y_1)&=(2,0)-0.2\,(4,2)=(2-0.8,\ 0-0.4)=(1.2,\ -0.4),\\
+      f(1.2,-0.4)&=1.44+(1.2)(-0.4)+0.16\\
+      &=1.44-0.48+0.16=1.12.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — iteration 2.</b> At \((1.2,-0.4)\):
+      \[\begin{aligned}
+      \nabla f&=\big(2(1.2)-0.4,\ 1.2+2(-0.4)\big)\\
+      &=(2.4-0.4,\ 1.2-0.8)=(2.0,\ 0.4),\\
+      (x_2,y_2)&=(1.2,-0.4)-0.2\,(2.0,0.4)\\
+      &=(1.2-0.4,\ -0.4-0.08)=(0.8,\ -0.48),\\
+      f(0.8,-0.48)&=0.64+(0.8)(-0.48)+0.2304\\
+      &=0.64-0.384+0.2304=0.4864.
+      \end{aligned}\]
+      So \(f:4\to1.12\to0.4864\), heading for \((0,0)\).
+      <table class="plain">
+        <thead><tr><th>\(k\)</th><th>point</th><th>gradient</th><th>new point</th><th>\(f\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\((2,\,0)\)</td><td>\((4,\,2)\)</td><td>\((1.2,\,-0.4)\)</td><td>\(4\)</td></tr>
+          <tr><td>1</td><td>\((1.2,\,-0.4)\)</td><td>\((2.0,\,0.4)\)</td><td>\((0.8,\,-0.48)\)</td><td>\(1.12\)</td></tr>
+          <tr><td>2</td><td>\((0.8,\,-0.48)\)</td><td>—</td><td>—</td><td>\(0.4864\)</td></tr>
+        </tbody>
+      </table></div>
+      <div class="pstep"><b>(c) Step 4 — why no decoupling.</b> At \((2,0)\) the \(y\)-coordinate already sits at its "own" best value \(0\), yet
+      \[\frac{\partial f}{\partial y}(2,0)=x+2y=2+0=2\neq0,\]
+      so the first step drags \(y\) to \(-0.4\) purely because \(x\) is large. The cross term \(xy\) makes each partial depend on <em>both</em> variables; updates of the form \(x_{k+1}=(\text{constant})\,x_k\) no longer exist. The coupling <em>is</em> the off-diagonal \(1\) in \(H\). What does decouple is the eigenvector frame: along \((1,1)\) the function is \(f(t,t)=3t^2\) (curvature \(3\)) and along \((1,-1)\) it is \(f(t,-t)=t^2\) (curvature \(1\)); in those coordinates the two factors are \(1-0.2\cdot3=0.4\) and \(1-0.2\cdot1=0.8\).</div>
+      <p class="pans">(a) Minimiser \((0,0)\); \(H=\begin{bmatrix}2&1\\1&2\end{bmatrix}\) with eigenvalues \(3,1\) — positive-definite. (b) \((1.2,-0.4)\) with \(f=1.12\), then \((0.8,-0.48)\) with \(f=0.4864\). (c) At \((2,0)\), \(\partial f/\partial y=2\neq0\) although \(y=0\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A cross term is there to test whether you differentiate carefully: \(\partial f/\partial x=2x+y\). Everything else — the update rule, the table — is unchanged. The eigenvalue fact for \(\begin{bmatrix}a&b\\b&a\end{bmatrix}\), namely \(a\pm b\), is worth keeping; it is where the coordinates <em>do</em> come apart.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">The line \(\hat y=ax+b\) is fitted to the four points \(x=(0,1,2,3)\), \(y=(1,3,5,7)\) by minimising \(L(a,b)=\sum_{i=1}^4\big(y_i-(ax_i+b)\big)^2\). <b>(a)</b> Find the exact minimiser \((a^*,b^*)\) from the normal equations and interpret \(L^*\). <b>(b)</b> From \((a_0,b_0)=(0,0)\) with \(\gamma=0.05\), perform two gradient-descent iterations; report the gradient, the parameters and \(L\) after each. <b>(c)</b> The Hessian of \(L\) is \(H=2\begin{bmatrix}\sum x_i^2&\sum x_i\\\sum x_i&n\end{bmatrix}\), with eigenvalues \(\approx33.6\) and \(\approx2.4\). Compute the largest usable step size \(\gamma_{\max}=2/\lambda_{\max}\) and use it to explain the path seen in (b).</p>
+    <p class="ptest"><b>What this tests.</b> The whole story in one place: the normal equations give the destination, descent gives the journey, and the Hessian explains the driving style. <b>Plan.</b> Compute the four sums once and reuse them everywhere; keep residuals in a row so the gradient is two dot products; after each update recompute predictions, residuals, \(L\); finally compare \(\gamma\) with \(2/\lambda_{\max}\) and read the sign of \(1-\gamma\lambda_{\max}\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the four sums.</b>
+      \[\begin{aligned}
+      \sum x_i&=0+1+2+3=6, & \sum y_i&=1+3+5+7=16,\\
+      \sum x_i^2&=0+1+4+9=14, & \sum x_iy_i&=0+3+10+21=34,
+      \end{aligned}\]
+      and \(n=4\).</div>
+      <div class="pstep"><b>Step 2 — the normal equations.</b>
+      \[\begin{aligned}
+      a^*&=\frac{n\sum x_iy_i-\sum x_i\sum y_i}{n\sum x_i^2-\big(\sum x_i\big)^2}=\frac{4(34)-6(16)}{4(14)-36}=\frac{136-96}{56-36}=\frac{40}{20}=2,\\
+      b^*&=\frac{\sum y_i-a^*\sum x_i}{n}=\frac{16-2\cdot6}{4}=\frac{16-12}{4}=1.
+      \end{aligned}\]
+      Check the fit: \(y=2x+1\) gives \(1,3,5,7\) — every point exactly. So \(L^*=0\): the data are perfectly linear, and the minimum of the loss is a perfect fit.</div>
+      <div class="pstep"><b>(b) Step 3 — the gradient formulas.</b> With residuals \(r_i=y_i-(ax_i+b)\),
+      \[\frac{\partial L}{\partial a}=-2\sum x_ir_i,\qquad \frac{\partial L}{\partial b}=-2\sum r_i.\]</div>
+      <div class="pstep"><b>Step 4 — iteration 1.</b> At \((0,0)\) the predictions are all \(0\), so \(r=(1,3,5,7)\):
+      \[\begin{aligned}
+      \sum x_ir_i&=0+3+10+21=34, & \sum r_i&=16,\\
+      \nabla L&=(-2\cdot34,\ -2\cdot16)=(-68,\ -32), & L_0&=1+9+25+49=84.
+      \end{aligned}\]
+      Update:
+      \[(a_1,b_1)=(0,0)-0.05\,(-68,-32)=(3.4,\ 1.6).\]
+      New predictions \(\hat y=3.4x+1.6\) and residuals:
+      \[\begin{aligned}
+      \hat y&=(1.6,\ 5.0,\ 8.4,\ 11.8),\\
+      r&=(1-1.6,\ 3-5.0,\ 5-8.4,\ 7-11.8)=(-0.6,\ -2.0,\ -3.4,\ -4.8),\\
+      L_1&=0.36+4+11.56+23.04=38.96.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 5 — iteration 2.</b> From those residuals:
+      \[\begin{aligned}
+      \sum x_ir_i&=0-2.0-6.8-14.4=-23.2, & \sum r_i&=-10.8,\\
+      \nabla L&=(-2(-23.2),\ -2(-10.8))=(46.4,\ 21.6).
+      \end{aligned}\]
+      Update:
+      \[\begin{aligned}
+      (a_2,b_2)&=(3.4,1.6)-0.05\,(46.4,21.6)\\
+      &=(3.4-2.32,\ 1.6-1.08)=(1.08,\ 0.52).
+      \end{aligned}\]
+      New predictions and residuals:
+      \[\begin{aligned}
+      \hat y&=(0.52,\ 1.60,\ 2.68,\ 3.76),\\
+      r&=(0.48,\ 1.40,\ 2.32,\ 3.24),\\
+      L_2&=0.2304+1.96+5.3824+10.4976=18.0704\approx18.07.
+      \end{aligned}\]
+      <table class="plain">
+        <thead><tr><th>\(k\)</th><th>\((a_k,b_k)\)</th><th>\(\nabla L\)</th><th>new \((a,b)\)</th><th>\(L\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\((0,\,0)\)</td><td>\((-68,\,-32)\)</td><td>\((3.4,\,1.6)\)</td><td>\(84\)</td></tr>
+          <tr><td>1</td><td>\((3.4,\,1.6)\)</td><td>\((46.4,\,21.6)\)</td><td>\((1.08,\,0.52)\)</td><td>\(38.96\)</td></tr>
+          <tr><td>2</td><td>\((1.08,\,0.52)\)</td><td>—</td><td>—</td><td>\(18.07\)</td></tr>
+        </tbody>
+      </table>
+      The pattern: \(a\) jumped past its target \(2\) (to \(3.4\)), then back below it (to \(1.08\)), yet \(L:84\to38.96\to18.07\) keeps falling.</div>
+      <div class="pstep"><b>(c) Step 6 — the step-size speed limit.</b> With the sums from Step 1,
+      \[H=2\begin{bmatrix}14&6\\6&4\end{bmatrix}=\begin{bmatrix}28&12\\12&8\end{bmatrix},\qquad \operatorname{tr}H=36,\quad \det H=224-144=80.\]
+      The eigenvalues solve \(\lambda^2-36\lambda+80=0\):
+      \[\begin{aligned}
+      \lambda&=\frac{36\pm\sqrt{1296-320}}{2}=\frac{36\pm\sqrt{976}}{2}=18\pm\sqrt{244}\\
+      &=18\pm15.62\ \Rightarrow\ \lambda_{\max}\approx33.62,\ \ \lambda_{\min}\approx2.38.
+      \end{aligned}\]
+      The speed limit is
+      \[\gamma_{\max}=\frac{2}{\lambda_{\max}}\approx\frac{2}{33.62}\approx0.0595.\]
+      Our \(\gamma=0.05\) is just under it. Along the stiff eigen-direction the error is multiplied each step by
+      \[1-\gamma\lambda_{\max}\approx1-0.05\times33.62\approx-0.68:\]
+      magnitude below \(1\), so the loss keeps shrinking, but <em>negative</em>, so the parameters flip from one side of the optimum to the other — exactly the overshoot-and-return seen in (b). A smaller \(\gamma\), say \(0.02\), gives \(1-0.02\times33.62\approx+0.33\): a smooth, one-sided approach, but a slower one along the gentle direction (\(1-0.02\times2.38\approx0.95\)).</div>
+      <p class="pans">(a) \((a^*,b^*)=(2,1)\), \(L^*=0\) — a perfect fit. (b) \((3.4,1.6)\), \(L=38.96\); then \((1.08,0.52)\), \(L\approx18.07\): oscillating but improving. (c) \(\lambda\approx33.62,\ 2.38\); \(\gamma_{\max}\approx0.0595\); \(1-\gamma\lambda_{\max}\approx-0.68\) is negative, so the iterates alternate sides of the optimum.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The reusable diagnostic is the single number \(1-\gamma\lambda\): its size sets the speed, its sign says whether the approach is smooth (\(+\)) or oscillating (\(-\)), and \(|1-\gamma\lambda_{\max}|<1\) is the same statement as \(\gamma<2/\lambda_{\max}\). The slip on this type is forgetting the factor \(2\) in the Hessian (and so in \(\gamma_{\max}\)), or dropping the \(-2\) from the gradient of a squared residual.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">A line search must minimise the unimodal \(h(\alpha)=\alpha^2-5\alpha+8\) over \([0,\alpha_{\max}]=[0,4]\). <b>(a)</b> Trace three iterations of binary search: at each midpoint \(m\) decide from the sign of the slope (compare \(h(m)\) with \(h(m+\epsilon)\), \(\epsilon=10^{-6}\)) whether the minimum lies to the left or the right, and give the new interval. <b>(b)</b> What is the bracket width after \(k\) iterations, and how many iterations guarantee a width \(\le0.01\)?</p>
+    <p class="ptest"><b>What this tests.</b> The bracketing trace — a decision rule applied mechanically — and the halving count that follows. <b>Plan.</b> Fix the rule before starting: slope negative at \(m\) means the minimum is to the right, keep \([m,b]\); slope positive means keep \([a,m]\). Then three midpoints; then the width formula and one logarithm.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — iteration 1.</b> Interval \([0,4]\), midpoint \(m=2\). The slope is \(h'(\alpha)=2\alpha-5\), so
+      \[h'(2)=4-5=-1<0\qquad\big(\text{equivalently }h(2+\epsilon)<h(2)\big).\]
+      \(h\) is still going down at \(m\), so the minimum lies to the right: new interval \([2,4]\).</div>
+      <div class="pstep"><b>Step 2 — iteration 2.</b> Midpoint \(m=3\):
+      \[h'(3)=6-5=+1>0\qquad\big(h(3+\epsilon)>h(3)\big).\]
+      \(h\) is going up at \(m\), so the minimum lies to the left: new interval \([2,3]\).</div>
+      <div class="pstep"><b>Step 3 — iteration 3.</b> Midpoint \(m=2.5\):
+      \[h'(2.5)=5-5=0.\]
+      Numerically the probe still decides: \(h(2.5+\epsilon)=h(2.5)+\epsilon^2>h(2.5)\) (since \(h(2.5+t)-h(2.5)=t^2\) exactly), so the rule treats \(m\) as "going up" and keeps the left half: new interval \([2,2.5]\).</div>
+      <div class="pstep"><b>Step 4 — sanity check.</b> The true minimiser is \(\alpha^*=2.5\) (where \(h'=0\)), and it sits inside every bracket:
+      \[[0,4]\supset[2,4]\supset[2,3]\supset[2,2.5].\] ✓
+      (Its value is \(h(2.5)=6.25-12.5+8=1.75\); at the two earlier midpoints \(h(2)=h(3)=2\).)</div>
+      <div class="pstep"><b>(b) Step 5 — the width count.</b> Each iteration halves the bracket, so
+      \[\text{width after }k\text{ iterations}=\frac{4}{2^k}.\]
+      Require \(4/2^k\le0.01\):
+      \[\begin{aligned}
+      2^k&\ge400\\
+      k&\ge\log_2400\approx8.64\\
+      k&=9\qquad\big(\text{width }4/512\approx0.0078\big).
+      \end{aligned}\]
+      Eight iterations leave \(4/256\approx0.0156\), still too wide; nine is the first that works.</div>
+      <p class="pans">(a) \([0,4]\to[2,4]\to[2,3]\to[2,2.5]\). (b) width \(=4/2^k\); \(k=9\) iterations guarantee width \(\le0.01\) (\(4/512\approx0.0078\)).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Fix the decision rule before you start and the trace runs itself; the width formula \((b-a)/2^k\) plus one \(\log_2\) finishes the count. If golden-section search is used instead, the bracket shrinks by \(0.618\) per evaluation and the same target takes \(13\) steps; and if \(h\) is not unimodal, no bracketing method is safe — the inexact Armijo rule is the fallback.</p></div>
+    </details>
+  </div>
