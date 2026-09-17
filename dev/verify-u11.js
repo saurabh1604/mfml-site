@@ -131,10 +131,10 @@ const okay = m => console.log('  ok   ' + m);
 
   console.log('— W11 · the branching interrogation —');
   await show('#w-cases');
-  await page.click('#cs-tree [data-b="b1"]'); await page.waitForTimeout(700);
+  await page.click('#cs-tree [data-b="b1"]'); await page.waitForTimeout(4500);
   t = norm(await text('#cs-work')) + ' ' + norm(await text('#cs-verdict'));
   if (/2\/3/.test(t) && /1\/3/.test(t) && /good|survives/i.test(t)) okay('case 1 survives at (2/3, 1/3)'); else fail('case 1: ' + t);
-  await page.click('#cs-tree [data-b="b2"]'); await page.waitForTimeout(700);
+  await page.click('#cs-tree [data-b="b2"]'); await page.waitForTimeout(4500);
   t = norm(await text('#cs-work')) + ' ' + norm(await text('#cs-verdict'));
   if (/-2/.test(t) && /reject/i.test(t)) okay('case 2 rejected on µ₂ = −2'); else fail('case 2: ' + t);
   await page.click('#cs-tabs [data-t="many"]');
