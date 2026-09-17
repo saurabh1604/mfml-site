@@ -1,0 +1,160 @@
+
+<!-- ================= 9 · THE FINE ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>Turn the wall into a fine</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The guard at the fence</span>
+    <p>We know how to optimise a function with <em>no</em> rules: differentiate, set to zero. So the plan is to get rid of the rules. And there is exactly one way to get rid of a rule without changing the answer: <strong>charge for breaking it</strong>. Put a guard at the fence. Cross it and you pay \(\mu\) rupees per metre past it; stay behind it and you pay nothing. Now there is no fence — only a bill. You want the bill small. The guard, who would love you to stray, wants it large. That tug-of-war is the whole method.</p>
+  </div>
+<!--@W9-->
+  <div class="prose reveal">
+    <p>The first honest attempt at that bill is a wall written as a function: charge \(0\) inside and \(\infty\) outside. It is perfectly correct — any illegal point now scores infinity, so the unconstrained problem has exactly the same answer as the constrained one. It is also useless, because you cannot differentiate a vertical cliff, and differentiating is the only thing we know how to do.</p>
+    <p>So look at the top panel and do the one thing that saves the method: <strong>put a straight line under the wall and raise its slope</strong>. The line \(\mu g\) is zero at the fence, harmless on the allowed side (where \(g\le0\) makes it negative or zero), and climbing on the banned side. It is not the wall — it is always <em>below</em> the wall — but as \(\mu\) grows it does more and more of the wall's job. And the wall is exactly what you get if you let the guard pick the worst \(\mu\) for you:</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\max_{\mu\ge0}\ \mu\,g \;=\; \begin{cases}0,& g\le0\\ +\infty,& g>0\end{cases}\qquad\Longrightarrow\qquad L(\mathbf x,\lambda,\boldsymbol\mu)=f(\mathbf x)+\lambda\,e(\mathbf x)+\sum_i\mu_i\,g_i(\mathbf x)\]</p>
+      <p>The infinite wall, <strong>rebuilt out of straight lines</strong>. Obey the fence and the guard's best move is \(\mu=0\), so you pay nothing; break it and the guard sends \(\mu\) up without limit. That one line is why the Lagrangian — score, plus a fine for leaving the path, plus a fine for crossing each fence — is not an approximation of the constrained problem. It <em>is</em> the constrained problem, with the rules relaxed into prices.</p>
+    </div>
+    <p>Two sign rules come out of the same picture, and they are not conventions.</p>
+    <p><strong>Every fence fine must satisfy \(\mu_i\ge0\).</strong> Drag \(\mu\) below zero in the top panel and watch: the line now dips <em>below</em> zero on the banned side, so crossing the fence would <em>lower</em> your bill. The optimiser would sprint out of bounds on purpose — and the widget draws it doing exactly that. A fine has to raise the bill, never lower it. This rule has a name, <strong>dual feasibility</strong>, and you have just seen the whole of it in one drag.</p>
+    <p><strong>The path fine \(\lambda\) is free.</strong> Any sign. The path constraint is \(e=0\), and you can drift off it in either direction; both directions are equally illegal, so the fine has no natural sign. You will find negative \(\lambda\)'s constantly and they are correct. Forcing \(\lambda\ge0\) will make you find nothing.</p>
+    <p>The lower panel is the same idea on a real problem: \(f(x)=(x-3)^2\) behind a fence at \(x\le1\). Slide \(\mu\) and watch \(\min_x L\) — a perfectly ordinary unconstrained minimisation, one you could do in your sleep — climb towards \(4\), the true constrained answer, and touch it exactly at \(\mu=4\). At that price, the straight line does the whole wall's job.</p>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why is a negative fence multiplier \(\mu_i<0\) forbidden, when a negative \(\lambda\) on the path is perfectly fine?</p>
+    <div class="opts">
+      <button data-correct data-why="With g > 0 (fence broken) the term µg is negative when µ < 0, so breaking the rule reduces the bill and the optimiser is paid to trespass. The path is different: e = 0 can be broken in either direction, so no sign of λ rewards one side over the other.">A negative \(\mu\) makes crossing the fence <em>cheaper</em>, so the optimiser runs out of bounds on purpose; a path can be left in either direction, so its fine has no natural sign</button>
+      <button data-why="Both live in the same Lagrangian and both are found the same way. The asymmetry is not about where they appear but about what they price: a one-sided rule versus a two-sided one.">Because \(\mu\) multiplies an inequality and \(\lambda\) multiplies an equality, and inequalities are always positive</button>
+      <button data-why="A negative µ is perfectly computable — that is exactly why it is dangerous. When a case returns µ < 0 the arithmetic is fine; it is the assumed active set that is wrong, so you discard that case.">Because \(\mu<0\) makes the algebra undefined</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You are minimising \(f\) subject to one fence, and your candidate point sits comfortably <em>inside</em> the allowed region. What does the guard charge?</p>
+    <div class="opts">
+      <button data-correct data-why="Inside means g < 0, so µg ≤ 0 for any µ ≥ 0 — a fine would only make the bill smaller, which the guard (who is maximising) will never do. The guard's best move is µ = 0, and the bill is just f. The fence is priced at nothing precisely because it is not in the way.">Nothing — with \(g<0\), any positive \(\mu\) would <em>lower</em> the bill, so the guard's best move is \(\mu=0\)</button>
+      <button data-why="The guard maximises the bill. With g < 0 the term µg is negative for every µ > 0, so raising µ hurts the guard. Sending it up is the right move only when the fence is actually broken.">As much as possible — the guard always sends \(\mu\) up</button>
+      <button data-why="Nothing in the Lagrangian measures distance to the fence in that way. The term is µ·g, and the guard chooses µ to maximise it; with g negative, that choice is µ = 0 and the charge is exactly zero, not something proportional.">Something small and positive, in proportion to how close the fence is</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s9-->
+  <div class="onesent reveal"><b>In one sentence:</b> An infinite wall cannot be differentiated but a straight line can, and letting the guard raise the line's slope without limit rebuilds the wall exactly — which is why \(L=f+\lambda e+\sum\mu_i g_i\) with \(\mu_i\ge0\) is the constrained problem itself, not a softened version of it.</div>
+</section>
+
+<!-- ================= 10 · ROOM LEFT ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Room left, and the rule that falls out of it</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The gap you can still walk</span>
+    <p>Stand somewhere legal and measure the one number the Lagrangian keeps ignoring: <strong>how much room you have left before you touch the fence</strong>. If there is room, the guard has no grounds to charge you. If there is no room, the guard may charge whatever the geometry demands. That sentence is a theorem, and the way to prove it is to <em>give the room a name and differentiate with respect to it</em>.</p>
+  </div>
+<!--@W10-->
+  <div class="prose reveal">
+    <p>Here is the move. The fence \(g\le0\) is an inequality, and calculus is bad at inequalities. So turn it into an equation by adding the room:</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[g_i(\mathbf x)+t_i^{\,2}=0\qquad\Longrightarrow\qquad \boxed{\ \mu_i\,g_i(\mathbf x^\star)=0\ }\]</p>
+      <p>Why <em>squared</em>? Because writing \(g_i+t_i=0\) with \(t_i\ge0\) would just swap one inequality for another. A square is never negative <strong>by construction</strong> — the rule is built into the algebra instead of sitting beside it as a condition — and it stays smooth, so we can still differentiate. Nothing is lost: \(t_i^2=-g_i\ge0\) says exactly \(g_i\le0\), back again.</p>
+      <p>And then the payoff falls out in four lines. \(t_i\) appears in \(L\) only inside \(\mu_i t_i^2\), so \(\partial L/\partial t_i=2\mu_it_i=0\); multiply by \(t_i\) and halve to get \(\mu_it_i^2=0\); substitute \(t_i^2=-g_i\). <strong>The name of the rule now makes sense: complementary <em>slackness</em> was derived from the slack.</strong></p>
+    </div>
+    <p>A product of two numbers is zero only if one of them is. So for every fence, exactly one of two worlds holds — and the widget's greyed-out quadrant is the world that cannot exist.</p>
+    <p><strong>Room to spare.</strong> \(g_i<0\): you are strictly inside. The guard has no grounds, so \(\mu_i=0\). The fence is <em>inactive</em>, or slack — it is doing no work, and deleting it entirely would not move the answer.</p>
+    <p><strong>Touching.</strong> \(g_i=0\): you are pressed against the edge. Now \(\mu_i\) is free to be positive, and usually is. The fence is <em>active</em>, or tight, and it is holding you back.</p>
+    <p>Two traps live here and both are easy. The first: "the fence is active" and "we are on the boundary" are the <em>same</em> world, not two — active means \(g_i=0\) means on the boundary. The real split is <em>fine is zero</em> versus <em>fence is touched</em>. The second, and it costs more marks: on the boundary the fine is <strong>not</strong> forced to zero. With \(g_i=0\) the product \(\mu_ig_i\) is zero for any \(\mu_i\) at all. A positive fine on an active fence is the normal case; in two sections you will meet a problem whose answer sits on the fence with \(\mu^\star=4\).</p>
+    <p>And the multiplier is not bookkeeping. It is a <em>price</em>: relax fence \(i\) by a small amount \(\varepsilon\) and the best score improves by about \(\mu_i\varepsilon\). A fence with \(\mu_i=0\) is a fence you would pay nothing to remove — because it was never in your way. We will cash that in at §13.</p>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At the optimum you find \(\mu_3=0\) for the third fence. What can you conclude about \(g_3(\mathbf x^\star)\)?</p>
+    <div class="opts">
+      <button data-correct data-why="µ₃g₃ = 0 is satisfied by µ₃ = 0 whatever g₃ ≤ 0 happens to be — the fence may be touched or not. The implications run one way only: µᵢ > 0 forces gᵢ = 0, and gᵢ < 0 forces µᵢ = 0. A zero multiplier tells you nothing beyond feasibility.">Nothing beyond \(g_3\le0\) — a zero fine is compatible with touching the fence or not</button>
+      <button data-why="That is the degenerate case, and it is possible, but it is not forced. With µ₃ = 0 the product is zero for any g₃ ≤ 0, so the fence is free to be strictly inactive as well.">\(g_3=0\) — the fence must be exactly touched</button>
+      <button data-why="This is the common reading and it is one-directional the wrong way. gᵢ < 0 does force µᵢ = 0, but the converse fails: µᵢ = 0 permits gᵢ = 0 too.">\(g_3<0\) — the fence must be strictly slack</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s10-->
+  <div class="onesent reveal"><b>In one sentence:</b> Name the room left as a square, and differentiating with respect to it hands you \(\mu_ig_i=0\) — either you have room and the fine is zero, or you are touching and the fine may be positive, never both loose at once.</div>
+</section>
+
+<!-- ================= 11 · THE FIVE CONDITIONS ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Five conditions, and a branching interrogation</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Nothing new, just everything at once</span>
+    <p>Here is the anticlimax that makes this topic learnable. The famous KKT conditions — Karush, Kuhn and Tucker — are <strong>not a new idea</strong>. They are the oldest idea in the course, <em>set every derivative to zero</em>, run on the Lagrangian with the slack variables in it. Differentiate with respect to each kind of unknown in turn and each condition falls out, one per kind. Only the last one has to be added by hand.</p>
+  </div>
+  <div class="prose reveal">
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\begin{aligned}
+        \text{1 · stationarity } (\partial L/\partial\mathbf x):\quad & \nabla f+\lambda\nabla e+\textstyle\sum_i\mu_i\nabla g_i=\mathbf 0\\[2pt]
+        \text{2 · the path } (\partial L/\partial\lambda):\quad & e(\mathbf x^\star)=0\\[2pt]
+        \text{3 · the fences } (\partial L/\partial\mu_i):\quad & g_i(\mathbf x^\star)\le0\\[2pt]
+        \text{4 · complementary slackness } (\partial L/\partial t_i):\quad & \mu_i\,g_i(\mathbf x^\star)=0\\[2pt]
+        \text{5 · dual feasibility } (\text{the sign rule}):\quad & \mu_i\ge0
+      \end{aligned}\]</p>
+      <p>Four of the five are derivatives. The fifth is §9's guard argument, and no derivative will ever give it to you. Note what condition 1 is: it is §8's two-arrows-on-one-line, written for many rules at once. And note that \(\lambda\) is absent from the sign rule. It stays free.</p>
+    </div>
+    <p>Now the part that turns this into a procedure you can actually run. Condition 4 is one product per fence, and a product being zero offers two branches: <em>the fine is zero</em>, or <em>the fence is touched</em>. Guess a branch for every fence, solve the resulting equations, and let conditions 2, 3 and 5 throw out the guesses that lie. Work through the four branches yourself:</p>
+  </div>
+<!--@W11-->
+  <div class="prose reveal">
+    <p>Three of the four cases died, and notice <em>how</em> they died — each one is a different lesson. Case 2 and case 3 produced a perfectly well-formed answer and then returned a negative multiplier, \(\mu=-2\) and \(\mu=-4\). That is not a sign convention to be fixed; it means <strong>the case you assumed is impossible</strong> — the fence would have to pull you towards it rather than push you away. Discard and move on. Case 4 never even got that far: it broke the path before any fine rate was computed. And the surviving case returned \(\lambda^\star=-4/3\), negative, and perfectly legal, because \(\lambda\) was never sign-restricted.</p>
+    <p>The branches multiply. Each fence doubles the count, so \(m\) fences give \(2^m\) cases — and the classic slip is to write \(m^2\). The two agree at \(m=2\) (both \(4\)) and at \(m=4\) (both \(16\)), which is exactly why the mistake survives; they part company at \(m=3\), where the truth is \(\mathbf 8\), not \(9\). Equality constraints add no branches at all: the path is always tight and \(\lambda\) is never forced to zero.</p>
+    <p>Three honest footnotes about that count. Branches <em>overlap</em> — a point can have \(\mu_i=0\) and \(g_i=0\) at once, and will then turn up in two of them; finding the same point twice is normal. A branch may yield no solution, one, or a whole family, so \(2^m\) counts branches to check, not candidates you will collect. And \(2^m\) grows viciously: ten fences give \(1024\), and a support vector machine has one fence <em>per training point</em>. Nobody solves a real one by listing cases. The case list is a hand tool; §13 is the algorithm.</p>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">While testing a case you assumed active, the algebra returns \(\mu_2=-3\). What do you do?</p>
+    <div class="opts">
+      <button data-correct data-why="Dual feasibility requires µᵢ ≥ 0. A negative multiplier means the assumed active set is wrong — that fence would have to pull you toward it. The arithmetic is not broken; the guess is. Discard the whole case and test the next pattern.">Discard the whole case — the assumed active set is wrong, and move to the next branch</button>
+      <button data-why="That rule is for λ on an equality, which is genuinely free in sign. For an inequality a negative multiplier is not an alternative convention — it is a contradiction, because a negative fine would reward crossing the fence.">Keep it — multipliers are free in sign, so \(-3\) is as good as \(+3\)</button>
+      <button data-why="Nothing is wrong with the sign of gᵢ; the standard form already fixed that. The negative multiplier is telling you about the active-set guess, not about your algebra.">Flip the sign of \(g_2\) and re-solve — the constraint was written the wrong way round</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A problem has one equality constraint and three inequality constraints. How many cases does complementary slackness create?</p>
+    <div class="opts">
+      <button data-correct data-why="Only inequalities branch, and each doubles the count: 2³ = 8. The equality adds none, because the path is always tight and λ is never forced to zero. The tempting answer 9 is m², which happens to agree with 2^m at m = 2 and m = 4 — which is exactly why the slip survives.">\(2^3=8\)</button>
+      <button data-why="That is m², the classic slip. It agrees with 2^m at m = 2 and m = 4, so it often goes unpunished — but at m = 3 the truth is 8, not 9.">\(3^2=9\)</button>
+      <button data-why="Equality constraints create no branches. The path is always tight, so there is no 'inactive' case to test for it; only the three fences double the count.">\(2^4=16\) — four constraints, four doublings</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s11-->
+  <div class="onesent reveal"><b>In one sentence:</b> KKT is "set every derivative to zero" run on the Lagrangian with slacks — four conditions from four kinds of unknown, plus the sign rule — and complementary slackness turns it into a finite interrogation of \(2^m\) branches, most of which die on a negative multiplier.</div>
+</section>
+
+<!-- ================= 12 · HONEST PROBLEMS ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>Which problems are honest</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The string test</span>
+    <p>You now have a test that finds candidates. When is a candidate <em>the answer</em>? There is a physical test you can do on any graph with a piece of string. Stretch it tight between two points on the curve. If the string never sags below the curve — if the curve always stays on or under its own chords — the function is a <strong>bowl</strong>, and a bowl has exactly one bottom. Stretch the string on a curve with two dips and it cuts straight across the hump: not a bowl, and everything gets harder.</p>
+  </div>
+<!--@W12-->
+  <div class="prose reveal">
+    <p>Drag the two points and read the two numbers. The point on the chord sits at height \(\theta f(x)+(1-\theta)f(y)\); the point on the curve directly below it sits at \(f(\theta x+(1-\theta)y)\). If the second is never above the first, you have a convex function.</p>
+    <p>Then switch to the tangent tab, which is the same fact in a different pose: lay a tangent line at any point and let it run. For a bowl the tangent is a <em>global under-estimate</em> — the curve never dips below it anywhere. Run the sweep on both tabs and they agree on every curve, every time; on \(x^2\) the chord test fails \(0\) times in \(200\) sampled pairs, on \(x^4-3x^2\) it fails in \(119\) of them.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\begin{aligned}f\big(\theta\mathbf x+(1-\theta)\mathbf y\big)&\le\theta f(\mathbf x)+(1-\theta)f(\mathbf y)\\[3pt] \Longleftrightarrow\quad f(\mathbf y)&\ge f(\mathbf x)+\nabla f(\mathbf x)^{\!\top}(\mathbf y-\mathbf x)\end{aligned}\]</p>
+      <p>Chord above the curve, on the left; tangent below the curve, on the right. Same property, two poses — and the right-hand one is the useful one, because it says <strong>a local reading of the slope is a global promise</strong>. That is the whole reason convexity matters: on a bowl, what you can measure at your feet constrains the entire landscape.</p>
+    </div>
+    <p>The same test applies to <em>sets</em>, on the third tab: a set is convex when the segment joining any two of its points stays inside. A disc passes; a crescent and a ring fail. So a convex problem means a bowl objective, bowl fences, linear path — and then the allowed region is convex too, and there is nothing to get trapped in.</p>
+    <p>Now collect the payoff, stated carefully, because the two halves of it are constantly confused.</p>
+    <p><strong>KKT is <em>necessary</em></strong> — every true answer must pass the test — provided the constraints are well behaved where the answer sits. The technical name is a constraint qualification, and the common one is that the gradients of the <em>active</em> constraints are linearly independent there. Two active fences with parallel gradients break it, the multipliers may fail to exist, and the test can miss the answer entirely.</p>
+    <p><strong>KKT is <em>sufficient</em> only if the problem is convex.</strong> For convex \(f\), convex \(g_i\) and linear \(e\), a point passing all five conditions is the global minimum, full stop, no second check. For a non-convex problem it might be a maximum or a saddle, and you must verify some other way. So never write "all five conditions hold, therefore this is the minimum" without saying which part is convex.</p>
+    <p>Two shapes cover most of what you will meet, and both are convex. A <strong>linear program</strong> has a linear score and linear rules: \(\min\mathbf c^{\!\top}\mathbf x\) subject to \(A\mathbf x\le\mathbf b\). A <strong>quadratic program</strong> has a bowl score and linear rules: \(\min\tfrac12\mathbf x^{\!\top}Q\mathbf x+\mathbf c^{\!\top}\mathbf x\) subject to \(A\mathbf x\le\mathbf b\). Ridge, lasso and the support vector machine are all quadratic programs. Their duals come out in closed form, and both are worked in the drawer below.</p>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You run the five conditions on a problem and one point passes all of them. Is it the minimum?</p>
+    <div class="opts">
+      <button data-correct data-why="KKT is sufficient only for convex problems. On a convex problem a KKT point is the global minimum with no further work. On a non-convex one it is a candidate — it could be a maximum or a saddle — and you must verify a second way, for example by restricting f to the constraint and examining it directly.">Only if the problem is convex — otherwise it is a candidate that still needs a second check</button>
+      <button data-why="Passing all five makes it a KKT point, which is a strictly weaker statement than being a minimum. The gap between the two is exactly what convexity closes.">Yes — that is what the five conditions are for</button>
+      <button data-why="A strictly positive multiplier tells you a fence is active; it says nothing about whether the point is a minimum, a maximum or a saddle. The deciding property is convexity, not the sign of µ.">Yes, provided at least one multiplier is strictly positive</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s12-->
+  <div class="onesent reveal"><b>In one sentence:</b> A bowl is a function that never rises above its own chords and never dips below its own tangents — and on a bowl, with bowl fences, a point that passes the five conditions <em>is</em> the answer; off a bowl, it is only a candidate.</div>
+</section>

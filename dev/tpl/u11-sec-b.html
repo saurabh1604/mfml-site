@@ -1,0 +1,146 @@
+
+<!-- ================= 5 · ADAM ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>Adam — two notebooks and a probation period</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The new analyst</span>
+    <p>A new analyst joins and starts two notebooks about a project. One records <strong>which way</strong> the decisions have been trending. The other records <strong>how big</strong> they have been running. On day two both notebooks are nearly empty, and a careful manager knows exactly what to do with a nearly-empty notebook: discount it. Not ignore it — discount it, heavily at first, less each week, until a year in the notebooks are full and can be read at face value. That discount is a number, it shrinks the analyst's authority on purpose, and <strong>it retires itself</strong>.</p>
+  </div>
+<!--@W5-->
+  <div class="prose reveal">
+    <p>You have already met both notebooks. The direction notebook is momentum, written as a fading average instead of a running velocity. The loudness notebook is RMSProp. Adam keeps both, one per knob, and divides the first by the root of the second.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[F\leftarrow \rho_f F+(1-\rho_f)\nabla J,\qquad A\leftarrow \rho A+(1-\rho)\nabla J\odot\nabla J,\qquad \mathbf w\leftarrow\mathbf w-\alpha_t\,\frac{F}{\sqrt A}\]</p>
+      <p>\[\alpha_t=\alpha\,\frac{\sqrt{1-\rho^{\,t}}}{1-\rho_f^{\,t}}\]</p>
+      <p>The step is <em>average direction</em> divided by <em>root average loudness</em>. The numerator averages signed slopes, so slopes that disagree cancel; the denominator averages squares, which cannot cancel. A knob being pushed consistently gets a ratio near \(\pm1\); a knob being shaken about gets a ratio near zero. <strong>Noise is throttled automatically, and nothing had to detect it.</strong></p>
+    </div>
+    <p>Now the probation rate. Both notebooks start empty, so after \(t\) steps \(F\) has filled to only a share \(1-\rho_f^{\,t}\) of full and \(A\) to \(1-\rho^{\,t}\). Correct each by its own share, put the corrected pair into an RMSProp-shaped step, and everything cancels except one leftover factor — and that leftover factor <em>is</em> \(\alpha_t\). Only \(A\) sits under a root, so only its correction picks up a square root. That is the whole derivation, and it is folded into the drawer below.</p>
+    <p>What it buys is visible in one number. Drag the step slider to \(t=1\): the stride is <strong>exactly \(0.1\)</strong> in both knobs. RMSProp's \(0.3162\) spike is gone, and AdaGrad's early fade never happens. Watch \(\alpha_t\) on the log axis: it starts at \(0.0316\), dips to a minimum of <strong>\(0.015224\) at \(t=12\)</strong> — the two notebooks fill at different speeds, so the correction is not monotone — and then climbs back to the plain \(\alpha=0.1\) and stays there. The scaffolding comes down by itself.</p>
+    <p>Two practical notes. Libraries call \((\rho_f,\rho)\) by the names \((\beta_1,\beta_2)\), with the same defaults \(0.9\) and \(0.999\). And count \(t\) from \(1\): at \(t=0\) the denominator \(1-\rho_f^{\,0}\) is zero and the whole rate blows up. That off-by-one is one of the most-committed bugs in machine learning.</p>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A knob's slope alternates \(+4,-4,+4,-4,\dots\) while another knob's stays steady at \(+4\). Both use Adam. Which one takes the bigger steps, and why?</p>
+    <div class="opts">
+      <button data-correct data-why="The numerator F averages signed slopes: for the alternating knob the +4s and −4s cancel, so F ≈ 0. The denominator averages squares, and (+4)² = (−4)² = 16, so √A ≈ 4 for both. Ratio ≈ 0 for the flapper, ≈ 1 for the steady knob. Adam damps noise without ever measuring it.">The steady one — the flapping knob's signed average cancels to nearly zero while its squared average does not</button>
+      <button data-why="They have identical slope sizes, so the denominators match — but the numerators do not. The signed average is what separates them, and it is near zero for the alternating knob.">The same — both feel slopes of the same size, so both are rescaled the same way</button>
+      <button data-why="That is what would happen if the numerator used |g| or g². It uses the signed g, precisely so that disagreement cancels. Large-but-inconsistent is exactly what Adam refuses to chase.">The flapping one — bigger swings mean bigger numerators</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s5-->
+  <div class="onesent reveal"><b>In one sentence:</b> Adam carries a signed memory and a squared memory per knob, steps by their ratio so that disagreement is thrown away and loudness is divided out, and wears a shrinking probation rate \(\alpha_t\) that makes the very first step exactly \(\alpha\) and then retires itself.</div>
+</section>
+
+<!-- ================= 6 · THE RACE ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Five walkers, one valley — and the dial that decides the race</h2></div>
+  <div class="callout scenario reveal"><span class="tag">A fair race</span>
+    <p>Same valley, same start \([1,1]\), same stride \(\alpha=0.1\), five rules. Everything you are about to see comes from the update rule alone — no tuning, no tricks, no head start. Press play, then do the thing the race is really for: <strong>turn the stiffness dial</strong> and watch the result change shape.</p>
+  </div>
+<!--@W6-->
+  <div class="prose reveal">
+    <p>At the lecture setting the story is already rich. Plain descent looks excellent — because \(\alpha=0.1\) happens to annihilate the steep direction in one step, which is luck, not skill. Momentum pays an early debt (the loss <em>rises</em> to \(4.31\) at step 2) and then rings its way down. AdaGrad evens the two directions immediately and then loses its stride. RMSProp reaches the floor first and by a distance. Adam walks a steady \(\alpha\)-sized pace, rolls through the bottom around step eleven because it still carries momentum, and swings back.</p>
+    <div class="svgwrap reveal"><table class="plain">
+      <thead><tr><th>Method</th><th>\(\mathbf w^{(1)}\)</th><th>\(\mathbf w^{(2)}\)</th><th>\(J\) after 2</th><th>\(J\) after 25</th></tr></thead>
+      <tbody>
+        <tr><td>Gradient descent</td><td>\([0.9,\ 0]\)</td><td>\([0.81,\ 0]\)</td><td>0.3281</td><td>0.00258</td></tr>
+        <tr><td>Momentum</td><td>\([0.9,\ 0]\)</td><td>\([0.72,\ -0.9]\)</td><td>4.3092</td><td>0.196</td></tr>
+        <tr><td>AdaGrad</td><td>\([0.9,\ 0.9]\)</td><td>\([0.8331,\ 0.8331]\)</td><td>3.8173</td><td>0.547</td></tr>
+        <tr><td>RMSProp</td><td>\([0.6838,\ 0.6838]\)</td><td>\([0.4989,\ 0.4989]\)</td><td>1.3688</td><td>\(3.6\times10^{-13}\)</td></tr>
+        <tr><td>Adam</td><td>\([0.9,\ 0.9]\)</td><td>\([0.8004,\ 0.8004]\)</td><td>3.5236</td><td>0.179</td></tr>
+      </tbody>
+    </table></div>
+    <p>Now do not crown a winner. This valley is tiny, clean, noiseless, only ten-to-one stiff, and the stride was chosen to suit it. Change any one of those and the order changes. That is not a weakness of the demo — <strong>it is the demo</strong>, and the dial is how you see it.</p>
+    <p>Push stiffness to \(c=300\) with the same \(\alpha=0.1\). Plain descent is now outside its own safety limit and leaves the map inside five steps; so does momentum, which inherits that limit and adds energy to it. The two adaptive methods do not notice. Drop \(\alpha\) to \(0.005\) to rescue descent and it survives — and now crawls, because the stride that keeps the stiff direction stable is far too small for the gentle one. That is §1's impossible choice returning at scale.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\begin{aligned}\text{plain descent needs}\quad &\alpha<\frac{2}{\lambda_{\max}},\\[2pt] \text{and progress along }\lambda_{\min}\text{ costs}\quad &\frac{\lambda_{\max}}{\lambda_{\min}}=\kappa\ \text{ times more steps.}\end{aligned}\]</p>
+      <p>The safe window for the shared stride is set by the <em>stiffest</em> direction; the number of steps is set by the <em>softest</em>. Their ratio is the condition number \(\kappa\), and it is the tax that plain descent pays and the adaptive methods refuse to. AdaGrad, RMSProp and Adam all divide by a measurement of the slope's own size, so the size never reaches the stride — <strong>they cannot see \(\kappa\) at all</strong>.</p>
+    </div>
+    <p>That is the honest reason Adam and its cousin AdamW are the default for transformers and large language models. At that scale, slope sizes differ across layers by orders of magnitude, they drift while training, and the readings are noisy mini-batch estimates. Nobody is going to hand-tune a stride per layer. A method that self-scales, smooths and starts fairly is the practical pick — not because it wins a race on a two-knob toy, but because it never needed the race to be fair.</p>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You make the valley a hundred times stiffer (\(\lambda_{\max}\) up by \(100\times\)) and leave everything else alone. What happens to plain gradient descent's largest usable stride?</p>
+    <div class="opts">
+      <button data-correct data-why="Stability needs α < 2/λmax, so multiplying λmax by 100 divides the safe window by 100. The soft direction's slope did not change at all, so the same stride now takes 100× as many steps to make the same progress there. The stiff direction sets the limit; the soft one pays the bill.">It shrinks by a factor of 100 — and progress along the soft direction slows by the same factor</button>
+      <button data-why="The limit is 2/λmax, not 2/√λmax. Doubling the stiffness halves the window; a hundredfold increase divides it by a hundred.">It shrinks by a factor of 10 — the limit goes with the square root of the curvature</button>
+      <button data-why="The safe window is set entirely by the stiffest direction. Changing λmax changes it directly; the soft direction has no say in stability, only in speed.">It does not change — the limit is set by the softest direction, which is unchanged</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On the same stiffer valley, why do AdaGrad, RMSProp and Adam keep working without you touching \(\alpha\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Each divides the step by a running measurement of that knob's own slope size — √A. A hundredfold stiffer direction produces hundredfold slopes, which produce a hundredfold larger √A, which cancels. The stride the knob actually takes is about α regardless. The curvature never reaches the step size.">Each divides by its own record of slope size, so a hundredfold bigger slope produces a hundredfold bigger divisor and cancels out</button>
+      <button data-why="None of them computes a second derivative — that is the whole point of the family. They use only first-order information, plus a running record of it.">They estimate the curvature and use it, like a second-order method</button>
+      <button data-why="Nothing in the three rules looks at the loss value; they see only gradients. And they do not adjust α, which stays whatever you set — what changes is the divisor √A.">They automatically lower \(\alpha\) when the loss stops falling</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s6-->
+  <div class="onesent reveal"><b>In one sentence:</b> Plain descent's safe stride is set by the stiffest direction and its speed by the softest, so it pays the condition number in steps — while every adaptive method divides the slope by a record of its own size, and so never sees the condition number at all.</div>
+</section>
+
+<!-- ================= 7 · THE WALL ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Then someone builds a wall</h2></div>
+  <div class="callout scenario reveal"><span class="tag">A problem you can do in your head</span>
+    <p>Find the smallest value of \(f(x)=x^2\) — but you may only pick \(x\ge2\). Do it now, before reading on. The bowl bottoms at \(x=0\), that point is banned, so you slide as close to it as the rule lets you and stop at \(x=2\), where \(f=4\). It took three seconds, and <strong>you just broke every method in this course</strong>. At \(x=2\) the slope of \(f\) is \(4\). Not zero. Four. Every technique you have — set the derivative to zero, walk until the tilt vanishes, check the Hessian — is hunting for a flat spot that is not there.</p>
+  </div>
+<!--@W7-->
+  <div class="prose reveal">
+    <p>Slide the wall and watch the readout flip. While the wall sits at \(c\le0\) it is not in your way: the free answer survives and the slope there is zero, the old world. The instant \(c>0\) three things happen at once, and they happen in almost every constrained problem you will ever meet.</p>
+    <p><strong>One:</strong> the free answer is thrown away. The rule did not adjust the answer, it <em>replaced</em> it. <strong>Two:</strong> the new answer sits exactly <em>on</em> the edge of the allowed set, not comfortably inside it. <strong>Three:</strong> the gradient at the answer is not zero, and it points straight into the wall — which is precisely why you cannot move.</p>
+    <p>Point three is the whole reason this half of the unit exists. We need a new test for "I have arrived", one that says: <em>the slope is nonzero, but every direction that would use it is blocked.</em></p>
+    <p>Before we can build that test, everything has to be written in one shape. Open the <em>standard form</em> tab. Two mechanical moves do it. A \(\ge\) becomes a \(\le\) by multiplying through by \(-1\). Everything else moves to the left of the sign.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\min_{\mathbf x}\ f(\mathbf x)\qquad\text{subject to}\qquad e(\mathbf x)=0,\qquad g_i(\mathbf x)\le0,\ \ i=1,\dots,m\]</p>
+      <p>Three roles, and this unit gives each a name you can picture. \(f\) is <strong>the score</strong> — the number you want small. \(e=0\) is <strong>the path</strong> — a line you must sit exactly on. Each \(g_i\le0\) is <strong>a fence</strong> — a wall you must stay behind. So \(x\ge2\) is written \(g=2-x\le0\), and its gradient is \(\nabla g=-1\). Keep that minus sign. More answers are lost to that sign than to any other step in the topic.</p>
+    </div>
+    <p>One last piece of the shape, and it looks like pedantry until you try to break it. You will never see a strict \(<\). Try to minimise \(f(x)=x\) subject to \(x>2\). Is \(2.1\) the answer? No — \(2.01\) is allowed and smaller. Is \(2.01\)? No. You can keep going for ever, getting closer to \(2\) without ever being allowed to reach it. <strong>The problem has no answer at all.</strong> Including the boundary is what makes the answer exist — and since the answer almost always sits <em>on</em> the boundary, a form that excluded it would throw away the thing we came for.</p>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Minimise \(f(x)=(x-5)^2\) subject to \(x\le1\). Where is the answer, and what is the slope there?</p>
+    <div class="opts">
+      <button data-correct data-why="The bowl bottoms at 5, which is banned. You slide as close as allowed and stop at x = 1, giving f = 16. The slope there is f′(1) = 2(1 − 5) = −8: strongly downhill to the right, and completely blocked. A nonzero gradient at the answer is the normal case once a fence bites.">\(x=1\), where the slope is \(-8\) — nonzero, pointing straight into the fence</button>
+      <button data-why="x = 5 is the free minimum and it breaks the rule x ≤ 1. The constraint does not bend to let the free answer through; it replaces it.">\(x=5\), where the slope is \(0\) — the constraint does not change a minimum</button>
+      <button data-why="A slope of zero on the allowed side would mean the bowl bottoms inside x ≤ 1, and it does not — it bottoms at 5, far outside. On [−∞, 1] the function is strictly decreasing, so the best allowed point is the rightmost one, the boundary.">Somewhere in \(x<1\), where the slope of the restricted problem is \(0\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s7-->
+  <div class="onesent reveal"><b>In one sentence:</b> Put a wall in a problem and the answer moves onto the wall, where the gradient is not zero — so "stop where the slope vanishes" has to be replaced, and the replacement starts by writing everything as \(\min f\) with \(e=0\) and \(g_i\le0\).</div>
+</section>
+
+<!-- ================= 8 · TWO ARROWS ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>Pushing a box against a wall</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The corridor</span>
+    <p>Push a heavy box along a corridor at an angle, so it presses against the wall. While your push has <em>any</em> sideways component along the wall, the box slides. It keeps sliding. It stops only at the instant your push is square-on — when nothing you are doing runs along the wall any more, and all of it goes into the wall. That is not a fact about boxes. <strong>It is the stopping condition for every constrained problem</strong>, and it is the first of the five conditions we are building.</p>
+  </div>
+<!--@W8-->
+  <div class="prose reveal">
+    <p>Drag the point around the fence and watch the bar. The downhill arrow \(-\nabla f\) has been split into two pieces: the part that runs <em>along</em> the fence, and the part that pushes <em>across</em> it. While the along-part exists you are not finished — slide that way and the score improves, legally, without ever leaving the allowed set. The bar shrinks as you approach the answer and reaches zero exactly at it.</p>
+    <p>When the along-part is gone, all of \(\nabla f\) points across the fence. And there is only one direction that is "across the fence": the fence's own gradient \(\nabla g\), which points out of the allowed side. Two arrows pointing along one line is not a vague picture — it is an equation.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\nabla f(\mathbf x^\star)=-\mu\,\nabla g(\mathbf x^\star),\qquad \mu\ge0\]</p>
+      <p>Parallel — <strong>not equal</strong>. The two arrows almost never have the same length, and \(\mu\) is the stretch factor between them. Writing "\(\nabla f=\nabla g\)" is the single most common slip in this topic, and the widget shows you the two lengths side by side so you can see how different they are: on the straight fence \(\nabla f=(4,4)\) and \(\nabla h=(1,1)\), a stretch of \(4\).</p>
+    </div>
+    <p>There is a second way to read the same picture, and it is worth having both. The level curves of \(f\) are the score's contour lines. Shrink them until the smallest one still <em>touches</em> the allowed set. It touches — it does not cross — and at a touching point two curves share a tangent, which means their normals lie on one line. Tangency and "nothing left to slide" are the same statement seen from two angles.</p>
+    <p>Open the <strong>budget circle</strong> tab, because you have been doing this for months without being told. Ridge regression is usually taught as "minimise the error plus \(\lambda\sum\beta_j^2\)". Its honest original form is a constrained problem: minimise the training error subject to \(\sum_j\beta_j^2\le s\) — a <em>budget</em> on how large the coefficients may grow. The grey rings are the error, the red circle is the budget, and the answer is where the smallest reachable ring touches the circle. That picture is the entire geometry of ridge, and the \(\lambda\) in your notes is the stretch factor \(\mu\) at that touching point. Lasso is the same picture with a diamond instead of a circle — and corners are exactly where coefficients become zero.</p>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At a candidate point on a fence you find that \(\nabla f\) has a component of size \(0.7\) running <em>along</em> the fence. What does that tell you?</p>
+    <div class="opts">
+      <button data-correct data-why="An along-fence component means there is a legal direction — staying on the fence — that lowers the score. Slide that way and f improves. So this point cannot be the answer, whatever else is true about it.">This is not the answer — you can still slide along the fence and improve the score</button>
+      <button data-why="A large ∇f is completely normal at a constrained optimum; what matters is its direction, not its size. The answer is decided by whether any of it runs along the fence, not by how long the arrow is.">Nothing on its own — the size of \(\nabla f\) says nothing about optimality</button>
+      <button data-why="Blocked movement means the push is entirely INTO the fence — no along-component at all. A nonzero along-component is precisely movement that is still available to you.">The fence is blocking you, so you have arrived</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s8-->
+  <div class="onesent reveal"><b>In one sentence:</b> You stop when nothing is left to slide, which means all of \(\nabla f\) points across the fence — so \(\nabla f\) and \(\nabla g\) lie on one line, related by a stretch factor \(\mu\ge0\), and that factor is about to turn out to be a price.</div>
+</section>

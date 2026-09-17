@@ -1,0 +1,1069 @@
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">A straight line \(\hat y=wx+b\) is fitted to the two points \((1,3)\) and \((2,5)\) by minimising \(L(w,b)=\tfrac12\big[(w+b-3)^2+(2w+b-5)^2\big]\). <b>(a)</b> Derive \(\partial L/\partial w\) and \(\partial L/\partial b\) in simplest form and write the two update lines. <b>(b)</b> From \((w_0,b_0)=(0,0)\) with \(\alpha=0.1\), run two iterations; report \((w_1,b_1)\), \((w_2,b_2)\) and the loss after each. <b>(c)</b> A second run started from the same \((0,0)\) with a different rate and landed at \((0.26,\,0.16)\) after one step. Recover that rate and check it on both coordinates. <b>(d)</b> From the Hessian of \(L\), give the two eigenvalues, the largest safe rate, and decide whether \(\alpha=0.3\) is safe — and by how much.</p>
+    <p class="pq">The five rules used throughout this set. All start from the current point \(\mathbf w_t\) with \(\mathbf g_t=\nabla f(\mathbf w_t)\); squares, roots and divisions of vectors are taken <em>element by element</em>; \(\epsilon\approx10^{-8}\) only prevents division by zero and is dropped in hand calculation.</p>
+    <table class="plain">
+      <thead><tr><th>method</th><th>rule</th></tr></thead>
+      <tbody>
+        <tr><td>gradient descent</td><td>\(\mathbf w_{t+1}=\mathbf w_t-\alpha\mathbf g_t\)</td></tr>
+        <tr><td>momentum</td><td>\(\mathbf v_{t+1}=\beta\mathbf v_t-\alpha\mathbf g_t,\quad \mathbf w_{t+1}=\mathbf w_t+\mathbf v_{t+1},\quad \mathbf v_0=\mathbf 0\)</td></tr>
+        <tr><td>AdaGrad</td><td>\(G_{t+1}=G_t+\mathbf g_t^2,\quad \mathbf w_{t+1}=\mathbf w_t-\dfrac{\alpha}{\sqrt{G_{t+1}}}\,\mathbf g_t,\quad G_0=0\)</td></tr>
+        <tr><td>RMSProp</td><td>\(A_{t+1}=\rho A_t+(1-\rho)\mathbf g_t^2,\quad \mathbf w_{t+1}=\mathbf w_t-\dfrac{\alpha}{\sqrt{A_{t+1}}}\,\mathbf g_t,\quad A_0=0\)</td></tr>
+        <tr><td>Adam</td><td>\(m_t=\beta_1m_{t-1}+(1-\beta_1)g_{t-1},\ \ v_t=\beta_2v_{t-1}+(1-\beta_2)g_{t-1}^2\)<br>\(\hat m_t=\dfrac{m_t}{1-\beta_1^{\,t}},\ \ \hat v_t=\dfrac{v_t}{1-\beta_2^{\,t}},\ \ w_t=w_{t-1}-\dfrac{\alpha}{\sqrt{\hat v_t}}\,\hat m_t\)</td></tr>
+      </tbody>
+    </table>
+    <p class="ptest"><b>What this tests.</b> Chain rule into a gradient, the plain rule run without slips, the fact that one step is <em>exactly</em> \(\alpha\) times the gradient vector — so a landing point hands \(\alpha\) back — and the speed limit \(\alpha&lt;2/\lambda_{\max}\). <b>Plan.</b> Differentiate each square by the chain rule and collect; then per iteration in this order: gradient at the current point, update <em>both</em> knobs with that same gradient, loss at the new point; for (c) write one step with \(\alpha\) unknown and solve from each coordinate; for (d) read trace and determinant off the Hessian.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — differentiate, do not expand.</b> Each term is \(\tfrac12(\text{stuff})^2\), whose derivative is \((\text{stuff})\times(\text{derivative of the stuff})\). The \(w\)-derivative of \(w+b-3\) is \(1\); of \(2w+b-5\) it is \(2\):
+      \[\begin{aligned}
+      \frac{\partial L}{\partial w}&=(w+b-3)(1)+(2w+b-5)(2)\\ 
+      &=w+b-3+4w+2b-10\\ 
+      &=5w+3b-13.
+      \end{aligned}\]
+      Both \(b\)-derivatives are \(1\):
+      \[\begin{aligned}
+      \frac{\partial L}{\partial b}&=(w+b-3)+(2w+b-5)\\ 
+      &=3w+2b-8.
+      \end{aligned}\]
+      So the two update lines are
+      \[\begin{aligned}
+      w&\leftarrow w-\alpha\,(5w+3b-13),\\ 
+      b&\leftarrow b-\alpha\,(3w+2b-8).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(b) Step 2 — iteration 1 from \((0,0)\).</b> Gradient first:
+      \[\begin{aligned}
+      \frac{\partial L}{\partial w}\Big|_{(0,0)}&=5(0)+3(0)-13=-13,\\ 
+      \frac{\partial L}{\partial b}\Big|_{(0,0)}&=3(0)+2(0)-8=-8,\\ 
+      L_0&=\tfrac12\big[(-3)^2+(-5)^2\big]=\tfrac12(34)=17.
+      \end{aligned}\]
+      Now move both knobs with that one gradient:
+      \[\begin{aligned}
+      w_1&=0-0.1(-13)=1.3,\\ 
+      b_1&=0-0.1(-8)=0.8.
+      \end{aligned}\]
+      The new loss, residual by residual:
+      \[\begin{aligned}
+      w_1+b_1-3&=1.3+0.8-3=-0.9,\\ 
+      2w_1+b_1-5&=2.6+0.8-5=-1.6,\\ 
+      L_1&=\tfrac12\big[0.81+2.56\big]\\ 
+      &=\tfrac12(3.37)=1.685.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — iteration 2.</b> New gradient at \((1.3,0.8)\):
+      \[\begin{aligned}
+      \frac{\partial L}{\partial w}&=5(1.3)+3(0.8)-13\\ 
+      &=6.5+2.4-13=-4.1,\\ 
+      \frac{\partial L}{\partial b}&=3(1.3)+2(0.8)-8\\ 
+      &=3.9+1.6-8=-2.5.
+      \end{aligned}\]
+      \[\begin{aligned}
+      w_2&=1.3+0.1(4.1)=1.71,\\ 
+      b_2&=0.8+0.1(2.5)=1.05.
+      \end{aligned}\]
+      \[\begin{aligned}
+      w_2+b_2-3&=1.71+1.05-3=-0.24,\\ 
+      2w_2+b_2-5&=3.42+1.05-5=-0.53,\\ 
+      L_2&=\tfrac12\big[0.0576+0.2809\big]\\ 
+      &=\tfrac12(0.3385)=0.16925.
+      \end{aligned}\]
+      The whole run on one page:
+      <table class="plain">
+        <thead><tr><th>\(t\)</th><th>\((w_t,b_t)\)</th><th>\(\nabla L\)</th><th>\(L\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\((0,\,0)\)</td><td>\((-13,\,-8)\)</td><td>\(17\)</td></tr>
+          <tr><td>1</td><td>\((1.3,\,0.8)\)</td><td>\((-4.1,\,-2.5)\)</td><td>\(1.685\)</td></tr>
+          <tr><td>2</td><td>\((1.71,\,1.05)\)</td><td>—</td><td>\(0.16925\)</td></tr>
+        </tbody>
+      </table>
+      Two steps cut the bill from \(17\) to \(0.169\), a factor of about \(100\). (The exact fit is \(w=2,\ b=1\), where \(L=0\).)</div>
+      <div class="pstep"><b>(c) Step 4 — read the rate off the landing point.</b> One step from \((0,0)\) with the gradient \((-13,-8)\) is
+      \[(w_1,b_1)=\big(0+13\alpha,\ 0+8\alpha\big).\]
+      Match each coordinate:
+      \[\begin{aligned}
+      13\alpha&=0.26\ \Rightarrow\ \alpha=\tfrac{0.26}{13}=0.02,\\ 
+      8\alpha&=0.16\ \Rightarrow\ \alpha=\tfrac{0.16}{8}=0.02.
+      \end{aligned}\]
+      Both coordinates give \(\alpha=0.02\) — the agreement is the check that the run really was plain gradient descent.</div>
+      <div class="pstep"><b>(d) Step 5 — curvature, eigenvalues, speed limit.</b> Differentiate the two partials once more:
+      \[H=\begin{bmatrix}5&3\\3&2\end{bmatrix},\quad \operatorname{tr}H=7,\quad \det H=10-9=1.\]
+      Eigenvalues from \(\lambda^2-(\operatorname{tr})\lambda+\det=0\):
+      \[\begin{aligned}
+      \lambda^2-7\lambda+1&=0,\\ 
+      \lambda&=\frac{7\pm\sqrt{49-4}}{2}=\frac{7\pm\sqrt{45}}{2},\\ 
+      \lambda_{\max}&=6.854102,\\ 
+      \lambda_{\min}&=0.145898.
+      \end{aligned}\]
+      The safe range is \(\alpha&lt;2/\lambda_{\max}\):
+      \[\begin{aligned}
+      \frac{2}{\lambda_{\max}}&=\frac{2}{6.854102}=0.291796,\\ 
+      0.3-0.291796&=0.008204.
+      \end{aligned}\]
+      So \(\alpha=0.3\) is <em>not</em> safe — but it misses by only \(0.008204\), about \(2.8\%\) over the limit, so the divergence would be slow and easy to mistake for noise. (The condition number \(\lambda_{\max}/\lambda_{\min}=46.98\) is what makes the safe window so narrow in the first place.)</div>
+      <p class="pans">answers at a glance: (a) \(\partial L/\partial w=5w+3b-13\), \(\partial L/\partial b=3w+2b-8\). (b) \(L_0=17\); \((w_1,b_1)=(1.3,0.8)\), \(L_1=1.685\); \((w_2,b_2)=(1.71,1.05)\), \(L_2=0.16925\). (c) \(\alpha=0.02\), from both coordinates. (d) \(\lambda=6.854102,\ 0.145898\); safe for \(\alpha&lt;0.291796\); \(0.3\) is unsafe by \(0.008204\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>One step is exactly \(\alpha\) times the gradient vector, which is why a landing point gives \(\alpha\) back — and why both coordinates must agree. The classic slip is updating \(w\) first and then using the <em>new</em> \(w\) inside the \(b\)-gradient: both knobs must move on the same old gradient. The second slip is testing safety against \(\lambda_{\min}\); the speed limit is set by the <em>steepest</em> direction, \(2/\lambda_{\max}\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Four runs on \(f(x)=x^2\) were logged, all starting from \(x_0=1\). <b>A:</b> \(1,\ 0.8,\ 0.64,\ 0.512\). <b>B:</b> \(1,\ -0.5,\ 0.25,\ -0.125\). <b>C:</b> \(1,\ -1.2,\ 1.44,\ -1.728\). <b>D:</b> \(1,\ 0.8,\ 0.54,\ 0.302\). <b>(a)</b> Three of the four are plain gradient descent. Name them, give each one's \(\alpha\), and list the five bands of behaviour of \(\alpha\) on this loss. <b>(b)</b> Name the odd run out, recover its \(\alpha\) and its \(\beta\) (momentum, \(\mathbf v_0=0\)), and verify them on its third step. <b>(c)</b> Re-run B with the decaying rate \(\alpha_t=0.75/(1+t)\): give \(\alpha_0,\alpha_1,\alpha_2\) and \(x_1,x_2,x_3\). <b>(d)</b> Give the first \(t\) with \(\alpha_t&lt;0.1\) and that \(\alpha_t\); the percentage drop from \(\alpha_0\); and the first \(t\) at which the factor \(1-2\alpha_t\) turns positive, so the sign stops flipping.</p>
+    <p class="ptest"><b>What this tests.</b> Diagnosis: on \(x^2\) every plain run is a geometric sequence, so the <em>ratio</em> is the fingerprint, and a run whose ratio drifts must be carrying the loaded trolley. <b>Plan.</b> Divide each term by the one before; a constant ratio identifies plain descent and gives \(\alpha\) from \(1-2\alpha\); for the drifting run use \(\mathbf v_0=0\) to get \(\alpha\) from step 1 alone, then \(\beta\) from step 2, then check step 3; finally do the decay arithmetic with two inequalities.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the fingerprint.</b> On \(f=x^2\) the gradient is \(2x\), so plain descent reads
+      \[x_{t+1}=x_t-\alpha(2x_t)=(1-2\alpha)\,x_t.\]
+      Every step multiplies by the same number, so a <em>constant</em> ratio means plain descent, and the ratio is \(1-2\alpha\). Divide:
+      <table class="plain">
+        <thead><tr><th>run</th><th>ratios</th><th>\(1-2\alpha\)</th><th>\(\alpha\)</th><th>behaviour</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>\(0.8,\ 0.8,\ 0.8\)</td><td>\(0.8\)</td><td>\(0.1\)</td><td>monotone</td></tr>
+          <tr><td>B</td><td>\(-0.5,\ -0.5,\ -0.5\)</td><td>\(-0.5\)</td><td>\(0.75\)</td><td>oscillating, shrinking</td></tr>
+          <tr><td>C</td><td>\(-1.2,\ -1.2,\ -1.2\)</td><td>\(-1.2\)</td><td>\(1.1\)</td><td>diverging</td></tr>
+          <tr><td>D</td><td>\(0.8,\ 0.675,\ 0.5593\)</td><td>—</td><td>—</td><td>not plain</td></tr>
+        </tbody>
+      </table>
+      The three \(\alpha\) values come straight out of \(1-2\alpha\):
+      \[\begin{aligned}
+      1-2\alpha&=0.8\ \Rightarrow\ \alpha=0.1,\\ 
+      1-2\alpha&=-0.5\ \Rightarrow\ \alpha=0.75,\\ 
+      1-2\alpha&=-1.2\ \Rightarrow\ \alpha=1.1.
+      \end{aligned}\]
+      The five bands, all read off \(|1-2\alpha|\):
+      <table class="plain">
+        <thead><tr><th>range of \(\alpha\)</th><th>factor \(1-2\alpha\)</th><th>what happens</th></tr></thead>
+        <tbody>
+          <tr><td>\(0&lt;\alpha&lt;0.5\)</td><td>in \((0,1)\)</td><td>monotone descent</td></tr>
+          <tr><td>\(\alpha=0.5\)</td><td>\(0\)</td><td>lands on \(0\) in one step</td></tr>
+          <tr><td>\(0.5&lt;\alpha&lt;1\)</td><td>in \((-1,0)\)</td><td>oscillates, still converges</td></tr>
+          <tr><td>\(\alpha=1\)</td><td>\(-1\)</td><td>permanent oscillation \(\pm1\)</td></tr>
+          <tr><td>\(\alpha&gt;1\)</td><td>\(&lt;-1\)</td><td>diverges</td></tr>
+        </tbody>
+      </table></div>
+      <div class="pstep"><b>(b) Step 2 — D is the loaded trolley.</b> Its ratios \(0.8,\ 0.675,\ 0.5593\) shrink instead of repeating, so no single \(\alpha\) explains it. Momentum starts with an empty trolley, \(v_0=0\), so its <em>first</em> step is pure descent:
+      \[\begin{aligned}
+      v_1&=-\alpha\,g(1)=-\alpha(2)=-2\alpha,\\ 
+      x_1&=1-2\alpha=0.8\ \Rightarrow\ \alpha=0.1,\\ 
+      v_1&=-0.2.
+      \end{aligned}\]
+      Now step 2 is the only place \(\beta\) appears:
+      \[\begin{aligned}
+      g(0.8)&=1.6,\\ 
+      v_2&=\beta(-0.2)-0.1(1.6)\\ 
+      &=-0.2\beta-0.16,\\ 
+      x_2&=0.8+v_2=0.64-0.2\beta.
+      \end{aligned}\]
+      Set that to the logged \(0.54\):
+      \[0.64-0.2\beta=0.54\ \Rightarrow\ \beta=0.5.\]</div>
+      <div class="pstep"><b>Step 3 — verify on the third step.</b> With \(\beta=0.5\), \(v_2=-0.2(0.5)-0.16=-0.26\):
+      \[\begin{aligned}
+      g(0.54)&=1.08,\\ 
+      v_3&=0.5(-0.26)-0.1(1.08)\\ 
+      &=-0.13-0.108=-0.238,\\ 
+      x_3&=0.54-0.238=0.302.
+      \end{aligned}\]
+      That is the logged value exactly, so \((\alpha,\beta)=(0.1,\,0.5)\) is confirmed. ✓</div>
+      <div class="pstep"><b>(c) Step 4 — B again, with a fading rate.</b> \(\alpha_t=0.75/(1+t)\):
+      \[\begin{aligned}
+      \alpha_0&=\tfrac{0.75}{1}=0.75,\\ 
+      \alpha_1&=\tfrac{0.75}{2}=0.375,\\ 
+      \alpha_2&=\tfrac{0.75}{3}=0.25.
+      \end{aligned}\]
+      The factors \(1-2\alpha_t\) are \(-0.5,\ 0.25,\ 0.5\), so
+      \[\begin{aligned}
+      x_1&=(-0.5)(1)=-0.5,\\ 
+      x_2&=(0.25)(-0.5)=-0.125,\\ 
+      x_3&=(0.5)(-0.125)=-0.0625.
+      \end{aligned}\]
+      Compare with the constant-rate run B — \(1,\,-0.5,\,0.25,\,-0.125\) — which flipped sign every single step. Fading the rate killed the flipping after one step and still reached a smaller \(|x|\) by step 3 (\(0.0625\) against \(0.125\)).</div>
+      <div class="pstep"><b>(d) Step 5 — three small inequalities.</b> First, when the rate drops below \(0.1\):
+      \[\begin{aligned}
+      \frac{0.75}{1+t}&&lt;0.1\\ 
+      1+t&&gt;7.5\\ 
+      t&\ge7,\qquad \alpha_7=\tfrac{0.75}{8}=0.09375.
+      \end{aligned}\]
+      The drop from the start:
+      \[\frac{0.75-0.09375}{0.75}=\frac{0.65625}{0.75}=0.875=87.5\%.\]
+      Finally, when the factor stops being negative:
+      \[\begin{aligned}
+      1-\frac{1.5}{1+t}&&gt;0\\ 
+      1+t&&gt;1.5\\ 
+      t&\ge1.
+      \end{aligned}\]
+      So \(t=1\) is the first index with a positive factor: the step taken at \(t=0\) is the last one that flips the sign, and from \(x_1\) onward every iterate stays negative — exactly what the numbers in (c) show.</div>
+      <p class="pans">answers at a glance: (a) A, B, C are plain, with \(\alpha=0.1,\ 0.75,\ 1.1\); bands \(0&lt;\alpha&lt;0.5\) monotone, \(\alpha=0.5\) one step, \(0.5&lt;\alpha&lt;1\) oscillating convergence, \(\alpha=1\) permanent oscillation, \(\alpha&gt;1\) divergence. (b) D is momentum with \(\alpha=0.1\), \(\beta=0.5\); step-3 check \(x_3=0.302\). (c) \(\alpha=0.75,\,0.375,\,0.25\); \(x=-0.5,\,-0.125,\,-0.0625\). (d) \(t=7\), \(\alpha_7=0.09375\); \(87.5\%\) drop; the factor turns positive at \(t=1\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>On a quadratic, plain descent is a geometric sequence — so <em>always divide consecutive iterates first</em>. A constant ratio means plain descent and hands you \(\alpha\); a drifting ratio means something is carrying memory. The slip is trying to fit \(\beta\) from step 1, where the trolley is still empty and \(\beta\) cannot appear: step 1 gives \(\alpha\), step 2 gives \(\beta\), step 3 checks them both.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Let \(f(x,y)=2x^2+xy+y^2-2x-y\), which is \(\tfrac12\mathbf w^{\!\top}A\mathbf w-\mathbf b^{\!\top}\mathbf w\) with \(A=\begin{bmatrix}4&amp;1\\1&amp;2\end{bmatrix}\) and \(\mathbf b=(2,1)\); start at \(\mathbf w_0=(0,0)\), where \(\nabla f=(4x+y-2,\ x+2y-1)\). <b>(a)</b> With direction \(\mathbf d_1=(1,0)\), show it is a descent direction, write \(h(\alpha)=f(\mathbf w_0+\alpha\mathbf d_1)\), minimise it exactly, and give \(\mathbf w_1\) and \(f(\mathbf w_1)\). <b>(b)</b> Take \(\mathbf d_2=-\nabla f(\mathbf w_1)\) and repeat: give \(h(\alpha)\), \(\alpha_2^*\), \(\mathbf w_2\) and \(f(\mathbf w_2)\). <b>(c)</b> Derive the closed form \(\alpha^*=-\dfrac{\nabla f(\mathbf w)^{\!\top}\mathbf d}{\mathbf d^{\!\top}A\mathbf d}\) and evaluate it for (a) and (b). <b>(d)</b> Give the exact minimiser \(\mathbf w^*\) and \(f^*\), and the amount by which \(f(\mathbf w_2)\) still exceeds \(f^*\). Also verify the free check \(\nabla f(\mathbf w_1)^{\!\top}\mathbf d_1=0\) and \(\nabla f(\mathbf w_2)^{\!\top}\mathbf d_2=0\).</p>
+    <p class="ptest"><b>What this tests.</b> That "how far do I walk?" is itself a one-variable minimisation, that on a quadratic it has a formula, and that an exact line search always leaves the new gradient perpendicular to the direction just walked. <b>Plan.</b> Substitute the line into \(f\) to get a parabola in \(\alpha\); set \(h'(\alpha)=0\); step; repeat once; then do the same substitution with symbols to get the formula, and finish with \(\nabla f=\mathbf 0\) for the exact answer.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — is \(\mathbf d_1\) downhill?</b> At \(\mathbf w_0=(0,0)\),
+      \[\nabla f(\mathbf w_0)=(-2,\,-1),\qquad \nabla f^{\!\top}\mathbf d_1=-2&lt;0,\]
+      so yes: moving along \(+x\) lowers \(f\).</div>
+      <div class="pstep"><b>Step 2 — the walk becomes a parabola.</b> Put \((x,y)=(\alpha,0)\) into \(f\):
+      \[\begin{aligned}
+      h(\alpha)&=2\alpha^2+\alpha(0)+0-2\alpha-0\\ 
+      &=2\alpha^2-2\alpha.
+      \end{aligned}\]
+      Minimise it:
+      \[\begin{aligned}
+      h'(\alpha)&=4\alpha-2=0,\\ 
+      \alpha_1^*&=0.5,\qquad h''=4&gt;0.
+      \end{aligned}\]
+      \[\begin{aligned}
+      \mathbf w_1&=(0,0)+0.5(1,0)=(0.5,\,0),\\ 
+      f(\mathbf w_1)&=2(0.25)-2(0.5)=-0.5.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(b) Step 3 — the second leg.</b> The gradient at \(\mathbf w_1\):
+      \[\begin{aligned}
+      \nabla f(\mathbf w_1)&=\big(4(0.5)+0-2,\ 0.5+0-1\big)\\ 
+      &=(0,\,-0.5),\\ 
+      \mathbf d_2&=-\nabla f(\mathbf w_1)=(0,\,0.5).
+      \end{aligned}\]
+      The line is \((0.5,\,0.5\alpha)\). Substitute, term by term:
+      \[\begin{aligned}
+      2x^2&=2(0.25)=0.5,\\ 
+      xy&=0.5(0.5\alpha)=0.25\alpha,\\ 
+      y^2&=0.25\alpha^2,\\ 
+      -2x&=-1,\qquad -y=-0.5\alpha.
+      \end{aligned}\]
+      Add:
+      \[\begin{aligned}
+      h(\alpha)&=0.25\alpha^2+0.25\alpha-0.5\alpha+0.5-1\\ 
+      &=0.25\alpha^2-0.25\alpha-0.5.
+      \end{aligned}\]
+      \[\begin{aligned}
+      h'(\alpha)&=0.5\alpha-0.25=0,\\ 
+      \alpha_2^*&=0.5,\\ 
+      \mathbf w_2&=(0.5,\,0)+0.5(0,0.5)\\ 
+      &=(0.5,\,0.25),\\ 
+      f(\mathbf w_2)&=0.25(0.25)-0.25(0.5)-0.5\\ 
+      &=0.0625-0.125-0.5=-0.5625.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(c) Step 4 — the formula, once and for all.</b> Expand \(f(\mathbf w+\alpha\mathbf d)\) with \(f=\tfrac12\mathbf w^{\!\top}A\mathbf w-\mathbf b^{\!\top}\mathbf w\):
+      \[\begin{aligned}
+      f(\mathbf w+\alpha\mathbf d)&=\tfrac12(\mathbf w+\alpha\mathbf d)^{\!\top}A(\mathbf w+\alpha\mathbf d)\\ 
+      &\qquad-\mathbf b^{\!\top}(\mathbf w+\alpha\mathbf d).
+      \end{aligned}\]
+      Because \(A\) is symmetric, \(\mathbf w^{\!\top}A\mathbf d=\mathbf d^{\!\top}A\mathbf w\), so the two cross terms merge:
+      \[\begin{aligned}
+      &=f(\mathbf w)+\alpha\,\mathbf d^{\!\top}(A\mathbf w-\mathbf b)\\ 
+      &\qquad+\tfrac{\alpha^2}{2}\,\mathbf d^{\!\top}A\mathbf d.
+      \end{aligned}\]
+      But \(A\mathbf w-\mathbf b=\nabla f(\mathbf w)\), so this is a parabola in \(\alpha\) with slope \(\nabla f^{\!\top}\mathbf d\) and curvature \(\mathbf d^{\!\top}A\mathbf d\). Setting the derivative to zero:
+      \[\alpha^*=-\frac{\nabla f(\mathbf w)^{\!\top}\mathbf d}{\mathbf d^{\!\top}A\mathbf d}.\]
+      Check it on both legs:
+      \[\begin{aligned}
+      \text{(a)}\quad \mathbf d_1^{\!\top}A\mathbf d_1&=4,\\ 
+      \alpha_1^*&=-\frac{-2}{4}=0.5\ \checkmark\\ 
+      \text{(b)}\quad \nabla f(\mathbf w_1)^{\!\top}\mathbf d_2&=-0.25,\\ 
+      \mathbf d_2^{\!\top}A\mathbf d_2&=2(0.5)^2=0.5,\\ 
+      \alpha_2^*&=-\frac{-0.25}{0.5}=0.5\ \checkmark
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(d) Step 5 — the exact bottom, and how close we got.</b> Set \(\nabla f=\mathbf 0\):
+      \[\begin{aligned}
+      4x+y&=2,\\ 
+      x+2y&=1.
+      \end{aligned}\]
+      From the first, \(y=2-4x\); substitute:
+      \[\begin{aligned}
+      x+2(2-4x)&=1,\\ 
+      -7x&=-3,\qquad x=\tfrac37,\\ 
+      y&=2-\tfrac{12}{7}=\tfrac27.
+      \end{aligned}\]
+      Evaluate over a denominator of \(49\):
+      \[\begin{aligned}
+      f^*&=\tfrac{18}{49}+\tfrac{6}{49}+\tfrac{4}{49}-\tfrac{42}{49}-\tfrac{14}{49}\\ 
+      &=-\tfrac{28}{49}=-\tfrac47\approx-0.571429.
+      \end{aligned}\]
+      Two exact line searches got to \(-0.5625\), still
+      \[-0.5625-(-0.571429)=0.008929\]
+      above the floor.</div>
+      <div class="pstep"><b>Step 6 — the free check.</b> After an exact line search the parabola is at its bottom, so the directional derivative along \(\mathbf d\) is zero — i.e. the new gradient is perpendicular to the direction just walked:
+      \[\begin{aligned}
+      \nabla f(\mathbf w_1)^{\!\top}\mathbf d_1&=(0,-0.5)\cdot(1,0)=0,\\ 
+      \nabla f(\mathbf w_2)&=(0.25,\,0),\\ 
+      \nabla f(\mathbf w_2)^{\!\top}\mathbf d_2&=(0.25,0)\cdot(0,0.5)=0.
+      \end{aligned}\]
+      Both are exactly zero, which is why consecutive exact-search directions turn a right angle — the zig-zag is not a bug, it is a theorem.</div>
+      <p class="pans">answers at a glance: (a) descent since \(-2&lt;0\); \(h=2\alpha^2-2\alpha\), \(\alpha_1^*=0.5\), \(\mathbf w_1=(0.5,0)\), \(f=-0.5\). (b) \(h=0.25\alpha^2-0.25\alpha-0.5\), \(\alpha_2^*=0.5\), \(\mathbf w_2=(0.5,0.25)\), \(f=-0.5625\). (c) \(\alpha^*=-\nabla f^{\!\top}\mathbf d/(\mathbf d^{\!\top}A\mathbf d)\); \(2/4=0.5\) and \(0.25/0.5=0.5\). (d) \(\mathbf w^*=(3/7,\,2/7)\), \(f^*=-4/7\approx-0.571429\), excess \(0.008929\); both orthogonality checks give \(0\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>"How far?" is its own one-variable problem, and on a quadratic its answer is \(-\nabla f^{\!\top}\mathbf d/(\mathbf d^{\!\top}A\mathbf d)\) — slope over curvature, measured along the direction you are actually walking. Always spend the one line on \(\nabla f(\mathbf w_{\text{new}})^{\!\top}\mathbf d=0\): if it is not zero, the line search was not exact. The slip is minimising \(f\) over \((x,y)\) instead of over the single number \(\alpha\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">A run of momentum on \(f(x)=(x-5)^2\) starts at \(x_0=0\) with \(v_0=0\); the log records \(x_1=1.0\) and \(x_2=2.6\), and nothing else. <b>(a)</b> Recover \(\alpha\) and \(\beta\), in that order, saying why the order is forced. <b>(b)</b> Continue the run: give \(f'(x_2)\), \(v_3\), \(x_3\), \(f'(x_3)\), \(v_4\) and \(x_4\). <b>(c)</b> Run plain gradient descent from \(x_0=0\) with the same \(\alpha\) for four steps, and give the two distances from the target \(x=5\) after four steps — one for momentum, one for plain descent — saying which is past and which is short.</p>
+    <p class="ptest"><b>What this tests.</b> Reading the loaded trolley backwards: \(\mathbf v_0=0\) makes the first step pure descent, so \(\alpha\) falls out alone and \(\beta\) shows up only at step 2 — and then whether you can see the overshoot that memory buys. <b>Plan.</b> One step with \(\alpha\) unknown; one step with \(\beta\) unknown; then roll the recursion forward two more rows; finally run the plain map \(x\leftarrow0.8x+1\) four times and subtract.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — step 1 has no \(\beta\) in it.</b> The gradient is \(f'(x)=2(x-5)\), so \(f'(0)=-10\). With \(v_0=0\),
+      \[\begin{aligned}
+      v_1&=\beta(0)-\alpha(-10)=10\alpha,\\ 
+      x_1&=0+10\alpha=1.0,\\ 
+      \alpha&=0.1,\qquad v_1=1.0.
+      \end{aligned}\]
+      The empty trolley is what makes this identification possible: \(\beta\) multiplies \(v_0=0\) and disappears.</div>
+      <div class="pstep"><b>Step 2 — \(\beta\) from the second step.</b> \(f'(1.0)=2(1-5)=-8\):
+      \[\begin{aligned}
+      v_2&=\beta(1.0)-0.1(-8)=\beta+0.8,\\ 
+      x_2&=1.0+\beta+0.8=1.8+\beta,\\ 
+      1.8+\beta&=2.6\ \Rightarrow\ \beta=0.8,\\ 
+      v_2&=1.6.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(b) Step 3 — two more rows.</b>
+      \[\begin{aligned}
+      f'(2.6)&=2(2.6-5)=-4.8,\\ 
+      v_3&=0.8(1.6)-0.1(-4.8)\\ 
+      &=1.28+0.48=1.76,\\ 
+      x_3&=2.6+1.76=4.36.
+      \end{aligned}\]
+      \[\begin{aligned}
+      f'(4.36)&=2(4.36-5)=-1.28,\\ 
+      v_4&=0.8(1.76)-0.1(-1.28)\\ 
+      &=1.408+0.128=1.536,\\ 
+      x_4&=4.36+1.536=5.896.
+      \end{aligned}\]
+      Note what happened at the last row: the pull \(0.128\) was tiny, but the trolley still carried \(1.408\) — so the walker sailed straight past \(5\).
+      <table class="plain">
+        <thead><tr><th>\(t\)</th><th>\(x_t\)</th><th>\(f'(x_t)\)</th><th>\(v_{t+1}\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\(0\)</td><td>\(-10\)</td><td>\(1.0\)</td></tr>
+          <tr><td>1</td><td>\(1.0\)</td><td>\(-8\)</td><td>\(1.6\)</td></tr>
+          <tr><td>2</td><td>\(2.6\)</td><td>\(-4.8\)</td><td>\(1.76\)</td></tr>
+          <tr><td>3</td><td>\(4.36\)</td><td>\(-1.28\)</td><td>\(1.536\)</td></tr>
+          <tr><td>4</td><td>\(5.896\)</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table></div>
+      <div class="pstep"><b>(c) Step 4 — the same rate without the trolley.</b> Plain descent is
+      \[\begin{aligned}
+      x&\leftarrow x-0.1\cdot2(x-5)\\ 
+      &=x-0.2x+1=0.8x+1.
+      \end{aligned}\]
+      Four applications from \(0\):
+      \[\begin{aligned}
+      x_1&=0.8(0)+1=1,\\ 
+      x_2&=0.8(1)+1=1.8,\\ 
+      x_3&=0.8(1.8)+1=2.44,\\ 
+      x_4&=0.8(2.44)+1=2.952.
+      \end{aligned}\]
+      The two distances after four steps:
+      \[\begin{aligned}
+      \text{momentum: }&5.896-5=0.896\ \text{past},\\ 
+      \text{plain: }&5-2.952=2.048\ \text{short}.
+      \end{aligned}\]
+      Same \(\alpha\), same four steps: memory covered \(5.896\) of the ground while plain descent covered \(2.952\) — but it bought that speed with an overshoot of \(0.896\), which it will now have to walk back.</div>
+      <p class="pans">answers at a glance: (a) \(\alpha=0.1\) (from step 1, where \(v_0=0\) hides \(\beta\)), then \(\beta=0.8\). (b) \(f'(2.6)=-4.8\), \(v_3=1.76\), \(x_3=4.36\); \(f'(4.36)=-1.28\), \(v_4=1.536\), \(x_4=5.896\). (c) plain run \(1,\ 1.8,\ 2.44,\ 2.952\); momentum ends \(0.896\) past the target, plain descent \(2.048\) short of it.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>\(\mathbf v_0=\mathbf 0\) is the crack that lets you read a momentum log backwards: step 1 is pure descent and gives \(\alpha\); only step 2 can give \(\beta\). The slip is fitting both at once from step 2 and getting a whole family of answers. The second thing to keep: momentum overshoots <em>by design</em> — the trolley keeps rolling after the slope has flattened — which is exactly what makes it fast in a long valley and jumpy near the bottom.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">A single weight sits on a long, perfectly straight slope: \(\mathrm dL/\mathrm dw=g=4\) at every iteration. Take \(\alpha=1\) and ignore \(\epsilon\). <b>(a)</b> Give AdaGrad's accumulator \(G_t\) in closed form, show its step size is \(\alpha/\sqrt t\), and give the first four step sizes. <b>(b)</b> Give the first \(t\) at which AdaGrad's step has fallen below \(10\%\) of \(\alpha\). <b>(c)</b> For RMSProp with \(\rho=0.5\), prove \(A_t=g^2(1-\rho^{\,t})\) by unrolling the geometric series, then give the first four step sizes and the value they approach. <b>(d)</b> Give the two limits as \(t\to\infty\) and the step each method takes at \(t=100\), plus the ratio between them.</p>
+    <p class="ptest"><b>What this tests.</b> The permanent record against form-not-career-average, on the one input where they visibly disagree: a slope that never changes. <b>Plan.</b> Sum \(t\) copies of \(g^2\) for AdaGrad and cancel \(g\) against \(\sqrt{g^2}\); for RMSProp unroll \(A_t=\rho A_{t-1}+(1-\rho)g^2\) into a geometric series and use \(1+\rho+\dots+\rho^{t-1}=(1-\rho^{\,t})/(1-\rho)\); then two limits and one division.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the permanent record never forgets.</b> AdaGrad adds \(g^2\) every iteration and never subtracts, so after \(t\) iterations
+      \[G_t=\underbrace{g^2+g^2+\dots+g^2}_{t\ \text{terms}}=t\,g^2=16t.\]
+      The step size is therefore
+      \[\begin{aligned}
+      \frac{\alpha\,g}{\sqrt{G_t}}&=\frac{\alpha\,g}{\sqrt{t\,g^2}}=\frac{\alpha\,g}{|g|\sqrt t}=\frac{\alpha}{\sqrt t}
+      \end{aligned}\]
+      for \(g&gt;0\). The size of the slope cancels completely — only the <em>count</em> of steps survives. With \(\alpha=1\):
+      \[\begin{aligned}
+      t=1:&\quad 1/\sqrt1=1,\\ 
+      t=2:&\quad 1/\sqrt2=0.70711,\\ 
+      t=3:&\quad 1/\sqrt3=0.57735,\\ 
+      t=4:&\quad 1/\sqrt4=0.5.
+      \end{aligned}\]
+      (Arithmetic check: \(G_1=16,\ \sqrt{16}=4,\ \alpha g/\sqrt{G_1}=4/4=1\) ✓; \(G_2=32,\ \sqrt{32}=5.65685,\ 4/5.65685=0.70711\) ✓.)</div>
+      <div class="pstep"><b>(b) Step 2 — when the record strangles the walker.</b>
+      \[\begin{aligned}
+      \frac{\alpha}{\sqrt t}&&lt;0.1\,\alpha\\ 
+      \sqrt t&&gt;10\\ 
+      t&&gt;100,
+      \end{aligned}\]
+      so from \(t=101\) onward. At \(t=100\) the step is exactly \(0.1\alpha\); at \(t=101\) it is \(0.099504\alpha\). Nothing about the problem changed — the brake came purely from the step count.</div>
+      <div class="pstep"><b>(c) Step 3 — unroll RMSProp.</b> Write \(c=1-\rho\) and start from \(A_0=0\):
+      \[\begin{aligned}
+      A_1&=c\,g^2,\\ 
+      A_2&=\rho\,c\,g^2+c\,g^2=c\,g^2(1+\rho),\\ 
+      A_3&=c\,g^2(1+\rho+\rho^2),\\ 
+      A_t&=c\,g^2\big(1+\rho+\dots+\rho^{\,t-1}\big).
+      \end{aligned}\]
+      The bracket is a geometric series:
+      \[\begin{aligned}
+      1+\rho+\dots+\rho^{\,t-1}&=\frac{1-\rho^{\,t}}{1-\rho},\\ 
+      A_t&=(1-\rho)g^2\cdot\frac{1-\rho^{\,t}}{1-\rho}\\ 
+      &=g^2\big(1-\rho^{\,t}\big).
+      \end{aligned}\]
+      So the step size is
+      \[\frac{\alpha g}{\sqrt{g^2(1-\rho^{\,t})}}=\frac{\alpha}{\sqrt{1-\rho^{\,t}}}.\]
+      With \(\rho=0.5\) and \(\alpha=1\):
+      \[\begin{aligned}
+      t=1:&\ 1/\sqrt{0.5}=1.41421,\\ 
+      t=2:&\ 1/\sqrt{0.75}=1.15470,\\ 
+      t=3:&\ 1/\sqrt{0.875}=1.06904,\\ 
+      t=4:&\ 1/\sqrt{0.9375}=1.03280.
+      \end{aligned}\]
+      As \(t\) grows, \(\rho^{\,t}\to0\) and the step settles at \(\alpha=1\). Notice it comes down <em>to</em> \(\alpha\) from above: the empty notebook at \(t=1\) makes the first step \(1/\sqrt{1-\rho}=1.41421\) times too big, and that inflation fades.</div>
+      <div class="pstep"><b>(d) Step 4 — the two limits, side by side.</b>
+      \[\begin{aligned}
+      \text{AdaGrad: }&\frac{\alpha}{\sqrt t}\longrightarrow 0,\\ 
+      \text{RMSProp: }&\frac{\alpha}{\sqrt{1-\rho^{\,t}}}\longrightarrow \alpha=1.
+      \end{aligned}\]
+      At \(t=100\):
+      \[\begin{aligned}
+      \text{AdaGrad: }&\frac{1}{\sqrt{100}}=0.1,\\ 
+      \text{RMSProp: }&\frac{1}{\sqrt{1-0.5^{100}}}=1.0000,\\ 
+      \text{ratio: }&\frac{1.0000}{0.1}=10.
+      \end{aligned}\]
+      (\(0.5^{100}\approx7.9\times10^{-31}\), so RMSProp's step at \(t=100\) is \(1\) to thirty decimal places.) On a slope that genuinely never ends, AdaGrad is ten times slower than RMSProp by step 100 and the gap keeps widening as \(\sqrt t\).</div>
+      <p class="pans">answers at a glance: (a) \(G_t=16t\), step \(=\alpha/\sqrt t\): \(1,\ 0.70711,\ 0.57735,\ 0.5\). (b) from \(t=101\). (c) \(A_t=g^2(1-\rho^{\,t})\), step \(=\alpha/\sqrt{1-\rho^{\,t}}\): \(1.41421,\ 1.15470,\ 1.06904,\ 1.03280\to\alpha=1\). (d) limits \(0\) and \(\alpha=1\); at \(t=100\), \(0.1\) versus \(1.0000\), a ratio of \(10\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Both methods divide by a root of remembered squares; the only difference is whether the memory is a permanent record (AdaGrad, sum) or recent form (RMSProp, fading average). On a constant slope that difference is \(\alpha/\sqrt t\to0\) against \(\alpha/\sqrt{1-\rho^{\,t}}\to\alpha\) — a brake that never lifts, against one that lifts after a few steps. The slip is thinking AdaGrad's shrinking step means "converging": here nothing has converged at all, the walker has simply been throttled.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">A model \(\hat y=w_1x_1+w_2x_2\) is fitted to two rows, \((10,1)\mapsto21\) and \((10,-1)\mapsto19\), with \(L=\tfrac12\sum_i(\hat y_i-y_i)^2\). <b>(a)</b> Write \(\partial L/\partial w_j\) in terms of the residuals and evaluate \(\nabla L\) at \(\mathbf w_0=(0,0)\). <b>(b)</b> Give \(H=X^{\!\top}X\), the range of \(\alpha\) for which plain descent is stable, the optimum \(\mathbf w^*\), and — at \(\alpha=0.005\) — the first move of \(w_2\), its per-step contraction factor, the number of steps it needs to close \(99\%\) of its gap, and what \(w_1\) does in one step. <b>(c)</b> Run RMSProp with \(\rho=0.9\), \(\alpha=0.3\) for two steps, showing \(A_t\), \(\sqrt{A_t}\) and the step vector each time. <b>(d)</b> Give \(w_2\) after two RMSProp steps and after two plain steps at \(\alpha=0.005\), and the ratio.</p>
+    <p class="ptest"><b>What this tests.</b> The whole reason per-weight step sizes exist: one column is ten times bigger than the other, so the curvature ratio is a hundred, and one shared rate cannot serve both. <b>Plan.</b> Residual times feature, summed, gives the gradient; \(X^{\!\top}X\) gives the curvature and the speed limit; then run RMSProp in vector form keeping every intermediate to six decimals — the point is that its two steps come out <em>equal</em> on the first iteration even though the gradients differ by a factor of \(200\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — gradient as residual times feature.</b> With \(r_i=\hat y_i-y_i\),
+      \[\frac{\partial L}{\partial w_j}=\sum_i r_i\,x_{ij}.\]
+      At \(\mathbf w_0=(0,0)\) both predictions are \(0\), so \(r=(-21,\,-19)\) and
+      \[\begin{aligned}
+      \frac{\partial L}{\partial w_1}&=(-21)(10)+(-19)(10)\\ 
+      &=-210-190=-400,\\ 
+      \frac{\partial L}{\partial w_2}&=(-21)(1)+(-19)(-1)\\ 
+      &=-21+19=-2.
+      \end{aligned}\]
+      So \(\nabla L=(-400,\,-2)\): the two partials differ by a factor of \(200\) at the very first point, purely because column 1 is ten times larger.</div>
+      <div class="pstep"><b>(b) Step 2 — curvature, speed limit, optimum.</b> With \(X=\begin{bmatrix}10&amp;1\\10&amp;-1\end{bmatrix}\),
+      \[\begin{aligned}
+      X^{\!\top}X&=\begin{bmatrix}100+100&amp;10-10\\10-10&amp;1+1\end{bmatrix}\\ 
+      &=\begin{bmatrix}200&amp;0\\0&amp;2\end{bmatrix}.
+      \end{aligned}\]
+      Diagonal, so the two coordinates never talk to each other; the eigenvalues are \(200\) and \(2\) and the condition number is \(100\). Stability needs \(\alpha&lt;2/\lambda_{\max}\):
+      \[0&lt;\alpha&lt;\frac{2}{200}=0.01.\]
+      The optimum solves \(X^{\!\top}X\mathbf w=X^{\!\top}\mathbf y\) with \(X^{\!\top}\mathbf y=(400,\,2)\):
+      \[\mathbf w^*=\Big(\tfrac{400}{200},\ \tfrac{2}{2}\Big)=(2,\,1).\]
+      Now take the largest rate the problem allows on the <em>small</em> side, \(\alpha=0.005\):
+      \[\begin{aligned}
+      \Delta w_2&=0.005\times2=0.01,\\ 
+      \text{factor}&=1-0.005(2)=0.99,\\ 
+      0.99^{\,n}&\le0.01\\ 
+      n&\ge\frac{\ln0.01}{\ln0.99}=458.21,
+      \end{aligned}\]
+      so \(459\) steps — call it about \(460\) — for \(w_2\) to close \(99\%\) of its gap. Meanwhile
+      \[\text{factor for }w_1=1-0.005(200)=0,\]
+      so \(w_1\) lands exactly on \(2\) in a single step and then never moves again. One rate, two completely different lives: one knob finished before the first step ended, the other needs four hundred and fifty-nine.</div>
+      <div class="pstep"><b>(c) Step 3 — RMSProp, first iteration.</b> \(\rho=0.9\), \(\alpha=0.3\), \(A_0=\mathbf 0\), \(\mathbf g_0=(-400,-2)\):
+      \[\begin{aligned}
+      A_1&=0.1\,\mathbf g_0^2=0.1(160000,\,4)\\ 
+      &=(16000,\ 0.4),\\ 
+      \sqrt{A_1}&=(126.4911,\ 0.632456).
+      \end{aligned}\]
+      \[\begin{aligned}
+      \text{step}&=\frac{0.3(-400)}{126.4911},\ \frac{0.3(-2)}{0.632456}\\ 
+      &=(-0.948683,\ -0.948683),\\ 
+      \mathbf w_1&=(0.948683,\ 0.948683).
+      \end{aligned}\]
+      The two moves are <em>identical</em> although the gradients differed by \(200\times\): on the first step \(\sqrt{A_1}=\sqrt{0.1}\,|g|\), so \(g\) cancels and every coordinate moves \(\alpha/\sqrt{1-\rho}=0.948683\) in the downhill direction.</div>
+      <div class="pstep"><b>Step 4 — second iteration.</b> New predictions and residuals:
+      \[\begin{aligned}
+      \hat y_1&=10(0.948683)+0.948683\\ 
+      &=10.435516,\\ 
+      r_1&=10.435516-21=-10.564484,\\ 
+      \hat y_2&=10(0.948683)-0.948683\\ 
+      &=8.538150,\\ 
+      r_2&=8.538150-19=-10.461850.
+      \end{aligned}\]
+      New gradient:
+      \[\begin{aligned}
+      g_{1,1}&=10(-10.564484)+10(-10.461850)\\ 
+      &=-210.263340,\\ 
+      g_{1,2}&=(-10.564484)-(-10.461850)\\ 
+      &=-0.102633.
+      \end{aligned}\]
+      Fade the notebook and add the new squares:
+      \[\begin{aligned}
+      A_2&=0.9(16000,\,0.4)\\ 
+      &\quad+0.1\,(44210.67,\ 0.010534)\\ 
+      &=(18821.067,\ 0.3610534),\\ 
+      \sqrt{A_2}&=(137.189895,\ 0.600877).
+      \end{aligned}\]
+      \[\begin{aligned}
+      \text{step}&=\frac{0.3(-210.263340)}{137.189895},\\ 
+      &\qquad\frac{0.3(-0.102633)}{0.600877}\\ 
+      &=(-0.459793,\ -0.051242),\\ 
+      \mathbf w_2&=(1.408477,\ 0.999925).
+      \end{aligned}\]
+      Two steps have taken \(w_2\) to within \(0.000075\) of its optimum \(1\).</div>
+      <div class="pstep"><b>(d) Step 5 — the comparison in one line.</b> Two plain steps at \(\alpha=0.005\) leave \(w_2\) at
+      \[\begin{aligned}
+      w_2^{(1)}&=0+0.005(2)=0.01,\\ 
+      w_2^{(2)}&=0.01+0.005(1.98)=0.0199.
+      \end{aligned}\]
+      Against RMSProp's \(0.999925\):
+      \[\frac{0.999925}{0.0199}=50.25.\]
+      RMSProp has moved the stiff knob fifty times further in the same two steps — and it did it without needing to know that column 2 was small, because the notebook measured that for itself.</div>
+      <p class="pans">answers at a glance: (a) \(r=(-21,-19)\), \(\nabla L=(-400,\,-2)\). (b) \(H=\operatorname{diag}(200,2)\), stable for \(0&lt;\alpha&lt;0.01\), \(\mathbf w^*=(2,1)\); at \(\alpha=0.005\): \(\Delta w_2=0.01\), factor \(0.99\), \(459\) steps for \(99\%\), and \(w_1\)'s factor is \(0\) so it lands in one step. (c) \(\mathbf w_1=(0.948683,\,0.948683)\); \(\mathbf w_2=(1.408477,\,0.999925)\). (d) \(0.999925\) versus \(0.0199\), a ratio of \(50.25\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Divide by the root of a remembered square and the gradient's <em>size</em> cancels — what is left is its <em>direction</em>, times a step the method sets for each weight separately. That is why RMSProp's first move is \(\alpha/\sqrt{1-\rho}\) in every coordinate no matter how lopsided the columns are. The slip is fading the notebook with the <em>new</em> squared gradient on the first step and forgetting the \(1-\rho\) factor: \(A_1=(1-\rho)g_0^2\), not \(g_0^2\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">Three gradients were logged for one weight: \(g_0=6,\ g_1=-4,\ g_2=2\). Run Adam by hand with \(\alpha=0.1\), \(\beta_1=0.9\), \(\beta_2=0.999\), \(m_0=v_0=0\) and \(w_0=1\). <b>(a)</b> Tabulate \(t=1,2,3\): first the two correction denominators \(1-\beta_1^{\,t}\) and \(1-\beta_2^{\,t}\), then \(m_t,\ v_t,\ \hat m_t,\ \hat v_t,\ \sqrt{\hat v_t}\), the ratio \(\hat m_t/\sqrt{\hat v_t}\) and \(w_t\). <b>(b)</b> Give the three iterates plain gradient descent would have produced at the same \(\alpha\) on the same gradients. <b>(c)</b> Give the three Adam step sizes, and give the number \(\hat m_2/\sqrt{\hat v_2}\) together with the two averages that produced it — say which average can cancel and which cannot.</p>
+    <p class="ptest"><b>What this tests.</b> The two notebooks and the probation rate, in full arithmetic: a signed average on top, a squared average underneath, and a start-up correction that makes step 1 honest. <b>Plan.</b> Compute the two denominators first — they are the same every run and are where most slips live — then one row at a time; never reuse a corrected value in the next row's recursion (the recursion runs on the raw \(m_t,v_t\)).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the two probation denominators.</b>
+      \[\begin{aligned}
+      1-\beta_1^{\,t}&:\ 0.1,\quad 0.19,\quad 0.271,\\ 
+      1-\beta_2^{\,t}&:\ 0.001,\ \ 0.001999,\\ 
+      &\qquad\quad 0.002997001.
+      \end{aligned}\]
+      (\(1-0.9^2=1-0.81=0.19\); \(1-0.9^3=1-0.729=0.271\); \(1-0.999^2=1-0.998001=0.001999\); \(1-0.999^3=1-0.997002999=0.002997001\).) Both start tiny and climb toward \(1\), which is exactly what inflates the nearly empty notebooks back to honest size.</div>
+      <div class="pstep"><b>Step 2 — \(t=1\), using \(g_0=6\).</b>
+      \[\begin{aligned}
+      m_1&=0.9(0)+0.1(6)=0.6,\\ 
+      v_1&=0.999(0)+0.001(36)=0.036,\\ 
+      \hat m_1&=\frac{0.6}{0.1}=6,\\ 
+      \hat v_1&=\frac{0.036}{0.001}=36,\\ 
+      \sqrt{\hat v_1}&=6,\\ 
+      \frac{\hat m_1}{\sqrt{\hat v_1}}&=\frac66=1,\\ 
+      w_1&=1-0.1(1)=0.9.
+      \end{aligned}\]
+      The ratio is exactly \(1\): after correction the first step is \(\alpha\) in the downhill direction, whatever the gradient was.</div>
+      <div class="pstep"><b>Step 3 — \(t=2\), using \(g_1=-4\).</b>
+      \[\begin{aligned}
+      m_2&=0.9(0.6)+0.1(-4)\\ 
+      &=0.54-0.4=0.14,\\ 
+      v_2&=0.999(0.036)+0.001(16)\\ 
+      &=0.035964+0.016=0.051964.
+      \end{aligned}\]
+      \[\begin{aligned}
+      \hat m_2&=\frac{0.14}{0.19}=0.736842,\\ 
+      \hat v_2&=\frac{0.051964}{0.001999}=25.994997,\\ 
+      \sqrt{\hat v_2}&=5.098529,\\ 
+      \frac{\hat m_2}{\sqrt{\hat v_2}}&=0.144521,\\ 
+      w_2&=0.9-0.1(0.144521)\\ 
+      &=0.885548.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 4 — \(t=3\), using \(g_2=2\).</b>
+      \[\begin{aligned}
+      m_3&=0.9(0.14)+0.1(2)\\ 
+      &=0.126+0.2=0.326,\\ 
+      v_3&=0.999(0.051964)+0.001(4)\\ 
+      &=0.051912036+0.004\\ 
+      &=0.055912036.
+      \end{aligned}\]
+      \[\begin{aligned}
+      \hat m_3&=\frac{0.326}{0.271}=1.202952,\\ 
+      \hat v_3&=\frac{0.055912036}{0.002997001}\\ 
+      &=18.655995,\\ 
+      \sqrt{\hat v_3}&=4.319259,\\ 
+      \frac{\hat m_3}{\sqrt{\hat v_3}}&=0.278509,\\ 
+      w_3&=0.885548-0.0278509\\ 
+      &=0.857697.
+      \end{aligned}\]
+      The whole run:
+      <table class="plain">
+        <thead><tr><th>\(t\)</th><th>\(m_t\)</th><th>\(v_t\)</th><th>\(\hat m_t\)</th><th>\(\sqrt{\hat v_t}\)</th><th>ratio</th><th>\(w_t\)</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>\(0.6\)</td><td>\(0.036\)</td><td>\(6\)</td><td>\(6\)</td><td>\(1\)</td><td>\(0.9\)</td></tr>
+          <tr><td>2</td><td>\(0.14\)</td><td>\(0.051964\)</td><td>\(0.736842\)</td><td>\(5.098529\)</td><td>\(0.144521\)</td><td>\(0.885548\)</td></tr>
+          <tr><td>3</td><td>\(0.326\)</td><td>\(0.055912\)</td><td>\(1.202952\)</td><td>\(4.319259\)</td><td>\(0.278509\)</td><td>\(0.857697\)</td></tr>
+        </tbody>
+      </table></div>
+      <div class="pstep"><b>(b) Step 5 — what plain descent would have done.</b> \(w\leftarrow w-0.1g\) on the same three gradients:
+      \[\begin{aligned}
+      w_1&=1-0.1(6)=0.4,\\ 
+      w_2&=0.4-0.1(-4)=0.8,\\ 
+      w_3&=0.8-0.1(2)=0.6.
+      \end{aligned}\]
+      Plain descent lurched \(0.6\), then \(0.4\) back, then \(0.2\) forward — total travel \(1.2\) to end \(0.4\) from the start. Adam travelled \(0.142\) in total and ended \(0.142\) from the start: same three gradients, a tenth of the thrashing.</div>
+      <div class="pstep"><b>(c) Step 6 — the three step sizes, and why the middle one is tiny.</b> Each step is \(\alpha\) times the ratio:
+      \[\begin{aligned}
+      t=1:&\ 0.1(1)=0.1,\\ 
+      t=2:&\ 0.1(0.144521)=0.014452,\\ 
+      t=3:&\ 0.1(0.278509)=0.027851.
+      \end{aligned}\]
+      The middle ratio is \(\hat m_2/\sqrt{\hat v_2}=0.736842/5.098529=0.144521\). Look at what each average did with the pair \((6,-4)\):
+      \[\begin{aligned}
+      \text{signed top: }&0.9(0.6)+0.1(-4)=0.14,\\ 
+      \text{squared bottom: }&0.999(0.036)+0.001(16)\\ 
+      &=0.051964.
+      \end{aligned}\]
+      The top averages <em>signed</em> gradients, so \(+6\) and \(-4\) nearly cancel and the numerator collapses to \(0.14\). The bottom averages <em>squares</em>, which are all positive and can never cancel, so it stays large. A ratio of about \(0.14\) is Adam saying: "the last two reports disagreed about the direction, so take a small step until they agree again."</div>
+      <p class="pans">answers at a glance: (a) denominators \(0.1,\,0.19,\,0.271\) and \(0.001,\,0.001999,\,0.002997001\); \(w_1=0.9\), \(w_2=0.885548\), \(w_3=0.857697\). (b) plain descent gives \(0.4,\ 0.8,\ 0.6\). (c) step sizes \(0.1,\ 0.014452,\ 0.027851\); \(\hat m_2/\sqrt{\hat v_2}=0.144521\), small because the signed average \(0.14\) nearly cancelled while the squared average \(0.051964\) could not.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Adam divides a <em>signed</em> average by the root of a <em>squared</em> average: disagreement shrinks the numerator but never the denominator, so conflicting gradients automatically produce small steps. The probation correction is what makes step 1 come out at exactly \(\alpha\). The slip is feeding the corrected \(\hat m_t,\hat v_t\) back into the next row — the recursion always runs on the raw \(m_t,v_t\), and the correction is applied fresh each time.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">You have \(20\) metres of fencing and want to enclose the largest possible rectangular plot. <b>(a)</b> Name the decision variables, the objective and the constraint, and reduce the perimeter equation to its simplest form. <b>(b)</b> Solve with one multiplier: give \(\lambda^*\), \(x^*\), \(y^*\) and the area \(A^*\), and confirm it is a maximum by eliminating one variable. <b>(c)</b> The fencing budget rises to \(22\) metres. Give the new optimum and area, the gain the multiplier <em>predicts</em>, the gain that actually occurs, the difference between them, and the exact value function \(A^*(s)\) together with its slope at \(s=10\).</p>
+    <p class="ptest"><b>What this tests.</b> Framing — what may I choose, what do I want, what limits me — and then the multiplier's second life as the price of a wall: how much the best attainable value improves per unit of extra budget. <b>Plan.</b> Three sentences of framing, then \(\nabla f=\lambda\nabla h\) and the constraint; then re-solve at the new budget and compare \(\lambda\,\Delta s\) against the true jump, and explain the difference with the value function.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — frame it in three lines.</b> Let \(x&gt;0\) be the width and \(y&gt;0\) the height, in metres. The area to maximise is \(f(x,y)=xy\). The fencing is all used, so the perimeter is
+      \[2x+2y=20\ \Longrightarrow\ h(x,y)=x+y-10=0.\]
+      Framed problem: \(\max_{x,y}\,xy\) subject to \(x+y=10\). Call the half-perimeter \(s=10\) the budget; it is the thing whose price we will ask for in (c).</div>
+      <div class="pstep"><b>(b) Step 2 — one multiplier.</b> \(\nabla f=(y,x)\) and \(\nabla h=(1,1)\), so \(\nabla f=\lambda\nabla h\) reads
+      \[\begin{aligned}
+      y&=\lambda(1)=\lambda,\\ 
+      x&=\lambda(1)=\lambda.
+      \end{aligned}\]
+      Both equations say the same thing, \(x=y=\lambda\). Feed that into the constraint:
+      \[\begin{aligned}
+      \lambda+\lambda&=10,\\ 
+      \lambda^*&=5,\qquad x^*=y^*=5,\\ 
+      A^*&=5\times5=25\ \text{m}^2.
+      \end{aligned}\]
+      Confirm it is a maximum without any second-derivative test: on the constraint line \(y=10-x\), so
+      \[A(x)=x(10-x)=10x-x^2,\]
+      a downward parabola whose single critical point is its peak, and whose value collapses to \(0\) at both ends \(x\to0\) and \(x\to10\). The square wins.</div>
+      <div class="pstep"><b>(c) Step 3 — the price of a wall.</b> With \(22\) m the budget becomes \(s=11\), i.e. \(x+y=11\); the same algebra gives
+      \[\begin{aligned}
+      x^*=y^*&=5.5,\\ 
+      A^*&=5.5\times5.5=30.25\ \text{m}^2.
+      \end{aligned}\]
+      Compare the prediction with the fact:
+      \[\begin{aligned}
+      \text{predicted gain}&=\lambda^*\,\Delta s=5(1)=5,\\ 
+      \text{true gain}&=30.25-25=5.25,\\ 
+      \text{difference}&=0.25.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 4 — where the missing \(0.25\) lives.</b> Solve at a general budget \(s\): \(x^*=y^*=s/2\), so the exact value function is
+      \[A^*(s)=\Big(\frac s2\Big)^2=\frac{s^2}{4},\qquad \frac{\mathrm dA^*}{\mathrm ds}=\frac s2.\]
+      At \(s=10\) that slope is \(5\) — which is exactly \(\lambda^*\). So the multiplier is the <em>derivative</em> of the best attainable value with respect to the budget, and a derivative is only exact for an infinitesimal change. Over a whole unit the curve bends upward:
+      \[\begin{aligned}
+      A^*(11)-A^*(10)&=\frac{121-100}{4}=\frac{21}{4}=5.25,\\ 
+      \text{linear part}&=5,\\ 
+      \text{curvature part}&=\frac{(\Delta s)^2}{4}=0.25.
+      \end{aligned}\]
+      The \(0.25\) is precisely the quadratic term of \(s^2/4\). Ask the multiplier for a small favour and it answers exactly; ask it for a big one and it under-promises.</div>
+      <p class="pans">answers at a glance: (a) variables \(x,y&gt;0\); \(\max xy\) subject to \(x+y-10=0\). (b) \(\lambda^*=5\), \(x^*=y^*=5\), \(A^*=25\) m². (c) new optimum \(5.5,\ 5.5\) with \(A^*=30.25\); predicted gain \(5\), true gain \(5.25\), difference \(0.25\); \(A^*(s)=s^2/4\) with slope \(s/2=5\) at \(s=10\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The multiplier is not a bookkeeping nuisance — it is the price of one more unit of budget, \(\lambda=\mathrm dA^*/\mathrm ds\), available <em>before</em> you re-solve anything. The slip is expecting that price to be exact for a large change: it is a slope, so it captures the straight-line part and misses the curvature (here \(5\) predicted against \(5.25\) delivered). The second slip is forgetting to divide the perimeter by \(2\) and carrying \(2x+2y-20\), which scales \(\lambda\) by a half.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff easy">easy</span></div>
+    <p class="pq"><b>(a)</b> Put each of these into the standard form \(\min f\) subject to \(e=0,\ g\le0\), keeping every sign explicit and giving the gradient of each converted rule: (i) \(x\ge2\); (ii) \(x+2y\ge5\); (iii) \(3x-y\le7\); (iv) \(x+y=1\); (v) \(\max xy\); (vi) \(x&gt;2\) — for this last one, state what goes wrong and name the value that cannot be attained. <b>(b)</b> Complementary slackness splits the search into branches. Give the number of branches for \(m=1,2,3,4,10\) fences, and say for which of \(m=2,3,4\) the guess \(m^2\) happens to agree with the true count and for which it fails, with both numbers. <b>(c)</b> For a problem with one path and no fences, name which of the five conditions are empty and write down what survives. <b>(d)</b> In the slack formulation with \(n\) variables and \(m\) fences, count the unknowns; evaluate for \(n=2,\ m=2\).</p>
+    <p class="ptest"><b>What this tests.</b> The bookkeeping that everything else rests on — every rule pushed to the \(\le0\) side, every maximisation flipped — and the size of the branching interrogation that complementary slackness sets up. <b>Plan.</b> Move everything to one side so the right-hand side is \(0\) and the sense is \(\le\); negate the objective to flip a max; then count branches as \(2\) per <em>inequality</em> and nothing per equality.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — six conversions.</b>
+      <table class="plain">
+        <thead><tr><th>as written</th><th>standard form</th><th>gradient</th></tr></thead>
+        <tbody>
+          <tr><td>\(x\ge2\)</td><td>\(g=2-x\le0\)</td><td>\(\nabla g=(-1)\)</td></tr>
+          <tr><td>\(x+2y\ge5\)</td><td>\(g=5-x-2y\le0\)</td><td>\(\nabla g=(-1,-2)\)</td></tr>
+          <tr><td>\(3x-y\le7\)</td><td>\(g=3x-y-7\le0\)</td><td>\(\nabla g=(3,-1)\)</td></tr>
+          <tr><td>\(x+y=1\)</td><td>\(e=x+y-1=0\)</td><td>\(\nabla e=(1,1)\)</td></tr>
+          <tr><td>\(\max xy\)</td><td>\(\min\,(-xy)\)</td><td>\(\nabla f=(-y,-x)\)</td></tr>
+          <tr><td>\(x&gt;2\)</td><td>not allowed</td><td>—</td></tr>
+        </tbody>
+      </table>
+      A \(\ge\) becomes a \(\le\) by multiplying through by \(-1\), which also flips the gradient — that sign is the whole content of the first two rows. The last row is different in kind: with \(x&gt;2\) the feasible set is open, the infimum is \(2\), and \(2\) is excluded. For any allowed \(x\) the point \((x+2)/2\) is still allowed and strictly better, so no minimiser exists. Every fence in this subject is closed: \(\le\), never \(&lt;\).</div>
+      <div class="pstep"><b>(b) Step 2 — how big is the interrogation?</b> Each fence contributes exactly two branches — its fine is zero, or it is touched — and the branches multiply. An equality contributes none, because it is always active. So with \(m\) fences the count is \(2^m\):
+      \[\begin{aligned}
+      m=1:&\ 2^1=2,\\ 
+      m=2:&\ 2^2=4,\\ 
+      m=3:&\ 2^3=8,\\ 
+      m=4:&\ 2^4=16,\\ 
+      m=10:&\ 2^{10}=1024.
+      \end{aligned}\]
+      The tempting guess \(m^2\) agrees by coincidence at \(m=2\) (\(4=4\)) and at \(m=4\) (\(16=16\)), and fails at \(m=3\), where the truth is \(8\) and \(m^2\) says \(9\). Two agreements are not a pattern: \(2^{10}=1024\) against \(m^2=100\) settles it.</div>
+      <div class="pstep"><b>(c) Step 3 — one path, no fences.</b> Of the five conditions — stationarity, path feasibility, fence feasibility, complementary slackness, and non-negative fines — the last three are about fences, so with no fences they are empty. What survives is exactly two lines:
+      \[\nabla f+\lambda\nabla e=\mathbf 0,\qquad e=0.\]
+      That is the plain Lagrange recipe: the constrained problem with only equalities never needs a case split, and \(\lambda\) is free to take either sign.</div>
+      <div class="pstep"><b>(d) Step 4 — counting unknowns in the slack formulation.</b> Writing each fence as \(g_i+t_i^2=0\) with a slack \(t_i\), the unknowns are
+      \[\begin{aligned}
+      &n\ \text{variables}\\ 
+      +\ &1\ \text{path multiplier }\lambda\\ 
+      +\ &m\ \text{fence multipliers }\mu_i\\ 
+      +\ &m\ \text{slacks }t_i\\ 
+      =\ &n+2m+1.
+      \end{aligned}\]
+      For \(n=2\) variables and \(m=2\) fences: \(2+4+1=7\) unknowns — which is why the branching version, solving four small systems, beats the one big system in practice.</div>
+      <p class="pans">answers at a glance: (a) \(2-x\le0\ (\nabla=-1)\); \(5-x-2y\le0\ (\nabla=(-1,-2))\); \(3x-y-7\le0\ (\nabla=(3,-1))\); \(x+y-1=0\ (\nabla=(1,1))\); \(\min(-xy)\); \(x&gt;2\) is not allowed — the infimum \(2\) is excluded, so no minimiser exists. (b) \(2,\ 4,\ 8,\ 16,\ 1024\); \(m^2\) agrees at \(m=2\) and \(m=4\), fails at \(m=3\) (\(8\), not \(9\)). (c) fence feasibility, complementary slackness and \(\mu\ge0\) are empty; \(\nabla f+\lambda\nabla e=\mathbf 0\) and \(e=0\) survive. (d) \(n+2m+1\); for \(n=2,m=2\) that is \(7\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Standard form first, every time: right-hand side \(0\), sense \(\le\), maximisation negated. A \(\ge\) that is not flipped puts the wrong sign on \(\nabla g\) and then the fine comes out negative and the whole branch is thrown away for the wrong reason. And count branches as \(2^m\) in the number of <em>inequalities</em> only — equalities never branch, because they are never slack.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Maximise and minimise \(f(\mathbf v)=\mathbf v^{\!\top}A\mathbf v\) with \(A=\begin{bmatrix}5&amp;2\\2&amp;2\end{bmatrix}\) subject to \(\mathbf v^{\!\top}\mathbf v=1\). <b>(a)</b> Write \(\nabla f\) and \(\nabla h\), impose \(\nabla f=\lambda\nabla h\), and simplify the resulting system to one familiar matrix equation. <b>(b)</b> Give the characteristic equation and both values of \(\lambda\). <b>(c)</b> Give the maximum and minimum of \(f\) and the unit vectors where each is attained, to six decimals. <b>(d)</b> Verify the maximum by direct substitution, showing the arithmetic, and verify that the two optimisers are orthogonal.</p>
+    <p class="ptest"><b>What this tests.</b> That the tangency condition on the unit circle <em>is</em> the eigenvalue equation, and that the constrained values of a quadratic form are exactly the eigenvalues. <b>Plan.</b> Differentiate both sides, divide out the \(2\), read off \(A\mathbf v=\lambda\mathbf v\); then trace and determinant give the characteristic polynomial; then \(f=\mathbf v^{\!\top}A\mathbf v=\mathbf v^{\!\top}(\lambda\mathbf v)=\lambda\) on a unit eigenvector, so the values need no further work.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the condition is the eigenvalue equation.</b> With \(f=5x^2+4xy+2y^2\) and \(h=x^2+y^2-1\),
+      \[\begin{aligned}
+      \nabla f&=(10x+4y,\ 4x+4y)=2A\mathbf v,\\ 
+      \nabla h&=(2x,\ 2y)=2\mathbf v.
+      \end{aligned}\]
+      So \(\nabla f=\lambda\nabla h\) reads \(2A\mathbf v=\lambda\,2\mathbf v\); cancel the \(2\):
+      \[A\mathbf v=\lambda\mathbf v.\]
+      The candidates are not "some points found by calculus" — they are the unit eigenvectors of \(A\), and the multiplier is the eigenvalue. Moreover, at any such candidate
+      \[f=\mathbf v^{\!\top}A\mathbf v=\mathbf v^{\!\top}(\lambda\mathbf v)=\lambda\|\mathbf v\|^2=\lambda,\]
+      so the constrained values <em>are</em> the eigenvalues.</div>
+      <div class="pstep"><b>(b) Step 2 — the two eigenvalues.</b> \(\operatorname{tr}A=7\), \(\det A=10-4=6\):
+      \[\begin{aligned}
+      \lambda^2-7\lambda+6&=0,\\ 
+      (\lambda-6)(\lambda-1)&=0,\\ 
+      \lambda&=6\ \text{ or }\ \lambda=1.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(c) Step 3 — the two directions.</b> For \(\lambda=6\), solve \((A-6I)\mathbf v=\mathbf 0\):
+      \[\begin{aligned}
+      -x+2y&=0\ \Rightarrow\ x=2y,\\ 
+      \mathbf v&=\frac{(2,1)}{\sqrt5}\\ 
+      &=(0.894427,\ 0.447214).
+      \end{aligned}\]
+      For \(\lambda=1\), solve \((A-I)\mathbf v=\mathbf 0\):
+      \[\begin{aligned}
+      4x+2y&=0\ \Rightarrow\ y=-2x,\\ 
+      \mathbf v&=\frac{(-1,2)}{\sqrt5}\\ 
+      &=(-0.447214,\ 0.894427).
+      \end{aligned}\]
+      Both signs work, since \(-\mathbf v\) is also a unit eigenvector. So
+      \[\begin{aligned}
+      \max f&=6\ \text{at}\ \pm(0.894427,\,0.447214),\\ 
+      \min f&=1\ \text{at}\ \pm(-0.447214,\,0.894427).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(d) Step 4 — two checks.</b> Substitute \((2,1)/\sqrt5\) into \(f=5x^2+4xy+2y^2\), pulling out the \(1/5\):
+      \[\begin{aligned}
+      f&=\tfrac15\big[5(4)+4(2)(1)+2(1)\big]\\ 
+      &=\tfrac15\big[20+8+2\big]=\tfrac{30}{5}=6.
+      \end{aligned}\]
+      That is \(\lambda_{\max}\), as promised. ✓ And the two optimisers are perpendicular:
+      \[(2,1)\cdot(-1,2)=-2+2=0.\]
+      A symmetric matrix always hands back orthogonal directions for distinct eigenvalues, which is why the largest and smallest values of a quadratic form sit at right angles to each other — the long and short axes of the same ellipse.</div>
+      <p class="pans">answers at a glance: (a) \(\nabla f=2A\mathbf v\), \(\nabla h=2\mathbf v\), so \(A\mathbf v=\lambda\mathbf v\). (b) \(\lambda^2-7\lambda+6=0\), \(\lambda=6,\ 1\). (c) \(\max f=6\) at \(\pm(0.894427,\,0.447214)\); \(\min f=1\) at \(\pm(-0.447214,\,0.894427)\). (d) direct check gives \(30/5=6\); dot product \(=0\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>"Maximise a quadratic form on the unit sphere" is the eigenvalue problem wearing a different hat — which is exactly how the first principal component is found. Once you recognise \(A\mathbf v=\lambda\mathbf v\), stop computing: on a unit eigenvector \(f\) equals \(\lambda\), so the answers are already on the page. The slip is forgetting to normalise: \((2,1)\) gives \(f=30\), not \(6\), because \(f\) scales with \(\|\mathbf v\|^2\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Minimise \(f(x)=(x-3)^2\) subject to \(x\le1\). <b>(a)</b> Put it in standard form and work both branches of the fine-or-no-fine split; say which branch dies and on which condition, give \(\mu^*\), check all five conditions, and give \(p^*\). <b>(b)</b> Write the Lagrangian and minimise it over \(x\) for a fixed \(\mu\), confirming it really is a minimum. <b>(c)</b> Substitute back to get \(d(\mu)\) in closed form and say what shape it is. <b>(d)</b> Solve \(\max_{\mu\ge0}d(\mu)\): give \(\mu^*\), \(d^*\) and the gap \(p^*-d^*\); recover \(x^*\) from \(\mu^*\) and verify complementary slackness.</p>
+    <p class="ptest"><b>What this tests.</b> The same one-fence problem answered twice — once by the branching interrogation, once by turning the wall into a fine — and the fact that the two answers agree. <b>Plan.</b> Branch on \(\mu=0\) versus \(g=0\) and kill the loser on a named condition; then build \(d(\mu)=\min_xL\) by substituting the inner minimiser, and maximise the resulting parabola over \(\mu\ge0\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the branching interrogation, two branches.</b> Standard form: \(g(x)=x-1\le0\), and stationarity of \(L=(x-3)^2+\mu(x-1)\) is
+      \[2(x-3)+\mu=0.\]
+      <em>Branch 1, \(\mu=0\) (the fence does nothing).</em> Then \(2(x-3)=0\), so \(x=3\). Check the fence: \(g(3)=3-1=2&gt;0\). The point is outside. <b>Rejected on fence feasibility.</b><br>
+      <em>Branch 2, \(g=0\) (pressed against the fence).</em> Then \(x=1\), and stationarity gives
+      \[\begin{aligned}
+      2(1-3)+\mu&=0,\\ 
+      -4+\mu&=0,\\ 
+      \mu^*&=4\ \ (\ge0\ \checkmark).
+      \end{aligned}\]
+      All five conditions at \((x,\mu)=(1,4)\): stationarity \(-4+4=0\) ✓; no path to check; fence feasibility \(g=0\le0\) ✓; complementary slackness \(\mu g=4(0)=0\) ✓; \(\mu=4\ge0\) ✓. So
+      \[p^*=(1-3)^2=4.\]</div>
+      <div class="pstep"><b>(b) Step 2 — turn the wall into a fine.</b>
+      \[L(x,\mu)=(x-3)^2+\mu(x-1).\]
+      For a fixed \(\mu\) this is a parabola in \(x\) opening upward, so its minimum is where the derivative vanishes:
+      \[\begin{aligned}
+      \frac{\partial L}{\partial x}&=2(x-3)+\mu=0,\\ 
+      x&=3-\frac\mu2,\\ 
+      \frac{\partial^2L}{\partial x^2}&=2&gt;0\ \Rightarrow\ \text{a minimum.}
+      \end{aligned}\]
+      Read that inner answer: at zero fine the walker goes straight to \(3\) and ignores the wall; each unit of fine drags it back by \(\tfrac12\).</div>
+      <div class="pstep"><b>(c) Step 3 — the dual function.</b> Substitute \(x=3-\mu/2\) back into \(L\). The first bracket becomes \(-\mu/2\) and the second becomes \(2-\mu/2\):
+      \[\begin{aligned}
+      d(\mu)&=\Big(-\frac\mu2\Big)^2+\mu\Big(2-\frac\mu2\Big)\\ 
+      &=\frac{\mu^2}{4}+2\mu-\frac{\mu^2}{2}\\ 
+      &=2\mu-\frac{\mu^2}{4}.
+      \end{aligned}\]
+      The \(\mu^2\) coefficient is \(\tfrac14-\tfrac12=-\tfrac14&lt;0\), so \(d\) is an upside-down parabola — concave, with a single peak. Every value it takes is a guaranteed floor under \(p^*\): \(d(0)=0\), \(d(2)=4-1=3\), \(d(6)=12-9=3\), all at or below \(4\).</div>
+      <div class="pstep"><b>(d) Step 4 — climb the hill and compare.</b>
+      \[\begin{aligned}
+      d'(\mu)&=2-\frac\mu2=0,\\ 
+      \mu^*&=4\ \ (\ge0\ \checkmark),\\ 
+      d^*&=2(4)-\frac{16}{4}=8-4=4.
+      \end{aligned}\]
+      The gap:
+      \[p^*-d^*=4-4=0,\]
+      zero — strong duality. Recover the primal point from the inner minimiser at \(\mu^*\):
+      \[x^*=3-\frac42=1\ \checkmark\]
+      which is the same \(x^*\) branch 2 produced, and complementary slackness holds there:
+      \[\mu^*g(x^*)=4(1-1)=4(0)=0.\ \checkmark\]
+      Two completely different routes — case analysis on the primal, hill-climbing on the dual — and they meet at the same \(\mu=4\), the same \(x=1\), the same value \(4\).</div>
+      <p class="pans">answers at a glance: (a) branch \(\mu=0\) gives \(x=3\) and dies on fence feasibility (\(g=2&gt;0\)); branch \(g=0\) gives \(x^*=1\), \(\mu^*=4\), all five conditions hold, \(p^*=4\). (b) \(x=3-\mu/2\), with \(\partial^2L/\partial x^2=2&gt;0\). (c) \(d(\mu)=2\mu-\mu^2/4\), a concave (downward) parabola. (d) \(\mu^*=4\), \(d^*=4\), gap \(=0\); recovered \(x^*=1\) and \(\mu^*g(x^*)=0\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Rejecting a branch is progress, not failure — but you must name <em>which</em> condition killed it: \(\mu=0\) here died on feasibility, and a branch that returns \(\mu&lt;0\) dies on the sign condition instead. The other thing to keep: the dual is built by substituting the inner minimiser back in, so it is a function of \(\mu\) alone — if an \(x\) is still visible in your \(d(\mu)\), the substitution was not finished.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Minimise \(f(x,y)=x^2+2y^2\) subject to \(x+y=1\), \(x\ge0\) and \(y\ge0\). <b>(a)</b> Put it in standard form, say how many cases the interrogation has, and write the Lagrangian. <b>(b)</b> Write the two stationarity equations as expressions for \(\mu_1\) and \(\mu_2\), and use the path to eliminate \(y\) from the second. <b>(c)</b> Work all four cases: for each, give the point, the multipliers, and either the value of \(f\) or the exact condition that rejects it. <b>(d)</b> Give \(\lambda^*\) and say why its sign is legal; give \(\mu_1^*,\mu_2^*\) and verify directly what they claim about the two fences; and state why the surviving point is the global minimum.</p>
+    <p class="ptest"><b>What this tests.</b> A complete four-case interrogation with one path and two fences, and the discipline of rejecting each losing case on a named condition rather than by eye. <b>Plan.</b> Standard form and the Lagrangian; differentiate once in \(x\) and once in \(y\) to get the two fines as formulas; then walk the four patterns in order, each time solving the small linear system the pattern leaves behind and checking what the pattern did <em>not</em> enforce.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — standard form.</b> The path is \(e=x+y-1=0\); the two fences are
+      \[g_1=-x\le0,\qquad g_2=-y\le0.\]
+      Two fences means \(2^2=4\) cases. The Lagrangian, with \(\lambda\) free and \(\mu_1,\mu_2\ge0\):
+      \[\begin{aligned}
+      L&=x^2+2y^2+\lambda(x+y-1)\\ 
+      &\quad-\mu_1x-\mu_2y.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(b) Step 2 — stationarity, rearranged.</b>
+      \[\begin{aligned}
+      \frac{\partial L}{\partial x}&=2x+\lambda-\mu_1=0\\ 
+      &\Rightarrow\ \mu_1=2x+\lambda,\\ 
+      \frac{\partial L}{\partial y}&=4y+\lambda-\mu_2=0\\ 
+      &\Rightarrow\ \mu_2=4y+\lambda.
+      \end{aligned}\]
+      The path gives \(y=1-x\), so the second becomes
+      \[\mu_2=4(1-x)+\lambda=4-4x+\lambda.\]
+      Everything is now in \(x\) and \(\lambda\), which is what makes each case a two-line solve.</div>
+      <div class="pstep"><b>(c) Step 3 — case 1: both fences slack (\(\mu_1=0,\ \mu_2=0\)).</b>
+      \[\begin{aligned}
+      0&=2x+\lambda\ \Rightarrow\ \lambda=-2x,\\ 
+      0&=4-4x+\lambda\ \Rightarrow\ \lambda=4x-4.
+      \end{aligned}\]
+      Equate:
+      \[\begin{aligned}
+      -2x&=4x-4,\\ 
+      6x&=4,\qquad x=\tfrac23,\\ 
+      y&=1-\tfrac23=\tfrac13,\\ 
+      \lambda&=-2\big(\tfrac23\big)=-\tfrac43.
+      \end{aligned}\]
+      Everything checks: \(x&gt;0\) and \(y&gt;0\) so both fences are respected, both fines are \(0\) so complementary slackness holds, and \(\mu_i=0\ge0\). The value:
+      \[f=\Big(\tfrac23\Big)^2+2\Big(\tfrac13\Big)^2=\tfrac49+\tfrac29=\tfrac23.\]
+      <b>Survives.</b></div>
+      <div class="pstep"><b>Step 4 — the three losers.</b>
+      <em>Case 2: \(\mu_1=0\), \(y=0\).</em> Then the path forces \(x=1\), and
+      \[\begin{aligned}
+      \lambda&=-2x=-2,\\ 
+      \mu_2&=4(0)+\lambda=-2&lt;0.
+      \end{aligned}\]
+      <b>Rejected</b> — a negative fine breaks the sign condition. (A fence is allowed to push, never to pull.)<br>
+      <em>Case 3: \(x=0\), \(\mu_2=0\).</em> Then \(y=1\), and
+      \[\begin{aligned}
+      0&=4(1)+\lambda\ \Rightarrow\ \lambda=-4,\\ 
+      \mu_1&=2(0)+\lambda=-4&lt;0.
+      \end{aligned}\]
+      <b>Rejected</b> on the same sign condition.<br>
+      <em>Case 4: both fences touched, \(x=0\) and \(y=0\).</em> Then
+      \[x+y=0\ne1,\]
+      so the point is not on the path at all. <b>Rejected on path feasibility</b> — and note this happens before any multiplier is computed.
+      <table class="plain">
+        <thead><tr><th>case</th><th>point</th><th>multipliers</th><th>verdict</th></tr></thead>
+        <tbody>
+          <tr><td>1 \((\mu_1=\mu_2=0)\)</td><td>\((\tfrac23,\tfrac13)\)</td><td>\(\lambda=-\tfrac43\)</td><td>survives, \(f=\tfrac23\)</td></tr>
+          <tr><td>2 \((\mu_1=0,\ y=0)\)</td><td>\((1,0)\)</td><td>\(\lambda=-2,\ \mu_2=-2\)</td><td>rejected: \(\mu_2&lt;0\)</td></tr>
+          <tr><td>3 \((x=0,\ \mu_2=0)\)</td><td>\((0,1)\)</td><td>\(\lambda=-4,\ \mu_1=-4\)</td><td>rejected: \(\mu_1&lt;0\)</td></tr>
+          <tr><td>4 \((x=0,\ y=0)\)</td><td>\((0,0)\)</td><td>—</td><td>rejected: off the path</td></tr>
+        </tbody>
+      </table></div>
+      <div class="pstep"><b>(d) Step 4 — read the answer.</b> Two computable readings of the surviving multipliers.
+      \[\lambda^*=-\tfrac43&lt;0,\]
+      and that is perfectly legal: only <em>fence</em> multipliers carry a sign restriction. A path may be pushed from either side, so \(\lambda\) is free.
+      \[\mu_1^*=\mu_2^*=0,\]
+      which claims both fences are slack. Verify it directly rather than trusting the claim:
+      \[\begin{aligned}
+      g_1&=-x^*=-\tfrac23&lt;0\ \checkmark\\ 
+      g_2&=-y^*=-\tfrac13&lt;0\ \checkmark
+      \end{aligned}\]
+      Both hold with room to spare, so the fences are doing no work — remove them and the answer would not move. Finally, the objective \(x^2+2y^2\) is a bowl and both rules are linear, so the problem is convex: the single surviving point is the global minimum, not just a candidate.</div>
+      <p class="pans">answers at a glance: (a) \(e=x+y-1\), \(g_1=-x\), \(g_2=-y\); \(4\) cases; \(L=x^2+2y^2+\lambda(x+y-1)-\mu_1x-\mu_2y\). (b) \(\mu_1=2x+\lambda\), \(\mu_2=4y+\lambda=4-4x+\lambda\). (c) case 1 survives at \((\tfrac23,\tfrac13)\), \(\lambda=-\tfrac43\), \(f=\tfrac23\); case 2 \(\mu_2=-2\), case 3 \(\mu_1=-4\), case 4 \(x+y=0\ne1\). (d) \(\lambda^*=-\tfrac43\) is legal because paths are unsigned; \(\mu_1^*=\mu_2^*=0\) with \(g_1=-\tfrac23&lt;0\) and \(g_2=-\tfrac13&lt;0\); convex, so it is the global minimum.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Every case must die of a named cause: infeasible point, or a negative fine. Those are the only two ways out. The classic slip is demanding \(\lambda\ge0\) — the sign condition belongs to fences alone, and a perfectly good answer gets thrown away when a negative \(\lambda\) is treated as an error. The second slip is forgetting to check the conditions the case pattern did not assume: assuming \(\mu_1=0\) does not make \(x\ge0\) true, it must still be verified.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 13 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 13</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">Minimise \(f(x,y)=x^2+y^2\) subject to \(x+y=4\) and \(x\ge3\). <b>(a)</b> Put it in standard form, write the Lagrangian and give the two stationarity equations. <b>(b)</b> Work both cases; give \(x^*,y^*,\lambda^*,\mu^*\) and \(p^*\), and say what kills the losing case. <b>(c)</b> Minimise \(L\) over \((x,y)\) for fixed multipliers and substitute back to get \(d(\lambda,\mu)\), showing where each of the three quadratic coefficients comes from. <b>(d)</b> Give the dual Hessian, its determinant and trace, and both eigenvalues, and conclude the shape of \(d\). <b>(e)</b> Solve the dual: give \(\lambda^*,\mu^*,d^*\), the gap, and the recovered \((x^*,y^*)\). <b>(f)</b> The wall moves to \(x\ge2.9\): give the predicted new \(p^*\), the actual one, the exact value function \(p^*(c)\) for \(c\ge2\), its slope, and the slope's values at \(c=3\) and \(c=2\).</p>
+    <p class="ptest"><b>What this tests.</b> The full round trip — primal case analysis, dual construction, dual optimisation, recovery — and then the multiplier read as the price of a wall, including the point where the wall stops being worth anything. <b>Plan.</b> Two cases on the primal; then minimise \(L\) in \(x\) and \(y\) separately, substitute, and collect \(\mu^2,\lambda^2,\lambda\mu\) coefficient by coefficient; then two linear equations for the dual optimum; finally differentiate the exact value function.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — standard form.</b> Path \(e=x+y-4=0\); fence \(g=3-x\le0\).
+      \[L=x^2+y^2+\lambda(x+y-4)+\mu(3-x).\]
+      \[\begin{aligned}
+      \frac{\partial L}{\partial x}&=2x+\lambda-\mu=0,\\ 
+      \frac{\partial L}{\partial y}&=2y+\lambda=0.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(b) Step 2 — two cases.</b> <em>Case \(\mu=0\).</em> Then \(2x+\lambda=0\) and \(2y+\lambda=0\) give \(x=y\), and the path gives \(x=y=2\). Check the wall:
+      \[g(2)=3-2=1&gt;0,\]
+      outside. <b>Rejected on fence feasibility.</b><br>
+      <em>Case \(g=0\).</em> Then \(x=3\), and the path gives \(y=1\):
+      \[\begin{aligned}
+      2(1)+\lambda&=0\ \Rightarrow\ \lambda=-2,\\ 
+      2(3)+(-2)-\mu&=0\ \Rightarrow\ \mu=4\ \ (\ge0\ \checkmark).
+      \end{aligned}\]
+      All five hold — stationarity ✓, path \(3+1-4=0\) ✓, fence \(g=0\le0\) ✓, \(\mu g=4(0)=0\) ✓, \(\mu\ge0\) ✓ — so
+      \[p^*=3^2+1^2=10.\]</div>
+      <div class="pstep"><b>(c) Step 3 — build the dual.</b> For fixed \((\lambda,\mu)\), \(L\) is a sum of two upward parabolas, so its minimiser is
+      \[\begin{aligned}
+      2x+\lambda-\mu=0&\ \Rightarrow\ x=\frac{\mu-\lambda}{2},\\ 
+      2y+\lambda=0&\ \Rightarrow\ y=-\frac\lambda2.
+      \end{aligned}\]
+      Substitute, one term per line:
+      \[\begin{aligned}
+      x^2&=\frac{\mu^2}{4}-\frac{\lambda\mu}{2}+\frac{\lambda^2}{4},\\ 
+      y^2&=\frac{\lambda^2}{4},\\ 
+      \lambda(x{+}y{-}4)&=\frac{\lambda\mu}{2}-\lambda^2-4\lambda,\\ 
+      \mu(3-x)&=3\mu-\frac{\mu^2}{2}+\frac{\lambda\mu}{2}.
+      \end{aligned}\]
+      (For the third line, \(x+y=\frac{\mu-\lambda}{2}-\frac\lambda2=\frac\mu2-\lambda\).) Now collect the three quadratic coefficients:
+      \[\begin{aligned}
+      \mu^2:&\ \tfrac14-\tfrac12=-\tfrac14,\\ 
+      \lambda^2:&\ \tfrac14+\tfrac14-1=-\tfrac12,\\ 
+      \lambda\mu:&\ -\tfrac12+\tfrac12+\tfrac12=+\tfrac12,
+      \end{aligned}\]
+      and the linear part is \(-4\lambda+3\mu\), so
+      \[d(\lambda,\mu)=-\frac{\mu^2}{4}-\frac{\lambda^2}{2}+\frac{\lambda\mu}{2}-4\lambda+3\mu.\]</div>
+      <div class="pstep"><b>(d) Step 4 — the dual is a hill.</b> Second derivatives:
+      \[H_d=\begin{bmatrix}-1&amp;\tfrac12\\ \tfrac12&amp;-\tfrac12\end{bmatrix},\]
+      \[\begin{aligned}
+      \det H_d&=\tfrac12-\tfrac14=\tfrac14&gt;0,\\ 
+      \operatorname{tr}H_d&=-1-\tfrac12=-\tfrac32&lt;0.
+      \end{aligned}\]
+      A positive determinant makes the eigenvalues share a sign; a negative trace makes that sign negative. Explicitly, from \(\lambda^2+\tfrac32\lambda+\tfrac14=0\):
+      \[\begin{aligned}
+      \lambda_{1,2}&=\frac{-3\pm\sqrt5}{4}\\ 
+      &=-0.190983,\ -1.309017.
+      \end{aligned}\]
+      (Check: their sum is \(-\tfrac32\) and their product is \(\tfrac{9-5}{16}=\tfrac14\) ✓.) Both negative, so \(d\) is concave: one peak, no ridges, no local traps — which is why the dual is always the easy side to optimise.</div>
+      <div class="pstep"><b>(e) Step 5 — climb to the top.</b>
+      \[\begin{aligned}
+      \frac{\partial d}{\partial\lambda}&=-\lambda+\frac\mu2-4=0\\ 
+      &\Rightarrow\ \lambda=\frac\mu2-4,\\ 
+      \frac{\partial d}{\partial\mu}&=-\frac\mu2+\frac\lambda2+3=0\\ 
+      &\Rightarrow\ \mu=\lambda+6.
+      \end{aligned}\]
+      Substitute the second into the first:
+      \[\begin{aligned}
+      \lambda&=\frac{\lambda+6}{2}-4=\frac\lambda2-1,\\ 
+      \frac\lambda2&=-1,\qquad \lambda^*=-2,\\ 
+      \mu^*&=-2+6=4\ \ (\ge0\ \checkmark).
+      \end{aligned}\]
+      \[\begin{aligned}
+      d^*&=-\tfrac{16}{4}-\tfrac{4}{2}+\tfrac{(-2)(4)}{2}\\ 
+      &\quad-4(-2)+3(4)\\ 
+      &=-4-2-4+8+12=10.
+      \end{aligned}\]
+      So \(d^*=10=p^*\): the gap is \(0\). Recover the primal point from the inner minimiser:
+      \[\begin{aligned}
+      x^*&=\frac{4-(-2)}{2}=3,\\ 
+      y^*&=-\frac{-2}{2}=1.\ \checkmark
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(f) Step 6 — what the wall is worth.</b> Move it to \(x\ge2.9\), a relaxation of \(0.1\). The multiplier is the price per unit of wall, so
+      \[\begin{aligned}
+      \text{predicted }p^*&\approx10-\mu^*(0.1)\\ 
+      &=10-0.4=9.60.
+      \end{aligned}\]
+      The truth: the wall is still binding, so \(x=2.9\), \(y=1.1\), and
+      \[\begin{aligned}
+      p^*&=(2.9)^2+(1.1)^2\\ 
+      &=8.41+1.21=9.62.
+      \end{aligned}\]
+      Prediction \(9.60\), fact \(9.62\) — off by \(0.02\), the curvature again. Exactly, with the wall at \(x\ge c\):
+      \[\begin{aligned}
+      p^*(c)&=c^2+(4-c)^2,\qquad c\ge2,\\ 
+      \frac{\mathrm dp^*}{\mathrm dc}&=2c-2(4-c)=4c-8.
+      \end{aligned}\]
+      At \(c=3\) the slope is \(4\), which is \(\mu^*\). ✓ At \(c=2\) the slope is \(0\): there the wall has slid back to the unconstrained answer \((2,2)\), the fence stops biting, and its price falls to nothing. For \(c&lt;2\) the wall is slack, \(p^*\) stays flat at \(8\), and \(\mu^*=0\).</div>
+      <p class="pans">answers at a glance: (a) \(e=x+y-4\), \(g=3-x\); \(2x+\lambda-\mu=0\), \(2y+\lambda=0\). (b) \(\mu=0\) gives \((2,2)\) with \(g=1&gt;0\), rejected; \(g=0\) gives \(x^*=3,\ y^*=1,\ \lambda^*=-2,\ \mu^*=4\), \(p^*=10\). (c) \(d=-\frac{\mu^2}{4}-\frac{\lambda^2}{2}+\frac{\lambda\mu}{2}-4\lambda+3\mu\). (d) \(H_d=\begin{bmatrix}-1&amp;\frac12\\ \frac12&amp;-\frac12\end{bmatrix}\), \(\det=\frac14\), \(\operatorname{tr}=-\frac32\), eigenvalues \(-0.190983,\ -1.309017\): concave. (e) \(\lambda^*=-2\), \(\mu^*=4\), \(d^*=10\), gap \(0\), recovered \((3,1)\). (f) predicted \(9.60\), actual \(9.62\); \(p^*(c)=c^2+(4-c)^2\), slope \(4c-8\), equal to \(4\) at \(c=3\) and \(0\) at \(c=2\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>At the optimum the multiplier is the slope of the value function, so \(\mu^*\) tells you what the wall is costing you <em>before</em> you re-solve. Follow that slope far enough and it hits zero, at the moment the wall stops touching the answer — after which relaxing it further buys nothing. The slip is quoting the dual optimum without checking \(\mu\ge0\): the dual problem is \(\max\) over \(\mu\ge0\), and an unconstrained stationary point with \(\mu&lt;0\) is not the dual answer.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 14 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 14</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">A one-dimensional dataset has two points: \(x_1=+1\) with \(y_1=+1\), and \(x_2=-1\) with \(y_2=-1\). The largest-margin classifier solves \(\min_{w,b}\tfrac12w^2\) subject to \(y_i(wx_i+b)\ge1\). <b>(a)</b> Write both constraints in standard form and give the Lagrangian with \(\alpha_1,\alpha_2\ge0\). <b>(b)</b> Give the two stationarity equations and reduce the Lagrangian to a function \(q(\alpha)\) of a single variable. <b>(c)</b> Maximise \(q\): give \(\alpha^*\), \(d^*\), \(w^*\), \(b^*\), the primal value, the gap, the decision boundary, the margin edges, the margin width, and the number of support vectors. <b>(d)</b> A third point \(x_3=3\) with \(y_3=+1\) is added: give \(\alpha_3\) and say what happens to the classifier. Then, with a point at \(x_3&lt;1\) of class \(+1\) and the point at \(-1\) both binding, derive \(w\) and \(b\) as formulas in \(x_3\), and evaluate them, the boundary and the margin at \(x_3=0.5\).</p>
+    <p class="ptest"><b>What this tests.</b> Every move of the unit chained together — framing, standard form, Lagrangian, dual, solve, recover, read the slackness — on the problem the whole subject is built toward. <b>Plan.</b> Write the two constraints out; differentiate in \(w\) and in \(b\) (the \(b\)-equation is what collapses two multipliers into one); substitute to get a one-variable concave parabola; solve it; then use \(\alpha_i&gt;0\Rightarrow\) constraint tight to pin \(b\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the two constraints, written out.</b> For \(i=1\): \(y_1(wx_1+b)=(+1)(w+b)\ge1\). For \(i=2\): \(y_2(wx_2+b)=(-1)(-w+b)=w-b\ge1\). In standard form,
+      \[\begin{aligned}
+      g_1&=1-w-b\le0,\\ 
+      g_2&=1-w+b\le0,
+      \end{aligned}\]
+      \[\begin{aligned}
+      L&=\tfrac12w^2+\alpha_1(1-w-b)\\ 
+      &\quad+\alpha_2(1-w+b),\qquad \alpha_i\ge0.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(b) Step 2 — stationarity, and the collapse to one variable.</b>
+      \[\begin{aligned}
+      \frac{\partial L}{\partial w}&=w-\alpha_1-\alpha_2=0\\ 
+      &\Rightarrow\ w=\alpha_1+\alpha_2,\\ 
+      \frac{\partial L}{\partial b}&=-\alpha_1+\alpha_2=0\\ 
+      &\Rightarrow\ \alpha_1=\alpha_2.
+      \end{aligned}\]
+      (These are the two standard identities \(w=\sum_i\alpha_iy_ix_i\) and \(\sum_i\alpha_iy_i=0\), written out for this data.) Regroup \(L\):
+      \[\begin{aligned}
+      L&=\tfrac12w^2-w(\alpha_1+\alpha_2)\\ 
+      &\quad-b(\alpha_1-\alpha_2)+(\alpha_1+\alpha_2).
+      \end{aligned}\]
+      Write \(\alpha_1=\alpha_2=\alpha\), so the \(b\)-term vanishes and \(w=2\alpha\):
+      \[\begin{aligned}
+      q(\alpha)&=\tfrac12(2\alpha)^2-(2\alpha)(2\alpha)+2\alpha\\ 
+      &=2\alpha^2-4\alpha^2+2\alpha\\ 
+      &=2\alpha-2\alpha^2.
+      \end{aligned}\]
+      (Cross-check against \(\sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_jx_ix_j\): here every product \(y_iy_jx_ix_j=1\), so it reads \(2\alpha-\tfrac12(2\alpha)^2=2\alpha-2\alpha^2\) — the same function.)</div>
+      <div class="pstep"><b>(c) Step 3 — solve, recover, read.</b>
+      \[\begin{aligned}
+      q'(\alpha)&=2-4\alpha=0,\\ 
+      \alpha^*&=\tfrac12\ \ (\ge0\ \checkmark),\\ 
+      d^*&=q\big(\tfrac12\big)=1-\tfrac12=\tfrac12.
+      \end{aligned}\]
+      Recover the classifier:
+      \[w^*=\alpha_1^*+\alpha_2^*=\tfrac12+\tfrac12=1.\]
+      Because \(\alpha_1^*=\tfrac12&gt;0\), complementary slackness forces its constraint tight:
+      \[\begin{aligned}
+      w+b&=1,\\ 
+      b^*&=1-1=0.
+      \end{aligned}\]
+      Consistency: the second constraint gives \(w-b=1-0=1\), also tight, matching \(\alpha_2^*&gt;0\). The primal value is \(\tfrac12(1)^2=\tfrac12=d^*\), so the gap is \(0\). Geometry:
+      \[\begin{aligned}
+      \text{boundary: }&w^*x+b^*=0\ \Rightarrow\ x=0,\\ 
+      \text{margin edges: }&w^*x+b^*=\pm1\ \Rightarrow\ x=\pm1,\\ 
+      \text{width: }&\frac{2}{|w^*|}=2.
+      \end{aligned}\]
+      Both \(\alpha_i&gt;0\), so both points are support vectors: \(\mathbf 2\) of them, out of \(2\).</div>
+      <div class="pstep"><b>(d) Step 4 — a point that does not matter.</b> Adding \(x_3=3\) with \(y_3=+1\) adds the constraint \(3w+b\ge1\). At the current answer \((w,b)=(1,0)\) it reads
+      \[3(1)+0=3\ \ge1,\]
+      slack by \(2\). In standard form \(g_3=1-3w-b=-2&lt;0\), and complementary slackness \(\alpha_3g_3=0\) with \(g_3\ne0\) forces
+      \[\alpha_3=0.\]
+      Since \(w=\sum_i\alpha_iy_ix_i\), a point with \(\alpha_i=0\) contributes nothing: the classifier does not move, and the point can be deleted from the training set without changing a thing.</div>
+      <div class="pstep"><b>Step 5 — now move that point inside.</b> Suppose instead the \(+1\) point sits at \(x_3&lt;1\), close enough that its constraint becomes tight, with the \(-1\) point at \(-1\) also tight:
+      \[\begin{aligned}
+      wx_3+b&=1,\\ 
+      w-b&=1\ \Rightarrow\ b=w-1.
+      \end{aligned}\]
+      Substitute:
+      \[\begin{aligned}
+      wx_3+w-1&=1,\\ 
+      w(x_3+1)&=2,\\ 
+      w&=\frac{2}{x_3+1},
+      \end{aligned}\]
+      \[\begin{aligned}
+      b&=1-wx_3=\frac{x_3+1-2x_3}{x_3+1}\\ 
+      &=\frac{1-x_3}{1+x_3}.
+      \end{aligned}\]
+      At \(x_3=0.5\):
+      \[\begin{aligned}
+      w&=\frac{2}{1.5}=1.3333,\\ 
+      b&=\frac{0.5}{1.5}=0.3333,\\ 
+      \text{boundary }x&=-\frac bw=-\frac{0.3333}{1.3333}=-0.25,\\ 
+      \text{margin }&=\frac{2}{|w|}=1.5.
+      \end{aligned}\]
+      Dragging the positive point from \(3\) (where it was ignored entirely) in to \(0.5\) squeezes the margin from \(2\) to \(1.5\) and shifts the boundary from \(0\) to \(-0.25\). Nothing about the point changed except whether its constraint was tight — and that is the whole difference between a data point that matters and one that does not.</div>
+      <p class="pans">answers at a glance: (a) \(g_1=1-w-b\le0\), \(g_2=1-w+b\le0\); \(L=\tfrac12w^2+\alpha_1g_1+\alpha_2g_2\). (b) \(w=\alpha_1+\alpha_2\), \(\alpha_1=\alpha_2\); \(q(\alpha)=2\alpha-2\alpha^2\). (c) \(\alpha^*=\tfrac12\), \(d^*=\tfrac12\), \(w^*=1\), \(b^*=0\), primal \(\tfrac12\), gap \(0\); boundary \(x=0\), edges \(x=\pm1\), width \(2\), \(2\) support vectors. (d) \(\alpha_3=0\) and the classifier does not move; \(w=2/(x_3+1)\), \(b=(1-x_3)/(1+x_3)\); at \(x_3=0.5\), \(w=1.3333\), \(b=0.3333\), boundary \(-0.25\), margin \(1.5\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Complementary slackness is why these classifiers are sparse: \(\alpha_i=0\) means the point sits strictly outside the margin and can be thrown away, while \(\alpha_i&gt;0\) means its constraint is tight and it is holding the boundary up. The multiplier <em>is</em> the answer to "which data matter". The slip is solving for \(b\) from stationarity — \(\partial L/\partial b\) only gives \(\sum_i\alpha_iy_i=0\) and never mentions \(b\); \(b\) comes from setting a support vector's constraint to equality.</p></div>
+    </details>
+  </div>

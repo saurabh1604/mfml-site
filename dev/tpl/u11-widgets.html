@@ -1,0 +1,348 @@
+<!--@W1-->
+  <div class="widget reveal" id="w-feel">
+    <div class="widget-head"><span class="w-title">Your feet feel the tilt, not the turn</span><span class="w-sub">One stride for two directions that differ ten-fold — and a cliff that the slope under your boot has no word for. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> set \(\eta=0.2\) on the valley tab and press ▶ — \(w_2\) flips \(+1,-1,+1,\dots\) for ever while \(w_1\) crawls; the per-step factor \(1-10\eta\) is exactly \(-1\).</p>
+    <div class="tabs" id="fl-tabs">
+      <button data-t="valley" aria-selected="true">valley · two directions, one stride</button>
+      <button data-t="cliff">cliff · the tilt that lasts 5 cm</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="fl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D landscape. On the valley tab a long trough, gentle along w1 and steep across w2, with lifted contour rings and a glowing walker whose trail drops to the floor in one step and then crawls along it. On the cliff tab the same stage becomes a flat shelf that falls off a sudden ledge, with a walker, an arrow for the tilt it feels and a second arrow for the step it takes."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls" data-tab="valley">
+          <div class="ctl"><label for="fl-eta">stride η</label><input id="fl-eta" type="range" min="0.01" max="0.30" step="0.005" value="0.10"><output id="fl-eta-o">0.1</output></div>
+          <div class="ctl"><label for="fl-k">steps</label><input id="fl-k" type="range" min="1" max="30" step="1" value="12"><output id="fl-k-o">12</output></div>
+        </div>
+        <div class="controls" data-tab="cliff" style="display:none">
+          <div class="ctl"><label for="fl-x">where you stand x</label><input id="fl-x" type="range" min="-4" max="4" step="0.05" value="-3.0"><output id="fl-x-o">−3</output></div>
+        </div>
+        <div class="presets" id="fl-pre" data-tab="valley"><button class="play" id="fl-play">▶ walk</button><button class="preset" id="fl-p-lucky" aria-pressed="true">η = 0.10 · lucky</button><button class="preset" id="fl-p-edge">η = 0.20 · the edge</button><button class="preset" id="fl-p-blow">η = 0.25 · gone</button></div>
+        <svg id="fl-side" viewBox="0 0 300 220" class="svg-lab" role="img" aria-label="The two one-dimensional slices of the same loss drawn on the same axes: a shallow bowl along w1 and a bowl ten times steeper along w2, with the current point and its step marked on each" style="margin-top:.4rem"></svg>
+        <div class="readout" id="fl-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(J(\mathbf w)=\tfrac12 w_1^2+5w_2^2\) has \(\nabla J=(w_1,\,10w_2)\): one step multiplies \(w_1\) by \(1-\eta\) and \(w_2\) by \(1-10\eta\). No single \(\eta\) is right for both — below \(0.2\) the steep direction settles and the gentle one crawls; above it the steep one explodes. The second derivative would warn you, and costs \(d^2\) numbers a step.</p>
+      </div>
+    </div>
+  </div>
+<!--@W2-->
+  <div class="widget reveal" id="w-trolley">
+    <div class="widget-head"><span class="w-title">The loaded trolley</span><span class="w-sub">Give the walker mass: pushes that agree stack, pushes that alternate cancel — and the loss is allowed to rise on the way</span></div>
+    <p class="try"><b>Try:</b> push \(\beta\) to \(0.97\) and press ▶ — the trolley sails through the bottom twice before it settles, and the \(w_1\) bars stack while the \(w_2\) bars cancel.</p>
+    <div class="presets" id="tr-pre"><button class="play" id="tr-play">▶ roll</button><button class="preset" id="tr-p-none">β = 0 · no memory</button><button class="preset" id="tr-p-std" aria-pressed="true">β = 0.90 · standard</button><button class="preset" id="tr-p-heavy">β = 0.97 · heavy</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="tr-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A top-down contour map of the valley with two walkers leaving the same start: the plain one dives to the floor and crawls, the trolley overshoots past the bottom and swings back, its velocity drawn as an arrow"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="tr-beta">memory β</label><input id="tr-beta" type="range" min="0" max="0.98" step="0.01" value="0.90"><output id="tr-beta-o">0.9</output></div>
+          <div class="ctl"><label for="tr-eta">stride η</label><input id="tr-eta" type="range" min="0.02" max="0.20" step="0.005" value="0.10"><output id="tr-eta-o">0.1</output></div>
+          <div class="ctl"><label for="tr-k">steps</label><input id="tr-k" type="range" min="1" max="30" step="1" value="14"><output id="tr-k-o">14</output></div>
+        </div>
+        <svg id="tr-bars" viewBox="0 0 300 210" class="svg-lab" role="img" aria-label="Two strips of signed bars, one per coordinate, showing the surviving contribution of each of the last ten pushes: along w1 every bar points the same way and they add to a long bar, along w2 they alternate and cancel to almost nothing" style="margin-top:.4rem"></svg>
+        <div class="readout" id="tr-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="tr-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(\mathbf v\leftarrow\beta\mathbf v-\eta\nabla J\), \(\mathbf w\leftarrow\mathbf w+\mathbf v\). A push from \(k\) steps ago still counts \(\beta^k\), so a run of agreeing pushes sums to \(1/(1-\beta)\) times one push, and a run of alternating pushes very nearly cancels. Speed along the trough, quiet across it — at the price of an overshoot.</p>
+      </div>
+    </div>
+  </div>
+<!--@W3-->
+  <div class="widget reveal" id="w-record">
+    <div class="widget-head"><span class="w-title">The permanent record</span><span class="w-sub">Keep every squared slope you ever felt, and divide your stride by the square root of the total — a brake that never lifts</span></div>
+    <p class="try"><b>Try:</b> read the first step on the <em>two steps</em> tab: \(0.1000\) in <em>both</em> weights, although one slope is \(1\) and the other is \(10\). Then open <em>the long run</em> and watch the stride die like \(\alpha/\sqrt t\).</p>
+    <div class="tabs" id="rc-tabs">
+      <button data-t="two" aria-selected="true">two steps · the exact arithmetic</button>
+      <button data-t="long">the long run · the brake that never lifts</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="rc-svg" viewBox="0 0 600 380" class="svg-lab" role="img" aria-label="Left, a contour map of the valley on which the AdaGrad walker's path is a perfectly straight diagonal. Right, two tall columns filling with translucent blocks, one block per step whose height is that step's squared slope; the steep column fills a hundred times faster, and under each column a shrinking bar shows that weight's remaining stride."></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="rc-k">steps</label><input id="rc-k" type="range" min="1" max="40" step="1" value="12"><output id="rc-k-o">12</output></div>
+          <div class="ctl"><label for="rc-eta">stride α</label><input id="rc-eta" type="range" min="0.02" max="0.4" step="0.005" value="0.10"><output id="rc-eta-o">0.1</output></div>
+        </div>
+        <div class="presets"><button class="play" id="rc-play">▶ run</button></div>
+        <div class="readout" id="rc-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="rc-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(A\leftarrow A+g^2\), step \(=\alpha g/\sqrt A\). On step one \(\alpha g/\sqrt{g^2}=\alpha\,\mathrm{sign}(g)\): the size of the slope cancels exactly and only its direction survives — which is why the walker leaves \([1,1]\) along the diagonal. \(A\) never shrinks, so the stride can only fall.</p>
+      </div>
+    </div>
+  </div>
+<!--@W4-->
+  <div class="widget reveal" id="w-form">
+    <div class="widget-head"><span class="w-title">Form, not career average</span><span class="w-sub">Forget the distant past at rate \(\rho\): the brake eases, the stride stays alive — and the very first step is puffed up by \(1/\sqrt{1-\rho}\)</span></div>
+    <p class="try"><b>Try:</b> click <em>ρ = 0.999</em> and watch the first step launch the walker clean off the map — the inflation \(1/\sqrt{1-\rho}\) has gone from \(3.16\times\) to \(31.6\times\).</p>
+    <div class="presets" id="fm-pre"><button class="play" id="fm-play">▶ run</button><button class="preset" id="fm-p-std" aria-pressed="true">ρ = 0.900 · ten-step memory</button><button class="preset" id="fm-p-long">ρ = 0.999 · thousand-step memory</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="fm-svg" viewBox="0 0 600 400" class="svg-lab" role="img" aria-label="Three panels: a contour map of the valley with the RMSProp walker, a comb of bars whose heights are rho to the power k showing how much a slope from k steps ago still counts with the memory horizon marked, and a chart of the per-weight stride against step for RMSProp and AdaGrad together"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="fm-rho">forgetting ρ</label><input id="fm-rho" type="range" min="0.5" max="0.999" step="0.001" value="0.900"><output id="fm-rho-o">0.9</output></div>
+          <div class="ctl"><label for="fm-eta">stride α</label><input id="fm-eta" type="range" min="0.02" max="0.3" step="0.005" value="0.10"><output id="fm-eta-o">0.1</output></div>
+          <div class="ctl"><label for="fm-k">steps</label><input id="fm-k" type="range" min="1" max="30" step="1" value="12"><output id="fm-k-o">12</output></div>
+        </div>
+        <div class="readout" id="fm-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(A\leftarrow\rho A+(1-\rho)g^2\) is a running average with a memory of about \(1/(1-\rho)\) steps. Starting it at zero makes the first average \((1-\rho)g^2\), so the first stride is \(1/\sqrt{1-\rho}\) times too long. RMSProp never fixes that first step. Adam does — next section.</p>
+      </div>
+    </div>
+  </div>
+<!--@W5-->
+  <div class="widget reveal" id="w-notebooks">
+    <div class="widget-head"><span class="w-title">Two notebooks and a probation</span><span class="w-sub">One book remembers which way; one remembers how loud. A shrinking rate covers the first few steps while both books are still nearly empty — then retires itself.</span></div>
+    <p class="try"><b>Try:</b> step \(t\) from 1 to 12 and watch \(\alpha_t\) fall to its minimum \(0.015224\), then keep going — it climbs back toward \(\alpha=0.1\) on its own.</p>
+    <div class="presets" id="nb-pre"><button class="play" id="nb-play">▶ step through</button><button class="preset" id="nb-p-def" aria-pressed="true">defaults · ρ_f = 0.9, ρ = 0.999</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="nb-svg" viewBox="0 0 600 400" class="svg-lab" role="img" aria-label="Three panels: two notebooks drawn as paired bars per weight, a signed direction memory and an unsigned loudness memory, both filling as t grows; the effective rate alpha-t on a logarithmic axis dipping to a minimum at step 12 and climbing back to alpha; and a contour map of the valley with the Adam walker"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="nb-t">step t</label><input id="nb-t" type="range" min="1" max="40" step="1" value="1"><output id="nb-t-o">1</output></div>
+          <div class="ctl"><label for="nb-rf">direction ρ_f</label><input id="nb-rf" type="range" min="0.5" max="0.99" step="0.01" value="0.90"><output id="nb-rf-o">0.9</output></div>
+          <div class="ctl"><label for="nb-rho">loudness ρ</label><input id="nb-rho" type="range" min="0.9" max="0.9999" step="0.0001" value="0.9990"><output id="nb-rho-o">0.999</output></div>
+        </div>
+        <div class="readout" id="nb-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div class="chip" id="nb-chip" style="display:inline-block;margin-top:.5rem;padding:.35rem .75rem;border-radius:14px;border:1px solid var(--line);font-size:.78rem;white-space:normal;line-height:1.5">—</div>
+        <div id="nb-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(F\leftarrow\rho_f F+(1-\rho_f)g\), \(A\leftarrow\rho A+(1-\rho)g^2\), and the step is \(\alpha_t F/\sqrt A\) with \(\alpha_t=\alpha\sqrt{1-\rho^{\,t}}/(1-\rho_f^{\,t})\). Count \(t\) from 0 instead of 1 and \(1-\rho_f^0=0\): the rate divides by zero on the very first step. That is the classic bug.</p>
+      </div>
+    </div>
+  </div>
+<!--@W6-->
+  <div class="widget reveal" id="w-five">
+    <div class="widget-head"><span class="w-title">Five walkers, one valley</span><span class="w-sub">The same start, the same stride, five rules — and a stiffness dial that decides the race before it starts. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> drag stiffness to \(300\) and press ▶ — the blue walker leaves the map while the other four barely blink.</p>
+    <div class="presets" id="fv-pre"><button class="play" id="fv-play">▶ race · 25 steps</button><button class="preset" id="fv-p-lecture" aria-pressed="true">lecture · c = 10, α = 0.1</button><button class="preset" id="fv-p-stiff">stiff · c = 300, α = 0.1</button><button class="preset" id="fv-p-safe">safe · c = 300, α = 0.005</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="fv-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D valley whose across-slope stiffness c is under your finger. Five glowing walkers leave the same point together, each trailing a ribbon in its own colour: gradient descent blue, momentum green, AdaGrad red, RMSProp amber, Adam gold."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="fv-c">stiffness c</label><input id="fv-c" type="range" min="0" max="150" step="1" value="50"><output id="fv-c-o">10</output></div>
+          <div class="ctl"><label for="fv-eta">stride α</label><input id="fv-eta" type="range" min="0.005" max="0.3" step="0.005" value="0.10"><output id="fv-eta-o">0.1</output></div>
+          <div class="ctl"><label for="fv-t">step t</label><input id="fv-t" type="range" min="0" max="40" step="1" value="0"><output id="fv-t-o">0</output></div>
+        </div>
+        <div id="fv-board" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem"></div>
+        <svg id="fv-chart" viewBox="0 0 300 200" class="svg-lab" role="img" aria-label="The loss on a logarithmic axis against step number, one curve per method in its own colour, so the orders of magnitude between them are plain" style="margin-top:.4rem"></svg>
+        <div class="readout" id="fv-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fv-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(J=\tfrac12 w_1^2+\tfrac c2 w_2^2\). Plain descent is stable only while \(\alpha<2/c\); the adaptive methods divide by their own record of the slope and never notice \(c\) at all. This race is tiny, clean and noiseless: take the mechanisms from it, not the finishing order — on a real network with noise and millions of weights the order can and does change.</p>
+      </div>
+    </div>
+  </div>
+<!--@W7-->
+  <div class="widget reveal" id="w-wall">
+    <div class="widget-head"><span class="w-title">Then someone builds a wall</span><span class="w-sub">The old test — "stop where the slope is zero" — stops being true the moment the answer is pressed against something</span></div>
+    <p class="try"><b>Try:</b> slide the wall from \(c=-1\) up past \(0\) on the first tab and watch the slope readout flip from \(0\) to \(2c\): the answer stops being flat, and there is still nowhere better to go.</p>
+    <div class="tabs" id="wl-tabs">
+      <button data-t="knob" aria-selected="true">one knob · \(f=x^2\), \(x\ge c\)</button>
+      <button data-t="valley">the valley · a glass wall</button>
+      <button data-t="std">standard form · six rules</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px">
+        <svg id="wl-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="The parabola f of x equals x squared with the banned region to the left of the wall hatched out; a ghost dot marks the free minimum at zero and a bright dot marks the answer, which is pinned to the wall whenever the wall is to the right of zero"></svg>
+        <div id="wl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D valley with a translucent glass wall standing at w1 equals c; the star that marks the answer slides along the surface from the free bottom to the foot of the wall" style="display:none"></div><p class="stage-tap" id="wl-tap" style="display:none">drag the picture to orbit</p>
+        <svg id="wl-conv" viewBox="0 0 600 250" class="svg-lab" role="img" aria-label="The feasible set of the chosen rule drawn live on a number line or in the plane, shaded on the allowed side" style="display:none"></svg>
+      </div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls" data-tab="knob">
+          <div class="ctl"><label for="wl-c">wall at c</label><input id="wl-c" type="range" min="-2" max="3" step="0.05" value="2"><output id="wl-c-o">2</output></div>
+        </div>
+        <div class="controls" data-tab="valley" style="display:none">
+          <div class="ctl"><label for="wl-c2">wall at c</label><input id="wl-c2" type="range" min="-1" max="2" step="0.05" value="1"><output id="wl-c2-o">1</output></div>
+        </div>
+        <div class="presets" id="wl-rules" data-tab="std" style="display:none;flex-direction:column;align-items:stretch">
+          <button class="preset" id="wl-r1" style="text-align:left" aria-pressed="true">x ≥ 2</button>
+          <button class="preset" id="wl-r2" style="text-align:left">x + 2y ≥ 5</button>
+          <button class="preset" id="wl-r3" style="text-align:left">x + y ≤ 1</button>
+          <button class="preset" id="wl-r4" style="text-align:left">x + y = 1</button>
+          <button class="preset" id="wl-r5" style="text-align:left">y ≥ 0</button>
+          <button class="preset" id="wl-r6" style="text-align:left">x &gt; 2</button>
+        </div>
+        <div class="readout" id="wl-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="wl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Standard form is one shape: minimise \(f\) subject to \(g_i(\mathbf x)\le 0\) and \(h_j(\mathbf x)=0\). Every rule is pushed into it — a \(\ge\) is multiplied by \(-1\), an \(=\) is kept as it is (or split into two \(\le\)), and a strict \(&lt;\) is simply not allowed, because a set with no smallest allowed value has no answer to find.</p>
+      </div>
+    </div>
+  </div>
+<!--@W8-->
+  <div class="widget reveal" id="w-arrows">
+    <div class="widget-head"><span class="w-title">Pushing a box against a wall</span><span class="w-sub">Split the downhill arrow into the part that runs along the fence and the part that pushes into it. You stop when the along-part is gone.</span></div>
+    <p class="try"><b>Try:</b> drag the dot along the fence and watch the along-the-fence bar shrink; where it hits zero the two gradient arrows lie on one line and the stretch factor is the multiplier.</p>
+    <div class="tabs" id="ar-tabs">
+      <button data-t="straight" aria-selected="true">straight fence · \(x+y=4\)</button>
+      <button data-t="round">round fence · \(x^2+y^2\le1\)</button>
+      <button data-t="ridge">budget circle · this is ridge regression</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="ar-svg" viewBox="0 0 600 400" class="svg-lab" role="img" aria-label="Grey level curves of the score, the fence drawn as a bright line or circle with the allowed side shaded, and at a draggable point on the fence three arrows: the downhill direction, the fence's own gradient, and the downhill arrow split into a piece running along the fence and a piece pushing across it"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="ar-t">slide along</label><input id="ar-t" type="range" min="0" max="1" step="0.002" value="0.74"><output id="ar-t-o">0.74</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ar-play">▶ slide to the answer</button></div>
+        <svg id="ar-bar" viewBox="0 0 300 122" class="svg-lab" role="img" aria-label="A horizontal bar whose length is how much downhill is still available along the fence; it shrinks to nothing at the answer" style="margin-top:.4rem"></svg>
+        <div class="readout" id="ar-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="ar-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">At the answer the leftover downhill along the fence is zero, so \(\nabla f\) has nothing left but the across-fence direction. For a \(\le\) fence that means \(\nabla f=-\mu\nabla g\) with \(\mu\ge0\) — the two arrows point opposite ways. For an \(=\) path it only means \(\nabla f\) is <em>some</em> multiple of \(\nabla h\), and the sign of that multiple is free. Either way the multiplier is the stretch factor that makes the two arrows the same length.</p>
+      </div>
+    </div>
+  </div>
+<!--@W9-->
+  <div class="widget reveal" id="w-fine">
+    <div class="widget-head"><span class="w-title">Turn the wall into a fine</span><span class="w-sub">An infinite wall is not a function you can differentiate. A straight-line fine is. Raise the rate until the fine does the wall's whole job.</span></div>
+    <p class="try"><b>Try:</b> drag \(\mu\) below zero and watch the walker sprint off to the right — a negative fine <em>pays</em> you to trespass. That one drag is the whole of \(\mu\ge0\).</p>
+    <div class="presets" id="fn-pre"><button class="play" id="fn-play">▶ raise the fine · 0 → 8 → 0</button><button class="preset" id="fn-p-zero">µ = 0 · no fine</button><button class="preset" id="fn-p-star" aria-pressed="true">µ = 4 · the right rate</button><button class="preset" id="fn-p-neg">µ = −1 · a bribe</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px">
+        <svg id="fn-wall" viewBox="0 0 600 220" class="svg-lab" role="img" aria-label="The infinite wall drawn as a flat zero line for g at most zero and a vertical bar shooting off the top at g equals zero, with the straight line mu times g drawn over it; as mu rises the line climbs toward the wall on the banned side while staying at or below zero on the allowed side"></svg>
+        <svg id="fn-bill" viewBox="0 0 600 260" class="svg-lab" role="img" aria-label="The score f of x, the true bill with its vertical cliff at the fence, and the Lagrangian for the current fine rate drawn as a smooth curve with its lowest point marked; at the right rate that lowest point rises to exactly the constrained answer" style="margin-top:.5rem"></svg>
+      </div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="fn-mu">fine rate µ</label><input id="fn-mu" type="range" min="-2" max="12" step="0.1" value="2"><output id="fn-mu-o">2</output></div>
+        </div>
+        <div class="readout" id="fn-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fn-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(\max_{\mu\ge0}\mu g\) is \(0\) when \(g\le0\) and \(+\infty\) when \(g>0\): the infinite wall, rebuilt out of straight lines. That is why \(\min_{\mathbf x}\max_{\mu\ge0}L\) is the original problem — and why swapping the two, \(\max_{\mu\ge0}\min_{\mathbf x}L\), is the dual.</p>
+      </div>
+    </div>
+  </div>
+<!--@W10-->
+  <div class="widget reveal" id="w-room">
+    <div class="widget-head"><span class="w-title">Room left, and the rule that falls out of it</span><span class="w-sub">Either you have room and the fine is zero, or you are touching and the fine may be positive. Never both, never neither.</span></div>
+    <p class="try"><b>Try:</b> drag the answer from deep inside to hard against the fence and watch the dot travel along the two edges of the square — it never once enters the middle, and \(\mu\cdot g\) stays \(0.000\) the whole way.</p>
+    <div class="tabs" id="rm-tabs">
+      <button data-t="one" aria-selected="true">one fence</button>
+      <button data-t="two">two fences · four patterns</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="rm-svg" viewBox="0 0 600 400" class="svg-lab" role="img" aria-label="Three panels: a horizontal gauge measuring the room left between the answer and the fence with the banned side hatched; a square whose axes are room left and fine rate, with the whole open middle greyed out and a dot that can only slide along the two edges; and a small ledger drawing the slack variable t as a physical length and t squared as its square"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="rm-x">answer at x</label><input id="rm-x" type="range" min="-2.4" max="0.4" step="0.01" value="-1.2"><output id="rm-x-o">−1.2</output></div>
+          <div class="ctl" data-tab="two" style="display:none"><label for="rm-y">second fence at</label><input id="rm-y" type="range" min="-2.4" max="0.4" step="0.01" value="-0.4"><output id="rm-y-o">−0.4</output></div>
+        </div>
+        <div class="readout" id="rm-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="rm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(\mu\,g=0\) is not an extra wish; it is what "the fine is only charged when you are actually touching" means in one line. Writing \(g+t^2=0\) says the same thing with a slack length \(t\): a square is never negative, so \(g\le0\) is built into the algebra instead of being asserted.</p>
+      </div>
+    </div>
+  </div>
+<!--@W11-->
+  <div class="widget reveal" id="w-cases">
+    <div class="widget-head"><span class="w-title">Five conditions, a branching interrogation</span><span class="w-sub">Each fence is either doing work or not. Guess, solve, and let the conditions throw out the guesses that lie.</span></div>
+    <p class="try"><b>Try:</b> click each of the four branches on the first tab — three of them die on a negative multiplier or on the path itself, and exactly one survives every condition.</p>
+    <div class="tabs" id="cs-tabs">
+      <button data-t="two" aria-selected="true">two fences · \(x^2+2y^2\)</button>
+      <button data-t="one">one fence · end to end</button>
+      <button data-t="many">how many branches?</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="cs-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="Level curves of the score with the allowed segment of the path drawn thick, the candidate points of each branch marked, and the surviving one lit; on the last tab a binary tree of two-to-the-m leaves beside a table comparing the true count with the common wrong guess m squared"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="presets" id="cs-tree" style="flex-direction:column;align-items:stretch"></div>
+        <div class="controls" data-tab="many" style="display:none">
+          <div class="ctl"><label for="cs-m">fences m</label><input id="cs-m" type="range" min="1" max="8" step="1" value="3"><output id="cs-m-o">3</output></div>
+        </div>
+        <div class="readout" id="cs-work" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="cs-check" style="margin-top:.5rem;font-size:.8rem;line-height:1.8;font-family:var(--ui)"></div>
+        <div id="cs-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Stationarity · the path · the fences · one fine charged only when touching · every fence fine \(\ge0\). A path multiplier \(\lambda\) may be any sign — only fence multipliers are forced to be non-negative, and that is the condition doing most of the rejecting here.</p>
+      </div>
+    </div>
+  </div>
+<!--@W12-->
+  <div class="widget reveal" id="w-bowl">
+    <div class="widget-head"><span class="w-title">Which problems are honest</span><span class="w-sub">Two tests for a bowl — the chord and the tangent — and one test for a set. They always agree, and together they decide whether a stopping point is the answer or only a candidate.</span></div>
+    <p class="try"><b>Try:</b> pick \(x^4-3x^2\) and press ▶ — the chord test fails on a fat block of pairs; then switch to the tangent test and watch the line rise above the curve over exactly the same region.</p>
+    <div class="tabs" id="bw-tabs">
+      <button data-t="chord" aria-selected="true">the chord test</button>
+      <button data-t="tangent">the tangent test</button>
+      <button data-t="sets">convex sets</button>
+    </div>
+    <div class="presets" id="bw-f"><button class="preset" data-f="sq" aria-pressed="true">x²</button><button class="preset" data-f="w">x⁴ − 3x²</button><button class="preset" data-f="abs">|x|</button><button class="preset" data-f="exp">eˣ</button><button class="preset" data-f="cube">x³</button><button class="preset" data-f="sqrt">√|x|</button></div>
+    <div class="presets" id="bw-s" style="display:none"><button class="preset" data-s="disc" aria-pressed="true">a disc</button><button class="preset" data-s="poly">a polygon</button><button class="preset" data-s="ring">an annulus</button><button class="preset" data-s="moon">a crescent</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="bw-svg" viewBox="0 0 600 360" class="svg-lab" role="img" aria-label="The chosen curve with two draggable points and the straight chord between them; wherever the chord dips below the curve the gap is flooded in red. On the tangent tab a long tangent line at a draggable point with the same regions shaded. On the sets tab a shape with two draggable points and the segment between them turning red where it leaves the shape."></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="bw-a">point x</label><input id="bw-a" type="range" min="0" max="1" step="0.005" value="0.18"><output id="bw-a-o">0.18</output></div>
+          <div class="ctl"><label for="bw-b">point y</label><input id="bw-b" type="range" min="0" max="1" step="0.005" value="0.86"><output id="bw-b-o">0.86</output></div>
+          <div class="ctl"><label for="bw-th">blend θ</label><input id="bw-th" type="range" min="0.02" max="0.98" step="0.01" value="0.5"><output id="bw-th-o">0.5</output></div>
+        </div>
+        <div class="presets"><button class="play" id="bw-play">▶ sweep 200 pairs</button></div>
+        <div class="readout" id="bw-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div class="chip" id="bw-chip" style="display:inline-block;margin-top:.5rem;padding:.35rem .75rem;border-radius:14px;border:1px solid var(--line);font-size:.78rem;white-space:normal;line-height:1.5">convex ⇒ a stopping point is THE answer. Not convex ⇒ only a candidate.</div>
+        <div id="bw-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">A bowl is a function no chord ever cuts into, which is the same as a function that never falls below any of its own tangents. A convex <em>set</em> is one that contains every segment between two of its points. The problem is honest when the score is a bowl and the allowed region is such a set.</p>
+      </div>
+    </div>
+  </div>
+<!--@W13-->
+  <div class="widget reveal" id="w-duel">
+    <div class="widget-head"><span class="w-title">Who moves first</span><span class="w-sub">The same number seen from two sides — and the reason the view from below is always a bowl turned upside down, however ugly the problem is</span></div>
+    <p class="try"><b>Try:</b> open <em>a bundle of lines</em> and drag the highlight: every single line is straight, and the thick curve under them all still bends downward. That is why the dual is always concave.</p>
+    <div class="tabs" id="du-tabs">
+      <button data-t="two" aria-selected="true">two curves · one number</button>
+      <button data-t="bundle">a bundle of lines</button>
+      <button data-t="gap">the gap</button>
+    </div>
+    <div class="presets" id="du-case" style="display:none"><button class="preset" data-c="bands" aria-pressed="true">two allowed bands</button><button class="preset" data-c="wells">two wells · a real gap</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="du-svg" viewBox="0 0 600 360" class="svg-lab" role="img" aria-label="Left, the score in x with the allowed strip shaded and the best allowed value marked; right, the dual in mu with its peak marked; a dashed line at the shared value spans both panels. On the bundle tab, forty faint straight lines and their lower envelope drawn thick, visibly bending downward."></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls" data-tab="two">
+          <div class="ctl"><label for="du-x">primal x</label><input id="du-x" type="range" min="-1" max="5" step="0.02" value="1"><output id="du-x-o">1</output></div>
+          <div class="ctl"><label for="du-mu">dual µ</label><input id="du-mu" type="range" min="0" max="10" step="0.05" value="4"><output id="du-mu-o">4</output></div>
+        </div>
+        <div class="controls" data-tab="bundle" style="display:none">
+          <div class="ctl"><label for="du-xl">highlight x</label><input id="du-xl" type="range" min="-1" max="5" step="0.05" value="3"><output id="du-xl-o">3</output></div>
+        </div>
+        <div class="readout" id="du-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="du-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">For each fixed \(x\), \(\mu\mapsto L(x,\mu)\) is a straight line of height \(f(x)\) and slope \(g(x)\). The dual is the lowest of all those lines, and the lowest of any bundle of straight lines bends downward — so \(d\) is concave whatever \(f\) and \(g\) are. Weak duality \(d^*\le p^*\) is free; it is equality that needs convexity.</p>
+      </div>
+    </div>
+  </div>
+<!--@W14-->
+  <div class="widget reveal" id="w-price">
+    <div class="widget-head"><span class="w-title">What a wall is worth</span><span class="w-sub">The multiplier is not bookkeeping. It is the price of the wall: move the wall a little and it tells you the new answer before you re-solve anything.</span></div>
+    <p class="try"><b>Try:</b> move the wall from \(3.00\) to \(2.90\) and compare the two numbers: the price predicts \(9.60\) and the truth is \(9.62\). Then push the wall below \(2\) and watch the price fall to zero.</p>
+    <div class="presets" id="pr-pre"><button class="play" id="pr-play">▶ move the wall</button><button class="preset" id="pr-p-base" aria-pressed="true">c = 3.00</button><button class="preset" id="pr-p-near">c = 2.90</button><button class="preset" id="pr-p-free">c = 2.00 · the wall lets go</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="pr-svg" viewBox="0 0 600 360" class="svg-lab" role="img" aria-label="Left, circular level curves with the path x plus y equals four drawn across them, the allowed part bright and the answer dot sliding as the wall moves. Right, the value of the problem plotted against where the wall is: flat while the wall is not touching, then curving upward, with the tangent whose slope is the multiplier drawn at the current wall."></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="pr-c">wall at c</label><input id="pr-c" type="range" min="2" max="3.6" step="0.01" value="3.00"><output id="pr-c-o">3</output></div>
+        </div>
+        <div class="readout" id="pr-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="pr-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(\mathrm dp^*/\mathrm dc=\mu^*\). Below \(c=2\) the wall is not touching, the multiplier is \(0\), and the value curve is flat — the price of a wall you are not pressed against is nothing. Above it the wall bites, and its price is exactly how fast the bill grows as you push the wall in.</p>
+      </div>
+    </div>
+  </div>
+<!--@W15-->
+  <div class="widget reveal" id="w-svm">
+    <div class="widget-head"><span class="w-title">Two points and a line</span><span class="w-sub">The widest gap is the smallest \(\tfrac12 w^2\) that still clears both constraints — and the answer is built out of the multipliers of the points that touch</span></div>
+    <p class="try"><b>Try:</b> on <em>add a point</em>, drag the third point in from \(3\) toward \(0.5\): nothing at all happens until it crosses \(1\), and then the boundary moves and the point fills in.</p>
+    <div class="tabs" id="sv-tabs">
+      <button data-t="ans" aria-selected="true">the answer</button>
+      <button data-t="dual">solve the dual</button>
+      <button data-t="add">add a point</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="sv-svg" viewBox="0 0 600 320" class="svg-lab" role="img" aria-label="A number line carrying one point of each class, the decision point between them, the margin band shaded and its two edges drawn; support vectors are filled and points with a zero multiplier are hollow. On the dual tab, the concave curve q of alpha with its peak marked and a side bar showing the classifier being built out of the multiplier."></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls" data-tab="ans">
+          <div class="ctl"><label for="sv-w">slope w</label><input id="sv-w" type="range" min="0.2" max="3" step="0.01" value="1"><output id="sv-w-o">1</output></div>
+        </div>
+        <div class="controls" data-tab="dual" style="display:none">
+          <div class="ctl"><label for="sv-a">multiplier α</label><input id="sv-a" type="range" min="0" max="1.2" step="0.005" value="0.5"><output id="sv-a-o">0.5</output></div>
+        </div>
+        <div class="controls" data-tab="add" style="display:none">
+          <div class="ctl"><label for="sv-x3">third point x₃</label><input id="sv-x3" type="range" min="0" max="4" step="0.05" value="3"><output id="sv-x3-o">3</output></div>
+        </div>
+        <div class="readout" id="sv-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="sv-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Every point with \(\alpha_i=0\) could be deleted from the training set and the classifier would not move. That one sentence is where Unit 14 begins.</p>
+      </div>
+    </div>
+  </div>

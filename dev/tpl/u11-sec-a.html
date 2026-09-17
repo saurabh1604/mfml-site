@@ -1,0 +1,164 @@
+<section class="hero-stage">
+  <div id="hero-3d" role="img" aria-label="A long squashed valley of a loss landscape floats in space. Five glowing walkers leave the same point together and race down it, each trailing a coloured ribbon — one dives to the floor and crawls, one overshoots and rings, two walk a straight diagonal, one sprints to the star. Then a translucent wall rises across the valley, the banned half darkens, and the star slides out of the free bottom and settles against the wall. The wall slides back and forth and the star follows it, a small chip printing the price of the wall. Then the wall dissolves and the race begins again."></div>
+  <div class="hero-scrim"></div>
+  <div class="wrap">
+  <header class="hero">
+    <div class="kicker reveal">Unit 11 of 16 · by Prof. Saurabh</div>
+    <h1 class="reveal">Optimization II — Five Ways Down One Valley</h1>
+    <p class="lede reveal">Unit 10 fixed the <em>ground</em>: change the units and the canyon becomes a bowl. This unit fixes the <em>walker</em>. Your feet can feel the tilt where you stand — they cannot feel where the tilt is about to change, and that one blindness is why a single stride is always wrong for somebody. So we hand the walker three instincts: <strong>memory</strong>, so steps that agree stack up and steps that flip cancel; <strong>a private stride for every knob</strong>, learned from that knob's own history; and <strong>forgetting</strong>, so the history does not become a life sentence. Momentum, AdaGrad, RMSProp and Adam are those three instincts in four combinations, and you will watch all five walkers race the same valley above. Then we do the thing no amount of walking can survive: <strong>we build a wall</strong>. The answer moves onto the wall, the slope there is not zero, and every test you have learned stops working — so we build a new one.</p>
+    <div class="meta reveal-stagger">
+      <span class="chip">≈ 110 min read + play</span>
+      <span class="chip">15 interactive widgets · 4 in 3D · a wall you can slide and price</span>
+      <span class="chip">20 inline checks</span>
+      <span class="chip">🧾 23 proofs, folded away — open "if you want the algebra" when you are ready</span>
+      <span class="chip">✍ 14 solved practice problems</span>
+    </div>
+  </header>
+  </div>
+  <div class="hero-hint">drag the landscape to orbit</div>
+</section>
+
+<main id="main-content" tabindex="-1">
+
+<!-- ================= 1 · FEET ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>Your feet feel the tilt, not the turn</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Walking a hill blindfolded</span>
+    <p>Blindfold yourself on a hillside. You can still feel one thing perfectly: how steeply the ground tilts under your boots. So you lean into the downhill direction and take a stride. Here is what your feet cannot tell you — <strong>how long that tilt lasts</strong>. A one-in-three slope that runs for fifty metres and a one-in-three slope that stops dead after five centimetres feel <em>exactly the same underfoot</em>. Take a long confident stride on the second one and you have walked off a ledge. Push the walker around and watch it happen:</p>
+  </div>
+<!--@W1-->
+  <div class="prose reveal">
+    <p>That is the honest limit of a gradient. A gradient is a <em>local</em> measurement: it reports the tilt at one point and says nothing about the next point. The information you actually wanted — <em>how fast the tilt itself is changing</em> — lives in the second derivatives, the Hessian, and that is a whole square table of numbers. For a model with a million knobs that is a trillion numbers per step. Nobody computes it.</p>
+    <p>So we are stuck with the tilt. Now look at the <strong>valley</strong> tab, where the same blindness costs you in a quieter way. The loss is \(J=\tfrac12w_1^2+5w_2^2\) — gentle along \(w_1\), steep along \(w_2\) — and the tilt at the start \([1,1]\) reads \((1,\,10)\). One direction pushes ten times harder than the other, and a single stride \(\eta\) has to serve both. Multiply out what one step does to each coordinate on its own and the whole problem becomes arithmetic you can do in your head.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[w_1\leftarrow(1-\eta)\,w_1,\qquad w_2\leftarrow(1-10\eta)\,w_2\]</p>
+      <p>Each direction is quietly multiplied by its <em>own</em> number every step, and the two numbers share one \(\eta\). At \(\eta=0.1\) the steep coordinate is annihilated in a single step (\(1-10\eta=0\)) while the gentle one only shrinks by a tenth — it needs <strong>44 steps</strong> to get within 1 % of zero. Raise \(\eta\) to hurry it along and at \(\eta=0.2\) the steep factor hits exactly \(-1\): \(w_2\) flips \(+1,-1,+1,-1\) for ever, never diverging, never arriving. Past that it explodes. <strong>There is no \(\eta\) that suits both.</strong> Not a bad choice of \(\eta\) — no choice at all.</p>
+    </div>
+    <p>Unit 10 attacked that by rebuilding the landscape: standardise the columns, the ten-to-one becomes one-to-one, one stride fits everybody. That fix is real and it is the first thing to try. But it only reaches as far as your data does. The stiffness of a deep network comes from the <em>layers</em>, not just the inputs, and it drifts while you train. You cannot restandardise your way out of that.</p>
+    <p>So the rest of this act takes the other road. Leave the landscape alone. <strong>Change the walker.</strong> Everything that follows is one of three instincts bolted onto the same plain step — and each instinct is one line of arithmetic.</p>
+  </div>
+  <div class="check reveal" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On \(J=\tfrac12w_1^2+5w_2^2\) you set \(\eta=0.2\) exactly. What does the steep coordinate \(w_2\) do?</p>
+    <div class="opts">
+      <button data-correct data-why="The factor is 1 − 10η = 1 − 2 = −1. Multiplying by −1 every step flips the sign and keeps the size: 1, −1, 1, −1 … The walker neither converges nor blows up; it is locked in a standing oscillation for ever.">It flips between \(+1\) and \(-1\) for ever — same size, opposite sign, every step</button>
+      <button data-why="It would converge if the factor sat strictly inside (−1, 1). At η = 0.2 the factor is exactly −1, the boundary: no shrinking happens at all.">It converges to 0, just with the sign alternating</button>
+      <button data-why="Divergence needs |1 − 10η| > 1, i.e. η > 0.2. At exactly 0.2 the size is preserved, not grown — this is the knife edge between the two.">It blows up — the factor is negative, so the walker diverges</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s1-->
+  <div class="onesent reveal"><b>In one sentence:</b> A gradient tells you the tilt and nothing about how long it lasts, so one shared stride multiplies each direction by its own factor \(1-\eta\lambda_i\) — and when those factors differ tenfold, no single stride can serve them all.</div>
+</section>
+
+<!-- ================= 2 · MOMENTUM ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>Momentum — give the walker mass</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The loaded trolley</span>
+    <p>Swap the walker for a loaded supermarket trolley. Two things change at once. The trolley has <strong>a wonky wheel</strong> that jerks it left, then right, then left — and you barely notice, because a jerk one way followed by a jerk the other way cancels out in something heavy. And the trolley has <strong>a direction</strong>: once it is rolling down the aisle, every small push in that same direction adds to the roll, and it goes faster and faster. There is a price, and you know it already: at the till you cannot stop it. Roll the trolley down the same valley and watch both halves:</p>
+  </div>
+<!--@W2-->
+  <div class="prose reveal">
+    <p>The panel of bars is the entire idea. Look at the two strips. Along the gentle direction \(w_1\), every step's push points the same way, so the bars stack into one long bar — and the trolley moves further per step than the walker ever could. Along the steep direction \(w_2\), the pushes alternate in sign, so the bars cancel and almost nothing survives. <strong>The trolley did not learn which direction was which.</strong> It simply added up recent pushes, and adding up is what separates a consistent direction from a flapping one.</p>
+    <p>Writing it down takes one extra vector. Call it the velocity \(\mathbf v\): it is what is left of the last move.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\mathbf v\leftarrow\beta\,\mathbf v-\alpha\nabla J,\qquad \mathbf w\leftarrow\mathbf w+\mathbf v,\qquad \mathbf v_0=\mathbf 0\]</p>
+      <p>"New move = a faded copy of the last move, plus a fresh downhill push." The dial \(\beta\in[0,1)\) is how much of the last move survives — the <em>friction</em>. At \(\beta=0\) you get the plain walker back, exactly. At \(\beta=0.9\), a direction that keeps getting the same push builds up until each step is \(1/(1-\beta)=\mathbf{10}\) times the plain step, while a direction that keeps flipping cancels itself to nothing.</p>
+    </div>
+    <p>Now the price. Run the defaults and read the loss: \(5.5\to0.405\to\mathbf{4.309}\). <strong>It went up.</strong> At step 1 the steep coordinate landed exactly on the floor, so its fresh push is zero — but the velocity still says "you were plunging, keep going", and it carries \(w_2\) straight through the bottom to \(-0.9\). That is not a bug and it is not a bad \(\beta\). It is a rolling object doing what rolling objects do. Momentum is <em>not</em> a method that lowers the loss every step; it is a method that lowers the loss over a stretch of steps, and pays for speed with overshoot on the way.</p>
+    <p>One warning the picture makes obvious: never set \(\beta\ge1\). Friction is the only thing draining the extra energy out of the swing. With none, the trolley rings for ever or flies apart.</p>
+  </div>
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">After one momentum step the walker sits at \(w_2=0\), exactly at the floor of the steep direction, where the fresh slope is \(0\). What does step 2 do to \(w_2\)?</p>
+    <div class="opts">
+      <button data-correct data-why="The fresh push is −α·0 = 0, but the velocity is β times the last move: 0.9 × (0 − 1) = −0.9. The trolley sails through the bottom to w₂ = −0.9. The loss rises from 0.405 to 4.3092, and that is the design working, not failing.">It carries on down to \(w_2=-0.9\) — the memory of the last plunge, not the current slope</button>
+      <button data-why="Nothing moves only if the velocity is zero too. Here the previous move was a full drop of −1, and 0.9 of it survives. A zero gradient stops a walker, not a trolley.">Nothing — a zero slope means a zero step</button>
+      <button data-why="Momentum never reverses on its own; it carries the last direction forward. It goes further down first, and only comes back on a later step once the slope below the floor has built up enough to turn it around.">It bounces back up, because the floor pushes it away</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A direction receives the <em>same</em> gradient \(g\) at every step. With \(\beta=0.9\) and stride \(\alpha\), how big does each step eventually become?</p>
+    <div class="opts">
+      <button data-correct data-why="The velocity is a geometric series: −αg(1 + β + β² + …) → −αg/(1 − β). With β = 0.9 that is 10αg — ten times the plain step. This is exactly why momentum crosses long gentle stretches so much faster.">About \(10\,\alpha g\) — the faded copies add up to \(\alpha g/(1-\beta)\)</button>
+      <button data-why="It would stay at αg only if nothing were remembered, i.e. β = 0. With memory, each step inherits 0.9 of the previous one and they compound.">It stays at \(\alpha g\) — momentum only changes the direction, not the size</button>
+      <button data-why="The series 1 + β + β² + … converges because β < 1. It grows without limit only at β = 1, which is exactly why β must stay strictly below 1.">It grows without limit, since every step adds to the last</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s2-->
+  <div class="onesent reveal"><b>In one sentence:</b> Momentum adds a faded copy of the last move, so pushes that agree compound to \(1/(1-\beta)\) times the plain step and pushes that alternate cancel — bought with an overshoot, and a loss that is allowed to rise on the way down.</div>
+</section>
+
+<!-- ================= 3 · ADAGRAD ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>AdaGrad — a stride each, out of a permanent record</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The permanent record</span>
+    <p>Momentum kept the one shared stride and added memory on top. AdaGrad goes at the real problem instead: <strong>it stops sharing</strong>. Every knob is issued a school report on its first day. Nothing about where it went — only <em>how loud its pushes have been</em>, added up as squares, from the beginning of time. A knob with a loud record gets gentle taps from now on. A knob with a quiet record keeps its full push. And the record is never cleared, which is the part that eventually costs.</p>
+  </div>
+<!--@W3-->
+  <div class="prose reveal">
+    <p>Watch the first step, because it is the most surprising number in this unit. The steep knob felt a slope of \(10\); the gentle one felt \(1\). Both move by <strong>exactly \(0.1\)</strong>. The ten-to-one mismatch that broke the shared stride in §1 has simply disappeared, and nobody standardised anything.</p>
+    <p>The reason is one line of cancellation. On step 1 the record holds only that step's own square, so the square root of the record <em>is</em> the size of the slope, and dividing the slope by its own size leaves \(\pm1\).</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[A\leftarrow A+\nabla J\odot\nabla J,\qquad \mathbf w\leftarrow\mathbf w-\frac{\alpha}{\sqrt A}\odot\nabla J\]</p>
+      <p>with every operation done one entry at a time (\(\odot\) means "multiply entry by entry"). On step 1, \(\alpha g/\sqrt{g^2}=\alpha\,\mathrm{sign}(g)\): <strong>only the sign of the slope survives</strong>. Its size decides nothing. Every knob takes a step of exactly \(\alpha\), and the only thing the gradient contributes is which way.</p>
+    </div>
+    <p>That is why AdaGrad's famous win is <em>rare features</em>. A word that appears in one document in ten thousand gives its weight a slope almost never, so its record stays tiny and its strides stay long. A word that appears everywhere is throttled. You get frequency-aware strides for nothing, without ever writing down what is rare.</p>
+    <p>Now the catch, and it is written into the update: \(A\) is a running <em>total</em>. It only ever grows, so \(\alpha/\sqrt A\) only ever shrinks, whether or not the knob has arrived. Two steps in, the stride is already down from \(0.1\) to \(\mathbf{0.0669}\). Open <em>the long run</em> tab and watch it trace \(\alpha/\sqrt t\) — a curve that reaches zero, and reaches it whether or not you did. <strong>A shrinking step is a brake, not a convergence.</strong> AdaGrad routinely stops short of the bottom because it ran out of stride, not because it arrived.</p>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Two knobs start together. Knob A feels a slope of \(+0.1\) at every step; knob B feels \(+100\) then \(-100\), alternating, for ever. After many steps, which one is AdaGrad still moving in long strides?</p>
+    <div class="opts">
+      <button data-correct data-why="A records how loud, never which way: it squares the slope, so +100 and −100 both add 10 000 to the record. Knob B's record explodes and its stride collapses, even though it has made no net progress. Knob A's record grows by 0.01 per step, so its stride stays comparatively long.">Knob A — the record counts loudness, not direction, so B's flapping brakes it hard</button>
+      <button data-why="B's slopes are enormous, but they are squared before being recorded. Both +100 and −100 add 10 000, so the record grows 10⁶ times faster than A's, and the stride α/√A collapses.">Knob B — its slopes are a thousand times bigger, so it keeps moving fastest</button>
+      <button data-why="They cannot stay equal: the record is a sum of squares, and B's squares are a million times larger than A's. The strides diverge from step one.">Both the same — the record is about history, and both have the same length of history</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s3-->
+  <div class="onesent reveal"><b>In one sentence:</b> Divide each knob's stride by the square root of everything it has ever felt, and the first step becomes exactly \(\alpha\) for every knob whatever its slope — at the cost of a record that never clears, so the brake never lifts.</div>
+</section>
+
+<!-- ================= 4 · RMSPROP ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>RMSProp — form, not career average</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Picking the side on form</span>
+    <p>No selector picks a side on career averages. They look at <strong>recent form</strong> — the last ten innings, with the latest counting most — because a bad patch from nine seasons ago tells you nothing about today. AdaGrad judges every knob on its career. RMSProp keeps the whole per-knob idea and changes one word: <em>forget</em>. The catch is the one every selector knows too. After a single innings, "recent form" is a wild number.</p>
+  </div>
+<!--@W4-->
+  <div class="prose reveal">
+    <p>One line of AdaGrad changes. Instead of adding squares to a total for ever, keep a fading average: hold on to a share \(\rho\) of what you had and let \(1-\rho\) of the new square in.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[A\leftarrow \rho\,A+(1-\rho)\,\nabla J\odot\nabla J,\qquad \mathbf w\leftarrow\mathbf w-\frac{\alpha}{\sqrt A}\odot\nabla J\]</p>
+      <p>A slope from \(t\) steps ago is worth \(\rho^{\,t}\) of a fresh one — the memory comb in the widget is exactly that. As a rule of thumb the average remembers about the last \(1/(1-\rho)\) steps, which at \(\rho=0.9\) is <strong>ten</strong>. And because \(A\) can now <em>fall</em> as well as rise, the brake can be released again. The stride never dies.</p>
+    </div>
+    <p>Compare the two stride curves in the third panel. AdaGrad's slides towards zero and stays there; RMSProp's settles at a healthy size and keeps working. On the session's valley the difference shows up fast: after two steps RMSProp's strides are \(0.3162\) then \(0.1849\), and the loss has fallen \(5.5\to2.57\to1.37\) while AdaGrad is still at \(3.82\).</p>
+    <p>But look at that first number again. \(0.3162\) is <strong>three times \(\alpha\)</strong>. Where did that come from? The average started at zero, so on step 1 it holds only \((1-\rho)g^2\) — a tenth of the true size. Its square root is \(\sqrt{0.1}\) too small, and dividing by something too small makes the step too big, by exactly \(1/\sqrt{1-\rho}=3.16\). Set \(\rho=0.999\), as people often do, and the first step is <strong>31.6 times</strong> what you asked for. RMSProp never fixes this. You just live through it — the average fills up within a few steps and the problem goes away on its own. The next method refuses to live through it.</p>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You raise the forgetting dial from \(\rho=0.9\) to \(\rho=0.99\). What happens to the <em>very first</em> step?</p>
+    <div class="opts">
+      <button data-correct data-why="The zero-started average holds only (1 − ρ)g² after one step, so its root is √(1−ρ) times too small and the step is inflated by 1/√(1−ρ). At ρ = 0.9 that is 3.16×; at ρ = 0.99 it is 10×. A longer memory makes the start-up spike worse, not better.">It gets <em>bigger</em> — inflated \(10\times\) instead of \(3.16\times\)</button>
+      <button data-why="Remembering more does make the average steadier later, but on step 1 there is nothing to remember. A larger ρ lets in less of the only square available, so the denominator is smaller and the step larger.">It gets smaller — a longer memory means a steadier, more cautious average</button>
+      <button data-why="ρ enters the very first step through the factor (1 − ρ) that scales the only square in the average. It is the step most affected by ρ, not the least.">Nothing changes — \(\rho\) only affects later steps, once there is a history</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A knob has been feeling the same slope \(g\) for hundreds of steps. What does RMSProp's stride settle at, and what does AdaGrad's do?</p>
+    <div class="opts">
+      <button data-correct data-why="With a constant g, RMSProp's A → g² (the geometric series sums to 1), so the stride → αg/|g| = α: constant for ever. AdaGrad's A = tg², so its stride is α/√t → 0. Same slope, one method keeps walking and the other stops.">RMSProp settles at \(\alpha\); AdaGrad fades away like \(\alpha/\sqrt t\)</button>
+      <button data-why="Both accumulate squares, but differently: a fading average converges to the thing it is averaging, while a running total grows without limit. The limits are α and 0, not the same number.">Both settle at the same stride — they accumulate the same squares</button>
+      <button data-why="A fading average of a constant converges to that constant; it has no reason to grow past it. The stride stabilises rather than growing.">RMSProp's stride grows without limit, because old squares keep leaking out</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s4-->
+  <div class="onesent reveal"><b>In one sentence:</b> Replace the permanent record with a fading one and the brake eases — the stride survives to the bottom — at the price of a first step puffed up by \(1/\sqrt{1-\rho}\), because an average that starts at zero is a wild guess after one reading.</div>
+</section>

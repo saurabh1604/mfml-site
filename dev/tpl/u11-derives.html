@@ -1,0 +1,345 @@
+<!--@D s1-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · one stride, one factor per direction</span>
+    <p class="dgoal"><b>Claim.</b> On \(J=\tfrac12\sum_i\lambda_iw_i^2\), one step of plain descent multiplies each coordinate by \(1-\eta\lambda_i\); the walk converges in every direction exactly when \(0<\eta<2/\lambda_{\max}\); and on \(J=\tfrac12w_1^2+5w_2^2\) at \(\eta=0.1\) the gentle coordinate needs \(44\) steps to fall inside \(1\,\%\) of zero.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The gradient separates, because the loss does: \(\partial J/\partial w_i=\lambda_iw_i\), with no other coordinate in it.
+      <span class="dwhy">A diagonal quadratic is \(d\) one-dimensional problems wearing one coat. Everything below is a statement about one coordinate.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">So one step is a multiplication:
+      \[\begin{aligned}w_i&\leftarrow w_i-\eta\lambda_iw_i=(1-\eta\lambda_i)\,w_i,\\[2pt] w_i^{(k)}&=(1-\eta\lambda_i)^k\,w_i^{(0)}.\end{aligned}\]
+      <span class="dwhy">No approximation anywhere — this is the exact iterate after \(k\) steps.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">A geometric sequence shrinks to zero exactly when its ratio is strictly inside \((-1,1)\):
+      \[|1-\eta\lambda_i|<1\iff 0<\eta\lambda_i<2\iff 0<\eta<\frac{2}{\lambda_i}.\]
+      All directions survive only if the tightest bound holds, so \(\eta<2/\lambda_{\max}\).
+      <span class="dwhy">The stiffest direction alone sets the speed limit. Every other direction is then travelling slower than it could.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Here \(\lambda=(1,10)\), so \(\eta<0.2\). At \(\eta=0.1\) the factors are \(0.9\) and \(0\): the steep coordinate is annihilated in one step, and for the gentle one
+      \[0.9^{\,k}\le0.01\iff k\ge\frac{\ln 0.01}{\ln 0.9}=43.7\ \Rightarrow\ k=44.\]
+      At \(\eta=0.2\) the second factor is exactly \(-1\), so \(w_2\) alternates \(\pm1\) for ever: no convergence, no divergence.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">One step for one coordinate, forty-four for the other, from the same \(\eta\). That ratio is the condition number \(\kappa=10\).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · what your feet could not tell you, written down</span>
+    <p class="dgoal"><b>Claim.</b> If \(\nabla f\) does not change faster than a rate \(L\) (that is, \(\|\nabla f(\mathbf u)-\nabla f(\mathbf v)\|\le L\|\mathbf u-\mathbf v\|\)), then one step guarantees \(f(\mathbf w-\eta\nabla f)\le f(\mathbf w)-\eta\big(1-\tfrac{\eta L}{2}\big)\|\nabla f\|^2\) — so progress is guaranteed exactly while \(\eta<2/L\), and is largest at \(\eta=1/L\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">A Lipschitz gradient bounds the Taylor remainder: for any \(\mathbf u,\mathbf v\),
+      \[f(\mathbf v)\le f(\mathbf u)+\nabla f(\mathbf u)^{\!\top}(\mathbf v-\mathbf u)+\frac{L}{2}\|\mathbf v-\mathbf u\|^2.\]
+      <span class="dwhy">This is the only place the missing second-order information enters — as a worst case, not a measurement. \(L\) is how sharply the tilt is allowed to turn.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Put \(\mathbf v=\mathbf w-\eta\nabla f(\mathbf w)\) and \(\mathbf u=\mathbf w\), writing \(\mathbf g=\nabla f(\mathbf w)\):
+      \[\begin{aligned}f(\mathbf w-\eta\mathbf g)&\le f(\mathbf w)-\eta\|\mathbf g\|^2+\frac{L\eta^2}{2}\|\mathbf g\|^2\\ &=f(\mathbf w)-\eta\Big(1-\frac{\eta L}{2}\Big)\|\mathbf g\|^2.\end{aligned}\]
+      <span class="dwhy">The first correction pays you \(\eta\|\mathbf g\|^2\); the second charges you \(\tfrac12L\eta^2\|\mathbf g\|^2\). One is linear in the stride, the other quadratic, so the charge wins eventually.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">The bracket is positive exactly when \(\eta<2/L\), and \(\eta(1-\eta L/2)\) is largest at \(\eta=1/L\), where the guaranteed drop is \(\|\mathbf g\|^2/(2L)\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Read it as the blindfold argument, quantified: the safe stride is set by how fast the tilt can turn, and your feet never measured that. On a quadratic \(L=\lambda_{\max}\) and this reproduces the bound above.</span></div></div>
+  </div>
+<!--@D s2-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the speed-up is \(1/(1-\beta)\)</span>
+    <p class="dgoal"><b>Claim.</b> If a direction receives the same gradient \(g\) at every step, momentum's step size rises from \(\alpha g\) to \(\alpha g/(1-\beta)\) — a factor of \(10\) at \(\beta=0.9\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Unroll the velocity from \(v_0=0\) with \(g\) fixed:
+      \[\begin{aligned}v_1&=-\alpha g\\ v_2&=\beta v_1-\alpha g=-\alpha g(1+\beta)\\ v_t&=-\alpha g\,(1+\beta+\beta^2+\cdots+\beta^{\,t-1}).\end{aligned}\]
+      <span class="dwhy">Each old push survives multiplied by \(\beta\) once more, so the surviving copies form a geometric series.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Sum it. Since \(0\le\beta<1\),
+      \[\sum_{k=0}^{t-1}\beta^{\,k}=\frac{1-\beta^{\,t}}{1-\beta}\ \xrightarrow[\ t\to\infty\ ]{}\ \frac{1}{1-\beta},\qquad v_\infty=-\frac{\alpha g}{1-\beta}.\]
+      <span class="dwhy">At \(\beta=0.9\) the limit is \(10\alpha g\), and the series is already at \(0.9\) of it by step \(22\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Now the other half. If the gradient alternates, \(g,-g,g,-g,\dots\), the same unrolling gives \(v_t=-\alpha g(1-\beta+\beta^2-\cdots)\to-\alpha g/(1+\beta)\), which at \(\beta=0.9\) is \(0.53\,\alpha g\) — about a twentieth of the consistent case.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The ratio of the two limits is \((1+\beta)/(1-\beta)=19\) at \(\beta=0.9\). That single number is why the bars stack in one strip and cancel in the other, and it also shows why \(\beta\ge1\) is fatal: the first series stops converging.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the two ways of writing momentum are the same rule</span>
+    <p class="dgoal"><b>Claim.</b> \(\mathbf v_t=\beta\mathbf v_{t-1}-\alpha\nabla J(\mathbf w_{t-1}),\ \mathbf w_t=\mathbf w_{t-1}+\mathbf v_t\) is identical to \(\mathbf w_t=\mathbf w_{t-1}-\alpha\nabla J(\mathbf w_{t-1})+\beta(\mathbf w_{t-1}-\mathbf w_{t-2})\); and on \(J=\tfrac12w_1^2+5w_2^2\) with \(\alpha=0.1,\beta=0.9\) the first three points are \([0.9,0]\), \([0.72,-0.9]\), \([0.486,-0.810]\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">From the second line, \(\mathbf v_t=\mathbf w_t-\mathbf w_{t-1}\) — the velocity <em>is</em> the last move. Shift the index: \(\mathbf v_{t-1}=\mathbf w_{t-1}-\mathbf w_{t-2}\).
+      <span class="dwhy">Nothing has been assumed; this is just naming the same quantity twice.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Substitute into the first line:
+      \[\mathbf w_t-\mathbf w_{t-1}=\beta(\mathbf w_{t-1}-\mathbf w_{t-2})-\alpha\nabla J(\mathbf w_{t-1}),\]
+      which rearranges to the second form exactly.
+      <span class="dwhy">So "keep a velocity" and "add \(\beta\) times the last move" are the same instruction. Different books pick different halves; nothing changes.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Run it. \(\nabla J=(w_1,10w_2)\), start \([1,1]\), \(\mathbf v_0=\mathbf 0\):
+      \[\begin{aligned}\mathbf v_1&=-0.1(1,10)=(-0.1,-1),\quad \mathbf w_1=[0.9,\ 0]\\[2pt] \mathbf v_2&=0.9(-0.1,-1)-0.1(0.9,0)=(-0.18,-0.9),\\ &\qquad\qquad\qquad\qquad\ \ \mathbf w_2=[0.72,\ -0.9]\\[2pt] \mathbf v_3&=0.9(-0.18,-0.9)-0.1(0.72,-9)=(-0.234,0.09),\\ &\qquad\qquad\qquad\qquad\ \ \mathbf w_3=[0.486,\ -0.810]\end{aligned}\]
+      and \(J\) reads \(5.5\to0.405\to4.3092\to3.3986\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Step 2 is the overshoot in numbers: the fresh push on \(w_2\) is zero and the memory carries it to \(-0.9\). Step 3 is the return: the slope at \(w_2=-0.9\) is \(-9\), so the fresh push finally turns it around.</span></div></div>
+  </div>
+<!--@D s3-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · AdaGrad's first step is exactly \(\alpha\), whatever the slope</span>
+    <p class="dgoal"><b>Claim.</b> With \(A_0=0\), the first AdaGrad step moves every coordinate by exactly \(\alpha\) in the direction \(-\mathrm{sign}(g_i)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">After one update, \(A_i=0+g_i^2=g_i^2\), so \(\sqrt{A_i}=|g_i|\).
+      <span class="dwhy">The record contains exactly one entry: this step's own square. Its root is therefore the size of this step's own slope.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The step is then
+      \[\frac{\alpha\,g_i}{\sqrt{A_i}}=\frac{\alpha\,g_i}{|g_i|}=\alpha\,\mathrm{sign}(g_i).\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The size of the slope cancels against itself. Only its <em>sign</em> reaches the update — the direction is data, the distance is a constant you chose.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Check on the session's valley: \(\nabla J([1,1])=(1,10)\), \(A=[1,100]\), \(\sqrt A=[1,10]\), step \(=0.1\cdot[1/1,\ 10/10]=[0.1,0.1]\), so \(\mathbf w^{(1)}=[0.9,0.9]\).
+      <span class="dwhy">The ten-to-one mismatch of §1 is gone on step one, with no standardisation and no knowledge of the landscape.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · why the record becomes a brake</span>
+    <p class="dgoal"><b>Claim.</b> On a constant slope \(g\), AdaGrad's step at time \(t\) is \(\alpha/\sqrt t\); the total distance it can ever cover in \(T\) steps grows only like \(2\alpha\sqrt T\), so reaching a target distance \(D\) costs about \((D/2\alpha)^2\) steps.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">With \(g\) fixed, \(A_t=A_{t-1}+g^2\) and \(A_0=0\) give \(A_t=t\,g^2\), so \(\sqrt{A_t}=\sqrt t\,|g|\).
+      <span class="dwhy">A running total of identical squares is just \(t\) copies of one square.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The step size is therefore
+      \[\frac{\alpha\,|g|}{\sqrt t\,|g|}=\frac{\alpha}{\sqrt t}.\]
+      <span class="dwhy">The slope cancels at <em>every</em> step, not just the first. What remains depends only on how long you have been walking.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Add up the first \(T\) steps and compare with an integral:
+      \[\sum_{t=1}^{T}\frac{\alpha}{\sqrt t}\ \approx\ \alpha\!\int_1^{T}\!\frac{\mathrm dt}{\sqrt t}=2\alpha\big(\sqrt T-1\big).\]
+      Setting that equal to \(D\) gives \(T\approx(D/2\alpha+1)^2\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The distance still grows without limit — AdaGrad is not <em>stuck</em> in theory. But it grows like \(\sqrt T\), so doubling the distance costs four times the steps, and in practice you run out of patience long before you run out of hill.</span></div></div>
+  </div>
+<!--@D s4-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · a fading average converges, a running total does not</span>
+    <p class="dgoal"><b>Claim.</b> On a constant slope \(g\), RMSProp's accumulator is \(A_t=g^2(1-\rho^{\,t})\to g^2\), so its step size tends to \(\alpha\) and never dies.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Unroll \(A_t=\rho A_{t-1}+(1-\rho)g^2\) from \(A_0=0\):
+      \[A_t=(1-\rho)g^2\big(1+\rho+\rho^2+\cdots+\rho^{\,t-1}\big).\]
+      <span class="dwhy">Each old square is multiplied by \(\rho\) once per step, which is what "fades as \(\rho^{\,t}\)" means.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Sum the geometric series and simplify:
+      \[A_t=(1-\rho)g^2\cdot\frac{1-\rho^{\,t}}{1-\rho}=g^2\big(1-\rho^{\,t}\big)\ \xrightarrow[\ t\to\infty\ ]{}\ g^2.\]
+      <span class="dwhy">The \((1-\rho)\) that scaled the new square is exactly cancelled by the \((1-\rho)\) in the denominator of the sum. The average converges to the thing being averaged — which is the whole point of an average.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">So the step size is \(\alpha|g|/\big(|g|\sqrt{1-\rho^{\,t}}\big)=\alpha/\sqrt{1-\rho^{\,t}}\to\alpha\). Compare AdaGrad's \(\alpha/\sqrt t\to0\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Same slope, same \(\alpha\), two different fates: one method settles into a working stride, the other brakes itself to a stop. The only difference is whether the accumulator is a total or an average.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the zero start inflates the first step by \(1/\sqrt{1-\rho}\)</span>
+    <p class="dgoal"><b>Claim.</b> RMSProp's first step is \(\alpha/\sqrt{1-\rho}\) — \(3.162\,\alpha\) at \(\rho=0.9\) and \(31.62\,\alpha\) at \(\rho=0.999\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Put \(t=1\) in the formula above: \(A_1=g^2(1-\rho)\), so \(\sqrt{A_1}=|g|\sqrt{1-\rho}\).
+      <span class="dwhy">The average is holding only a \((1-\rho)\) share of the true size, because the other \(\rho\) share is still the zero it started from.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Hence
+      \[\frac{\alpha|g|}{\sqrt{A_1}}=\frac{\alpha|g|}{|g|\sqrt{1-\rho}}=\frac{\alpha}{\sqrt{1-\rho}}.\]
+      At \(\rho=0.9\): \(\alpha/\sqrt{0.1}=3.1623\,\alpha\), which is the \(0.3162\) the widget prints at \(\alpha=0.1\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Dividing by a root that is too small makes the step too big, and the longer the memory the worse it is — the opposite of the intuition that more memory means more caution.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">How long does it last? The inflation at step \(t\) is \(1/\sqrt{1-\rho^{\,t}}\), which is within \(1\,\%\) of \(1\) once \(\rho^{\,t}<0.02\), i.e. \(t>\ln(0.02)/\ln\rho\) — about \(37\) steps at \(\rho=0.9\), but about \(3\,900\) at \(\rho=0.999\).
+      <span class="dwhy">That is why the fix matters: at the popular \(\rho=0.999\) the "start-up transient" lasts thousands of steps.</span></div></div>
+  </div>
+<!--@D s5-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · where Adam's probation rate \(\alpha_t\) comes from</span>
+    <p class="dgoal"><b>Claim.</b> Correcting both zero-started averages for how full they are turns the RMSProp step into \(\alpha_t\,F/\sqrt A\) with \(\alpha_t=\alpha\sqrt{1-\rho^{\,t}}\big/(1-\rho_f^{\,t})\) — the square root landing on the \(A\) correction only.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">A zero-started fading average of a constant \(c\) reaches \(c(1-\rho_f^{\,t})\) after \(t\) steps (the same geometric sum as §4). So \(F\) is systematically short by exactly that factor, and the honest estimate is
+      \[\widehat F=\frac{F}{1-\rho_f^{\,t}},\qquad \widehat A=\frac{A}{1-\rho^{\,t}}.\]
+      <span class="dwhy">This is a division by "how full the notebook is", nothing more. Each notebook fills at its own rate, so each gets its own correction.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Put the corrected pair into an RMSProp-shaped step and separate the constants from the raw averages:
+      \[\alpha\,\frac{\widehat F}{\sqrt{\widehat A}}=\alpha\,\frac{F/(1-\rho_f^{\,t})}{\sqrt{A}\big/\sqrt{1-\rho^{\,t}}}=\underbrace{\alpha\,\frac{\sqrt{1-\rho^{\,t}}}{1-\rho_f^{\,t}}}_{\textstyle \alpha_t}\cdot\frac{F}{\sqrt A}.\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The whole correction collapses into one scalar multiplying the uncorrected ratio — which is why implementations can keep the raw \(F\) and \(A\) and just scale the stride. And the square root sits only on \(A\)'s correction because only \(A\) was under a root.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Limits and shape. As \(t\to\infty\) both \(\rho^{\,t}\) and \(\rho_f^{\,t}\) vanish, so \(\alpha_t\to\alpha\). With the defaults \(\rho_f=0.9,\rho=0.999\), \(\alpha_t/\alpha\) reads \(0.3162,\ 0.2353,\ 0.2020,\dots\), dips to \(0.15224\) at \(t=12\), then climbs back.
+      <span class="dwhy">Non-monotone, because the two notebooks fill at very different speeds — \(F\) is nearly full by step \(20\) while \(A\) needs thousands. The correction is not a schedule somebody tuned; it is bookkeeping that retires itself.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · Adam's first step is exactly \(\alpha\) per knob</span>
+    <p class="dgoal"><b>Claim.</b> At \(t=1\), Adam moves every coordinate by exactly \(\alpha\) in the direction \(-\mathrm{sign}(g_i)\) — RMSProp's \(1/\sqrt{1-\rho}\) spike is cancelled precisely.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">At \(t=1\) the two notebooks hold one reading each:
+      \[\begin{aligned}F_i&=(1-\rho_f)g_i,\qquad A_i=(1-\rho)g_i^2,\\[2pt] \sqrt{A_i}&=\sqrt{1-\rho}\,|g_i|.\end{aligned}\]
+      <span class="dwhy">Both are short by their own factor — and those are exactly the factors \(\alpha_1\) is built from.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">And \(\alpha_1=\alpha\sqrt{1-\rho}\big/(1-\rho_f)\). Multiply:
+      \[\begin{aligned}\alpha_1\,\frac{F_i}{\sqrt{A_i}}&=\alpha\,\frac{\sqrt{1-\rho}}{1-\rho_f}\cdot\frac{(1-\rho_f)\,g_i}{\sqrt{1-\rho}\,|g_i|}\\[2pt] &=\alpha\,\frac{g_i}{|g_i|}=\alpha\,\mathrm{sign}(g_i).\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Every factor cancels — \((1-\rho_f)\) against \((1-\rho_f)\), \(\sqrt{1-\rho}\) against \(\sqrt{1-\rho}\), \(|g_i|\) against \(g_i\). What survives is the stride you asked for and the direction the data gave.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">On the valley: \(F=[0.1,1]\), \(A=[0.001,0.1]\), \(\sqrt A=[0.031623,0.31623]\), \(F/\sqrt A=[3.1623,3.1623]\), \(\alpha_1=0.031623\), step \(=[0.1,0.1]\). Compare RMSProp's \([0.3162,0.3162]\) at the same point.
+      <span class="dwhy">Same landscape, same \(\alpha\), one method three times too eager and the other exactly right — because of one scalar.</span></div></div>
+  </div>
+<!--@D s6-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the best shared stride, and the price of a bad condition number</span>
+    <p class="dgoal"><b>Claim.</b> On \(J=\tfrac12\sum\lambda_iw_i^2\) the stride that minimises the worst per-step factor is \(\eta^\star=\dfrac{2}{\lambda_{\min}+\lambda_{\max}}\), and at that stride every coordinate shrinks by at best \(\dfrac{\kappa-1}{\kappa+1}\) per step, where \(\kappa=\lambda_{\max}/\lambda_{\min}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">From the first drawer, coordinate \(i\) is multiplied by \(1-\eta\lambda_i\) each step, so after \(k\) steps the worst-behaved coordinate governs:
+      \[\begin{aligned}r(\eta)&=\max_i\big|1-\eta\lambda_i\big|\\[2pt] &=\max\big\{|1-\eta\lambda_{\min}|,\ |1-\eta\lambda_{\max}|\big\}.\end{aligned}\]
+      <span class="dwhy">The maximum over an interval of \(\lambda\) is attained at an end, because \(|1-\eta\lambda|\) is a V in \(\lambda\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">As \(\eta\) grows, \(1-\eta\lambda_{\min}\) falls from \(1\) and \(|1-\eta\lambda_{\max}|\) eventually rises. The maximum of a falling and a rising curve is smallest where they cross:
+      \[1-\eta\lambda_{\min}=-(1-\eta\lambda_{\max})\ \Longrightarrow\ \eta^\star=\frac{2}{\lambda_{\min}+\lambda_{\max}}.\]
+      <span class="dwhy">At the best stride the softest direction creeps forward and the stiffest one <em>flips sign every step</em> by the same fraction. Optimal does not mean pretty.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Substitute back:
+      \[r(\eta^\star)=1-\frac{2\lambda_{\min}}{\lambda_{\min}+\lambda_{\max}}=\frac{\lambda_{\max}-\lambda_{\min}}{\lambda_{\max}+\lambda_{\min}}=\frac{\kappa-1}{\kappa+1}.\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">At \(\kappa=1\) the rate is \(0\): one step and you are done. At \(\kappa=10\) it is \(9/11=0.818\) and you need \(\approx23\) steps per decimal place. At \(\kappa=1000\) it is \(0.998\) and you need \(\approx1150\). That curve is the whole reason the adaptive family exists.</span></div></div>
+  </div>
+<!--@D s7-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · a strict inequality can leave a problem with no answer</span>
+    <p class="dgoal"><b>Claim.</b> \(\min x\) subject to \(x>2\) has infimum \(2\) and <em>no minimiser</em>; replacing \(>\) by \(\ge\) makes the answer exist, at \(x=2\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Every feasible \(x\) satisfies \(x>2\), so \(2\) is a lower bound for the objective.
+      <span class="dwhy">A lower bound always exists here; the question is whether anything attains it.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Suppose some feasible \(x_0\) were the minimum. Then \(x_0>2\), so the midpoint \(x_1=\tfrac{x_0+2}{2}\) satisfies \(2<x_1<x_0\): it is feasible and strictly better.
+      <span class="dwhy">The assumption defeats itself, and it does so for <em>any</em> candidate — there is no special point where the argument fails.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">So no feasible point is minimal: the infimum \(2\) is approached (\(2.1,2.01,2.001,\dots\)) and never reached. With \(x\ge2\) the point \(x=2\) is feasible and clearly optimal.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">This is not pedantry, because constrained answers usually sit <em>on</em> the boundary. A form that excluded the boundary would throw away the answer in the typical case, not the exceptional one.</span></div></div>
+  </div>
+<!--@D s8-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · nothing left to slide means the two gradients are parallel</span>
+    <p class="dgoal"><b>Claim.</b> At a minimum sitting on an active fence \(g=0\) (with \(\nabla g\ne\mathbf 0\)), the component of \(\nabla f\) along the fence must vanish, hence \(\nabla f(\mathbf x^\star)=-\mu\,\nabla g(\mathbf x^\star)\) for some \(\mu\ge0\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Split \(\nabla f\) into the part along the fence and the part across it. Writing \(\mathbf n=\nabla g/\|\nabla g\|\) for the unit normal,
+      \[\nabla f=\underbrace{(\nabla f^{\!\top}\mathbf n)\,\mathbf n}_{\text{across}}+\underbrace{\nabla f-(\nabla f^{\!\top}\mathbf n)\,\mathbf n}_{\textstyle \mathbf p\ =\ \text{along}}.\]
+      <span class="dwhy">A plain orthogonal decomposition. \(\mathbf p\) is the piece that lives in the fence's tangent direction.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Suppose \(\mathbf p\ne\mathbf 0\). Move a small \(\varepsilon\) along \(-\mathbf p\). To first order this keeps you on the fence (\(\nabla g^{\!\top}\mathbf p=0\), so \(g\) does not change) and changes the score by
+      \[\nabla f^{\!\top}(-\varepsilon\mathbf p)=-\varepsilon\|\mathbf p\|^2<0.\]
+      <span class="dwhy">A legal move that strictly lowers the score. So the point was not a minimum — exactly the box that is still sliding.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Therefore \(\mathbf p=\mathbf 0\) at any minimum, so \(\nabla f\) is a multiple of \(\mathbf n\), i.e. of \(\nabla g\): write \(\nabla f=-\mu\nabla g\).
+      <span class="dwhy">Parallel, not equal — \(\mu\) absorbs the difference in length, which is typically large.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">The sign. Moving into the feasible side means moving along \(-\nabla g\), and that must not lower \(f\):
+      \[\begin{aligned}\nabla f^{\!\top}(-\nabla g)&=(-\mu\nabla g)^{\!\top}(-\nabla g)\\[2pt] &=\mu\|\nabla g\|^2\ \ge0\ \Longrightarrow\ \mu\ge0.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">If \(\mu\) were negative you could step <em>inwards</em>, legally, and improve — so the fence was not holding you at all. That is the geometric twin of §9's guard argument.</span></div></div>
+  </div>
+<!--@D s9-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the infinite wall, rebuilt out of straight lines</span>
+    <p class="dgoal"><b>Claim.</b> \(\displaystyle\max_{\mu\ge0}\ \mu\,g=\begin{cases}0,&g\le0\\ +\infty,&g>0\end{cases}\) — the indicator of the fence, exactly.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">If \(g\le0\): for every \(\mu\ge0\) the product \(\mu g\le0\), and the value \(0\) is achieved at \(\mu=0\). So the maximum is \(0\).
+      <span class="dwhy">On the allowed side the guard's best move is to charge nothing — any positive rate would <em>reduce</em> the bill the guard is trying to raise.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">If \(g>0\): taking \(\mu=M\) gives \(Mg\to\infty\) as \(M\to\infty\). So the supremum is \(+\infty\).
+      <span class="dwhy">On the banned side the guard is unbounded, and one violated fence is enough to make the whole bill infinite.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Hence for every \(\mathbf x\),
+      \[\begin{aligned}\max_{\boldsymbol\mu\ge0} L(\mathbf x,\boldsymbol\mu)&=f(\mathbf x)+\sum_i\max_{\mu_i\ge0}\mu_ig_i(\mathbf x)\\[2pt] &=\begin{cases}f(\mathbf x),&\mathbf x\ \text{feasible}\\ +\infty,&\text{otherwise,}\end{cases}\end{aligned}\]
+      so \(\min_{\mathbf x}\max_{\boldsymbol\mu\ge0}L\) <em>is</em> the constrained problem.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Nothing was relaxed or approximated. The Lagrangian with a maximising guard is the original problem written in a form we can differentiate.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · why a fence fine can never be negative</span>
+    <p class="dgoal"><b>Claim.</b> If some \(\mu_i<0\) were allowed, the minimiser of \(L\) would be pushed <em>outside</em> the feasible set on purpose, and the construction above would fail.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Take one fence and a point with \(g(\mathbf x)>0\) — illegal. The term contributed to the bill is \(\mu g\).
+      <span class="dwhy">This is the only place the rule enters the objective, so this term alone decides whether breaking the rule is punished or rewarded.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">With \(\mu<0\) and \(g>0\), \(\mu g<0\): the bill <em>falls</em>. And it falls further the more the fence is broken, since \(\mu g\to-\infty\) as \(g\to\infty\).
+      <span class="dwhy">A subsidy, not a fine. The minimiser will chase it out of bounds and never come back.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Correspondingly, \(\max_{\mu\in\mathbb R}\mu g\) is \(+\infty\) for \(g\ne0\) and \(0\) only at \(g=0\) — the indicator of the <em>equality</em> \(g=0\), not of \(g\le0\). Restricting to \(\mu\ge0\) is exactly what turns it into the one-sided rule.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So the sign rule is not a convention: it is the difference between "stay behind the fence" and "sit exactly on it". And it explains \(\lambda\) at once — for a genuine equality we <em>want</em> the two-sided version, so \(\lambda\) is left free.</span></div></div>
+  </div>
+<!--@D s10-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · complementary slackness, in four lines, from the room left</span>
+    <p class="dgoal"><b>Claim.</b> Writing each fence as \(g_i(\mathbf x)+t_i^2=0\) and differentiating \(L\) with respect to \(t_i\) gives \(\mu_i\,g_i(\mathbf x^\star)=0\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The substitution loses nothing: \(t_i^2=-g_i\), and a square is never negative, so \(-g_i\ge0\), which is \(g_i\le0\) — the original fence, recovered.
+      <span class="dwhy">The inequality has been absorbed into the algebra. Every rule in the problem is now an equation, apart from the sign rule on \(\mu_i\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">With the slacks in, \(L(\mathbf x,\lambda,\boldsymbol\mu,\mathbf t)=f+\lambda e+\sum_i\mu_i\big(g_i+t_i^2\big)\). The only term containing \(t_i\) is \(\mu_it_i^2\), so
+      \[\frac{\partial L}{\partial t_i}=2\mu_it_i=0.\]
+      <span class="dwhy">A new unknown means a new equation — and this is the one that books usually state without ever deriving.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Multiply by \(t_i\) and halve: \(\mu_it_i^2=0\).
+      <span class="dwhy">Multiplying by \(t_i\) is legal even when \(t_i=0\); it simply keeps the identity true in both worlds.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Substitute \(t_i^2=-g_i\):
+      \[\mu_i\big(-g_i(\mathbf x^\star)\big)=0\ \Longrightarrow\ \mu_i\,g_i(\mathbf x^\star)=0.\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A product is zero only if a factor is, so per fence: either \(t_i\ne0\) (room left) forcing \(\mu_i=0\), or \(\mu_i\ne0\) forcing \(t_i=0\), i.e. the fence is touched. The name is literal — the rule came out of the slack.</span></div></div>
+  </div>
+<!--@D s11-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the five conditions are four derivatives and a sign</span>
+    <p class="dgoal"><b>Claim.</b> Setting every partial derivative of \(L(\mathbf x,\lambda,\boldsymbol\mu,\mathbf t)=f+\lambda e+\sum_i\mu_i(g_i+t_i^2)\) to zero yields conditions 1–4, and condition 5 is the sign rule of the previous drawer.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>In \(\mathbf x\)</b> (\(n\) equations). The slack terms carry no \(\mathbf x\), so they drop:
+      \[\nabla f(\mathbf x^\star)+\lambda\nabla e(\mathbf x^\star)+\sum_i\mu_i\nabla g_i(\mathbf x^\star)=\mathbf 0.\]
+      <span class="dwhy">This is §8's two-arrows statement, written for many rules at once: \(\nabla f\) is a combination of the constraint gradients, so nothing of it is left running along the feasible directions.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>In \(\lambda\)</b>. Only \(\lambda e(\mathbf x)\) contains \(\lambda\), and it is linear in it, so the derivative is \(e(\mathbf x^\star)=0\).
+      <span class="dwhy">Our own path constraint, handed back. A good sign: the machinery did not lose a rule.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>In \(\mu_i\)</b>. Only \(\mu_i(g_i+t_i^2)\) contains \(\mu_i\), so \(g_i(\mathbf x^\star)+t_i^2=0\), i.e.
+      \[g_i(\mathbf x^\star)=-t_i^2\le0.\]
+      <span class="dwhy">Our own fences, handed back — and with the inequality restored for free by the square.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody"><b>In \(t_i\)</b>. The previous drawer: \(\mu_ig_i(\mathbf x^\star)=0\). <b>And the sign:</b> \(\mu_i\ge0\), which no derivative will give you — it comes from the guard argument.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Four kinds of unknown, four conditions, plus one rule about what a fine is. Some books list four conditions by folding the sign rule into the setup; count five when you write an answer, so nothing can be said to be missing.</span></div></div>
+    <div class="dstep"><span class="dn">5</span><div class="dbody">Counting: \(n\) variables, one \(\lambda\), \(m\) multipliers, \(m\) slacks — \(n+2m+1\) unknowns, matched by \(n+1+m+m\) equations plus \(m\) sign rules. And condition 4 splits into \(2^m\) branches, since each \(\mu_ig_i=0\) can be satisfied two ways.
+      <span class="dwhy">Books that skip slacks report \(n+m+1\) unknowns. Both counts are right; they describe different setups, and only the slack version hands you condition 4 for free.</span></div></div>
+  </div>
+<!--@D s12-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the chord test implies the tangent test</span>
+    <p class="dgoal"><b>Claim.</b> If \(f\big(\theta\mathbf x+(1-\theta)\mathbf y\big)\le\theta f(\mathbf x)+(1-\theta)f(\mathbf y)\) for all \(\theta\in[0,1]\), then \(f(\mathbf y)\ge f(\mathbf x)+\nabla f(\mathbf x)^{\!\top}(\mathbf y-\mathbf x)\) for all \(\mathbf x,\mathbf y\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Rewrite the chord condition with the roles arranged around \(\mathbf x\). Put \(\mathbf z_\theta=\mathbf x+\theta(\mathbf y-\mathbf x)\); then \(\mathbf z_\theta=(1-\theta)\mathbf x+\theta\mathbf y\), so
+      \[f(\mathbf z_\theta)\le(1-\theta)f(\mathbf x)+\theta f(\mathbf y).\]
+      <span class="dwhy">Same statement, parametrised by how far along the segment you have walked.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Subtract \(f(\mathbf x)\) from both sides and divide by \(\theta>0\):
+      \[\frac{f\big(\mathbf x+\theta(\mathbf y-\mathbf x)\big)-f(\mathbf x)}{\theta}\ \le\ f(\mathbf y)-f(\mathbf x).\]
+      <span class="dwhy">The left side is a difference quotient along the direction \(\mathbf y-\mathbf x\). The right side does not contain \(\theta\) at all — so it is an upper bound that survives any limit.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Let \(\theta\to0^+\). The left side is the directional derivative \(\nabla f(\mathbf x)^{\!\top}(\mathbf y-\mathbf x)\), giving
+      \[\nabla f(\mathbf x)^{\!\top}(\mathbf y-\mathbf x)\le f(\mathbf y)-f(\mathbf x).\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Read it as a promise: the tangent plane at \(\mathbf x\) lies below the whole surface. So if \(\nabla f(\mathbf x)=\mathbf 0\) then \(f(\mathbf y)\ge f(\mathbf x)\) <em>everywhere</em> — one local measurement certifies a global minimum. That is the entire practical value of convexity.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the duals of a linear program and a quadratic program</span>
+    <p class="dgoal"><b>Claim.</b> For \(\min\mathbf c^{\!\top}\mathbf x\) s.t. \(A\mathbf x\le\mathbf b\) the dual is \(\max-\boldsymbol\lambda^{\!\top}\mathbf b\) s.t. \(\mathbf c+A^{\!\top}\boldsymbol\lambda=\mathbf 0,\ \boldsymbol\lambda\ge\mathbf 0\); for \(\min\tfrac12\mathbf x^{\!\top}Q\mathbf x+\mathbf c^{\!\top}\mathbf x\) s.t. \(A\mathbf x\le\mathbf b\) with \(Q\) invertible it is \(\max-\tfrac12(\mathbf c+A^{\!\top}\boldsymbol\lambda)^{\!\top}Q^{-1}(\mathbf c+A^{\!\top}\boldsymbol\lambda)-\boldsymbol\lambda^{\!\top}\mathbf b\) s.t. \(\boldsymbol\lambda\ge\mathbf 0\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody"><b>Linear.</b> Write the Lagrangian and collect the \(\mathbf x\) terms:
+      \[L=\mathbf c^{\!\top}\mathbf x+\boldsymbol\lambda^{\!\top}(A\mathbf x-\mathbf b)=(\mathbf c+A^{\!\top}\boldsymbol\lambda)^{\!\top}\mathbf x-\boldsymbol\lambda^{\!\top}\mathbf b.\]
+      <span class="dwhy">It is <em>linear</em> in \(\mathbf x\), which makes the inner minimisation trivial and brutal.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Minimising a linear function over all of \(\mathbb R^d\) gives \(-\infty\) unless its coefficient vector is zero. So
+      \[d(\boldsymbol\lambda)=\begin{cases}-\boldsymbol\lambda^{\!\top}\mathbf b,&\mathbf c+A^{\!\top}\boldsymbol\lambda=\mathbf 0\\ -\infty,&\text{otherwise.}\end{cases}\]
+      Maximising over \(\boldsymbol\lambda\ge\mathbf 0\) therefore <em>forces</em> the equation as a constraint of the dual.
+      <span class="dwhy">The \(-\infty\) region is not a nuisance; it is where the dual's own constraints come from. A dual variable that sends the inner problem to \(-\infty\) is a price nobody would ever quote.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Note the shape swap: the primal has \(d\) variables and \(m\) rules; the dual has \(m\) variables and \(d\) rules. Solve whichever is smaller.
+      <span class="dwhy">This is reason one from §13, in its purest form.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody"><b>Quadratic.</b> Now \(L=\tfrac12\mathbf x^{\!\top}Q\mathbf x+(\mathbf c+A^{\!\top}\boldsymbol\lambda)^{\!\top}\mathbf x-\boldsymbol\lambda^{\!\top}\mathbf b\); setting \(\nabla_{\mathbf x}L=\mathbf 0\) gives \(Q\mathbf x+(\mathbf c+A^{\!\top}\boldsymbol\lambda)=\mathbf 0\), so \(\mathbf x=-Q^{-1}(\mathbf c+A^{\!\top}\boldsymbol\lambda)\).
+      <span class="dwhy">A bowl in \(\mathbf x\) has a genuine minimum, so nothing runs off to \(-\infty\) and there is no hidden constraint this time.</span></div></div>
+    <div class="dstep"><span class="dn">5</span><div class="dbody">Substituting back and writing \(\mathbf u=\mathbf c+A^{\!\top}\boldsymbol\lambda\):
+      \[\begin{aligned}d(\boldsymbol\lambda)&=\tfrac12\mathbf u^{\!\top}Q^{-1}\mathbf u-\mathbf u^{\!\top}Q^{-1}\mathbf u-\boldsymbol\lambda^{\!\top}\mathbf b\\ &=-\tfrac12\mathbf u^{\!\top}Q^{-1}\mathbf u-\boldsymbol\lambda^{\!\top}\mathbf b.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A concave quadratic in \(\boldsymbol\lambda\) with only the sign rules left — and ridge, lasso and the support vector machine are all of exactly this shape. The last one is worked in §14.</span></div></div>
+  </div>
+<!--@D s13-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · moving second is never worse (the minimax inequality)</span>
+    <p class="dgoal"><b>Claim.</b> For any function \(\varphi\) of two arguments, \(\displaystyle\max_y\min_x\varphi(x,y)\le\min_x\max_y\varphi(x,y)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Name the two optima: let the left side be attained at \((x_A,y_A)\) and the right side at \((x_B,y_B)\), so LHS \(=\varphi(x_A,y_A)\) and RHS \(=\varphi(x_B,y_B)\).
+      <span class="dwhy">Two numbers, four points' worth of information. The whole proof is comparing them through a shared middle term.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Fix \(y=y_A\). The left side's inner operation is a minimum over \(x\), and it returned \(x_A\), so it is no larger than the value at any other \(x\) — in particular \(x_B\):
+      \[\varphi(x_A,y_A)\le\varphi(x_B,y_A).\]
+      <span class="dwhy">A minimum is \(\le\) any particular value.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Fix \(x=x_B\). The right side's inner operation is a maximum over \(y\), and it returned \(y_B\), so it is no smaller than the value at any other \(y\) — in particular \(y_A\):
+      \[\varphi(x_B,y_B)\ge\varphi(x_B,y_A).\]
+      <span class="dwhy">A maximum is \(\ge\) any particular value. The middle term \(\varphi(x_B,y_A)\) is the same in both lines — that is the whole trick.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Chain them: \(\varphi(x_A,y_A)\le\varphi(x_B,y_A)\le\varphi(x_B,y_B)\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">With \(\varphi=L\), \(x=\mathbf x\), \(y=\boldsymbol\mu\): \(d^\star\le p^\star\). No convexity, no differentiability, no assumptions at all — which is why weak duality is free.</span></div></div>
+    <div class="dstep"><span class="dn">5</span><div class="dbody">The one-line version, worth memorising. For any feasible \(\mathbf x\) and any \(\boldsymbol\mu\ge\mathbf 0\),
+      \[\begin{aligned}d(\boldsymbol\mu)&=\min_{\mathbf z}L(\mathbf z,\boldsymbol\mu)\le L(\mathbf x,\boldsymbol\mu)\\[2pt] &=f(\mathbf x)+\boldsymbol\mu^{\!\top}\mathbf g(\mathbf x)\ \le\ f(\mathbf x),\end{aligned}\]
+      because \(\boldsymbol\mu\ge\mathbf 0\) and \(\mathbf g(\mathbf x)\le\mathbf 0\). Take the best on each side.
+      <span class="dwhy">Every dual value you ever compute is a certified lower bound on the primal answer — even if you never solve the primal.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the dual function is always concave</span>
+    <p class="dgoal"><b>Claim.</b> \(d(\boldsymbol\mu)=\min_{\mathbf x}\big[f(\mathbf x)+\boldsymbol\mu^{\!\top}\mathbf g(\mathbf x)\big]\) is concave in \(\boldsymbol\mu\), whatever \(f\) and \(\mathbf g\) are.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Fix any single \(\mathbf x\). As a function of \(\boldsymbol\mu\), \(L(\mathbf x,\boldsymbol\mu)=f(\mathbf x)+\boldsymbol\mu^{\!\top}\mathbf g(\mathbf x)\) is <em>affine</em>: a constant height \(f(\mathbf x)\) plus a constant slope \(\mathbf g(\mathbf x)\).
+      <span class="dwhy">All the nastiness of \(f\) and \(\mathbf g\) has been frozen into two numbers. This is the step that does the work.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">\(d\) is the pointwise minimum of that whole family of affine functions, one per \(\mathbf x\). Take any \(\boldsymbol\mu_1,\boldsymbol\mu_2\) and \(\theta\in[0,1]\), and let \(\mathbf x_\theta\) attain the minimum at \(\theta\boldsymbol\mu_1+(1-\theta)\boldsymbol\mu_2\). Then
+      \[\begin{aligned}d\big(\theta\boldsymbol\mu_1+(1-\theta)\boldsymbol\mu_2\big)&=L\big(\mathbf x_\theta,\ \theta\boldsymbol\mu_1+(1-\theta)\boldsymbol\mu_2\big)\\ &=\theta L(\mathbf x_\theta,\boldsymbol\mu_1)+(1-\theta)L(\mathbf x_\theta,\boldsymbol\mu_2)\\ &\ge\theta\,d(\boldsymbol\mu_1)+(1-\theta)\,d(\boldsymbol\mu_2),\end{aligned}\]
+      the middle line because \(L\) is affine in \(\boldsymbol\mu\), the last because \(L(\mathbf x_\theta,\cdot)\ge d(\cdot)\) by definition of a minimum.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">That is exactly the chord test with the inequality reversed: concave. The picture in the widget is this proof — forty straight lines, and the thing underneath them all bends downward.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Say it precisely: the dual <em>function</em> is concave; the dual <em>problem</em>, "maximise a concave function over \(\boldsymbol\mu\ge\mathbf 0\)", is a convex optimization problem. Both statements are true and they are about different objects.
+      <span class="dwhy">"The dual is convex" is loose talk that costs marks. Be specific about which object you mean.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the multiplier is the slope of the value function</span>
+    <p class="dgoal"><b>Claim.</b> Let \(p^\star(b)=\min f(\mathbf x)\) subject to \(g(\mathbf x)\le b\). Then \(\mathrm dp^\star/\mathrm db=-\mu^\star\) — relaxing the fence by \(\varepsilon\) improves the best score by about \(\mu^\star\varepsilon\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write the Lagrangian with the level \(b\) in it: \(L=f(\mathbf x)+\mu\big(g(\mathbf x)-b\big)\). At the optimum, strong duality gives \(p^\star(b)=L(\mathbf x^\star(b),\mu^\star(b))\).
+      <span class="dwhy">The value function is the Lagrangian evaluated along the optimal pair — which is what lets us differentiate it.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Differentiate in \(b\). The terms coming from \(\mathbf x^\star\) and \(\mu^\star\) moving are multiplied by \(\partial L/\partial\mathbf x=\mathbf 0\) (stationarity) and \(\partial L/\partial\mu=g-b=0\) (the fence is active), so both vanish. Only the explicit \(b\) survives:
+      \[\frac{\mathrm dp^\star}{\mathrm db}=\frac{\partial L}{\partial b}=-\mu^\star.\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">This is the envelope argument: at an optimum, first-order changes in the <em>decisions</em> cost nothing, so only the direct effect of the parameter is left.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Check it on \(\min x^2+y^2\) s.t. \(x+y=4,\ x\ge c\). For \(c\ge2\) the answer is \((c,4-c)\), so \(p^\star(c)=c^2+(4-c)^2\) and \(\mathrm dp^\star/\mathrm dc=4c-8\), which is \(4\) at \(c=3\) — exactly \(\mu^\star\). Predicting \(c=2.9\): \(10-4(0.1)=9.60\); the truth is \(8.41+1.21=9.62\).
+      <span class="dwhy">The \(0.02\) is the curvature of the value function; the multiplier is a derivative, so it is exact only in the limit. And at \(c\le2\) the fence stops binding, \(\mu^\star=0\), and \(p^\star\) goes flat at \(8\) — a wall you are not touching is worth nothing.</span></div></div>
+  </div>
+<!--@D s14-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the widest margin, solved through its dual</span>
+    <p class="dgoal"><b>Claim.</b> For \(x_1=+1\) (class \(+1\)) and \(x_2=-1\) (class \(-1\)), minimising \(\tfrac12w^2\) subject to \(y_i(wx_i+b)\ge1\) has dual \(q(\alpha)=2\alpha-2\alpha^2\) with \(\alpha^\star=\tfrac12\), giving \(w^\star=1\), \(b^\star=0\), boundary \(x=0\) and margin width \(2\); and a third point at \(x_3=3\) gets \(\alpha_3=0\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Standard form. For \(i=1\): \((+1)(w\cdot1+b)\ge1\), so \(g_1=1-w-b\le0\). For \(i=2\): \((-1)(w\cdot(-1)+b)\ge1\), i.e. \(w-b\ge1\), so \(g_2=1-w+b\le0\). Then
+      \[\begin{aligned}L(w,b,\alpha_1,\alpha_2)&=\tfrac12w^2+\alpha_1(1-w-b)\\ &\quad+\alpha_2(1-w+b),\qquad \alpha_i\ge0.\end{aligned}\]
+      <span class="dwhy">Two fences, so \(m=2\); the multipliers are traditionally called \(\alpha\) here rather than \(\mu\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Stationarity in the primal variables:
+      \[\begin{aligned}\frac{\partial L}{\partial w}&=w-\alpha_1-\alpha_2=0\ \Rightarrow\ w=\alpha_1+\alpha_2,\\[3pt] \frac{\partial L}{\partial b}&=-\alpha_1+\alpha_2=0\ \Rightarrow\ \alpha_1=\alpha_2.\end{aligned}\]
+      <span class="dwhy">These are the general identities \(w=\sum_i\alpha_iy_ix_i\) and \(\sum_i\alpha_iy_i=0\), written out for this data. The second is what makes \(b\) drop out of the dual entirely.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Substitute. Group \(L=\tfrac12w^2-w(\alpha_1+\alpha_2)-b(\alpha_1-\alpha_2)+(\alpha_1+\alpha_2)\); with \(\alpha_1=\alpha_2=\alpha\) the \(b\) term vanishes and \(w=2\alpha\):
+      \[\begin{aligned}q(\alpha)&=\tfrac12(2\alpha)^2-(2\alpha)(2\alpha)+2\alpha\\[2pt] &=2\alpha^2-4\alpha^2+2\alpha=2\alpha-2\alpha^2.\end{aligned}\]
+      <span class="dwhy">Two primal variables gone, one dual variable left, and the result is a downward parabola — concave, as §13 promised.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">Maximise over \(\alpha\ge0\): \(q'(\alpha)=2-4\alpha=0\Rightarrow\alpha^\star=\tfrac12\ge0\) ✓, and \(d^\star=q(\tfrac12)=1-\tfrac12=\tfrac12\).
+      <span class="dwhy">Check the sign rule before reporting — a peak with \(\alpha<0\) would be out of bounds and the best allowed value would sit at \(\alpha=0\).</span></div></div>
+    <div class="dstep"><span class="dn">5</span><div class="dbody">Recover the classifier. \(w^\star=\alpha_1+\alpha_2=1\). Since \(\alpha_1=\tfrac12>0\), complementary slackness forces \(g_1=0\), i.e. \(w+b=1\), so \(b^\star=0\). Primal value \(\tfrac12(1)^2=\tfrac12=d^\star\): zero gap. Boundary \(x=0\), margin lines \(x=\pm1\), width \(2/|w^\star|=2\), both points tight and therefore support vectors.
+      <span class="dwhy">Note how \(b\) was recovered — not from stationarity (which only gave \(\alpha_1=\alpha_2\)) but from a <em>tight constraint</em> identified by a positive multiplier. That is the standard trick.</span></div></div>
+    <div class="dstep"><span class="dn">6</span><div class="dbody">Add \(x_3=3\), class \(+1\). Its constraint is \(3w+b\ge1\), which at \((1,0)\) reads \(3\ge1\): slack, so \(g_3<0\) and complementary slackness forces \(\alpha_3=0\). The point contributes nothing to \(w=\sum\alpha_iy_ix_i\) and can be deleted. If instead \(x_3<1\), it and the negative point become the binding pair, giving \(w=\dfrac{2}{x_3+1}\) and \(b=\dfrac{1-x_3}{1+x_3}\) — at \(x_3=0.5\), \(w=1.3333\), \(b=0.3333\), boundary \(-0.25\), margin \(1.5\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A million training points, a handful of nonzero multipliers, and the rest deletable: the sparsity of a support vector machine is complementary slackness and nothing else.</span></div></div>
+  </div>

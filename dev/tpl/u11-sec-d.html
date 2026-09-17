@@ -1,0 +1,133 @@
+
+<!-- ================= 13 · WHO MOVES FIRST ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Who moves first — and what a wall is worth</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Naming your price first</span>
+    <p>Two people share one number: you pick \(\mathbf x\) and want the bill low, the guard picks \(\mu\) and wants it high. Everything about duality comes from one question nobody asks in the algebra — <strong>who moves first?</strong> If you choose and the guard answers, that is one game. If the guard announces the price and you then choose knowing it, that is a different game, and it is a worse deal for the guard. Moving second is an advantage. Whoever gives it up loses something.</p>
+  </div>
+<!--@W13-->
+  <div class="prose reveal">
+    <p>Put both games on paper. If you move first, the guard sees your choice and answers with the worst \(\mu\) for you — which, as §9 showed, is \(0\) when you obeyed the fence and \(\infty\) when you did not. So the min-max quietly scores every illegal point at infinity and every legal one at its true score: it <em>is</em> the original problem.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[p^\star=\min_{\mathbf x}\ \max_{\mu\ge0}\ L(\mathbf x,\mu)\qquad\ge\qquad \max_{\mu\ge0}\ \min_{\mathbf x}\ L(\mathbf x,\mu)=d^\star\]</p>
+      <p>Left, the <strong>primal</strong>: you move first. Right, the <strong>dual</strong>: the guard moves first, and the inner part \(d(\mu)=\min_{\mathbf x}L(\mathbf x,\mu)\) is the <em>dual function</em> — an ordinary unconstrained minimisation with no \(\mathbf x\) left in the answer. The inequality is <strong>weak duality</strong> and it is always true, for every problem, convex or not. The shortfall \(p^\star-d^\star\ge0\) is the <em>duality gap</em>, and when it is zero we have <strong>strong duality</strong>.</p>
+    </div>
+    <p>Now open <em>a bundle of lines</em>, because this is the picture that explains why anybody bothers. Fix any \(\mathbf x\) and look at \(L(\mathbf x,\mu)=f(\mathbf x)+\mu g(\mathbf x)\) as a function of \(\mu\): it is a <strong>straight line</strong>, with height \(f(\mathbf x)\) and slope \(g(\mathbf x)\). One line per \(\mathbf x\). The dual function is the lowest of all of them — and the lowest of any bundle of straight lines always bends downward.</p>
+    <p>So \(d\) is <strong>concave</strong>. Always. However lumpy, non-convex, multi-valleyed and awful \(f\) and \(g\) are, the view from below is a single hill with one peak and no local traps. Maximising it is a well-behaved problem when the original is not. (Say that carefully: the dual <em>function</em> is concave; the dual <em>problem</em>, maximising a concave function, is a convex optimization problem. Both statements are right and they are about different objects.)</p>
+    <p>Three reasons this matters, and the third is the one that decides this course. <strong>Fewer unknowns:</strong> the primal has one variable per parameter, the dual has one per constraint — swap a thousand-variable primal for a three-variable dual and the work collapses. <strong>No local traps,</strong> by the paragraph above. And <strong>the variables change meaning:</strong> in a support vector machine the primal is over the weight vector, whose length is the number of features, while the dual is over one multiplier per <em>training point</em>. That swap is what lets kernels in, and it is why we spent this session here.</p>
+    <p>Does the gap ever actually open? Yes — and it is worth seeing both outcomes. On the <em>gap</em> tab, <strong>two allowed bands</strong> is a genuinely non-convex problem whose feasible set is two separate intervals, and its gap closes anyway: \(p^\star=d^\star=-2\). <strong>Two wells</strong> is non-convex and does not close: \(p^\star=0.3894\) while \(d^\star=0\), a gap of \(0.3894\). Read the lesson in the right direction. Weak duality is free. Convexity plus a strictly feasible point is <em>sufficient</em> for the gap to close — not necessary. Sometimes you get lucky; you just cannot count on it.</p>
+    <p>One thing remains: the multiplier itself. We have called it a stretch factor, a fine rate, a price. Make that literal.</p>
+  </div>
+<!--@W14-->
+  <div class="prose reveal">
+    <p>Drag the wall. The answer slides along the path, the score rises, and the chip compares two numbers: what the multiplier <em>predicted</em> and what actually happened. At \(c=3\) the answer is \((3,1)\) with \(\mu^\star=4\) and \(p^\star=10\). Move the wall back to \(c=2.9\) and the multiplier says the score should fall by about \(4\times0.1=0.4\), to \(\mathbf{9.60}\). Re-solve properly and the truth is \((2.9,1.1)\), giving \(\mathbf{9.62}\).</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[\mu^\star=\left|\frac{\mathrm d\,p^\star}{\mathrm d\,(\text{how tight the fence is})}\right|\]</p>
+      <p>The multiplier is the <strong>slope of the value function</strong> — how much the best achievable score changes per unit of relaxation. It is exact for an infinitesimal move and approximate for a real one (the \(0.02\) discrepancy above is the curvature of the value curve). And watch what happens as you slide the wall left past \(c=2\): the fence stops biting, \(\mu^\star\) drops to \(0\), and the value curve goes flat. <strong>The price of a wall you are not touching is nothing</strong> — which is complementary slackness, arriving from the economics side.</p>
+    </div>
+    <p>That reading is why multipliers appear all over applied work under the name <em>shadow price</em>. The \(\lambda\) in ridge regression is the price of the coefficient budget. In a resource allocation, \(\mu\) is what one more machine-hour is worth to you — before you buy it. It is not bookkeeping left over from a derivation; it is the answer to the question you were going to ask next.</p>
+  </div>
+  <div class="check reveal" data-check="c18">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A colleague computes the dual of a horrible non-convex problem and gets \(d^\star=7\). What have they proved about the primal answer \(p^\star\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Weak duality holds for every problem whatsoever: d* ≤ p*. So the primal optimum is at least 7 — a certificate, computed without ever solving the primal. Equality would need strong duality, which non-convexity does not guarantee (though it sometimes happens anyway).">That \(p^\star\ge7\) — a guaranteed lower bound, with no convexity needed</button>
+      <button data-why="That is strong duality, which needs convexity plus a strictly feasible point. Without it the two can differ, and the dual can fall short by an arbitrary amount.">That \(p^\star=7\) — the dual optimum always equals the primal optimum</button>
+      <button data-why="The direction is fixed and it is the other way. For a minimisation primal the dual sits below: d* ≤ p*. Moving second is an advantage, and the guard gives it up.">That \(p^\star\le7\) — the dual is an upper bound on a minimisation</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c19">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At the optimum of a resource problem, the multiplier on the "at most 40 machine-hours" constraint comes out as \(\mu^\star=0\). Your supplier offers you an extra hour. What is it worth?</p>
+    <div class="opts">
+      <button data-correct data-why="µ* = 0 means, by complementary slackness, that the constraint is slack — you are not using all 40 hours. The multiplier is the slope of the value function, so one more hour changes the best achievable score by about 0 × 1 = 0. You are not short of machine-hours; something else is binding.">Nothing — a zero price means you were not using all 40 hours in the first place</button>
+      <button data-why="It would be worth something if the constraint were tight. A zero multiplier says it is not: complementary slackness forces µ = 0 exactly when there is room to spare, so relaxing it buys nothing.">One fortieth of the total score — hours are worth their share</button>
+      <button data-why="A zero multiplier is not a missing number; it is a definite answer with a clear meaning. The constraint is inactive and relaxing it changes nothing.">Impossible to say — a zero multiplier carries no information</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s13-->
+  <div class="onesent reveal"><b>In one sentence:</b> Swapping the order of the two moves gives the dual, which is the lowest of a bundle of straight lines and therefore always concave and always a lower bound — and the multiplier it hands back is the price of the wall, the slope of the best achievable score.</div>
+</section>
+
+<!-- ================= 14 · TWO POINTS AND A LINE ================= -->
+<section class="unit" id="s14">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>Two points and a line — where all of this is going</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The smallest problem that uses everything</span>
+    <p>One number line. Two labelled points: \(x=+1\) is a positive, \(x=-1\) is a negative. Draw the boundary that separates them <em>with the widest possible gap</em>. You already know where it goes. What you may not know is that finding it uses every single thing in this half of the unit — standard form, the Lagrangian, stationarity, the dual, and complementary slackness — and that the last one explains why these machines are called <em>support</em> vector machines.</p>
+  </div>
+<!--@W15-->
+  <div class="prose reveal">
+    <p>The trick is the translation. "Widest gap" sounds like a maximisation with no obvious objective, so rescale the boundary until both classes clear it by at least \(1\): \(y_i(wx_i+b)\ge1\). The margin's width is then \(2/|w|\), so making the gap widest means making \(|w|\) smallest — and minimising \(\tfrac12w^2\) subject to two fences is an ordinary quadratic program. Slide \(w\) on the first tab and watch the two constraints go red the moment \(w<1\): \(w=1\) is the smallest value that still clears both.</p>
+    <p>Now do it the other way, through the dual, because that is how it is actually solved. Stationarity in \(w\) gives \(w=\alpha_1+\alpha_2\); stationarity in \(b\) gives \(\alpha_1=\alpha_2\). Substitute both back and the two primal variables vanish, leaving a one-variable concave problem:</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[q(\alpha)=2\alpha-2\alpha^2,\qquad \alpha^\star=\tfrac12,\qquad d^\star=\tfrac12=p^\star\]</p>
+      <p>and then the classifier is <strong>rebuilt out of the multipliers</strong>: \(w^\star=\alpha_1+\alpha_2=1\); and since \(\alpha_1>0\), complementary slackness forces that point's constraint tight, \(w+b=1\), so \(b^\star=0\). Boundary at \(x=0\), margin edges at \(x=\pm1\), width \(2/|w^\star|=2\). This is the general rule \(w=\sum_i\alpha_iy_ix_i\) with \(\sum_i\alpha_iy_i=0\), written out for two points.</p>
+    </div>
+    <p>Then the sentence this whole half of the unit was built for. Drag the third point on the last tab. While it sits out at \(x=3\), comfortably beyond the margin, its constraint is slack — \(g_3<0\) — so complementary slackness forces \(\alpha_3=\mathbf 0\). The classifier does not move. <strong>You could delete that training point entirely and get the same machine.</strong> Drag it inside the margin and its multiplier comes alive, the boundary shifts, and it becomes load-bearing.</p>
+    <p>That is what "support vector" means: the points whose constraints are tight, the ones with \(\alpha_i>0\), the only ones carrying the answer. A million training points, a handful of multipliers that are not zero, and the rest could be thrown away. <strong>The sparsity of a support vector machine is complementary slackness, and nothing else.</strong> It is also why the dual is the form people solve: one multiplier per training point, most of them zero, and the data entering only through products \(x_ix_j\) — which is the doorway that kernels walk through.</p>
+    <p>Units 13 and 14 are that door. You now have the key.</p>
+  </div>
+  <div class="check reveal" data-check="c20">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A trained classifier reports \(\alpha_i=0\) for \(9\,970\) of its \(10\,000\) training points. What does that mean geometrically, and what may you do with those points?</p>
+    <div class="opts">
+      <button data-correct data-why="αᵢ = 0 with complementary slackness means the constraint is slack: yᵢ(w·xᵢ + b) > 1, so the point sits strictly outside the margin. It exerts no force on the solution — delete all 9 970 and retrain, and you get exactly the same classifier. Only the 30 tight points carry it.">They lie strictly outside the margin and exert no force — delete them and the classifier is unchanged</button>
+      <button data-why="It is the opposite. A zero multiplier means the constraint is slack, which means the point is comfortably on the right side, far from the boundary — not sitting on it.">They lie exactly on the margin edges, which is why their multipliers vanished</button>
+      <button data-why="A zero multiplier says nothing about being misclassified. In a hard-margin machine every point is correctly classified by construction; αᵢ = 0 means the point is easy, not wrong.">They were misclassified, so the method gave up on them</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s14-->
+  <div class="onesent reveal"><b>In one sentence:</b> The widest margin is the smallest \(\tfrac12w^2\) that still clears every constraint, its dual has one multiplier per training point, and complementary slackness makes almost all of them zero — which is why the machine is built out of a handful of support vectors.</div>
+</section>
+
+<!-- ================= 15 · CARRY FORWARD ================= -->
+<section class="unit" id="s15">
+  <div class="sec-head reveal"><span class="sec-num">15</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>Two halves, one thread. The first half fixes the walker because one stride can never suit two directions; the second half admits that sometimes the place you want to stand is not allowed, and builds a test for arriving where the ground is still tilted.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>The picture</th><th>What it says</th><th>The line of math it becomes</th></tr></thead>
+    <tbody>
+      <tr><td>Walking blindfolded</td><td>feet feel the tilt, never how long it lasts; one stride, two factors</td><td>\(w_i\leftarrow(1-\eta\lambda_i)w_i\)</td></tr>
+      <tr><td>The loaded trolley</td><td>agreeing pushes stack, alternating pushes cancel; speed costs overshoot</td><td>\(\mathbf v\leftarrow\beta\mathbf v-\alpha\nabla J\); speed-up \(1/(1-\beta)\)</td></tr>
+      <tr><td>The permanent record</td><td>a stride per knob out of its own history; first step is exactly \(\alpha\), then the brake never lifts</td><td>\(A\leftarrow A+\nabla J\odot\nabla J\); step \(\alpha/\sqrt t\)</td></tr>
+      <tr><td>Form, not career average</td><td>forget at rate \(\rho\) and the stride survives; the zero start puffs step 1</td><td>\(A\leftarrow\rho A+(1-\rho)\nabla J^{\odot2}\); inflation \(1/\sqrt{1-\rho}\)</td></tr>
+      <tr><td>Two notebooks</td><td>signed average over root squared average; disagreement cancels, loudness divides out</td><td>\(\alpha_t=\alpha\sqrt{1-\rho^t}/(1-\rho_f^t)\)</td></tr>
+      <tr><td>The race</td><td>the stiffest direction sets the safe stride, the softest sets the step count</td><td>\(\alpha<2/\lambda_{\max}\); cost \(\kappa\)</td></tr>
+      <tr><td>The wall</td><td>the answer moves onto the boundary, where the gradient is not zero</td><td>\(\min f\) s.t. \(e=0,\ g_i\le0\)</td></tr>
+      <tr><td>The box in the corridor</td><td>you stop when nothing of \(\nabla f\) runs along the fence</td><td>\(\nabla f=-\mu\nabla g\), parallel not equal</td></tr>
+      <tr><td>The guard's fine</td><td>an infinite wall rebuilt out of straight lines; a negative fine pays you to trespass</td><td>\(L=f+\lambda e+\sum\mu_ig_i,\ \mu_i\ge0\)</td></tr>
+      <tr><td>Room left</td><td>name the room as a square and differentiate: fine and spare room never coexist</td><td>\(g+t^2=0\Rightarrow\mu_ig_i=0\)</td></tr>
+      <tr><td>The interrogation</td><td>each fence is active or not; guess, solve, discard on a negative multiplier</td><td>five conditions; \(2^m\) branches</td></tr>
+      <tr><td>The string test</td><td>never above its chords, never below its tangents; then a candidate is the answer</td><td>\(f(\theta x+(1-\theta)y)\le\theta f(x)+(1-\theta)f(y)\)</td></tr>
+      <tr><td>Who moves first</td><td>moving second is an advantage; the view from below is a bundle of lines, so always a hill</td><td>\(d^\star\le p^\star\); \(d\) concave</td></tr>
+      <tr><td>The price of a wall</td><td>the multiplier is the slope of the value function; untouched walls cost nothing</td><td>\(\mu^\star=|\mathrm dp^\star/\mathrm db|\)</td></tr>
+      <tr><td>Two points and a line</td><td>the classifier is built from the multipliers, and almost all of them are zero</td><td>\(q(\alpha)=2\alpha-2\alpha^2\); \(\alpha_i=0\Rightarrow\) deletable</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
+    <p><strong>Divide by what you have felt, and price what blocks you.</strong> Every adaptive method is the same move: measure how loud a knob's slopes have been, divide its stride by that, and the curvature never reaches the step size — momentum adds memory so agreement compounds, forgetting keeps the brake from becoming a life sentence, and Adam does all three with a start-up correction that retires itself. Every constrained method is the other same move: replace each wall by the cheapest straight line that does its job, and the price of that line tells you three things at once — which way the answer is pinned, whether the wall matters at all, and exactly what you would pay to move it.</p>
+  </div>
+</section>
+
+<!-- ================= 16 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head reveal"><span class="sec-num">16</span><h2>Practice arena — fourteen problems, solved in full</h2></div>
+  <div class="prose reveal">
+    <p>Fourteen problems, easy to hard, across both halves: descent on a two-knob fit and recovering the stride from where it landed, four logged runs read backwards, exact line search, momentum's hyperparameters recovered from three numbers, AdaGrad against RMSProp on a long slope, RMSProp in vector form on badly scaled columns, Adam by hand with its bias correction — then framing a word problem, standard form and the branch count, a quadratic form on the unit circle where the multiplier <em>is</em> the eigenvalue, a fence tested both ways, the full four-case enumeration, a primal-and-dual round trip with the shadow price, and a two-point classifier built from its multipliers. Every number is machine-verified.</p>
+    <p>Three habits do most of the work. <strong>For any optimizer question, tabulate before you calculate</strong> — one row per step, columns for the gradient, the accumulators and the new point, in that fixed order; nearly every lost mark is a value used one step out of date. <strong>For any constrained question, write the standard form first and keep the minus signs</strong> — \(x\ge2\) is \(g=2-x\), so \(\nabla g=-1\). And <strong>never stop at the first case that works</strong>: test every branch, or say in writing why a branch is impossible.</p>
+  </div>
+<!--@PRACTICE-->
+  <div class="next-card reveal">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 12 · Principal Component Analysis I</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">You have just maximised a quadratic form on the unit circle and watched the multiplier come out as an eigenvalue. That was not a coincidence — it is the whole of principal component analysis in miniature. Unit 12 asks what a cloud of data looks like from its own best angle, why the directions of greatest spread are the eigenvectors of a covariance matrix, and how much you can throw away before the picture stops being the picture.</p>
+    <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
+  </div>
+</section>
+
+</main>
