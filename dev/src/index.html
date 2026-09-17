@@ -222,11 +222,11 @@ footer p:first-child{color:var(--ink-2)}
     <p class="byline reveal">by <strong>Prof. Saurabh</strong></p>
     <p class="lede reveal">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
     <div class="meta-chips reveal-stagger">
-      <span class="chip">📐 16 units · 9 live so far</span>
-      <span class="chip">🎛 85 hands-on widgets</span>
-      <span class="chip">✅ 130 pause-and-predict checks</span>
-      <span class="chip">✍ 98 problems solved step by step</span>
-      <span class="chip">🧾 93 rules derived step by step, nothing on faith</span>
+      <span class="chip">📐 16 units · 10 live so far</span>
+      <span class="chip">🎛 96 hands-on widgets</span>
+      <span class="chip">✅ 145 pause-and-predict checks</span>
+      <span class="chip">✍ 110 problems solved step by step</span>
+      <span class="chip">🧾 109 rules derived step by step, nothing on faith</span>
     </div>
     <div class="start-row reveal" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 →</a><span class="start-note">Each unit is a story you can play with — about an hour, no prerequisites.</span></div>
     <div class="progress-row reveal" id="progress-row">
@@ -306,12 +306,12 @@ footer p:first-child{color:var(--ink-2)}
       <p>Walk downhill in thick fog: the descent rule proved, the step-size speed limit and the zig-zag, exact line search, schedules, gradient checking — and why a random spoonful of the data (stochastic gradient descent) points the right way.</p>
       <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 15 checks · 12 problems</span></div>
     </a>
-    <div class="card locked">
+    <a class="card" href="unit-10.html" data-unit="10">
       <canvas class="glyph" data-g="10" aria-hidden="true"></canvas>
       <div class="top"><span class="num">10</span><h3>Optimization I — Gradients that Work</h3></div>
-      <p>Nonlinear optimization and the minutiae that make or break gradient methods.</p>
-      <div class="foot"><span class="status soon">Coming soon</span></div>
-    </div>
+      <p>The four ways the walk goes wrong — a bad start, memorising, the wrong valley or a salt flat, a canyon that makes every step bounce — and the cheapest fix in machine learning: change the units of the data, not the model, and watch the canyon become a bowl.</p>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 15 checks · 12 problems</span></div>
+    </a>
     <div class="card locked">
       <canvas class="glyph" data-g="11" aria-hidden="true"></canvas>
       <div class="top"><span class="num">11</span><h3>Optimization II — Five Ways Down One Valley</h3></div>
@@ -371,9 +371,9 @@ footer p:first-child{color:var(--ink-2)}
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
   /* Fallbacks are used only until a student opens the unit itself — each unit
      page writes its true check count to mfml-uN-total when it loads. */
-  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15};
+  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15};
   const TITLE={1:'Systems of Linear Equations',2:'Vector Spaces',3:'Analytic Geometry',
-               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent'};
+               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent',10:'Optimization I'};
   let done=0, total=0;
 
   document.querySelectorAll('a.card[data-unit]').forEach(card=>{
@@ -407,7 +407,7 @@ footer p:first-child{color:var(--ink-2)}
   const last=(store.get('mfml-last')||'').split('|');
   if(last.length===2 && TITLE[+last[0]]){
     const u=+last[0], link=document.getElementById('continue-link');
-    link.href='unit-0'+u+'.html#'+last[1];
+    link.href='unit-'+String(u).padStart(2,'0')+'.html#'+last[1];
     link.textContent='Continue · Unit '+u+' — '+TITLE[u]+' →';
     link.hidden=false;
     row.classList.add('on');
@@ -591,6 +591,16 @@ footer p:first-child{color:var(--ink-2)}
       g.strokeStyle=pal.s2; g.lineWidth=2.4; g.lineCap='round'; glow(g,pal.s2,12); g.beginPath(); g.moveTo(cx+x0-L,cy-(y0-s*L)); g.lineTo(cx+x0+L,cy-(y0+s*L)); g.stroke(); g.lineCap='butt';
       g.setLineDash([2,3]); g.strokeStyle=pal.ink2; g.globalAlpha=.45; g.lineWidth=1; noglow(g); g.beginPath(); g.moveTo(cx+x0,cy-y0); g.lineTo(cx+x0,cy+h*.4); g.stroke(); g.setLineDash([]); g.globalAlpha=1;
       g.fillStyle=pal.s4; glow(g,pal.s4,14); g.beginPath(); g.arc(cx+x0,cy-y0,3.4,0,7); g.fill(); },
+    /* 10 · the canyon becomes a bowl: the contours' stiffness breathes 9 → 1 → 9 and the walker's zig-zag straightens with it */
+    10(g,w,h,t){ const cx=w/2, cy=h*.52; const u=(1-Math.cos(t/7*2*Math.PI))/2, c=1+8*Math.pow(1-u,1.6); const sx=w*.11, sy=h*.36; const gam=.9*2/(2*c);
+      const P=(x,y)=>[cx+x*sx, cy-y*sy];
+      g.strokeStyle=pal.s1; g.lineWidth=1; glow(g,pal.s1,6); g.globalAlpha=.55;
+      for(const L of [.3,1.2,2.8,5.2]){ const rx=Math.sqrt(L), ry=Math.sqrt(L/c); g.beginPath(); g.ellipse(cx,cy,rx*sx,ry*sy,0,0,7); g.stroke(); }
+      g.globalAlpha=1;
+      const pts=[]; let x=-2.1, y=.95; for(let k=0;k<13;k++){ pts.push([x,y]); x-=gam*2*x; y-=gam*2*c*y; }
+      g.strokeStyle=pal.s3; g.lineWidth=1.6; glow(g,pal.s3,9); g.beginPath(); pts.forEach(([X,Y],k)=>{ const q=P(X,Y); k?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]); }); g.stroke();
+      const q=P(...pts[pts.length-1]); g.fillStyle=pal.s4; glow(g,pal.s4,14); g.beginPath(); g.arc(q[0],q[1],3.2,0,7); g.fill();
+      noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText('κ = '+c.toFixed(1),w-6,h-6); g.globalAlpha=1; g.textAlign='left'; },
     /* 09 · a walker zig-zagging down a trench of contours, step by step */
     9(g,w,h,t){ const cx=w/2, cy=h*.52, L1=9, L2=1.2, gam=.16; const sx=w*.11, sy=h*.36;
       const f=(x,y)=>.5*(L1*x*x+L2*y*y); const P=(x,y)=>[cx+x*sx, cy-y*sy];
