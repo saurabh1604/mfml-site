@@ -1,0 +1,1345 @@
+MFML Companion · AIMLCZC416                                          Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+    WILP, BITS Pilani
+
+     MATHEMATICAL FOUNDATIONS FOR MACHINE LEARNING · COMPANION READER
+
+
+
+     Constrained Optimization
+     Lagrangian, slack variables, the KKT conditions, and the primal–dual pair
+
+
+     Live session, 26 July 2026 · Read alongside the lecture · Every board example worked out in full
+
+
+
+
+Prepared for the Work Integrated Learning Programmes (WILP), BITS Pilani.
+
+How to use this companion. The lecture gave you the board work; this reader gives you the
+why. Every idea from the session is expanded into plain English. Every board example is
+worked out in full, with no skipped steps.
+Colour-coded boxes guide you. The blue “intuition” box states the core idea in one breath.
+The amber “everyday picture” box ties it to real life, before any math. The green “worked
+example” box solves a problem with real numbers. The red “watch out” box flags the common
+mistake. The teal “wait — really?” box holds a true fact that sounds wrong. The purple “key
+takeaway” box is the one line to remember. Read it in order.
+
+
+1 Solve one right now, before any theory
+Put a wall in front of gradient descent and the answer moves onto the wall. That single
+fact drives this whole session.
+
+Here is a problem you can do in your head. Find the smallest value of f ( x ) = x2 , but you are
+only allowed to pick x ≥ 2.
+Try it. The bowl x2 has its bottom at x = 0. That point is banned. So you slide as close to it as
+the rule lets you. That is x = 2, giving f = 4.
+Now notice three things about what you just did.
+
+1. The free answer, x = 0, was thrown away. The rule changed the answer.
+
+2. The new answer sat exactly on the edge of the allowed set.
+
+3. At x = 2 the slope of f is 4, not 0. The usual “set the derivative to zero” test fails here.
+
+Point 3 is the reason this session exists. Every method you have learnt so far hunts for a zero
+gradient. With a rule in the way, the winning point can have a non-zero gradient. We need a
+new test. That test is called KKT, and by the end of this reader you will be able to run it.
+
+
+
+
+WILP, BITS Pilani                                            1
+MFML Companion · AIMLCZC416                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+      ⋆ Everyday picture
+   Think of a hike in a national park. You want to reach the lowest point in the valley. A
+   sign says: do not cross this fence. The true bottom lies past the fence. So the best you
+   can do is walk right up to the fence and stop. We will use this one story — the park, the
+   fence, and a guard who fines you — for the whole reader.
+
+
+      ✓ Key takeaway
+   A constrained problem is an unconstrained problem with a wall added. The answer
+   usually ends up pressed against the wall.
+
+
+
+
+Figure 1: How to read it: the colours are the value of f , dark is low. The white-and-red circle is
+the fence. The X marks the free minimum, which is out of bounds. The star is the real answer,
+and it sits on the fence, not inside it.
+
+
+
+
+WILP, BITS Pilani                               2
+MFML Companion · AIMLCZC416                                  Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+2 The standard form: one shape for every problem
+Every constrained problem is rewritten as “minimise f , subject to e = 0 and g ≤ 0”.
+Two lines of algebra get any problem into that shape.
+
+A constrained optimization problem has an objective (the thing you want smallest) and
+constraints (the rules you must obey). We always write it in one fixed layout, called the
+standard form:
+
+
+
+                                      min     f (x)
+                                        x
+                                subject to    e(x) = 0
+                                              gi (x) ≤ 0,      i = 1, . . . , m                              (1)
+
+Read the symbols one at a time.
+
+ • x (bold x) is the whole list of unknowns, such as ( x, y) or ( β 1 , . . . , β p ).
+
+ • f (x) is the objective function: the score we want as small as possible. We will call it the
+   score.
+
+ • e(x) = 0 is an equality constraint. It is a rule you must sit exactly on. We will call it the
+   path. Most exam problems have just one.
+
+ • gi (x) ≤ 0 are the inequality constraints. Each one is a wall you must stay behind. We will
+   call each one a fence. There can be many, so we number them i = 1, . . . , m.
+
+2.1 Turning any rule into standard form
+Your problem will rarely arrive in this shape. Two moves fix that.
+Move 1: flip a ≥ into a ≤. Multiply both sides by −1 and the arrow turns around:
+
+                                  h(x) ≥ 0        ⇐⇒         −h(x) ≤ 0.
+
+So x ≥ 0 becomes − x ≤ 0. Same rule, standard shape.
+Move 2: move everything to the left. A rule like x + y ≤ 1 becomes x + y − 1 ≤ 0. A rule like
+x + y = 1 becomes x + y − 1 = 0.
+
+      ✎ Worked example: Rewrite one problem in standard form
+   Take the problem: minimise x2 + y2 subject to x + y = 1, x ≥ 0 and y ≥ 0.
+   Step 1.      The score is already fine: f ( x, y) = x2 + y2 .
+   Step 2.      The path: x + y = 1 becomes e( x, y) = x + y − 1 = 0.
+   Step 3.      First fence: x ≥ 0 becomes g1 ( x, y) = − x ≤ 0.
+   Step 4.      Second fence: y ≥ 0 becomes g2 ( x, y) = −y ≤ 0.
+   So we have one path and two fences, m = 2. That is the whole conversion.
+
+
+
+
+WILP, BITS Pilani                                     3
+MFML Companion · AIMLCZC416                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+      ✗ Watch out
+   When you flip x ≥ 0 into − x ≤ 0, the constraint function is g1 = − x, not x. Later you will
+   need ∇ g1 = (−1, 0), with the minus sign. Getting this sign wrong flips the sign of the
+   fine rate and breaks the whole answer.
+
+
+2.2 Why we never write a strict <
+Look at the list again. You see =, ≤ and ≥. You never see < or >. There is a good reason.
+Try to minimise f ( x ) = x subject to x > 2. Is x = 2.1 the answer? No, because 2.01 is allowed
+and smaller. Is 2.01 the answer? No, because 2.001 is allowed and smaller. You can keep going
+forever.
+The values get closer and closer to 2, but 2 itself is banned. So there is no smallest allowed
+value. The problem has no answer at all.
+With x ≥ 2 the endpoint is allowed, so the answer is x = 2, and f = 2. Including the boundary
+is what makes the answer exist.
+
+
+
+
+Figure 2: How to read it: the dashed red line is the banned edge x = 2. The amber dots are
+allowed points, each one beating the last. The hollow circle marks the point that would win,
+but is not allowed.
+
+      ✽ Wait — really?
+   This is not a small technical point. It is the reason the answer lands on the boundary so
+   often. Most constrained answers sit exactly on a fence, so a form that excludes the fence
+   would throw the answer away.
+
+
+      ✓ Key takeaway
+   Standard form is: minimise f , subject to e = 0 and every gi ≤ 0. Flip a ≥ by multiplying
+   by −1. Never use a strict <.
+
+
+
+
+WILP, BITS Pilani                               4
+MFML Companion · AIMLCZC416                             Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+3 You have been doing this since ridge regression
+Ridge and lasso are constrained problems in disguise. The penalty term you already
+write is the Lagrangian of a fence on the coefficients.
+
+Before the theory, here is where you have already met this shape.
+Ridge regression is usually taught as: minimise the mean squared error plus a penalty. Its
+honest original form is a constrained problem:
+                                                        n
+                                    min    MSE = n1 ∑ (yk − ŷk )2
+                                      β
+                                                      k =1
+                                            p
+                              subject to   ∑ β2j ≤ s.                                                   (2)
+                                           j =1
+
+Here β j is the coefficient on feature j, and s is a budget you choose. Lasso regression is the
+same, with ∑ j | β j | ≤ s instead.
+Read (2) in the park story. The score is the training error. The fence is a budget on how big the
+coefficients may grow.
+
+3.1 Why we fence the coefficients at all
+Without gradient descent, linear regression solves for the coefficients in one shot:
+
+                                      β̂ = ( X ⊤ X )−1 X ⊤ y,
+
+where X is the feature matrix and y is the output vector. The inverse is the weak spot. An
+inverse is the adjoint divided by the determinant. When the determinant is near zero, the
+entries of the inverse blow up.
+The determinant goes to zero when two feature columns carry the same information. Say x2 is
+exactly twice x1 :
+                                       
+                     ⊤              2 4
+                   X X = A =              ,     det A = 2 · 8 − 4 · 4 = 0.
+                                    4 8
+
+The rank is 1, not 2, so A−1 does not exist. Real data is rarely this perfect, but with strong
+multicollinearity (features that move together) the determinant gets tiny. Then the coefficients
+explode. This is called parameter inflation. A true relationship like
+
+                                    y = 0.2x1 + 4x2 − 0.6x3
+
+can come back fitted as
+                                  ŷ = 200x1 − 180x2 + 0.79x3 .
+The two big numbers nearly cancel. The fit looks fine on the training data and falls apart on
+new data.
+
+3.2 The trick most textbooks skip
+Ridge came from a plain matrix repair, not from a penalty. Add a small number λ to each
+diagonal entry:
+                                            
+                        2+2    4         4 4
+             A + λI =                =           ,   det = 4 · 10 − 4 · 4 = 24.
+                         4   8+2         4 10
+
+
+WILP, BITS Pilani                                 5
+MFML Companion · AIMLCZC416                                  Constrained Optimization · Lagrangian, KKT & Duality
+
+
+Column two is no longer exactly twice column one. The determinant is now 24, not 0, so the
+inverse behaves. That gives the ridge formula
+
+                                 β̂ridge = ( X ⊤ X + λI )−1 X ⊤ y.
+
+Now the connection. Put a fine of λ on the fence in (2):
+                                                          
+                              L( β, λ) = MSE + λ ∑ β2j − s
+                                                             j
+
+                                        = MSE + λ ∑ β2j − λs.
+                                                         j
+                                           |        {z           }
+                                           the form you know
+
+The last piece, λs, does not contain β. It cannot change which β wins, so we drop it. What is
+left is exactly the penalised form from your regularization notes. Minimising it gives the +λI
+above. Same λ, three different disguises.
+
+      ✽ Wait — really?
+
+   The λ in “MSE + λ ∑ β2j ”, the λ added to the diagonal of X ⊤ X, and the fine rate we are
+   about to define are the same number. Most books show one of the three and never say
+   they are linked.
+
+
+      ✓ Key takeaway
+   Ridge and lasso are constrained problems with a budget on the coefficients. The penalty
+   you already write is that budget, priced as a fine.
+
+
+
+
+WILP, BITS Pilani                               6
+MFML Companion · AIMLCZC416                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+Figure 3: How to read it: grey rings are level curves of the training error over two coefficients,
+best at the grey X. The red circle is the budget β21 + β22 ≤ s. Ridge picks the star, where the
+smallest reachable ring touches the budget circle.
+
+
+
+
+WILP, BITS Pilani                               7
+MFML Companion · AIMLCZC416                           Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+4 The one picture: at the answer, two arrows lie on one line
+Where the walk stops, the gradient of the score and the gradient of the fence point along
+the same line. That single geometric fact becomes the first KKT condition.
+
+Go back to the park. You are walking downhill and you hit the fence. Why do you stop here
+and not slide further along it?
+Because sliding along the fence no longer takes you downhill. At the stopping point, the
+downhill direction of the score points straight into the fence. There is no piece of it left that
+runs along the fence.
+Say that with gradients. The gradient ∇ f points uphill on the score. The gradient ∇ g points
+out of the allowed side of the fence. “No downhill left along the fence” means these two
+arrows lie on one line:
+                              ∇ f ( x ⋆ ) = − µ ∇ g ( x ⋆ ), µ ≥ 0.                       (3)
+
+      ✗ Watch out
+   The two arrows are parallel, not equal. They almost never have the same length. The
+   number µ is the stretch factor between them. Saying “∇ f = ∇ g” is the single most
+   common slip on this topic.
+
+
+      ☞ The intuition
+   Break ∇ f into two pieces: one along the fence, one across it. If the along-the-fence piece
+   is not zero, you can still walk downhill, so you are not finished. You stop only when that
+   piece vanishes. Then all of ∇ f points across the fence, which is what (3) says.
+
+
+      ✓ Key takeaway
+   At the winning point, the score’s gradient and the fence’s gradient are parallel. The
+   stretch factor between them is the fine rate.
+
+
+
+
+WILP, BITS Pilani                               8
+MFML Companion · AIMLCZC416                             Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+Figure 4: How to read it: grey rings are level curves of the score, the red circle is the fence, the
+shaded disc is the allowed region. At the white dot the amber arrow ∇ f and the red arrow
+∇ g lie along one line, pointing opposite ways.
+
+
+
+
+WILP, BITS Pilani                                9
+MFML Companion · AIMLCZC416                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+Figure 5: The same story in three dimensions. The ball rolls down the bowl and is stopped by
+the wall x + y = 4. The true bottom of the bowl is out of bounds, so the ball settles on the wall.
+
+
+
+
+WILP, BITS Pilani                              10
+MFML Companion · AIMLCZC416                              Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+5 The Lagrangian: turn every fence into a fine
+Add each broken rule to the score, priced by a fine rate. The rules disappear from the
+problem and reappear inside one unconstrained function.
+
+We know how to optimise a function with no rules: take derivatives, set them to zero. So the
+plan is to remove the rules. The way to remove a rule is to charge for breaking it.
+Build one new function, the Lagrangian:
+                                                             m
+                              L(x, λ, µ) = f (x) + λ e(x) + ∑ µi gi (x).                                 (4)
+                                                            i =1
+
+
+Reading it in plain words: the total bill equals the score, plus a fine for leaving the path, plus a
+fine for crossing each fence.
+The new symbols are the Lagrange multipliers, also called the fine rates:
+
+ • λ (the Greek letter lambda) is the fine rate for the path.
+
+ • µi (the Greek letter mu) is the fine rate for fence i.
+
+      ⋆ Everyday picture
+   A guard stands at the fence. Cross it and you pay µ rupees per metre past it. Stay behind
+   it and you pay nothing. The guard would love you to stray, so the guard sets the fine as
+   high as it can go. You want your bill low. That tug-of-war is the whole method.
+
+
+5.1 The sign rules, and why they are not arbitrary
+Two rules govern the fine rates. They look small and they decide everything.
+Rule A: λ is free. It may be positive, negative or zero. The path constraint is e(x) = 0. You
+can drift off it in either direction. Both directions are equally illegal, so the fine has no natural
+sign. We check this with real numbers in Section 10.
+Rule B: every µi must satisfy µi ≥ 0. Here is the argument. A fine has to raise your bill.
+Suppose you cross fence i, so gi (x) > 0. The term added is µi gi . If µi were negative, that
+term would be negative. Crossing the fence would lower your bill. The optimiser would then
+run straight out of bounds, on purpose. Forcing µi ≥ 0 blocks that. This rule is called dual
+feasibility.
+
+      ✗ Watch out
+   Do not carry Rule A over to a fence. For an inequality, a negative µi does not mean “a
+   different sign convention”. It means the case you are testing is impossible, and you throw
+   it away. You will use this to kill three of four cases in Section 9.
+
+
+      ✓ Key takeaway
+   The Lagrangian is score + fine for the path + fines for the fences. The path fine has any
+   sign. Every fence fine must be zero or positive.
+
+
+
+
+WILP, BITS Pilani                                11
+MFML Companion · AIMLCZC416                        Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+Figure 6: The whole method on one line. The next three sections build the middle two boxes;
+Section 9 runs the last two on a real problem.
+
+
+
+
+WILP, BITS Pilani                           12
+MFML Companion · AIMLCZC416                                        Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+6 The slack variable: how ≤ becomes =
+Add a squared number to soak up the leftover room. A squared number is never negative,
+so the new equation says exactly what the old inequality said.
+
+The Lagrangian in (4) treats the fence like the path. But they are not the same. The path is an
+equation. The fence is an inequality. Derivatives handle equations well and inequalities badly.
+So we convert the fence into an equation. Take the fence gi (x) ≤ 0 and add a new unknown ti :
+
+                                                    gi (x) + t2i = 0.                                              (5)
+
+The number ti is a slack variable. Read it as the room you have left before you touch fence i.
+Check that (5) really says the same thing. Rearranging, t2i = − gi (x). A square is never negative,
+so − gi (x) ≥ 0, which is gi (x) ≤ 0. That is the original fence, back again. Nothing was lost and
+nothing was added.
+
+      ☞ The intuition
+   Why square it, instead of writing gi + ti = 0 with ti ≥ 0? Because then we would still be
+   carrying an inequality, ti ≥ 0. The square builds “never negative” into the algebra itself.
+   It also keeps the Lagrangian smooth, so we can differentiate it.
+
+
+Now rewrite the Lagrangian with the slack terms folded in:
+                                                                 m
+                                L(x, λ, µ, t) = f (x) + λ e(x) + ∑ µi gi (x) + t2i .
+                                                                                 
+                                                                                                                   (6)
+                                                                   i =1
+
+Every rule in the problem is now an equation. There are no inequalities left, apart from the
+sign rule µi ≥ 0.
+
+6.1 Count the unknowns
+It pays to know how many things you are solving for.
+
+                    Unknown            How many       What it is
+                    x                  n              the variables you actually care about
+                    λ                  1              the fine rate for the path
+                    µ1 , . . . , µ m   m              one fine rate per fence
+                    t1 , . . . , t m   m              one room-left number per fence
+                    Total              n + 2m + 1
+
+Books that skip slack variables report n + m + 1 instead. Both counts are right. They just
+describe different setups. We keep the slacks for two more pages, because they hand us the
+next result for free.
+
+      ✓ Key takeaway
+   A slack variable is a squared number that fills the gap to the fence. It turns gi ≤ 0 into
+   gi + t2i = 0 with no loss.
+
+
+
+
+WILP, BITS Pilani                                          13
+MFML Companion · AIMLCZC416                             Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+Figure 7: How to read it: the axis is the value of g( x ), and only the shaded left half is allowed.
+The green bar is t2 , the room left before the fence. At the fence the bar has length zero.
+
+
+
+
+WILP, BITS Pilani                               14
+MFML Companion · AIMLCZC416                                  Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+7 Complementary slackness, derived in four lines
+Differentiate the Lagrangian with respect to the room-left variable. Out drops the rule
+that a fine and spare room can never both be present.
+
+This is the result most books state and never prove. With the slack variable in hand, the proof
+is four lines.
+Differentiate (6) with respect to ti . The only term containing ti is µi t2i :
+
+                                           ∂L
+                                               = 2µi ti = 0.                                                 (7)
+                                           ∂ti
+
+Multiply both sides by ti and halve:
+
+                                               µi t2i = 0.                                                   (8)
+
+From (5) we know t2i = − gi (x). Substitute:
+
+                                                                µ i gi ( x ⋆ ) = 0
+                                        
+                          µ i − gi ( x ) = 0      =⇒                                                         (9)
+
+
+That boxed line is complementary slackness. The name now makes sense: it is the statement
+about slack, and it was derived from the slack variable.
+
+7.1 What it actually says
+A product of two numbers is zero only when at least one of them is zero. So for each fence i,
+exactly one of these two worlds holds.
+World 1: you have room to spare. Here gi (x⋆ ) < 0. You are strictly inside the fence. The guard
+has no grounds to charge you, so µi = 0. The fence is not doing any work. We say the fence is
+inactive, or slack.
+World 2: you are touching the fence. Here gi (x⋆ ) = 0. You are pressed against the edge. Now
+the fine rate is allowed to be positive, and usually is: µi > 0. The fence is holding you back.
+We say the fence is active, or tight.
+
+      ✗ Watch out
+   Two traps here, and both are easy to fall into.
+   Trap 1. “The fence is active” and “we are on the boundary” are the same world, not two
+   different ones. Active means gi = 0, which means on the boundary. The real split is: fine
+   is zero versus fence is touched.
+   Trap 2. On the boundary the fine rate is not forced to zero. With gi = 0 the product µi gi
+   is zero for any µi . In Section 11 you will meet a problem whose answer sits on the fence
+   with µ = 4. A positive fine on an active fence is the normal case, not an error.
+
+
+      ✽ Wait — really?
+   The fine rate is not a bookkeeping device. It is a price. It measures how much the best
+   score would improve if the fence were relaxed a little. Relax it by a small amount ε and
+   the best score falls by about µε. A fence with µ = 0 is a fence you would pay nothing to
+   remove, because it was never in your way.
+
+
+
+
+WILP, BITS Pilani                                  15
+MFML Companion · AIMLCZC416                           Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+Figure 8: How to read it: the product µi gi = 0 leaves only two possible worlds per fence.
+Either the fine is zero, or the fence is touched. Never a positive fine with room to spare.
+
+
+      ✓ Key takeaway
+   Complementary slackness: µi gi (x⋆ ) = 0. Either the fine is zero, or the fence is touched.
+   Never both loose at once.
+
+
+
+
+WILP, BITS Pilani                              16
+MFML Companion · AIMLCZC416                                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+8 The five KKT conditions
+Differentiate the Lagrangian once with respect to every unknown, add the sign rule on
+the fines, and you have the full test for a constrained optimum.
+
+The conditions are named after Karush, Kuhn and Tucker, so KKT. They are not a new idea.
+They are the old idea — set every derivative to zero — run on (6).
+Work through the unknowns one at a time.
+
+8.1 Condition 1: stationarity (from ∂L/∂x)
+Differentiate with respect to the n real variables. The slack terms t2i do not contain x, so they
+drop out:
+                                                                 m
+                                ∇ f (x⋆ ) + λ ∇e(x⋆ ) + ∑ µi ∇ gi (x⋆ ) = 0.                                          (10)
+                                                                i =1
+
+This is n equations, one per variable. It is the arrows-on-one-line picture from (3), now written
+for many rules at once.
+
+8.2 Condition 2: primal feasibility, path (from ∂L/∂λ)
+Only the term λe(x) contains λ, and it is linear in it. So the derivative is just e(x):
+
+                                                     e(x⋆ ) = 0.                                                      (11)
+
+This is the path constraint, handed back to us. That is a good sign: the machine did not lose
+our rules.
+
+8.3 Condition 3: primal feasibility, fences (from ∂L/∂µi )
+Only µi [ gi + t2i ] contains µi , so
+
+                            gi (x⋆ ) + t2i = 0        =⇒               gi (x⋆ ) = −t2i ≤ 0.
+
+So
+                                         gi (x⋆ ) ≤ 0,          i = 1, . . . , m.                                     (12)
+Again, our own fences returned to us.
+
+8.4 Condition 4: complementary slackness (from ∂L/∂ti )
+This is the result we proved above:
+
+                                        µi gi (x⋆ ) = 0,         i = 1, . . . , m.                                    (13)
+
+8.5 Condition 5: dual feasibility (the sign rule)
+                                           µi ≥ 0,         i = 1, . . . , m.                                          (14)
+No derivative gives you this one. It came from Rule B: a fine must raise the bill, never lower it.
+Note that λ is not in this list. It stays free.
+
+       ✗ Watch out
+     You will see KKT quoted as “four conditions” in some notes and “five” in others. The
+     four-item version folds µi ≥ 0 into the setup instead of listing it. Nothing changes. Count
+     five when you write an exam answer, so no marker can say you missed a check.
+
+
+
+WILP, BITS Pilani                                          17
+MFML Companion · AIMLCZC416                           Constrained Optimization · Lagrangian, KKT & Duality
+
+
+8.6 How many cases will you test?
+Condition (13) is one product per fence. Each product offers two branches: the fine is zero, or
+the fence is touched. The branches multiply:
+                                    number of cases = 2m .
+So m = 1 gives 2 cases, m = 2 gives 4, m = 3 gives 8, and m = 4 gives 16.
+
+      ✗ Watch out
+   It is easy to guess m2 instead of 2m . They agree at m = 2 (both give 4) and at m = 4 (both
+   give 16), which hides the mistake. They disagree at m = 3: the true count is 23 = 8, not 9.
+   Always double the count for each new fence.
+
+
+Three things about that count are worth knowing before you rely on it.
+Equality constraints do not branch. The path is always tight, and λ is never forced to zero. So
+e(x) = 0 adds no cases. Only the fences do.
+The branches overlap. A point can have both µi = 0 and gi = 0 at once. That is the degenerate
+case, and it will show up in two different branches. So the 2m cases cover everything, but they
+are not a clean split. Finding the same point twice is normal.
+It counts cases, not answers. A branch may give no solution, exactly one, or a whole family. In
+Section 9 one branch dies on arithmetic before any fine rate is computed. So 2m is the number
+of branches you must check, not the number of candidates you will collect.
+
+      ✽ Wait — really?
+   2m grows fast. Ten fences give 1024 branches, and a support vector machine has one fence
+   per training point. That is why nobody solves a real SVM by listing cases. You solve the
+   dual instead, which is Section 11. The case list is an exam tool, not an algorithm.
+
+
+8.7 When is the KKT test trustworthy?
+Two honest limits belong with the five conditions. Both are usually left out. First, some
+vocabulary. Necessary means every true answer must pass the test. Sufficient means anything
+that passes the test is a true answer. KKT is not automatically either one.
+KKT is necessary only if the constraints are well behaved at the answer. The technical name
+is a constraint qualification. The common one is: the gradients of the active constraints at x⋆
+must be linearly independent. Two active fences with parallel gradients break that. Then the
+multipliers may not exist at all, and the test can miss the true answer. Every problem in this
+reader passes, and so will your exam problems.
+KKT is sufficient only if the problem is convex. A point that passes all five checks is a KKT
+point. For a convex problem — convex f , convex gi , linear e — a KKT point is the global
+minimum, full stop. For a non-convex problem it may be a maximum or a saddle, so you must
+check it a second way.
+
+      ✗ Watch out
+   Do not write “all five conditions hold, so this is the minimum” unless the problem is
+   convex. Say which part is convex, or verify the point another way. Section 10 shows both
+   routes on a non-convex constraint.
+
+
+
+WILP, BITS Pilani                              18
+MFML Companion · AIMLCZC416                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+      ✓ Key takeaway
+   Five conditions: stationarity, path feasibility, fence feasibility, complementary slackness,
+   and µi ≥ 0. Four fall out of derivatives; the fifth is the sign rule. They pin down the
+   answer when the problem is convex.
+
+
+
+
+WILP, BITS Pilani                              19
+MFML Companion · AIMLCZC416                                 Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+9 Worked example: one path, two fences
+We run all five KKT conditions on a problem with three rules, test all four cases, and
+reject three of them on signs alone.
+
+
+      ✎ Worked example: Minimise f ( x, y) = x2 + 2y2 subject to x + y = 1, x ≥ 0, y ≥ 0
+
+   Step 1.      Standard form. The score is f = x2 + 2y2 . The path is e = x + y − 1 = 0. The
+                fences are g1 = − x ≤ 0 and g2 = −y ≤ 0. So m = 2, and we expect 22 = 4
+                cases.
+   Step 2.      Write the Lagrangian. Using (4):
+
+                            L( x, y, λ, µ1 , µ2 ) = x2 + 2y2 + λ( x + y − 1) − µ1 x − µ2 y.
+
+                The minus signs come from g1 = − x and g2 = −y. There are five unknowns.
+                                     ∂L
+   Step 3.      Stationarity in x.      = 2x + λ − µ1 = 0, so
+                                     ∂x
+                                                    µ1 = 2x + λ.                                       (E1)
+
+                                     ∂L
+   Step 4.      Stationarity in y.      = 4y + λ − µ2 = 0, so
+                                     ∂y
+
+                                                    µ2 = 4y + λ.                                       (E2)
+
+   Step 5.      Path feasibility. x + y − 1 = 0, so
+
+                                                      y = 1 − x.                                       (E3)
+
+   Step 6.      Get everything into x and λ. Put (E3) into (E2):
+
+                                         µ2 = 4(1 − x ) + λ = 4 − 4x + λ.                              (E4)
+
+                Now (E1) and (E4) both use only x and λ. That was the goal.
+   Step 7.      Fence feasibility and signs. We still need x ≥ 0, y ≥ 0, µ1 ≥ 0 and µ2 ≥ 0.
+                These are the tests that will kill the bad cases.
+   Step 8.      Complementary slackness. From (13), µ1 (− x ) = 0 and µ2 (−y) = 0, which
+                simplify to
+                                        µ1 x = 0,   µ2 y = 0.                       (E5)
+                Each gives two branches, so the four cases are: (µ1 =0, µ2 =0), (µ1 =0, y=0),
+                ( x =0, µ2 =0), ( x =0, y=0).
+
+
+      ✎ Worked example: The four cases, tested one by one
+   Step 1.      Case 1: µ1 = 0 and µ2 = 0. Put µ1 = 0 in (E1): 2x + λ = 0, so λ = −2x. Put
+                µ2 = 0 in (E4): 4 − 4x + λ = 0, so λ = 4x − 4. Both describe the same λ, so set
+                them equal:
+                                    −2x = 4x − 4 =⇒ 6x = 4 =⇒ x = 32 .
+                Then y = 1 − 23 = 13 and λ = −2 · 32 = − 34 .
+
+
+
+
+WILP, BITS Pilani                                   20
+MFML Companion · AIMLCZC416                                    Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+   Step 2.      Check Case 1 against every condition. x = 23 ≥ 0 and y = 31 ≥ 0, so both
+                fences hold. µ1 = µ2 = 0 ≥ 0, so dual feasibility holds. And 23 + 13 = 1, so the
+                path holds. Case 1 survives. The score is
+                                            2          2
+                                            2            1
+                                     f =    3      +2    3     = 94 + 29 = 69 = 23 .
+
+   Step 3.      Case 2: µ1 = 0 and y = 0. From (E3), y = 0 forces x = 1. Put x = 1
+                into (E1) with µ1 = 0: 2(1) + λ = 0, so λ = −2. Now read µ2 off (E4):
+                µ2 = 4 − 4(1) + (−2) = −2. But µ2 ≥ 0 is required. Case 2 is rejected.
+   Step 4.      Case 3: x = 0 and µ2 = 0. From (E3), x = 0 forces y = 1. Put x = 0
+                into (E4) with µ2 = 0: 4 − 0 + λ = 0, so λ = −4. Now read µ1 off (E1):
+                µ1 = 2(0) + (−4) = −4. Again negative. Case 3 is rejected.
+   Step 5.      Case 4: x = 0 and y = 0. Then x + y = 0. But the path needs x + y = 1, and
+                0 ̸= 1. Case 4 is rejected before any fine rate is computed.
+   Step 6.      Answer. Only Case 1 survives:
+
+                                      x ⋆ = 32 ,        y⋆ = 13 ,       λ⋆ = − 43 ,
+                                      µ1⋆ = µ2⋆ = 0,           f ⋆ = 23 .
+
+
+Two things are worth reading off that answer.
+First, λ⋆ = − 43 is negative, and that is fine. Rule A allows it. If you had forced λ ≥ 0 you
+would have found nothing.
+Second, this problem is convex: x2 + 2y2 is a bowl, and all three rules are linear. So the one
+surviving KKT point is the global minimum. No second check is needed here.
+Third, both fine rates came out zero. That says the answer sits strictly inside both fences:
+x ⋆ > 0 and y⋆ > 0. Neither fence was doing any work. Once you see that, you could have
+solved the problem with the path alone. But you only know it after the check, so run the cases
+anyway.
+
+      ✗ Watch out
+   A common shortcut is to test only the case where all fines are zero, find an answer, and
+   stop. That works here, but it will fail you when a fence really bites. Always test all 2m
+   cases, or say in writing why a case is impossible.
+
+
+
+
+WILP, BITS Pilani                                   21
+MFML Companion · AIMLCZC416                           Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+Figure 9: How to read it: grey rings are level curves of x2 + 2y2 ; the thick blue segment is the
+allowed set. Shrink the rings until the smallest one still touches the segment. It touches at the
+star, (2/3, 1/3), where the value is 2/3.
+
+
+
+
+WILP, BITS Pilani                              22
+MFML Companion · AIMLCZC416                                  Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+10 Two fast problems with a path and no fence
+With only an equality constraint, KKT collapses to one line: set ∇ f parallel to ∇e, then
+use the constraint to pin down the numbers.
+
+Most exam questions have an equality constraint and nothing else. Then conditions 3, 4 and 5
+are empty, and all you need is
+                               ∇ f (x⋆ ) + λ ∇e(x⋆ ) = 0,           e(x⋆ ) = 0.                             (15)
+Because λ is free, you may write ∇ f = λ∇e instead. The value of λ flips sign and the answer
+does not move. The first example shows that happening.
+
+      ✎ Worked example: Maximise f ( x, y) = xy subject to x + y = 6
+   Step 1.      Set up. The path is e = x + y − 6 = 0.
+   Step 2.      Two gradients. ∇ f = (y, x ) and ∇e = (1, 1).
+   Step 3.      Make them parallel. Using ∇ f = λ∇e:
+
+                                 (y, x ) = λ (1, 1)     =⇒          y = λ and x = λ.
+
+   Step 4.      Use the path. Put x = y = λ into x + y = 6: 2λ = 6, so λ = 3, and x = y = 3.
+   Step 5.      Read the value. f = 3 × 3 = 9. That is the largest product of two numbers
+                adding to 6.
+   Step 6.      Now flip the sign. Using ∇ f = −λ∇e instead gives y = −λ and x = −λ, so
+                −2λ = 6 and λ = −3. Then x = −(−3) = 3 and y = 3 again, with f = 9.
+                Same point, same value, opposite λ. Rule A in action.
+
+
+      ✎ Worked example: Minimise f ( x, y) = x2 + y2 subject to xy = 1
+   Step 1.      Set up. The path is e = xy − 1 = 0.
+   Step 2.      Two gradients. ∇ f = (2x, 2y) and ∇e = (y, x ).
+   Step 3.      Make them parallel. From ∇ f + λ∇e = 0:
+
+                                       2x + λy = 0      and        2y + λx = 0.
+                                                            λy
+   Step 4.      Solve for λ. The first line gives x = − 2 . Put that into the second:
+                                                           
+                                                         λy
+                                               2y + λ − 2 = 0
+                                                                 λ2 y
+                                                     2y − 2 = 0
+                                                          2
+                                                             
+                                                   y 2 − λ2 = 0.
+
+   Step 5.      Rule out y = 0. If y = 0 then xy = 0, and the path needs xy = 1. So y ̸= 0,
+                and the bracket must vanish: λ2 = 4, giving λ = ±2.
+                                           (−2)y
+   Step 6.      Try λ = −2. Then x = − 2 = y. The path gives xy = x2 = 1, so x = ±1.
+                Two points work: (1, 1) and (−1, −1). Both give f = 12 + 12 = 2.
+   Step 7.      Try λ = +2. Then x = −y, and the path becomes xy = −y2 = 1. A square is
+                never negative, so −y2 is never +1. This branch has no solution.
+
+
+
+WILP, BITS Pilani                                  23
+MFML Companion · AIMLCZC416                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+   Step 8.      Check it, because this problem is not convex. The set xy = 1 is a hyperbola,
+                not a line, so KKT alone does not prove we found a minimum. Verify directly.
+                On the curve, y = 1/x, so
+                                                          1
+                                                f = x2 + 2 .
+                                                         x
+                Write u = x2 > 0. Then f = u + 1/u, and
+
+                                      1      u2 − 2u + 1   ( u − 1)2
+                                 u+     −2 =             =           ≥ 0.
+                                      u           u            u
+                So f ≥ 2 everywhere on the curve, with equality only at u = 1, which is
+                x = ±1. The KKT point really is the minimum.
+   Step 9.      Answer. The minimum is f ⋆ = 2, reached at (1, 1) and at (−1, −1).
+
+
+      ✓ Key takeaway
+   With only a path, the whole method is: set ∇ f parallel to ∇e, solve for λ, then use the
+   path to pin down the point.
+
+
+
+
+WILP, BITS Pilani                               24
+MFML Companion · AIMLCZC416                                  Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+11 Primal and dual: the same game, played in a different order
+You and the guard both move. If you move first you are solving the primal. If the guard
+moves first you are solving the dual. The order changes the value, and never in your
+favour.
+
+Look at the Lagrangian once more, for a single fence:
+                              L( x, µ) = f ( x ) + µ g( x ),       µ ≥ 0.
+Two players share this one number. You pick x and want the bill low. The guard picks µ and
+wants the bill high. That is a two-player, zero-sum game, the kind John Nash studied.
+Now ask: who moves first?
+
+11.1 The primal: you move first
+If you pick x first, the guard sees your choice and answers with the worst µ for you. So the
+value of picking x is maxµ≥0 L( x, µ), and your best play is
+                                    p⋆ = min max L( x, µ).                                                  (16)
+                                              x     µ ≥0
+
+This is the primal problem. It is a min-max.
+Here is why (16) is the original problem in disguise. Suppose you pick an x that breaks the
+fence, so g( x ) > 0. The guard then raises µ without limit, and the inner maximum is +∞. Any
+illegal x scores infinity, so you will never choose one. Suppose instead you obey the fence,
+so g( x ) ≤ 0. The best the guard can do is µ = 0, and the value is just f ( x ). So the min-max
+quietly rules out every illegal point and scores every legal one by its true score.
+
+11.2 The dual: the guard moves first
+Swap the order. The guard announces a fine rate µ, then you pick your best x knowing that
+price:
+                               d⋆ = max min L( x, µ).                                 (17)
+                                             µ ≥0        x
+
+This is the dual problem, a max-min. The inner part,
+                                      d(µ) = min L( x, µ),
+                                                    x
+is called the dual function. It has one input per fine rate, and no x at all.
+
+      ⋆ Everyday picture
+   Announcing the price first is a worse deal for the guard. You get to see the number and
+   plan around it. Moving second is an advantage, and the guard loses it. That is the whole
+   reason d⋆ can only fall short of p⋆ .
+
+
+11.3 Weak duality, strong duality, and the gap
+Moving second is never worse, so the guard’s value cannot beat yours:
+                                              d⋆ ≤ p⋆ .                                                     (18)
+This always holds, for any problem at all. It is called weak duality. The shortfall p⋆ − d⋆ ≥ 0
+is the duality gap.
+When the gap is zero, so d⋆ = p⋆ , we have strong duality. This happens for convex problems
+that have a strictly feasible point, which covers ridge, lasso and the support vector machine.
+
+
+
+WILP, BITS Pilani                                   25
+MFML Companion · AIMLCZC416                                Constrained Optimization · Lagrangian, KKT & Duality
+
+
+      ✗ Watch out
+   Say it in the right direction. For a minimisation primal, the dual sits below: d⋆ ≤ p⋆ . A
+   positive gap is not “weak duality” as a special case of equality — weak duality is the
+   inequality itself, and it is always true. Strong duality is the extra fact that the two meet.
+
+
+11.4 Why anyone bothers
+Three reasons, and the third is the one that matters in machine learning.
+One: fewer unknowns. The primal has n variables. The dual has one per constraint. Swap a
+10-variable primal for a 1-variable dual and the work collapses.
+Two: the dual is always concave. Fix any x. Then L( x, µ) = f ( x ) + µ g( x ) is a straight line in
+µ, with height f ( x ) and slope g( x ). The dual d(µ) is the lowest of all those lines, one line per
+x. The lowest of a bundle of straight lines always bends downward, so d is concave. This holds
+even when f is not convex. So maximising d is a well-behaved problem with no local traps.
+Three: the dual can change what the variables mean. In the support vector machine, the
+primal is over the weight vector, whose length is the number of features. The dual is over one
+µi per training point. That swap is what lets kernels enter, and it is why we spent this session
+here.
+
+      ✗ Watch out
+   “The dual is convex” is loose talk. The dual function is concave. The dual problem —
+   maximise a concave function — is a convex optimization problem. Both statements are
+   right, and they are about different objects.
+
+
+      ✎ Worked example: Build a dual from scratch: minimise ( x − 3)2 subject to x ≤ 1
+
+   Step 1.      Standard form. The score is f ( x ) = ( x − 3)2 . The fence is g( x ) = x − 1 ≤ 0.
+   Step 2.      Solve the primal by eye. The bowl bottoms at x = 3, which is banned. So you
+                slide left to the fence: x ⋆ = 1 and
+                                                p⋆ = (1 − 3)2 = 4.
+   Step 3.      Write the Lagrangian.
+                                   L( x, µ) = ( x − 3)2 + µ( x − 1),        µ ≥ 0.
+   Step 4.      Inner minimum over x, with µ held fixed.
+                                  ∂L                                     µ
+                                      = 2( x − 3) + µ = 0 =⇒ x = 3 − .
+                                  ∂x                                     2
+                The second derivative is 2 > 0, so this is a minimum, not a maximum.
+   Step 5.      Put that x back in to get the dual function.
+                                                     2           
+                                                  µ              µ
+                                     d(µ) = 3 − 2 − 3 + µ 3 − 2 − 1
+                                                 2          
+                                          = − µ2 + µ 2 − µ2
+                                             µ2        µ2
+                                           =    + 2µ −
+                                              4        2
+                                                  µ2
+                                           = 2µ − .
+                                                  4
+
+
+WILP, BITS Pilani                                  26
+MFML Companion · AIMLCZC416                                Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+                Notice the shape: an upside-down parabola. Concave, exactly as promised.
+   Step 6.      Maximise the dual over µ ≥ 0.
+
+                                    d       µ2       µ
+                                        2µ −      = 2 − = 0 =⇒ µ⋆ = 4.
+                                   dµ        4         2
+
+                That satisfies µ ≥ 0, so we keep it.
+   Step 7.      Read the dual value.
+
+                                                         42
+                                          d ⋆ = 2(4) −      = 8 − 4 = 4.
+                                                         4
+   Step 8.      Compare. p⋆ = 4 and d⋆ = 4. The gap is zero, so this problem has strong
+                duality.
+   Step 9.      Recover the point. x ⋆ = 3 − 24 = 1, which matches Step 2. And check
+                complementary slackness: µ⋆ g( x ⋆ ) = 4 × (1 − 1) = 0. It holds.
+
+
+
+
+Figure 10: How to read it: two different curves over two different variables. On the left you
+choose x and the shaded strip is allowed. On the right you choose µ and the curve is concave.
+Their best values agree at 4.
+
+      ✽ Wait — really?
+   That last example kills a tempting rule of thumb. The answer sits on the fence, and the
+   fine rate is µ⋆ = 4, not zero. On an active fence the fine rate is normally positive. It is
+   only inside the fence that complementary slackness forces the fine to zero.
+
+
+      ✓ Key takeaway
+   Primal is min then max. Dual is max then min. The dual never overshoots: d⋆ ≤ p⋆ .
+   When they meet, solve whichever one is easier.
+
+
+
+WILP, BITS Pilani                                 27
+MFML Companion · AIMLCZC416                                  Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+12 The full problem: primal by KKT, then the dual, end to end
+One problem, one path, one fence, both constraints biting. We solve it twice and watch
+the two answers land on the same number.
+
+Here is the problem to keep. It has an equality constraint and an inequality constraint, and the
+inequality genuinely bites.
+
+                                    Minimise      f ( x, y) = x2 + y2
+                               subject to     x+y = 4        and      x ≥ 3.
+
+In the park story: you want the point closest to the origin, you must stay on the marked path
+x + y = 4, and a fence blocks everything with x < 3.
+
+      ✎ Worked example: Part A — the primal, using all five KKT conditions
+   Step 1.      Standard form. Path: e = x + y − 4 = 0. Fence: x ≥ 3 becomes g = 3 − x ≤ 0.
+                One fence, so m = 1 and there are 21 = 2 cases.
+   Step 2.      Lagrangian.
+
+                         L( x, y, λ, µ) = x2 + y2 + λ( x + y − 4) + µ(3 − x ),            µ ≥ 0.
+
+   Step 3.      Stationarity. Differentiate in x and in y:
+
+                                       ∂L
+                                          = 2x + λ − µ = 0,                                             (S1)
+                                       ∂x
+                                       ∂L
+                                          = 2y + λ = 0 =⇒ λ = −2y.                                      (S2)
+                                       ∂y
+
+   Step 4.      Case 1: the fine is zero, µ = 0. Then (S1) gives 2x + λ = 0, so λ = −2x.
+                Compare with (S2), λ = −2y, to get x = y. The path x + y = 4 then gives
+                x = y = 2. Check the fence: g = 3 − 2 = 1 > 0, so x ≥ 3 is broken. Case 1 is
+                rejected.
+   Step 5.      Case 2: the fence is touched, g = 0. Then 3 − x = 0, so x = 3. The path
+                gives y = 4 − 3 = 1. From (S2), λ = −2(1) = −2. From (S1), µ = 2x + λ =
+                6 + (−2) = 4.
+   Step 6.      Check every condition for Case 2. Path: 3 + 1 = 4. Holds. Fence: g = 3 − 3 =
+                0 ≤ 0. Holds. Dual feasibility: µ = 4 ≥ 0. Holds. Complementary slackness:
+                µg = 4 × 0 = 0. Holds. Stationarity: both (S1) and (S2) were used to build the
+                numbers.
+   Step 7.      Primal answer.
+
+                         x ⋆ = 3,   y⋆ = 1,   λ⋆ = −2,       µ⋆ = 4,      p⋆ = 32 + 12 = 10.
+
+
+Now solve the same problem the other way. We build the dual function and maximise it.
+
+      ✎ Worked example: Part B — the dual, built and solved in full
+   Step 1.      Start from the same Lagrangian.
+
+                               L( x, y, λ, µ) = x2 + y2 + λ( x + y − 4) + µ(3 − x ).
+
+
+
+WILP, BITS Pilani                                  28
+MFML Companion · AIMLCZC416                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+Figure 11: How to read it: grey rings are level curves of x2 + y2 , so shrinking a ring means a
+better score. The dashed line is x + y = 4; only the blue part clears the fence x = 3. The green
+ring is the smallest one that still reaches the blue part, and it reaches it at the corner (3, 1).
+
+
+
+
+WILP, BITS Pilani                               29
+MFML Companion · AIMLCZC416                                 Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+   Step 2.      Minimise over x and y, holding λ and µ fixed. Setting both partial derivatives
+                to zero:
+                                                               µ−λ
+                                       2x + λ − µ = 0 =⇒ x =       ,
+                                                                2
+                                                                λ
+                                             2y + λ = 0 =⇒ y = − .
+                                                                2
+                The x, y part of L is x2 + y2 plus linear terms. Both squares have coefficient +1,
+                so this really is the minimum.
+   Step 3.      Substitute, piece by piece. Take the three groups separately.
+
+                                      ( µ − λ )2 λ2     µ2    λµ λ2   λ2
+                                x 2 + y2 =      +    =     −     +   + ,
+                                           4       4     4     2   4  4
+                                      µ−λ λ             µ
+                              x+y−4 =        − − 4 = − λ − 4,
+                                         2      2       2
+                                           µ−λ         µ λ
+                                3−x = 3−          = 3− + .
+                                             2         2    2
+   Step 4.      Multiply out the two fine terms.
+
+                                                          λµ
+                                         λ ( x + y − 4) =    − λ2 − 4λ,
+                                                           2
+                                                               µ2   λµ
+                                              µ(3 − x ) = 3µ −    +    .
+                                                               2     2
+   Step 5.      Add everything and collect like terms. Group the µ2 , λ2 and λµ pieces:
+
+                                             µ2 :   1    1
+                                                    4 − 2 = −4,
+                                                               1
+
+                                             λ2 :   1    1
+                                                    4 + 4 − 1 = −2,
+                                                                    1
+
+                                             λµ :   − 12 + 12 + 21 = + 12 .
+
+                The leftover linear terms are −4λ and +3µ. So the dual function is
+
+                                                    µ2   λ2   λµ
+                                     d(λ, µ) = −       −    +    − 4λ + 3µ.                            (19)
+                                                    4    2     2
+                Two variables gone. The dual is a problem in λ and µ only.
+   Step 6.      Check that it is concave. The matrix of second derivatives of (19) is
+                                    !
+                          −1 21
+                   H=      1       1 ,     det H = 12 − 41 = 14 > 0,   trace H = − 32 < 0.
+                           2     −2
+
+                A positive determinant with a negative trace means both eigenvalues are
+                negative. So H is negative definite and d is concave. There is one peak and no
+                local traps.
+   Step 7.      Maximise: set both partial derivatives to zero.
+
+                                    ∂d       µ              µ
+                                       = −λ + − 4 = 0 =⇒ λ = − 4,                                      (D1)
+                                    ∂λ       2              2
+                                    ∂d    µ λ
+                                       = − + + 3 = 0 =⇒ µ = λ + 6.                                     (D2)
+                                    ∂µ    2  2
+
+
+WILP, BITS Pilani                                   30
+MFML Companion · AIMLCZC416                            Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+
+   Step 8.      Solve the two together. Put (D2) into (D1):
+
+                                           λ+6      λ         λ
+                                    λ=         − 4 = + 3 − 4 = − 1.
+                                            2       2         2
+
+                So λ2 = −1, giving λ⋆ = −2. Then (D2) gives µ⋆ = −2 + 6 = 4.
+   Step 9.      Check the sign rule. We need µ ≥ 0, and µ⋆ = 4 ≥ 0. The peak lies inside the
+                allowed region, so we keep it. (Had it come out negative, the best allowed µ
+                would sit at the edge, µ = 0.)
+   Step 10. Read the dual value. Put λ = −2 and µ = 4 into (19):
+
+                                       16 4 (−2)(4)
+                                  d⋆ = −  − +             − 4(−2) + 3(4)
+                                        4    2       2
+                                    = −4 − 2 − 4 + 8 + 12
+                                    = 10.
+
+   Step 11. Compare with the primal. p⋆ = 10 and d⋆ = 10. The duality gap is zero, so
+            strong duality holds.
+   Step 12. Recover the primal point from the dual answer. Use the formulas from Step
+            2:
+                                            µ⋆ − λ⋆   4 − (−2)
+                                       x⋆ =         =          = 3,
+                                               2          2
+                                              λ⋆     −2
+                                       y⋆ = −    =−      = 1.
+                                              2       2
+                The same (3, 1) as Part A. The two routes agree at every number: λ⋆ = −2,
+                µ⋆ = 4, x ⋆ = 3, y⋆ = 1, and the value 10.
+
+
+      ✽ Wait — really?
+   Read the fine rate as a price. Here µ⋆ = 4. Move the fence from x ≥ 3 to x ≥ 2.9 and the
+   best score drops by about 4 × 0.1 = 0.4. Check it: the new answer is (2.9, 1.1), giving
+   8.41 + 1.21 = 9.62, which is 0.38 below 10. The multiplier told you the gain before you
+   solved anything again.
+
+
+      ✗ Watch out
+   Do not forget Step 9. Maximising the dual by derivatives finds the peak of the whole
+   surface. If that peak has µ < 0, it is out of bounds, and the best allowed value sits on the
+   edge µ = 0. Always test the sign before reporting d⋆ .
+
+
+
+
+WILP, BITS Pilani                               31
+                                                           32                                   WILP, BITS Pilani
+         Because the branches overlap. A degenerate point has µi = 0 and gi = 0 at the same time,
+         so it satisfies both branches for that fence. 11. Why can a point turn up in two of the 2m cases?
+         Only if the problem is convex. Otherwise it is just a KKT point, and it could be a maximum
+         or a saddle. Check it a second way.
+                                       10. A point passes all five KKT conditions. Is it the minimum?
+         Strong duality, with a zero duality gap. In general only d⋆ ≤ p⋆ is guaranteed.
+                                                 9. Primal value 12, dual value 12. What is that called?
+         From the slack variable ti . Setting ∂L/∂ti = 2µi ti = 0, then multiplying by ti and using
+         t2i = − gi , gives µi gi = 0.
+                                  8. Where does the name “complementary slackness” come from?
+         No. Active means g = 0, so µg = 0 holds for any µ. The fine rate is usually positive there.
+         It is forced to zero only when g < 0.
+                                         7. A fence is active at the answer. Must its fine rate be zero?
+         Nothing. The path multiplier is free in sign. Only fence multipliers must be non-negative.
+                                                                      6. You find λ = −4. What do you do?
+         Reject that case. Dual feasibility needs µi ≥ 0. A negative fine would reward crossing the
+         fence.                           5. You find µ2 = −3 while testing a case. What do you do?
+         No, parallel. They lie on one line, related by ∇ f = −µ∇ g. The lengths usually differ.
+                                                                    4. At the answer, are ∇ f and ∇ g equal?
+         Eight, from 23 . Not nine. Each fence gives two branches and the branches multiply.
+      3. A problem has three fences. How many cases does complementary slackness create?
+         Multiply by −1: − x − 2y ≤ −5, so g = − x − 2y + 5 ≤ 0.
+                                                                2. Convert “x + 2y ≥ 5” into standard form.
+         The best point may sit exactly on the boundary. A strict rule removes it and leaves values
+         that keep improving with no smallest one, so the problem has no answer.
+                                                                 1. Why does standard form ban a strict <?
+try each one first.
+Nine questions covering every idea in this reader. Answers are printed upside down, so
+                                                                                       13 Test yourself
+Constrained Optimization · Lagrangian, KKT & Duality                               MFML Companion · AIMLCZC416
+MFML Companion · AIMLCZC416                                Constrained Optimization · Lagrangian, KKT & Duality
+
+
+
+14 The pocket card
+Everything in this reader on one page. If you memorise one thing, memorise this.
+
+   Step                              What you write
+   1. Standard form                  min f (x) with e(x) = 0, gi (x) ≤ 0. Flip any ≥ by multiply-
+                                     ing by −1.
+   2. Lagrangian                     L = f + λe + ∑i µi gi , with λ free and µi ≥ 0.
+   3. Stationarity                   ∇ f + λ ∇ e + ∑ i µ i ∇ gi = 0   (n equations).
+   4. Path feasibility               e(x⋆ ) = 0.
+   5. Fence feasibility              gi (x⋆ ) ≤ 0 for every i.
+   6. Complementary slack- µi gi (x⋆ ) = 0 for every i. Split into 2m cases.
+   ness
+   7. Dual feasibility     µi ≥ 0. Any case with a negative µi is thrown out.
+   8. Test the cases                 Keep only cases passing steps 4, 5 and 7. Compare the
+                                     surviving scores.
+   9. Dual (if wanted)               d(λ, µ) = minx L; then maximise d over λ free, µi ≥ 0.
+   10. Duality check                 d⋆ ≤ p⋆ always. Equal means strong duality.
+   11. Say why it wins               Convex problem ⇒ the KKT point is the global minimum.
+                                     Not convex ⇒ verify a second way.
+
+14.1 Friendly name → textbook name
+
+                    In this reader           Textbook term                    Symbol
+                    the score                objective function               f (x)
+                    the path                 equality constraint              e(x) = 0
+                    a fence                  inequality constraint            gi ( x ) ≤ 0
+                    the fine rate            Lagrange multiplier              λ, µi
+                    room left                slack variable                   ti
+                    touching the fence       active (tight) constraint        gi = 0
+                    room to spare            inactive (slack) constraint      gi < 0
+                    the total bill           the Lagrangian                   L
+                    the guard’s best price   the dual optimum                 d⋆
+
+
+
+
+WILP, BITS Pilani                                  33
+MFML Companion · AIMLCZC416                             Constrained Optimization · Lagrangian, KKT & Duality
+
+
+14.2 Symbol cheat sheet
+
+                Symbol          Meaning
+                x               the list of n variables you are solving for
+                f (x)           the objective; the number to make small
+                e(x)            the equality constraint function; some books write h
+                gi ( x )        inequality constraint i, written so that gi ≤ 0
+                m               how many inequality constraints there are
+                λ               multiplier on the equality; any sign
+                µi              multiplier on inequality i; must satisfy µi ≥ 0
+                ti              slack variable for fence i, with t2i = − gi
+                L               the Lagrangian
+                ∇f              gradient of f ; the vector of partial derivatives
+                p⋆              the primal optimal value
+                d⋆              the dual optimal value
+                p⋆ − d⋆         the duality gap; always ≥ 0
+                ⋆ superscript   marks an optimal value, as in x ⋆
+
+
+      ✓ Key takeaway
+   Fences move the answer onto the boundary. The Lagrangian prices each fence. KKT is
+   just “all derivatives zero” plus a sign rule. Complementary slackness comes from the
+   slack variable, and it says a fine and spare room never appear together. The dual reorders
+   the game and never overshoots.
+
+
+
+
+WILP, BITS Pilani                                34
+

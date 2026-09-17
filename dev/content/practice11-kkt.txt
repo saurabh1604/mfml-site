@@ -1,0 +1,1306 @@
+MFML · Practice Set                                                   Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+
+    WILP, BITS Pilani
+
+     MATHEMATICAL FOUNDATIONS FOR MACHINE LEARNING · PRACTICE SET
+
+
+
+     Constrained Optimization
+     Lagrange multipliers, KKT conditions, and duality — 15 fully worked problems
+
+
+     Frame → solve → dualize → verify · Every algebraic step shown · Attempt each problem before reading its solution
+
+
+
+
+Prepared for the Work Integrated Learning Programmes (WILP), BITS Pilani.
+
+How to use this set. Each problem sits in a navy box. Try it on paper first. Then read the
+solution, which shows every algebraic step — nothing is skipped. The green box states the
+final answer. Blue boxes explain the idea behind a step, red boxes flag the classic mistakes,
+and purple boxes hold the one lesson each problem teaches. The problems build on each other:
+Part A uses equality constraints only, Part B brings in inequalities and KKT, Part C converts
+primals to duals and solves them, and Part D uses complementary slackness to test candidate
+answers — ending with a tiny support vector machine that uses everything at once.
+
+
+1 Read this first: the toolkit
+Four recipes solve every problem in this set. Everything else is careful bookkeeping.
+
+Standard form. Before doing anything, rewrite the problem as a minimization in standard
+form:
+
+          min f ( x )    subject to      gi ( x ) ≤ 0 (i = 1, . . . , m),      h j ( x ) = 0 ( j = 1, . . . , p).
+            x
+
+The conversion rules are mechanical: a maximization max f becomes min (− f ); a constraint
+a ≥ b becomes b − a ≤ 0; an equality h = c becomes h − c = 0.
+
+      ☞ The intuition
+   Everything in this topic answers one question: at the best feasible point, how does the objective’s
+   gradient relate to the constraints’ gradients? Lagrange multipliers are the bookkeeping device
+   that records that relationship — one multiplier per constraint, measuring how hard that
+   constraint “pushes”.
+
+
+Recipe 1 — Lagrange (equality constraints only). To optimize f ( x ) subject to h( x ) = 0: at a
+constrained optimum the two gradients are parallel,
+
+                                       ∇ f ( x ) = λ ∇ h ( x ),       h( x ) = 0.
+
+Solve these equations together. With several equality constraints h1 = · · · = h p = 0, the
+condition becomes ∇ f = λ1 ∇h1 + · · · + λ p ∇h p . The sign of λ is unrestricted here — an
+equality constraint can push either way.
+
+
+WILP, BITS Pilani                                           1
+MFML · Practice Set                                             Constrained Optimization · Lagrange, KKT & Duality
+
+
+Recipe 2 — KKT (the full set of conditions). For the standard form above, build the Lagrangian
+                                                      m                 p
+                           L( x, µ, λ) = f ( x ) + ∑ µi gi ( x ) + ∑ λ j h j ( x ).
+                                                     i =1              j =1
+
+A point x ⋆ with multipliers (µ⋆ , λ⋆ ) satisfies the KKT conditions when all four hold:
+
+  K1. Stationarity: ∇ x L( x ⋆ , µ⋆ , λ⋆ ) = 0.
+
+  K2. Primal feasibility: gi ( x ⋆ ) ≤ 0 for all i, and h j ( x ⋆ ) = 0 for all j.
+
+  K3. Dual feasibility: µi⋆ ≥ 0 for all i.
+
+  K4. Complementary slackness: µi⋆ gi ( x ⋆ ) = 0 for every i.
+
+For a convex problem (convex f and gi , affine h j ), any point satisfying K1–K4 is a global minimizer
+— KKT is sufficient. Under a constraint qualification such as Slater’s condition, KKT is also
+necessary.
+Recipe 3 — the complementary-slackness case method. Condition K4 says every inequality
+constraint is in one of two states: inactive (µi = 0, the constraint exerts no force) or active
+(gi ( x ⋆ ) = 0, the point sits on the boundary). With m inequalities there are at most 2m active/in-
+active patterns. Pick a pattern, solve K1 together with the assumed active equations, then check
+what the pattern did not enforce: feasibility of the constraints assumed inactive, and µi ≥ 0 for
+the constraints assumed active. Exactly the patterns that pass every check survive.
+Recipe 4 — Lagrangian duality. From the same Lagrangian, define the dual function by
+minimizing over x with the multipliers held fixed:
+
+                                         q(µ, λ) = inf L( x, µ, λ).
+                                                       x
+
+This inner minimization is unconstrained — that is the whole point. The dual problem is
+maxµ≥0, λ q(µ, λ), and it is always concave. Writing p⋆ for the primal optimum and d⋆ for the
+dual optimum: weak duality d⋆ ≤ p⋆ holds for every problem; strong duality d⋆ = p⋆ holds
+for convex problems satisfying Slater’s condition (some strictly feasible point exists, gi ( x̃ ) < 0
+for all i). Under strong duality, the primal solution is recovered from the inner minimization
+evaluated at the optimal multipliers.
+
+      ✗ Watch out
+   KKT as written above is for minimization with ≤ constraints. Applying it to a maximiza-
+   tion, or to a ≥ constraint, without converting first is the single most common source of
+   sign errors in this topic. Convert to standard form before writing the Lagrangian — always.
+   Problems 7, 9 and 10 drill exactly this.
+
+
+
+
+WILP, BITS Pilani                                      2
+MFML · Practice Set                                           Constrained Optimization · Lagrange, KKT & Duality
+
+
+The 15 problems at a glance
+            #       Topic                                                                     Page
+            1       Framing a word problem, then solving it (fence and area)                    4
+            2       Geometry of ∇ f = λ∇h (closest point on a line)                             5
+            3       The multiplier as a shadow price (production under a budget)                5
+            4       Two equality constraints at once                                            8
+            5       Quadratic forms on the unit circle → eigenvalues (PCA)                     9
+            6       First contact with KKT: active vs. inactive, in one dimension              11
+            7       KKT in 2-D with a ≥ constraint (projection onto a half-plane)              12
+            8       Two inequalities: the full four-case enumeration                           13
+            9       A maximization handled by KKT (convert, then solve)                        14
+            10      KKT on a disk: when stationarity forces the constraint active              15
+            11      Primal → dual, end to end, in one variable                                 17
+            12      Primal → dual in two variables, plus Slater and recovery                   18
+            13      A dual function that is −∞ for some multipliers                            19
+            14      Judging candidate answers with KKT and complementary slackness             22
+            15      Capstone: a tiny hard-margin SVM, primal to dual to support vectors        23
+
+
+
+
+WILP, BITS Pilani                                     3
+MFML · Practice Set                                             Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+2 Part A — Framing problems and the Lagrange condition
+Turn a story into “optimize f subject to h = 0”, then solve ∇ f = λ∇ h together with the
+constraint.
+
+      ☞ Problem 1 · Framing a word problem, then solving it
+   A farmer has 20 metres of fencing and wants to enclose a rectangular plot of the largest
+   possible area.
+   (a) Frame this as a constrained optimization problem: name the decision variables, the
+       objective, and the constraint.
+   (b) Solve it with a Lagrange multiplier.
+   Skill trained: translating words into max f subject to h = 0, then applying Recipe 1.
+
+
+Solution
+
+
+
+Step 1.     Name the variables. Let x > 0 be the width and y > 0 the height of the plot, both in
+            metres.
+
+Step 2.     Write the objective. The area is A( x, y) = xy, and we want it as large as possible:
+            maxx,y xy.
+
+Step 3.     Write the constraint. The perimeter uses all the fencing: 2x + 2y = 20. Dividing by 2
+            gives the cleaner equivalent h( x, y) = x + y − 10 = 0. The framed problem is
+
+                                       max xy         subject to       x + y = 10.
+                                        x,y
+
+
+Step 4.     Write the Lagrange condition. ∇ f = λ∇h with f = xy and h = x + y − 10. The
+            gradients are ∇ f = (y, x ) and ∇h = (1, 1), so
+
+                                                     y = λ · 1 = λ,
+                                                     x = λ · 1 = λ.
+
+Step 5.     Solve the system. Both equations say the same thing: x = y = λ. Substitute into the
+            constraint:
+                                x + y = 10 =⇒ λ + λ = 10 =⇒ λ = 5.
+            So x = 5 and y = 5: the optimal plot is a square.
+
+Step 6.     Confirm it is a maximum. On the constraint line, y = 10 − x and the area becomes
+            A( x ) = x (10 − x ) = 10x − x2 , a downward parabola. Its only critical point is the top,
+            and at the endpoints (x → 0 or x → 10) the area collapses to 0. So x = y = 5 is the
+            maximum, with A = 5 × 5 = 25.
+
+      ✓ Final answer
+   Decision variables x, y; objective max xy; constraint x + y = 10. Optimum: x ⋆ = y⋆ = 5 m
+   (a square), maximum area A⋆ = 25 m2 , multiplier λ⋆ = 5.
+
+
+
+
+WILP, BITS Pilani                                      4
+MFML · Practice Set                                               Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+      ✓ Key takeaway
+   Framing is three sentences: what can I choose (variables), what do I want (objective), what
+   limits me (constraints). Only after those three lines does any calculus start.
+
+
+      ☞ Problem 2 · Geometry of the Lagrange condition
+   Find the point on the line x + y = 4 that is closest to the origin, by minimizing f ( x, y) =
+   x2 + y2 subject to x + y = 4. Then explain, in one sentence, what ∇ f = λ∇h means
+   geometrically at your answer.
+   Skill trained: solving Recipe 1 cleanly, and reading the tangency picture behind it.
+
+
+
+Solution
+
+
+
+Step 1.     Set up the condition. Here f = x2 + y2 and h = x + y − 4, so ∇ f = (2x, 2y) and
+            ∇h = (1, 1). The Lagrange condition ∇ f = λ∇h gives
+
+                                                            2x = λ,
+                                                            2y = λ.
+
+Step 2.     Eliminate λ. Subtracting the two equations: 2x − 2y = 0, so x = y.
+
+Step 3.     Use the constraint. x + y = 4 with x = y gives 2x = 4, so x = 2 and y = 2. Then
+            λ = 2x = 4.
+
+Step 4.     Compute the minimum value. f (2, 2) =√22 + 22 = 8. As
+                                                                √ a check,
+                                                                       √ the distance
+                                                                                 √ 2from
+                                                       2   2
+            the origin to the line x + y = 4 is |−4|/ 1 + 1 = 4/ 2 = 2 2, and (2 2) = 8.
+            The two computations agree.
+
+Step 5.     Read the geometry. At (2, 2) the level curve of f (the circle x2 + y2 = 8) just touches
+            the line: the circle is tangent to the constraint. Tangency is exactly the statement that
+            the two gradients point along the same direction — ∇ f = (4, 4) = 4 · (1, 1) = λ∇h.
+
+      ✓ Final answer
+                                                                                            √
+   Closest point ( x ⋆ , y⋆ ) = (2, 2), with λ⋆ = 4 and minimum value f ⋆ = 8 (distance 2 2).
+   Geometrically: at the optimum, the level curve of f is tangent to the constraint, so ∇ f and
+   ∇h are parallel.
+
+
+      ☞ The intuition
+   If ∇ f had any component along the constraint line, you could slide along the line in that
+   direction and improve f — so at the optimum, no such component can remain. That forces
+   ∇ f to be perpendicular to the line, i.e. parallel to ∇h. This one picture is the entire logic
+   of Lagrange multipliers.
+
+
+
+
+WILP, BITS Pilani                                       5
+MFML · Practice Set                                         Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+
+Figure 1: How to read it: the smallest circle that still touches the line is the level set f = 8; at the
+touching point (2, 2) the gradient of f and the gradient of the constraint are parallel.
+
+
+
+
+WILP, BITS Pilani                                  6
+MFML · Practice Set                                               Constrained Optimization · Lagrange, KKT & Duality
+
+
+      ☞ Problem 3 · The multiplier is a shadow price
+   A workshop produces Q( x, y) = xy units using x machine-hours (cost Rs. 2 per hour) and
+   y labour-hours (cost Rs. 1 per hour). The budget is Rs. 8.
+   (a) Frame and solve: how should the budget be split to maximize output?
+   (b) Interpret the multiplier λ. Then re-solve with a budget of Rs. 9 and check the interpre-
+       tation numerically.
+   Skill trained: framing with costs, and reading λ as “extra objective per extra unit of budget”.
+
+
+
+Solution
+
+
+
+Step 1.     Frame. Maximize Q = xy subject to the budget constraint 2x + y = 8, with x, y > 0.
+
+Step 2.     Lagrange condition. ∇ Q = (y, x ) and, for h = 2x + y − 8, ∇h = (2, 1). So ∇ Q =
+            λ∇h reads
+
+                                                            y = 2λ,
+                                                            x = λ.
+
+Step 3.     Eliminate λ. From the second equation λ = x; substitute into the first: y = 2x. In
+            words: at the optimum, spend the same amount on each input (2x rupees on machines
+            equals y · 1 = 2x rupees on labour).
+
+Step 4.     Use the budget. 2x + y = 8 with y = 2x:
+
+                                   2x + 2x = 8 =⇒ 4x = 8 =⇒ x = 2,                  y = 4.
+
+            Output Q = 2 × 4 = 8, and λ = x = 2.
+
+Step 5.     Interpret λ. The multiplier is the shadow price of the budget: one extra rupee of
+            budget buys approximately λ = 2 extra units of output.
+
+Step 6.     Check with budget 9. Redo Step 4 with 2x + y = 9 and y = 2x: 4x = 9, so x = 9/4,
+            y = 9/2, and
+                                               9 9    81
+                                           Q= · =        = 10.125.
+                                               4 2     8
+            The gain is 10.125 − 8 = 2.125, close to λ = 2 as predicted. (In general x = b/4,
+            y = b/2, so Q(b) = b2 /8 and dQ/db = b/4 = 2 at b = 8 — exactly λ. The prediction
+            is exact in the derivative and approximate over a whole-rupee jump.)
+
+      ✓ Final answer
+   x ⋆ = 2 machine-hours, y⋆ = 4 labour-hours, Q⋆ = 8 units, λ⋆ = 2. The multiplier is the
+   marginal value of budget: dQ⋆ /db = λ.
+
+
+
+
+WILP, BITS Pilani                                       7
+MFML · Practice Set                                             Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+      ✽ Wait — really?
+   The multiplier you computed as a mere “helper variable” turns out to be a forecast: it
+   predicts how much the optimal objective improves per unit of constraint relaxation —
+   before you re-solve anything. This is why economists call it a price, and why in ML the
+   multipliers on data constraints tell you which data points matter (Problem 15 makes this
+   literal).
+
+
+      ☞ Problem 4 · Two equality constraints at once
+   Minimize f ( x, y, z) = x2 + y2 + z2 subject to
+
+                            h1 : x + y + z = 3        and       h2 : x − y = 0.
+
+   Skill trained: running Recipe 1 with two multipliers: ∇ f = λ1 ∇h1 + λ2 ∇h2 .
+
+
+
+Solution
+
+
+
+Step 1.     Write the condition with two multipliers. With ∇ f = (2x, 2y, 2z), ∇h1 = (1, 1, 1)
+            and ∇h2 = (1, −1, 0), the condition ∇ f = λ1 ∇h1 + λ2 ∇h2 reads
+
+                                                    2x = λ1 + λ2 ,
+                                                    2y = λ1 − λ2 ,
+                                                    2z = λ1 .
+
+Step 2.     Use the second constraint. h2 says x = y. Subtract the second equation from the first:
+
+                                     2x − 2y = (λ1 + λ2 ) − (λ1 − λ2 ) = 2λ2 .
+
+            The left side is 0 (because x = y), so λ2 = 0.
+
+Step 3.     Simplify. With λ2 = 0 the three equations collapse to 2x = 2y = 2z = λ1 , i.e.
+            x = y = z = λ1 /2.
+
+Step 4.     Use the first constraint. x + y + z = 3 with all three equal gives 3x = 3, so x = y =
+            z = 1 and λ1 = 2x = 2.
+
+Step 5.     Value. f (1, 1, 1) = 1 + 1 + 1 = 3. Since f is a sum of squares (strictly convex) and
+            both constraints are affine, this critical point is the unique global minimum.
+
+      ✓ Final answer
+   ( x ⋆ , y⋆ , z⋆ ) = (1, 1, 1), f ⋆ = 3, with multipliers λ1⋆ = 2 and λ2⋆ = 0.
+
+
+      ☞ The intuition
+   λ2 = 0 is not an accident. Minimizing distance-to-origin on the plane x + y + z = 3 alone
+   already lands on the symmetric point (1, 1, 1), which happens to satisfy x = y for free. A
+   constraint that the solution satisfies anyway exerts no force — its multiplier is zero. This
+
+
+
+WILP, BITS Pilani                                     8
+MFML · Practice Set                                             Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+
+   is complementary slackness making an early, informal appearance.
+
+
+      ☞ Problem 5 · Quadratic forms on the unit circle: hello, eigenvalues
+                       
+                    3 1
+   Let A =                . Find the maximum and minimum of the quadratic form
+                    1 3
+                                                       
+                                                       x
+                                                          = 3x2 + 2xy + 3y2
+                                                   
+                              f ( x, y) =       x y A
+                                                       y
+
+   subject to x2 + y2 = 1. What familiar linear-algebra objects do the solutions turn out to be?
+   Skill trained: seeing the Lagrange condition become the eigenvalue equation Av = λv.
+
+
+
+Solution
+
+
+
+Step 1.     Gradients. f = 3x2 + 2xy + 3y2 gives ∇ f = (6x + 2y, 2x + 6y). The constraint
+            h = x2 + y2 − 1 gives ∇h = (2x, 2y).
+
+Step 2.     Lagrange condition. ∇ f = λ∇h:
+
+                                                       6x + 2y = 2λx,
+                                                       2x + 6y = 2λy.
+
+            Divide both equations by 2:
+
+                                                        3x + y = λx,
+                                                        x + 3y = λy.
+
+Step 3.     Recognize the structure. In matrix form this is exactly
+                                        
+                                x         x
+                             A      =λ            — the eigenvalue equation.
+                                y         y
+
+            The candidates are the unit eigenvectors of A, and at any such candidate the objective
+            equals f = v⊤ Av = v⊤ (λv) = λ ∥v∥2 = λ. So the constrained max/min of f are the
+            largest/smallest eigenvalues.
+
+Step 4.     Find the eigenvalues.
+
+                                det( A − λI ) = (3 − λ)2 − 1
+                                                  = λ2 − 6λ + 9 − 1
+                                                  = λ2 − 6λ + 8 = (λ − 2)(λ − 4) = 0,
+
+            so λ = 4 or λ = 2.
+
+Step 5.     Find the unit eigenvectors. For λ = 4: ( A − 4I )v = 0 gives − x + y = 0, so y = x and
+            the unit vector is v1 = √1 (1, 1). For λ = 2: x + y = 0, so v2 = √1 (1, −1).
+                                            2                                           2
+
+
+
+WILP, BITS Pilani                                       9
+MFML · Practice Set                                            Constrained Optimization · Lagrange, KKT & Duality
+
+
+Step 6.     Conclude. Maximum f = 4 at ± √1 (1, 1); minimum f = 2 at ± √1 (1, −1). Sanity
+                                                     2                                      2
+            check at √1 (1, 1): 3 · 12 + 2 · 12 + 3 · 21 = 3+22+3 = 4. ✓
+                        2
+
+
+      ✓ Final answer
+                           √                              √
+   Maximum 4 at ±(1, 1)/ 2; minimum 2 at ±(1, −1)/ 2. The optimizers are the unit
+   eigenvectors of A and the optimal values are its eigenvalues.
+
+
+      ✓ Key takeaway
+   “Maximize a quadratic form on the unit sphere” is the eigenvalue problem — this is
+   precisely how PCA finds its first principal component: maximize the variance v⊤ Σ v
+   subject to ∥v∥ = 1, and the answer is the top eigenvector of the covariance matrix Σ.
+
+
+
+
+WILP, BITS Pilani                                    10
+MFML · Practice Set                                               Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+3 Part B — Inequality constraints and the KKT conditions
+Convert to standard form, write the Lagrangian, then let complementary slackness split
+the search into clean cases.
+
+      ☞ Problem 6 · First contact with KKT: active vs. inactive
+   Solve the two one-dimensional problems
+   (a) min ( x − 3)2     subject to     x ≤ 1;
+          x
+   (b) min ( x − 3)2     subject to     x ≤ 5.
+          x
+   For each, write all four KKT conditions explicitly and identify whether the constraint is
+   active or inactive at the optimum.
+   Skill trained: writing K1–K4 in full, and feeling the difference between a constraint that binds and one that
+   does not.
+
+
+Solution
+
+
+
+Part (a).
+
+Step 1.       Standard form. f ( x ) = ( x − 3)2 and g( x ) = x − 1 ≤ 0. Lagrangian: L( x, µ) =
+              ( x − 3)2 + µ ( x − 1).
+
+Step 2.       Write the four KKT conditions.
+
+                                             K1 (stationarity):     2( x − 3) + µ = 0
+                                      K2 (primal feasibility):      x−1 ≤ 0
+                                        K3 (dual feasibility):      µ≥0
+                                      K4 (compl. slackness):        µ ( x − 1) = 0
+
+Step 3.       Case µ = 0 (constraint inactive). K1 becomes 2( x − 3) = 0, so x = 3. Check K2:
+              3 − 1 = 2 ̸≤ 0. Infeasible — discard this case.
+
+Step 4.       Case x = 1 (constraint active). K1 gives
+
+                                  2(1 − 3) + µ = 0 =⇒ −4 + µ = 0 =⇒ µ = 4.
+
+              Check K3: µ = 4 ≥ 0. ✓ K2 holds (1 − 1 = 0), and K4 holds because g = 0. All four
+              conditions pass.
+
+Step 5.       Conclude (a). x ⋆ = 1, µ⋆ = 4, f ⋆ = (1 − 3)2 = 4. The constraint is active: the
+              unconstrained minimizer x = 3 lies outside the feasible set, so the solution is pushed
+              onto the boundary and the multiplier records the force of that push.
+
+Part (b).
+
+Step 1.       Standard form. Now g( x ) = x − 5 ≤ 0 and L( x, µ) = ( x − 3)2 + µ ( x − 5). The four
+              conditions are the same four lines with x − 5 in place of x − 1.
+
+
+
+
+WILP, BITS Pilani                                       11
+MFML · Practice Set                                             Constrained Optimization · Lagrange, KKT & Duality
+
+
+Step 2.     Case µ = 0. K1: 2( x − 3) = 0, so x = 3. Check K2: 3 − 5 = −2 ≤ 0. ✓ Feasible! K3
+            holds (µ = 0 ≥ 0) and K4 holds (µ = 0). All four pass — no need to try the other case,
+            since the problem is convex and any KKT point is the global minimum.
+
+Step 3.     Conclude (b). x ⋆ = 3, µ⋆ = 0, f ⋆ = 0. The constraint is inactive: the unconstrained
+            minimizer already satisfies it, so it exerts no force.
+
+      ✓ Final answer
+   (a) x ⋆ = 1, µ⋆ = 4, f ⋆ = 4 — constraint active. (b) x ⋆ = 3, µ⋆ = 0, f ⋆ = 0 — constraint
+   inactive.
+
+
+      ☞ The intuition
+   Think of µ as the force the wall exerts on a ball rolling downhill inside the feasible region.
+   In (a) the ball wants to reach x = 3 but the wall at x = 1 stops it, pressing back with force
+   µ = 4. In (b) the ball settles at x = 3 without ever touching the wall at x = 5, so the wall
+   pushes with force 0. Complementary slackness is just: a wall you are not touching cannot
+   push you.
+
+
+      ☞ Problem 7 · KKT in 2-D with a ≥ constraint
+   Minimize f ( x, y) = x2 + y2 subject to x + y ≥ 2.
+   Skill trained: converting a ≥ constraint to standard form before touching the Lagrangian, then running the
+   two-case analysis.
+
+
+Solution
+
+
+
+Step 1.     Standard form. Rewrite x + y ≥ 2 as g( x, y) = 2 − x − y ≤ 0. Lagrangian:
+                                        L( x, y, µ) = x2 + y2 + µ (2 − x − y).
+
+Step 2.     Stationarity (K1).
+                                            ∂L                    µ
+                                               = 2x − µ = 0 =⇒ x = ,
+                                            ∂x                    2
+                                            ∂L                    µ
+                                               = 2y − µ = 0 =⇒ y = .
+                                            ∂y                    2
+            So x = y at any KKT point.
+
+Step 3.     Case µ = 0 (inactive). Then x = y = 0. Check K2: g(0, 0) = 2 − 0 − 0 = 2 ̸≤ 0.
+            Infeasible — discard. (The origin, the unconstrained minimizer, lies on the wrong
+            side of the line.)
+
+Step 4.     Case active: x + y = 2. With x = y this gives 2x = 2, so x = y = 1. Recover the
+            multiplier from Step 2: µ = 2x = 2 ≥ 0. ✓ All four conditions hold.
+
+Step 5.     Value and check. f (1, 1) = 1 + 1 = 2. Geometrically this is the projection of the
+            origin onto the half-plane x + y ≥ 2: the closest boundary point is the foot of the
+            perpendicular, which by symmetry is (1, 1).
+
+WILP, BITS Pilani                                     12
+MFML · Practice Set                                                Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+      ✓ Final answer
+   ( x ⋆ , y⋆ ) = (1, 1), µ⋆ = 2, f ⋆ = 2.
+
+
+      ✗ Watch out
+   If you skip the conversion and write L = x2 + y2 + µ ( x + y − 2) with µ ≥ 0 for the
+   constraint x + y ≥ 2, stationarity gives x = y = −µ/2, which forces x + y = −µ ≤ 0 < 2:
+   every candidate is infeasible and the method “mysteriously fails”. The method is fine —
+   the sign was wrong. Standard form first, always.
+
+
+      ☞ Problem 8 · Two inequalities: the full four-case enumeration
+   Minimize f ( x, y) = ( x − 2)2 + y2 subject to
+
+                                        x+y ≤ 1           and       y ≥ 0.
+
+   Enumerate all four active/inactive patterns of the two constraints and solve the problem
+   completely.
+   Skill trained: Recipe 3 in full: propose a pattern, solve, check what the pattern did not enforce.
+
+
+
+Solution
+
+
+
+Step 1.     Standard form. g1 ( x, y) = x + y − 1 ≤ 0 and g2 ( x, y) = −y ≤ 0. Lagrangian:
+
+                                    L = ( x − 2)2 + y2 + µ1 ( x + y − 1) + µ2 (−y).
+
+Step 2.     Stationarity (K1).
+
+                                    ∂L
+                                       = 2( x − 2) + µ1 = 0 =⇒ µ1 = 2 (2 − x ),
+                                    ∂x
+                                    ∂L
+                                       = 2y + µ1 − µ2 = 0.
+                                    ∂y
+
+Step 3.     Case 1: µ1 = 0, µ2 = 0 (both inactive). From K1: 2( x − 2) = 0 gives x = 2, and
+            2y = 0 gives y = 0. Check g1 : 2 + 0 − 1 = 1 ̸≤ 0. Infeasible — discard.
+
+Step 4.     Case 2: g1 active, µ2 = 0. Constraint: x + y = 1. From K1, µ1 = 2(2 − x ) = 4 − 2x
+            and 2y + µ1 = 0, so
+                                             µ1      4 − 2x
+                                       y=−      =−          = x − 2.
+                                              2         2
+            Substitute into x + y = 1:
+
+                                x + ( x − 2) = 1 =⇒ 2x = 3 =⇒ x = 32 ,                 y = − 12 .
+
+            Check g2 : −y = 12 ̸≤ 0. Infeasible (y went negative) — discard.
+
+Step 5.     Case 3: µ1 = 0, g2 active. Constraint: y = 0. From K1 with µ1 = 0: 2( x − 2) = 0 gives
+            x = 2. Check g1 : 2 + 0 − 1 = 1 ̸≤ 0. Infeasible — discard.
+
+
+WILP, BITS Pilani                                        13
+MFML · Practice Set                                         Constrained Optimization · Lagrange, KKT & Duality
+
+
+Step 6.     Case 4: both active. x + y = 1 and y = 0 give x = 1, y = 0. Recover the multipliers:
+
+                                       µ1 = 2 (2 − 1) = 2 ≥ 0, ✓
+                                       µ2 = 2y + µ1 = 0 + 2 = 2 ≥ 0. ✓
+
+            K2 holds (g1 = 0, g2 = 0), K4 holds (both constraints are tight). All four conditions
+            pass.
+
+Step 7.     Conclude. The problem is convex (a convex quadratic over an intersection of half-
+            planes), so the surviving KKT point is the global minimum: ( x ⋆ , y⋆ ) = (1, 0) with
+            f ⋆ = (1 − 2)2 + 02 = 1.
+
+
+
+
+Figure 2: How to read it: the shaded wedge is the feasible set; the circles are level sets of
+f centred at the unconstrained minimizer (2, 0), which lies outside. The smallest circle that
+reaches the wedge touches it at the corner (1, 0) — where both constraints are active, matching
+Case 4.
+
+      ✓ Final answer
+   Only the both-active pattern survives: ( x ⋆ , y⋆ ) = (1, 0), µ1⋆ = µ2⋆ = 2, f ⋆ = 1.
+
+
+      ✓ Key takeaway
+   The case method is not guesswork — it is exhaustive. Each of the 2m patterns either solves
+   and verifies, or contradicts itself (infeasible point, or a negative multiplier). Discarding a
+   case is progress, not failure.
+
+
+
+
+WILP, BITS Pilani                                  14
+MFML · Practice Set                                              Constrained Optimization · Lagrange, KKT & Duality
+
+
+      ☞ Problem 9 · A maximization handled by KKT
+   Maximize f ( x ) = 4x − x2 subject to x ≤ 1. Solve by first converting to a standard-form
+   minimization, and report the multiplier.
+   Skill trained: the max-to-min conversion, done without sign accidents.
+
+
+
+Solution
+
+
+
+Step 1.     Convert. max (4x − x2 ) is the same problem as
+
+                              min f˜( x ) = x2 − 4x        subject to   g( x ) = x − 1 ≤ 0,
+                                x
+
+            and the optimal values satisfy max f = − min f˜.
+
+Step 2.     Lagrangian and K1. L( x, µ) = x2 − 4x + µ ( x − 1), so
+
+                                                 ∂L
+                                                    = 2x − 4 + µ = 0.
+                                                 ∂x
+
+Step 3.     Case µ = 0. 2x − 4 = 0 gives x = 2; check K2: 2 − 1 = 1 ̸≤ 0. Infeasible — discard.
+            (Unconstrained, the parabola peaks at x = 2, outside the feasible set.)
+
+Step 4.     Case x = 1 (active). K1 gives 2(1) − 4 + µ = 0, so µ = 2 ≥ 0. ✓ All four KKT
+            conditions hold.
+
+Step 5.     Report in the original problem. x ⋆ = 1 and max f = 4(1) − 12 = 3. (Equivalently
+            min f˜ = 1 − 4 = −3 and max f = −(−3) = 3.)
+
+      ✓ Final answer
+   x ⋆ = 1, µ⋆ = 2, maximum value f ⋆ = 3.
+
+
+      ✗ Watch out
+   Two equivalent-looking habits, one of them dangerous. Safe: convert to min(− f ) and use
+   the standard machinery untouched. Dangerous: keep the max and “flip the sign of µ in
+   your head”. The second habit works until a problem has three constraints and a ≥ among
+   them — then the mental sign-flips collide. This set always converts first.
+
+
+      ☞ Problem 10 · KKT on a disk: stationarity can force activity
+   Maximize f ( x, y) = x subject to x2 + y2 ≤ 1.
+   Skill trained: using the stationarity equation itself to rule out the inactive case — a different discard
+   mechanism than infeasibility.
+
+
+
+Solution
+
+
+
+
+WILP, BITS Pilani                                     15
+MFML · Practice Set                                         Constrained Optimization · Lagrange, KKT & Duality
+
+
+Step 1.     Standard form. Minimize f˜( x, y) = − x subject to g( x, y) = x2 + y2 − 1 ≤ 0. La-
+            grangian:
+                                      L = − x + µ ( x 2 + y2 − 1).
+
+Step 2.     Stationarity (K1).
+
+                                               ∂L
+                                                  = −1 + 2µx = 0,
+                                               ∂x
+                                               ∂L
+                                                  = 2µy = 0.
+                                               ∂y
+
+Step 3.     Case µ = 0 dies inside K1. The first equation becomes −1 = 0 — a contradiction. So
+            there is no KKT point with µ = 0: this time the inactive case is killed by stationarity
+            itself, not by infeasibility. The constraint must be active.
+
+Step 4.     Active case. µ > 0, so the second equation forces y = 0, and K4 (with µ > 0) forces
+                                                                     1
+            x2 + y2 = 1, giving x = ±1. The first equation says x = 2µ , which is positive (since
+                                            1
+            µ > 0), so x = +1 and then µ = 2x = 12 ≥ 0. ✓
+
+Step 5.     Conclude. ( x ⋆ , y⋆ ) = (1, 0) and the maximum of the original objective is f ⋆ = 1.
+            Geometrically: pushing x as far right as the disk allows lands on the rightmost
+            boundary point.
+
+      ✓ Final answer
+   ( x ⋆ , y⋆ ) = (1, 0), µ⋆ = 21 , maximum f ⋆ = 1.
+
+
+      ☞ The intuition
+   A linear objective has a constant, nonzero gradient — it never “settles” in the interior of a
+   region. So for linear objectives the optimum always lies on the boundary, and KKT knows
+   it: the inactive case self-destructs at stationarity. This is also why linear programs are
+   solved at vertices.
+
+
+
+
+WILP, BITS Pilani                                      16
+MFML · Practice Set                                               Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+4 Part C — From primal to dual, and back
+Minimize the Lagrangian over x to get the dual function q(µ), maximize q over µ ≥ 0,
+then recover the primal solution.
+
+      ☞ Problem 11 · Primal to dual, end to end, in one variable
+   Consider the primal problem
+
+                                     min x2         subject to       x ≥ 2.
+                                       x
+
+   (a) Write the Lagrangian and derive the dual function q(µ) in closed form.
+   (b) State and solve the dual problem.
+   (c) Verify strong duality by solving the primal directly, and recover x ⋆ from the dual
+       solution.
+   Skill trained: Recipe 4 on the smallest possible example: every move visible.
+
+
+Solution
+
+
+
+Step 1.     Standard form and Lagrangian. The constraint x ≥ 2 becomes g( x ) = 2 − x ≤ 0, so
+                                      L( x, µ) = x2 + µ (2 − x ) = x2 − µx + 2µ.
+
+Step 2.     Dual function = unconstrained minimum over x. For fixed µ, L is a convex parabola
+            in x. Set its x-derivative to zero:
+                                             ∂L                    µ
+                                                = 2x − µ = 0 =⇒ x = .
+                                             ∂x                    2
+            Substitute back:
+                                            µ      µ 2      µ
+                                   q(µ) = L 2 , µ =       − µ · + 2µ
+                                                     2         2
+                                                    µ2    µ2         µ2
+                                                  =    −     + 2µ = − + 2µ.
+                                                    4     2          4
+            Note q is a concave parabola in µ — dual functions always are.
+
+                                                                               µ2
+Step 3.     Solve the dual. The dual problem is maxµ≥0 q(µ) = − 4 + 2µ. Set the derivative to
+            zero:
+                          µ
+                q′ (µ) = − + 2 = 0 =⇒ µ⋆ = 4 (≥ 0, so the constraint µ ≥ 0 is satisfied).
+                          2
+            Dual optimum: d⋆ = q(4) = − 16
+                                        4 + 8 = −4 + 8 = 4.
+
+Step 4.     Solve the primal directly. x2 decreases toward x = 0, so on the feasible set x ≥ 2 the
+            minimum sits at the boundary: x ⋆ = 2, p⋆ = 4.
+
+Step 5.     Compare and recover. d⋆ = 4 = p⋆ : zero duality gap (strong duality — the problem
+            is convex and x = 3 is strictly feasible, so Slater holds). The inner minimizer at µ⋆
+            recovers the primal solution: x ⋆ = µ⋆ /2 = 4/2 = 2. ✓
+
+
+
+WILP, BITS Pilani                                       17
+MFML · Practice Set                                                    Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+      ✓ Final answer
+   q(µ) = −µ2 /4 + 2µ; dual solution µ⋆ = 4 with d⋆ = 4; primal solution x ⋆ = 2 with p⋆ = 4.
+   Strong duality holds, and x ⋆ = µ⋆ /2.
+
+
+      ☞ The intuition
+   The dual is a bargaining game. The dual variable µ prices violations of the constraint;
+   for each price, the primal side responds with the cheapest x (the inner minimization).
+   A too-low price lets x drift toward 0 and ignore the constraint; a too-high price over-
+   corrects. The dual problem searches for the price at which the primal side, acting selfishly,
+   voluntarily lands on the true constrained optimum. Here that price is µ⋆ = 4.
+
+
+      ☞ Problem 12 · Primal to dual in two variables, plus Slater and recovery
+   Consider
+                              min x2 + y2             subject to          x + y ≥ 4.
+                               x,y
+
+   (a) Derive the dual function q(µ) and solve the dual problem.
+   (b) Verify Slater’s condition and confirm p⋆ = d⋆ .
+   (c) Recover ( x ⋆ , y⋆ ) from µ⋆ and verify all four KKT conditions at the primal–dual pair.
+   Skill trained: the full round trip: primal → dual → multipliers → primal point → KKT check.
+
+
+Solution
+
+
+
+Step 1.     Standard form and Lagrangian. Constraint: g( x, y) = 4 − x − y ≤ 0.
+
+                                       L( x, y, µ) = x2 + y2 + µ (4 − x − y).
+
+Step 2.     Inner minimization over ( x, y). L separates into a term in x and a term in y:
+
+                                          ∂L                    µ
+                                             = 2x − µ = 0 =⇒ x = ,
+                                          ∂x                    2
+                                          ∂L                    µ
+                                             = 2y − µ = 0 =⇒ y = .
+                                          ∂y                    2
+
+Step 3.     Dual function. Substitute both back into L:
+                                                 µ 2         µ 2       µ µ
+                                     q(µ) =              +             +µ 4− −
+                                                  2             2           2  2
+                                                µ2       µ2
+                                           =    +    + µ (4 − µ )
+                                             4     4
+                                             µ2                µ2
+                                           =    + 4µ − µ2 = − + 4µ.
+                                             2                 2
+
+                                           µ2
+Step 4.     Solve the dual. maxµ≥0 − 2 + 4µ. Setting q′ (µ) = −µ + 4 = 0 gives µ⋆ = 4 ≥ 0,
+            with
+                                              16
+                                d⋆ = q(4) = − + 16 = −8 + 16 = 8.
+                                              2
+
+WILP, BITS Pilani                                        18
+MFML · Practice Set                                      Constrained Optimization · Lagrange, KKT & Duality
+
+
+Step 5.     Slater’s condition. The point (3, 3) satisfies x + y = 6 > 4 — strictly feasible.
+            The objective is convex and the constraint affine, so strong duality is guaranteed:
+            p⋆ = d⋆ = 8, before we even solve the primal.
+
+Step 6.     Recover the primal point. Evaluate the inner minimizer at µ⋆ = 4: x ⋆ = y⋆ = 4/2 =
+            2. Check: f (2, 2) = 4 + 4 = 8 = p⋆ . ✓
+                                       
+Step 7.     Verify KKT at (2, 2), µ = 4 .
+
+                                  K1:   2(2) − 4 = 0 (both coordinates) ✓
+                                  K2:   4−2−2 = 0 ≤ 0 ✓
+                                  K3:   µ=4≥0✓
+                                  K4:   µ·g = 4·0 = 0 ✓
+
+
+
+
+Figure 3: How to read it: the dual function q(µ) = −µ2 /2 + 4µ is a concave hill; every point
+on it is a certified lower bound on p⋆ (weak duality), and its peak q(4) = 8 exactly reaches the
+primal optimum (strong duality).
+
+      ✓ Final answer
+   q(µ) = −µ2 /2 + 4µ; µ⋆ = 4, d⋆ = p⋆ = 8; recovered primal point ( x ⋆ , y⋆ ) = (2, 2), and
+   all four KKT conditions hold at the pair.
+
+
+      ✽ Wait — really?
+   Pick any µ ≥ 0 — say µ = 2 — and compute q(2) = −2 + 8 = 6. Weak duality promises
+   that 6 is a floor under the optimum of the primal, a hard guarantee obtained without
+   solving the primal at all. Try any feasible point, say (3, 1): f = 9 + 1 = 10 ≥ 6. Every dual
+   value bounds every primal value. This “certificate for free” is why duality matters in
+   practice.
+
+
+
+
+WILP, BITS Pilani                               19
+MFML · Practice Set                                             Constrained Optimization · Lagrange, KKT & Duality
+
+
+      ☞ Problem 13 · A dual function that is −∞ for some multipliers
+   Consider
+                                     min x       subject to       x2 ≤ 1.
+                                       x
+
+   Derive the dual function q(µ) — treating µ = 0 and µ > 0 separately — solve the dual
+   problem, and verify strong duality.
+   Skill trained: handling the implicit domain of the dual: values of µ where the inner minimum runs away to
+   −∞.
+
+
+Solution
+
+
+
+Step 1.     Lagrangian. g( x ) = x2 − 1 ≤ 0 is already standard, so
+
+                                       L( x, µ) = x + µ ( x2 − 1) = µx2 + x − µ.
+
+Step 2.     Inner minimization, case µ = 0. Then L = x, and infx∈R x = −∞: with no price on
+            the constraint, the objective just slides off to −∞. So q(0) = −∞ — the value µ = 0
+            carries no information.
+
+Step 3.     Inner minimization, case µ > 0. Now L is a convex parabola in x. Minimize:
+
+                                           ∂L                        1
+                                              = 2µx + 1 = 0 =⇒ x = − .
+                                           ∂x                       2µ
+
+            Substitute back, term by term:
+
+                                                         1 2
+                                                                    
+                                                                    1
+                                           q(µ) = µ −         + −        −µ
+                                                        2µ         2µ
+                                                      1      1
+                                                = µ· 2 −       −µ
+                                                     4µ     2µ
+                                                   1     2           1
+                                                =    −      − µ = − − µ.
+                                                  4µ 4µ             4µ
+
+                                               1
+Step 4.     Solve the dual. Maximize q(µ) = − 4µ − µ over µ > 0:
+
+                                1                   1        1
+                    q′ (µ) =      2
+                                    − 1 = 0 =⇒ µ2 =   =⇒ µ⋆ = (taking the positive root).
+                               4µ                   4        2
+
+            Then
+                                                   1   1  1 1
+                                     d⋆ = q 12 = − 1 − = − − = −1.
+                                              
+                                                  4· 2 2  2 2
+
+Step 5.     Solve the primal directly. The feasible set is x2 ≤ 1, i.e. −1 ≤ x ≤ 1. Minimizing x
+            over [−1, 1] gives x ⋆ = −1, p⋆ = −1.
+
+Step 6.     Compare and recover. d⋆ = −1 = p⋆ : strong duality (convex problem; x = 0 is
+            strictly feasible since 0 < 1, so Slater holds). Recovery: x ⋆ = − 2µ1 ⋆ = − 2·1/2
+                                                                                           1
+                                                                                               = −1. ✓
+
+
+
+
+WILP, BITS Pilani                                     20
+MFML · Practice Set                                      Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+      ✓ Final answer
+   q(0) = −∞ and q(µ) = −µ − 4µ
+                              1
+                                for µ > 0; µ⋆ = 12 , d⋆ = p⋆ = −1, x ⋆ = −1.
+
+
+      ✗ Watch out
+   q(µ) = −∞ does not mean the method broke — it means that particular price fails to
+   make the inner problem bounded, so it contributes only the useless bound −∞ ≤ p⋆ . The
+   dual problem quietly restricts itself to the multipliers where q is finite (the domain of the
+   dual). Always ask: for which µ is the inner minimum actually finite?
+
+
+      ✓ Key takeaway
+   The dual recipe never changes: (1) Lagrangian, (2) minimize over x holding µ fixed —
+   watching for µ that send it to −∞, (3) maximize q(µ) over µ ≥ 0, (4) recover x ⋆ from the
+   inner minimizer at µ⋆ and confirm p⋆ = d⋆ .
+
+
+
+
+WILP, BITS Pilani                               21
+MFML · Practice Set                                               Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+5 Part D — Judging answers, and the SVM capstone
+KKT is not only a solver — it is a verifier. Feed it a candidate answer and it says yes or
+no, with reasons.
+
+      ☞ Problem 14 · Judging candidate answers with KKT and complementary slackness
+   Consider the convex problem
+
+                      min ( x − 3)2 + (y − 2)2         subject to          x ≤ 2,   y ≤ 3.
+                      x,y
+
+                                                                    
+   Three students propose primal–dual candidates ( x, y), (µ1 , µ2 ) :
+    • Candidate A: (2, 2) with (µ1 , µ2 ) = (2, 0);
+    • Candidate B: (2, 3) with (µ1 , µ2 ) = (2, −2);
+    • Candidate C: (3, 2) with (µ1 , µ2 ) = (0, 0).
+   Test each candidate against all four KKT conditions, decide which (if any) is optimal, and
+   state the optimal value. Then show how complementary slackness could have predicted
+   the right active set without testing anything.
+   Skill trained: using K1–K4 as a checklist to accept or reject proposed solutions — the examiner’s view of
+   KKT.
+
+
+Solution
+
+
+
+Step 1.     Set up once. g1 = x − 2 ≤ 0, g2 = y − 3 ≤ 0,
+
+                                  L = ( x − 3)2 + ( y − 2)2 + µ1 ( x − 2) + µ2 ( y − 3),
+
+            so stationarity (K1) reads
+
+                                  2( x − 3) + µ1 = 0        and       2(y − 2) + µ2 = 0.
+
+            Because the problem is convex, any candidate passing K1–K4 is the global minimum;
+            any candidate failing even one condition is out.
+
+Step 2.     Test Candidate A: (2, 2), µ = (2, 0).
+
+                            K1:    2(2 − 3) + 2 = −2 + 2 = 0 ✓              2(2 − 2) + 0 = 0 ✓
+                            K2:    g1 = 2 − 2 = 0 ≤ 0 ✓           g2 = 2 − 3 = − 1 ≤ 0 ✓
+                            K3:    µ1 = 2 ≥ 0 ✓        µ2 = 0 ≥ 0 ✓
+                            K4:    µ 1 g1 = 2 · 0 = 0 ✓      µ2 g2 = 0 · (−1) = 0 ✓
+
+            All four hold. A is optimal.
+
+Step 3.     Test Candidate B: (2, 3), µ = (2, −2). Stationarity actually holds: 2(2 − 3) + 2 = 0
+            and 2(3 − 2) + (−2) = 0. Primal feasibility holds (g1 = 0, g2 = 0), and so does K4
+            (both constraints tight). But K3 fails:
+
+                                                   µ2 = −2 < 0.        ✗
+
+            Reject B — dual infeasibility. Reading: to hold y up at the boundary y = 3, the
+            constraint would have to pull the point away from where the objective wants to go
+
+WILP, BITS Pilani                                      22
+MFML · Practice Set                                          Constrained Optimization · Lagrange, KKT & Duality
+
+
+            (y = 2 is already feasible) — a wall can only push, never pull, and µ2 < 0 is the
+            algebra saying exactly that.
+
+Step 4.     Test Candidate C: (3, 2), µ = (0, 0). Stationarity holds: 2(3 − 3) + 0 = 0 and 2(2 −
+            2) + 0 = 0; K3 and K4 hold trivially. But K2 fails:
+                                             g1 = 3 − 2 = 1 ̸≤ 0. ✗
+            Reject C — primal infeasibility. C is just the unconstrained minimizer with the
+            constraints ignored.
+
+Step 5.     Optimal value. From A: f (2, 2) = (2 − 3)2 + (2 − 2)2 = 1 + 0 = 1.
+
+Step 6.     The complementary-slackness shortcut. The unconstrained minimizer is (3, 2). It
+            violates only g1 (x-limit), and satisfies g2 strictly. So predict: g1 active, g2 inactive
+            — i.e. x = 2, µ2 = 0. Then K1 instantly gives y = 2 (from 2(y − 2) + 0 = 0) and
+            µ1 = −2( x − 3) = −2(2 − 3) = 2 ≥ 0. That is Candidate A, derived in two lines
+            rather than discovered by testing.
+
+      ✓ Final answer
+   Only Candidate A passes all four KKT conditions: ( x ⋆ , y⋆ ) = (2, 2), (µ1⋆ , µ2⋆ ) = (2, 0),
+   f ⋆ = 1. B fails dual feasibility (µ2 < 0); C fails primal feasibility (x > 2).
+
+
+      ✗ Watch out
+   A candidate can pass three conditions and still be wrong — B passed stationarity, primal
+   feasibility and complementary slackness. Never declare optimality until all four boxes are
+   ticked; in an exam, write the four checks explicitly, one line each.
+
+
+      ☞ Problem 15 · Capstone: a tiny hard-margin SVM, from primal to support vectors
+   A one-dimensional dataset has two points: x1 = +1 with label y1 = +1, and x2 = −1
+   with label y2 = −1. The hard-margin SVM problem is
+
+                       min 12 w2      subject to     yi (wxi + b) ≥ 1,      i = 1, 2.
+                       w, b
+
+   (a) Write both constraints explicitly and form the Lagrangian with multipliers α1 , α2 ≥ 0.
+   (b) Derive the dual problem and solve it.
+   (c) Recover w⋆ and b⋆ , identify the support vectors using complementary slackness, and
+       give the decision boundary and margin.
+   Skill trained: every skill in this set, chained: frame → standard form → Lagrangian → dual → solve →
+   recover → read complementary slackness.
+
+
+Solution
+
+
+
+Step 1.     Write the constraints. For i = 1: y1 (wx1 + b) = (+1)(w · 1 + b) = w + b ≥ 1. For
+            i = 2: y2 (wx2 + b) = (−1)(−w + b) = w − b ≥ 1. In standard form:
+                                   g1 = 1 − w − b ≤ 0,       g2 = 1 − w + b ≤ 0.
+
+WILP, BITS Pilani                                  23
+MFML · Practice Set                                                Constrained Optimization · Lagrange, KKT & Duality
+
+
+Step 2.     Lagrangian.
+
+                              L(w, b, α1 , α2 ) = 21 w2 + α1 (1 − w − b) + α2 (1 − w + b).
+
+Step 3.     Stationarity in w and b.
+                                      ∂L
+                                         = w − α1 − α2 = 0 =⇒ w = α1 + α2 ,
+                                      ∂w
+                                      ∂L
+                                         = −α1 + α2 = 0 =⇒ α1 = α2 .
+                                      ∂b
+            (These are the general SVM identities w = ∑i αi yi xi and ∑i αi yi = 0, written out for
+            this data.)
+
+Step 4.     Build the dual function. Group L as
+
+                                  L = 12 w2 − w (α1 + α2 ) − b (α1 − α2 ) + (α1 + α2 ).
+
+            Set α1 = α2 = α (so the b-term vanishes) and substitute w = α1 + α2 = 2α:
+
+                                          q(α) = 21 (2α)2 − (2α)(2α) + 2α
+                                                 = 2α2 − 4α2 + 2α = 2α − 2α2 .
+
+            (Check against the textbook dual ∑i αi − 12 ∑i,j αi α j yi y j xi x j : here every product yi y j xi x j
+            equals 1, so it reads (α1 +α2 ) − 12 (α1 +α2 )2 = 2α − 2α2 . Same function.)
+
+Step 5.     Solve the dual. Maximize q(α) = 2α − 2α2 over α ≥ 0:
+
+                       q′ (α) = 2 − 4α = 0 =⇒ α⋆ = 12 ≥ 0,                 d⋆ = q 12 = 1 − 21 = 12 .
+                                                                                    
+
+
+            So α1⋆ = α2⋆ = 21 .
+
+Step 6.     Recover w⋆ and b⋆ . w⋆ = α1⋆ + α2⋆ = 12 + 12 = 1. Since α1⋆ = 12 > 0, complementary
+            slackness forces its constraint tight: w + b = 1, so b⋆ = 1 − w⋆ = 0. Consistency: the
+            second constraint gives w − b = 1 − 0 = 1 — also tight, matching α2⋆ > 0. Primal
+            value: 12 (w⋆ )2 = 12 = d⋆ : zero duality gap. ✓
+
+Step 7.     Read the geometry. Decision boundary: w⋆ x + b⋆ = 0, i.e. x = 0 — exactly midway
+            between the two points. Margin lines: w⋆ x + b⋆ = ±1, i.e. x = ±1 — passing through
+            the data points. Margin width = 2/|w⋆ | = 2. Both points sit on the margin with
+            αi > 0: by complementary slackness, both are support vectors.
+
+      ✓ Final answer
+   Dual: maxα≥0 2α − 2α2 with α1 = α2 = α; solution α1⋆ = α2⋆ = 12 , d⋆ = 12 . Recovered
+   classifier: w⋆ = 1, b⋆ = 0, decision boundary x = 0, margin width 2. Both data points are
+   support vectors.
+
+
+      ✓ Key takeaway
+   Complementary slackness is the reason SVMs are “sparse”: a training point with αi = 0
+   sits strictly outside the margin and could be deleted without changing the classifier; only
+   the points with αi > 0 — the support vectors, whose constraints are tight — carry the
+
+
+
+WILP, BITS Pilani                                       24
+MFML · Practice Set                                    Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+
+Figure 4: How to read it: the classifier is the midpoint x = 0; the shaded band is the margin,
+whose edges x = ±1 pass exactly through the two data points — that is what αi > 0 ⇒
+constraint tight looks like in a picture.
+
+
+   solution. The multiplier tells you which data matter.
+
+
+
+
+WILP, BITS Pilani                             25
+                                                      26                                        WILP, BITS Pilani
+         Discard the whole case — dual feasibility (K3) fails. The assumed active set is wrong: the
+         constraint is trying to “pull” rather than push. Move to the next active/inactive pattern.
+you do?
+Q5. Your case analysis (Recipe 3) returns µ = −3 for a constraint you assumed active. What do
+         The point lies strictly outside the margin (yi (wxi + b) > 1). Its constraint is slack, so it exerts no
+         force on the solution — delete it and the classifier does not move. It is not a support vector.
+point?
+Q4. In an SVM, what does αi = 0 mean geometrically, and what may you do with that training
+         q(µ) = infz L(z, µ) ≤ L( x, µ) = f ( x ) + µ g( x ) ≤ f ( x ), because µ ≥ 0 and g( x ) ≤ 0 make
+         µ g( x ) ≤ 0. Take the best on both sides: d⋆ ≤ p⋆ .
+                                          Q3. Prove weak duality in one line, for feasible x and µ ≥ 0.
+         False. For each fixed x, L( x, µ) is affine in µ; the infimum of affine functions is always concave.
+         The dual is a concave maximization even when the primal is ugly — that is much of its charm.
+concave.
+Q2. True or false: if the primal problem is nonconvex, the dual function q(µ) may fail to be
+         Nothing beyond feasibility. µ3 g3 = 0 is satisfied by µ3 = 0 whatever g3 ≤ 0 is — the constraint
+         may be active or inactive. It is only µi > 0 that forces gi = 0 (and gi < 0 that forces µi = 0).
+about g3 ( x ⋆ )?
+Q1. At the optimum you find µ3 = 0. What does complementary slackness let you conclude
+                             Answer from memory first; the answers are printed upside down.
+                                                6 Close the loop: five-question self-check
+Constrained Optimization · Lagrange, KKT & Duality                                           MFML · Practice Set
+MFML · Practice Set                                          Constrained Optimization · Lagrange, KKT & Duality
+
+
+
+7 Pocket card: the whole topic on one page
+If you remember only this page, you can rebuild everything else.
+
+  Move                      What you actually do
+
+  Standard form             min f ; every inequality as gi ≤ 0; every equality as h j = 0. max f →
+                            min(− f ); a ≥ b → b − a ≤ 0.
+  Lagrangian                L = f + ∑i µi gi + ∑ j λ j h j (µi ≥ 0; λ j free).
+  Equality-only shortcut    ∇ f = λ ∇h together with h = 0 (tangency of level set and constraint).
+  KKT checklist             K1 ∇ x L = 0; K2 gi ≤ 0, h j = 0; K3 µi ≥ 0; K4 µi gi = 0 ∀i. Convex
+                            problem: K1–K4 ⇒ global optimum.
+  Case method               Each gi is active (gi = 0) or inactive (µi = 0). Solve each pattern; discard
+                            on infeasibility, negative multiplier, or a contradiction inside K1; keep what
+                            survives.
+  Dual function             q(µ, λ) = infx L( x, µ, λ) — an unconstrained minimization; note where
+                            q = −∞. Always concave.
+  Dual problem              max q over µ ≥ 0 (and free λ). Weak duality: d⋆ ≤ p⋆ , always. Strong
+                            duality: convex + Slater (a strictly feasible point) ⇒ d⋆ = p⋆ .
+  Recovery                  Plug µ⋆ into the inner minimizer to get x ⋆ ; confirm f ( x ⋆ ) = q(µ⋆ ) and
+                            run the KKT checklist on the pair.
+  Meanings                  λ = shadow price (d f ⋆ /db); µ = force of a wall (zero if untouched);
+                            αi > 0 = support vector.
+
+
+      ✓ Key takeaway
+   Frame it, standardize it, write the Lagrangian, and then let the four KKT lines — or the
+   dual — do the thinking. Every one of the fifteen problems above is these same moves in a
+   different costume.
+
+
+
+
+WILP, BITS Pilani                                 27
+
