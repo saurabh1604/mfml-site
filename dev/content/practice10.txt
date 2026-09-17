@@ -1,0 +1,512 @@
+ZC416 MFML/MFDS                                                     Lecture 10 – Optimization: Exam Practice
+
+
+
+
+           Nonlinear Optimization: Challenges in ML
+                Exam-Pattern Practice Problems – Fully Worked, Step by Step
+                ZC416 Mathematical Foundations for ML/DS  Lecture 10 (Topic #10)
+  All questions use fresh functions and data in the style typically asked in quizzes, mid-semester and
+              comprehensive exams. Every problem is numerical: compute, derive, or trace.
+
+
+
+
+           #     Skill tested                                                     Difficulty    Marks
+            1    Min-max scaling vs. standardization (+ unseen point)             Easy            5
+            2    Update-step imbalance across parameters                          Easy            4
+            3    Gradients before vs. after standardization                       Moderate        8
+            4    Differential curvature: trace, stability, condition number       Moderate        8
+            5    Least-squares gradient: derive + one GD step                     Moderate        6
+            6    Basins of attraction + random restarts                           Difficult       6
+            7    Hessian before/after scaling: step-size gain                     Difficult       8
+
+
+
+   Problem 1 (5 marks) EASY COMPUTATION
+
+ A feature column contains {30, 50, 70, 90, 110}.
+                                            x − min
+  (a) Apply min-max normalization x′ =               to all five values.                [1.5]
+                                          max − min
+  (b) Standardize the column (mean-center, divide by the population standard deviation). [2]
+  (c) A new observation x = 130 arrives at test time. Transform it under both schemes (using
+      the training statistics) and comment on the results.                              [1.5]
+
+
+ Step-by-step solution
+
+
+ Step 1 (min-max). Here min = 30, max = 110, range = 80:
+
+                   30 7→ 0,     50 7→ 20
+                                      80 = 0.25,      70 7→ 0.5,   90 7→ 0.75,      110 7→ 1.
+
+
+ Step 2 (standardize). Mean:
+                 30 + 50 + 70 + 90 + 110
+            µ=                           = 70,             deviations = (−40, −20, 0, 20, 40).
+                            5
+ Variance and standard deviation:
+                        1600 + 400 + 0 + 400 + 1600                           √
+                 σ2 =                               = 800,             σ=         800 ≈ 28.28.
+                                     5
+ Standardized values:
+                                x − 70
+                         z=            :        −1.414, −0.707, 0, 0.707, 1.414.
+                                28.28
+ (Check: the z-values sum to 0 and their squares sum to 5 ⇒ unit variance. ✓)
+
+ Step 3 (unseen point x = 130). Min-max:
+                                           130 − 30
+                                  x′ =              = 1.25 – outside [0, 1].
+                                              80
+
+
+                                                   Page 1 of 8
+ZC416 MFML/MFDS                                                Lecture 10 – Optimization: Exam Practice
+
+
+
+ The [0, 1] guarantee holds only for training data; a downstream model assuming that range now
+ extrapolates. Standardization:
+           130 − 70
+      z=            = 2.12 – unusual but well-defined (z-scores are unbounded by design).
+            28.28
+
+  Answer. (a) 0, 0.25, 0.5, 0.75, 1; (b) µ = 70, σ ≈ 28.28, z = (−1.414, −0.707, 0, 0.707, 1.414);
+  (c) min-max gives 1.25 (out of range), z-score gives 2.12 (fine).
+
+ Intuition & exam tips
+
+ The part-(c) twist – transforming an unseen point with training statistics – is where marks
+ are separated. Min-max promises [0, 1] only in-sample and is fragile to outliers/new extremes;
+ standardization degrades gracefully. Always use the training µ, σ; never recompute statistics
+ with the test point.
+
+   Problem 2 (4 marks) EASY COMPUTATION
+
+                                                          ∂J             ∂J
+ At the current iterate, a loss has partial derivatives       = −640 and     = −1.6, and a single
+                                                          ∂w1            ∂w2
+ learning rate γ = 10−3 is used for both parameters.
+   (a) Compute the update to each parameter in this step.                                        [1]
+   (b) Assuming gradient components of this magnitude persist, roughly how many iterations
+       does w2 need to move by 1 unit?                                                           [1]
+   (c) If instead γ is chosen so that the w1 -update is a modest 0.01 per step, how many iterations
+       does w2 then need for a 1-unit move?                                                      [1]
+   (d) Name the lecture technique that removes this dilemma and state (in one line) what it
+       equalizes.                                                                                [1]
+
+ Step-by-step solution
+
+
+ Step 1 (updates). Using ∆wj = −γ ∂J/∂wj :
+                ∆w1 = −10−3 (−640) = 0.64,          ∆w2 = −10−3 (−1.6) = 0.0016.
+ A 400:1 imbalance in movement per step.
+
+ Step 2 (the slow coordinate).
+                                            1
+                                    N≈          = 625 iterations
+                                         0.0016
+ for one unit of progress in w2 – during which w1 would have moved 625 × 0.64 = 400 units (long
+ since overshot and oscillating).
+
+ Step 3 (protecting w1 instead). Require γ · 640 = 0.01:
+             γ = 1.5625 × 10−5       ⇒       ∆w2 = 1.5625 × 10−5 × 1.6 = 2.5 × 10−5 ,
+                                          1
+                                N≈              = 40 000 iterations.
+                                     2.5 × 10−5
+
+ Step 4 (the fix). Feature normalization / standardization (mean-center and divide by
+ the standard deviation, or min-max scale): it equalizes the loss’s sensitivity (gradient scale /
+ curvature) across parameters, so one shared learning rate suits all coordinates.
+
+
+                                             Page 2 of 8
+ZC416 MFML/MFDS                                              Lecture 10 – Optimization: Exam Practice
+
+
+
+  Answer. (a) 0.64 vs 0.0016; (b) ≈ 625; (c) ≈ 40,000; (d) standardize features ⇒ comparable
+  per-parameter sensitivities.
+
+ Intuition & exam tips
+
+ The “one γ, two very different gradients” dilemma in pure arithmetic: protect the fast coordinate
+ and the slow one crawls (40,000 steps); serve the slow one and the fast one oscillates. Whenever
+ an exam gives you two wildly different partials, this cost-benefit computation is the expected
+ answer skeleton.
+
+   Problem 3 (8 marks) MODERATE COMPUTATION
+
+ House price y (lakh) is modeled as ŷ = w1 x1 + w2 x2 from area x1 (sq. ft) and bedroom count x2 :
+
+                                            x1 x2 y
+                                           1000 2 50
+                                           1500 3 75
+                                           2000 3 90
+             P                     2
+ with J(w) = i w1 xi1 + w2 xi2 − yi .
+  (a) Compute ∂J/∂w1 and ∂J/∂w2 at w = (0, 0) and their ratio.                          [3]
+  (b) Standardize both columns (population σ) and recompute the two partials at w = (0, 0).
+      [4]
+  (c) Quantify the improvement and its consequence for gradient descent.                [1]
+
+
+ Step-by-step solution
+
+
+                                                                     ∂J      P
+ Step 1 (raw gradients). At w = (0, 0) all predictions are 0, so         = −2 i yi xij :
+                                                                     ∂wj
+
+             ∂J                                     
+                 = −2 1000(50) + 1500(75) + 2000(90) = −2(342 500) = −685 000,
+             ∂w1
+                        ∂J                            
+                            = −2 2(50) + 3(75) + 3(90) = −2(595) = −1190.
+                        ∂w2
+ Ratio:
+                                          685000
+                                                   ≈ 576
+                                             1190
+ – the loss is ∼ 576× more sensitive to w1 , purely because square-feet are numerically huge.
+
+ Step 2 (standardize column x1 ). Mean and deviations:
+                        1000 + 1500 + 2000
+                 µ1 =                      = 1500,     deviations = (−500, 0, 500).
+                                 3
+                 r
+                     250000 + 0 + 250000
+          σ1 =                           ≈ 408.25      ⇒      z1 = (−1.2247, 0, 1.2247).
+                              3
+
+ Step 3 (standardize column x2 ).
+                      2+3+3  8
+              µ2 =          = ≈ 2.667,          deviations = (−0.667, 0.333, 0.333).
+                        3    3
+
+
+
+                                             Page 3 of 8
+ZC416 MFML/MFDS                                                  Lecture 10 – Optimization: Exam Practice
+
+
+            r
+                0.4444 + 0.1111 + 0.1111
+     σ2 =                                ≈ 0.4714       ⇒         z2 = (−1.4142, 0.7071, 0.7071).
+                            3
+
+ Step 4 (recompute both partials). At w = (0, 0):
+
+            ∂J                                           
+                = −2 (−1.2247)(50) + 0(75) + (1.2247)(90) = −2(48.99) = −97.98,
+            ∂w1
+         ∂J                                                  
+             = −2 (−1.4142)(50) + (0.7071)(75) + (0.7071)(90) = −2(45.96) = −91.92.
+         ∂w2
+
+ Step 5 (improvement). The sensitivity ratio collapses from ≈ 576 to
+                                              97.98
+                                                    ≈ 1.07.
+                                              91.92
+ With comparable gradient scales, a single learning rate drives both weights at similar speeds: no
+ oscillation in w1 while w2 crawls – differential curvature is essentially eliminated and convergence
+ accelerates dramatically.
+
+  Answer. (a) (−685000, −1190), ratio ≈ 576; (b) (−97.98, −91.92); (c) ratio ≈ 1.07 –
+  balanced sensitivities ⇒ one γ fits all, fast stable descent.
+
+ Intuition & exam tips
+
+ Housing data is the classic exam clothing
+                                        P    for this computation. The arithmetic pattern to
+ remember at w = 0: gradient = −2 y x·j , so the feature scale multiplies straight into the
+ gradient. Standardize, and the ratio drops to order 1. Quote the before/after ratio explicitly –
+ that one number is usually a rubric line.
+
+   Problem 4 (8 marks) MODERATE COMPUTATION
+
+ Consider L(x, y) = 9x2 + y 2 .
+  (a) Write the GD updates for x and y as multiplications by constant factors, and find the
+      exact range of γ for convergence.                                                           [3]
+  (b) With γ = 0.1, trace three iterations from (x0 , y0 ) = (1, 3). Which coordinate oscillates and
+      why?                                                                                        [3]
+  (c) Compute the Hessian and its condition number. What curvature profile would make GD
+      fastest, and which single γ then finishes in one step?                                      [2]
+
+
+ Step-by-step solution
+
+
+ Step 1 (decoupled updates). The gradient is ∇L = (18x, 2y), so
+
+                              xk+1 = (1 − 18γ) xk ,    yk+1 = (1 − 2γ) yk .
+
+ Stability needs both factors inside (−1, 1):
+                                           2
+                       |1 − 18γ| < 1 ⇒ γ < 18 = 19 ,         |1 − 2γ| < 1 ⇒ γ < 1.
+
+ The stiff direction binds:
+                                           0 < γ < 19 ≈ 0.111
+
+
+
+
+                                               Page 4 of 8
+ZC416 MFML/MFDS                                              Lecture 10 – Optimization: Exam Practice
+
+
+
+ Step 2 (trace with γ = 0.1). Factors: 1 − 1.8 = −0.8 for x; 1 − 0.2 = 0.8 for y:
+
+                   (1, 3) → (−0.8, 2.4) → (0.64, 1.92) → (−0.512, 1.536).
+
+ Both coordinates shrink by 20% per step, but x flips sign each iteration: its factor is neg-
+ ative because γ = 0.1 exceeds 1/18 ≈ 0.056, the smooth-descent threshold for that coordinate.
+ Each step overshoots the valley floor in the stiff direction and bounces back, while y descends
+ monotonically – zig-zag in its cleanest form.
+
+ Step 3 (Hessian and the ideal bowl).
+                                      
+                                  18 0                     18
+                            H=           ,            κ=      = 9.
+                                  0 2                       2
+
+ GD is fastest when curvature is moderate and equal in all directions (κ = 1, a circular bowl, e.g.
+ 9x2 + 9y 2 ): the gradient then points straight at the minimizer, and γ = 1/λ (here 1/18) sends
+ both coordinates exactly to 0 in one step. With κ = 9 no such γ exists – one-step convergence
+ would need γ = 1/18 and γ = 1/2 simultaneously.
+
+  Answer. (a) factors (1 − 18γ), (1 − 2γ); range γ < 1/9; (b) (−0.8, 2.4) → (0.64, 1.92) →
+  (−0.512, 1.536); x oscillates (negative factor); (c) H = diag(18, 2), κ = 9; equal moderate
+  curvature is ideal, then γ = 1/λ finishes in one step.
+
+ Intuition & exam tips
+
+ Everything about differential curvature in one computation: per-coordinate factors (1 − γλi ),
+ the stiffest eigenvalue capping γ at 2/λmax , the sign of a factor determining oscillation, and
+ κ = λmax /λmin as the difficulty score. When asked “why is the elliptical bowl slow?” – answer
+ with the two factors, not with prose.
+
+   Problem 5 (6 marks) MODERATE DERIVATION + COMPUTATION
+                                                      2
+ For the least-squares loss J(w) = ni=1    ⊤
+                                   P
+                                     Pnw Xi⊤− yi : 
+  (a) Derive the gradient ∇J(w) = 2 i=1 w Xi − yi Xi .                                        [2]
+  (b) For X1 = (2, 1)⊤ , y1 = 4 and X2 = (1, 3)⊤ , y2 = 5, compute ∇J at w0 = (0, 0)⊤ , take one
+       GD step with γ = 0.02, and verify the loss decreased.                                  [4]
+
+
+ Step-by-step solution
+
+
+ Step 1 (derive via the chain rule). Write J = i ri2 with residual ri = w⊤ Xi − yi . Since
+                                                 P
+ ∇w ri = Xi ,
+                             X                 n
+                                               X
+                                                  w⊤ Xi − yi Xi .
+                                                            
+                        ∇J =    2 ri ∇w ri = 2
+                                   i                i=1
+
+ Reading: each example pulls w along its own feature vector, in proportion to its current error.
+
+ Step 2 (gradient at w0 ). Residuals at the origin:
+
+               r1 = 0 − 4 = −4,       r2 = 0 − 5 = −5,     J0 = 16 + 25 = 41.
+                                             
+           ∇J(w0 ) = 2 (−4)(2, 1) + (−5)(1, 3) = 2 (−8 − 5, −4 − 15) = (−26, −38).
+
+
+
+
+                                            Page 5 of 8
+ZC416 MFML/MFDS                                                 Lecture 10 – Optimization: Exam Practice
+
+
+
+ Step 3 (one GD step).
+
+                          w1 = (0, 0) − 0.02 (−26, −38) = (0.52, 0.76).
+
+
+ Step 4 (verify the decrease). New residuals:
+
+           r1 = 0.52(2) + 0.76(1) − 4 = −2.20,        r2 = 0.52(1) + 0.76(3) − 5 = −2.20.
+
+                             J1 = (−2.2)2 + (−2.2)2 = 9.68 < 41. ✓
+ One step recovered 76% of the loss.
+                                   ⊤X − y ) X ;
+                         P
+  Answer. (a) ∇J = 2        i (w     i   i   i    (b) ∇J(0) = (−26, −38), w1 = (0.52, 0.76), J :
+  41 → 9.68.
+
+ Intuition & exam tips
+
+ This gradient – residual times feature vector, summed – is the engine behind the standardization
+ computation of Problem 3, and restricting the sum to a sample S gives the mini-batch gradient
+    Pby stochastic methods. Watch the sign convention: with ri = ŷi − yi the formula is
+ used
+ +2 ri Xi and the minus sign lives in the update.
+
+   Problem 6 (6 marks) DIFFICULT COMPUTATION
+
+ For F (x) = 3x4 − 4x3 − 12x2 + 5, small-step gradient descent converges to the local minimum
+ at x = −1 from any start x0 < 0, and to the global minimum at x = 2 from any start x0 > 0
+ (the watershed – a local maximum – sits at x = 0). The initial point x0 is drawn uniformly from
+ [−2, 3].
+   (a) Compute the probability that a single run converges to the global minimum.              [2]
+   (b) With k independent restarts (keeping the best result), find the smallest k for which the
+       global minimum is found with probability ≥ 0.99.                                        [3]
+   (c) If a separable 10-dimensional objective has such a landscape in every coordinate (per-
+       coordinate success probability 0.6, independent), what is the chance that a single run
+       lands in the global basin of all coordinates simultaneously?                            [1]
+
+
+ Step-by-step solution
+
+
+ Step 1 (one run). Success requires x0 > 0 (from x0 < 0 the run is funnelled to −1; the
+ single point x0 = 0 has probability zero under a continuous draw). Favourable length over total
+ length:
+                                            3−0      3
+                                     p=            = = 0.6.
+                                          3 − (−2)   5
+
+ Step 2 (restarts). One run fails with probability 0.4. We need
+
+                               1 − 0.4k ≥ 0.99     ⇐⇒       0.4k ≤ 0.01.
+
+ Compute the powers:
+
+                       0.45 = 0.01024 > 0.01,         0.46 = 0.004096 ≤ 0.01.
+
+ So k = 6 restarts (success probability ≈ 0.9959; k = 5 just misses at 0.98976).
+
+
+
+                                              Page 6 of 8
+ZC416 MFML/MFDS                                                  Lecture 10 – Optimization: Exam Practice
+
+
+
+ Step 3 (ten coordinates at once). By independence:
+
+                                      P = 0.610 ≈ 0.006 (≈ 0.6%).
+
+ Even with per-coordinate odds well above one half, the joint success collapses exponentially
+ – the high-dimensional version of the local-minima trap, and the reason restarts alone cannot
+ rescue GD in ML.
+
+  Answer. (a) p = 0.6; (b) k = 6; (c) 0.610 ≈ 0.6%.
+
+ Intuition & exam tips
+
+ The template 1 − (1 − p)k (“at least one success in k tries”) plus a careful power computation is
+ a recurring exam device. Basins multiply across coordinates, so probabilities multiply too. Note
+ how the numbers are engineered so that k = 5 barely fails – compute powers precisely rather
+ than rounding early.
+
+   Problem 7 (8 marks) DIFFICULT COMPUTATION
+
+ A linear model ŷ = w1 x1 + w2 x2 is trained on features
+
+              x1 ∈ {100, 500, 900} (e.g. sq. ft),      x2 ∈ {0.9, 0.3, 0.6} (e.g. a rate),
+
+ with J = i (ŷi − yi )2 , whose Hessian is H = 2 i Xi Xi⊤ (rows Xi = (xi1 , xi2 )⊤ ).
+          P                                      P
+  (a) Compute H and (given eigenvalues λ ≈ 2.14 × 106 and ≈ 1.38) the largest stable learning
+      rate γmax = 2/λmax .                                                                 [3]
+                                                             ′
+  (b) Min-max normalize both columns and recompute H ; find its eigenvalues and the new
+        ′
+      γmax .                                                                               [4]
+  (c) By what factor did the admissible learning rate improve?                             [1]
+
+ Step-by-step solution
+
+
+ Step 1 (raw Hessian). The needed sums:
+       P 2
+          xi1 = (1 + 25 + 81) × 104 = 107 × 104 ,
+                                                      P
+                                                         xi1 xi2 = 90 + 150 + 540 = 780,
+                              P 2
+                                 xi2 = 0.81 + 0.09 + 0.36 = 1.26.
+ Hence
+                                               2.14 × 106 1560
+                                                            
+                              1 070 000 780
+                          H=2                =                   .
+                                 780    1.26      1560    2.52
+ With the given λmax ≈ 2.14×106 (≈ H11 ; the off-diagonal is tiny in comparison) and λmin ≈ 1.38:
+                      2              2                                2.14 × 106
+            γmax =          ≈              ≈ 9.3 × 10−7 ,        κ≈              ≈ 1.6 × 106 .
+                     λmax       2.14 × 106                               1.38
+ Any learning rate above ∼ 10−6 blows up – and at ∼ 10−6 the w2 direction (curvature ≈ 1.4)
+ moves glacially.
+
+ Step 2 (min-max scale the columns). Column 1: min = 100, range = 800:
+                                            x′1 = (0, 0.5, 1).
+ Column 2: min = 0.3, range = 0.6:
+                                            x′2 = (1, 0, 0.5).
+
+
+                                               Page 7 of 8
+ZC416 MFML/MFDS                                                  Lecture 10 – Optimization: Exam Practice
+
+
+
+ Step 3 (new Hessian). New sums:
+ P ′2                               P ′ ′                           P ′2
+    x1 = 0 + 0.25 + 1 = 1.25,        x1 x2 = 0 + 0 + 0.5 = 0.5,      x2 = 1 + 0 + 0.25 = 1.25.
+                                                             
+                                ′      1.25 0.5         2.5 1
+                              H =2                  =             .
+                                        0.5 1.25         1 2.5
+                                  
+ Eigenvalues of a symmetric ab ab matrix are a ± b:
+
+                                        ′        2                       3.5
+       λ = 2.5 ± 1 = {3.5, 1.5},       γmax =       ≈ 0.571,      κ′ =       ≈ 2.33 (was ∼ 106 ).
+                                                3.5                      1.5
+
+ Step 4 (improvement factor).
+                                     ′
+                                    γmax      0.571
+                                         ≈            ≈ 6 × 105 .
+                                    γmax   9.3 × 10−7
+ Scaling the features let the learning rate grow by roughly six orders of magnitude while also bal-
+ ancing the two directions – the quantitative content of “normalize your features before gradient
+ descent”.
+                                6 1560 
+                                         , γmax ≈ 9.3 × 10−7 ; (b) H ′ = 2.5  1
+                                                                                
+  Answer. (a) H = 2.14×10  1560   2.52                                     1 2.5 , λ = {3.5, 1.5},
+   ′
+  γmax ≈ 0.571; (c) ≈ 6 × 105 × larger.
+
+ Intuition & exam tips
+
+ The grand synthesis: feature scales enter the Hessian squared (x2 terms), so a 103 scale gap
+ becomes a 106 curvature gap, which caps γ at 2/λmax ∼ 10−6 . Normalization is not cosmetic
+ – it is a 105 –106 × speedup you can compute. Handy fact used in (b): eigenvalues of ab ab are
+                                                                                           
+
+ a ± b – worth memorizing for 2 × 2 symmetric matrices with equal diagonal.
+
+
+
+
+  Highest-yield patterns: Problems 3 (standardization vs gradients), 4 (curvature factors) and 7 (Hessian
+                      before/after scaling) – most exam variants are re-skins of these.
+
+
+
+
+                                                Page 8 of 8
+

@@ -1,0 +1,385 @@
+              MFML AND MFDS
+                       MFML and MFDS Team
+BITS Pilani                   WILPD - CSIS
+                                             BITS Pilani
+
+
+
+
+         *
+             ZC416 Mathematical Foundations for
+              Machine Learning / Data Science
+                  Topic: # 10 Optimization
+1 / 24
+  I NTRODUCTION
+
+
+         We will look at nonlinear optimization concepts in this
+         lecture.
+         We already know how to compute gradient, but there are
+         some minutiae of gradient descent that we need to address.
+         Machine learning algorithms depend heavily on the
+         correctness of the gradient since if the gradient is
+         computed erroneously, the algorihms might fail to find the
+         local or global optimum.
+         We will also look into some challenges in non-linear
+         optimization.
+
+
+
+2 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  I NITIALISATION
+
+         Gradient descent must start at some value of the
+         parameters. How is an initial point chosen?
+         For many applications, the vector components of the initial
+         point can be chosen from [−1, +1].
+         In case the parameters are constrained to be non-negative,
+         the components can be chosen in the range [0, 1].
+         What about more complex applications where the individual
+         components are correlated with each other? In this case
+         the choice of the initial point can be critical.
+         It may also happen that choosing improper magnitudes of
+         some components may cause overflow or underflow errors
+         during updates.
+
+3 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  P ROPERTIES OF OPTIMIZATION IN MACHINE
+  LEARNING
+
+         Most objective functions in machine learning penalize the
+         deviation of a predicted value from an observed value in
+         one form or the other.
+                                                    Pi =n
+         A common loss function is J (w ) = i =1 ∥w T Xi − yi ∥2 .
+         Here XiT is the ith row vector in a matrix consisting of n row
+         vectors where each row vector represents a training point,
+         and yi contains the real-valued observation of the ith
+         training point.
+         The above loss function occurs in least squared regression,
+         and represents the sum of squared differences between the
+         observed values yi in the data and the predicted values
+         ŷi = w T Xi .
+4 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  OVERFITTING
+
+
+         Suppose we have 4-dimensional data and one dependent
+         variable, i,e output that is a function of the four inputs. Let
+         the input parameters be x1 , x2 , x3 , x4 and the output be y .
+         We seek to learn parameters w1 , w2 , w3 , w4 , w5 such that
+         out prediction ŷ = w1 x1 + w2 x2 + w3 x3 + w4 x4 + w5 where
+         y is the observed value for the given values of the inputs.
+         We would like to minimize the squared error between
+         prediction and actual output over all the given training
+         examples.
+
+
+
+
+5 / 24
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  OVERFITTING
+
+
+
+         Assuming that we have fewer than 5 training examples, we
+         can actually find values of w1 , w2 , w3 , w4 , w5 to get the
+         squared error to be zero since we can solve for values of
+         w1 , w2 , w3 , w4 , w5 by solving fewer than five linear
+         equations. Such a solution is possible because we have
+         fewer equations than variables.
+         Our model parameters will perform very well on the training
+         data but might perform poorly on the test data.
+
+
+
+
+6 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E XAMPLE OF OVERFITTING
+
+         Consider the following data on 4 variables x1 , x2 , x3 , x4 and as-
+         sociated output variable y . Let us say that this is a sample of
+         real-life data where the output y ≈ x1 .
+
+                              x1    x2   x3     x4          y
+                              61    2     3     0.1        59
+                              40    0     4     0.5        40
+                              68    0    10     1.0        70
+
+         Minimizing squared error, we notice that one good solution is
+         w1 = 1, w2 = w3 = w4 = 0, w5 = 0. This solution does not
+         give zero squared error with respect to the actual observations
+         but gives an error close to zero.
+
+
+7 / 24
+                                          BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E XAMPLE OF OVERFITTING
+         Consider the solution
+         w1 = 0, w2 = 7, w3 = 5, w4 = 0, w5 = 20. This solution
+         gives zero training error. It is a very poor solution since
+         there is no dependence of the output variable y on x1 while
+         we know that there is actually a strong dependence
+         between y and x1 . Therefore it will incur a high error on
+         test-data.
+         On the other hand, the previous solution
+         w1 = 1, w2 = w3 = w4 = 0, w5 = 0 is a very good one
+         since it captures the real-life relationship between the
+         output variable y and x1 . This example illustrates the idea
+         that minimizing the loss function to the greatest extent may
+         not be a good thing since the model may then perform
+         poorly on real-life data.
+8 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  F EATURE PROCESSING
+         The loss function can have vastly different sensitivities to
+         different model parameters and this can have an impact in
+         the learning process.
+         Consider a model where a person’s wealth y is modeled in
+         terms of his age x1 and number of years of college
+         education x2 .
+         The age variable has a range of 100, ie [0, 100] and the
+         number of years in the college education is in the range
+         [0, 10].
+         The formula for wealth y is y = w1 x12 + w2 x22 .
+         We have ∂∂wy1 = x12 and ∂∂wy2 = x22 . Since x1 and x2 are
+         generally very different in magnitude, we take small steps in
+         respect of w2 and large steps in respect of w1 .
+
+9 / 24
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  F EATURE PROCESSING
+          Taking small steps in w2 and large steps in w1 will make us
+          go steadily towards the optimal value for w2 but oscillate
+          with respect to the optimal value of w1 , overshooting the
+          target each time. This makes convergence very slow.
+          It is therefore helpful to have features with similar variance.
+          Two techniques used for achieving similar variance are
+          mean-centering and feature normalization.
+          In case of mean-centering a vector of column-wise means
+          is subtracted from each data point.
+          In case of feature normalization, each feature value is
+          divided by its standard deviation.
+          In case of min-max normalization we scale the jth feature
+                                                  x −minj
+          of the ith datapoint as follows: xij = maxij j − min j
+                                                                 .
+
+10 / 24
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L OCAL OPTIMA AND FLAT REGIONS
+
+          Consider the following one-dimensional function:
+          F (x ) = (x − 1)2 ((x − 3)2 − 1).
+          Taking the derivative and setting it to zero, we have
+          F ′ (x ) = 2(x − 1)((x − 1)(x − 3) + (x − 3)2 − 1) = 0.
+          The solutions to
+                        √ this equation are √
+                      5− 3
+          x = 1, x = 2 = 1.634, x = 5+2 3 = 3.366.
+          We can show that the first and third roots are minima since
+          F ′′ (x ) > 0 at these points while the second point is a
+          maximum since F ′′ (x ) < 0.
+          Evaluating the function
+                          √       values at these
+                                              √   points, we find
+                        5− 3               5+ 3
+          F (1) = 0, F ( 2 ) = 0.348, F ( 2 ) = −4.848.
+
+
+11 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L OCAL OPTIMA AND FLAT REGIONS
+
+          If we start gradient descent from any point less than 1.634, we
+          will arrive only at a local minimum.
+
+
+
+
+12 / 24
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L OCAL OPTIMA AND FLAT REGIONS
+          We might never arrive at a global minimum if we keep
+          choosing wrong starting points. Thus we will get stuck at a
+          local minimum, not knowing that a better solution exists.
+          The problem becomes worse with high-dimensionality.
+          Consider an objective function consisting of the sum of
+          d-univariate functions in the variables x1 , x2 , . . . , xd , each a
+          function of a different variable, say
+          F (x1 , x2 , . . . xd ) = A1 (x1 ) + A2 (x2 ) + . . . + An (xn ).
+          Let Ai (xi ) have ki local minima. Setting ∂∂xFi = 0∀i, we note
+          that any point (x1∗ , x2∗ , . . . , xd∗ ), where xi∗ is a local minima
+          of the function Ai (xi ), is a solution to ∂∂xFi = 0.
+          This is because ∂∂xFi |(x1∗ ,x2∗ ,...xd∗ ) = A′i (xi∗ ) = 0 since xi∗ is a
+          local minimum of Ai (xi ).
+13 / 24
+                                             BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L OCAL OPTIMA AND FLAT REGIONS
+                               Qi =d
+          There are therefore i =1 ki local minima for the function
+          F (x1 , x2 , . . . , xd ), which is very large number of points.
+          Gradient descent could be stuck at any one of these points
+          which might be far from the global optimum.
+          Another problem to contend with is the presence of flat
+          regions where the gradient is close to zero. An example of
+          this situation is shown in the next slide.
+          Flat regions are problematic because the speed of descent
+          depends on the magnitude of the gradient, given a fixed
+          learning rate. The optimization process will take a long time
+          to cross a flat region of space which will make convergence
+          slow.
+
+
+14 / 24
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  L OCAL OPTIMA AND FLAT REGIONS
+
+
+
+
+15 / 24
+                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D IFFERENTIAL CURVATURE
+          In multi-dimensional settings, the components of the
+          gradient with respect to different parameters can vary
+          widely. As has already been mentioned in a previous slide,
+          this will cause convergence problems since there is
+          oscillation in the update step with respect to some
+          components and a steady movement with respect to other
+          components.
+          Consider the simplest possible case of a bowl-like convex,
+          quadratic objective function with a single global minimum -
+          L = x 2 + y 2 represents a perfectly circular bowl, and the
+          function L = x 2 + 4y 2 .
+          We shall show contour plots of both functions and how
+          gradient descent performs on finding the minimum of the
+          two functions.
+16 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D IFFERENTIAL CURVATURE
+
+
+          What is the qualitative difference between L = x 2 + y 2 and
+          L = x 2 + 4y 2 . Intuitively one looks symmetric in x and y ,
+          and the other is not.
+          The second loss function is more sensitive to changes in y
+          as compared to x - it looks like an elliptical bowl. The
+          specific sensitivity depends on the position of x , y .
+          Looking at the second-order derivatives we can see that for
+                                 2             2
+          the second function ∂∂2 xL2 , and ∂∂2 yL2 are very different.
+
+
+
+
+17 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D IFFERENTIAL CURVATURE
+
+
+
+          The second-prder derivative measures the rate of change
+          of the gradient - a high second-order derivative means high
+          curvature.
+          From the point of view of gradient descent we want
+          moderate curvature in all dimensions as it would means
+          that the gradient does not change too much in some
+          dimensions compared to others. We can then make
+          gradient-descent steps of large sizes.
+
+
+
+
+18 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D IFFERENTIAL CURVATURE
+          In the next slide we show contour plots of the perfect and
+          elliptical bowls discussed previously. We see that in case of
+          the perfect bowl, a sufficiently large step-size from any
+          point can take us directly to the optimum of the function in
+          one-step, since the gradient at any point points towards the
+          optimum of the function. This is not true for the elliptical
+          bowl, the gradient at any point does not point to the
+          optimum of the function.
+          Note that the gradient at any point is orthogonal to the
+          contour line at that point. This because the dot product of
+          the gradient ∇F and a small displacement δ x along the
+          contour line gives the change in the value of the function
+          along the displacement x. Since the function remains
+          constant along the contour line, ∇F .x = 0
+19 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  C ONTOUR PLOTS
+
+
+
+
+20 / 24
+                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D IFFERENTIAL CURVATURE
+          A closer look at the controur plot for the elliptical bowl case
+          shows that in the y -direction, we see oscillatory movement
+          as in each step we correct the mistake of overshooting
+          made in the previous step. The gradient component along
+          the y-direction is more than the component along the
+          x-direction.
+          Along the x-direction, we make small movements towards
+          the optimum x-value.
+          Overall, after many training steps we find that we have
+          made little progress to the optimum.
+          It needs to be kept in mind that the path of steepest
+          descent in most objective functions is only an
+          instantaneous direction of best improvement, and is not the
+          correct direction of descent in the longer term.
+21 / 24
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  R EVISITING FEATURE NORMALIZATION
+
+          We show how to address in some measure the differential cur-
+          vature problem by feature normalization. Consider the following
+          toy dataset, where the two input attributes are Guns and Butter
+          respectively, and the output attribute is Happiness.
+                 Guns                   Butter                      Happiness
+           (number per capita)    (ounces per capita)                (index)
+                  0.1                     25                            7
+                  0.8                     10                            1
+                  0.4                     10                            4
+          We intend to find a relationship of the form y = w1 x1 + w2 x2 from
+          the data. The coefficients w1 and w2 are found using gradient
+          descent on the loss function computed from the above data.
+
+22 / 24
+                                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  R EVISITING FEATURE NORMALIZATION
+
+          From the given three examples we can set up the loss
+          function as follows:
+
+          J (w ) = (0.1w1 +25w2 −7)2 +(0.8w1 +10w2 −1)2 +(0.4w1 +10w2 −
+
+          .
+          We note that this objective function is much more sensitive
+          to w2 than w1 since the coefficients for w2 in the expression
+          above are much larger than those for w1 .
+          One way to get around this issue is to standardize each
+          column to zero mean and unit variance, the coefficients for
+          w1 and w2 will become much more similar, and differential
+          curvature will be reduced.
+
+23 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+                      BITS Pilani
+
+
+
+
+          Thank you
+
+24 / 24
+
