@@ -1,0 +1,105 @@
+<!--@W1-->
+  <div class="widget reveal" id="w-feel">
+    <div class="widget-head"><span class="w-title">Your feet feel the tilt, not the turn</span><span class="w-sub">A lit valley, one walker, and a tilt disc under its boots: the disc knows the slope here and nothing about where the slope changes. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> click <em>η = 0.20 · the edge</em> and press ▶ — the walker pogo-sticks between two glowing landing pads for ever, because the across-valley factor \(1-10\eta\) is exactly \(-1\); then open the <em>cliff</em> tab and watch a confident stride step straight off a ledge the tilt never mentioned.</p>
+    <div class="tabs" id="fl-tabs">
+      <button data-t="valley" aria-selected="true">valley · two directions, one stride</button>
+      <button data-t="cliff">cliff · the tilt that lasts 5 cm</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="fl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On the valley tab a long lit trough, gentle along w1 and steep across w2, with a glowing walker standing on a translucent tilt disc, a faint ghost arrow to where its next stride lands, and a glass panel at the back showing the two one-dimensional slices of the loss as two lit curves, one ten times steeper than the other. Pressing play walks the trace: at a small stride the walker drops to the trough floor in one step and creeps along it; at the edge stride it hops between two glowing pads for ever; beyond it it flies off the top with a red comet tail. On the cliff tab the surface becomes a high shelf that drops off a sudden ledge; the walker takes a confident stride, steps off, and the camera follows it down."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls" data-tab="valley">
+          <div class="ctl"><label for="fl-eta">stride η</label><input id="fl-eta" type="range" min="0.01" max="0.30" step="0.005" value="0.10"><output id="fl-eta-o">0.1</output></div>
+          <div class="ctl"><label for="fl-k">steps</label><input id="fl-k" type="range" min="1" max="30" step="1" value="12"><output id="fl-k-o">12</output></div>
+        </div>
+        <div class="controls" data-tab="cliff" style="display:none">
+          <div class="ctl"><label for="fl-x">where you stand x</label><input id="fl-x" type="range" min="-4" max="4" step="0.05" value="-2.0"><output id="fl-x-o">−2</output></div>
+        </div>
+        <div class="presets" id="fl-pre"><button class="play" id="fl-play">▶ walk</button><button class="preset" id="fl-p-lucky" data-tab="valley" aria-pressed="true">η = 0.10 · lucky</button><button class="preset" id="fl-p-edge" data-tab="valley">η = 0.20 · the edge</button><button class="preset" id="fl-p-blow" data-tab="valley">η = 0.25 · gone</button></div>
+        <div class="readout" id="fl-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(J(\mathbf w)=\tfrac12 w_1^2+5w_2^2\) has \(\nabla J=(w_1,\,10w_2)\): one step multiplies \(w_1\) by \(1-\eta\) and \(w_2\) by \(1-10\eta\), so no single \(\eta\) serves both. The tilt disc is first-order information; the ledge is what it cannot see.</p>
+      </div>
+    </div>
+  </div>
+<!--@W2-->
+  <div class="widget reveal" id="w-trolley">
+    <div class="widget-head"><span class="w-title">The loaded trolley</span><span class="w-sub">Give the walker mass. Its comet tail is its velocity; the two chains laid on the floor are the last ten pushes, end to end — one chain stacks, the other folds back on itself. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> press ▶ at \(\beta=0.90\) and watch the trolley sail straight through the trough floor at step 2 while the plain walker stops on it — then set \(\beta=0.97\) and count the crossings in the chip at the top of the scene.</p>
+    <div class="presets" id="tr-pre"><button class="play" id="tr-play">▶ roll</button><button class="preset" id="tr-p-none">β = 0 · no memory</button><button class="preset" id="tr-p-std" aria-pressed="true">β = 0.90 · standard</button><button class="preset" id="tr-p-heavy">β = 0.97 · heavy</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="tr-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D valley. A plain glowing walker and a small trolley leave the same start together. The walker drops to the trough floor and creeps along it; the trolley overshoots through the floor and swings back with a comet tail for its velocity and a short orange arrow for each fresh push, sparks flying when a push fights the velocity. On the floor beside the valley two chains of lit segments are laid end to end from the last ten pushes: the along-trough chain grows into one long bar, the across-trough chain folds back on itself to almost nothing. A glass panel at the back draws both losses against step."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="tr-beta">memory β</label><input id="tr-beta" type="range" min="0" max="0.98" step="0.01" value="0.90"><output id="tr-beta-o">0.9</output></div>
+          <div class="ctl"><label for="tr-eta">stride η</label><input id="tr-eta" type="range" min="0.02" max="0.20" step="0.005" value="0.10"><output id="tr-eta-o">0.1</output></div>
+          <div class="ctl"><label for="tr-k">steps</label><input id="tr-k" type="range" min="1" max="30" step="1" value="14"><output id="tr-k-o">14</output></div>
+        </div>
+        <div class="readout" id="tr-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="tr-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(\mathbf v\leftarrow\beta\mathbf v-\eta\nabla J\), \(\mathbf w\leftarrow\mathbf w+\mathbf v\). A push from \(k\) steps ago still counts \(\beta^k\): agreeing pushes sum to \(1/(1-\beta)\) times one push, alternating pushes nearly cancel — speed along the trough, quiet across it, at the price of an overshoot.</p>
+      </div>
+    </div>
+  </div>
+<!--@W3-->
+  <div class="widget reveal" id="w-record">
+    <div class="widget-head"><span class="w-title">The permanent record</span><span class="w-sub">Two block towers on the floor, one per weight: every step drops a block whose height is that step's squared slope, and the towers never shrink. The stride is divided by the square root of the tower. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> press ▶ on the <em>two steps</em> tab and watch the first stride: \(0.1000\) in <em>both</em> weights although one slope is \(1\) and the other \(10\) — the path leaves at exactly 45°. Then open <em>the long run</em>: the towers loom and the walker crawls to a halt short of the star.</p>
+    <div class="tabs" id="rc-tabs">
+      <button data-t="two" aria-selected="true">two steps · the exact arithmetic</button>
+      <button data-t="long">the long run · the brake that never lifts</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="rc-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D valley with a red walker whose path is a laser-straight diagonal toward the star. Two red block towers stand on the floor at the near corners, one per weight; each step drops a block onto both, the steep weight's tower far taller, and the towers never shrink. A ghost arrow shows the walker's shrinking next stride and its halo dims as the record grows. On the long-run tab the camera pulls back, the towers loom, a dark ring on the surface shows the distance still to go, and a glass panel at the back draws the stride against step beside the reference curve alpha over root t."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="rc-k">steps</label><input id="rc-k" type="range" min="1" max="40" step="1" value="12"><output id="rc-k-o">12</output></div>
+          <div class="ctl"><label for="rc-eta">stride α</label><input id="rc-eta" type="range" min="0.02" max="0.4" step="0.005" value="0.10"><output id="rc-eta-o">0.1</output></div>
+        </div>
+        <div class="presets"><button class="play" id="rc-play">▶ run</button></div>
+        <div class="readout" id="rc-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="rc-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(A\leftarrow A+g^2\), step \(=\alpha g/\sqrt A\), so on step one \(\alpha g/\sqrt{g^2}=\alpha\,\mathrm{sign}(g)\): the size of the slope cancels and only its direction survives. \(A\) never shrinks, so the stride can only fall.</p>
+      </div>
+    </div>
+  </div>
+<!--@W4-->
+  <div class="widget reveal" id="w-form">
+    <div class="widget-head"><span class="w-title">Form, not career average</span><span class="w-sub">The same two towers, but old blocks evaporate at rate \(\rho\): the towers stay short, the stride stays alive. A dim red ghost walks the AdaGrad path beside the walker and stalls. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> click <em>ρ = 0.999</em> — the first step launches the walker clean off the map with a long comet tail, because the inflation \(1/\sqrt{1-\rho}\) has gone from \(3.16\times\) to \(31.6\times\); it comes back into frame on step 2.</p>
+    <div class="presets" id="fm-pre"><button class="play" id="fm-play">▶ run</button><button class="preset" id="fm-p-std" aria-pressed="true">ρ = 0.900 · ten-step memory</button><button class="preset" id="fm-p-long">ρ = 0.999 · thousand-step memory</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="fm-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D valley. An amber walker walks the RMSProp path to the star while a dim red ghost walks the AdaGrad path beside it and stalls. Two amber block towers on the floor receive a block every step, but old blocks sink and go translucent, so the towers stay short. At rho close to one the first step fires the walker off the map with a long comet tail and sparks before it returns on step two. A glass panel at the back draws the stride against step for both walkers."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="fm-rho">forgetting ρ</label><input id="fm-rho" type="range" min="0.5" max="0.999" step="0.001" value="0.900"><output id="fm-rho-o">0.9</output></div>
+          <div class="ctl"><label for="fm-eta">stride α</label><input id="fm-eta" type="range" min="0.02" max="0.3" step="0.005" value="0.10"><output id="fm-eta-o">0.1</output></div>
+          <div class="ctl"><label for="fm-k">steps</label><input id="fm-k" type="range" min="1" max="30" step="1" value="12"><output id="fm-k-o">12</output></div>
+        </div>
+        <div class="readout" id="fm-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(A\leftarrow\rho A+(1-\rho)g^2\) is a running average with a memory of about \(1/(1-\rho)\) steps. Starting it at zero makes the first average \((1-\rho)g^2\), so the first stride is \(1/\sqrt{1-\rho}\) times too long — RMSProp never fixes that; Adam does.</p>
+      </div>
+    </div>
+  </div>
+<!--@W5-->
+  <div class="widget reveal" id="w-notebooks">
+    <div class="widget-head"><span class="w-title">Two notebooks and a probation</span><span class="w-sub">Two glass notebooks fill with ink as the walker goes — one remembers which way, one how loud — and a lamp over the walker is the rate on probation: dim while the books are nearly empty, bright once they are full. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> drag \(t\) from 1 to 12 and watch the lamp dim to its darkest as \(\alpha_t\) falls to \(0.015224\); keep going and it brightens on its own toward \(\alpha=0.1\) — the correction retires itself.</p>
+    <div class="presets" id="nb-pre"><button class="play" id="nb-play">▶ step through</button><button class="preset" id="nb-p-def" aria-pressed="true">defaults · ρ_f = 0.9, ρ = 0.999</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="nb-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D valley with the gold Adam walker on its trace. Two glass notebooks stand at the front corners and fill with ink from the bottom as t grows: the gold which-way book fills quickly, the amber how-loud book barely at all. A lamp hangs over the walker whose brightness is the effective rate: dim at t equals one, darkest at t equals twelve, full later. A glass panel at the back draws the rate against t on a log scale with a bead at the current step and a dashed line at alpha."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="nb-t">step t</label><input id="nb-t" type="range" min="1" max="40" step="1" value="1"><output id="nb-t-o">1</output></div>
+          <div class="ctl"><label for="nb-rf">direction ρ_f</label><input id="nb-rf" type="range" min="0.5" max="0.99" step="0.01" value="0.90"><output id="nb-rf-o">0.9</output></div>
+          <div class="ctl"><label for="nb-rho">loudness ρ</label><input id="nb-rho" type="range" min="0.9" max="0.9999" step="0.0001" value="0.9990"><output id="nb-rho-o">0.999</output></div>
+        </div>
+        <div class="readout" id="nb-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div class="chip" id="nb-chip" style="display:inline-block;margin-top:.5rem;padding:.35rem .75rem;border-radius:14px;border:1px solid var(--line);font-size:.78rem;white-space:normal;line-height:1.5">—</div>
+        <div id="nb-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(F\leftarrow\rho_f F+(1-\rho_f)g\), \(A\leftarrow\rho A+(1-\rho)g^2\), step \(=\alpha_t F/\sqrt A\) with \(\alpha_t=\alpha\sqrt{1-\rho^{\,t}}/(1-\rho_f^{\,t})\). Count \(t\) from 0 and \(1-\rho_f^0=0\) divides the rate by zero on the very first step — the classic bug.</p>
+      </div>
+    </div>
+  </div>

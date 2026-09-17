@@ -15,15 +15,25 @@ function glo(svg,blur){ if(!CIN||isLight()) return null; return CIN.glowFilter(s
 const G=(p,attrs)=>{ if(p&&p.glow) attrs.filter=p.glow; return attrs; };
 /* ---- three.js stage registry: every stage rebuilds itself when the theme flips, so colours are always the live palette ---- */
 const STAGES=[];
-function mountStage(box, build){ const S={box,build,handle:null}; STAGES.push(S); remount(S);
-  if('IntersectionObserver' in window) new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting&&S.handle) S.handle.requestRender(); }),{threshold:.02}).observe(box);  /* a canvas the browser discarded off-screen gets repainted on return */
+/* 3D stages mount only while they are near the viewport and give their GL context back when they scroll far away
+   (browsers cap live WebGL contexts at ~8-16 and silently kill the oldest). A stage's state must live OUTSIDE build():
+   build() is called again from scratch on every return, and on every theme flip. */
+const NEAR='900px 0px';
+function mountStage(box, build){ const S={box,build,handle:null,near:false}; STAGES.push(S);
+  const dist=()=>{ const r=box.getBoundingClientRect(); return r.bottom<0?-r.bottom:r.top>innerHeight?r.top-innerHeight:0; };
+  S.near=dist()<900;
+  if(S.near) remount(S);
+  if('IntersectionObserver' in window) new IntersectionObserver(es=>es.forEach(e=>{ S.near=e.isIntersecting; clearTimeout(S.park);
+      if(S.near){ if(!S.handle) remount(S); else S.handle.requestRender(); }
+      else if(S.handle) S.park=setTimeout(()=>{ if(!S.near&&S.handle) unmountStage(S); },900); }),{rootMargin:NEAR,threshold:0}).observe(box);
   return S; }
+function unmountStage(S){ if(!S.handle) return; const h=S.handle; try{ h.ctx.dead=true; const R=h.ctx.renderer; R.render=()=>{}; R.setSize=()=>{}; h.dispose(); R.forceContextLoss(); }catch(e){} S.handle=null; S.box.innerHTML=''; S.box.dataset.parked='1'; }
 function remount(S){
-  if(S.handle){ const h=S.handle; try{ h.ctx.dead=true; const R=h.ctx.renderer; R.render=()=>{}; R.setSize=()=>{}; h.dispose(); R.forceContextLoss(); }catch(e){} S.handle=null; }  /* give the GL context back — browsers cap live contexts and silently kill the oldest; the old loop may be woken again by its observers: make it inert */
-  S.box.innerHTML=''; if(CIN&&window.THREE){ try{ S.handle=S.build(); }catch(e){ console.warn('stage failed', e); } } }
+  if(S.handle){ const h=S.handle; try{ h.ctx.dead=true; const R=h.ctx.renderer; R.render=()=>{}; R.setSize=()=>{}; h.dispose(); R.forceContextLoss(); }catch(e){} S.handle=null; }  /* give the GL context back */
+  S.box.innerHTML=''; delete S.box.dataset.parked; if(CIN&&window.THREE){ try{ S.handle=S.build(); }catch(e){ console.warn('stage failed', e); } } }
 function hud(box, cls){ const d=document.createElement('div'); d.className='hud'+(cls?' '+cls:''); box.appendChild(d); return d; }
 function hint(box, text){ const d=document.createElement('div'); d.className='hint'; d.textContent=text||'drag to orbit'; box.appendChild(d); return d; }
-new MutationObserver(()=>STAGES.forEach(remount)).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+new MutationObserver(()=>STAGES.forEach(S=>{ if(S.handle||S.near) remount(S); })).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 /* a lit tube between two points (three.js coords) — the glowing-edge primitive */
 function tube(ctx,a,b,color,r,opacity){ const T=ctx.THREE; const A=new T.Vector3(...a), B=new T.Vector3(...b); const d=B.clone().sub(A), L=Math.max(1e-4,d.length());
   const m=new T.Mesh(new T.CylinderGeometry(r,r,L,12),new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:ctx.isLight?.15:.7,roughness:.3,transparent:true,opacity:opacity==null?1:opacity}));

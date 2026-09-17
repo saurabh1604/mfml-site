@@ -1,0 +1,123 @@
+<!--@W11-->
+  <div class="widget reveal" id="w-cases">
+    <div class="widget-head"><span class="w-title">Five conditions, a branching interrogation</span><span class="w-sub">Each fence is either doing work or not. Guess, solve, and let the conditions throw out the guesses that lie.</span></div>
+    <p class="try"><b>Try:</b> click a branch of the lit tree, or press ▶ to interrogate all four — three branches burn out red and their beads fall through the map, one turns green and a star lands on the path at (2/3, 1/3).</p>
+    <div class="tabs" id="cs-tabs">
+      <button data-t="two" aria-selected="true">two fences · \(x^2+2y^2\)</button>
+      <button data-t="one">one fence · end to end</button>
+      <button data-t="many">how many branches?</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="cs-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene: the level curves of the score lie on a floor map with the allowed part of the path as a bright rail; above the map a lit tree of branches, one per case, arcs down to the candidate points. Clicking a branch sends a bead down it: the branch either turns green and a star lands on the map, or flashes red and dissolves while the bead falls through the floor. On the last tab the tree grows to two-to-the-m leaf lights beside a dim ghost tree with m-squared leaves."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="presets" id="cs-playbar"><button class="play" id="cs-play">▶ interrogate all four</button></div>
+        <div class="presets" id="cs-tree" style="flex-direction:column;align-items:stretch"></div>
+        <div class="controls" data-tab="many" style="display:none">
+          <div class="ctl"><label for="cs-m">fences m</label><input id="cs-m" type="range" min="1" max="8" step="1" value="3"><output id="cs-m-o">3</output></div>
+        </div>
+        <div class="readout" id="cs-work" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="cs-check" style="margin-top:.5rem;font-size:.8rem;line-height:1.8;font-family:var(--ui)"></div>
+        <div id="cs-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Stationarity · the path · the fences · one fine charged only when touching · every fence fine \(\ge0\). A path multiplier \(\lambda\) may be any sign — only fence multipliers are forced to be non-negative, and that is the condition doing most of the rejecting here.</p>
+      </div>
+    </div>
+  </div>
+<!--@W12-->
+  <div class="widget reveal" id="w-bowl">
+    <div class="widget-head"><span class="w-title">Which problems are honest</span><span class="w-sub">Two tests for a bowl — the chord and the tangent — and one test for a set. They always agree, and together they decide whether a stopping point is the answer or only a candidate.</span></div>
+    <p class="try"><b>Try:</b> pick the wavy surface and drag the two pins: wherever the string passes under the surface it glows red. Press ▶ and the string tries 200 pairs — 119 of them go red and stay on the surface as a scar. Then switch to the tangent test and slide the glass plane over the same region.</p>
+    <div class="tabs" id="bw-tabs">
+      <button data-t="chord" aria-selected="true">the string test</button>
+      <button data-t="tangent">the tangent plane</button>
+      <button data-t="sets">convex sets</button>
+    </div>
+    <div class="presets" id="bw-f"><button class="preset" data-f="sq" aria-pressed="true">bowl x² + y²</button><button class="preset" data-f="w">wavy x⁴ − 3x² + y²</button><button class="preset" data-f="abs">|x| + |y|</button><button class="preset" data-f="exp">eˣ + y²</button><button class="preset" data-f="cube">saddle x² − y²</button><button class="preset" data-f="sqrt">dome 4 − x² − y²</button></div>
+    <div class="presets" id="bw-s" style="display:none"><button class="preset" data-s="disc" aria-pressed="true">a disc</button><button class="preset" data-s="poly">a polygon</button><button class="preset" data-s="ring">an annulus</button><button class="preset" data-s="moon">a crescent</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="bw-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D surface with two draggable glowing pins and a string stretched straight between them; every part of the string that passes below the surface glows red. On the tangent tab a glass plane rests on the surface at one pin and the surface is painted red wherever it dips under the plane. On the sets tab a lit shape lies on the floor with two pins and a segment that turns red where it leaves the shape."></div><p class="stage-tap">drag the picture to orbit · drag a pin to move it</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="bw-a">pin x</label><input id="bw-a" type="range" min="0" max="1" step="0.005" value="0.18"><output id="bw-a-o">0.18</output></div>
+          <div class="ctl"><label for="bw-b">pin y</label><input id="bw-b" type="range" min="0" max="1" step="0.005" value="0.86"><output id="bw-b-o">0.86</output></div>
+          <div class="ctl"><label for="bw-th">blend θ</label><input id="bw-th" type="range" min="0.02" max="0.98" step="0.01" value="0.5"><output id="bw-th-o">0.5</output></div>
+        </div>
+        <div class="presets"><button class="play" id="bw-play">▶ sweep 200 pairs</button></div>
+        <div class="readout" id="bw-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div class="chip" id="bw-chip" style="display:inline-block;margin-top:.5rem;padding:.35rem .75rem;border-radius:14px;border:1px solid var(--line);font-size:.78rem;white-space:normal;line-height:1.5">convex ⇒ a KKT point is THE answer. Not convex ⇒ a KKT point is only a candidate.</div>
+        <div id="bw-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">A bowl is a surface no string ever passes under, which is the same as a surface that never dips below any of its own tangent planes. A convex <em>set</em> contains every segment between two of its points. The problem is honest when the score is a bowl and the allowed region is such a set.</p>
+      </div>
+    </div>
+  </div>
+<!--@W13-->
+  <div class="widget reveal" id="w-duel">
+    <div class="widget-head"><span class="w-title">Who moves first</span><span class="w-sub">The same number seen from two sides — and the reason the view from below is always a bowl turned upside down, however ugly the problem is</span></div>
+    <p class="try"><b>Try:</b> open <em>a bundle of rods</em> and drag the highlight: every rod is dead straight, and the lit ridge running under all forty still bends downward. Press ▶ to sweep the highlight along the sheaf. That is why the dual is always concave.</p>
+    <div class="tabs" id="du-tabs">
+      <button data-t="two" aria-selected="true">two curves · one number</button>
+      <button data-t="bundle">a bundle of rods</button>
+      <button data-t="gap">the gap</button>
+    </div>
+    <div class="presets" id="du-case" style="display:none"><button class="preset" data-c="bands" aria-pressed="true">two allowed bands</button><button class="preset" data-c="wells">two wells · a real gap</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="du-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On the first tab two glass panels face each other, the primal curve on the left with its banned strip darkened and the dual arch on the right, with a horizontal beam of light at the shared value and two beads that meet on it. On the bundle tab forty glowing straight rods hang above a lit axis, one highlighted, with a thick lit ridge running under all of them that visibly bends downward. On the gap tab the same two panels with a red vertical ruler measuring the gap between the dual peak and the primal floor."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="presets"><button class="play" id="du-play">▶ play</button></div>
+        <div class="controls" data-tab="two">
+          <div class="ctl"><label for="du-x">primal x</label><input id="du-x" type="range" min="-1" max="5" step="0.02" value="1"><output id="du-x-o">1</output></div>
+          <div class="ctl"><label for="du-mu">dual µ</label><input id="du-mu" type="range" min="0" max="10" step="0.05" value="4"><output id="du-mu-o">4</output></div>
+        </div>
+        <div class="controls" data-tab="bundle" style="display:none">
+          <div class="ctl"><label for="du-xl">highlight x</label><input id="du-xl" type="range" min="-1" max="5" step="0.05" value="3"><output id="du-xl-o">3</output></div>
+        </div>
+        <div class="readout" id="du-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="du-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">For each fixed \(x\), \(\mu\mapsto L(x,\mu)\) is a straight rod of height \(f(x)\) and slope \(g(x)\). The dual is the lowest of all those rods, and the lowest of any bundle of straight rods bends downward — so \(d\) is concave whatever \(f\) and \(g\) are. Weak duality \(d^*\le p^*\) is free; it is equality that needs convexity.</p>
+      </div>
+    </div>
+  </div>
+<!--@W14-->
+  <div class="widget reveal" id="w-price">
+    <div class="widget-head"><span class="w-title">What a wall is worth</span><span class="w-sub">The multiplier is not bookkeeping. It is the price of the wall: move the wall a little and it tells you the new answer before you re-solve anything.</span></div>
+    <p class="try"><b>Try:</b> slide the wall from \(3.00\) to \(2.90\) and watch the glass panel at the back: the green bead on the tangent says \(9.60\), the gold bead on the true curve says \(9.62\), and the red tick between them is the error. Push the wall below \(2\) and it dims — it is not touching anything any more.</p>
+    <div class="presets" id="pr-pre"><button class="play" id="pr-play">▶ move the wall</button><button class="preset" id="pr-p-base" aria-pressed="true">c = 3.00</button><button class="preset" id="pr-p-near">c = 2.90</button><button class="preset" id="pr-p-free">c = 2.00 · the wall lets go</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="pr-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D bowl with the path x plus y equals four lying on it as a lit rail, a glass wall that slides along x and darkens the floor behind it, and a glowing bead pressed into the corner where the rail meets the wall. A glass panel at the back draws the value of the problem against the wall position as a lit curve, with a tangent segment at c equals three, a gold bead for the true value, a green bead for the price's prediction and a red tick for their gap."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="pr-c">wall at c</label><input id="pr-c" type="range" min="2" max="3.6" step="0.01" value="3.00"><output id="pr-c-o">3</output></div>
+        </div>
+        <div class="readout" id="pr-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="pr-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(\mathrm dp^*/\mathrm dc=\mu^*\). Below \(c=2\) the wall is not touching, the multiplier is \(0\), and the value curve is flat — the price of a wall you are not pressed against is nothing. Above it the wall bites, and its price is exactly how fast the bill grows as you push the wall in.</p>
+      </div>
+    </div>
+  </div>
+<!--@W15-->
+  <div class="widget reveal" id="w-svm">
+    <div class="widget-head"><span class="w-title">Two points and a line</span><span class="w-sub">The widest gap is the smallest \(\tfrac12 w^2\) that still clears both constraints — and the answer is built out of the multipliers of the points that touch</span></div>
+    <p class="try"><b>Try:</b> on <em>add a point</em>, drag the third lantern in from \(3\) toward \(0.5\): it stays dim and hollow and nothing moves until it crosses \(1\) — then it lights up, and the pylons and the beam shift to the new answer.</p>
+    <div class="tabs" id="sv-tabs">
+      <button data-t="ans" aria-selected="true">the answer</button>
+      <button data-t="dual">solve the dual</button>
+      <button data-t="add">add a point</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="sv-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D road: a lit strip between two glowing pylons at the margin edges, a bright beam across the road at the boundary, and one lantern of each class standing on the number line. Narrowing the slope w widens the road until the pylons pass the lanterns, which then turn red. On the dual tab a glass panel shows the dual arch and the road is built out of the multiplier live. On the add tab a third lantern can be dragged along the road; outside the pylons it is dim and hollow, inside it lights up and the whole road shifts."></div><p class="stage-tap">drag the picture to orbit · drag the third lantern</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="presets"><button class="play" id="sv-play">▶ play</button></div>
+        <div class="controls" data-tab="ans">
+          <div class="ctl"><label for="sv-w">slope w</label><input id="sv-w" type="range" min="0.2" max="3" step="0.01" value="1"><output id="sv-w-o">1</output></div>
+        </div>
+        <div class="controls" data-tab="dual" style="display:none">
+          <div class="ctl"><label for="sv-a">multiplier α</label><input id="sv-a" type="range" min="0" max="1.2" step="0.005" value="0.5"><output id="sv-a-o">0.5</output></div>
+        </div>
+        <div class="controls" data-tab="add" style="display:none">
+          <div class="ctl"><label for="sv-x3">third point x₃</label><input id="sv-x3" type="range" min="0" max="4" step="0.05" value="3"><output id="sv-x3-o">3</output></div>
+        </div>
+        <div class="readout" id="sv-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="sv-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Every point with \(\alpha_i=0\) could be deleted from the training set and the classifier would not move. That one sentence is where Unit 14 begins.</p>
+      </div>
+    </div>
+  </div>

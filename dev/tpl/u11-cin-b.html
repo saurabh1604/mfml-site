@@ -1,0 +1,114 @@
+<!--@W6-->
+  <div class="widget reveal" id="w-five">
+    <div class="widget-head"><span class="w-title">Five walkers, one valley</span><span class="w-sub">The same start, the same stride, five rules — and a stiffness dial that reshapes the valley under their feet. The camera runs with the leader; the loss curves burn on the glass behind.</span></div>
+    <p class="try"><b>Try:</b> drag stiffness to \(300\) and press ▶ — the valley closes into a slot canyon, the blue walker is thrown out over the rim on its first step, and the three adaptive walkers barely notice.</p>
+    <div class="presets" id="fv-pre"><button class="play" id="fv-play">▶ race · 25 steps</button><button class="preset" id="fv-p-lecture" aria-pressed="true">lecture · c = 10, α = 0.1</button><button class="preset" id="fv-p-stiff">stiff · c = 300, α = 0.1</button><button class="preset" id="fv-p-safe">safe · c = 300, α = 0.005</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="fv-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D valley whose across-slope stiffness c is under your finger. Five glowing walkers leave the same point together, each trailing a ribbon in its own colour: gradient descent blue, momentum green, AdaGrad red, RMSProp orange, Adam gold. A scoreboard strip at the top of the picture ranks them by loss, and a glass panel behind the valley draws their five loss curves on a log scale."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="fv-c">stiffness c</label><input id="fv-c" type="range" min="0" max="150" step="1" value="50"><output id="fv-c-o">10</output></div>
+          <div class="ctl"><label for="fv-eta">stride α</label><input id="fv-eta" type="range" min="0.005" max="0.3" step="0.005" value="0.10"><output id="fv-eta-o">0.1</output></div>
+          <div class="ctl"><label for="fv-t">step t</label><input id="fv-t" type="range" min="0" max="40" step="1" value="0"><output id="fv-t-o">0</output></div>
+        </div>
+        <div id="fv-board" style="display:flex;flex-wrap:wrap;gap:.15rem .55rem;margin-top:.55rem;font-family:var(--ui);font-size:.74rem;line-height:1.6;color:var(--ink-2)"></div>
+        <div class="readout" id="fv-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fv-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(J=\tfrac12 w_1^2+\tfrac c2 w_2^2\): plain descent is stable only while \(\alpha<2/c\), while the adaptive methods divide by their own record of the slope and never notice \(c\) at all. This race is tiny, clean and noiseless — take the mechanisms from it, not the finishing order, which on a real network with noise and millions of weights can and does change.</p>
+      </div>
+    </div>
+  </div>
+<!--@W7-->
+  <div class="widget reveal" id="w-wall">
+    <div class="widget-head"><span class="w-title">Then someone builds a wall</span><span class="w-sub">The old test — "stop where the slope is zero" — stops being true the moment the answer is pressed against something</span></div>
+    <p class="try"><b>Try:</b> slide the wall from \(c=-1\) up past \(0\) on the first tab: the walker is scraped off the bottom of the parabola and pinned to the glass, and its downhill arrow sparks into the wall instead of shrinking to nothing.</p>
+    <div class="tabs" id="wl-tabs">
+      <button data-t="knob" aria-selected="true">one knob · \(f=x^2\), \(x\ge c\)</button>
+      <button data-t="valley">the valley · a glass wall</button>
+      <button data-t="std">standard form · six rules</button>
+    </div>
+    <div class="presets" id="wl-pre"><button class="play" id="wl-play">▶ build the wall</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="wl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On the first tab the parabola f equals x squared stands up as a lit ribbon over a floor, a translucent glass wall rises at x equals c with the floor behind it darkened, and a glowing walker sits on the ribbon at the answer with its downhill arrow sparking into the wall. On the valley tab the same glass wall stands in the long valley and the answer slides from the free bottom to the foot of the wall. On the standard-form tab a floor is lit on the allowed side of the chosen rule and a tilted sheet flips over when the rule is multiplied by minus one."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls" data-tab="knob">
+          <div class="ctl"><label for="wl-c">wall at c</label><input id="wl-c" type="range" min="-2" max="3" step="0.05" value="2"><output id="wl-c-o">2</output></div>
+        </div>
+        <div class="controls" data-tab="valley" style="display:none">
+          <div class="ctl"><label for="wl-c2">wall at c</label><input id="wl-c2" type="range" min="-1" max="2" step="0.05" value="1"><output id="wl-c2-o">1</output></div>
+        </div>
+        <div class="presets" id="wl-rules" data-tab="std" style="display:none;flex-direction:column;align-items:stretch">
+          <button class="preset" id="wl-r1" style="text-align:left" aria-pressed="true">x ≥ 2</button>
+          <button class="preset" id="wl-r2" style="text-align:left">x + 2y ≥ 5</button>
+          <button class="preset" id="wl-r3" style="text-align:left">x + y ≤ 1</button>
+          <button class="preset" id="wl-r4" style="text-align:left">x + y = 1</button>
+          <button class="preset" id="wl-r5" style="text-align:left">y ≥ 0</button>
+          <button class="preset" id="wl-r6" style="text-align:left">x &gt; 2</button>
+        </div>
+        <div class="readout" id="wl-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="wl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Standard form is one shape: minimise \(f\) subject to \(g_i(\mathbf x)\le 0\) and \(h_j(\mathbf x)=0\). Every rule is pushed into it — a \(\ge\) is multiplied by \(-1\), an \(=\) is kept as it is (or split into two \(\le\)), and a strict \(&lt;\) is simply not allowed, because a set with no smallest allowed value has no answer to find.</p>
+      </div>
+    </div>
+  </div>
+<!--@W8-->
+  <div class="widget reveal" id="w-arrows">
+    <div class="widget-head"><span class="w-title">Pushing a box against a wall</span><span class="w-sub">Split the downhill push into the part that runs along the wall and the part that shoves into it. The box slides while the along-part lasts; it stops when that part is gone.</span></div>
+    <p class="try"><b>Try:</b> drag the gold box along the glass wall and watch the violet along-the-wall arrow shrink; where it vanishes the push and the wall's own gradient snap onto one line, and the stretch factor between them is the multiplier.</p>
+    <div class="tabs" id="ar-tabs">
+      <button data-t="straight" aria-selected="true">straight fence · \(x+y=4\)</button>
+      <button data-t="round">round fence · \(x^2+y^2\le1\)</button>
+      <button data-t="ridge">budget circle · this is ridge regression</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="ar-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D corridor: a shallow lit bowl with its level curves drawn as rings, a translucent glass wall standing along the fence, and a glowing gold box pressed against the wall. From the box the downhill push is drawn as an orange arrow, split into a violet arrow lying along the wall and a gold arrow shoving into it; a blue arrow shows the wall's own gradient. Drag the box along the wall; at the answer the along-arrow vanishes and the push and the wall gradient line up."></div><p class="stage-tap">drag the picture to orbit · drag the box to slide it</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="ar-t">slide along</label><input id="ar-t" type="range" min="0" max="1" step="0.002" value="0.74"><output id="ar-t-o">0.74</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ar-play">▶ slide to the answer</button></div>
+        <div class="readout" id="ar-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="ar-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">At the answer the leftover downhill along the fence is zero, so \(\nabla f\) has nothing left but the across-fence direction: for a \(\le\) fence that means \(\nabla f=-\mu\nabla g\) with \(\mu\ge0\), and for an \(=\) path only that \(\nabla f\) is <em>some</em> multiple of \(\nabla h\), with a free sign. Either way the multiplier is the stretch factor that makes the two arrows the same length.</p>
+      </div>
+    </div>
+  </div>
+<!--@W9-->
+  <div class="widget reveal" id="w-fine">
+    <div class="widget-head"><span class="w-title">Turn the wall into a fine</span><span class="w-sub">An infinite wall is not a function you can differentiate. A straight-line fine is. Raise the rate until the fine does the wall's whole job.</span></div>
+    <p class="try"><b>Try:</b> press ▶ and watch the green bead climb the bill toward the dashed \(p^*=4\) line as the fine rises — it touches the line exactly at \(\mu=4\) and bursts — then drag \(\mu\) below zero and watch the amber walker sprint off the right edge: a negative fine <em>pays</em> you to trespass, and that one drag is the whole of \(\mu\ge0\).</p>
+    <div class="presets" id="fn-pre"><button class="play" id="fn-play">▶ raise the fine · 0 → 8 → 0</button><button class="preset" id="fn-p-zero">µ = 0 · no fine</button><button class="preset" id="fn-p-star" aria-pressed="true">µ = 4 · the right rate</button><button class="preset" id="fn-p-neg">µ = −1 · a bribe</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><svg id="fn-svg" viewBox="0 0 600 420" class="svg-lab" role="img" aria-label="Two panels. Top: the infinite wall drawn as a glowing vertical light column at g equals zero with the banned side hatched and darkened, and the straight line mu times g drawn as a laser that tilts as mu changes; when mu is negative an amber walker sprints off the right edge. Bottom: the score f of x, the true bill with its glowing vertical cliff at the fence, the Lagrangian for the current fine rate as a laser, and its lowest point as a bead that climbs toward the dashed line p star equals four, bursting when it touches it at mu equals four."></svg></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="fn-mu">fine rate µ</label><input id="fn-mu" type="range" min="-2" max="12" step="0.1" value="2"><output id="fn-mu-o">2</output></div>
+        </div>
+        <div class="readout" id="fn-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="fn-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(\max_{\mu\ge0}\mu g\) is \(0\) when \(g\le0\) and \(+\infty\) when \(g>0\): the infinite wall, rebuilt out of straight lines. That is why \(\min_{\mathbf x}\max_{\mu\ge0}L\) is the original problem — and why swapping the two, \(\max_{\mu\ge0}\min_{\mathbf x}L\), is the dual.</p>
+      </div>
+    </div>
+  </div>
+<!--@W10-->
+  <div class="widget reveal" id="w-room">
+    <div class="widget-head"><span class="w-title">Room left, and the rule that falls out of it</span><span class="w-sub">Either you have room and the fine is zero, or you are touching and the fine may be positive. Never both, never neither — the bead rides two rails and never falls into the chasm between them.</span></div>
+    <p class="try"><b>Try:</b> drag the walker from deep in the corridor to hard against the glass and watch the gold bead run along the green rail to the corner, then climb the orange one — it never once enters the dark pit, and \(\mu\cdot g\) stays \(0.000\) the whole way. Drag past the wall and the corridor turns red: infeasible.</p>
+    <div class="tabs" id="rm-tabs">
+      <button data-t="one" aria-selected="true">one fence</button>
+      <button data-t="two">two fences · four patterns</button>
+    </div>
+    <div class="presets" id="rm-pre"><button class="play" id="rm-play">▶ walk to the fence</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="rm-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene: a lit corridor runs toward a translucent glass wall; a glowing walker stands in it and the floor between walker and wall is brighter, labelled with the room left. Beside the corridor a square floor tile has two lit edges, one for the room left and one for the fine rate, and a dark pit in the middle labelled never lives here; a gold bead slides along the two edges as the walker moves. A glass slab at the back holds a lit square whose side is the slack t. On the two-fence tab there are two corridors and four small tiles, one per pattern, with the live one lit."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="rm-x">answer at x</label><input id="rm-x" type="range" min="-2.4" max="0.4" step="0.01" value="-1.2"><output id="rm-x-o">−1.2</output></div>
+          <div class="ctl" data-tab="two" style="display:none"><label for="rm-y">second fence at</label><input id="rm-y" type="range" min="-2.4" max="0.4" step="0.01" value="-0.4"><output id="rm-y-o">−0.4</output></div>
+        </div>
+        <div class="readout" id="rm-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="rm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(\mu\,g=0\) is not an extra wish; it is what "the fine is only charged when you are actually touching" means in one line. Writing \(g+t^2=0\) says the same thing with a slack length \(t\): a square is never negative, so \(g\le0\) is built into the algebra instead of being asserted.</p>
+      </div>
+    </div>
+  </div>
