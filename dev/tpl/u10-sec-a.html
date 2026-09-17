@@ -1,0 +1,121 @@
+<section class="hero-stage">
+  <div id="hero-3d" role="img" aria-label="A long, razor-thin trench of a loss landscape floats in space. A glowing walker bounces from wall to wall across it, barely creeping along the floor. Then the landscape morphs — the trench opens into a round, gently tilted bowl — and the same walker runs almost straight to the bottom. Then the bowl closes back into the trench and it begins again."></div>
+  <div class="hero-scrim"></div>
+  <div class="wrap">
+  <header class="hero">
+    <div class="kicker reveal">Unit 10 of 16 · by Prof. Saurabh</div>
+    <h1 class="reveal">Optimization I — Gradients that Work</h1>
+    <p class="lede reveal">Unit 9 taught you the walk: feel the tilt, step the other way. This unit is about the four ways that walk quietly goes wrong. <strong>You are dropped in a bad place.</strong> <strong>You score full marks by memorising</strong> and learn nothing true. <strong>You settle in the wrong valley</strong>, or shuffle for ever across a salt flat where the ground feels level. And the valley you are in is not a bowl but <strong>a canyon</strong> — steep across, gentle along — so every step bounces off a wall. Each has a picture you can push around, and the fixes turn out to be mostly one fix: the cheapest trick in machine learning is to <strong>change the units of the data, not the model</strong>, so that the canyon becomes a bowl. Watch it happen above.</p>
+    <div class="meta reveal-stagger">
+      <span class="chip">≈ 90 min read + play</span>
+      <span class="chip">11 interactive widgets · 4 in 3D · a trench that opens into a bowl under your finger</span>
+      <span class="chip">15 inline checks</span>
+      <span class="chip">🧾 16 proofs, folded away — open "if you want the algebra" when you are ready</span>
+      <span class="chip">✍ 12 solved practice problems</span>
+    </div>
+  </header>
+  </div>
+  <div class="hero-hint">drag the landscape to orbit</div>
+</section>
+
+<main id="main-content" tabindex="-1">
+
+<!-- ================= 1 · THE BILL ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>The bill for being wrong — and why the squares are squares</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The tailor's patches</span>
+    <p>A tailor cuts three sleeves to a rule of thumb — "sleeve length is <em>w</em> times the arm measurement". Each sleeve comes out a little long or a little short, and every miss costs a square patch of cloth with the miss as its side: miss by 1 cm, pay for 1 cm²; miss by 3 cm, pay for 9 cm². Short and long cost the same, and one big miss costs more than three small ones. The <strong>bill</strong> is the total area of the patches. Turn the knob <em>w</em> and watch the patches grow and shrink:</p>
+  </div>
+<!--@W1-->
+  <div class="prose reveal">
+    <p>Everything a model does while "training" is on that picture. The knob is a parameter. The three points are the data. The bill is the loss, and the squares are not a metaphor: the loss <em>is</em> the total area of the squares. Slide the knob and the areas change together — the first square wants the line steeper, the third wants it flatter, and the knob settles where they stop being able to shrink at once. That is the bottom of the bill curve on the right: slope zero, bill smallest.</p>
+    <p>For one knob you can read the bottom off the curve. With many knobs the bill is still a sum of squares — one square per data row, now with the side <em>"what I predicted minus what was true"</em> — and there is no curve to look at, only the tilt under your feet. The tilt has a beautiful shape once you see the squares: each square pushes the knobs in the direction of <em>its own</em> data row, harder when its miss is bigger. The uphill direction is just all those pushes added up.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\[J(\mathbf w)=\sum_{i}\big(\mathbf w^{\top}\mathbf X_i-y_i\big)^2,\qquad \nabla J=2\sum_i\underbrace{(\mathbf w^{\top}\mathbf X_i-y_i)}_{\text{the miss}}\;\underbrace{\mathbf X_i}_{\text{its row}}\]</p>
+      <p>Each row pulls the knobs along its own feature vector, in proportion to its miss. Positive miss (predicted too much) ⇒ push the knobs <em>down</em> along that row. That one sentence is the whole gradient of least squares — and it is the sentence you would have written after watching the squares.</p>
+    </div>
+    <p>Press ▶ on the tailor's bill with the stride \(\eta=0.02\): the knob hops \(0\to1.32\to1.90\to2.16\), the bill \(78\to15.3\to3.1\to0.8\). Each hop closes the remaining gap to the bottom by the same fraction, \(1-28\eta=0.44\) — the bouncing ball of Unit 9, now with a bill attached. Push \(\eta\) past \(1/14\) and the hops overshoot by more than they gain: the squares <em>grow</em>. Keep that number in mind; the whole unit is about what sets it.</p>
+  </div>
+  <div class="check reveal" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The tailor's three misses are currently \((-2,\,-5,\,-7)\): every sleeve is too short (the line is below all three points). Which way does the bill's tilt push the knob \(w\)?</p>
+    <div class="opts">
+      <button data-correct data-why="All three misses are negative, so every square says 'make the sleeves longer': raise w. In numbers, dJ/dw = 28w − 66 = −66 at w = 0, and the step −η·(−66) is positive.">Up — every square wants a longer sleeve, so the slope of the line must rise</button>
+      <button data-why="Lowering w makes every sleeve shorter still and every square bigger. The tilt of the bill always points to 'more bill'; the walker goes the other way.">Down — descent always reduces the parameters</button>
+      <button data-why="The misses cancel only if some are positive and some negative. Here all three are negative, so their pushes add up in the same direction: dJ/dw = −66, not zero.">Nowhere — the three misses cancel out</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s1-->
+  <div class="onesent reveal"><b>In one sentence:</b> The loss is the total area of one square per data row, and its tilt is the sum of each row's push — miss times row — which is why the same recipe works for one knob or a billion.</div>
+</section>
+
+<!-- ================= 2 · THE PARACHUTE DROP ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>The parachute drop — where you start</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The drop</span>
+    <p>Before the walk in the fog there is a parachute drop: somebody has to choose where the walker lands. Two mistakes are famous. Drop from too high, in the wrong place, and the first step is so violent it throws you off the map. And drop a whole team on the same square metre, all facing the same way, and they will take exactly the same steps for ever — a team of one. Watch the first mistake happen in numbers:</p>
+  </div>
+<!--@W2-->
+  <div class="prose reveal">
+    <p>The <em>overflow</em> ladder is the surprising one. A modest start (\(w_0=1\)), a plain feature (\(x=200\)), a small-looking stride (\(\eta=0.001\)) — and the error does not shrink by a factor, it <em>multiplies by \(79\) every step</em>. By step 163 the number is larger than any a computer can hold; it becomes \(\infty\), then \(\infty-\infty\), which is \(\mathrm{NaN}\), and the whole run is dead. Now slide \(w_0\) anywhere you like: nothing changes. The start was never the culprit. The factor per step is \(1-2\eta x^2\), and with \(x=200\) that is \(1-80\). <strong>The feature's size, squared, is what set the speed limit</strong>, and the only escape is a stride under \(1/x^2=2.5\times10^{-5}\) — absurdly tiny, because \(x\) is absurdly big. That is why the lecture's advice for the start is so modest: small numbers in \([-1,1]\) (or \([0,1]\) when the knobs must stay positive). Small starts do not cause overflow; they just do not <em>add</em> to a problem the data's units have already created. Sections 4 and 10 fix the units.</p>
+    <p>The <em>clones</em> tab is the second mistake. Two knobs that play symmetric roles, started at exactly the same value, receive exactly the same tilt — so they stay equal after every step, for ever. Two neurons started as clones never stop being clones: the network has half the neurons it seems to have. Nudge one start a little (drag <em>separation</em> off zero) and the tie breaks at once. That is the whole reason initialisation is <em>random</em>: randomness costs nothing and it is the only thing that lets identical knobs become different.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>Start small, central and random. Small: \(w_0\in[-1,1]\), so you do not throw the first step off the map. Random: so no two symmetric knobs are clones. And when the numbers blow up anyway, look at the factor \(1-2\eta x^2\) — it is the data's units, not your start, that need fixing.</p>
+    </div>
+  </div>
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With \(x=200\) and \(\eta=0.001\) every start overflows. You halve the start to \(w_0=0.5\). What happens?</p>
+    <div class="opts">
+      <button data-correct data-why="The per-step factor is 1 − 2ηx² = −79 whatever w₀ is. Halving the start halves the first error and buys about half a step: overflow still arrives in the 160s. Only η (below 1/x² = 2.5 × 10⁻⁵) or the scale of x can change the factor.">Still overflows at almost the same step — the factor \(-79\) does not depend on \(w_0\)</button>
+      <button data-why="The factor per step is 1 − 2ηx², which has no w₀ in it. A smaller start shrinks the first error, not the multiplication that follows.">It converges — a smaller start means smaller steps</button>
+      <button data-why="Overflow takes about 163 steps because each step multiplies by 79 and float64 gives out near 1.8 × 10³⁰⁸. Halving w₀ delays that by ln 2 / ln 79 ≈ 0.16 of a step — not by half the steps.">It overflows, but in about half as many steps</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s2-->
+  <div class="onesent reveal"><b>In one sentence:</b> Land small, central and random — and when the numbers explode anyway, blame the feature's size squared in the factor \(1-2\eta x^2\), not the place you landed.</div>
+</section>
+
+<!-- ================= 3 · FULL MARKS BY MEMORISING ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Full marks by memorising — knobs versus facts</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Last year's paper</span>
+    <p>Two students sit the same three-question test. One learned the subject and gets 96 %. The other memorised last year's answer key — and this year's paper happens to be the same three questions, so she scores 100 %. Which one would you hire? The trap is that the number you can see says the memoriser is better. The lecture's data has exactly this shape: three rows, five knobs, and the truth is simply <em>y ≈ x₁</em>. Drag the unseen point:</p>
+  </div>
+<!--@W3-->
+  <div class="prose reveal">
+    <p>The honest model has one knob set to 1 and the rest to 0: it says <em>y = x₁</em>. On the three rows it misses by \(2,0,-2\), a bill of \(8\). The memoriser ignores \(x_1\) altogether and uses the other columns and the constant to hit all three rows <em>exactly</em> — a bill of \(0\). Any optimiser told "make the bill smallest" will choose the memoriser without a flicker of doubt.</p>
+    <p>Now drag the unseen point. Its truth slides along the diagonal, because the truth really is \(y\approx x_1\). The honest model's prediction slides with it. The memoriser's prediction is a flat line at \(62\): it does not contain \(x_1\), so it <em>cannot</em> respond to it. At \(x_1=50\) it is off by \(12\) — and that is a typical error, not an unlucky one. Zero on the training rows, hopeless on the world.</p>
+    <p>How was zero even possible? Count. Five knobs, three facts. Three equations in five unknowns have infinitely many exact solutions — two knobs are left completely free. Being told "two numbers add to 10" does not tell you the numbers. The data never pinned the knobs down, so the optimiser handed you one of the infinitely many settings that fit, and it has no way of knowing which one means something. The honest model's \(8\) is not a failure to fit; it is the size of the noise in the three rows. Chasing that last \(8\) to zero is where learning turned into memorising.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>More knobs than facts ⇒ zero training bill is <em>free</em> ⇒ zero training bill means <em>nothing</em>. Judge a model on rows it has never seen. (Later units will make the memoriser expensive by adding a penalty on big knobs — a regulariser — so that "fits the data with small knobs" beats "fits the data with any knobs".)</p>
+    </div>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Errata — check this against your slides</span>
+    <p>The deck quotes the memorising solution as \(w_2=7,\ w_3=5,\ w_5=20\). Check row 1: \(7\cdot2+5\cdot3+20=49\), but \(y_1=59\). Solving the three equations properly gives \(w_3=5,\ w_5=20,\ w_2=12\) (the drawer below and Practice Problem 8 do it line by line). The lesson is untouched; only the arithmetic needed a nudge.</p>
+  </div>
+  <div class="check reveal" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A model has \(8\) knobs and you train it on \(6\) rows. The training bill lands on exactly \(0\). How pleased should you be?</p>
+    <div class="opts">
+      <button data-correct data-why="Six equations in eight unknowns leave two knobs free: infinitely many settings give zero bill, and the optimiser picked one arbitrarily. Zero was guaranteed before you looked at the data, so it says nothing about the world. Test on held-out rows.">Not at all — with more knobs than facts, zero was guaranteed and says nothing</button>
+      <button data-why="Zero training bill is available for ANY six rows when you have eight knobs — including rows of pure noise. It cannot be evidence that the model found the truth.">Very — zero error means the model found the true rule</button>
+      <button data-why="It is not luck: with fewer equations than unknowns an exact fit always exists. That is precisely the problem — the fit was free, so it is not informative.">Somewhat — zero is lucky, so the model is probably good</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You drag the unseen point from \(x_1=50\) to \(x_1=70\) (truth \(\approx70\)). What do the two models predict?</p>
+    <div class="opts">
+      <button data-correct data-why="The honest model is ŷ = x₁, so it says 70. The memoriser is ŷ = 12x₂ + 5x₃ + 20 with x₂ = 1, x₃ = 6 fixed — 62 whatever x₁ is. Its error grew from 12 to 8 the other way; it never tracked x₁ at all.">Honest \(70\), memoriser still \(62\) — the memoriser cannot see \(x_1\)</button>
+      <button data-why="The memoriser has w₁ = 0: x₁ does not enter its formula. Its prediction is the same 62 for every x₁ — the flat dashed line in the picture.">Both \(70\) — both models fit the training rows well</button>
+      <button data-why="The honest model is literally ŷ = x₁: at x₁ = 70 it says 70, error 0. It is the memoriser that is stuck at 62.">Honest \(62\), memoriser \(70\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s3-->
+  <div class="onesent reveal"><b>In one sentence:</b> With more knobs than facts a zero bill is free and therefore meaningless — the memoriser hits every training row and cannot see the one variable that matters.</div>
+</section>

@@ -1,0 +1,187 @@
+<!--@D s1-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the gradient of the least-squares bill</span>
+    <p class="dgoal"><b>Claim.</b> For \(J(\mathbf w)=\sum_i(\mathbf w^{\top}\mathbf X_i-y_i)^2\), \(\ \nabla J=2\sum_i(\mathbf w^{\top}\mathbf X_i-y_i)\,\mathbf X_i\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Name each miss: \(r_i=\mathbf w^{\top}\mathbf X_i-y_i\). Then \(J=\sum_i r_i^2\).
+      <span class="dwhy">A sum of squares of something simple is the easiest shape to differentiate.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The miss is linear in \(\mathbf w\): \(\nabla_{\mathbf w}\,r_i=\mathbf X_i\).
+      \[r_i=\sum_j w_jx_{ij}-y_i\ \Rightarrow\ \frac{\partial r_i}{\partial w_j}=x_{ij}.\]
+      <span class="dwhy">Knob \(j\) touches row \(i\) only through the product \(w_jx_{ij}\); its derivative is the feature value.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Chain rule on one square, then add the rows:
+      \[\nabla\,r_i^2=2r_i\,\nabla r_i=2r_i\mathbf X_i,\qquad \nabla J=2\sum_i r_i\mathbf X_i.\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Read it: every row pulls the knobs along its own feature vector, in proportion to its miss. With \(r_i=\hat y_i-y_i\) the sign is \(+\) and the minus sign lives in the update \(\mathbf w\leftarrow\mathbf w-\eta\nabla J\).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the tailor's bill has its bottom at \(w^*=33/14\)</span>
+    <p class="dgoal"><b>Claim.</b> For \(x=(1,2,3)\), \(y=(2,5,7)\) and \(\hat y=wx\): \(J(w)=14w^2-66w+78\), \(w^*=33/14\approx2.357\), \(J^*=3/14\approx0.214\), and the per-step factor at stride \(\eta\) is \(1-28\eta\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Expand the three squares and add:
+      \[\begin{aligned}(w-2)^2&=w^2-4w+4\\ (2w-5)^2&=4w^2-20w+25\\ (3w-7)^2&=9w^2-42w+49\\ J(w)&=14w^2-66w+78.\end{aligned}\]
+      <span class="dwhy">The coefficient \(14=\sum x_i^2\) is the column's size squared — the stiffness of this one knob.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Set the slope to zero: \(J'(w)=28w-66=0\Rightarrow w^*=66/28=33/14\). And \(J''=28>0\): a valley.
+      <span class="dwhy">One knob, one parabola, one bottom.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">The bill at the bottom:
+      \[\begin{aligned}J^*&=\frac{14\cdot33^2}{14^2}-\frac{66\cdot33}{14}+78\\ &=\frac{1089-2178+1092}{14}=\frac{3}{14}.\end{aligned}\]
+      <span class="dwhy">Not zero: three points do not lie on one line through the origin, and \(3/14\) is the area the best line cannot remove.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">One step of descent: \(w-\eta(28w-66)=w^*+(1-28\eta)(w-w^*)\), since \(28w-66=28(w-w^*)\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The gap to the bottom is multiplied by \(1-28\eta\) each step: \(0.44\) at \(\eta=0.02\), and the walk diverges once \(28\eta>2\), i.e. \(\eta>1/14\).</span></div></div>
+  </div>
+<!--@D s2-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · why the start is not the culprit</span>
+    <p class="dgoal"><b>Claim.</b> For the one-feature bill \((wx-y)^2\), gradient descent multiplies the error \(wx-y\) by \(1-2\eta x^2\) every step, whatever \(w_0\) is; it converges iff \(\eta<1/x^2\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The gradient is \(2x(wx-y)\), so the update is \(w\leftarrow w-2\eta x(wx-y)\).
+      <span class="dwhy">Chain rule on one square: outer \(2(wx-y)\), inner \(x\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Multiply by \(x\) and subtract \(y\) to follow the error \(e=wx-y\):
+      \[e_{\text{new}}=(w-2\eta x\,e)\,x-y=e-2\eta x^2e=(1-2\eta x^2)\,e.\]
+      <span class="dwhy">The error obeys a one-line rule with a constant factor. \(w_0\) only sets \(e_0\); the factor is \(x\) and \(\eta\) alone.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Convergence needs \(|1-2\eta x^2|<1\), i.e. \(0<\eta<1/x^2\). With \(x=200\): \(\eta<2.5\times10^{-5}\); at \(\eta=10^{-3}\) the factor is \(-79\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(79^k|e_0|\) passes \(1.8\times10^{308}\) (the largest float64) at \(k=163\) for \(e_0\approx193\): overflow, then \(\infty-\infty=\mathrm{NaN}\). Halving \(w_0\) delays this by \(\ln2/\ln79\approx0.16\) of a step.</span></div></div>
+  </div>
+<!--@D s3-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the memoriser, solved (and the slide's slip)</span>
+    <p class="dgoal"><b>Claim.</b> With \(w_1=w_4=0\), the three rows are hit exactly by \(w_3=5,\ w_5=20,\ w_2=12\); the slide's \(w_2=7\) does not hit row 1.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write the three rows as equations in \(w_2,w_3,w_5\):
+      \[\begin{aligned}2w_2+3w_3+w_5&=59\\4w_3+w_5&=40\\10w_3+w_5&=70.\end{aligned}\]
+      <span class="dwhy">Rows 2 and 3 have \(x_2=0\), so \(w_2\) drops out of them — two equations in two unknowns.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Subtract row 2 from row 3: \(6w_3=30\Rightarrow w_3=5\). Back into row 2: \(20+w_5=40\Rightarrow w_5=20\).
+      <span class="dwhy">Elimination, exactly as in Unit 1.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Into row 1: \(2w_2+15+20=59\Rightarrow w_2=12\). Check the slide's triple: \(7\cdot2+5\cdot3+20=49\neq59\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">On the unseen row \((50,1,6,0.3)\) the memoriser says \(12+30+20=62\) whatever \(x_1\) is; the truth is about \(50\).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · more knobs than facts ⇒ a zero bill is free</span>
+    <p class="dgoal"><b>Claim.</b> If a linear model has \(d\) knobs and \(n<d\) training rows whose feature vectors are independent, there are infinitely many \(\mathbf w\) with \(J(\mathbf w)=0\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(J=0\) means every miss is zero: \(X\mathbf w=\mathbf y\), a system of \(n\) equations in \(d\) unknowns, \(X\) being \(n\times d\).
+      <span class="dwhy">A sum of squares is zero only when every square is.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">With independent rows, \(\operatorname{rank}X=n\), so \(X\mathbf w=\mathbf y\) is consistent and its solution set is a particular solution plus the null space, of dimension \(d-n\ge1\).
+      <span class="dwhy">Unit 1's rank–nullity: \(d-n\) free parameters, hence a whole line, plane, … of exact fits.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Every point of that set has a zero bill, so an optimiser told only "minimise \(J\)" cannot prefer one; which it returns depends on the start and the walk, not on the truth.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The lecture's case: \(d=5\), \(n=3\), two free knobs. A penalty \(\lambda\sum_jw_j^2\) breaks the tie in favour of small knobs — the honest model here has a single knob equal to \(1\).</span></div></div>
+  </div>
+<!--@D s4-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the two knobs move \(x_1^2/x_2^2\) times differently</span>
+    <p class="dgoal"><b>Claim.</b> For \(y=w_1x_1^2+w_2x_2^2\) and a squared-error bill, one stride \(\eta\) moves \(w_1\) by \(\eta x_1^2|r|\) and \(w_2\) by \(\eta x_2^2|r|\) per row — a ratio of \(x_1^2/x_2^2\) (\(156\) at \(x_1=50,\ x_2=4\)).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Sensitivities of the prediction: \(\partial y/\partial w_1=x_1^2\), \(\partial y/\partial w_2=x_2^2\).
+      <span class="dwhy">Each knob multiplies its own feature-squared; the derivative is that feature-squared.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">For the bill \(\tfrac12(y-t)^2\) with miss \(r=y-t\): \(\partial J/\partial w_1=r\,x_1^2\), \(\partial J/\partial w_2=r\,x_2^2\) (chain rule).
+      <span class="dwhy">The same miss multiplies both; only the feature-squared differs.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">The update moves \(w_j\) by \(\eta\,|r|\,x_j^2\). Ratio: \(x_1^2/x_2^2=2500/16=156.25\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A stride that moves \(w_1\) by \(0.01\) moves \(w_2\) by \(0.000064\) per unit miss; a stride that moves \(w_2\) by \(0.01\) moves \(w_1\) by \(1.56\). No single \(\eta\) is sane for both.</span></div></div>
+  </div>
+<!--@D s5-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · a standardised column has mean \(0\) and \(\sum z^2=n\)</span>
+    <p class="dgoal"><b>Claim.</b> For \(z_i=(x_i-\mu)/\sigma\) with \(\mu=\frac1n\sum x_i\) and \(\sigma^2=\frac1n\sum(x_i-\mu)^2\): \(\sum_iz_i=0\) and \(\sum_iz_i^2=n\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(\sum_i(x_i-\mu)=\sum_ix_i-n\mu=n\mu-n\mu=0\), so \(\sum_iz_i=0\).
+      <span class="dwhy">Subtracting the mean makes the deviations cancel exactly.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">\(\sum_iz_i^2=\dfrac{1}{\sigma^2}\sum_i(x_i-\mu)^2=\dfrac{n\sigma^2}{\sigma^2}=n\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">This is why, after standardising, every diagonal of \(2Z^{\top}Z\) is the same \(2n\): every column is now the same size. On the practice column \((30,\dots,110)\): \(z=(-1.414,-0.707,0,0.707,1.414)\), sum \(0\), sum of squares \(5\).</span></div></div>
+  </div>
+<!--@D s6-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the lecture's curve has a watershed at \((5-\sqrt3)/2\)</span>
+    <p class="dgoal"><b>Claim.</b> \(F(x)=(x-1)^2\big((x-3)^2-1\big)\) is flat at \(x=1\), \(1.634\), \(3.366\): valley (\(F=0\)), hilltop (\(F=0.348\)), valley (\(F=-4.848\)).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Product rule with \(u=(x-1)^2\), \(v=(x-3)^2-1\):
+      \[\begin{aligned}F'&=2(x-1)\,v+(x-1)^2\cdot2(x-3)\\ &=2(x-1)\big[(x-3)^2-1+(x-1)(x-3)\big].\end{aligned}\]
+      <span class="dwhy">Pull out the common \(2(x-1)\) first; it hands you the root \(x=1\) for free.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Simplify the bracket: \((x^2-6x+8)+(x^2-4x+3)=2x^2-10x+11\). So \(F'=2(x-1)(2x^2-10x+11)=4x^3-24x^2+42x-22\).
+      <span class="dwhy">Two quadratics added; nothing cancels except the arithmetic.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">\(2x^2-10x+11=0\Rightarrow x=\dfrac{10\pm\sqrt{100-88}}{4}=\dfrac{5\pm\sqrt3}{2}=1.634,\ 3.366\).
+      <span class="dwhy">The discriminant \(12=4\cdot3\) is what makes \(\sqrt3\) appear.</span></div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">\(F''=12x^2-48x+42\): \(F''(1)=6>0\), \(F''(1.634)=-4.39<0\), \(F''(3.366)=16.39>0\). Heights \(F(1)=0\), \(F(1.634)=0.348\), \(F(3.366)=-4.848\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Valley, hilltop, valley. A downhill walker from \(x_0<1.634\) ends at \(F=0\) with \(F=-4.848\) next door.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the combination lock — \(\prod k_i\) local minima</span>
+    <p class="dgoal"><b>Claim.</b> If \(F(x_1,\dots,x_d)=A_1(x_1)+\dots+A_d(x_d)\) and \(A_i\) has \(k_i\) local minima, then \(F\) has \(\prod_ik_i\) local minima.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(\partial F/\partial x_i=A_i'(x_i)\): every other term is a constant as far as \(x_i\) is concerned.
+      <span class="dwhy">Separable means each knob sees only its own piece.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">So \(\nabla F=0\) exactly when every \(A_i'(x_i^*)=0\), and \(F\) curls up in every direction exactly when every \(A_i''(x_i^*)>0\) (the Hessian is diagonal with entries \(A_i''\)).
+      <span class="dwhy">A local minimum of \(F\) is a choice of a local minimum of each piece, independently.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Independent choices multiply: \(k_1k_2\cdots k_d\). With \(k=3\), \(d=10\): \(59{,}049\); \(d=50\): \(3^{50}\approx7\times10^{23}\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Only one combination is the global bottom; a random start lands in it with probability \(\prod p_i\) (\(0.6^{10}\approx0.006\)).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · how many restarts</span>
+    <p class="dgoal"><b>Claim.</b> If one run finds the global valley with probability \(p\), \(k\) independent runs (keep the best) succeed with probability \(1-(1-p)^k\); for \(p=0.6\) and a \(99\,\%\) target, \(k=6\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">All \(k\) fail with probability \((1-p)^k\) (independence); at least one succeeds otherwise.
+      <span class="dwhy">"At least one" is always easiest through its complement.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Require \(0.4^k\le0.01\): \(0.4^5=0.01024\) (just fails), \(0.4^6=0.004096\) (works). So \(k=6\), success \(0.9959\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Compute the powers exactly; \(k=5\) misses by a hair. In general \(k=\lceil\ln0.01/\ln(1-p)\rceil\).</span></div></div>
+  </div>
+<!--@D s7-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · steps to cross a plateau</span>
+    <p class="dgoal"><b>Claim.</b> Crossing a flat of width \(W\) where the tilt is about \(g\) takes roughly \(W/(\gamma g)\) steps — \(200{,}000\) for \(W=2\), \(g=0.001\), \(\gamma=0.01\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Each step moves \(\gamma|\nabla f|\approx\gamma g\) along the flat.
+      <span class="dwhy">The update is \(-\gamma\nabla f\); on a plateau the direction barely changes and the size is \(\gamma g\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Steps \(=W/(\gamma g)=2/(0.01\cdot0.001)=2\times10^5\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Near a true minimum the same slowing is harmless (you are where you want to be); on a plateau it is pure waste. Momentum, next unit, is the cure.</span></div></div>
+  </div>
+<!--@D s8-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · each direction shrinks by its own factor; the stiffest sets the limit</span>
+    <p class="dgoal"><b>Claim.</b> On \(L=x^2+cy^2\), gradient descent gives \(x_{k+1}=(1-2\eta)x_k\), \(y_{k+1}=(1-2c\eta)y_k\); it converges iff \(\eta<1/c\) (for \(c\ge1\)), and the \(y\)-coordinate bounces (sign flips) once \(\eta>1/(2c)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(\nabla L=(2x,\,2cy)\), so \(x\leftarrow x-2\eta x\), \(y\leftarrow y-2c\eta y\).
+      <span class="dwhy">The bowl has no cross term, so the two coordinates never talk to each other: two one-dimensional problems.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Each is a geometric sequence: \(x_k=(1-2\eta)^kx_0\), \(y_k=(1-2c\eta)^ky_0\). Convergence needs \(|1-2\eta|<1\) and \(|1-2c\eta|<1\), i.e. \(\eta<1\) and \(\eta<1/c\).
+      <span class="dwhy">The stiffer direction's condition is the tighter one: \(\eta<1/c=2/\lambda_{\max}\) with \(\lambda_{\max}=2c\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">For \(1/(2c)<\eta<1/c\) the \(y\)-factor is negative: \(y\) overshoots the floor every step. At \(c=4\), \(\eta=0.24\): factors \(0.52\) and \(-0.92\); from \((10,10)\): \((5.2,-9.2)\), \((2.70,8.46)\), \((1.41,-7.79)\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">At the cap \(\eta\to1/c\) the floor factor is \(1-2/c\): for \(c=4\), \(0.5\) — fine; for \(c=1487\), \(0.9987\) — the crawl of Section 10.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the one-step finish on a round bowl, and why a canyon has none</span>
+    <p class="dgoal"><b>Claim.</b> On \(L=x^2+y^2\), \(\eta=1/2\) sends every point to the origin in one step; on \(L=x^2+cy^2\) with \(c\neq1\) no single \(\eta\) does.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Round bowl: both factors are \(1-2\eta\); at \(\eta=1/2\) both are \(0\), so \((x_1,y_1)=(0,0)\).
+      <span class="dwhy">The gradient \((2x,2y)\) points straight at the origin, and \(\eta=1/2\) walks exactly that far.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Canyon: a one-step finish needs \(1-2\eta=0\) and \(1-2c\eta=0\) at once, i.e. \(\eta=1/2\) and \(\eta=1/(2c)\) — impossible unless \(c=1\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The condition number \(\kappa=\lambda_{\max}/\lambda_{\min}=c\) measures exactly this conflict; \(\kappa=1\) is the only case where one stride suits every direction.</span></div></div>
+  </div>
+<!--@D s9-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the gradient is perpendicular to every contour</span>
+    <p class="dgoal"><b>Claim.</b> If \(\delta\mathbf x\) is a small displacement along a contour of \(F\), then \(\nabla F\cdot\delta\mathbf x=0\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">First-order Taylor (Unit 8): \(F(\mathbf x+\delta\mathbf x)\approx F(\mathbf x)+\nabla F\cdot\delta\mathbf x\).
+      <span class="dwhy">The change in height for a small move is the tilt dotted with the move.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Along a contour the height does not change: \(F(\mathbf x+\delta\mathbf x)=F(\mathbf x)\). Hence \(\nabla F\cdot\delta\mathbf x=0\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Zero dot product means a right angle. On \(F=x^2+4y^2\) at \((2.2,1.1)\): \(\nabla F=(4.4,8.8)\), tangent \((-8.8,4.4)\), dot \(0\); the line to the origin \((2.2,1.1)\) makes \(\cos\theta=0.8\), \(\theta\approx36.9^\circ\) with the gradient.</span></div></div>
+  </div>
+<!--@D s10-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the Hessian of least squares is \(2X^{\top}X\), and standardising levels its diagonal</span>
+    <p class="dgoal"><b>Claim.</b> For \(J(\mathbf w)=\sum_i(\mathbf w^{\top}\mathbf X_i-y_i)^2\): \(H=2\sum_i\mathbf X_i\mathbf X_i^{\top}=2X^{\top}X\), with \(H_{jj}=2\sum_ix_{ij}^2\). After standardising, every \(H_{jj}=2n\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">From the first drawer, \(\nabla J=2\sum_ir_i\mathbf X_i\) with \(r_i=\mathbf w^{\top}\mathbf X_i-y_i\). Differentiate once more: \(\nabla r_i=\mathbf X_i\), so \(H=2\sum_i\mathbf X_i\mathbf X_i^{\top}\).
+      <span class="dwhy">The targets \(y_i\) vanish: the bowl's <em>shape</em> depends only on the features. Its position depends on \(y\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Entry by entry: \(H_{jk}=2\sum_ix_{ij}x_{ik}\); on the diagonal \(H_{jj}=2\sum_ix_{ij}^2\) — the column's size, squared. Guns and butter: sums \(0.81,\ 14.5,\ 825\) give \(H=\begin{pmatrix}1.62&29\\29&1650\end{pmatrix}\).
+      <span class="dwhy">A column thirty times bigger is a wall nine hundred times stiffer; \(1650/1.62\approx1019\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Standardise: \(\sum_iz_{ij}^2=n\) for every column (Section 5's drawer), so \(H_{jj}=2n=6\). Off-diagonal: \(2\sum_iz_{i1}z_{i2}=2(-2.466)=-4.93\). \(H_{\text{std}}=\begin{pmatrix}6&-4.93\\-4.93&6\end{pmatrix}\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The walls are level by construction; the off-diagonal is \(2n\) times the correlation coefficient (\(-0.822\)), and it is what keeps \(\kappa\) at \(10.2\) rather than \(1\).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · a symmetric 2×2 with equal diagonals has eigenvalues \(a\pm b\) — so \(\kappa\) falls from \(1487\) to \(10.2\)</span>
+    <p class="dgoal"><b>Claim.</b> The symmetric matrix with equal diagonals \(a\) and off-diagonal \(b\) has eigenvalues \(a+b\) and \(a-b\); hence \(H_{\text{std}}\) has \(10.93\) and \(1.07\), \(\kappa\approx10.2\), against \(1650.5\) and \(1.11\), \(\kappa\approx1487\), before.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(\begin{pmatrix}a&b\\b&a\end{pmatrix}\begin{pmatrix}1\\1\end{pmatrix}=(a+b)\begin{pmatrix}1\\1\end{pmatrix}\) and \(\begin{pmatrix}a&b\\b&a\end{pmatrix}\begin{pmatrix}1\\-1\end{pmatrix}=(a-b)\begin{pmatrix}1\\-1\end{pmatrix}\).
+      <span class="dwhy">Unit 4: two eigenvectors found by inspection — the diagonal directions of the tilted bowl.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">With \(a=6\), \(b=-4.93\): \(\lambda=1.07,\ 10.93\); \(\kappa=10.93/1.07\approx10.2\); speed limit \(2/10.93\approx0.183\).
+      <span class="dwhy">The eigenvectors \((1,1)\) and \((1,-1)\) are exactly the axes whitening rotates onto.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Before: for \(\begin{pmatrix}1.62&29\\29&1650\end{pmatrix}\), \(\lambda=825.81\pm\sqrt{824.19^2+29^2}=1650.51,\ 1.11\); \(\kappa\approx1487\); limit \(2/1650.5\approx0.00121\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(\kappa\) improved \(145\times\) and the admissible stride \(151\times\) — and neither the data's meaning, the model, nor the best fit changed.</span></div></div>
+  </div>

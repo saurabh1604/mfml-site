@@ -1,0 +1,630 @@
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">A feature column holds the five values \(\{30,\,50,\,70,\,90,\,110\}\). <b>(a)</b> Apply min–max scaling \(x'=(x-\min)/(\max-\min)\) to all five. <b>(b)</b> Standardise the column (subtract the mean, divide by the population standard deviation) and check that the \(z\)-values sum to \(0\) and their squares sum to \(5\). <b>(c)</b> A new value \(x=130\) arrives later. Transform it under both schemes using the <em>training</em> statistics, and say whether the min–max result lies in \([0,1]\).</p>
+    <p class="ptest"><b>What this tests.</b> Two of the three repairs (standardise, min–max) as plain arithmetic, and the one habit that matters at test time: reuse the training statistics, never recompute them. <b>Plan.</b> Read off min, max and range; then mean, deviations, variance, \(\sigma\); divide; run the two sanity sums; finally push \(130\) through both formulas with the numbers already on the page.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — min–max.</b> Here \(\min=30\), \(\max=110\), range \(=80\):
+      \[\begin{aligned}
+      30&\mapsto\tfrac{0}{80}=0, & 50&\mapsto\tfrac{20}{80}=0.25,\\
+      70&\mapsto\tfrac{40}{80}=0.5, & 90&\mapsto\tfrac{60}{80}=0.75,\\
+      110&\mapsto\tfrac{80}{80}=1.
+      \end{aligned}\]
+      Evenly spaced inputs give evenly spaced outputs — min–max is a pure stretch-and-shift.</div>
+      <div class="pstep"><b>(b) Step 2 — mean and deviations.</b>
+      \[\begin{aligned}
+      \mu&=\frac{30+50+70+90+110}{5}=\frac{350}{5}=70,\\
+      x-\mu&=(-40,\,-20,\,0,\,20,\,40).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — variance and standard deviation.</b> Square the deviations and average over \(n=5\):
+      \[\begin{aligned}
+      \sigma^2&=\frac{1600+400+0+400+1600}{5}\\
+      &=\frac{4000}{5}=800,\\
+      \sigma&=\sqrt{800}\approx28.28.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 4 — divide, then check.</b> \(z=(x-70)/28.28\):
+      \[\begin{aligned}
+      z&=\Big(\tfrac{-40}{28.28},\ \tfrac{-20}{28.28},\ 0,\\
+      &\qquad\tfrac{20}{28.28},\ \tfrac{40}{28.28}\Big)\\
+      &=(-1.414,\,-0.707,\,0,\,0.707,\,1.414).
+      \end{aligned}\]
+      Sanity sums:
+      \[\begin{aligned}
+      \textstyle\sum z&=-1.414-0.707+0+0.707+1.414=0,\\
+      \textstyle\sum z^2&=2+0.5+0+0.5+2=5=n.
+      \end{aligned}\]
+      Both hold, so the column now has mean \(0\) and variance \(5/5=1\). ✓</div>
+      <div class="pstep"><b>(c) Step 5 — the unseen value, training statistics only.</b>
+      \[\begin{aligned}
+      x'&=\frac{130-30}{80}=\frac{100}{80}=1.25,\\
+      z&=\frac{130-70}{28.28}=\frac{60}{28.28}\approx2.12.
+      \end{aligned}\]
+      \(1.25\) lies <em>outside</em> \([0,1]\): the promise "everything lands in \([0,1]\)" was only ever a promise about the training column. The \(z\)-score \(2.12\) is unusual (two standard deviations up) but perfectly well defined — \(z\)-scores are unbounded by design.</div>
+      <p class="pans">(a) \(0,\ 0.25,\ 0.5,\ 0.75,\ 1\). (b) \(\mu=70\), \(\sigma\approx28.28\), \(z=(-1.414,-0.707,0,0.707,1.414)\); \(\sum z=0\), \(\sum z^2=5\). (c) min–max \(1.25\) (outside \([0,1]\)); \(z=2.12\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>"Change the units, not the model": both repairs are invertible bookkeeping, and the bookkeeping is done once, on the training column. The slip on this type is recomputing \(\min\), \(\max\), \(\mu\), \(\sigma\) with the new point included — that silently changes every training value too. Min–max is fragile to a new extreme; standardisation degrades gracefully.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">At the current iterate a loss has partial derivatives \(\partial J/\partial w_1=-640\) and \(\partial J/\partial w_2=-1.6\), and one learning rate \(\gamma=10^{-3}\) serves both knobs. <b>(a)</b> Compute the update to each parameter and the ratio of the two moves. <b>(b)</b> If gradients of this size persist, how many steps does \(w_2\) need to move by one unit, and how far does \(w_1\) travel in that time? <b>(c)</b> Choose \(\gamma\) instead so that \(w_1\) moves a modest \(0.01\) per step; give the new \(\gamma\), the new \(w_2\) move and the new step count for a one-unit move of \(w_2\). <b>(d)</b> State, in one line, what standardising the two feature columns does to the two partials.</p>
+    <p class="ptest"><b>What this tests.</b> The hair-trigger knob in pure arithmetic — one stride length, two wildly different slopes — and the cost of protecting either knob at the other's expense. <b>Plan.</b> \(\Delta w_j=-\gamma\,\partial J/\partial w_j\) twice; divide \(1\) by the small move; scale \(\gamma\) down so the big move is \(0.01\) and redo the count; then name the repair as a computable claim.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the two moves.</b>
+      \[\begin{aligned}
+      \Delta w_1&=-10^{-3}\,(-640)=0.64,\\
+      \Delta w_2&=-10^{-3}\,(-1.6)=0.0016,\\
+      \frac{\Delta w_1}{\Delta w_2}&=\frac{0.64}{0.0016}=400.
+      \end{aligned}\]
+      One stride, but a \(400:1\) imbalance in how far each knob turns.</div>
+      <div class="pstep"><b>(b) Step 2 — the slow coordinate.</b>
+      \[N\approx\frac{1}{0.0016}=625\ \text{steps}\]
+      for \(w_2\) to move one unit. Meanwhile \(w_1\) moves
+      \[625\times0.64=400\ \text{units}\]
+      — long since past its target and bouncing.</div>
+      <div class="pstep"><b>(c) Step 3 — protect \(w_1\) instead.</b> Require \(\gamma\times640=0.01\):
+      \[\begin{aligned}
+      \gamma&=\frac{0.01}{640}=1.5625\times10^{-5},\\
+      \Delta w_2&=1.5625\times10^{-5}\times1.6=2.5\times10^{-5},\\
+      N&\approx\frac{1}{2.5\times10^{-5}}=40\,000\ \text{steps}.
+      \end{aligned}\]
+      The hair-trigger knob is now tame; the stiff knob crawls \(64\) times more slowly than before.</div>
+      <div class="pstep"><b>(d) Step 4 — the repair.</b> After standardising both columns, the two partials come out of the same order of magnitude (a ratio near \(1\) instead of \(400\)), so a single \(\gamma\) serves both knobs — Problem 5 does this arithmetic on real columns and watches \(576\) turn into \(1.07\).</div>
+      <p class="pans">(a) \(\Delta w_1=0.64\), \(\Delta w_2=0.0016\), ratio \(400:1\). (b) \(\approx625\) steps, during which \(w_1\) moves \(400\) units. (c) \(\gamma=1.5625\times10^{-5}\), \(\Delta w_2=2.5\times10^{-5}\), \(\approx40\,000\) steps. (d) standardising makes the partials comparable, so one \(\gamma\) fits both.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The stride \(\gamma\) is the same for every knob; it is the <em>gradient</em> that differs, so the actual move \(\gamma\times\)gradient is what you compare. Serve the slow knob and the fast one oscillates; serve the fast knob and the slow one takes \(40\,000\) steps. No choice of \(\gamma\) escapes — only changing the units does.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Three receipts: \(x=(1,2,3)\), \(y=(2,5,7)\), model \(\hat y=wx\) with no intercept. <b>(a)</b> Write the bill for being wrong \(J(w)=\sum(wx_i-y_i)^2\) and expand it to the form \(aw^2+bw+c\). <b>(b)</b> Find \(w^*\) by setting the slope to zero, confirm it is a minimum, and compute \(J(w^*)\) exactly. <b>(c)</b> Run gradient descent from \(w_0=0\) with \(\eta=0.02\) for five steps, tabulating \(w\), the slope and \(J\). <b>(d)</b> Give the per-step factor \(1-\eta\lambda\) and the largest \(\eta\) for which the iteration converges.</p>
+    <p class="ptest"><b>What this tests.</b> The smallest possible training run, done twice — once by formula, once by feel — and the fact that the two agree. <b>Plan.</b> Expand three squares and add; differentiate; solve; evaluate \(J^*\) as a fraction with denominator \(14\); fill a five-row table; then read the curvature \(28\) for the factor and the speed limit \(2/28\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — write and expand the scorecard.</b>
+      \[J(w)=(w-2)^2+(2w-5)^2+(3w-7)^2.\]
+      Each square on its own line:
+      \[\begin{aligned}
+      (w-2)^2&=w^2-4w+4,\\
+      (2w-5)^2&=4w^2-20w+25,\\
+      (3w-7)^2&=9w^2-42w+49.
+      \end{aligned}\]
+      Add columns:
+      \[\begin{aligned}
+      J(w)&=(1+4+9)w^2-(4+20+42)w+(4+25+49)\\
+      &=14w^2-66w+78.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(b) Step 2 — slope zero, curvature positive.</b>
+      \[\begin{aligned}
+      \frac{dJ}{dw}&=28w-66=0\\
+      w^*&=\frac{66}{28}=\frac{33}{14}\approx2.357,\\
+      \frac{d^2J}{dw^2}&=28>0\ \Rightarrow\ \text{a minimum.}
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — the lowest possible bill, exactly.</b> Put everything over \(14\):
+      \[\begin{aligned}
+      J(w^*)&=14\Big(\tfrac{33}{14}\Big)^2-66\cdot\tfrac{33}{14}+78\\
+      &=\tfrac{1089}{14}-\tfrac{2178}{14}+\tfrac{1092}{14}\\
+      &=\tfrac{1089-2178+1092}{14}=\tfrac{3}{14}\approx0.214.
+      \end{aligned}\]
+      (\(14\cdot33^2/14^2=33^2/14=1089/14\); \(66\cdot33=2178\); \(78\cdot14=1092\).)</div>
+      <div class="pstep"><b>(c) Step 4 — the parachute drop and the walk.</b> Update \(w\leftarrow w-0.02\,(28w-66)\), one row per step:
+      <table class="plain">
+        <thead><tr><th>\(k\)</th><th>\(w_k\)</th><th>slope \(28w_k-66\)</th><th>new \(w\)</th><th>\(J(w_k)\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\(0\)</td><td>\(-66\)</td><td>\(0+0.02\cdot66=1.3200\)</td><td>\(78\)</td></tr>
+          <tr><td>1</td><td>\(1.3200\)</td><td>\(36.96-66=-29.04\)</td><td>\(1.3200+0.5808=1.9008\)</td><td>\(15.27\)</td></tr>
+          <tr><td>2</td><td>\(1.9008\)</td><td>\(53.22-66=-12.78\)</td><td>\(1.9008+0.2556=2.1564\)</td><td>\(3.13\)</td></tr>
+          <tr><td>3</td><td>\(2.1564\)</td><td>\(60.38-66=-5.62\)</td><td>\(2.1564+0.1124=2.2688\)</td><td>\(0.78\)</td></tr>
+          <tr><td>4</td><td>\(2.2688\)</td><td>\(63.53-66=-2.47\)</td><td>\(2.2688+0.0495=2.3183\)</td><td>\(0.32\)</td></tr>
+          <tr><td>5</td><td>\(2.3183\)</td><td>\(64.91-66=-1.09\)</td><td>—</td><td>\(0.24\)</td></tr>
+        </tbody>
+      </table>
+      Two of the \(J\) values in full, to see the arithmetic:
+      \[\begin{aligned}
+      J(1.3200)&=14(1.7424)-66(1.3200)+78\\
+      &=24.39-87.12+78=15.27,\\
+      J(1.9008)&=14(3.6130)-66(1.9008)+78\\
+      &=50.58-125.45+78=3.13.
+      \end{aligned}\]
+      The slope column shrinks every step: \(66\to29\to13\to5.6\to2.5\to1.1\). Descent naturally decelerates as it nears the floor, and the limit is \(w=2.357\), \(J=0.214\) — the formula's answer, reached by feel.</div>
+      <div class="pstep"><b>(d) Step 5 — the per-direction factor and the speed limit.</b> Subtract \(w^*\) from both sides of the update:
+      \[\begin{aligned}
+      w_{k+1}-w^*&=w_k-w^*-\eta\,(28w_k-66)\\
+      &=(1-28\eta)(w_k-w^*).
+      \end{aligned}\]
+      With \(\eta=0.02\) the factor is \(1-0.56=0.44\): the distance to \(w^*\) is multiplied by \(0.44\) each step (check: \(2.357-1.320=1.037\); \(0.44\times2.357=1.037\) ✓). Convergence needs \(|1-28\eta|<1\), i.e.
+      \[0<\eta<\frac{2}{28}=\frac{1}{14}\approx0.0714.\]
+      At \(\eta=1/28\) the factor is \(0\) and one step finishes; between \(1/28\) and \(1/14\) the iterates alternate sides of \(w^*\); beyond \(1/14\) they blow up.</div>
+      <p class="pans">(a) \(J(w)=14w^2-66w+78\). (b) \(w^*=33/14\approx2.357\), \(J''=28>0\), \(J^*=3/14\approx0.214\). (c) \(w:0,1.320,1.901,2.156,2.269,2.318\); \(J:78,15.27,3.13,0.78,0.32,0.24\). (d) factor \(1-28\eta=0.44\); converges for \(\eta<1/14\approx0.0714\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>For one knob the formula wins; the walk exists because for a billion knobs there is no formula. Keep the table — point, slope, new point, \(J\) — and check it against the closed form: the gap to \(w^*\) must shrink by exactly \(1-\eta\lambda\) each row. The slip is evaluating \(J\) at the new \(w\) but writing it in the old row.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Two bowls: the circle \(L=x^2+y^2\) and the canyon \(L=x^2+4y^2\). <b>(a)</b> For the circle, write both gradient-descent updates as multiplications by a constant factor and give the \(\eta\) that sends every starting point to \((0,0)\) in one step. <b>(b)</b> For the canyon, write the two factors, find the range of \(\eta\) for which the iteration is stable, and say which coordinate sets it. <b>(c)</b> Trace \(\eta=0.24\) from \((10,10)\) for three steps, with \(L\) at each point. <b>(d)</b> Give the Hessian and the condition number \(\kappa\), and the two per-step factors that explain the trace.</p>
+    <p class="ptest"><b>What this tests.</b> The canyon problem in its cleanest form — same convexity, same minimiser, and yet one bowl is easy and the other bounces off the walls. <b>Plan.</b> Gradient, factor per coordinate; the one-step \(\eta\) is where a factor hits \(0\); stability is \(|1-\eta\lambda|<1\) for the larger \(\lambda\); then multiply through a table and read the signs of the two factors.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the circle.</b> \(\nabla L=(2x,\,2y)\), so
+      \[\begin{aligned}
+      x&\leftarrow x-\eta(2x)=(1-2\eta)\,x,\\
+      y&\leftarrow y-\eta(2y)=(1-2\eta)\,y.
+      \end{aligned}\]
+      Both coordinates shrink by the <em>same</em> factor. Choose \(\eta=0.5\): \(1-2(0.5)=0\), so \((x,y)\to(0,0)\) in a single step from anywhere. The gradient points straight at the centre because the contours are circles.</div>
+      <div class="pstep"><b>(b) Step 2 — the canyon.</b> \(\nabla L=(2x,\,8y)\), so
+      \[\begin{aligned}
+      x&\leftarrow(1-2\eta)\,x,\\
+      y&\leftarrow(1-8\eta)\,y.
+      \end{aligned}\]
+      Stability needs each factor inside \((-1,1)\):
+      \[\begin{aligned}
+      |1-2\eta|<1&\ \Rightarrow\ 0<\eta<1,\\
+      |1-8\eta|<1&\ \Rightarrow\ 0<\eta<0.25.
+      \end{aligned}\]
+      The \(y\)-coordinate, with \(\partial^2L/\partial y^2=8\), sets the ceiling \(\eta<0.25\) — even though \(x\) would happily accept a stride four times longer.</div>
+      <div class="pstep"><b>(c) Step 3 — trace \(\eta=0.24\).</b> Factors: \(x\): \(1-0.48=0.52\); \(y\): \(1-1.92=-0.92\).
+      <table class="plain">
+        <thead><tr><th>\(k\)</th><th>point</th><th>gradient \((2x,8y)\)</th><th>new point</th><th>\(L=x^2+4y^2\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\((10,\,10)\)</td><td>\((20,\,80)\)</td><td>\((5.2,\,-9.2)\)</td><td>\(100+400=500\)</td></tr>
+          <tr><td>1</td><td>\((5.2,\,-9.2)\)</td><td>\((10.4,\,-73.6)\)</td><td>\((2.704,\,8.464)\)</td><td>\(27.04+338.56=365.6\)</td></tr>
+          <tr><td>2</td><td>\((2.704,\,8.464)\)</td><td>\((5.408,\,67.71)\)</td><td>\((1.406,\,-7.787)\)</td><td>\(7.31+286.56=293.9\)</td></tr>
+          <tr><td>3</td><td>\((1.406,\,-7.787)\)</td><td>—</td><td>—</td><td>\(1.98+242.55=244.5\)</td></tr>
+        </tbody>
+      </table>
+      The new points come straight from the factors: \(0.52\times10=5.2\), \(-0.92\times10=-9.2\); \(0.52\times5.2=2.704\), \(-0.92\times(-9.2)=8.464\); \(0.52\times2.704=1.406\), \(-0.92\times8.464=-7.787\).</div>
+      <div class="pstep"><b>(d) Step 4 — Hessian, \(\kappa\), and what the trace shows.</b>
+      \[H=\begin{bmatrix}2&0\\0&8\end{bmatrix},\qquad\kappa=\frac{8}{2}=4.\]
+      In three steps \(x\) has gone \(10\to1.4\) (factor \(0.52\) each time, monotone); \(y\) has gone \(10\to-9.2\to8.5\to-7.8\), flipping sign every step and losing only \(8\%\) of its size each time (factor \(-0.92\)). Most of the motion is sideways across the canyon, not down it — \(L\) fell only from \(500\) to \(244.5\).</div>
+      <p class="pans">(a) \(x\leftarrow(1-2\eta)x\), \(y\leftarrow(1-2\eta)y\); \(\eta=0.5\) finishes in one step. (b) factors \(1-2\eta\), \(1-8\eta\); stable for \(0<\eta<0.25\), set by \(y\). (c) \((5.2,-9.2)\), \((2.704,8.464)\), \((1.406,-7.787)\); \(L=500,365.6,293.9,244.5\). (d) \(H=\operatorname{diag}(2,8)\), \(\kappa=4\); factors \(0.52\) and \(-0.92\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Everything about the canyon is in two numbers, the per-direction factors \(1-\eta\lambda_i\): the largest \(\lambda\) caps \(\eta\) at \(2/\lambda_{\max}\), a negative factor means zig-zag, and \(\kappa=\lambda_{\max}/\lambda_{\min}\) is the difficulty score. Answer "why is the canyon slow?" with the two factors, not with prose.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">House price \(y\) is modelled as \(\hat y=w_1x_1+w_2x_2\) from area \(x_1=(1000,1500,2000)\) and bedroom count \(x_2=(2,3,3)\), with \(y=(50,75,90)\) and \(J(\mathbf w)=\sum_i(w_1x_{i1}+w_2x_{i2}-y_i)^2\). <b>(a)</b> Compute \(\partial J/\partial w_1\) and \(\partial J/\partial w_2\) at \(\mathbf w=(0,0)\), and their ratio. <b>(b)</b> Standardise both columns (population \(\sigma\)) and recompute both partials at \(\mathbf w=(0,0)\). <b>(c)</b> Give the new ratio.</p>
+    <p class="ptest"><b>What this tests.</b> Knobs and units: the feature scale multiplies straight into the gradient, and standardising both columns brings the two partials to the same order of magnitude. <b>Plan.</b> At \(\mathbf w=0\) every prediction is \(0\), so each partial is \(-2\sum y_ix_{ij}\); compute the two sums; then \(\mu,\sigma,z\) for each column; redo the two sums with \(z\) in place of \(x\); divide.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — raw partials at the origin.</b> With \(r_i=\hat y_i-y_i\), the chain rule gives \(\partial J/\partial w_j=2\sum_ir_ix_{ij}\). At \(\mathbf w=0\) all \(\hat y_i=0\), so \(r_i=-y_i\) and \(\partial J/\partial w_j=-2\sum_iy_ix_{ij}\):
+      \[\begin{aligned}
+      \frac{\partial J}{\partial w_1}&=-2\big[1000(50)+1500(75)\\
+      &\qquad+2000(90)\big]\\
+      &=-2\,[50\,000+112\,500+180\,000]\\
+      &=-2\,(342\,500)=-685\,000,\\
+      \frac{\partial J}{\partial w_2}&=-2\big[2(50)+3(75)+3(90)\big]\\
+      &=-2\,[100+225+270]\\
+      &=-2\,(595)=-1190.
+      \end{aligned}\]
+      Ratio:
+      \[\frac{685\,000}{1190}\approx576.\]
+      The bill is about \(576\) times more sensitive to \(w_1\), purely because square feet are numerically huge.</div>
+      <div class="pstep"><b>(b) Step 2 — standardise \(x_1\).</b>
+      \[\begin{aligned}
+      \mu_1&=\frac{1000+1500+2000}{3}=1500,\\
+      x_1-\mu_1&=(-500,\,0,\,500),\\
+      \sigma_1&=\sqrt{\frac{250\,000+0+250\,000}{3}}\\
+      &=\sqrt{166\,667}\approx408.25,\\
+      z_1&=(-1.2247,\,0,\,1.2247).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — standardise \(x_2\).</b>
+      \[\begin{aligned}
+      \mu_2&=\frac{2+3+3}{3}=\frac{8}{3}\approx2.667,\\
+      x_2-\mu_2&=(-0.667,\,0.333,\,0.333),\\
+      \sigma_2&=\sqrt{\frac{0.4444+0.1111+0.1111}{3}}\\
+      &=\sqrt{0.2222}\approx0.4714,\\
+      z_2&=(-1.4142,\,0.7071,\,0.7071).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 4 — the partials again, with \(z\) in place of \(x\).</b>
+      \[\begin{aligned}
+      \frac{\partial J}{\partial w_1}&=-2\big[(-1.2247)(50)+0(75)\\
+      &\qquad+(1.2247)(90)\big]\\
+      &=-2\,[-61.24+0+110.22]\\
+      &=-2\,(48.99)=-97.98,\\
+      \frac{\partial J}{\partial w_2}&=-2\big[(-1.4142)(50)+(0.7071)(75)\\
+      &\qquad+(0.7071)(90)\big]\\
+      &=-2\,[-70.71+53.03+63.64]\\
+      &=-2\,(45.96)=-91.92.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(c) Step 5 — the new ratio.</b>
+      \[\frac{97.98}{91.92}\approx1.07.\]
+      From \(576\) to \(1.07\): the two knobs now feel the same stride in the same way, so one \(\gamma\) drives both at similar speeds — no oscillation in \(w_1\) while \(w_2\) crawls.</div>
+      <p class="pans">(a) \(-685\,000\) and \(-1190\), ratio \(\approx576\). (b) \(z_1=(-1.2247,0,1.2247)\), \(z_2=(-1.4142,0.7071,0.7071)\); partials \(-97.98\) and \(-91.92\). (c) ratio \(\approx1.07\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>At \(\mathbf w=0\) the gradient is \(-2\sum y_ix_{\cdot j}\), so a column's scale multiplies straight into its partial. Quote the before/after ratio — \(576\to1.07\) — as the whole result. The slip is using the sample \(\sigma\) (dividing by \(n-1\)) when the population \(\sigma\) was asked for; the \(z\)'s then change by \(\sqrt{2/3}\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Consider \(L(x,y)=9x^2+y^2\). <b>(a)</b> Write the gradient-descent updates as multiplications by constant factors and find the exact range of \(\eta\) for convergence, naming the coordinate that sets it. <b>(b)</b> With \(\eta=0.1\), trace three steps from \((1,3)\); say which coordinate oscillates and give the threshold of \(\eta\) above which it does. <b>(c)</b> Give the Hessian and \(\kappa\); give the \(\eta\) that finishes in one step on the equal-curvature bowl \(9x^2+9y^2\), and the two values of \(\eta\) that one-step convergence would need simultaneously on \(L\).</p>
+    <p class="ptest"><b>What this tests.</b> The canyon again with the stiff direction along \(x\) this time — checking you read the factors from the curvatures and not from habit. <b>Plan.</b> \(\nabla L=(18x,2y)\); factors \(1-18\eta\), \(1-2\eta\); stability from the larger curvature; multiply through three rows; then \(\kappa=18/2\) and the one-step condition \(1-\eta\lambda=0\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — decoupled updates.</b> \(\nabla L=(18x,\,2y)\), so
+      \[\begin{aligned}
+      x_{k+1}&=(1-18\eta)\,x_k,\\
+      y_{k+1}&=(1-2\eta)\,y_k.
+      \end{aligned}\]
+      Stability needs both factors inside \((-1,1)\):
+      \[\begin{aligned}
+      |1-18\eta|<1&\ \Rightarrow\ \eta<\tfrac{2}{18}=\tfrac{1}{9},\\
+      |1-2\eta|<1&\ \Rightarrow\ \eta<1.
+      \end{aligned}\]
+      The stiff direction is \(x\) (curvature \(18\)), so the range is
+      \[0<\eta<\tfrac19\approx0.111.\]</div>
+      <div class="pstep"><b>(b) Step 2 — trace \(\eta=0.1\).</b> Factors: \(x\): \(1-1.8=-0.8\); \(y\): \(1-0.2=0.8\).
+      <table class="plain">
+        <thead><tr><th>\(k\)</th><th>point</th><th>gradient \((18x,2y)\)</th><th>new point</th><th>\(L\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\((1,\,3)\)</td><td>\((18,\,6)\)</td><td>\((-0.8,\,2.4)\)</td><td>\(9+9=18\)</td></tr>
+          <tr><td>1</td><td>\((-0.8,\,2.4)\)</td><td>\((-14.4,\,4.8)\)</td><td>\((0.64,\,1.92)\)</td><td>\(5.76+5.76=11.52\)</td></tr>
+          <tr><td>2</td><td>\((0.64,\,1.92)\)</td><td>\((11.52,\,3.84)\)</td><td>\((-0.512,\,1.536)\)</td><td>\(3.686+3.686=7.373\)</td></tr>
+          <tr><td>3</td><td>\((-0.512,\,1.536)\)</td><td>—</td><td>—</td><td>\(2.359+2.359=4.719\)</td></tr>
+        </tbody>
+      </table>
+      Both coordinates lose \(20\%\) of their size per step, but \(x\) flips sign every time: its factor is negative because \(\eta=0.1\) exceeds \(1/18\approx0.056\), the value at which \(1-18\eta\) crosses zero. Each step overshoots the floor in the stiff direction and lands on the opposite wall; \(y\) descends monotonically. (The two halves of \(L\) stay equal because \(9x^2\) and \(y^2\) both shrink by \(0.64\) per step.)</div>
+      <div class="pstep"><b>(c) Step 3 — Hessian, \(\kappa\), the ideal bowl.</b>
+      \[H=\begin{bmatrix}18&0\\0&2\end{bmatrix},\qquad\kappa=\frac{18}{2}=9.\]
+      Descent is fastest when curvature is equal in every direction, \(\kappa=1\): on \(9x^2+9y^2\) both factors are \(1-18\eta\), so \(\eta=1/18\) makes both zero and every start reaches \((0,0)\) in one step. On \(L\) itself one-step convergence would need \(1-18\eta=0\) <em>and</em> \(1-2\eta=0\), i.e. \(\eta=1/18\) and \(\eta=1/2\) at once — impossible with a single stride.</div>
+      <p class="pans">(a) \(x\leftarrow(1-18\eta)x\), \(y\leftarrow(1-2\eta)y\); \(0<\eta<1/9\approx0.111\), set by \(x\). (b) \((-0.8,2.4)\), \((0.64,1.92)\), \((-0.512,1.536)\); \(x\) oscillates (factor \(-0.8\)) because \(\eta>1/18\approx0.056\); \(y\) descends (factor \(0.8\)). (c) \(H=\operatorname{diag}(18,2)\), \(\kappa=9\); \(\eta=1/18\) finishes \(9x^2+9y^2\) in one step; \(L\) would need \(1/18\) and \(1/2\) simultaneously.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Three thresholds per direction: \(\eta<1/\lambda\) smooth, \(\eta=1/\lambda\) one-step, \(1/\lambda<\eta<2/\lambda\) zig-zag, beyond that blow-up. The largest \(\lambda\) owns the speed limit, the smallest owns the crawl, and \(\kappa\) is their ratio. The slip is putting the stiff factor on \(y\) out of habit — read it from the coefficient.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">For the least-squares bill \(J(\mathbf w)=\sum_{i=1}^n(\mathbf w^{\top}X_i-y_i)^2\): <b>(a)</b> derive \(\nabla J(\mathbf w)=2\sum_i(\mathbf w^{\top}X_i-y_i)\,X_i\). <b>(b)</b> For \(X_1=(2,1)\), \(y_1=4\), \(X_2=(1,3)\), \(y_2=5\), compute \(J\) and \(\nabla J\) at \(\mathbf w_0=(0,0)\), take one step with \(\gamma=0.02\), and compute the new residuals and \(J_1\); give the fraction of the loss removed.</p>
+    <p class="ptest"><b>What this tests.</b> The engine behind every gradient in this unit — residual times feature vector, summed — derived once and then run once. <b>Plan.</b> Name the residual \(r_i\), differentiate the square by the chain rule, note \(\nabla r_i=X_i\); then residuals at the origin, two scaled vectors added, one update, two new residuals, compare.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the chain rule.</b> Write \(J=\sum_ir_i^2\) with \(r_i=\mathbf w^{\top}X_i-y_i\). Since \(\mathbf w^{\top}X_i\) is linear in \(\mathbf w\), its gradient is the vector \(X_i\), and \(y_i\) is a constant:
+      \[\nabla_{\mathbf w}r_i=X_i.\]
+      Differentiate each square:
+      \[\begin{aligned}
+      \nabla J&=\sum_i2r_i\,\nabla_{\mathbf w}r_i\\
+      &=2\sum_i(\mathbf w^{\top}X_i-y_i)\,X_i.
+      \end{aligned}\]
+      Reading: each row pulls \(\mathbf w\) along its own feature vector, in proportion to its current error.</div>
+      <div class="pstep"><b>(b) Step 2 — at the origin.</b> Predictions are \(0\), so
+      \[\begin{aligned}
+      r_1&=0-4=-4, & r_2&=0-5=-5,\\
+      J_0&=16+25=41.
+      \end{aligned}\]
+      The gradient:
+      \[\begin{aligned}
+      \nabla J(\mathbf w_0)&=2\big[(-4)(2,1)+(-5)(1,3)\big]\\
+      &=2\big[(-8,-4)+(-5,-15)\big]\\
+      &=2\,(-13,\,-19)=(-26,\,-38).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — one step.</b>
+      \[\begin{aligned}
+      \mathbf w_1&=(0,0)-0.02\,(-26,-38)\\
+      &=(0.52,\ 0.76).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 4 — verify the drop.</b> New residuals:
+      \[\begin{aligned}
+      r_1&=0.52(2)+0.76(1)-4\\
+      &=1.04+0.76-4=-2.20,\\
+      r_2&=0.52(1)+0.76(3)-5\\
+      &=0.52+2.28-5=-2.20,\\
+      J_1&=(-2.2)^2+(-2.2)^2=4.84+4.84=9.68.
+      \end{aligned}\]
+      \(9.68<41\) ✓. Fraction removed:
+      \[\frac{41-9.68}{41}=\frac{31.32}{41}\approx0.76,\]
+      i.e. \(76\%\) of the bill in a single step.</div>
+      <p class="pans">(a) \(\nabla J=2\sum_i(\mathbf w^{\top}X_i-y_i)X_i\). (b) \(r=(-4,-5)\), \(J_0=41\), \(\nabla J=(-26,-38)\), \(\mathbf w_1=(0.52,0.76)\), new \(r=(-2.20,-2.20)\), \(J_1=9.68\); \(76\%\) removed.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>"Residual times feature vector, summed" is the whole gradient; restricting the sum to a sample gives the mini-batch version, and Problem 5's arithmetic is this formula at \(\mathbf w=0\). Watch the sign convention: with \(r_i=\hat y_i-y_i\) the formula is \(+2\sum r_iX_i\) and the minus sign lives in the update; with \(r_i=y_i-\hat y_i\) it moves into the gradient.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Knobs versus facts. Three rows \((x_1,x_2,x_3,x_4,y)\): \((61,2,3,0.1,59)\), \((40,0,4,0.5,40)\), \((68,0,10,1.0,70)\); the model has five knobs, \(\hat y=w_1x_1+w_2x_2+w_3x_3+w_4x_4+w_5\), and the real-world truth is \(y\approx x_1\). <b>(a)</b> For the honest model \(\mathbf w=(1,0,0,0,0)\) give the three predictions, the three errors and \(J\). <b>(b)</b> The memoriser sets \(w_1=w_4=0\) and hits all three rows exactly using \(w_2,w_3,w_5\): write the three equations, solve them, and give its \(J\). <b>(c)</b> Check the candidate \(\mathbf w=(0,7,5,0,20)\): compute its row-1 prediction and its \(J\). <b>(d)</b> On an unseen row \(x=(50,1,6,0.3)\) with true \(y\approx50\), give both models' predictions and errors. <b>(e)</b> Count unknowns and equations for the full model, and state how many free parameters remain in the set of zero-error solutions.</p>
+    <p class="ptest"><b>What this tests.</b> Overfitting as arithmetic: more knobs than facts means zero training error is always available and means nothing. <b>Plan.</b> Honest model first (three subtractions); then a \(3\times3\) linear system by elimination; then plug the candidate into row 1 and recompute \(J\); then one unseen row through both models; finally the count \(5-3\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the honest model \(\hat y=x_1\).</b>
+      <table class="plain">
+        <thead><tr><th>row</th><th>\(\hat y=x_1\)</th><th>\(y\)</th><th>error \(\hat y-y\)</th><th>squared</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>\(61\)</td><td>\(59\)</td><td>\(+2\)</td><td>\(4\)</td></tr>
+          <tr><td>2</td><td>\(40\)</td><td>\(40\)</td><td>\(0\)</td><td>\(0\)</td></tr>
+          <tr><td>3</td><td>\(68\)</td><td>\(70\)</td><td>\(-2\)</td><td>\(4\)</td></tr>
+        </tbody>
+      </table>
+      \[J=4+0+4=8.\]
+      Close to zero, not zero.</div>
+      <div class="pstep"><b>(b) Step 2 — the memoriser's three equations.</b> With \(w_1=w_4=0\), row by row:
+      \[\begin{aligned}
+      2w_2+3w_3+w_5&=59 &&\text{(row 1)}\\
+      4w_3+w_5&=40 &&\text{(row 2)}\\
+      10w_3+w_5&=70 &&\text{(row 3)}
+      \end{aligned}\]
+      Row 3 minus row 2 kills \(w_5\):
+      \[\begin{aligned}
+      10w_3-4w_3&=70-40\\
+      6w_3&=30\\
+      w_3&=5.
+      \end{aligned}\]
+      Into row 2:
+      \[4(5)+w_5=40\ \Rightarrow\ w_5=20.\]
+      Into row 1:
+      \[\begin{aligned}
+      2w_2+3(5)+20&=59\\
+      2w_2+35&=59\\
+      2w_2&=24\\
+      w_2&=12.
+      \end{aligned}\]
+      So the memoriser is \(\hat y=12x_2+5x_3+20\). Check all three rows: \(24+15+20=59\) ✓, \(20+20=40\) ✓, \(50+20=70\) ✓. Its \(J=0\) exactly.</div>
+      <div class="pstep"><b>(c) Step 3 — the candidate \((0,7,5,0,20)\).</b> Row 1:
+      \[7(2)+5(3)+20=14+15+20=49\neq59.\]
+      Rows 2 and 3 do not involve \(w_2\) and are still exact. So
+      \[J=(49-59)^2+0+0=(-10)^2=100,\]
+      not \(0\): that triple is not a zero-error solution, \(w_2=12\) is.</div>
+      <div class="pstep"><b>(d) Step 4 — one unseen row.</b> \(x=(50,1,6,0.3)\), truth \(y\approx50\):
+      \[\begin{aligned}
+      \text{honest:}\quad\hat y&=x_1=50, & \text{error}&=0,\\
+      \text{memoriser:}\quad\hat y&=12(1)+5(6)+20\\
+      &=12+30+20=62, & \text{error}&=12.
+      \end{aligned}\]
+      Perfect on the three training rows, off by \(12\) on the first row it has never seen — it was memorising with variables that have nothing to do with the answer.</div>
+      <div class="pstep"><b>(e) Step 5 — the count.</b> The full model has \(5\) unknowns; the data supply \(3\) equations (one per row). Three independent equations in five unknowns leave
+      \[5-3=2\]
+      free parameters: the zero-error solutions form a two-parameter family — infinitely many of them — and the optimiser hands you one of them with no idea which is meaningful. The memoriser of (b) is the member with \(w_1=w_4=0\).</div>
+      <p class="pans">(a) \(\hat y=(61,40,68)\), errors \((2,0,-2)\), \(J=8\). (b) \(w_3=5\), \(w_5=20\), \(w_2=12\); \(J=0\). (c) row 1 gives \(49\), so \(J=100\). (d) honest \(50\) (error \(0\)); memoriser \(62\) (error \(12\)). (e) \(5\) unknowns, \(3\) equations, \(2\) free parameters — infinitely many zero-error solutions.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>More knobs than facts \(\Rightarrow\) zero training error is available \(\Rightarrow\) zero training error means nothing; judge on a row the model has not seen. Solve the small system honestly — a plausible-looking triple like \((7,5,20)\) is one row-1 check away from being exposed. Regularisation later makes the memoriser (weights \(12,5,20\)) expensive and the honest model (weight \(1\)) cheap.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Let \(F(x)=(x-1)^2\big((x-3)^2-1\big)\). <b>(a)</b> Find \(F'(x)\) in factored and expanded form, and all stationary points. <b>(b)</b> Classify them with \(F''\) and give \(F\) at each. <b>(c)</b> Run gradient descent from \(x_0=0.5\) with \(\eta=0.02\) for four steps, tabulating \(x\), \(F'\) and \(F\); state the limit and which starting points end there. <b>(d)</b> On a plateau where \(|F'|=0.001\), with \(\eta=0.01\), give the step length and the number of steps to cross a plateau of width \(2\).</p>
+    <p class="ptest"><b>What this tests.</b> One knob, two valleys: the walk converges beautifully into the wrong one and never gets a hint the other exists; plus the salt-flat arithmetic. <b>Plan.</b> Product rule, pull out \(2(x-1)\), quadratic formula; \(F''\) at three points; four table rows with the expanded \(F'\); then step \(=\eta|F'|\) and divide the width by it.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — product rule.</b> With \(u=(x-1)^2\), \(v=(x-3)^2-1\): \(u'=2(x-1)\), \(v'=2(x-3)\), so
+      \[\begin{aligned}
+      F'&=u'v+uv'\\
+      &=2(x-1)\big[(x-3)^2-1\big]+(x-1)^2\cdot2(x-3)\\
+      &=2(x-1)\big[(x-3)^2-1+(x-1)(x-3)\big].
+      \end{aligned}\]
+      Simplify the bracket:
+      \[\begin{aligned}
+      (x-3)^2-1&=x^2-6x+8,\\
+      (x-1)(x-3)&=x^2-4x+3,\\
+      \text{sum}&=2x^2-10x+11.
+      \end{aligned}\]
+      Hence
+      \[F'(x)=2(x-1)(2x^2-10x+11).\]
+      Expanded:
+      \[\begin{aligned}
+      F'&=2\,(2x^3-10x^2+11x-2x^2+10x-11)\\
+      &=2\,(2x^3-12x^2+21x-11)\\
+      &=4x^3-24x^2+42x-22.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 2 — stationary points.</b> Either \(x=1\), or \(2x^2-10x+11=0\):
+      \[\begin{aligned}
+      x&=\frac{10\pm\sqrt{100-88}}{4}=\frac{10\pm\sqrt{12}}{4}\\
+      &=\frac{10\pm2\sqrt3}{4}=\frac{5\pm\sqrt3}{2}.
+      \end{aligned}\]
+      Numerically \(1.634\) and \(3.366\). Three stationary points: \(x=1,\ 1.634,\ 3.366\).</div>
+      <div class="pstep"><b>(b) Step 3 — curvature and depth.</b> \(F''(x)=12x^2-48x+42\):
+      \[\begin{aligned}
+      F''(1)&=12-48+42=6>0,\\
+      F''(1.634)&=32.04-78.43+42=-4.39<0,\\
+      F''(3.366)&=135.96-161.57+42=16.39>0.
+      \end{aligned}\]
+      So \(x=1\) is a minimum, \(1.634\) a maximum, \(3.366\) a minimum.
+      Values:
+      \[\begin{aligned}
+      F(1)&=0^2\cdot(4-1)=0,\\
+      F(1.634)&=(0.634)^2\big[(-1.366)^2-1\big]\\
+      &=0.4020\times0.866=0.348,\\
+      F(3.366)&=(2.366)^2\big[(0.366)^2-1\big]\\
+      &=5.598\times(-0.866)=-4.848.
+      \end{aligned}\]
+      The valley at \(x=1\) has floor \(0\); the valley at \(3.366\) has floor \(-4.848\). The watershed between them is the hilltop at \(1.634\).</div>
+      <div class="pstep"><b>(c) Step 4 — the walk from \(x_0=0.5\).</b> Update \(x\leftarrow x-0.02\,F'(x)\):
+      <table class="plain">
+        <thead><tr><th>\(k\)</th><th>\(x_k\)</th><th>\(F'(x_k)\)</th><th>new \(x\)</th><th>\(F(x_k)\)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>\(0.5000\)</td><td>\(-6.500\)</td><td>\(0.5+0.1300=0.6300\)</td><td>\(1.3125\)</td></tr>
+          <tr><td>1</td><td>\(0.6300\)</td><td>\(-4.065\)</td><td>\(0.63+0.0813=0.7113\)</td><td>\(0.6321\)</td></tr>
+          <tr><td>2</td><td>\(0.7113\)</td><td>\(-2.829\)</td><td>\(0.7113+0.0566=0.7679\)</td><td>\(0.3532\)</td></tr>
+          <tr><td>3</td><td>\(0.7679\)</td><td>\(-2.089\)</td><td>\(0.7679+0.0418=0.8097\)</td><td>\(0.2146\)</td></tr>
+          <tr><td>4</td><td>\(0.8097\)</td><td>—</td><td>—</td><td>\(0.1376\)</td></tr>
+        </tbody>
+      </table>
+      The first row in full:
+      \[\begin{aligned}
+      F'(0.5)&=4(0.125)-24(0.25)+42(0.5)-22\\
+      &=0.5-6+21-22=-6.5,\\
+      F(0.5)&=(-0.5)^2\big[(-2.5)^2-1\big]\\
+      &=0.25\times5.25=1.3125.
+      \end{aligned}\]
+      \(|F'|\) shrinks every step — the walk decelerates as it nears a floor — and the limit is \(x=1\), \(F=0\). It reports success while \(F=-4.848\) existed the whole time. Every start below the watershed \(1.634\) ends at \(x=1\); only a start above it finds the good valley.</div>
+      <div class="pstep"><b>(d) Step 5 — the salt flat.</b> Step length \(=\eta|F'|\):
+      \[\begin{aligned}
+      \text{step}&=0.01\times0.001=10^{-5},\\
+      \text{steps}&=\frac{2}{10^{-5}}=200\,000.
+      \end{aligned}\]
+      Not at a minimum, just on level ground, inching.</div>
+      <p class="pans">(a) \(F'=2(x-1)(2x^2-10x+11)=4x^3-24x^2+42x-22\); stationary at \(1\), \((5-\sqrt3)/2\approx1.634\), \((5+\sqrt3)/2\approx3.366\). (b) \(F''=6\) (min, \(F=0\)), \(-4.39\) (max, \(F\approx0.348\)), \(16.39\) (min, \(F\approx-4.848\)). (c) \(x=0.5,0.630,0.7113,0.7679,0.8097\); \(F=1.3125,0.6321,0.3532,0.2146,0.1376\); limit \(x=1\), \(F=0\), for every start below \(1.634\). (d) step \(10^{-5}\); \(200\,000\) steps.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The watershed is the local maximum between the valleys; which side of it the parachute lands decides everything, and the walk itself carries no information about the other valley. The plateau arithmetic is the same deceleration seen at a true minimum, happening far from one. The slip is calling the deeper valley "the answer" — descent from \(0.5\) never sees it.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">For \(F(x)=3x^4-4x^3-12x^2+5\), small-step gradient descent converges to the local minimum at \(x=-1\) from any start \(x_0<0\) and to the global minimum at \(x=2\) from any start \(x_0>0\); the watershed sits at \(x=0\). Verify these three facts from \(F'\) and the values \(F(-1)\), \(F(2)\), \(F(0)\). The start \(x_0\) is drawn uniformly from \([-2,3]\). <b>(a)</b> Compute the probability that a single run finds the global minimum. <b>(b)</b> With \(k\) independent restarts (keep the best), find the smallest \(k\) for which the global minimum is found with probability at least \(0.99\), and give that probability. <b>(c)</b> If a separable ten-dimensional objective has this landscape in every coordinate (per-coordinate success \(0.6\), independent), compute the chance that one run lands in the global basin of all ten coordinates at once.</p>
+    <p class="ptest"><b>What this tests.</b> Basins as lengths, restarts as "at least one success", and the combination lock: probabilities multiply across coordinates just as basins do. <b>Plan.</b> Factor \(F'\) and evaluate \(F\) at the three roots; favourable length over total length; \(1-0.4^k\ge0.99\) with powers computed exactly; then \(0.6^{10}\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the landscape.</b>
+      \[\begin{aligned}
+      F'(x)&=12x^3-12x^2-24x\\
+      &=12x\,(x^2-x-2)\\
+      &=12x\,(x-2)(x+1).
+      \end{aligned}\]
+      Roots \(-1,\,0,\,2\). Values:
+      \[\begin{aligned}
+      F(-1)&=3+4-12+5=0,\\
+      F(0)&=5,\\
+      F(2)&=48-32-48+5=-27.
+      \end{aligned}\]
+      \(F''(x)=36x^2-24x-24\): \(F''(-1)=36>0\), \(F''(0)=-24<0\), \(F''(2)=72>0\). So \(x=-1\) is a local minimum (floor \(0\)), \(x=0\) the hilltop between the valleys (the watershed), \(x=2\) the global minimum (floor \(-27\)). Left of \(0\) the slope pushes toward \(-1\); right of \(0\) toward \(2\).</div>
+      <div class="pstep"><b>(a) Step 2 — one run.</b> Success needs \(x_0>0\) (the single point \(x_0=0\) has probability zero under a continuous draw). Favourable length over total length:
+      \[p=\frac{3-0}{3-(-2)}=\frac{3}{5}=0.6.\]</div>
+      <div class="pstep"><b>(b) Step 3 — restarts.</b> One run fails with probability \(0.4\); all \(k\) fail with probability \(0.4^k\). Require
+      \[1-0.4^k\ge0.99\iff0.4^k\le0.01.\]
+      Compute the powers exactly:
+      \[\begin{aligned}
+      0.4^5&=0.01024>0.01\quad\text{(fails)},\\
+      0.4^6&=0.004096\le0.01\quad\text{(works)}.
+      \end{aligned}\]
+      So \(k=6\), with success probability \(1-0.004096=0.995904\approx0.9959\). Five restarts just miss at \(1-0.01024=0.98976\).</div>
+      <div class="pstep"><b>(c) Step 4 — ten dials at once.</b> By independence,
+      \[P=0.6^{10}=0.0060466\approx0.006,\]
+      about \(0.6\%\). With per-coordinate odds well above a half, joint success collapses exponentially — the combination lock has \(2^{10}=1024\) settings here and only one opens the door.</div>
+      <p class="pans">\(F'=12x(x-2)(x+1)\); \(F(-1)=0\), \(F(0)=5\), \(F(2)=-27\). (a) \(p=3/5=0.6\). (b) \(0.4^5=0.01024\) fails, \(0.4^6=0.004096\) works: \(k=6\), success \(\approx0.9959\). (c) \(0.6^{10}\approx0.006\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>"At least one success in \(k\) tries" is \(1-(1-p)^k\); compute the powers precisely, because these numbers are built so that \(k=5\) barely fails. Basins multiply across coordinates, so probabilities multiply too — restarts rescue one dial, not a lock with ten.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">Guns and butter: \(x_1=(0.1,0.8,0.4)\), \(x_2=(25,10,10)\), \(y=(7,1,4)\), model \(\hat y=w_1x_1+w_2x_2\), \(J=\sum(\hat y_i-y_i)^2\). <b>(a)</b> Write \(J(\mathbf w)\) out, compute the Hessian \(H=2\begin{bmatrix}\sum x_1^2&\sum x_1x_2\\\sum x_1x_2&\sum x_2^2\end{bmatrix}\), its eigenvalues, \(\kappa\) and the speed limit \(2/\lambda_{\max}\). <b>(b)</b> Standardise both columns (population \(\sigma\)), recompute the three sums, \(H_{\mathrm{std}}\), its eigenvalues, \(\kappa\) and \(2/\lambda_{\max}\). <b>(c)</b> Give the improvement factors in \(\kappa\) and in the admissible stride, and compute the correlation coefficient of the two columns that explains why \(\kappa\) is \(10\) and not \(1\).</p>
+    <p class="ptest"><b>What this tests.</b> Bad scaling and bad curvature meeting: feature scales enter the Hessian squared, standardising forces both diagonals to \(2n\), and what is left over is correlation. <b>Plan.</b> Three sums, double them; eigenvalues from the \(2\times2\) formula; then \(\mu,\sigma,z\) per column, the three sums again, \(a\pm b\) eigenvalues; divide before by after; finally \(\sum z_1z_2/n\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — the bill, written out.</b>
+      \[\begin{aligned}
+      J(\mathbf w)&=(0.1w_1+25w_2-7)^2\\
+      &\quad+(0.8w_1+10w_2-1)^2\\
+      &\quad+(0.4w_1+10w_2-4)^2.
+      \end{aligned}\]
+      Its second derivatives are \(2\sum x_{i1}^2\), \(2\sum x_{i2}^2\) and \(2\sum x_{i1}x_{i2}\).</div>
+      <div class="pstep"><b>Step 2 — the three sums and \(H\).</b>
+      \[\begin{aligned}
+      \textstyle\sum x_1^2&=0.01+0.64+0.16=0.81,\\
+      \textstyle\sum x_2^2&=625+100+100=825,\\
+      \textstyle\sum x_1x_2&=2.5+8+4=14.5.
+      \end{aligned}\]
+      \[\begin{aligned}
+      H&=2\begin{bmatrix}0.81&14.5\\14.5&825\end{bmatrix}\\
+      &=\begin{bmatrix}1.62&29\\29&1650\end{bmatrix}.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — eigenvalues, \(\kappa\), speed limit.</b> For a symmetric \(\begin{bmatrix}p&q\\q&s\end{bmatrix}\), \(\lambda=\tfrac{p+s}{2}\pm\sqrt{\big(\tfrac{s-p}{2}\big)^2+q^2}\):
+      \[\begin{aligned}
+      \tfrac{p+s}{2}&=\tfrac{1651.62}{2}=825.81,\\
+      \tfrac{s-p}{2}&=\tfrac{1648.38}{2}=824.19,\\
+      \lambda&=825.81\pm\sqrt{824.19^2+29^2}\\
+      &=825.81\pm\sqrt{679\,289+841}\\
+      &=825.81\pm824.70,
+      \end{aligned}\]
+      so \(\lambda_{\max}\approx1650.5\), \(\lambda_{\min}\approx1.11\). Then
+      \[\begin{aligned}
+      \kappa&=\frac{1650.5}{1.11}\approx1487,\\
+      \frac{2}{\lambda_{\max}}&=\frac{2}{1650.5}\approx0.00121.
+      \end{aligned}\]
+      A canyon about \(\sqrt{1487}\approx39\) times longer than it is wide, and a stride capped near \(10^{-3}\) in the \(w_1\) direction, whose curvature is only \(1.62\).</div>
+      <div class="pstep"><b>(b) Step 4 — standardise the guns column.</b>
+      \[\begin{aligned}
+      \mu_1&=\tfrac{0.1+0.8+0.4}{3}=\tfrac{1.3}{3}=0.4333,\\
+      x_1-\mu_1&=(-0.3333,\,0.3667,\,-0.0333),\\
+      \sigma_1^2&=\tfrac{0.1111+0.1344+0.0011}{3}=0.0822,\\
+      \sigma_1&=\sqrt{0.0822}=0.2867,\\
+      z_1&=(-1.163,\,1.279,\,-0.116).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 5 — standardise the butter column.</b>
+      \[\begin{aligned}
+      \mu_2&=\tfrac{25+10+10}{3}=\tfrac{45}{3}=15,\\
+      x_2-\mu_2&=(10,\,-5,\,-5),\\
+      \sigma_2^2&=\tfrac{100+25+25}{3}=\tfrac{150}{3}=50,\\
+      \sigma_2&=\sqrt{50}=7.071,\\
+      z_2&=(1.414,\,-0.707,\,-0.707).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 6 — the three sums again.</b>
+      \[\begin{aligned}
+      \textstyle\sum z_1^2&=1.352+1.635+0.014=3.000,\\
+      \textstyle\sum z_2^2&=2.000+0.500+0.500=3.000,\\
+      \textstyle\sum z_1z_2&=-1.644-0.904+0.082=-2.466.
+      \end{aligned}\]
+      The first two are exactly \(3=n\) — dividing a column by its own \(\sigma\) forces \(\sum z^2=n\), so every diagonal entry of the Hessian becomes \(2n\).
+      \[H_{\mathrm{std}}=\begin{bmatrix}6&-4.93\\-4.93&6\end{bmatrix}.\]
+      Equal diagonal, so the eigenvalues are \(a\pm b\):
+      \[\begin{aligned}
+      \lambda&=6\pm4.93=10.93,\ 1.07,\\
+      \kappa&=\frac{10.93}{1.07}\approx10.2,\\
+      \frac{2}{\lambda_{\max}}&=\frac{2}{10.93}\approx0.183.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(c) Step 7 — the improvement, and what is left.</b>
+      \[\begin{aligned}
+      \frac{\kappa_{\text{raw}}}{\kappa_{\text{std}}}&=\frac{1487}{10.2}\approx145,\\
+      \frac{0.183}{0.00121}&\approx151.
+      \end{aligned}\]
+      About \(145\times\) in \(\kappa\) and \(151\times\) in the admissible stride, without touching the model, the algorithm or the data's meaning. The leftover \(\kappa=10.2\) comes from the off-diagonal \(-4.93\): the columns are correlated,
+      \[\rho=\frac{\sum z_1z_2}{n}=\frac{-2.466}{3}\approx-0.822.\]
+      Scaling equalises the axes; it does not decorrelate them, so the contours stay tilted. Removing the tilt is what PCA-whitening is for.</div>
+      <p class="pans">(a) \(H=\begin{bmatrix}1.62&29\\29&1650\end{bmatrix}\); \(\lambda\approx1650.5,\,1.11\); \(\kappa\approx1487\); \(2/\lambda_{\max}\approx0.00121\). (b) \(z_1=(-1.163,1.279,-0.116)\), \(z_2=(1.414,-0.707,-0.707)\); sums \(3,3,-2.466\); \(H_{\mathrm{std}}=\begin{bmatrix}6&-4.93\\-4.93&6\end{bmatrix}\); \(\lambda=10.93,\,1.07\); \(\kappa\approx10.2\); \(2/\lambda_{\max}\approx0.183\). (c) \(\approx145\times\) in \(\kappa\), \(\approx151\times\) in stride; \(\rho\approx-0.822\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Standardising forces every diagonal of \(H\) to \(2n\); whatever \(\kappa\) survives is correlation, read off the off-diagonal. Two handy facts: eigenvalues of \(\begin{bmatrix}a&b\\b&a\end{bmatrix}\) are \(a\pm b\), and for general \(2\times2\) symmetric use mean \(\pm\) half-difference-and-\(q\). The slip is forgetting the factor \(2\) in \(H\) and so in \(2/\lambda_{\max}\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">A linear model \(\hat y=w_1x_1+w_2x_2\) is trained on \(x_1=(100,500,900)\) and \(x_2=(0.9,0.3,0.6)\), with \(J=\sum(\hat y_i-y_i)^2\) and Hessian \(H=2\sum_iX_iX_i^{\top}\). <b>(a)</b> Compute \(H\), its eigenvalues (use \(\lambda_{\min}=\det H/\lambda_{\max}\)), the largest stable stride \(\gamma_{\max}=2/\lambda_{\max}\) and \(\kappa\). <b>(b)</b> Min–max normalise both columns, recompute \(H'\), its eigenvalues, \(\gamma'_{\max}\) and \(\kappa'\). <b>(c)</b> By what factor did the admissible stride improve?</p>
+    <p class="ptest"><b>What this tests.</b> The grand synthesis: a \(10^3\) gap in feature scale becomes a \(10^6\) gap in curvature, which caps the stride at \(10^{-6}\); min–max scaling buys it back. <b>Plan.</b> Three sums, double them; \(\lambda_{\max}\approx H_{11}\) because the off-diagonal is tiny in comparison, \(\lambda_{\min}\) from the determinant; then scale, three new sums, \(a\pm b\); divide the two strides.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Step 1 — raw sums and \(H\).</b>
+      \[\begin{aligned}
+      \textstyle\sum x_1^2&=10^4+25\times10^4+81\times10^4\\
+      &=107\times10^4=1\,070\,000,\\
+      \textstyle\sum x_1x_2&=90+150+540=780,\\
+      \textstyle\sum x_2^2&=0.81+0.09+0.36=1.26.
+      \end{aligned}\]
+      \[\begin{aligned}
+      H&=2\begin{bmatrix}1\,070\,000&780\\780&1.26\end{bmatrix}\\
+      &=\begin{bmatrix}2.14\times10^6&1560\\1560&2.52\end{bmatrix}.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 2 — eigenvalues, stride, \(\kappa\).</b> The off-diagonal \(1560\) is tiny next to \(2.14\times10^6\), so \(\lambda_{\max}\approx H_{11}=2.14\times10^6\). The other eigenvalue comes from the determinant:
+      \[\begin{aligned}
+      \det H&=(2.14\times10^6)(2.52)-1560^2\\
+      &=5\,392\,800-2\,433\,600=2\,959\,200,\\
+      \lambda_{\min}&=\frac{\det H}{\lambda_{\max}}=\frac{2\,959\,200}{2.14\times10^6}\approx1.38.
+      \end{aligned}\]
+      Then
+      \[\begin{aligned}
+      \gamma_{\max}&=\frac{2}{2.14\times10^6}\approx9.3\times10^{-7},\\
+      \kappa&=\frac{2.14\times10^6}{1.38}\approx1.6\times10^6.
+      \end{aligned}\]
+      Any stride above \(\sim10^{-6}\) blows up, and at \(10^{-6}\) the \(w_2\) direction (curvature \(1.38\)) moves by a factor \(1-1.38\times10^{-6}\) per step — glacially.</div>
+      <div class="pstep"><b>(b) Step 3 — min–max both columns.</b> Column 1: \(\min=100\), range \(800\); column 2: \(\min=0.3\), range \(0.6\):
+      \[\begin{aligned}
+      x_1'&=\Big(\tfrac{0}{800},\tfrac{400}{800},\tfrac{800}{800}\Big)=(0,\,0.5,\,1),\\
+      x_2'&=\Big(\tfrac{0.6}{0.6},\tfrac{0}{0.6},\tfrac{0.3}{0.6}\Big)=(1,\,0,\,0.5).
+      \end{aligned}\]</div>
+      <div class="pstep"><b>Step 4 — the new Hessian.</b>
+      \[\begin{aligned}
+      \textstyle\sum x_1'^2&=0+0.25+1=1.25,\\
+      \textstyle\sum x_1'x_2'&=0+0+0.5=0.5,\\
+      \textstyle\sum x_2'^2&=1+0+0.25=1.25.
+      \end{aligned}\]
+      \[H'=2\begin{bmatrix}1.25&0.5\\0.5&1.25\end{bmatrix}=\begin{bmatrix}2.5&1\\1&2.5\end{bmatrix}.\]
+      Equal diagonal, so \(\lambda=a\pm b\):
+      \[\begin{aligned}
+      \lambda&=2.5\pm1=3.5,\ 1.5,\\
+      \gamma'_{\max}&=\frac{2}{3.5}\approx0.571,\\
+      \kappa'&=\frac{3.5}{1.5}\approx2.33.
+      \end{aligned}\]</div>
+      <div class="pstep"><b>(c) Step 5 — the improvement.</b>
+      \[\frac{\gamma'_{\max}}{\gamma_{\max}}=\frac{0.571}{9.3\times10^{-7}}\approx6\times10^5.\]
+      The stride grew by roughly six orders of magnitude, and \(\kappa\) fell from \(\sim10^6\) to \(2.33\) — the quantitative content of "scale your features before descending".</div>
+      <p class="pans">(a) \(H=\begin{bmatrix}2.14\times10^6&1560\\1560&2.52\end{bmatrix}\); \(\lambda_{\max}\approx2.14\times10^6\), \(\lambda_{\min}\approx1.38\); \(\gamma_{\max}\approx9.3\times10^{-7}\); \(\kappa\approx1.6\times10^6\). (b) \(x_1'=(0,0.5,1)\), \(x_2'=(1,0,0.5)\); \(H'=\begin{bmatrix}2.5&1\\1&2.5\end{bmatrix}\); \(\lambda=3.5,1.5\); \(\gamma'_{\max}\approx0.571\); \(\kappa'\approx2.33\). (c) \(\approx6\times10^5\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Feature scales enter \(H\) squared, so a \(10^3\) scale gap is a \(10^6\) curvature gap and a \(10^{-6}\) speed limit. Scaling is not cosmetic; it is a computable \(10^5\)–\(10^6\times\) speed-up. For a nearly diagonal \(2\times2\), \(\lambda_{\max}\approx\) the big diagonal entry and \(\lambda_{\min}=\det/\lambda_{\max}\) — never read \(\lambda_{\min}\) off the small diagonal entry (\(2.52\), not \(1.38\)).</p></div>
+    </details>
+  </div>

@@ -18,9 +18,9 @@
         next = UNITS.filter(function(u){return u.n===U+1})[0];
     var nav = document.createElement('div');
     nav.className = 'toc-nav';
-    nav.innerHTML = (prev ? '<a href="unit-0'+prev.n+'.html" title="'+prev.t+'">\u2190 Unit '+prev.n+'</a>' : '<span></span>')
+    nav.innerHTML = (prev ? '<a href="unit-'+String(prev.n).padStart(2,'0')+'.html" title="'+prev.t+'">\u2190 Unit '+prev.n+'</a>' : '<span></span>')
                   + '<a class="hub" href="index.html">All units</a>'
-                  + (next ? '<a href="unit-0'+next.n+'.html" title="'+next.t+'">Unit '+next.n+' \u2192</a>' : '<span></span>');
+                  + (next ? '<a href="unit-'+String(next.n).padStart(2,'0')+'.html" title="'+next.t+'">Unit '+next.n+' \u2192</a>' : '<span></span>');
     toc.appendChild(nav);
 
     var close = document.createElement('button');

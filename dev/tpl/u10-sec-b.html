@@ -1,0 +1,102 @@
+
+<!-- ================= 4 · THE HAIR-TRIGGER KNOB ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>The hair-trigger and the stiff knob</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Two knobs, one hand</span>
+    <p>An old radio has two knobs. One is a hair-trigger: a millimetre of turn swings the station wildly. The other is stiff: you can spin it and almost nothing happens. Now imagine you are only allowed to turn both by <em>the same amount per move</em>. Any move gentle enough not to over-turn the hair-trigger is far too gentle to budge the stiff one. You will overshoot on one dial and crawl on the other. That is precisely what one stride \(\eta\) does to two parameters whose features have different sizes:</p>
+  </div>
+<!--@W4-->
+  <div class="prose reveal">
+    <p>The lecture's model predicts wealth from age and years of college: \(y=w_1x_1^2+w_2x_2^2\). Age runs to \(100\); college runs to \(10\). At a typical person (\(x_1=50\), \(x_2=4\)) the bill is <em>\(2500\) times</em> more sensitive to the age knob than to the college knob — because sensitivity is the feature's value, squared, and \(50^2/4^2=156\). Same stride, so the age knob moves \(156\) times further per step. Press ▶ and watch the needles: the age dial swings past its mark and back; the college dial creeps.</p>
+    <p>Try to fix it with the stride alone. <em>Protect</em> the hair-trigger (a stride that moves \(w_1\) by \(0.01\)) and the stiff knob needs thousands of steps per unit. <em>Serve</em> the stiff knob and the hair-trigger swings by whole units and oscillates. There is no stride that suits both, because the imbalance is not in the stride — it is in the <strong>units of the features</strong>. Age in years and college in years are both "years", but their sizes differ by ten, and the bill feels sizes squared. The only real fix is to make the two features the same size. That is the next section, and — after a detour through valleys and canyons — the whole of Section 10.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>\(\partial y/\partial w_j = x_j^2\): a knob's sensitivity is its feature's size, squared. One stride \(\eta\) moves knob \(j\) by \(\eta\,x_j^2\,|\text{miss}|\). Different feature sizes ⇒ one knob overshoots while another crawls, and no \(\eta\) can serve both. Normalisation exists to make \(x_j\) the same size for every \(j\).</p>
+    </div>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At the current step, \(\partial J/\partial w_1=-640\) and \(\partial J/\partial w_2=-1.6\), and one stride \(\gamma=10^{-3}\) serves both. How far does each knob move this step, and roughly how many steps does \(w_2\) need to travel one unit?</p>
+    <div class="opts">
+      <button data-correct data-why="Δw = −γ · ∂J/∂w: 0.64 for w₁ and 0.0016 for w₂ — a 400 : 1 imbalance. At 0.0016 per step, one unit takes 1/0.0016 = 625 steps, during which w₁ would have travelled 625 × 0.64 = 400 units and long since overshot.">\(0.64\) and \(0.0016\); about \(625\) steps</button>
+      <button data-why="The step is stride times gradient, not the gradient itself: 10⁻³ × 640 = 0.64 and 10⁻³ × 1.6 = 0.0016. The ratio 400 : 1 is right; the sizes are a thousand times smaller.">\(640\) and \(1.6\); about \(1\) step</button>
+      <button data-why="Both knobs use the same γ, so the moves are proportional to the partials: 0.64 versus 0.0016. Gradient descent never equalises the moves by itself — that is exactly the problem.">\(0.64\) and \(0.64\); the same stride gives the same move</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s4-->
+  <div class="onesent reveal"><b>In one sentence:</b> A knob's sensitivity is its feature's size squared, so features of different sizes turn one stride into a hair-trigger on one knob and a stiff crawl on the other — and no stride can fix what only the units can.</div>
+</section>
+
+<!-- ================= 5 · THREE WAYS TO FIX THE UNITS ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>Three ways to fix the units — centre, standardise, min–max</h2></div>
+  <div class="callout scenario reveal"><span class="tag">The same map, redrawn</span>
+    <p>A map of a country drawn with kilometres east and <em>metres</em> north is a long thin smear: every route looks like it runs east–west. Nothing about the country is thin; the units are. Redraw the north axis in kilometres and the shape reappears. The data is the map. Here are the three redrawings the lecture uses, side by side, on a cloud you can watch move:</p>
+  </div>
+<!--@W5-->
+  <div class="prose reveal">
+    <p>Three operations, each a motion you just saw. <strong>Centring</strong> subtracts each column's mean: the cloud <em>slides</em> so its centre sits on the origin. Shape unchanged; it only removes the "everything is around 15" offset that makes all columns look alike to a knob. <strong>Standardising</strong> also divides each column by its spread: the cloud <em>squeezes</em> so that every column has spread \(1\). After this, "one unit" means "one standard deviation of surprise" in every column — the radio's two knobs now have the same stiffness. <strong>Min–max</strong> squashes every column into \([0,1]\): the cloud is pressed into a box. Simple and bounded, but look at the <em>outlier</em> preset: one wild point squashes everybody else into a corner, and a new value beyond the training maximum lands <em>outside</em> the box (\(1.25\) on the practice column, where standardising would have said an unremarkable \(z=2.12\)).</p>
+    <p>One rule the widget insists on: the unseen point is transformed with the <em>training</em> statistics. The mean and spread are part of the model now. Recompute them with the test point and the test point has leaked into the training.</p>
+    <div class="svgwrap reveal"><table class="plain">
+      <thead><tr><th>Repair</th><th>Formula</th><th>What moves</th><th>Use it when</th></tr></thead>
+      <tbody>
+        <tr><td>centre</td><td>\(x_{ij}\leftarrow x_{ij}-\mu_j\)</td><td>the cloud slides onto the origin; shape unchanged</td><td>the offset is the problem, not the scale</td></tr>
+        <tr><td>standardise</td><td>\(x_{ij}\leftarrow (x_{ij}-\mu_j)/\sigma_j\)</td><td>slides, then squeezes to spread \(1\) per column</td><td>almost always — the default before gradient descent</td></tr>
+        <tr><td>min–max</td><td>\(x_{ij}\leftarrow (x_{ij}-\min_j)/(\max_j-\min_j)\)</td><td>pressed into the unit box</td><td>bounded inputs matter and there are no outliers</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>Normalisation changes the <em>units</em>, not the meaning. Standardised columns each have mean \(0\) and \(\sum_i z_{ij}^2=n\) — every column is now the same size — so one stride can serve every knob. What it does <em>not</em> remove is a tilt: two columns that rise and fall together stay tilted after standardising. That leftover is Section 10's last word.</p>
+    </div>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A training column has \(\mu=40,\ \sigma=8\), minimum \(20\) and maximum \(60\). A new value \(x=72\) arrives. What do standardising and min–max make of it?</p>
+    <div class="opts">
+      <button data-correct data-why="z = (72 − 40)/8 = 4: four spreads above the mean — unusual but perfectly defined. Min–max gives (72 − 20)/40 = 1.3, outside the [0, 1] the training data promised. Both use the TRAINING statistics; neither recomputes them.">\(z=4\); min–max \(1.3\), outside \([0,1]\)</button>
+      <button data-why="Min–max only promises [0, 1] for the training values. A new value beyond the training maximum maps beyond 1: (72 − 20)/40 = 1.3. Nothing clips it unless you add a clip yourself.">\(z=4\); min–max \(1\), because it is capped at the maximum</button>
+      <button data-why="Never recompute the statistics with the new point — that leaks it into training. With the training μ = 40 and σ = 8, z = 32/8 = 4.">\(z=3.2\), after updating \(\mu\) and \(\sigma\) with the new point</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s5-->
+  <div class="onesent reveal"><b>In one sentence:</b> Centre slides, standardise squeezes, min–max boxes — all three redraw the data's units so that every column is the same size, and all three are applied to new data with the training statistics.</div>
+</section>
+
+<!-- ================= 6 · THE WATERSHED AND THE LOCK ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>The wrong valley — the watershed and the combination lock</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Rain on a ridge</span>
+    <p>Rain falls on a mountain ridge. Every drop rolls downhill and ends in a lake — but which lake was decided the instant it landed, by which side of the ridge it fell on. A drop one centimetre left of the crest ends in the shallow lake; one centimetre right, in the deep one. The crest is the <em>watershed</em>. Gradient descent is a raindrop. Drop a few dozen on the lecture's landscape and watch them sort themselves:</p>
+  </div>
+<!--@W6-->
+  <div class="prose reveal">
+    <p>The lecture's curve has two valleys: a shallow one at \(x=1\) (height \(0\)) and a deep one at \(x=3.37\) (height \(-4.85\)), with a hilltop between them at \(x=1.63\). Every marble that lands left of the hilltop rolls into the shallow valley and <em>stops there</em>, reporting success, with a valley five units deeper sitting next door. It never had a hint. The walk in Unit 9 only ever found "the valley downhill from here"; this is the price. Drop the marbles on \([0,4]\) and about \(59\,\%\) reach the deep valley — the share of the range that lies right of the watershed. Nothing about the walk changed that number; only the drop zone did.</p>
+    <p>So restart from several random places and keep the best? On a line, yes: with a \(0.59\) chance per drop, six drops find the deep valley \(99\,\%\) of the time. Now open the <em>lock</em> tab. A landscape with many knobs is a combination lock: if each knob's own curve has \(k\) flat spots, the whole landscape has a flat spot for every <em>combination</em> — \(k^d\) of them, and exactly one is the true bottom. Ten dials with three notches each: \(59{,}049\) valleys. Fifty dials: about \(7\times10^{23}\). And the chance that a single drop lands right on <em>every</em> dial multiplies too: \(0.6^{10}\approx0.006\). Restarts cannot rescue that. (Deep learning lives with it: on the landscapes of large networks most valleys turn out to be about equally good, and Section 11 says what to do when they are not.)</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>For a loss that splits into one-knob pieces, \(F=A_1(x_1)+\dots+A_d(x_d)\), the tilt in knob \(i\) is \(A_i'(x_i)\) alone — so <em>any</em> choice of one flat spot per knob is a flat spot of \(F\). Count: \(\prod_i k_i\) local minima. With independent per-knob odds \(p\), one run lands in the global basin of every knob with probability \(p^d\), and \(k\) restarts fail with probability \((1-p)^k\).</p>
+    </div>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Marbles are dropped uniformly on \([0,4]\) of the lecture's curve, whose watershed is at \(x=1.634\). What fraction reaches the deep valley, and how many independent drops make the chance of at least one success reach \(99\,\%\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right of the watershed is (4 − 1.634)/4 = 0.5915 of the range. Each drop fails with probability 0.4085; k drops all fail with 0.4085^k, which drops below 0.01 at k = 6 (0.4085⁵ = 0.0114, 0.4085⁶ = 0.0047).">About \(0.59\); \(6\) drops</button>
+      <button data-why="The share is measured along the drop range, not by counting valleys: (4 − 1.634)/4 ≈ 0.59, not one half. And with p ≈ 0.59, five drops still fail 1.1 % of the time — just short of 99 %.">Exactly \(0.5\) — there are two valleys; \(5\) drops</button>
+      <button data-why="A downhill marble never climbs the hilltop, so starts left of 1.634 CANNOT reach the deep valley. The fraction is set by the drop zone: 0.59 here.">All of them — the deep valley is lower, so descent finds it</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A loss splits into \(10\) one-knob pieces, each with \(3\) flat spots of which one is its true bottom, and a random start lands in each knob's best basin with probability \(0.6\). How many flat spots does the whole loss have, and what is the chance one run lands in the best basin of every knob?</p>
+    <div class="opts">
+      <button data-correct data-why="Every combination of one flat spot per knob is a flat spot of the sum: 3¹⁰ = 59,049. The knobs are independent, so the chance of being right on all ten is 0.6¹⁰ ≈ 0.006 — about one run in 165.">\(3^{10}=59{,}049\) flat spots; \(0.6^{10}\approx0.006\)</button>
+      <button data-why="The flat spots multiply, they do not add: choosing one of 3 for each of 10 knobs gives 3¹⁰ combinations. Likewise the odds multiply: 0.6 × 0.6 × … ten times, not 0.6 once.">\(30\) flat spots; \(0.6\)</button>
+      <button data-why="The count is right, but a single run must be lucky on every knob at once: the probabilities multiply to 0.6¹⁰ ≈ 0.006, not 6 (a probability cannot exceed 1).">\(59{,}049\) flat spots; \(0.6\times10=6\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s6-->
+  <div class="onesent reveal"><b>In one sentence:</b> Which valley you reach is decided by which side of the watershed you land on, and with many knobs the valleys multiply like the settings of a combination lock — \(k^d\) of them — so restarts alone cannot save a walker in high dimensions.</div>
+</section>

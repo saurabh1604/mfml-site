@@ -1,0 +1,118 @@
+
+<!-- ================= 10 · CHANGE THE UNITS, NOT THE MODEL ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Change the units, not the model — the canyon becomes a bowl</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Guns and butter</span>
+    <p>Three countries, two numbers each — guns per person (\(0.1,\ 0.8,\ 0.4\)) and ounces of butter per person (\(25,\ 10,\ 10\)) — and a happiness score to predict (\(7,\ 1,\ 4\)). The butter numbers are thirty times the gun numbers, so the bill is over a thousand times stiffer in the butter knob than in the gun knob. The landscape is a razor blade. You hold the dial that standardises the two columns. Turn it:</p>
+  </div>
+<!--@W10-->
+  <div class="prose reveal">
+    <p>At \(t=0\) the surface is the trench from the top of the page: stiff wall, soft floor, \(\kappa\approx1487\). Press ▶: forty steps just under the speed limit bounce wall to wall and barely move along the floor. Now slide \(t\) to \(1\). The trench opens under your finger into a bowl — a slightly tilted one, \(\kappa\approx10\) — and the same forty steps walk nearly straight in. Look at what changed and what did not. The data means exactly what it meant. The model is the same two knobs. The best fit is the same fit, written in new units. Only the <em>units of the columns</em> moved, and \(\kappa\) fell by a factor of \(145\), the safe stride grew from \(0.0012\) to \(0.18\), and the number of steps to shrink the error a hundredfold along the soft direction fell from thousands to a couple of dozen. This is the cheapest win in all of machine learning, and it is the sentence Sections 4, 5 and 8 were building toward.</p>
+    <p>Why does standardising land so precisely on the fix? Because the stiffness in each knob is (twice) the <em>sum of squares of its column</em> — the bill feels the columns squared, so a column thirty times bigger is a wall nine hundred times stiffer. Dividing every column by its own spread forces every column's sum of squares to \(n\), so every diagonal stiffness becomes the same \(2n\). The walls are now the same height by construction.</p>
+    <p>And the leftover tilt? The bowl at \(t=1\) still leans, and \(\kappa\) is \(10\), not \(1\). The lean comes from the off-diagonal: guns and butter rise and fall <em>together</em> in this data (correlation \(-0.82\)), so the two knobs are not independent, and Section 9's tilted contours are exactly what you see. Scaling equalises the axes; it does not straighten them. Try the <em>whiten</em> preset: standardise and then rotate onto the bowl's own axes, and \(\kappa\) becomes exactly \(1\) — a perfect round bowl, one step to the bottom. Finding those axes is what Unit 12 is for (it is called PCA); the adaptive strides of the next unit are the practical version of the same wish.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>The least-squares bill has Hessian \(H=2X^{\top}X\): stiffness in knob \(j\) is \(2\sum_i x_{ij}^2\), the column's size squared. Standardising makes every column's \(\sum_i z_{ij}^2=n\), so every diagonal becomes \(2n\) — the walls level out. On this data: \(\kappa\ 1487\to10.2\), speed limit \(2/\lambda_{\max}\ 0.0012\to0.18\). The off-diagonal \(2\sum_i z_{i1}z_{i2}\) — correlation — survives; removing it is whitening, a rotation, not a rescaling.</p>
+    </div>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You standardise the two columns of the guns-and-butter data. Which of these changes?</p>
+    <div class="opts">
+      <button data-correct data-why="The Hessian is 2ZᵀZ, and Z has changed, so its eigenvalues and their ratio κ change (1487 → 10.2). The minimum bill, the meaning of the data and the fitted line (in the new units) are all the same problem re-measured.">The Hessian's eigenvalues and \(\kappa\) — the bowl's shape</button>
+      <button data-why="The best fit is the same relationship expressed in new units; standardising is an invertible relabelling of the axes, so the predictions of the best model are unchanged.">The best predictions — standardising finds a better model</button>
+      <button data-why="Nothing about the countries, the guns, the butter or the happiness changed. Only the units on the two axes did — that is the whole point: same problem, new ruler.">What the data means</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">After standardising, \(\kappa\) is \(10.2\) rather than \(1\). What is the leftover, and which repair would remove it?</p>
+    <div class="opts">
+      <button data-correct data-why="Both diagonals are now 6; the off-diagonal −4.93 is 2Σz₁z₂, the correlation between the columns. It tilts the contours, and the eigenvalues 6 ± 4.93 are unequal because of it. Only a rotation onto the bowl's own axes (whitening / PCA) removes it; no per-column rescaling can.">Correlation between the columns (the off-diagonal \(-4.93\)); a rotation — whitening</button>
+      <button data-why="Standardising already made both diagonals exactly 6 = 2n. Rescaling a column again would un-equalise them; it cannot touch the off-diagonal term that carries the tilt.">Unequal column sizes; standardise once more</button>
+      <button data-why="The residual bill (what the best fit cannot explain) does not enter the Hessian of least squares at all: H = 2ZᵀZ contains only the features. The leftover is in the features' correlation.">The noise in the three rows; more data</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s10-->
+  <div class="onesent reveal"><b>In one sentence:</b> The bill feels each column squared, so dividing every column by its own spread levels every wall to the same height — \(\kappa\) collapses, the safe stride explodes, the model and the data's meaning are untouched — and only the tilt of correlation remains, for a rotation to remove.</div>
+</section>
+
+<!-- ================= 11 · THE TRAINING CLINIC ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>The training clinic — read the loss curve like a doctor</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Six patients</span>
+    <p>A doctor does not see the disease; she sees the chart. You will not see the landscape either — only the loss, step after step. Everything in this unit has a signature on that chart. Six recorded runs, one diagnosis each. Read the curve, name the cause, pick the fix:</p>
+  </div>
+<!--@W11-->
+  <div class="prose reveal">
+    <p>Once you have diagnosed all six, notice that the fixes come in only two families. <strong>Reshape the landscape</strong> so the plain walk works: scale the features, initialise sensibly, add a penalty on big knobs. That is this unit. <strong>Give the walker better instincts</strong>: momentum that keeps rolling across a flat, a private stride per knob so the stiff one is not held hostage by the hair-trigger, or a feel for the curvature and not just the slope. That is the next unit. Almost every trick in modern optimisation is one of the two.</p>
+    <div class="svgwrap reveal"><table class="plain">
+      <thead><tr><th>The chart says</th><th>What is going on</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>loss becomes \(\infty\) / NaN in a few steps</td><td>overflow: huge start or unscaled features</td><td>start in \([-1,1]\); scale the features; lower \(\eta\)</td></tr>
+        <tr><td>training loss \(\to0\), test loss climbs</td><td>memorising: more knobs than facts</td><td>more data, fewer knobs, a penalty on big knobs, stop early</td></tr>
+        <tr><td>sawtooth that grows</td><td>\(\eta>2/\lambda_{\max}\) in the stiff direction</td><td>reduce \(\eta\); standardise</td></tr>
+        <tr><td>falls fast, then crawls for ever</td><td>zig-zag in a canyon (big \(\kappa\))</td><td>standardise; momentum, adaptive strides</td></tr>
+        <tr><td>flat from the very first step</td><td>a plateau, a dead start, \(\eta\) far too small — or a wrong gradient</td><td>raise \(\eta\); momentum; better start; audit the gradient</td></tr>
+        <tr><td>different runs, different answers</td><td>several valleys, different watersheds</td><td>restarts, keep the best — or accept it</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A run's loss goes \(12,\ 4,\ 11,\ 5,\ 13,\ 6,\dots\) — a sawtooth that slowly grows. What is wrong, and what is the first thing to try?</p>
+    <div class="opts">
+      <button data-correct data-why="Alternate steps overshoot and land higher: a per-step factor below −1 in the stiffest direction, i.e. η above 2/λ_max. Halve η (or standardise the features so λ_max drops) and the sawtooth becomes a descent.">The stride is above the speed limit in the stiff direction; reduce \(\eta\) or standardise</button>
+      <button data-why="A plateau shows a FLAT loss, not a growing sawtooth. Raising η here makes the overshoot worse — the factor moves further below −1.">A plateau; raise \(\eta\)</button>
+      <button data-why="Memorising shows a training loss that falls smoothly to zero while the test loss rises. A growing sawtooth on the training loss itself is a step-size problem.">Memorising; add more knobs</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="onesent reveal"><b>In one sentence:</b> Every failure in this unit has a signature on the loss curve — explosion, the train/test scissors, a growing sawtooth, fast-then-crawl, flat from the start, run-to-run lottery — and every fix either reshapes the landscape or gives the walker better instincts.</div>
+</section>
+
+<!-- ================= 12 · CARRY FORWARD ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>Four ways the walk goes wrong, one fix that does most of the work, and a picture for each.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>The picture</th><th>What it says</th><th>The line of math it becomes</th></tr></thead>
+    <tbody>
+      <tr><td>The tailor's patches</td><td>the bill is the area of the squares; each row pushes along itself, by its miss</td><td>\(\nabla J=2\sum_i(\mathbf w^{\top}\mathbf X_i-y_i)\mathbf X_i\)</td></tr>
+      <tr><td>The parachute drop</td><td>land small, central, random; blow-ups come from the units, not the start</td><td>\(w_0\in[-1,1]\); factor \(1-2\eta x^2\)</td></tr>
+      <tr><td>Last year's paper</td><td>more knobs than facts makes a zero bill free and meaningless</td><td>\(d>n\Rightarrow\) infinitely many exact fits</td></tr>
+      <tr><td>Two knobs, one hand</td><td>sensitivity is the feature's size squared; no stride serves both</td><td>\(\partial y/\partial w_j=x_j^2\)</td></tr>
+      <tr><td>The map redrawn</td><td>centre slides, standardise squeezes, min–max boxes; use training statistics</td><td>\(z=(x-\mu)/\sigma\), \((x-\min)/(\max-\min)\)</td></tr>
+      <tr><td>Rain on a ridge</td><td>the watershed decides the valley; valleys multiply like a combination lock</td><td>\(\prod_i k_i\) minima; \(p^d\); \(1-(1-p)^k\)</td></tr>
+      <tr><td>The salt flat</td><td>small tilt, small step — a plateau is not a minimum, just slow</td><td>steps \(\approx W/(\gamma g)\)</td></tr>
+      <tr><td>Skiing the gully</td><td>each direction shrinks by its own factor; the stiffest sets the limit</td><td>\(1-\eta\lambda_i\); \(\eta<2/\lambda_{\max}\); \(\kappa\)</td></tr>
+      <tr><td>The hillside path</td><td>the tilt crosses every contour at a right angle; it points at the bottom only on circles</td><td>\(\nabla F\cdot\delta\mathbf x=0\)</td></tr>
+      <tr><td>Guns and butter</td><td>standardising levels every wall to \(2n\); only correlation's tilt remains</td><td>\(H=2X^{\top}X\); \(\kappa\ 1487\to10\)</td></tr>
+      <tr><td>Six patients</td><td>every failure has a signature on the loss curve</td><td>reshape the landscape, or teach the walker</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
+    <p><strong>Change the units, not the model.</strong> The bill feels every feature squared, so features of different sizes make a canyon: one stride overshoots on the stiff wall and crawls along the soft floor. Standardise the columns and the canyon becomes a bowl — same data, same model, same best fit, a hundred times fewer steps. Then remember the other three: land small and random, judge the model on rows it never saw, and know that the valley you find is the one downhill from where you landed.</p>
+  </div>
+</section>
+
+<!-- ================= 13 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Practice arena — twelve problems, solved in full</h2></div>
+  <div class="prose reveal">
+    <p>Twelve problems, easy to hard, covering every picture in the unit: the three repairs on a real column and an unseen value, the imbalance one stride creates, the tailor's bill walked and solved, the round bowl against the canyon, standardisation's effect on the gradient and on the Hessian, the least-squares gradient derived and used, knobs versus facts, a walk into the wrong valley, basins and restarts, and the guns-and-butter canyon opened into a bowl. Every number is machine-verified.</p>
+    <p>Two habits do most of the work: <strong>for any stride question, write the per-direction factors first</strong> — \(1-\eta\lambda_i\) is the whole story of stability, oscillation and speed; and <strong>for any scaling question, compute the sums of squares of the columns</strong>, because the Hessian of least squares is \(2X^{\top}X\) and the feature sizes enter it squared.</p>
+  </div>
+<!--@PRACTICE-->
+  <div class="next-card reveal">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 11 · Optimization II — Five Ways Down One Valley</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">You can now reshape a landscape so the plain walk works. Unit 11 teaches the walker new instincts — momentum that keeps rolling, strides that adapt per knob — and then fences the landscape in: what "downhill" means when you may not leave a region, Lagrange multipliers, the KKT conditions, and the dual problem that looks at the same fence from the other side.</p>
+    <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
+  </div>
+</section>
+
+</main>

@@ -1,0 +1,94 @@
+
+<!-- ================= 7 · THE SALT FLAT ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>The salt flat — where the walk slows to nothing</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Level ground in fog</span>
+    <p>You have come down a cliff at a run and stepped onto a salt flat. The ground is level in every direction. Your one rule — "feel the tilt, step that way, and step <em>further</em> the steeper it is" — now gives you almost nothing to act on. You are not at the bottom of anything; you are on a plateau, and you shuffle across it in steps you can barely see. Watch the footprints:</p>
+  </div>
+<!--@W7-->
+  <div class="prose reveal">
+    <p>The footprints are the whole story. Sparse on the cliff, where every step is long. Then a dense glowing band across the shelf, where two hundred steps pile up in the space a handful covered on the slope. Then long strides again down into the bowl. Nothing is wrong with the walker; the step is \(\gamma\) times the tilt, and on the flat the tilt is tiny. The height chart on the right shows the same thing as a long horizontal ledge before the final drop.</p>
+    <p>The arithmetic is brutal. Tilt \(0.001\), stride \(0.01\): each step moves \(10^{-5}\). A flat two units wide takes \(200{,}000\) steps — hours of compute to go nowhere, on a plateau that is not a minimum and never was. Unit 9 already showed the walk slowing down as it nears a valley bottom; that is the same effect and there it is welcome. On a plateau it is a trap: the walker slows for the same reason (small tilt) in a place that deserves no slowing.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>Step length \(=\gamma\,\lvert\nabla f\rvert\). Small tilt ⇒ small step, whether or not you are near a minimum. Steps to cross a flat of width \(W\) and tilt \(g\): about \(W/(\gamma g)\). The cures are the next unit's: <em>momentum</em>, which carries speed across the flat instead of re-deciding at every footstep, and strides that grow when the tilt stays small.</p>
+    </div>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The loss has barely moved for \(500\) steps: \(6.00,\ 5.99,\ 5.99,\ 5.98,\dots\) Which is the <em>wrong</em> conclusion?</p>
+    <div class="opts">
+      <button data-correct data-why="A tiny tilt is not evidence of a minimum — a plateau has a tiny tilt too, and the loss here is still falling, just very slowly. 'Converged' is precisely the wrong reading; the plateau is where 200,000 steps go to die.">"The walk has converged — this must be a minimum"</button>
+      <button data-why="This is a right conclusion: on a plateau the tilt is small, so the steps are small, so the loss barely moves. Raising γ or adding momentum is the standard response.">"The tilt is tiny here — a plateau, or \(\gamma\) far too small"</button>
+      <button data-why="Also a right conclusion: a loss that is flat from the very first step is one of the classic signs that the gradient code is wrong (the audit of Unit 9), alongside a plateau or a dead start.">"Check the gradient code — a flat loss from the start is a classic symptom"</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s7-->
+  <div class="onesent reveal"><b>In one sentence:</b> Steps are stride times tilt, so a plateau — small tilt, no minimum — swallows hundreds of thousands of steps, which is the one place slowing down is a trap rather than a comfort.</div>
+</section>
+
+<!-- ================= 8 · THE CANYON ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The canyon — why the fastest way down is the wrong way down</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Skiing a gully</span>
+    <p>You are skiing down a narrow gully. The way you actually want to go is <em>along</em> the gully, gently downhill. But the steepest slope under your skis points at the <em>wall</em>. So you shoot across, hit the far wall, shoot back. Every run is downhill; you are barely getting anywhere. Two bowls, one round and one stretched, and the same walker on both:</p>
+  </div>
+<!--@W8-->
+  <div class="prose reveal">
+    <p>Set \(c=1\): a perfectly round bowl. From anywhere, the tilt points straight at the bottom — the two arrows lie on top of each other — and a stride of \(\eta=0.5\) lands every point on the bottom in <em>one step</em>. Now set \(c=4\): the lecture's elliptical bowl, four times stiffer across than along. The tilt no longer points at the bottom (watch the angle between the two arrows open up). Press ▶ at the lecture's stride \(\eta=0.24\): the \(y\)-coordinate flips sign every step, \(10\to-9.2\to8.5\to-7.8\), each time correcting the overshoot of the last; the \(x\)-coordinate creeps, \(10\to5.2\to2.7\). After six steps \(x\) is essentially solved and \(y\) is still at \(6\). Most of the motion was sideways.</p>
+    <p>The two shrink bars say why nothing better was available. Each coordinate is its own one-dimensional problem, multiplied by its own factor each step: \(1-2\eta\) along the floor, \(1-2c\eta\) across the walls. The stiff wall demands \(\eta<1/c\) or it explodes; at that cap the floor factor is \(1-2/c\), which for a stiff wall is close to \(1\) — a crawl. Serve the wall and the floor crawls; serve the floor and the wall blows up. This is the radio of Section 4 again, now drawn as a landscape: <strong>different curvatures in different directions</strong> are the same disease as different feature sizes. The lecture's phrase is exact: steepest descent is only the best <em>instantaneous</em> direction, never the best direction for the long run.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>On \(L=x^2+c\,y^2\): \(x\leftarrow(1-2\eta)x,\quad y\leftarrow(1-2c\eta)y\). Stability needs both factors inside \((-1,1)\), so the stiffest direction sets the speed limit \(\eta<2/\lambda_{\max}=1/c\), and the ratio \(\kappa=\lambda_{\max}/\lambda_{\min}=c\) — the <em>condition number</em> — says how badly the soft direction crawls at that limit. \(\kappa=1\) is a round bowl and one step; big \(\kappa\) is a canyon and a zig-zag.</p>
+    </div>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On \(L=x^2+4y^2\) with \(\eta=0.24\) you start at \((10,10)\). Where are you after one step, and which coordinate is misbehaving?</p>
+    <div class="opts">
+      <button data-correct data-why="x ← (1 − 0.48)·10 = 5.2; y ← (1 − 1.92)·10 = −9.2. The y-factor is negative: y overshot the floor and landed on the far wall, shrinking only 8 %. That negative factor IS the zig-zag.">\((5.2,\,-9.2)\) — \(y\) overshot and flipped sign</button>
+      <button data-why="The factors are 1 − 2η = 0.52 for x and 1 − 8η = −0.92 for y: y flips sign, and it shrinks far less (8 %) than x (48 %). Neither coordinate shrinks by the same amount.">\((5.2,\,5.2)\) — both shrink by the same factor</button>
+      <button data-why="η = 0.24 is just inside the limit 1/c = 0.25, so |1 − 8η| = 0.92 < 1: y bounces but still shrinks. Divergence needs η > 0.25.">\((5.2,\,-19.2)\) — \(y\) has diverged</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(L=x^2+9y^2\), what is the largest stride that does not blow up, and which direction sets it?</p>
+    <div class="opts">
+      <button data-correct data-why="∇L = (2x, 18y), factors (1 − 2η) and (1 − 18η). Stability needs |1 − 18η| < 1, i.e. η < 2/18 = 1/9 ≈ 0.111 — set by y, the direction with the larger curvature ∂²L/∂y² = 18.">\(\eta<1/9\), set by the \(y\)-direction (curvature \(18\))</button>
+      <button data-why="The x-direction would happily accept η < 1 — but the stiff y-direction explodes at η ≥ 1/9. The most sensitive direction caps everyone's stride.">\(\eta<1\), set by the \(x\)-direction</button>
+      <button data-why="1/18 is where the y-factor changes sign (from smooth descent to bouncing), not where it blows up. Blow-up is at |1 − 18η| = 1, i.e. η = 1/9.">\(\eta<1/18\), where \(y\) starts to overshoot</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s8-->
+  <div class="onesent reveal"><b>In one sentence:</b> In a canyon the tilt points at the wall, not along the floor; each direction shrinks by its own factor \(1-\eta\lambda\), the stiffest sets the speed limit, and the ratio \(\kappa\) of stiff to soft is how much of the walk is wasted bouncing.</div>
+</section>
+
+<!-- ================= 9 · THE COMPASS AND THE CONTOUR LINES ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>Why the compass crosses the contour lines at a right angle</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Walking a hillside path</span>
+    <p>A path that runs <em>level</em> along a hillside — neither climbing nor descending — is a contour line. Stand on it and ask: which way is straight up? Not along the path (that stays level). Straight across it. Every hiker knows this without a formula: the steepest way up a hill is at a right angle to the level path. Drag the point and watch the compass needle:</p>
+  </div>
+<!--@W9-->
+  <div class="prose reveal">
+    <p>Wherever you put the point, the uphill needle meets the contour through it at exactly \(90^\circ\). The reason is one sentence: a tiny move <em>along</em> the contour does not change the height, and the change in height for a tiny move is "tilt dotted with the move" — so tilt dotted with the along-the-contour move is zero, which is what a right angle means. Press ▶ and the point glides around its own contour while the needle rotates to stay perpendicular.</p>
+    <p>Now the payoff. On the round bowl, "across the contour" happens to be "toward the centre", so the needle points at the answer from anywhere: that was the one-step finish of Section 8. On the stretched bowl the contours are ellipses, and across an ellipse is <em>not</em> toward its centre — the angle between the needle and the straight line to the bottom is the third readout, and it is the exact size of the zig-zag. On the <em>tilted</em> bowl the ellipses are turned, so even a walker who has fixed the scale of each axis still sees a gap. That tilt is correlation between the features, and it is the one thing the next section's fix does not remove.</p>
+    <div class="callout remember"><span class="tag">The realization</span>
+      <p>Along a contour \(F\) is constant, so for a small step \(\delta\mathbf x\) along it \(F(\mathbf x+\delta\mathbf x)\approx F(\mathbf x)+\nabla F\cdot\delta\mathbf x\) gives \(\nabla F\cdot\delta\mathbf x=0\): the gradient is perpendicular to every contour. It points at the minimum only when the contours are circles.</p>
+    </div>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On \(F=x^2+4y^2\) at the point \((2.2,\,1.1)\), what is the angle between the gradient and the contour through the point — and between the gradient and the straight line to the minimum?</p>
+    <div class="opts">
+      <button data-correct data-why="∇F = (4.4, 8.8). The contour tangent is perpendicular to it by the Taylor argument: 90° always. The line to the origin is along (2.2, 1.1); cos θ = (4.4·2.2 + 8.8·1.1)/(|∇F|·|(2.2,1.1)|) = 19.36/(9.84·2.46) = 0.8 → θ ≈ 36.9°. That 37° is the zig-zag.">\(90^\circ\) to the contour; about \(37^\circ\) off the line to the minimum</button>
+      <button data-why="The gradient crosses contours at 90° everywhere, but it points at the minimum only on a round bowl. Here the contours are ellipses and the gradient (4.4, 8.8) is not parallel to (2.2, 1.1).">\(90^\circ\) and \(0^\circ\) — the gradient always points at the minimum</button>
+      <button data-why="The angle to the contour is exactly 90° at every point of every smooth function — that is what ∇F · δx = 0 says. It is the angle to the MINIMUM that varies (≈ 37° here).">\(37^\circ\) to the contour and \(90^\circ\) to the line to the minimum</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s9-->
+  <div class="onesent reveal"><b>In one sentence:</b> A step along a contour changes nothing, so the tilt is at a right angle to every contour — which points at the bottom only when the contours are circles, and the gap on stretched or tilted contours is the zig-zag.</div>
+</section>

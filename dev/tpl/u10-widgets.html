@@ -1,0 +1,236 @@
+<!--@W1-->
+  <div class="widget reveal" id="w-bill">
+    <div class="widget-head"><span class="w-title">The squares are squares</span><span class="w-sub">Three receipts, one slope w, and the loss drawn as what it literally is — the total area of three squares</span></div>
+    <p class="try"><b>Try:</b> drag \(w\) from 0 toward 2.36 and watch the three squares shrink together, then press ▶ descend with \(\eta=0.02\) — the bead on the bill curve hops \(78\to15.3\to3.1\to0.78\). Then push \(\eta\) past \(0.0714\) and press ▶ again: the squares grow.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="bl-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="Three data points, the line y = w x through the origin, and at each point a square whose side is the vertical miss between the point and the line; the loss is the total area of the three squares and they shrink together as w approaches 2.357"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="bl-w">slope w</label><input id="bl-w" type="range" min="0" max="4" step="0.01" value="0"><output id="bl-w-o">0</output></div>
+          <div class="ctl"><label for="bl-eta">stride η</label><input id="bl-eta" type="range" min="0.005" max="0.075" step="0.001" value="0.02"><output id="bl-eta-o">0.02</output></div>
+        </div>
+        <div class="presets"><button class="play" id="bl-play">▶ descend</button><button class="preset" id="bl-reset">reset to w = 0</button></div>
+        <svg id="bl-h" viewBox="0 0 300 170" class="svg-lab" role="img" aria-label="The bill curve J of w, a parabola with its bottom at w = 2.357, a glowing bead at the current w and faint dots where the descent has been" style="margin-top:.4rem"></svg>
+        <div class="readout" id="bl-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="bl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(J(w)=\sum_i (w x_i-y_i)^2 = 14w^2-66w+78\) is a parabola in \(w\): its slope is \(28w-66\), zero at \(w^*=33/14\). One descent step multiplies the distance to \(w^*\) by \(1-28\eta\), so the walk shrinks only while \(\eta<1/14\).</p>
+      </div>
+    </div>
+  </div>
+<!--@W2-->
+  <div class="widget reveal" id="w-drop">
+    <div class="widget-head"><span class="w-title">The parachute drop</span><span class="w-sub">Where you are dropped decides everything — a start that blows the numbers up, and two clones that can never become different</span></div>
+    <p class="try"><b>Try:</b> press ▶ and watch the bars climb the ladder by \(79\times\) a step until they hit the float64 ceiling. Then slide \(\log_{10}\eta\) below \(-4.6\) — the same start is suddenly forgiven, because \(\eta<1/x^2\).</p>
+    <div class="tabs" id="dp-tabs">
+      <button data-t="overflow" aria-selected="true">overflow · one big feature</button>
+      <button data-t="clones">clones · two equal knobs</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="dp-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="In the overflow tab, a ladder of bars showing the size of the weight after each step on a logarithmic axis, climbing toward a dashed ceiling marked overflow where the bars become infinity and NaN chips; in the clones tab, a contour map with a dashed diagonal and two walkers, one on the diagonal that never leaves it and one just off it"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls" data-tab="overflow">
+          <div class="ctl"><label for="dp-w0">log₁₀ |w₀|</label><input id="dp-w0" type="range" min="-3" max="4" step="0.1" value="0"><output id="dp-w0-o">1</output></div>
+          <div class="ctl"><label for="dp-eta">log₁₀ η</label><input id="dp-eta" type="range" min="-6" max="-2" step="0.1" value="-3"><output id="dp-eta-o">0.001</output></div>
+        </div>
+        <div class="controls" data-tab="clones" style="display:none">
+          <div class="ctl"><label for="dp-sep">B below the diagonal</label><input id="dp-sep" type="range" min="0" max="0.6" step="0.01" value="0.3"><output id="dp-sep-o">0.3</output></div>
+        </div>
+        <div class="presets" id="dp-start" data-tab="clones" style="display:none"><button class="preset" data-p="same">same · B on top of A</button><button class="preset" data-p="nudged" aria-pressed="true">nudged · B 0.3 below</button></div>
+        <div class="presets"><button class="play" id="dp-play">▶ run</button></div>
+        <div class="readout" id="dp-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="dp-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">With one feature the update is \(w\leftarrow w-2\eta x(wx-y)\), i.e. the miss is multiplied by \(1-2\eta x^2\) each step. For \(x=200\) and \(\eta=10^{-3}\) that factor is \(-79\): no starting point survives — the feature's size, not the start, is the culprit. And two knobs that start equal on a symmetric loss receive identical gradients for ever.</p>
+      </div>
+    </div>
+  </div>
+<!--@W3-->
+  <div class="widget reveal" id="w-memo">
+    <div class="widget-head"><span class="w-title">Full marks by memorising</span><span class="w-sub">Five knobs, three facts: one model learns the rule, the other memorises the rows — and only the unseen row can tell them apart</span></div>
+    <p class="try"><b>Try:</b> switch to the <em>memoriser</em> — it sits exactly on all three training dots (\(J=0\)). Now drag the unseen point along the diagonal: the truth moves, the memoriser's prediction stays glued to \(62\).</p>
+    <div class="tabs" id="mm-tabs">
+      <button data-t="honest" aria-selected="true">honest · ŷ = x₁</button>
+      <button data-t="memoriser">memoriser · ŷ = 12x₂ + 5x₃ + 20</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="mm-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="Three training rows plotted as y against x1 with the honest line y equals x1 through them; the memoriser's predictions sit exactly on the three dots; a draggable unseen point on the diagonal shows the truth, and a flat dashed line at y equals 62 shows what the memoriser predicts for it whatever x1 is"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <svg id="mm-knobs" viewBox="0 0 300 118" class="svg-lab" role="img" aria-label="Five small dials showing the active model's weights w1 to w5, with a chip counting five knobs against three facts"></svg>
+        <div class="controls" style="margin-top:.5rem">
+          <div class="ctl"><label for="mm-x1">unseen x₁</label><input id="mm-x1" type="range" min="30" max="80" step="0.5" value="50"><output id="mm-x1-o">50</output></div>
+        </div>
+        <div class="readout" id="mm-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="mm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Rows \((x_1,x_2,x_3,x_4,y)\): \((61,2,3,0.1,59)\), \((40,0,4,0.5,40)\), \((68,0,10,1,70)\). Three equations in five unknowns leave two knobs free — so a model can score \(J=0\) using variables that have nothing to do with the answer. Training error measures fit, not understanding; only a row the model never saw measures learning.</p>
+      </div>
+    </div>
+  </div>
+<!--@W4-->
+  <div class="widget reveal" id="w-knobs">
+    <div class="widget-head"><span class="w-title">The hair-trigger and the stiff knob</span><span class="w-sub">One stride η for two knobs whose sensitivities differ 156-fold: serve one and the other overshoots or crawls</span></div>
+    <p class="try"><b>Try:</b> press <em>serve the stiff knob</em> and then ▶ — the age needle swings past its mark and back while the college needle finally moves. Press <em>protect the hair-trigger</em>: now the college needle barely stirs in 8 steps.</p>
+    <div class="presets" id="kn-presets"><button class="preset" data-p="default" aria-pressed="true">default · η = 10⁻⁵</button><button class="preset" data-p="protect">protect the hair-trigger</button><button class="preset" data-p="serve">serve the stiff knob</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="kn-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="Two large dials with needles labelled w1 for age squared and w2 for college squared, each with a target mark; under each a logarithmic sensitivity bar and a movement-per-step bar with an overshoot zone above 1 and a crawl zone below 0.001"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="kn-x1">age x₁</label><input id="kn-x1" type="range" min="1" max="100" step="1" value="50"><output id="kn-x1-o">50</output></div>
+          <div class="ctl"><label for="kn-x2">college x₂</label><input id="kn-x2" type="range" min="1" max="10" step="1" value="4"><output id="kn-x2-o">4</output></div>
+          <div class="ctl"><label for="kn-eta">log₁₀ η</label><input id="kn-eta" type="range" min="-8" max="-2" step="0.1" value="-5"><output id="kn-eta-o">1e−5</output></div>
+        </div>
+        <div class="presets"><button class="play" id="kn-play">▶ turn the knobs · 8 steps</button></div>
+        <div class="readout" id="kn-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="kn-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">For \(y=w_1x_1^2+w_2x_2^2\) the gradient is \((x_1^2 r,\;x_2^2 r)\): the age knob is \(x_1^2/x_2^2\) times more sensitive than the college knob, and both get the same \(\eta\). The only way both dials behave is to make the two features the same size — the next widget.</p>
+      </div>
+    </div>
+  </div>
+<!--@W5-->
+  <div class="widget reveal" id="w-rescale">
+    <div class="widget-head"><span class="w-title">Three ways to fix the units</span><span class="w-sub">Centre, standardise, or squash into a box — watch the cloud move, and what happens to a value the training set never saw</span></div>
+    <p class="try"><b>Try:</b> click <em>standardise</em> and watch the smear squeeze into a round blob around the origin. Then pick the <em>outlier</em> cloud and click <em>min–max</em> — one point pins the corner and crushes everyone else.</p>
+    <div class="presets" id="rs-data"><button class="preset" data-p="lecture" aria-pressed="true">lecture · 3 rows</button><button class="preset" data-p="cloud">cloud · 24 points</button><button class="preset" data-p="outlier">cloud + one outlier</button></div>
+    <div class="tabs" id="rs-tabs">
+      <button data-t="raw" aria-selected="true">raw</button>
+      <button data-t="centre">centre · x − μ</button>
+      <button data-t="standardise">standardise · (x − μ)/σ</button>
+      <button data-t="minmax">min–max · (x − min)/(max − min)</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="rs-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A scatter of two features whose axes rescale to fit: raw is a thin smear along one axis, centring slides it onto the origin, standardising squeezes it into a round blob with a dashed one-sigma ellipse, and min–max squashes it into a dashed unit box; a hollow ring marks an unseen value transformed with the training statistics"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="rs-new">unseen x₁</label><input id="rs-new" type="range" min="0" max="1" step="0.01" value="0.9"><output id="rs-new-o">0.9</output></div>
+        </div>
+        <table class="plain" id="rs-table" style="margin:.5rem 0;font-size:.8rem"></table>
+        <div class="readout" id="rs-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="rs-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Every repair is a per-column affine map fixed by the <em>training</em> statistics, and the same map must be applied to new data. After standardising, every column has mean 0 and variance 1: "one unit" means "one standard deviation of surprise" in every column. Min–max is bounded and simple, but a single outlier sets the box.</p>
+      </div>
+    </div>
+  </div>
+<!--@W6-->
+  <div class="widget reveal" id="w-valleys">
+    <div class="widget-head"><span class="w-title">The marble rain and the combination lock</span><span class="w-sub">Drop a handful of marbles onto a two-valley curve: where each lands was decided before it rolled — and in high dimensions the valleys multiply</span></div>
+    <p class="try"><b>Try:</b> press ▶ drop the marbles and watch the rain split at the watershed \(x=1.634\): about \(59\%\) reach the deep valley. Then open the <em>lock</em> tab with 10 dials — \(0.6^{10}\approx0.006\) is the chance of opening it in one go.</p>
+    <div class="tabs" id="vl-tabs">
+      <button data-t="rain" aria-selected="true">rain · F(x) = (x−1)²((x−3)² − 1)</button>
+      <button data-t="lock">lock · d dials, k notches</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="vl-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A curve with a shallow valley at x equals 1 and a deep valley at x equals 3.366 separated by a hilltop at 1.634, the two basins tinted; marbles fall from the top edge onto the curve and roll downhill together, filling the two valleys with counters; in the lock tab, a row of combination dials each with one glowing notch"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls" data-tab="rain">
+          <div class="ctl"><label for="vl-lo">starts from</label><input id="vl-lo" type="range" min="-0.3" max="4.3" step="0.05" value="0"><output id="vl-lo-o">0</output></div>
+          <div class="ctl"><label for="vl-hi">starts to</label><input id="vl-hi" type="range" min="-0.3" max="4.3" step="0.05" value="4"><output id="vl-hi-o">4</output></div>
+          <div class="ctl"><label for="vl-n">marbles</label><input id="vl-n" type="range" min="5" max="60" step="1" value="24"><output id="vl-n-o">24</output></div>
+          <div class="ctl"><label for="vl-eta">stride η</label><input id="vl-eta" type="range" min="0.005" max="0.05" step="0.001" value="0.02"><output id="vl-eta-o">0.02</output></div>
+        </div>
+        <div class="controls" data-tab="lock" style="display:none">
+          <div class="ctl"><label for="vl-d">dials d</label><input id="vl-d" type="range" min="1" max="12" step="1" value="3"><output id="vl-d-o">3</output></div>
+          <div class="ctl"><label for="vl-k">notches k</label><input id="vl-k" type="range" min="2" max="5" step="1" value="3"><output id="vl-k-o">3</output></div>
+          <div class="ctl"><label for="vl-p">p per dial</label><input id="vl-p" type="range" min="0.3" max="0.95" step="0.05" value="0.6"><output id="vl-p-o">0.6</output></div>
+        </div>
+        <div class="presets"><button class="play" id="vl-play">▶ drop the marbles</button></div>
+        <svg id="vl-lock" viewBox="0 0 300 200" class="svg-lab" role="img" aria-label="The chance that at least one of k restarts lands in the global valley, as a curve against k with the current per-start probability" style="margin-top:.4rem"></svg>
+        <div class="readout" id="vl-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="vl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(F'(x)=4x^3-24x^2+42x-22\) vanishes at \(1\), \(1.634\) and \(3.366\). A downhill walker never climbs the watershed, so the start alone picks the valley; with \(d\) knobs each having \(k\) flat spots there are \(k^d\) settings of \(\nabla F=0\) and restarts alone cannot search them.</p>
+      </div>
+    </div>
+  </div>
+<!--@W7-->
+  <div class="widget reveal" id="w-salt">
+    <div class="widget-head"><span class="w-title">The salt flat</span><span class="w-sub">A cliff, a nearly level shelf, then a bowl — the walker races down the cliff and then shuffles for two hundred steps where the ground is flat. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> press ▶ from the cliff and watch the footprints: sparse on the slope, then a dense glowing band across the shelf where every step is tiny. Read the height chart — a long horizontal ledge before the final drop.</p>
+    <div class="presets" id="sf-presets"><button class="preset" data-p="cliff" aria-pressed="true">start on the cliff (−2.6, 0.6)</button><button class="preset" data-p="shelf">on the shelf (−0.6, 0.3)</button><button class="preset" data-p="rim">on the bowl's rim (1.3, 0.8)</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="sf-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D landscape: a cliff on the left dropping onto a nearly level shelf that leads to a bowl on the right; a glowing walker descends leaving a footprint every step — sparse on the cliff, a dense band on the flat — and a trail on top"></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="sf-g">stride γ</label><input id="sf-g" type="range" min="0.05" max="1.2" step="0.01" value="0.3"><output id="sf-g-o">0.3</output></div>
+          <div class="ctl"><label for="sf-k">steps</label><input id="sf-k" type="range" min="20" max="600" step="10" value="300"><output id="sf-k-o">300</output></div>
+        </div>
+        <div class="presets"><button class="play" id="sf-play">▶ walk</button><button class="preset" id="sf-reset">reset</button></div>
+        <svg id="sf-prog" viewBox="0 0 300 160" class="svg-lab" role="img" aria-label="Height against step number as a line with a long almost-horizontal shelf, and the size of the gradient on a logarithmic scale as a dashed second line" style="margin-top:.4rem"></svg>
+        <div class="readout" id="sf-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="sf-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The step is \(\gamma\nabla f\): where the ground is flat the gradient is tiny and the step is tinier still — the walker is not at a minimum, just slow. A plateau of tilt \(10^{-3}\) crossed at \(\gamma=0.01\) moves \(10^{-5}\) per step: two units of flat take \(\approx 200\,000\) steps.</p>
+      </div>
+    </div>
+  </div>
+<!--@W8-->
+  <div class="widget reveal" id="w-canyon">
+    <div class="widget-head"><span class="w-title">The canyon</span><span class="w-sub">L = x² + c·y² — the stiffer the y-wall, the further the gradient points from the bottom, and the walker bounces off the walls. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> press ▶ at \(c=4\), \(\eta=0.24\): \(y\) flips sign every step \((10\to-9.2\to8.46)\) while \(x\) creeps \((10\to5.2\to2.7)\). Set \(c=1\) and \(\eta=0.5\) — one step lands at the origin.</p>
+    <div class="presets" id="cn-presets"><button class="preset" data-p="lecture" aria-pressed="true">start (10, 10)</button><button class="preset" data-p="axis">on the floor (10, 0.5)</button><button class="preset" data-p="wall">on the wall (2, 10)</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="cn-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D canyon x squared plus c y squared with lifted contour rings; at the walker an orange arrow points uphill along the gradient and a green arrow points straight to the bottom, the angle between them growing with c; the walker's trail zig-zags wall to wall"></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="cn-c">stiffness c</label><input id="cn-c" type="range" min="1" max="9" step="0.5" value="4"><output id="cn-c-o">4</output></div>
+          <div class="ctl"><label for="cn-eta">stride η</label><input id="cn-eta" type="range" min="0.02" max="0.5" step="0.005" value="0.24"><output id="cn-eta-o">0.24</output></div>
+          <div class="ctl"><label for="cn-k">steps</label><input id="cn-k" type="range" min="1" max="30" step="1" value="8"><output id="cn-k-o">8</output></div>
+        </div>
+        <div class="presets"><button class="play" id="cn-play">▶ run</button><button class="preset" id="cn-reset">reset</button></div>
+        <svg id="cn-side" viewBox="0 0 300 200" class="svg-lab" role="img" aria-label="Two horizontal bars for the per-step factors 1 minus 2 eta along x and 1 minus 2 c eta along y on an axis from minus 1.2 to 1.2, the danger zone beyond plus or minus one shaded and the negative half labelled bounces, plus a small loss-versus-step sparkline" style="margin-top:.4rem"></svg>
+        <div class="readout" id="cn-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="cn-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Each coordinate is its own one-dimensional problem: \(x\leftarrow(1-2\eta)x\), \(y\leftarrow(1-2c\eta)y\). The stiff direction caps \(\eta\) at \(1/c\), and at that cap the soft direction shrinks by only \(1-2/c\) per step. Only when \(c=1\) does the gradient point at the bottom, and then \(\eta=1/2\) finishes in one step.</p>
+      </div>
+    </div>
+  </div>
+<!--@W9-->
+  <div class="widget reveal" id="w-compass">
+    <div class="widget-head"><span class="w-title">The compass crosses the contour lines</span><span class="w-sub">The gradient is always at right angles to the level curve — which is only "toward the bottom" when the bowl is round</span></div>
+    <p class="try"><b>Try:</b> drag the point around the ellipse and watch the chip: the gradient stays at \(90.0^\circ\) to the contour but drifts up to \(60^\circ\) away from the straight line to the centre. Switch to the <em>circle</em> — the two arrows fuse.</p>
+    <div class="tabs" id="cp-tabs">
+      <button data-t="circle">circle · x² + y²</button>
+      <button data-t="ellipse" aria-selected="true">ellipse · x² + 4y²</button>
+      <button data-t="tilted">tilted · x² + xy + y²</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="cp-svg" viewBox="0 0 600 360" class="svg-lab" role="img" aria-label="Contour lines of a bowl with a draggable point; at the point the gradient arrow, the tangent to the level curve through it with a right-angle marker, and a dashed arrow straight to the minimum; a chip prints the angle between the gradient and the line to the bottom"></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="presets"><button class="play" id="cp-play">▶ walk the contour</button></div>
+        <div class="readout" id="cp-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="cp-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Along a level curve \(F\) does not change, so for a tiny move \(\delta\mathbf x\) along it \(\nabla F\cdot\delta\mathbf x=0\): the gradient is perpendicular to the contour. On a round bowl "across the contour" and "toward the centre" coincide; on a stretched one they differ, and the difference is the zig-zag of the next widget's walker.</p>
+      </div>
+    </div>
+  </div>
+<!--@W10-->
+  <div class="widget reveal" id="w-units">
+    <div class="widget-head"><span class="w-title">Change the units, not the model</span><span class="w-sub">The guns-and-butter loss with the standardising dial in your hand — slide t and watch the razor-blade trench open into a bowl. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> press ▶ at \(t=0\): forty steps bounce wall to wall and barely move along the trench. Slide \(t\) to 1 (\(\kappa\) falls from \(1487\) to \(10\)) and press ▶ again — the same forty steps walk straight in.</p>
+    <div class="presets" id="un-scheme"><button class="preset" data-p="standardise" aria-pressed="true">standardise · (x − μ)/σ</button><button class="preset" data-p="minmax">min–max · (x − min)/range</button><button class="preset" data-p="whiten">whiten · standardise + rotate (Unit 12)</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><div id="un-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D loss surface of the guns-and-butter regression that morphs live as the slider t goes from raw units, a long narrow trench, to standardised units, a tilted bowl; a glowing walker runs gradient descent just under the stability limit leaving a trail"></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="un-t">how standardised t</label><input id="un-t" type="range" min="0" max="1" step="0.01" value="0"><output id="un-t-o">0</output></div>
+          <div class="ctl"><label for="un-eta">η as share of 2/λ_max</label><input id="un-eta" type="range" min="0.1" max="0.99" step="0.01" value="0.9"><output id="un-eta-o">0.9</output></div>
+          <div class="ctl"><label for="un-k">steps</label><input id="un-k" type="range" min="5" max="60" step="1" value="30"><output id="un-k-o">30</output></div>
+        </div>
+        <div class="presets"><button class="play" id="un-play">▶ run</button><button class="preset" id="un-reset">reset</button></div>
+        <svg id="un-side" viewBox="0 0 300 220" class="svg-lab" role="img" aria-label="Two vertical bars on a logarithmic scale for the stiff and soft eigenvalues of the Hessian with the condition number printed between them, and the loss-versus-step curve of the last run" style="margin-top:.4rem"></svg>
+        <div class="readout" id="un-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="un-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">\(J(\mathbf w)=\sum_i(\mathbf w^{\top}\mathbf z_i-y_i)^2\) has Hessian \(2Z^{\top}Z\). Re-measuring the columns changes \(Z\), hence the Hessian, hence \(\kappa=\lambda_{\max}/\lambda_{\min}\) — but not the model, the data's meaning or the best fit. Standardising removes scale; the leftover tilt is correlation, and removing it (whitening) is Unit 12's job.</p>
+      </div>
+    </div>
+  </div>
+<!--@W11-->
+  <div class="widget reveal" id="w-clinic">
+    <div class="widget-head"><span class="w-title">The training clinic</span><span class="w-sub">Six recorded training runs walk in — read the loss curve, name the disease, prescribe the fix</span></div>
+    <p class="try"><b>Try:</b> case 2 — the train loss falls to \(0\) while the test loss turns around at step 25 and climbs. Pick the diagnosis; a right answer overlays the healthy curve the fix would have produced.</p>
+    <div class="presets" id="cl-cases"><button class="preset" data-c="1" aria-pressed="true">1 · NaN</button><button class="preset" data-c="2">2 · memoriser</button><button class="preset" data-c="3">3 · oscillates</button><button class="preset" data-c="4">4 · fast then crawls</button><button class="preset" data-c="5">5 · flat from the start</button><button class="preset" data-c="6">6 · different every time</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:2.3 1 400px"><svg id="cl-svg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A loss-versus-step chart of a recorded training run on a logarithmic axis, with infinity and NaN steps drawn as hatched chips, a train and test pair where relevant, and after a correct diagnosis a green ghost curve showing the run after the fix"></svg>
+        <div class="readout" id="cl-read" style="margin-top:.6rem;line-height:1.9"></div></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div id="cl-panel"></div>
+        <div id="cl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The toolkit, as a checklist: NaN → overflow (huge start, unscaled features, \(\eta\) too big); train \(\downarrow\) test \(\uparrow\) → overfitting; sawtooth → \(\eta>2/\lambda_{\max}\); fast-then-crawl → a badly conditioned canyon; flat → plateau or \(\eta\) too small; seed-dependent → several minima.</p>
+      </div>
+    </div>
+  </div>
