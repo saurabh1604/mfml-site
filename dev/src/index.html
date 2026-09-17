@@ -222,11 +222,11 @@ footer p:first-child{color:var(--ink-2)}
     <p class="byline reveal">by <strong>Prof. Saurabh</strong></p>
     <p class="lede reveal">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
     <div class="meta-chips reveal-stagger">
-      <span class="chip">📐 16 units · 10 live so far</span>
-      <span class="chip">🎛 96 hands-on widgets</span>
-      <span class="chip">✅ 145 pause-and-predict checks</span>
-      <span class="chip">✍ 110 problems solved step by step</span>
-      <span class="chip">🧾 109 rules derived step by step, nothing on faith</span>
+      <span class="chip">📐 16 units · 11 live so far</span>
+      <span class="chip">🎛 111 hands-on widgets</span>
+      <span class="chip">✅ 165 pause-and-predict checks</span>
+      <span class="chip">✍ 124 problems solved step by step</span>
+      <span class="chip">🧾 132 rules derived step by step, nothing on faith</span>
     </div>
     <div class="start-row reveal" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 →</a><span class="start-note">Each unit is a story you can play with — about an hour, no prerequisites.</span></div>
     <div class="progress-row reveal" id="progress-row">
@@ -312,12 +312,12 @@ footer p:first-child{color:var(--ink-2)}
       <p>The four ways the walk goes wrong — a bad start, memorising, the wrong valley or a salt flat, a canyon that makes every step bounce — and the cheapest fix in machine learning: change the units of the data, not the model, and watch the canyon become a bowl.</p>
       <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 15 checks · 12 problems</span></div>
     </a>
-    <div class="card locked">
+    <a class="card" href="unit-11.html" data-unit="11">
       <canvas class="glyph" data-g="11" aria-hidden="true"></canvas>
       <div class="top"><span class="num">11</span><h3>Optimization II — Five Ways Down One Valley</h3></div>
-      <p>Momentum, AdaGrad, RMSProp, Adam — and the cliffs and valleys that defeat naive descent.</p>
-      <div class="foot"><span class="status soon">Coming soon</span></div>
-    </div>
+      <p>One stride can never suit two directions, so give the walker memory, a private stride per knob, and the ability to forget — momentum, AdaGrad, RMSProp and Adam racing the same valley. Then someone builds a wall, the answer moves onto it while the gradient is still tilted, and you need a new test: the Lagrangian as a fine, complementary slackness, the five conditions, and the price of the wall.</p>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>15 widgets · 20 checks · 14 problems</span></div>
+    </a>
   </div>
 
   <h2 class="part reveal" data-p="4"><span class="roman">IV</span>Part IV · Applications</h2>
@@ -371,9 +371,9 @@ footer p:first-child{color:var(--ink-2)}
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
   /* Fallbacks are used only until a student opens the unit itself — each unit
      page writes its true check count to mfml-uN-total when it loads. */
-  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15};
+  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15,11:20};
   const TITLE={1:'Systems of Linear Equations',2:'Vector Spaces',3:'Analytic Geometry',
-               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent',10:'Optimization I'};
+               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent',10:'Optimization I',11:'Optimization II'};
   let done=0, total=0;
 
   document.querySelectorAll('a.card[data-unit]').forEach(card=>{
@@ -591,6 +591,37 @@ footer p:first-child{color:var(--ink-2)}
       g.strokeStyle=pal.s2; g.lineWidth=2.4; g.lineCap='round'; glow(g,pal.s2,12); g.beginPath(); g.moveTo(cx+x0-L,cy-(y0-s*L)); g.lineTo(cx+x0+L,cy-(y0+s*L)); g.stroke(); g.lineCap='butt';
       g.setLineDash([2,3]); g.strokeStyle=pal.ink2; g.globalAlpha=.45; g.lineWidth=1; noglow(g); g.beginPath(); g.moveTo(cx+x0,cy-y0); g.lineTo(cx+x0,cy+h*.4); g.stroke(); g.setLineDash([]); g.globalAlpha=1;
       g.fillStyle=pal.s4; glow(g,pal.s4,14); g.beginPath(); g.arc(cx+x0,cy-y0,3.4,0,7); g.fill(); },
+    /* 11 · five walkers race one squashed valley, then a wall drops and the answer slides onto it */
+    11(g,w,h,t){ const cx=w/2, cy=h*.54, sx=w*.15, sy=h*.30, al=.1;
+      const P=(x,y)=>[cx+x*sx, cy-y*sy], gr=p=>[p[0],10*p[1]];
+      g.strokeStyle=pal.s1; g.lineWidth=1; glow(g,pal.s1,6); g.globalAlpha=.45;
+      for(const L of [.35,1.3,3,5.5]){ g.beginPath(); g.ellipse(cx,cy,Math.sqrt(2*L)*sx,Math.sqrt(L/5)*sy,0,0,7); g.stroke(); }
+      g.globalAlpha=1;
+      const N=18, cols=[pal.s1,pal.s3,pal.s6,pal.s2,pal.s4], tr=[];
+      for(let m=0;m<5;m++){ let p=[1,1], q=[1,1], A=[0,0], F=[0,0], path=[[1,1]];
+        for(let k=1;k<=N;k++){ const gd=gr(p), n=[0,0];
+          for(let i=0;i<2;i++){
+            if(m===0) n[i]=p[i]-al*gd[i];
+            else if(m===1) n[i]=p[i]-al*gd[i]+(k>1?.9*(p[i]-q[i]):0);
+            else if(m===2){ A[i]+=gd[i]*gd[i]; n[i]=p[i]-al*gd[i]/Math.sqrt(A[i]+1e-12); }
+            else if(m===3){ A[i]=.9*A[i]+.1*gd[i]*gd[i]; n[i]=p[i]-al*gd[i]/Math.sqrt(A[i]+1e-12); }
+            else { F[i]=.9*F[i]+.1*gd[i]; A[i]=.999*A[i]+.001*gd[i]*gd[i];
+                   const at=al*Math.sqrt(1-Math.pow(.999,k))/(1-Math.pow(.9,k)); n[i]=p[i]-at*F[i]/Math.sqrt(A[i]+1e-16); } }
+          q=p; p=n; path.push([p[0],p[1]]); }
+        tr.push(path); }
+      const cyc=(t/9)%1, race=Math.min(1,cyc/.62), nn=Math.max(1,Math.floor(race*N));
+      g.lineWidth=1.3;
+      tr.forEach((path,m)=>{ g.strokeStyle=cols[m]; glow(g,cols[m],7); g.globalAlpha=cyc>.62?.28:.9; g.beginPath();
+        for(let k=0;k<=nn;k++){ const Q=P(path[k][0],path[k][1]); k?g.lineTo(Q[0],Q[1]):g.moveTo(Q[0],Q[1]); } g.stroke(); });
+      g.globalAlpha=1; noglow(g);
+      if(cyc>.62){ const u=Math.min(1,(cyc-.62)/.16), WX=P(1,0)[0];
+        g.fillStyle=pal.s2; g.globalAlpha=.10*u; g.fillRect(cx-sx*2.6,cy-sy*1.3,WX-(cx-sx*2.6),sy*2.6); g.globalAlpha=1;
+        g.strokeStyle=pal.s2; g.lineWidth=2; glow(g,pal.s2,10);
+        g.beginPath(); g.moveTo(WX,cy-sy*1.25*u); g.lineTo(WX,cy+sy*1.25*u); g.stroke();
+        const S=P(u,0); g.fillStyle=pal.s4; glow(g,pal.s4,14); g.beginPath(); g.arc(S[0],S[1],3.2,0,7); g.fill();
+        noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText('µ* = 1',w-6,h-6); g.globalAlpha=1; g.textAlign='left'; }
+      else { const S=P(0,0); g.fillStyle=pal.s4; glow(g,pal.s4,12); g.beginPath(); g.arc(S[0],S[1],2.6,0,7); g.fill();
+        noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText('step '+nn,w-6,h-6); g.globalAlpha=1; g.textAlign='left'; } },
     /* 10 · the canyon becomes a bowl: the contours' stiffness breathes 9 → 1 → 9 and the walker's zig-zag straightens with it */
     10(g,w,h,t){ const cx=w/2, cy=h*.52; const u=(1-Math.cos(t/7*2*Math.PI))/2, c=1+8*Math.pow(1-u,1.6); const sx=w*.11, sy=h*.36; const gam=.9*2/(2*c);
       const P=(x,y)=>[cx+x*sx, cy-y*sy];
