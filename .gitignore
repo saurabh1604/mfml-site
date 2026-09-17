@@ -1,0 +1,6 @@
+# Verification screenshots: build artefacts, ~85 MB per round. Kept locally, never committed.
+dev/shots-cinema/
+# Playwright/node deps installed per session for the verify suites.
+dev/node_modules/
+# Symlink used only while the verify suites run (they expect /site next to the repo root).
+/site
