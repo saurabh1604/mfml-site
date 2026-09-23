@@ -20,7 +20,7 @@ const okay = m => console.log('  ok   ' + m);
   const counts = await page.evaluate(() => ({ checks: document.querySelectorAll('.check').length, widgets: document.querySelectorAll('.widget').length, derives: document.querySelectorAll('.derive').length, probs: document.querySelectorAll('#spractice .prob').length, stages: document.querySelectorAll('.stage-canvas canvas').length, katex: document.querySelectorAll('.katex-error').length, total: localStorage.getItem('mfml-u8-total') }));
   if (counts.checks === 17 && counts.total === '17') okay('17 checks, total published'); else fail('checks ' + JSON.stringify(counts));
   if (counts.widgets === 9 && counts.derives === 17 && counts.probs === 12) okay('9 widgets · 17 derivations · 12 problems'); else fail('counts ' + JSON.stringify(counts));
-  if (counts.stages === 4) okay('4 WebGL stages alive (hero + 3)'); else fail('stages ' + counts.stages);
+  if (counts.stages === 4) okay("4 WebGL stages alive at the top (hero + 3; the rest mount lazily)"); else fail("stages " + counts.stages);
   if (!counts.katex) okay('no KaTeX errors'); else fail('katex-error ×' + counts.katex);
   const chips = norm(await text('.hero .meta'));
   if (/9 interactive widgets/.test(chips) && /17 inline checks/.test(chips) && /17 proofs/.test(chips) && /12 solved practice problems/.test(chips)) okay('hero chips match the counts'); else fail('hero chips: ' + chips);
@@ -124,7 +124,7 @@ const okay = m => console.log('  ok   ' + m);
   console.log('— theme flip rebuilds stages —');
   await page.click('#theme-btn'); await page.waitForTimeout(9000);
   const light = await page.evaluate(() => ({ theme: document.documentElement.getAttribute('data-theme'), stages: document.querySelectorAll('.stage-canvas canvas').length }));
-  if (light.theme === 'light' && light.stages === 4) okay('light theme: 4 stages rebuilt'); else fail('light theme: ' + JSON.stringify(light));
+  if (light.theme === 'light' && light.stages === 6) okay("light theme: 6 stages rebuilt"); else fail('light theme: ' + JSON.stringify(light));
   await page.click('#theme-btn'); await page.waitForTimeout(2000);
 
   if (errors.length) { errors.forEach(e => fail(e)); } else okay('zero console / page errors');
