@@ -940,6 +940,7 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
   const IDLE=9;
   const H={mode:'auto',M:[1,0,0,1],cur:matrixAt(0),from:null,to:null,t0:0,dur:1.2,key:null,label:'',last:-1e9,now:0,
            touched:false,drag:null,hover:null,snapped:false,dirty:true,glow:{x:0,z:0,s:0,tx:0,tz:0,ts:0}};
+  const nowS=()=>performance.now()/1000;   /* event time, even if frames were paused in a background tab */
   const lerp4=(A,B,e)=>[A[0]+(B[0]-A[0])*e,A[1]+(B[1]-A[1])*e,A[2]+(B[2]-A[2])*e,A[3]+(B[3]-A[3])*e];
   const lin=x=>x<.04045?x*.0773993808:Math.pow(x*.9478672986+.0521327014,2.4);
   function loopName(t){ if(reduced) return 'a shear'; const u=((t%CYCLE)+CYCLE)%CYCLE, k=Math.floor(u/STEP); return LOOPNAME[(u-k*STEP)<HOLD?k:k+1]; }
@@ -953,8 +954,8 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
     }
     return H.M;
   }
-  function tweenTo(target,key,label){ H.from=H.cur.slice(); H.to=target; H.t0=H.now; H.dur=target==='loop'?1.8:1.25;
-    H.mode='tween'; H.key=key; H.label=label; H.last=H.now; H.dirty=true; }
+  function tweenTo(target,key,label){ const n=nowS(); H.now=n; H.from=H.cur.slice(); H.to=target; H.t0=n; H.dur=target==='loop'?1.8:1.25;
+    H.mode='tween'; H.key=key; H.label=label; H.last=n; H.dirty=true; }
 
   /* the live readout: matrix, determinant, what the space is doing, presets */
   const hudEl=document.getElementById('mhud'), hq=id=>document.getElementById(id);
@@ -1001,7 +1002,7 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
       if(snapped&&!H.snapped&&navigator.vibrate){ try{ navigator.vibrate(8); }catch(_){} }
       H.snapped=snapped;
       if(H.drag.k==='i'){ H.M[0]=A; H.M[2]=B; } else { H.M[1]=A; H.M[3]=B; }
-      H.glow.tx=p.x; H.glow.tz=p.z; H.glow.ts=1; H.last=H.now; H.dirty=true;
+      H.glow.tx=p.x; H.glow.tz=p.z; H.glow.ts=1; H.last=nowS(); H.dirty=true;
     }
     let orbit=null;
     el.addEventListener('pointerdown',e=>{
@@ -1023,7 +1024,7 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
       const k=pick(e,30); if(k!==H.hover){ H.hover=k; el.style.cursor=k?'grab':'default'; H.dirty=true; }
     });
     const end=e=>{
-      if(H.drag&&e.pointerId===H.drag.id){ H.drag=null; H.label='your matrix'; H.last=H.now; H.dirty=true; el.style.cursor=H.hover?'grab':'default'; if(e.pointerType!=='mouse') H.glow.ts=0; }
+      if(H.drag&&e.pointerId===H.drag.id){ H.drag=null; H.label='your matrix'; H.last=nowS(); H.dirty=true; el.style.cursor=H.hover?'grab':'default'; if(e.pointerType!=='mouse') H.glow.ts=0; }
       if(orbit&&e.pointerId===orbit.id){ orbit=null; el.style.cursor=H.hover?'grab':'default'; }
     };
     el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
@@ -1034,8 +1035,9 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
     const el=document.getElementById('hero-3d'); if(!el) return;
     if(hero){ hero.dispose(); hero=null; }
     el.innerHTML='';
+    const box=document.createElement('div'); box.style.cssText='position:absolute;inset:0;border-radius:0;background:none'; el.appendChild(box);
     const wide=innerWidth>=760;
-    hero=C.stage3d(el,{fill:true,orbit:false,zoom:false,autoRotate:H.mode==='auto'?.045:0,
+    hero=C.stage3d(box,{fill:true,orbit:false,zoom:false,autoRotate:H.mode==='auto'?.045:0,
       camera:(()=>{ const m=clamp((1300-innerWidth)/540,0,1), f=1+.32*m; return {pos:wide?[3.6*f,4.6*f,7.9*f]:[1.2,6.4,7.2],look:wide?[-1.9-.45*m,0,.3]:[0,0,.75],fov:36}; })(),
       build(ctx){
         const {THREE,root,colors,isLight}=ctx, hx=k=>C.hex(colors[k]);
