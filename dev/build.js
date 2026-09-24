@@ -72,6 +72,17 @@ function transform(html) {
   return head + tail;
 }
 
+/* ---- SITE-X (round 15): search palette + shortcuts + thread links on every page; data from gen-site.js ---- */
+function sitex(html) {
+  const IDX = path.join(ROOT, 'tpl/site-index.json');
+  if (!fs.existsSync(IDX) || html.includes('id="site-x"')) return html;
+  const data = fs.readFileSync(IDX, 'utf8').replace(/</g, '\\u003c');
+  const inj = '<style id="site-x-css">' + fs.readFileSync(path.join(ROOT, 'tpl/site-x.css'), 'utf8') + '</style>\n' +
+    '<script id="site-x">window.MBM_INDEX=' + data + ';\n' + fs.readFileSync(path.join(ROOT, 'tpl/site-x.js'), 'utf8') + '</script>\n';
+  const i = html.lastIndexOf('</body>');
+  return i < 0 ? html + inj : html.slice(0, i) + inj + html.slice(i);
+}
+
 fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(path.join(OUT, 'vendor'), { recursive: true });
 fs.copyFileSync(path.join(ROOT, '../vendor/three.min.js'), path.join(OUT, 'vendor/three.min.js'));
@@ -79,7 +90,7 @@ const ONLY = process.argv.slice(2);
 for (const f of fs.readdirSync(SRC).filter(f => f.endsWith('.html') && (ONLY.length === 0 || ONLY.includes(f)))) {
   const src = fs.readFileSync(path.join(SRC, f), 'utf8');
   nDisp = 0; nInline = 0;
-  const out = cinema(src.includes('\\(') || src.includes('\\[') ? transform(src) : src);
+  const out = sitex(cinema(src.includes('\\(') || src.includes('\\[') ? transform(src) : src));
   fs.writeFileSync(path.join(OUT, f), out);
   console.log(`${f}: display=${nDisp} inline=${nInline} bytes=${out.length}`);
 }

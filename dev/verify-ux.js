@@ -175,7 +175,7 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
 
     /* card copy matches the real pages */
     const feet = await page.locator('a.card[data-unit] .foot span:not(.status)').allTextContents();
-    const want = ['13 widgets · 11 checks · 10 problems', '6 widgets · 11 checks · 18 problems',
+    const want = ['13 widgets · 11 checks · 10 problems', '11 widgets · 11 checks · 18 problems',
                   '10 widgets · 13 checks · 8 problems', '8 widgets · 13 checks · 5 problems',
                   '10 widgets · 17 checks · 12 problems', '13 widgets · 17 checks · 10 problems',
                   '7 widgets · 16 checks · 11 problems', '9 widgets · 17 checks · 12 problems', '11 widgets · 15 checks · 12 problems', '11 widgets · 15 checks · 12 problems', '15 widgets · 20 checks · 14 problems'];
