@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big Ideas — The Math Behind the Machine</title>
+<meta name="description" content="The whole course on one page: every realization and one-sentence summary from every unit, plus the threads that tie linear algebra, calculus and optimization to modern machine learning. By Prof. Saurabh.">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%235b93ff"/><text x="32" y="44" font-family="Georgia,serif" font-size="36" fill="white" text-anchor="middle">Σ</text></svg>'>
+<meta property="og:site_name" content="The Math Behind the Machine">
+<meta property="og:title" content="Big Ideas — the whole course on one page">
+<meta property="og:description" content="Every realization from every unit, in order, plus the threads that tie the maths of machine learning together.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://linearalgebra.info/ideas.html">
+<meta property="og:image" content="https://linearalgebra.info/social-card.png">
+<meta name="theme-color" content="#070a12">
+<style>
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink)}
+.wrap{max-width:62rem;margin:0 auto;padding:0 1.25rem 5rem}
+.topbar{position:sticky;top:0;z-index:30}
+.topbar-in{max-width:62rem;margin:0 auto;display:flex;align-items:center;gap:.6rem;padding:.7rem 1.25rem;font-size:.86rem}
+.brand{font-weight:750;color:var(--ink);text-decoration:none;letter-spacing:-.01em;display:inline-flex;align-items:center;gap:.55rem}
+.brand::before{content:"Σ";display:inline-grid;place-items:center;width:1.55rem;height:1.55rem;border-radius:.45rem;background:linear-gradient(135deg,var(--s1),var(--s7));color:#fff;font-family:Georgia,serif;font-size:.95rem}
+.crumb{color:var(--ink-muted)}
+.spacer{flex:1}
+button.ghost{white-space:nowrap;font-size:.8rem;border:1px solid var(--line);color:var(--ink-2);border-radius:999px;padding:.28rem .75rem;cursor:pointer}
+.i-hero{padding:4rem 0 1.5rem;position:relative}
+#weave{position:absolute;right:-2rem;top:2.2rem;width:24rem;height:18rem;pointer-events:none;opacity:.95}
+@media (max-width:900px){#weave{display:none}}
+@media (min-width:901px){.i-hero .lede{max-width:33rem}}
+.i-hero .lede{font-size:1.25rem;line-height:1.55;color:var(--ink-2);max-width:42rem;margin:0}
+.i-hero h1 .hl{color:var(--s4)}
+.stats{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.3rem}
+.stats span{font-family:var(--ui);font-size:.78rem;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:.3rem .75rem;background:color-mix(in srgb,var(--surface) 60%,transparent)}
+.tools{position:sticky;top:3.05rem;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding:.65rem 1.25rem;margin:1.2rem -1.25rem 0;background:color-mix(in srgb,var(--page) 88%,transparent);backdrop-filter:blur(12px)}
+.tools button{font-family:var(--ui);font-size:.8rem;font-weight:600;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 70%,transparent);color:var(--ink-2);border-radius:999px;padding:.34rem .85rem;cursor:pointer}
+.tools button[aria-pressed="true"]{color:var(--ink);border-color:color-mix(in srgb,var(--s1) 60%,transparent);background:color-mix(in srgb,var(--s1) 16%,var(--surface));box-shadow:var(--glow-1)}
+.tools .sep{width:1px;height:1.3rem;background:var(--line);margin:0 .2rem}
+.jump{display:flex;flex-wrap:wrap;gap:.35rem;margin:.6rem 0 0}
+.jump a{font-family:var(--ui);font-size:.74rem;color:var(--ink-2);text-decoration:none;border:1px solid var(--line);border-radius:.5rem;padding:.25rem .5rem;display:inline-flex;gap:.35rem}
+.jump a b{color:var(--pc)}
+.jump a:hover{color:var(--ink);border-color:var(--pc)}
+h2.sec{font-size:clamp(1.6rem,3vw,2.2rem);margin:3.2rem 0 .4rem}
+.sec-lede{color:var(--ink-2);margin:0 0 1.4rem;max-width:42rem}
+.threads{display:grid;grid-template-columns:repeat(auto-fill,minmax(19rem,1fr));gap:1rem}
+.thread{border:1px solid var(--line);border-radius:var(--r-lg);padding:1.1rem 1.15rem 1rem;background:var(--stage-bg);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.thread h3{font-family:var(--display);font-weight:600;font-size:1.3rem;line-height:1.2;margin:0 0 .45rem;letter-spacing:-.01em}
+.thread p{font-size:.98rem;color:var(--ink-2);margin:0 0 .9rem;line-height:1.55}
+.stops{list-style:none;margin:0;padding:0 0 0 .2rem;position:relative}
+.stops::before{content:"";position:absolute;left:.52rem;top:.6rem;bottom:.6rem;width:2px;background:linear-gradient(var(--s1),var(--s3),var(--s2),var(--s7));opacity:.45;border-radius:2px}
+.stop a,.stop.soon{display:grid;grid-template-columns:1.1rem 4.4rem 1fr;align-items:center;gap:.45rem;padding:.22rem 0;text-decoration:none;font-family:var(--ui);font-size:.82rem}
+.stop .dot{width:.72rem;height:.72rem;border-radius:50%;background:var(--pc);box-shadow:0 0 10px var(--pc);position:relative;z-index:1;margin-left:.16rem}
+:root[data-theme="light"] .stop .dot{box-shadow:none}
+.stop .su{color:var(--ink-muted);font-weight:700;white-space:nowrap}
+.stop .sl{color:var(--ink)}
+.stop a:hover .sl{color:var(--pc);text-decoration:underline}
+.stop.soon .dot{background:none;border:1.5px dashed var(--ink-muted);box-shadow:none}
+.stop.soon .sl{color:var(--ink-muted);font-style:italic}
+h2.part-h{position:relative;display:flex;align-items:center;gap:1rem;font-family:var(--ui);font-weight:700;font-size:.76rem;letter-spacing:.26em;text-transform:uppercase;color:var(--pc);margin:3.6rem 0 1.2rem;line-height:1}
+h2.part-h .roman{font-family:var(--display);font-weight:400;font-size:2.6rem;letter-spacing:-.02em;color:color-mix(in srgb,var(--pc) 55%,transparent);text-transform:none}
+h2.part-h::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,color-mix(in srgb,var(--pc) 70%,transparent),transparent)}
+.soon-tag{font-size:.62rem;letter-spacing:.14em;border:1px dashed color-mix(in srgb,var(--pc) 55%,transparent);border-radius:999px;padding:.32rem .6rem .3rem}
+[data-p="1"]{--pc:var(--s1)} [data-p="2"]{--pc:var(--s3)} [data-p="3"]{--pc:var(--s2)} [data-p="4"]{--pc:var(--s7)} [data-p="5"]{--pc:var(--s6)}
+.u-block{margin:0 0 2.2rem}
+.u-head{position:sticky;top:6.2rem;margin-left:-.5rem;z-index:10;display:flex;align-items:center;gap:.8rem;padding:.6rem .9rem;border-radius:var(--r-md);background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border:1px solid var(--line);margin-bottom:.8rem}
+.u-num{font-family:var(--ui);font-weight:800;font-size:.8rem;color:var(--pc);border:1px solid color-mix(in srgb,var(--pc) 50%,transparent);border-radius:.45rem;padding:.12rem .4rem}
+.u-head h3{margin:0;font-size:1.05rem;flex:1}
+.u-head h3 a{color:var(--ink);text-decoration:none}
+.u-open{font-family:var(--ui);font-size:.78rem;font-weight:600;color:var(--pc);text-decoration:none;white-space:nowrap}
+.u-block.soon{opacity:.6}
+.ideas{list-style:none;margin:0;padding:0 0 0 1.1rem;border-left:2px solid color-mix(in srgb,var(--pc) 35%,transparent)}
+.idea{position:relative;margin:0 0 1.35rem;padding-left:.6rem}
+.idea::before{content:"";position:absolute;left:-1.48rem;top:.55rem;width:.6rem;height:.6rem;border-radius:50%;background:var(--page);border:2px solid var(--pc)}
+.i-head{display:flex;align-items:baseline;gap:.55rem;text-decoration:none;color:var(--ink);font-family:var(--ui);font-weight:700;font-size:1rem}
+.i-num{color:var(--pc);font-size:.8rem;min-width:1.2rem}
+.i-go{opacity:0;color:var(--pc);transition:opacity .2s,transform .2s}
+.i-head:hover .i-t{text-decoration:underline;text-decoration-color:var(--pc)}
+.i-head:hover .i-go{opacity:1;transform:translateX(3px)}
+.i-real{margin:.45rem 0 0;padding:.75rem 1rem;border-radius:var(--r-sm);background:color-mix(in srgb,var(--pc) 7%,var(--surface));border:1px solid color-mix(in srgb,var(--pc) 22%,transparent);font-size:1.02rem;line-height:1.6}
+.i-real p{margin:.35rem 0}
+.i-real .katex-display{margin:.5rem 0;overflow-x:auto;overflow-y:hidden}
+.i-one{margin:.5rem 0 0;font-size:1rem;color:var(--ink-2)}
+.i-one b{font-family:var(--ui);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--pc)}
+body.quick .i-real{display:none}
+body.quick .idea{margin-bottom:.8rem}
+.hidden-p{display:none!important}
+footer{margin-top:4rem;padding-top:1.2rem;border-top:1px solid var(--line);font-family:var(--ui);font-size:.8rem;color:var(--ink-muted)}
+footer a{color:var(--ink-2)}
+@media (max-width:640px){.crumb{display:none}.brand{font-size:.84rem;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;display:block}.brand::before{display:none}.topbar-in{gap:.4rem}.tools{position:static;margin:1rem 0 0;padding:.4rem 0;background:none;backdrop-filter:none}.u-head{top:3.2rem}.i-hero{padding-top:2.6rem}.stop a,.stop.soon{grid-template-columns:1.1rem 3.8rem 1fr}}
+@media print{.topbar,.tools,.jump{display:none}.u-head{position:static}.reveal{opacity:1!important;transform:none!important}body.quick .i-real{display:block}}
+</style>
+<!--@cinema-css-->
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+  <a class="brand" href="index.html">The Math Behind the Machine</a><span class="crumb">/ Big ideas</span>
+  <span class="spacer"></span>
+  <button class="ghost" id="theme-btn" type="button">Theme: dark</button>
+</div></div>
+<main class="wrap">
+  <header class="i-hero">
+    <canvas id="weave" aria-hidden="true"></canvas>
+    <div class="kicker reveal">The whole course on one page</div>
+    <h1 class="reveal">Big <span class="hl">ideas</span></h1>
+    <p class="lede reveal">Every section of every unit ends with a realization — the formula turned into a sentence you could have written yourself. Here they all are, in order. Read it the night before an exam, or read it first to see where the road goes.</p>
+    <div class="stats reveal"><span>@NUNITS units live</span><span>@NIDEAS big ideas</span><span>@NTHREADS threads across the course</span></div>
+  </header>
+
+  <h2 class="sec reveal" id="threads">Threads</h2>
+  <p class="sec-lede reveal">A handful of ideas keep coming back, each time in bigger clothes. Follow one from its first appearance to the place where it runs a real machine.</p>
+  <div class="threads">
+<!--@THREADS-->
+  </div>
+
+  <h2 class="sec reveal" id="all">Every idea, unit by unit</h2>
+  <p class="sec-lede reveal">Click any title to open that exact section.</p>
+  <div class="tools" role="toolbar" aria-label="Filter the ideas">
+    <button type="button" data-f="0" aria-pressed="true">All</button>
+    <button type="button" data-f="1">I · Linear algebra</button>
+    <button type="button" data-f="2">II · Calculus</button>
+    <button type="button" data-f="3">III · Optimization</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="quick" aria-pressed="false">One sentence only</button>
+  </div>
+  <nav class="jump" aria-label="Jump to a unit"><!--@TOC--></nav>
+<!--@UNITS-->
+  <footer>Handcrafted by Prof. Saurabh · every idea a story, every example worked in full · <a href="index.html">all units</a></footer>
+</main>
+<script>
+(function(){
+  const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  const btn=document.getElementById('theme-btn');
+  let mode=store.get('mfml-theme')==='light'?'light':'dark';
+  const apply=()=>{document.documentElement.setAttribute('data-theme',mode);btn.textContent='Theme: '+mode;};
+  btn.addEventListener('click',()=>{mode=mode==='dark'?'light':'dark';store.set('mfml-theme',mode);apply();}); apply();
+  /* reveal on scroll (no 3D on this page, so no cinema runtime) */
+  const els=[...document.querySelectorAll('.reveal')];
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window)) els.forEach(e=>e.classList.add('in'));
+  else { const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{rootMargin:'0px 0px -6% 0px'}); els.forEach(e=>io.observe(e)); }
+  /* hero art: seven threads weaving through five parts */
+  (function(){ const cv=document.getElementById('weave'); if(!cv||!cv.getContext) return; const g=cv.getContext('2d'); const D=Math.min(devicePixelRatio||1,2);
+    let W=0,H=0; const size=()=>{ const r=cv.getBoundingClientRect(); W=r.width; H=r.height; cv.width=W*D; cv.height=H*D; };
+    const cols=()=>{ const cs=getComputedStyle(document.documentElement); return ['--s1','--s3','--s2','--s7','--s6','--s4','--s5'].map(v=>cs.getPropertyValue(v).trim()); };
+    let C=cols(); new MutationObserver(()=>{C=cols();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+    const red=matchMedia('(prefers-reduced-motion: reduce)').matches; let vis=true;
+    new IntersectionObserver(es=>{vis=es[0].isIntersecting;}).observe(cv);
+    function frame(ts){ const t=red?4:ts/1000; if(!W) size(); g.setTransform(D,0,0,D,0,0); g.clearRect(0,0,W,H);
+      const light=document.documentElement.getAttribute('data-theme')==='light';
+      for(let k=0;k<7;k++){ g.beginPath(); for(let i=0;i<=80;i++){ const x=i/80*W; const u=i/80;
+          const y=H/2+Math.sin(u*Math.PI*2*(1+k*.13)+t*.35+k*.9)*H*.28*(1-.55*Math.abs(u-.5)*2)+Math.sin(u*9+k+t*.2)*6;
+          i?g.lineTo(x,y):g.moveTo(x,y); }
+        g.strokeStyle=C[k]; g.globalAlpha=light?.55:.75; g.lineWidth=1.6; if(!light){g.shadowColor=C[k]; g.shadowBlur=10;} g.stroke();
+        const u=((t*.06+k*.137)%1), x=u*W, y=H/2+Math.sin(u*Math.PI*2*(1+k*.13)+t*.35+k*.9)*H*.28*(1-.55*Math.abs(u-.5)*2)+Math.sin(u*9+k+t*.2)*6;
+        g.globalAlpha=1; g.fillStyle=C[k]; g.beginPath(); g.arc(x,y,2.6,0,7); g.fill(); g.shadowBlur=0; }
+      if(!red) requestAnimationFrame(frame2); }
+    function frame2(ts){ if(vis) frame(ts); else requestAnimationFrame(frame2); }
+    addEventListener('resize',size); requestAnimationFrame(frame);
+  })();
+  /* filters */
+  const fb=[...document.querySelectorAll('.tools button[data-f]')];
+  fb.forEach(b=>b.addEventListener('click',()=>{ const f=b.dataset.f; fb.forEach(x=>x.setAttribute('aria-pressed',x===b));
+    document.querySelectorAll('.u-block,h2.part-h,.jump a').forEach(el=>{ const p=el.dataset.p||(el.getAttribute('href')&&document.querySelector(el.getAttribute('href'))?.dataset.p);
+      el.classList.toggle('hidden-p', f!=='0' && p!==f); });
+    document.querySelectorAll('.reveal').forEach(e=>e.classList.add('in')); }));
+  const q=document.getElementById('quick');
+  const setQ=on=>{ document.body.classList.toggle('quick',on); q.setAttribute('aria-pressed',on); store.set('mfml-ideas-quick',on?'1':''); };
+  q.addEventListener('click',()=>setQ(q.getAttribute('aria-pressed')!=='true'));
+  if(store.get('mfml-ideas-quick')==='1') setQ(true);
+})();
+</script>
+</body>
+</html>
