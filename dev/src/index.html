@@ -459,6 +459,7 @@ a.cta:active,a.cta-ghost:active,button.cta-ghost:active{transform:scale(.98)}
 .mh-foot b{font-family:var(--display);font-style:italic;font-weight:600;font-size:.95em}
 .mh-foot .c1{color:var(--s2)} .mh-foot .c2{color:var(--s3)}
 @media (max-width:1180px){.mhud{width:15.6rem;padding:.75rem .8rem .7rem}.mh-mat{font-size:.88rem}}
+@media (min-width:761px){.mhud{bottom:auto;top:calc(100% - 16rem);top:min(calc(100% - 16rem),calc(100svh - 15rem))}}
 
 /* unit cards: a soft light that follows the pointer */
 .grid .card::before{content:"";display:block;position:absolute;inset:0;top:0;bottom:0;left:0;right:0;width:auto;height:auto;border-radius:inherit;pointer-events:none;z-index:0;
