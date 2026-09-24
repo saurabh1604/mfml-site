@@ -203,7 +203,7 @@ footer p:first-child{color:var(--ink-2)}
 @media print{.hero-stage{min-height:auto}#hero-3d,.hero-scrim,.hero-hint,.card .glyph{display:none!important}}
 
 /* ===== ROUND 15 · hub finish: route map, part subtitles, upcoming parts ===== */
-[data-p="5"]{--pc:var(--s6)}
+[data-p="5"]{--pc:var(--s6)} [data-p="6"]{--pc:var(--s5)}
 a.ghost.navlink{font-family:var(--ui);font-size:.8rem;background:var(--surface);border:1px solid var(--ring);color:var(--ink-2);border-radius:999px;padding:.28rem .8rem;text-decoration:none;margin-right:.45rem;transition:color .2s,border-color .2s}
 a.ghost.navlink:hover{color:var(--ink);border-color:color-mix(in srgb,var(--s7) 55%,transparent)}
 a.cta-2{flex-basis:100%;font-family:var(--ui);font-size:.82rem;font-weight:600;color:var(--s6);text-decoration:none;opacity:.9}
@@ -254,6 +254,16 @@ h2.part{margin-bottom:.35rem}
 .j-legend .lg.soon{border-style:dashed;border-color:var(--ink-muted)}
 @media (prefers-reduced-motion:reduce){.j-map .seg.draw{animation:none;stroke-dashoffset:0}.j-map .halo{animation:none;opacity:.5}}
 @media print{.journey{display:none}}
+
+/* ===== ROUND 17 · roadmap cards ===== */
+.card.roadmap{opacity:.9;filter:none}
+.card.roadmap .aha{font-size:.92rem;color:var(--ink-2);border-left:2px solid color-mix(in srgb,var(--pc) 60%,transparent);padding:.1rem 0 .1rem .7rem;margin:.2rem 0 .7rem}
+.card.roadmap .aha b{display:block;font-family:var(--ui);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pc);margin-bottom:.15rem}
+.card .builds{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;margin:0 0 .7rem}
+.card .blabel{font-family:var(--ui);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);margin-right:.2rem}
+.card .bchip{font-family:var(--ui);font-size:.72rem;font-weight:700;min-width:1.7rem;text-align:center;padding:.12rem .4rem;border-radius:.45rem;border:1px solid var(--line);color:var(--ink-2);text-decoration:none;background:color-mix(in srgb,var(--surface) 70%,transparent)}
+a.bchip:hover{color:var(--ink);border-color:var(--pc)}
+.card .bchip.soon{border-style:dashed;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -276,7 +286,7 @@ h2.part{margin-bottom:.35rem}
     <p class="byline reveal">by <strong>Prof. Saurabh</strong></p>
     <p class="lede reveal">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
     <div class="meta-chips reveal-stagger">
-      <span class="chip">📐 16 units · 13 live so far</span>
+      <span class="chip">📐 20 units · 13 live so far</span>
       <span class="chip">🎛 150 hands-on widgets</span>
       <span class="chip">✅ 207 pause-and-predict checks</span>
       <span class="chip">✍ 152 problems solved step by step</span>
@@ -299,9 +309,9 @@ h2.part{margin-bottom:.35rem}
   <section class="journey reveal" id="journey" aria-labelledby="journey-h">
     <div class="j-head">
       <h2 class="j-title" id="journey-h">The route</h2>
-      <p class="j-sub">Sixteen stops, from one straight line to a machine that reads. Each stop uses the ones before it. Tap a stop to jump in.</p>
+      <p class="j-sub">Twenty stops, from one straight line to a machine that writes and paints. Each stop uses the ones before it. Tap a stop to jump in.</p>
     </div>
-    <div class="j-map" id="j-map" role="navigation" aria-label="Course route: all sixteen units"></div>
+    <div class="j-map" id="j-map" role="navigation" aria-label="Course route: all twenty units"></div>
     <div class="j-legend" aria-hidden="true"><span><i class="lg live"></i>open</span><span><i class="lg part"></i>in progress</span><span><i class="lg done"></i>complete</span><span><i class="lg soon"></i>upcoming</span></div>
   </section>
   <h2 class="part reveal" id="units" data-p="1"><span class="roman">I</span>Part I · Linear Algebra</h2>
@@ -403,24 +413,67 @@ h2.part{margin-bottom:.35rem}
   </div>
 
   <h2 class="part reveal" data-p="5"><span class="roman">V</span>Part V · Models that Read<span class="soon-tag">Upcoming</span></h2>
-  <p class="part-sub reveal" data-p="5">Sequences, memory and attention — the maths inside models that read and write.</p>
+  <p class="part-sub reveal" data-p="5">From geometry to uncertainty, then networks that read — each unit ending with the problem the next one solves.</p>
   <div class="grid reveal-stagger" data-p="5">
-    <div class="card locked">
+    <div class="card locked roadmap">
       <canvas class="glyph" data-g="14" aria-hidden="true"></canvas>
-      <div class="top"><span class="num">14</span><h3>Encoder–Decoder Maths &amp; RNNs</h3></div>
-      <p>A network with a memory. One small matrix reused at every word, a hidden state that carries the story forward, backprop through time and why gradients fade — then an encoder that squeezes a sentence into a vector and a decoder that unfolds it again.</p>
+      <div class="top"><span class="num">14</span><h3>Thinking in Probabilities</h3></div>
+      <p>The switch from geometry to uncertainty. Random variables and distributions, Bayes as updating a belief, the Gaussian in one and many dimensions, likelihood and maximum likelihood, softmax — scores into probabilities, with a temperature dial — and entropy, cross-entropy and KL divergence.</p>
+      <p class="aha"><b>The aha</b> The covariance ellipse of Unit 12 was a Gaussian all along, and “minimise the squared error” was secretly “make the data most likely”.</p>
+      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-03.html">3</a><a class="bchip" href="unit-06.html">6</a><a class="bchip" href="unit-12.html">12</a></div>
       <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
-    <div class="card locked">
+    <div class="card locked roadmap">
       <canvas class="glyph" data-g="15" aria-hidden="true"></canvas>
-      <div class="top"><span class="num">15</span><h3>Transformers &amp; Attention</h3></div>
-      <p>Every word asks every other word a question. Queries, keys and values as dot products, the softmax that turns scores into weights, many heads, positions — the matrix algebra inside the models that write.</p>
+      <div class="top"><span class="num">15</span><h3>The Network, Whole</h3></div>
+      <p>A real network, every number visible. One neuron is a bend; why stacked linear layers collapse to one matrix; universal approximation built fold by fold; softmax and cross-entropy put to work; the full forward pass and the full backward pass in matrix form, worked by hand — and a playground where you build a network, watch values flow through its computational graph and gradients flow back.</p>
+      <p class="aha"><b>The aha</b> At the output the whole gradient is just prediction − truth; everything before it is Unit 7’s “local slope × incoming blame”, done with matrices.</p>
+      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-07.html">7</a><a class="bchip" href="unit-09.html">9</a><a class="bchip" href="unit-10.html">10</a><a class="bchip" href="unit-11.html">11</a><span class="bchip soon">14</span></div>
       <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
-    <div class="card locked">
+    <div class="card locked roadmap">
       <canvas class="glyph" data-g="16" aria-hidden="true"></canvas>
-      <div class="top"><span class="num">16</span><h3>The Finale</h3></div>
-      <p>Every thread tied together — from one straight line to a machine that reads.</p>
+      <div class="top"><span class="num">16</span><h3>Words as Vectors</h3></div>
+      <p>Teaching a machine what words mean. From counting word pairs to a neural language model (perplexity is the exponential of cross-entropy), a co-occurrence matrix squeezed by the SVD, word2vec, and the geometry of meaning.</p>
+      <p class="aha"><b>The aha</b> Meaning is a direction: king − man + woman lands next to queen.</p>
+      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-03.html">3</a><a class="bchip" href="unit-05.html">5</a><a class="bchip" href="unit-12.html">12</a><span class="bchip soon">14</span><span class="bchip soon">15</span></div>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
+    </div>
+    <div class="card locked roadmap">
+      <canvas class="glyph" data-g="17" aria-hidden="true"></canvas>
+      <div class="top"><span class="num">17</span><h3>Machines with Memory</h3></div>
+      <p>Reading one word at a time. The recurrent cell, backprop through time, why gradients fade or explode, LSTM and GRU gates, and the encoder–decoder with its bottleneck.</p>
+      <p class="aha"><b>The aha</b> The gradient carries powers of one matrix, so its eigenvalues decide whether memory fades away or blows up.</p>
+      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-04.html">4</a><a class="bchip" href="unit-07.html">7</a><span class="bchip soon">15</span><span class="bchip soon">16</span></div>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
+    </div>
+    <div class="card locked roadmap">
+      <canvas class="glyph" data-g="18" aria-hidden="true"></canvas>
+      <div class="top"><span class="num">18</span><h3>Attention and Transformers</h3></div>
+      <p>Every word asks every other word a question. Queries, keys and values, why we divide by √d, softmax weights, many heads as many subspaces, positions as rotations, residual paths and layer norm, causal masking.</p>
+      <p class="aha"><b>The aha</b> Attention is Unit 13’s kernel vote: similarity by a dot product, then a weighted sum.</p>
+      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-03.html">3</a><a class="bchip" href="unit-04.html">4</a><a class="bchip" href="unit-10.html">10</a><a class="bchip" href="unit-12.html">12</a><a class="bchip" href="unit-13.html">13</a><span class="bchip soon">14</span></div>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
+    </div>
+  </div>
+
+  <h2 class="part reveal" data-p="6"><span class="roman">VI</span>Part VI · Models that Create<span class="soon-tag">Upcoming</span></h2>
+  <p class="part-sub reveal" data-p="6">The two things modern AI does — predict the next word, and turn noise into data — and how almost the whole course lives inside them.</p>
+  <div class="grid reveal-stagger" data-p="6">
+    <div class="card locked roadmap">
+      <canvas class="glyph" data-g="19" aria-hidden="true"></canvas>
+      <div class="top"><span class="num">19</span><h3>The Maths Inside an LLM</h3></div>
+      <p>What happens when a model writes. Next-token likelihood at scale, sampling with temperature, top-k and top-p, rotary positions, the KV cache, LoRA fine-tuning, alignment with a reward and a KL leash (and DPO), and scaling laws.</p>
+      <p class="aha"><b>The aha</b> Fine-tuning a giant model is Eckart–Young: change only a rank-8 slice and leave the rest alone.</p>
+      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-04.html">4</a><a class="bchip" href="unit-05.html">5</a><a class="bchip" href="unit-11.html">11</a><span class="bchip soon">14</span><span class="bchip soon">18</span></div>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
+    </div>
+    <div class="card locked roadmap">
+      <canvas class="glyph" data-g="20" aria-hidden="true"></canvas>
+      <div class="top"><span class="num">20</span><h3>From Noise to Pictures: VAEs and Diffusion</h3></div>
+      <p>How a model paints. Sampling and the reparameterisation trick, the evidence lower bound, adding noise step by step, the score as a compass pointing towards real data, and walking back from static to a picture.</p>
+      <p class="aha"><b>The aha</b> Generating an image is Unit 9’s walker going downhill on a learned landscape — with a little noise at every step.</p>
+      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-09.html">9</a><a class="bchip" href="unit-12.html">12</a><span class="bchip soon">14</span><span class="bchip soon">15</span></div>
       <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
   </div>
@@ -498,7 +551,7 @@ h2.part{margin-bottom:.35rem}
 })();
 </script>
 <script>
-/* ================= ROUND 15 · the route map (16 stops, live progress) ================= */
+/* ================= ROUND 17 · the route map (20 stops in six parts, live progress) ================= */
 (function(){
   const el=document.getElementById('j-map'); if(!el) return;
   const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
@@ -508,30 +561,32 @@ h2.part{margin-bottom:.35rem}
     [6,'Derivatives','Differentiation',2,17],[7,'Backprop','Backprop & Automatic Differentiation',2,16],[8,'Taylor','Taylor & MacLaurin Series',2,17],
     [9,'Gradient descent','Gradient Descent',3,15],[10,'Optim.\u00a0I','Optimization I — Gradients that Work',3,15],[11,'Optim.\u00a0II','Optimization II — Five Ways Down One Valley',3,20],
     [12,'PCA','Principal Component Analysis',4,22],[13,'SVM','Support Vector Machines',4,20],
-    [14,'RNNs','Encoder–Decoder Maths & RNNs',5,0],[15,'Transformers','Transformers & Attention',5,0],[16,'Finale','The Finale',5,0]];
-  const PC={1:'--s1',2:'--s3',3:'--s2',4:'--s7',5:'--s6'};
+    [14,'Probability','Thinking in Probabilities',5,0],[15,'Networks','The Network, Whole',5,0],[16,'Word vectors','Words as Vectors',5,0],
+    [17,'RNNs','Machines with Memory',5,0],[18,'Transformers','Attention and Transformers',5,0],
+    [19,'LLM maths','The Maths Inside an LLM',6,0],[20,'Diffusion','From Noise to Pictures: VAEs and Diffusion',6,0]];
+  const PC={1:'--s1',2:'--s3',3:'--s2',4:'--s7',5:'--s6',6:'--s5'};
   const last=+((get('mfml-last')||'').split('|')[0])||0;
   const NS='http://www.w3.org/2000/svg';
   const mk=(t,a,p)=>{const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e;};
   let drawn=false, lastW=0;
   function render(){
     const W=el.clientWidth; if(!W||Math.abs(W-lastW)<2) return; lastW=W;
-    const cols=W>=940?16:W>=560?8:4, rows=16/cols, padX=cols===16?40:cols===8?44:40, rowH=cols===16?120:112, top=cols===16?70:46;
+    const N=U.length, cols=W>=900?10:W>=560?5:4, rows=Math.ceil(N/cols), padX=cols===10?52:44, rowH=cols===10?128:112, top=cols===10?78:46;
     const H=top+(rows-1)*rowH+62;
     const dx=(W-2*padX)/(cols-1);
-    const pos=U.map((u,i)=>{ const r=Math.floor(i/cols), c=i%cols, cc=r%2?cols-1-c:c;
-      const wave=cols===16?Math.sin(i/15*Math.PI*2.2)*14:0; return [padX+cc*dx, top+r*rowH+wave]; });
+    const pos=U.map((u,i)=>{ const r=Math.floor(i/cols), c=i%cols, cc=r%2?cols-1-c:c; return [padX+cc*dx, top+r*rowH]; });
     el.innerHTML='';
     const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
-    /* part captions over each group (wide layout only) */
-    if(cols===16){ const PN={1:'I · Linear algebra',2:'II · Calculus',3:'III · Optimization',4:'IV · Applications',5:'V · Models that read'};
-      for(let p=1;p<=5;p++){ const idx=U.map((u,i)=>u[3]===p?i:-1).filter(i=>i>=0); const xa=pos[idx[0]][0], xb=pos[idx[idx.length-1]][0];
-        const t=mk('text',{x:(xa+xb)/2,y:16,class:'pcap'},svg); t.style.fill=`var(${PC[p]})`; t.textContent=PN[p];
-        mk('line',{x1:xa-12,x2:xb+12,y1:24,y2:24,class:'pline2'},svg).style.stroke=`var(${PC[p]})`; } }
+    /* part captions over each run of a part within a row (wide layout only) */
+    if(cols===10){ const PN={1:'I · Linear algebra',2:'II · Calculus',3:'III · Optimization',4:'IV · Applications',5:'V · Models that read',6:'VI · Models that create'};
+      const runs=[]; U.forEach((u,i)=>{ const r=Math.floor(i/cols), L=runs[runs.length-1]; if(L&&L.p===u[3]&&L.r===r) L.idx.push(i); else runs.push({p:u[3],r,idx:[i]}); });
+      runs.forEach(R=>{ const xs=R.idx.map(i=>pos[i][0]), xa=Math.min(...xs), xb=Math.max(...xs), y=top+R.r*rowH-48;
+        const t=mk('text',{x:(xa+xb)/2,y,class:'pcap'},svg); t.style.fill=`var(${PC[R.p]})`; t.textContent=R.idx.length<2?PN[R.p].split(' · ')[0]:PN[R.p];
+        mk('line',{x1:xa-14,x2:xb+14,y1:y+8,y2:y+8,class:'pline2'},svg).style.stroke=`var(${PC[R.p]})`; }); }
     /* segments */
-    for(let i=0;i<15;i++){
+    for(let i=0;i<N-1;i++){
       const [x0,y0]=pos[i],[x1,y1]=pos[i+1]; let d;
-      if(Math.abs(y1-y0)>rowH*.5){ const side=x0>W/2?1:-1, bx=x0+side*Math.min(46,padX+10); d=`M${x0},${y0} C${bx},${y0} ${bx},${y1} ${x1},${y1}`; }
+      if(Math.abs(y1-y0)>rowH*.5){ const side=x0>W/2?1:-1, bx=x0+side*Math.min(50,padX+6); d=`M${x0},${y0} C${bx},${y0} ${bx},${y1} ${x1},${y1}`; }
       else { const mx=(x0+x1)/2; d=`M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}`; }
       const live=U[i+1][4]>0, path=mk('path',{d,class:'seg'+(live?'':' soon')},svg);
       path.style.setProperty('--pc',`var(${PC[U[i+1][3]]})`); path.style.stroke=`var(${PC[U[i+1][3]]})`;
@@ -553,7 +608,7 @@ h2.part{margin-bottom:.35rem}
         ring.setAttribute('stroke-dasharray',`${(C*f).toFixed(1)} ${C.toFixed(1)}`); ring.style.opacity=state==='done'?1:.9; }
       const num=mk('text',{x,y,class:'num'},g); num.textContent=state==='done'?'✓':n;
       const words=short.split(' '), lbl=mk('text',{x,y:y+32,class:'lbl'},g);
-      if(cols===16 && words.length>1){ words.forEach((w,k)=>{ const ts=mk('tspan',{x,dy:k?'1.15em':'0'},lbl); ts.textContent=w; }); }
+      if(false && words.length>1){ words.forEach((w,k)=>{ const ts=mk('tspan',{x,dy:k?'1.15em':'0'},lbl); ts.textContent=w; }); }
       else lbl.textContent=short;
     });
     el.appendChild(svg);
@@ -832,8 +887,8 @@ h2.part{margin-bottom:.35rem}
   };
   /* upcoming units: dim outline glyphs that breathe slowly (t = phase, pal.ink2 stroke set by draw) */
   const LOCKED={
-    /* 14 · encoder → context vector → decoder, a pulse of memory travelling along the chain */
-    14(g,w,h,t){ const cy=h*.5, xs=[-54,-36,-18,18,36,54].map(x=>w/2+x);
+    /* 17 · encoder → context vector → decoder, a pulse of memory travelling along the chain */
+    17(g,w,h,t){ const cy=h*.5, xs=[-54,-36,-18,18,36,54].map(x=>w/2+x);
       xs.forEach((x,i)=>{ g.beginPath(); g.roundRect?g.roundRect(x-6,cy-6,12,12,3):g.rect(x-6,cy-6,12,12); g.stroke();
         g.beginPath(); if(i<3){ g.moveTo(x,cy+20); g.lineTo(x,cy+7); } else { g.moveTo(x,cy-7); g.lineTo(x,cy-20); } g.stroke(); });
       for(let i=0;i<5;i++){ if(i===2) continue; g.beginPath(); g.moveTo(xs[i]+6,cy); g.lineTo(xs[i+1]-6,cy); g.stroke(); }
@@ -841,19 +896,44 @@ h2.part{margin-bottom:.35rem}
       const u=(t*.32)%1, px=xs[0]+(xs[5]-xs[0])*u;
       g.save(); g.fillStyle=pal.s7; g.globalAlpha=.9; g.beginPath(); g.arc(w/2,cy,3+1.2*Math.sin(t*2),0,7); g.fill();
       g.globalAlpha=.8; g.fillStyle=pal.s4; g.beginPath(); g.arc(px,cy,2.2,0,7); g.fill(); g.restore(); },
-    /* 15 · attention — one word looks at every other word; line weight = attention */
-    15(g,w,h,t){ const n=6, y0=h*.78, y1=h*.24, xs=[...Array(n)].map((_,i)=>w/2-50+i*20);
+    /* 18 · attention — one word looks at every other word; line weight = attention */
+    18(g,w,h,t){ const n=6, y0=h*.78, y1=h*.24, xs=[...Array(n)].map((_,i)=>w/2-50+i*20);
       xs.forEach(x=>{ g.beginPath(); g.arc(x,y0,2.4,0,7); g.stroke(); g.beginPath(); g.arc(x,y1,2.4,0,7); g.stroke(); });
       const q=Math.floor(t*.45)%n, fr=(t*.45)%1, W=[.08,.5,.1,.22,.05,.05].map((_,j)=>Math.exp(-Math.abs(j-((q*2+1)%n))*.9)); const Z=W.reduce((a,b)=>a+b,0);
       g.save(); g.strokeStyle=pal.s7;
       xs.forEach((x,j)=>{ const a=W[j]/Z; g.globalAlpha=Math.min(1,.35+a*2)*Math.min(1,.25+fr*3); g.lineWidth=.7+a*4; g.beginPath(); g.moveTo(xs[q],y1+3); g.bezierCurveTo(xs[q],h*.52,x,h*.52,x,y0-3); g.stroke(); });
       g.globalAlpha=.95; g.fillStyle=pal.s4; g.beginPath(); g.arc(xs[q],y1,3,0,7); g.fill(); g.restore(); },
-    /* 16 · the finale — a constellation that slowly connects */
-    16(g,w,h,t){ const cx=w/2, cy=h*.52; const P=[[-44,-10],[-24,14],[-6,-18],[12,10],[30,-12],[46,8],[4,22],[-38,20]];
-      P.forEach(([x,y])=>{ g.beginPath(); g.arc(cx+x,cy+y,2,0,7); g.stroke(); });
-      const k=(t*.8)%(P.length+3);
-      g.save(); g.strokeStyle=pal.s7; g.globalAlpha=.7; g.lineWidth=1.2; g.beginPath();
-      for(let i=0;i<Math.min(P.length,Math.floor(k)+1);i++){ const [x,y]=P[i]; i?g.lineTo(cx+x,cy+y):g.moveTo(cx+x,cy+y); } g.stroke(); g.restore(); }
+    /* 14 · probability — a bell curve breathing, softmax bars re-sharing their mass as the temperature changes */
+    14(g,w,h,t){ const cx=w/2, base=h*.8, sd=12+6*Math.sin(t*.6);
+      g.beginPath(); for(let x=-56;x<=0;x+=2){ const y=Math.exp(-x*x/(2*sd*sd))*34; x===-56?g.moveTo(cx-10+x,base-y):g.lineTo(cx-10+x,base-y); } g.stroke();
+      g.save(); g.strokeStyle=pal.s6; g.globalAlpha=.8; g.beginPath(); for(let x=0;x<=56;x+=2){ const y=Math.exp(-x*x/(2*sd*sd))*34; x===0?g.moveTo(cx-10+x,base-y):g.lineTo(cx-10+x,base-y);} g.stroke(); g.restore();
+      const sc=[1.2,.4,-.3,.9], T=.5+.45*(1+Math.sin(t*.5)), e=sc.map(v=>Math.exp(v/T)), Z=e.reduce((a,b)=>a+b,0);
+      e.forEach((v,k)=>{ const hh=v/Z*44; g.strokeRect(cx+34+k*8,base-hh,5,hh); }); },
+    /* 15 · a network — values pulse forward, then blame pulses back */
+    15(g,w,h,t){ const cx=w/2, cy=h*.5, L=[2,4,4,2], X=L.map((_,l)=>cx-45+l*30);
+      const N=L.map((n,l)=>[...Array(n)].map((_,k)=>[X[l],cy+(k-(n-1)/2)*13]));
+      for(let l=0;l<3;l++) N[l].forEach(a=>N[l+1].forEach(b=>{ g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(b[0],b[1]); g.stroke(); }));
+      const ph=(t*.35)%2, fwd=ph<1, u=fwd?ph:2-ph, xpos=X[0]+(X[3]-X[0])*u;
+      N.forEach(col=>col.forEach(([x,y])=>{ g.beginPath(); g.arc(x,y,3,0,7); g.stroke(); }));
+      g.save(); g.strokeStyle=fwd?pal.s6:pal.s2; g.globalAlpha=.85; g.lineWidth=1.6; g.beginPath(); g.moveTo(xpos,cy-28); g.lineTo(xpos,cy+28); g.stroke(); g.restore(); },
+    /* 16 · words as vectors — the king/queen parallelogram */
+    16(g,w,h,t){ const cx=w/2-18, cy=h*.72, wob=Math.sin(t*.7)*2;
+      const P={man:[0,0],king:[10,-34],woman:[40,4],queen:[50,-30+wob]};
+      const ar=(a,b)=>{ g.beginPath(); g.moveTo(cx+a[0],cy+a[1]); g.lineTo(cx+b[0],cy+b[1]); g.stroke(); };
+      ar(P.man,P.king); ar(P.woman,P.queen);
+      g.save(); g.setLineDash([2,3]); ar(P.man,P.woman); ar(P.king,P.queen); g.restore();
+      g.save(); g.fillStyle=pal.ink2; g.font='600 7px Inter,system-ui'; Object.entries(P).forEach(([k,[x,y]])=>{ g.beginPath(); g.arc(cx+x,cy+y,2,0,7); g.stroke(); g.fillText(k,cx+x+4,cy+y+3); }); g.restore(); },
+    /* 19 · an LLM — a token stream, each next token sampled from a small bar chart */
+    19(g,w,h,t){ const cy=h*.35, k=Math.floor(t*.9)%6;
+      for(let i=0;i<6;i++){ g.globalAlpha=i<=k?.75:.25; g.strokeRect(w/2-54+i*18,cy-5,14,10); }
+      g.globalAlpha=.7; const pr=[.5,.25,.15,.1].map((v,i)=>v*(1+.15*Math.sin(t*2+i)));
+      pr.forEach((v,i)=>{ const hh=v*52; g.strokeRect(w/2-20+i*11,h*.88-hh,7,hh); });
+      g.save(); g.strokeStyle=pal.s5; g.globalAlpha=.9; g.beginPath(); g.moveTo(w/2-54+k*18+7,cy+6); g.lineTo(w/2-16,h*.88-28); g.stroke(); g.restore(); g.globalAlpha=1; },
+    /* 20 · diffusion — scattered noise slowly settling onto a ring, then dissolving again */
+    20(g,w,h,t){ const cx=w/2, cy=h*.52, u=.5-.5*Math.cos(t*.4); let sd=3;
+      const rnd=()=>{ sd=(sd*16807)%2147483647; return sd/2147483647; };
+      for(let k=0;k<40;k++){ const a=k/40*Math.PI*2, tx=cx+Math.cos(a)*24, ty=cy+Math.sin(a)*24, nx=cx+(rnd()-.5)*110, ny=cy+(rnd()-.5)*60;
+        g.beginPath(); g.arc(nx+(tx-nx)*u,ny+(ty-ny)*u,1.6,0,7); g.stroke(); } }
   };
 
   function setupGlyph(cv){
@@ -867,7 +947,7 @@ h2.part{margin-bottom:.35rem}
   }
   function draw(G){ let {g,w,h}=G; if(!w) return; const k=h/70; g.setTransform(DPR,0,0,DPR,0,0); g.clearRect(0,0,w,h); g.setTransform(DPR*k,0,0,DPR*k,0,0); w/=k; h/=k;
     g.shadowBlur=0; g.globalAlpha=1; g.lineJoin='round';
-    if(G.locked){ g.strokeStyle=pal.ink2; g.lineWidth=1.1; g.globalAlpha=.6; (LOCKED[G.id]||LOCKED[16])(g,w,h,G.ph); g.globalAlpha=1; return; }
+    if(G.locked){ g.strokeStyle=pal.ink2; g.lineWidth=1.1; g.globalAlpha=.6; (LOCKED[G.id]||LOCKED[20])(g,w,h,G.ph); g.globalAlpha=1; return; }
     DRAW[G.id](g,w,h,G.ph); }
   let lastT=performance.now();
   function loop(now){ const dt=Math.min(.05,(now-lastT)/1000); lastT=now;

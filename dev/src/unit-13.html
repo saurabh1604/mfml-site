@@ -660,7 +660,7 @@ table.kv td b{color:var(--s4)}
   <div class="hero-scrim"></div>
   <div class="wrap">
   <header class="hero">
-    <div class="kicker reveal">Unit 13 of 16 · by Prof. Saurabh</div>
+    <div class="kicker reveal">Unit 13 of 20 · by Prof. Saurabh</div>
     <h1 class="reveal">Support Vector Machines</h1>
     <p class="lede reveal">Two groups of points, and a straight line to split them. There are <strong>many</strong> lines that make no mistakes at all, so which one should you draw? This unit's answer is simple to say: <strong>draw the widest empty street</strong> you can between the two groups, and put the line down its middle. Then we turn that sentence into mathematics. The width becomes \(2/\|\mathbf w\|\), the search becomes a bowl with exactly one bottom, and the answer turns out to rest on a <strong>few points</strong> that touch the street. Last, we bend the street. Lift the points into a bigger space, cut them there with a flat plane, and the cut comes back down as a <strong>curve</strong> — without ever visiting the big space.</p>
     <div class="meta reveal-stagger">
@@ -1954,8 +1954,8 @@ table.kv td b{color:var(--s4)}
     <div class="cd"><h4>The kernel swap</h4>\[\mathbf x_i\cdot\mathbf x_j\to K(\mathbf x_i,\mathbf x_j)=\varphi(\mathbf x_i)\cdot\varphi(\mathbf x_j)\]<p>Flat upstairs, curved down here, and the table stays \(N\times N\).</p></div>
     <div class="cd"><h4>The recipe</h4><p>Dots first, kernel second · symmetry · balance · dual with numbers · check \(\alpha\ge0\) · \(b\) from a support vector · classify by the vote · simplify \(f\) to see the curve.</p></div>
   </div>
-  <div class="callout aha reveal"><span class="tag">The thread to Units 14 and 15</span>
-    <p>Look at the vote once more: <strong>score every stored item by its similarity to the new one, then take a weighted sum.</strong> Hold on to that sentence. When machines start reading sentences (Unit 14) and then paying <em>attention</em> to words (Unit 15), the core operation will be exactly this: similarity by a dot product, then a weighted vote.</p>
+  <div class="callout aha reveal"><span class="tag">The thread to Units 16 and 18</span>
+    <p>Look at the vote once more: <strong>score every stored item by its similarity to the new one, then take a weighted sum.</strong> Hold on to that sentence. When machines start reading sentences (Unit 16) and then paying <em>attention</em> to words (Unit 18), the core operation will be exactly this: similarity by a dot product, then a weighted vote.</p>
   </div>
   <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
     <p><strong>Draw the widest street, and let the few points that touch it decide.</strong> Everything else — the dual, the fine, the kernel — is how you find that street when the world is large, noisy and curved.</p>
@@ -2291,8 +2291,8 @@ table.kv td b{color:var(--s4)}
 
   <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
-    <p style="margin:.35rem 0 .6rem"><strong>Unit 14 · Encoder–Decoder Maths &amp; RNNs</strong> <span style="color:var(--ink-muted)">— upcoming</span></p>
-    <p style="margin:0 0 .6rem;font-family:var(--serif)">After straight streets and curved ones, machines that read. A sentence is not a point on a page but a sequence, one word after another, and the machine must carry a memory from each word to the next. Unit 14 builds that memory out of the matrices and chain rules you already own — and meets again the move that ended this unit: score what you have stored by its similarity to what you see, then take a weighted vote.</p>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 14 · Thinking in Probabilities</strong> <span style="color:var(--ink-muted)">— upcoming</span></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">Every unit so far has been geometry — lines, projections, eigenvectors, margins. Everything that comes next runs on uncertainty. Unit 14 teaches the language: how likely, how surprised, how far apart two beliefs are — and it shows that the covariance ellipse of Unit 12 was a Gaussian all along, and that "minimise the squared error" was secretly "make the data most likely".</p>
     <p style="margin:0;font-size:.85rem"><a href="unit-12.html">← Unit 12 · Principal Component Analysis</a> · <a href="index.html">All units</a></p>
   </div>
 </section>
