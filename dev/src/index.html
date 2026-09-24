@@ -276,11 +276,11 @@ h2.part{margin-bottom:.35rem}
     <p class="byline reveal">by <strong>Prof. Saurabh</strong></p>
     <p class="lede reveal">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
     <div class="meta-chips reveal-stagger">
-      <span class="chip">📐 16 units · 11 live so far</span>
-      <span class="chip">🎛 118 hands-on widgets</span>
-      <span class="chip">✅ 165 pause-and-predict checks</span>
-      <span class="chip">✍ 124 problems solved step by step</span>
-      <span class="chip">🧾 132 rules derived step by step, nothing on faith</span>
+      <span class="chip">📐 16 units · 13 live so far</span>
+      <span class="chip">🎛 150 hands-on widgets</span>
+      <span class="chip">✅ 207 pause-and-predict checks</span>
+      <span class="chip">✍ 152 problems solved step by step</span>
+      <span class="chip">🧾 168 rules derived step by step, nothing on faith</span>
     </div>
     <div class="start-row reveal" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 →</a><span class="start-note">Each unit is a story you can play with — about an hour, no prerequisites.</span><a class="cta-2" href="ideas.html">Or read the whole course in one page of big ideas →</a></div>
     <div class="progress-row reveal" id="progress-row">
@@ -385,21 +385,21 @@ h2.part{margin-bottom:.35rem}
     </a>
   </div>
 
-  <h2 class="part reveal" data-p="4"><span class="roman">IV</span>Part IV · Applications<span class="soon-tag">Upcoming</span></h2>
+  <h2 class="part reveal" data-p="4"><span class="roman">IV</span>Part IV · Applications</h2>
   <p class="part-sub reveal" data-p="4">Everything so far, earning its keep on real data.</p>
   <div class="grid reveal-stagger" data-p="4">
-    <div class="card locked">
+    <a class="card" href="unit-12.html" data-unit="12">
       <canvas class="glyph" data-g="12" aria-hidden="true"></canvas>
       <div class="top"><span class="num">12</span><h3>Principal Component Analysis</h3></div>
-      <p>A cloud of a thousand columns has only a few directions that matter. Find the one where the data spreads the most, then the next — variance, projection, eigenvectors and SVD finally working together on real data.</p>
-      <div class="foot"><span class="status soon">Upcoming</span></div>
-    </div>
-    <div class="card locked">
+      <p>A cloud of a thousand columns has only a few directions that matter. Find the one where the data spreads the most — the leash that turns it into an eigenvector, the spread budget, the rebuild error, the SVD route, power iteration and the Gram trick for wide data — then run the whole recipe on real numbers.</p>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>16 widgets · 22 checks · 12 problems</span></div>
+    </a>
+    <a class="card" href="unit-13.html" data-unit="13">
       <canvas class="glyph" data-g="13" aria-hidden="true"></canvas>
       <div class="top"><span class="num">13</span><h3>Support Vector Machines</h3></div>
-      <p>Draw the widest street between two groups. The margin, the Lagrangian and its dual, the few points that hold the street up, soft margins for messy data — and the kernel trick that bends a straight street into a curve.</p>
-      <div class="foot"><span class="status soon">Upcoming</span></div>
-    </div>
+      <p>Draw the widest street between two groups. How wide it is, a price on every point, the dual, the few support vectors that hold the street up, soft margins for messy data — and the kernel trick that lifts the data so a straight cut up there becomes a curve down here.</p>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>16 widgets · 20 checks · 16 problems</span></div>
+    </a>
   </div>
 
   <h2 class="part reveal" data-p="5"><span class="roman">V</span>Part V · Models that Read<span class="soon-tag">Upcoming</span></h2>
@@ -442,9 +442,9 @@ h2.part{margin-bottom:.35rem}
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
   /* Fallbacks are used only until a student opens the unit itself — each unit
      page writes its true check count to mfml-uN-total when it loads. */
-  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15,11:20};
+  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15,11:20,12:22,13:20};
   const TITLE={1:'Systems of Linear Equations',2:'Vector Spaces',3:'Analytic Geometry',
-               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent',10:'Optimization I',11:'Optimization II'};
+               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent',10:'Optimization I',11:'Optimization II',12:'Principal Component Analysis',13:'Support Vector Machines'};
   let done=0, total=0;
 
   document.querySelectorAll('a.card[data-unit]').forEach(card=>{
@@ -507,7 +507,7 @@ h2.part{margin-bottom:.35rem}
     [4,'Eigenvalues','Determinants, Eigenvalues & the Spectral Theorem',1,13],[5,'SVD','Matrix Decompositions & SVD',1,17],
     [6,'Derivatives','Differentiation',2,17],[7,'Backprop','Backprop & Automatic Differentiation',2,16],[8,'Taylor','Taylor & MacLaurin Series',2,17],
     [9,'Gradient descent','Gradient Descent',3,15],[10,'Optim.\u00a0I','Optimization I — Gradients that Work',3,15],[11,'Optim.\u00a0II','Optimization II — Five Ways Down One Valley',3,20],
-    [12,'PCA','Principal Component Analysis',4,0],[13,'SVM','Support Vector Machines',4,0],
+    [12,'PCA','Principal Component Analysis',4,22],[13,'SVM','Support Vector Machines',4,20],
     [14,'RNNs','Encoder–Decoder Maths & RNNs',5,0],[15,'Transformers','Transformers & Attention',5,0],[16,'Finale','The Finale',5,0]];
   const PC={1:'--s1',2:'--s3',3:'--s2',4:'--s7',5:'--s6'};
   const last=+((get('mfml-last')||'').split('|')[0])||0;
@@ -799,6 +799,24 @@ h2.part{margin-bottom:.35rem}
       for(let i=0;i<=80;i++){ const x=-2.6+5.2*i/80; const y=Math.max(-2.4,Math.min(2.4,P(x))); if(Math.abs(P(x))>2.4){ on=false; continue; } on?g.lineTo(cx+x*X/2.6,cy-y*S):g.moveTo(cx+x*X/2.6,cy-y*S); on=true; } g.stroke();
       g.fillStyle=pal.s4; glow(g,pal.s4,14); g.beginPath(); g.arc(cx+a*X/2.6,cy-f(a)*S,3.4,0,7); g.fill();
       noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText('degree '+deg,w-6,h-6); g.globalAlpha=1; g.textAlign='left'; },
+    /* 12 · PCA — a tilted cloud; the orange axis sweeps until it locks onto the spread, green PC2 at right angles */
+    12(g,w,h,t){ const cx=w/2, cy=h*.52, tilt=-.36; let sd=7; const rnd=()=>{ sd=(sd*16807)%2147483647; return sd/2147483647; };
+      noglow(g); g.fillStyle=pal.s1; g.globalAlpha=.8;
+      for(let k=0;k<34;k++){ const a=(rnd()-.5)*96, b=(rnd()-.5)*18; g.beginPath(); g.arc(cx+(a*Math.cos(tilt)-b*Math.sin(tilt))*.9,cy+(a*Math.sin(tilt)+b*Math.cos(tilt))*.9,1.5,0,7); g.fill(); }
+      g.globalAlpha=1; const cyc=(t*.3)%2, lock=cyc>1, ang=lock?tilt:tilt+1.2*Math.cos(cyc*Math.PI*.5)*Math.sin(cyc*Math.PI*.5+.4)*(1-cyc), L=52;
+      g.strokeStyle=pal.s2; g.lineWidth=2.2; g.lineCap='round'; glow(g,pal.s2,12); g.beginPath(); g.moveTo(cx-Math.cos(ang)*L,cy-Math.sin(ang)*L); g.lineTo(cx+Math.cos(ang)*L,cy+Math.sin(ang)*L); g.stroke();
+      if(lock){ g.strokeStyle=pal.s3; g.lineWidth=1.6; glow(g,pal.s3,9); g.globalAlpha=Math.min(1,(cyc-1)*3); g.beginPath(); g.moveTo(cx+Math.sin(ang)*17,cy-Math.cos(ang)*17); g.lineTo(cx-Math.sin(ang)*17,cy+Math.cos(ang)*17); g.stroke(); g.globalAlpha=1; }
+      g.lineCap='butt'; noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText(lock?'PC1 locked':'searching',w-6,h-6); g.globalAlpha=1; g.textAlign='left'; },
+    /* 13 · SVM — two groups, the street breathes out to its widest and the support vectors light up */
+    13(g,w,h,t){ const cx=w/2, cy=h*.52; const A=[[-30,-14],[-22,-22],[-36,-4],[-14,-12],[-26,0]], B=[[14,14],[26,6],[20,24],[34,16],[8,26]];
+      const n=[Math.SQRT1_2,Math.SQRT1_2], d=[Math.SQRT1_2,-Math.SQRT1_2], m=5+6.5*(.5+.5*Math.sin(t*.8)), full=m>11;
+      const seg=o=>{ g.beginPath(); g.moveTo(cx+n[0]*o-d[0]*48,cy+n[1]*o-d[1]*48); g.lineTo(cx+n[0]*o+d[0]*48,cy+n[1]*o+d[1]*48); g.stroke(); };
+      g.fillStyle=pal.s7; g.globalAlpha=.1; g.beginPath(); g.moveTo(cx+n[0]*m-d[0]*48,cy+n[1]*m-d[1]*48); g.lineTo(cx+n[0]*m+d[0]*48,cy+n[1]*m+d[1]*48); g.lineTo(cx-n[0]*m+d[0]*48,cy-n[1]*m+d[1]*48); g.lineTo(cx-n[0]*m-d[0]*48,cy-n[1]*m-d[1]*48); g.closePath(); g.fill(); g.globalAlpha=1;
+      g.strokeStyle=pal.s7; g.lineWidth=1.2; g.setLineDash([3,3]); glow(g,pal.s7,6); seg(m); seg(-m); g.setLineDash([]);
+      g.strokeStyle=pal.ink; g.lineWidth=1.6; glow(g,pal.ink,6); seg(0); noglow(g);
+      A.forEach(([x,y])=>{ g.fillStyle=pal.s1; glow(g,pal.s1,8); g.beginPath(); g.arc(cx+x,cy+y,2.4,0,7); g.fill(); });
+      B.forEach(([x,y])=>{ g.fillStyle=pal.s2; glow(g,pal.s2,8); g.fillRect(cx+x-2.2,cy+y-2.2,4.4,4.4); });
+      noglow(g); if(full){ g.strokeStyle=pal.s4; g.lineWidth=1.3; glow(g,pal.s4,10); [[-14,-12],[-26,0],[14,14]].forEach(([x,y])=>{ g.beginPath(); g.arc(cx+x,cy+y,5.5,0,7); g.stroke(); }); noglow(g); } },
     /* 07 · blame flowing backwards through a small graph */
     7(g,w,h,t){ const cx=w/2, cy=h/2; const X=[cx-46,cx-8,cx+30,cx+56], LAY=[[-18,18],[-24,0,24],[-12,12],[0]];
       const N=LAY.map((ys,l)=>ys.map(y=>[X[l],cy+y])); const E=[];
@@ -814,20 +832,6 @@ h2.part{margin-bottom:.35rem}
   };
   /* upcoming units: dim outline glyphs that breathe slowly (t = phase, pal.ink2 stroke set by draw) */
   const LOCKED={
-    /* 12 · PCA — a tilted cloud; the principal axis sweeps until it locks onto the spread */
-    12(g,w,h,t){ const cx=w/2, cy=h*.52; let s=7; const rnd=()=>{ s=(s*16807)%2147483647; return s/2147483647; };
-      const tilt=-.36;
-      for(let k=0;k<26;k++){ const a=(rnd()-.5)*92, b=(rnd()-.5)*16; const x=a*Math.cos(tilt)-b*Math.sin(tilt), y=a*Math.sin(tilt)+b*Math.cos(tilt); g.beginPath(); g.arc(cx+x*.9,cy+y*.9,1.5,0,7); g.stroke(); }
-      const ang=tilt+.55*Math.sin(t*.5)*Math.max(0,Math.cos(t*.25)); const L=50;
-      g.save(); g.strokeStyle=pal.s7; g.globalAlpha=.75; g.lineWidth=1.4; g.beginPath(); g.moveTo(cx-Math.cos(ang)*L,cy-Math.sin(ang)*L); g.lineTo(cx+Math.cos(ang)*L,cy+Math.sin(ang)*L); g.stroke();
-      g.setLineDash([2,3]); g.globalAlpha=.4; g.beginPath(); g.moveTo(cx+Math.sin(ang)*18,cy-Math.cos(ang)*18); g.lineTo(cx-Math.sin(ang)*18,cy+Math.cos(ang)*18); g.stroke(); g.restore(); },
-    /* 13 · SVM — two groups, the widest street; the street breathes to its widest width */
-    13(g,w,h,t){ const cx=w/2, cy=h*.52; const A=[[-30,-14],[-22,-22],[-36,-4],[-14,-12],[-26,0]], B=[[14,14],[26,6],[20,24],[34,16],[8,26]];
-      A.forEach(([x,y])=>{ g.beginPath(); g.arc(cx+x,cy+y,2.1,0,7); g.stroke(); });
-      B.forEach(([x,y])=>{ g.beginPath(); g.rect(cx+x-2,cy+y-2,4,4); g.stroke(); });
-      const m=7+4*(.5+.5*Math.sin(t*.7)); const d=[Math.SQRT1_2,-Math.SQRT1_2], n=[Math.SQRT1_2,Math.SQRT1_2];
-      const seg=(o)=>{ g.beginPath(); g.moveTo(cx+n[0]*o-d[0]*44,cy+n[1]*o-d[1]*44); g.lineTo(cx+n[0]*o+d[0]*44,cy+n[1]*o+d[1]*44); g.stroke(); };
-      g.save(); g.strokeStyle=pal.s7; g.globalAlpha=.8; g.lineWidth=1.4; seg(0); g.setLineDash([3,3]); g.globalAlpha=.5; seg(m); seg(-m); g.restore(); },
     /* 14 · encoder → context vector → decoder, a pulse of memory travelling along the chain */
     14(g,w,h,t){ const cy=h*.5, xs=[-54,-36,-18,18,36,54].map(x=>w/2+x);
       xs.forEach((x,i)=>{ g.beginPath(); g.roundRect?g.roundRect(x-6,cy-6,12,12,3):g.rect(x-6,cy-6,12,12); g.stroke();
