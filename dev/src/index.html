@@ -115,7 +115,7 @@ body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;z-index:60
   background:linear-gradient(90deg,var(--s1),var(--s7) 34%,var(--s2) 67%,var(--s3));opacity:.85;pointer-events:none}
 
 /* --- topbar floats over the opening shot --- */
-.hero-stage>.wrap.topwrap{position:absolute;top:0;left:0;right:0;z-index:5;padding:0 1.25rem;pointer-events:auto;width:auto;max-width:72rem;margin:0 auto}
+body>.wrap.topwrap{position:absolute;top:0;left:0;right:0;z-index:5;padding:0 1.25rem;pointer-events:auto;width:auto;max-width:72rem;margin:0 auto}
 .topbar{border-bottom:0;background:none;backdrop-filter:none;padding:1rem 0}
 .topbar .brand{font-family:var(--ui);font-weight:800;letter-spacing:.01em;font-size:.92rem}
 .topbar .brand::before{content:"Σ";display:inline-grid;place-items:center;width:1.55rem;height:1.55rem;margin-right:.55rem;border-radius:7px;
@@ -191,7 +191,7 @@ footer p:first-child{color:var(--ink-2)}
 @media (max-width:760px){
   .hero-stage{min-height:auto}
   .hero-stage>.wrap:not(.topwrap){padding-top:15.5rem;padding-bottom:2.4rem}
-  .hero-stage>.wrap.topwrap{padding:0 1.25rem}
+
   #hero-3d{height:360px;bottom:auto}
   .hero-scrim{background:linear-gradient(180deg,color-mix(in srgb,var(--page) 40%,transparent) 0px,transparent 90px,transparent 170px,color-mix(in srgb,var(--page) 82%,transparent) 270px,var(--page) 360px)}
   .hero h1{font-size:clamp(2.35rem,10vw,3.2rem)}
@@ -264,155 +264,342 @@ h2.part{margin-bottom:.35rem}
 .card .bchip{font-family:var(--ui);font-size:.72rem;font-weight:700;min-width:1.7rem;text-align:center;padding:.12rem .4rem;border-radius:.45rem;border:1px solid var(--line);color:var(--ink-2);text-decoration:none;background:color-mix(in srgb,var(--surface) 70%,transparent)}
 a.bchip:hover{color:var(--ink);border-color:var(--pc)}
 .card .bchip.soon{border-style:dashed;color:var(--ink-muted)}
+
+/* ================= ROUND 18 · the pro landing ================= */
+/* --- topbar: quiet, glassy once you scroll --- */
+body>.wrap.topwrap{position:fixed;top:0;left:0;right:0;max-width:none;padding:0;z-index:50;transition:background .3s,border-color .3s,backdrop-filter .3s;border-bottom:1px solid transparent}
+body>.wrap.topwrap .topbar{max-width:72rem;margin:0 auto;padding:.85rem 1.25rem;gap:.35rem}
+body.scrolled>.wrap.topwrap{background:var(--topbar);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom-color:var(--line)}
+.topbar .brand{color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;margin-right:auto}
+.topbar .brand::before{box-shadow:none;background:linear-gradient(140deg,var(--s1),var(--s7));border-radius:8px}
+a.ghost.navlink{background:none;border-color:transparent;color:var(--ink-2);margin:0;padding:.34rem .7rem}
+a.ghost.navlink:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent);border-color:transparent}
+.topbar .sx-btn,.topbar button.ghost{background:color-mix(in srgb,var(--surface) 60%,transparent);border:1px solid var(--line);color:var(--ink-2);border-radius:999px;transition:color .2s,border-color .2s}
+.topbar .sx-btn:hover,.topbar button.ghost:hover{color:var(--ink);border-color:var(--ring)}
+button.icon-btn{width:2.1rem;height:2.1rem;padding:0!important;display:inline-grid;place-items:center}
+button.icon-btn svg{width:1rem;height:1rem;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* --- the opening shot --- */
+.hero-stage{min-height:clamp(600px,92vh,860px)}
+.hero-stage::before{content:"";position:absolute;inset:-20% -10% auto 35%;height:120%;z-index:0;pointer-events:none;
+  background:radial-gradient(38% 42% at 62% 42%,color-mix(in srgb,var(--s7) 22%,transparent),transparent 70%),
+             radial-gradient(30% 36% at 78% 62%,color-mix(in srgb,var(--s1) 18%,transparent),transparent 70%);filter:blur(10px);opacity:.9}
+:root[data-theme="light"] .hero-stage::before{opacity:.45}
+.hero-stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;z-index:3;background:linear-gradient(90deg,transparent,var(--line) 20%,var(--line) 80%,transparent)}
+.hero-scrim{background:
+  linear-gradient(90deg,color-mix(in srgb,var(--page) 94%,transparent) 0%,color-mix(in srgb,var(--page) 80%,transparent) 32%,color-mix(in srgb,var(--page) 30%,transparent) 58%,transparent 78%),
+  linear-gradient(180deg,color-mix(in srgb,var(--page) 55%,transparent) 0%,transparent 16%,transparent 70%,var(--page) 100%)}
+.hero-stage>.wrap{padding-top:8.5rem;padding-bottom:5rem}
+header.hero{max-width:46rem}
+.hero>*{animation:heroIn .9s var(--ease-out) both}
+.hero>*:nth-child(2){animation-delay:.06s}.hero>*:nth-child(3){animation-delay:.12s}.hero>*:nth-child(4){animation-delay:.18s}.hero>*:nth-child(5){animation-delay:.24s}.hero>*:nth-child(6){animation-delay:.3s}
+@keyframes heroIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+a.eyebrow{display:inline-flex;align-items:center;gap:.6rem;max-width:100%;padding:.28rem .8rem .28rem .3rem;border-radius:999px;border:1px solid var(--line);
+  background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-family:var(--ui);font-size:.8rem;color:var(--ink-2);text-decoration:none;transition:border-color .25s,color .25s}
+a.eyebrow:hover{border-color:color-mix(in srgb,var(--s7) 50%,transparent);color:var(--ink)}
+.eb-new{flex:none;font-weight:700;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:linear-gradient(140deg,var(--s1),var(--s7));padding:.2rem .55rem;border-radius:999px}
+.eb-txt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eb-arr{flex:none;transition:transform .25s var(--ease-out)} a.eyebrow:hover .eb-arr{transform:translateX(3px)}
+.hero h1{font-family:var(--display);font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 0;font-weight:560;font-size:clamp(2.7rem,6.2vw,5.1rem);line-height:1.02;letter-spacing:-.035em;margin:1.4rem 0 1.3rem;color:var(--ink);text-wrap:balance}
+.hero h1 em{display:block;font-style:italic;font-weight:440;font-variation-settings:"opsz" 144,"SOFT" 100,"WONK" 1;letter-spacing:-.025em;
+  background:linear-gradient(100deg,var(--s2) 0%,var(--s5) 45%,var(--s7) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.08em}
+.hero .lede{font-family:var(--body);font-size:clamp(1.12rem,1.6vw,1.3rem);line-height:1.55;color:var(--ink-2);max-width:34rem;margin:0}
+.start-row{margin-top:2.1rem;gap:.75rem}
+a.cta{padding:.78rem 1.35rem;font-size:.95rem;font-weight:650;letter-spacing:-.005em;border-radius:12px;background:var(--ink);color:var(--page);box-shadow:0 10px 30px -12px color-mix(in srgb,var(--s7) 70%,transparent);transition:transform .25s var(--ease-out),box-shadow .25s}
+a.cta:hover{transform:translateY(-1px);filter:none;box-shadow:0 14px 36px -12px color-mix(in srgb,var(--s7) 90%,transparent)}
+a.cta span{transition:transform .25s var(--ease-out);display:inline-block} a.cta:hover span{transform:translateX(3px)}
+a.cta-ghost{display:inline-flex;align-items:center;padding:.78rem 1.25rem;border-radius:12px;font-family:var(--ui);font-size:.95rem;font-weight:600;color:var(--ink);text-decoration:none;
+  border:1px solid var(--ring);background:color-mix(in srgb,var(--surface) 45%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:border-color .25s,background .25s}
+a.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent);background:color-mix(in srgb,var(--surface) 75%,transparent)}
+.progress-row{margin-top:2.1rem}
+.progress-row a.cta{max-width:100%;white-space:normal}
+.author{display:flex;align-items:center;gap:.75rem;margin-top:2.6rem;font-family:var(--ui);font-size:.86rem;color:var(--ink)}
+.author .av{flex:none;width:2.3rem;height:2.3rem;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:1.05rem;color:#fff;
+  background:linear-gradient(140deg,var(--s2),var(--s7));box-shadow:0 0 0 3px color-mix(in srgb,var(--page) 80%,transparent),0 0 0 4px var(--line)}
+.author b{display:block;font-weight:650}
+.au-sub{display:block;color:var(--ink-muted);font-size:.78rem;margin-top:.05rem}
+.hero-hint{font-size:.66rem;letter-spacing:.18em;right:1.6rem;bottom:1.4rem}
+
+/* --- topic band --- */
+.band{position:relative;overflow:hidden;padding:1.05rem 0;border-bottom:1px solid var(--line);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.band-track{display:flex;width:max-content;animation:band 90s linear infinite}
+.band:hover .band-track{animation-play-state:paused}
+.band-row{display:flex;flex:none}
+.band-row span{font-family:var(--display);font-style:italic;font-weight:400;font-size:1.05rem;color:var(--ink-muted);white-space:nowrap;padding:0 1.4rem;position:relative}
+.band-row span::after{content:"";position:absolute;right:-2px;top:50%;width:4px;height:4px;border-radius:50%;background:color-mix(in srgb,var(--ink) 22%,transparent)}
+@keyframes band{to{transform:translateX(-50%)}}
+
+/* --- section heads --- */
+.lp-head{max-width:44rem;margin:0 0 2rem}
+.lp-eyebrow{display:inline-block;font-family:var(--ui);font-weight:650;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:.8rem}
+.lp-head h2,.lp-head .j-title{font-family:var(--display);font-variation-settings:"opsz" 144,"SOFT" 30;font-weight:520;font-size:clamp(1.9rem,3.6vw,2.75rem);line-height:1.08;letter-spacing:-.03em;margin:0 0 .8rem;color:var(--ink)}
+.lp-head p,.lp-head .j-sub{font-family:var(--body);font-size:1.12rem;line-height:1.55;color:var(--ink-2);margin:0;max-width:38rem}
+.j-head.lp-head{display:block;margin-bottom:1.6rem}
+
+/* --- the method --- */
+.method{padding:6rem 0 1rem}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.pillar{background:var(--page);padding:1.7rem 1.5rem 1.8rem;position:relative;transition:background .35s}
+.pillar::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 60% at 30% 0%,color-mix(in srgb,var(--pc,var(--s7)) 10%,transparent),transparent 70%);opacity:0;transition:opacity .35s}
+.pillar:hover::before{opacity:1}
+.pillar:nth-child(1){--pc:var(--s2)}.pillar:nth-child(2){--pc:var(--s1)}.pillar:nth-child(3){--pc:var(--s3)}.pillar:nth-child(4){--pc:var(--s7)}
+.pillar svg{width:2.3rem;height:2.3rem;fill:none;stroke:var(--pc);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:1.1rem;position:relative}
+.pillar h3{position:relative;font-family:var(--ui);font-size:1rem;font-weight:650;margin:0 0 .45rem;color:var(--ink)}
+.pillar p{position:relative;font-family:var(--body);font-size:1rem;line-height:1.5;color:var(--ink-2);margin:0}
+
+/* --- route --- */
+.journey{margin:6rem 0 0}
+.j-map{border-radius:var(--r-lg)}
+.j-legend{margin-top:.8rem}
+
+/* --- course --- */
+.course-head{margin-top:6.5rem}
+h2.part{margin-top:3.6rem}
+h2.part .roman{font-size:2.2rem}
+.part-sub{margin-bottom:1.5rem}
+.grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.1rem}
+.card{border-radius:18px;padding:0 1.25rem 1.15rem;gap:.55rem;height:100%}
+.card .glyph{height:112px;width:calc(100% + 2.5rem);margin:0 -1.25rem .45rem}
+.card .top{align-items:flex-start;gap:.7rem}
+.card .num{font-size:.72rem;padding:.14rem .42rem;margin-top:.12rem;border-radius:7px}
+.card h3{font-size:1.06rem;line-height:1.28}
+.card p{font-size:.97rem;line-height:1.52}
+.card .foot{margin-top:auto;padding-top:.75rem;border-top:1px solid var(--line);gap:.6rem;font-size:.74rem;color:var(--ink-muted)}
+.card .pline{margin-top:.2rem}
+.status{font-size:.7rem;letter-spacing:.02em;padding:.18rem .55rem .18rem .5rem;border-radius:999px}
+.status.ready{background:none;border:0;padding-left:0;color:var(--good-text)}
+.status.ready::before{content:"";width:.42rem;height:.42rem;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good);display:inline-block}
+:root[data-theme="light"] .status.ready::before{box-shadow:none}
+.status.soon{font-size:.68rem}
+a.card::before{display:none}
+a.card:hover .glyph,a.card:focus-visible .glyph{background:radial-gradient(60% 90% at 50% 100%,color-mix(in srgb,var(--pc,var(--s1)) 24%,transparent),transparent 72%)}
+.card.roadmap .foot{border-top:0;padding-top:0}
+
+/* --- footer --- */
+footer.site-foot{margin-top:7rem;padding:3rem 0 0;border-top:1px solid var(--line);font-family:var(--ui);font-size:.86rem;color:var(--ink-2)}
+.f-top{display:grid;grid-template-columns:2.2fr 1fr 1.2fr 1.1fr;gap:2.4rem}
+.f-brand{display:flex;gap:.9rem;align-items:flex-start}
+.f-brand b{display:block;color:var(--ink);font-weight:650;margin-bottom:.4rem}
+.f-brand p{margin:0;font-family:var(--body);font-size:.98rem;line-height:1.55;color:var(--ink-2);max-width:24rem}
+.f-mark{flex:none;width:2rem;height:2rem;display:grid;place-items:center;border-radius:9px;color:#fff;font-family:var(--display);background:linear-gradient(140deg,var(--s1),var(--s7))}
+.f-col{display:flex;flex-direction:column;gap:.5rem}
+.f-col h4{font-family:var(--ui);font-size:.72rem;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin:0 0 .35rem}
+.f-col a{color:var(--ink-2);text-decoration:none;width:fit-content} .f-col a:hover{color:var(--ink)}
+.f-col span{color:var(--ink-2)}
+kbd{font-family:var(--mono);font-size:.72rem;display:inline-block;min-width:1.4rem;text-align:center;padding:.05rem .35rem;margin-right:.35rem;border:1px solid var(--ring);border-bottom-width:2px;border-radius:6px;color:var(--ink);background:var(--surface)}
+.f-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem 2rem;margin-top:3rem;padding:1.3rem 0 .5rem;border-top:1px solid var(--line);font-size:.78rem;color:var(--ink-muted)}
+.f-bottom p{margin:0}
+
+/* --- motion: calmer, quicker reveals on the hub --- */
+.reveal{transform:translateY(10px);transition:opacity .55s var(--ease-out),transform .6s var(--ease-out)}
+.reveal-stagger>*{transform:translateY(10px);transition:opacity .5s var(--ease-out),transform .55s var(--ease-out)}
+
+/* --- responsive --- */
+@media (max-width:980px){
+  .pillars{grid-template-columns:repeat(2,1fr)}
+  .f-top{grid-template-columns:1fr 1fr;gap:2rem}
+  .f-brand{grid-column:1/-1}
+}
+@media (max-width:760px){
+  .nav-plain{display:none}
+  .hero-stage>.wrap:not(.topwrap){padding-top:18rem;padding-bottom:3rem}
+  #hero-3d{height:400px}
+  .hero-stage::before{inset:-10% -30% auto -10%;height:460px}
+  .hero-scrim{background:linear-gradient(180deg,color-mix(in srgb,var(--page) 55%,transparent) 0px,transparent 80px,transparent 200px,color-mix(in srgb,var(--page) 85%,transparent) 320px,var(--page) 400px)}
+  .hero h1{font-size:clamp(2.4rem,11vw,3.3rem);margin:1.1rem 0 1rem}
+  .start-row{flex-direction:column;align-items:stretch}
+  .start-row a{justify-content:center}
+  .method{padding-top:4rem}
+  .journey{margin-top:4rem}
+  .course-head{margin-top:4.5rem}
+  .band-row span{font-size:.95rem;padding:0 1rem}
+}
+@media (max-width:560px){
+  .pillars{grid-template-columns:1fr}
+  .f-top{grid-template-columns:1fr}
+  .eb-txt{font-size:.76rem}
+}
+@media (max-width:560px){
+  .topbar a.navlink{display:none}
+  .topbar .brand{font-size:.86rem}
+  .pillar{display:grid;grid-template-columns:auto 1fr;column-gap:1rem;padding:1.2rem 1.2rem 1.3rem}
+  .pillar svg{grid-row:1/3;margin:0;width:2rem;height:2rem}
+  .pillar h3{margin-top:.15rem}
+  h2.part{letter-spacing:.14em;gap:.7rem;line-height:1.3}
+  h2.part .roman{font-size:1.9rem}
+}
+@media (hover:none){.f-keys{display:none}}
+@media (prefers-reduced-motion:reduce){.band-track{animation:none}.hero>*{animation:none}}
+@media print{.band,.method,.hero-stage::before{display:none!important}}
 </style>
 </head>
 <body>
 <a class="skip" href="#units">Skip to the unit list</a>
-<section class="hero-stage">
-  <div class="wrap topwrap">
+<div class="wrap topwrap">
     <div class="topbar">
-      <span class="brand">The Math Behind the Machine</span>
+      <a class="brand" href="index.html">The Math Behind the Machine</a>
       <span class="spacer"></span>
-      <a class="ghost navlink" href="ideas.html"><span class="nl-long">Big ideas</span><span class="nl-short">Ideas</span></a>
-      <button class="ghost" id="theme-btn">Theme: dark</button>
+      <a class="ghost navlink nav-plain" href="#units">Course</a><a class="ghost navlink nav-plain" href="#journey">Route</a><a class="ghost navlink" href="ideas.html"><span class="nl-long">Big ideas</span><span class="nl-short">Ideas</span></a>
+      <button class="ghost icon-btn" id="theme-btn" type="button" aria-label="Switch theme"></button>
     </div>
   </div>
+<section class="hero-stage">
   <div id="hero-3d" role="img" aria-label="A glowing grid of space being rotated, sheared and stretched by a slowly changing matrix, with the two basis vectors and a probe vector tracing an ellipse."></div>
   <div class="hero-scrim"></div>
   <div class="wrap">
   <header class="hero">
-    <div class="kicker reveal">The mathematics of machine learning &amp; AI</div>
-    <h1 class="reveal">Learn the math under the machine — by <span class="hl">touching</span> it.</h1>
-    <p class="byline reveal">by <strong>Prof. Saurabh</strong></p>
-    <p class="lede reveal">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
-    <div class="meta-chips reveal-stagger">
-      <span class="chip">📐 20 units · 13 live so far</span>
-      <span class="chip">🎛 150 hands-on widgets</span>
-      <span class="chip">✅ 207 pause-and-predict checks</span>
-      <span class="chip">✍ 152 problems solved step by step</span>
-      <span class="chip">🧾 168 rules derived step by step, nothing on faith</span>
-    </div>
-    <div class="start-row reveal" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 →</a><span class="start-note">Each unit is a story you can play with — about an hour, no prerequisites.</span><a class="cta-2" href="ideas.html">Or read the whole course in one page of big ideas →</a></div>
-    <div class="progress-row reveal" id="progress-row">
+    <a class="eyebrow" href="#units"><span class="eb-new">New</span><span class="eb-txt">Principal Component Analysis and Support Vector Machines are live</span><span class="eb-arr" aria-hidden="true">→</span></a>
+    <h1>Learn the math under the machine <em>by touching it.</em></h1>
+    <p class="lede">From a single straight line to the transformer. Every idea begins as a story, turns into something you can drag and spin, and ends worked out in full.</p>
+    <div class="start-row" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 <span aria-hidden="true">→</span></a><a class="cta-ghost" href="#journey">Explore the route</a></div>
+    <div class="progress-row" id="progress-row">
       <a class="cta" id="continue-link" href="unit-01.html" hidden>Continue where you left off →</a>
       <div class="overall" id="overall" hidden>
         <div class="obar"><i id="obar-fill"></i></div>
         <span id="overall-txt"></span>
       </div>
     </div>
+    <div class="author"><span class="av" aria-hidden="true">S</span><span><b>Prof. Saurabh</b><span class="au-sub">Free to learn · no sign-up · your progress stays in your browser</span></span></div>
   </header>
   </div>
-  <div class="hero-hint">drag the space to orbit</div>
+  <div class="hero-hint">Drag to orbit</div>
 </section>
 
+<div class="band" aria-hidden="true"><div class="band-track"><div class="band-row"><span>Linear systems</span><span>Vector spaces</span><span>Inner products</span><span>Eigenvalues</span><span>Spectral theorem</span><span>SVD</span><span>Derivatives</span><span>Jacobians</span><span>Backpropagation</span><span>Taylor series</span><span>The Hessian</span><span>Gradient descent</span><span>Momentum</span><span>Adam</span><span>Lagrange multipliers</span><span>Duality</span><span>PCA</span><span>Support vectors</span><span>Kernels</span><span>Probability</span><span>Networks</span><span>Word vectors</span><span>Attention</span><span>Transformers</span><span>Diffusion</span></div><div class="band-row"><span>Linear systems</span><span>Vector spaces</span><span>Inner products</span><span>Eigenvalues</span><span>Spectral theorem</span><span>SVD</span><span>Derivatives</span><span>Jacobians</span><span>Backpropagation</span><span>Taylor series</span><span>The Hessian</span><span>Gradient descent</span><span>Momentum</span><span>Adam</span><span>Lagrange multipliers</span><span>Duality</span><span>PCA</span><span>Support vectors</span><span>Kernels</span><span>Probability</span><span>Networks</span><span>Word vectors</span><span>Attention</span><span>Transformers</span><span>Diffusion</span></div></div></div>
+
 <div class="wrap units-wrap">
+  <section class="method" aria-labelledby="method-h">
+    <div class="lp-head reveal">
+      <span class="lp-eyebrow">The method</span>
+      <h2 id="method-h">Every unit, built the same careful way</h2>
+      <p>No slides to memorise. Each idea is met four times — as a story, as a picture you can move, as a question you answer, and as a proof you can open.</p>
+    </div>
+    <div class="pillars reveal-stagger">
+      <div class="pillar"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 9h20l8 8v22H10z"/><path d="M30 9v8h8"/><path d="M16 24h16M16 30h16M16 36h10"/></svg>
+        <h3>Story first</h3><p>Every idea opens with a scene from everyday life, long before the first symbol appears.</p></div>
+      <div class="pillar"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6l16 9v18l-16 9-16-9V15z"/><path d="M8 15l16 9 16-9M24 24v18"/></svg>
+        <h3>Touch it</h3><p>Drag, spin and break the maths in live figures — many of them in 3&#8209;D — until the picture explains itself.</p></div>
+      <div class="pillar"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="16"/><path d="M17 24.5l5 5 10-11"/></svg>
+        <h3>Check yourself</h3><p>Short pause-and-predict questions sit inside the text, so you find the gap while it is still small.</p></div>
+      <div class="pillar"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 38h32"/><path d="M12 38V26M20 38V18M28 38V22M36 38V10"/><path d="M12 22l8-8 8 4 8-10"/></svg>
+        <h3>Proof on demand</h3><p>Every rule is derived step by step, folded away until you want it. Each unit ends with its problems solved in full.</p></div>
+    </div>
+  </section>
+
   <section class="journey reveal" id="journey" aria-labelledby="journey-h">
-    <div class="j-head">
-      <h2 class="j-title" id="journey-h">The route</h2>
-      <p class="j-sub">Twenty stops, from one straight line to a machine that writes and paints. Each stop uses the ones before it. Tap a stop to jump in.</p>
+    <div class="j-head lp-head">
+      <span class="lp-eyebrow">The route</span>
+      <h2 class="j-title" id="journey-h">Twenty stops, one continuous road</h2>
+      <p class="j-sub">From one straight line to a machine that writes and paints. Each stop uses the ones before it — tap any open stop to jump in.</p>
     </div>
     <div class="j-map" id="j-map" role="navigation" aria-label="Course route: all twenty units"></div>
     <div class="j-legend" aria-hidden="true"><span><i class="lg live"></i>open</span><span><i class="lg part"></i>in progress</span><span><i class="lg done"></i>complete</span><span><i class="lg soon"></i>upcoming</span></div>
   </section>
-  <h2 class="part reveal" id="units" data-p="1"><span class="roman">I</span>Part I · Linear Algebra</h2>
+  <div class="lp-head course-head reveal" id="units">
+    <span class="lp-eyebrow">The course</span>
+    <h2>Six parts, from vectors to generative AI</h2>
+    <p>Parts I–IV are open now. Parts V and VI are being written, and each card shows what it will build on.</p>
+  </div>
+  <h2 class="part reveal" id="part-1" data-p="1"><span class="roman">I</span>Part I · Linear Algebra</h2>
   <p class="part-sub reveal" data-p="1">Where vectors live, and the matrices that move them.</p>
   <div class="grid reveal-stagger" data-p="1">
     <a class="card" href="unit-01.html" data-unit="1">
       <canvas class="glyph" data-g="1" aria-hidden="true"></canvas>
       <div class="top"><span class="num">01</span><h3>Systems of Linear Equations</h3></div>
       <p>A matrix is a machine that moves space. Three windows on Ax = b, the three fates, and elimination — the algorithm that never lies.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>13 widgets · 11 checks · 10 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>13 widgets · 11 checks · 10 problems</span></div>
     </a>
     <a class="card" href="unit-02.html" data-unit="2">
       <canvas class="glyph" data-g="2" aria-hidden="true"></canvas>
       <div class="top"><span class="num">02</span><h3>Vector Spaces</h3></div>
       <p>The universe where vectors live: groups, subspaces, span, independence, basis, dimension — the architecture of ML math.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 11 checks · 18 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>11 widgets · 11 checks · 18 problems</span></div>
     </a>
     <a class="card" href="unit-03.html" data-unit="3">
       <canvas class="glyph" data-g="3" aria-hidden="true"></canvas>
       <div class="top"><span class="num">03</span><h3>Analytic Geometry</h3></div>
       <p>The board gets its ruler: norms, inner products, angles, orthogonality — and Gram–Schmidt, the cleanest grid a geometry can have.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>10 widgets · 13 checks · 8 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>10 widgets · 13 checks · 8 problems</span></div>
     </a>
     <a class="card" href="unit-04.html" data-unit="4">
       <canvas class="glyph" data-g="4" aria-hidden="true"></canvas>
       <div class="top"><span class="num">04</span><h3>Determinants, Eigenvalues &amp; the Spectral Theorem</h3></div>
       <p>A matrix's fingerprints: the volume dial, the directions it cannot turn, A = QΛQᵀ — and Cholesky, the covariance square root.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>8 widgets · 13 checks · 5 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>8 widgets · 13 checks · 5 problems</span></div>
     </a>
     <a class="card" href="unit-05.html" data-unit="5">
       <canvas class="glyph" data-g="5" aria-hidden="true"></canvas>
       <div class="top"><span class="num">05</span><h3>Matrix Decompositions &amp; SVD</h3></div>
       <p>Prime factorization for transformations: the ladder from spectral to eigen to SVD — ending with a real photograph compressed live.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>10 widgets · 17 checks · 12 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>10 widgets · 17 checks · 12 problems</span></div>
     </a>
   </div>
 
-  <h2 class="part reveal" data-p="2"><span class="roman">II</span>Part II · Calculus &amp; Differentiation</h2>
+  <h2 class="part reveal" id="part-2" data-p="2"><span class="roman">II</span>Part II · Calculus &amp; Differentiation</h2>
   <p class="part-sub reveal" data-p="2">How a tiny nudge in the input changes the output — the language of learning.</p>
   <div class="grid reveal-stagger" data-p="2">
     <a class="card" href="unit-06.html" data-unit="6">
       <canvas class="glyph" data-g="6" aria-hidden="true"></canvas>
       <div class="top"><span class="num">06</span><h3>Differentiation</h3></div>
       <p>Which way is down? From a shrinking secant to the Jacobian matrices behind backpropagation — the language every learning machine speaks.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>13 widgets · 17 checks · 10 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>13 widgets · 17 checks · 10 problems</span></div>
     </a>
     <a class="card" href="unit-07.html" data-unit="7">
       <canvas class="glyph" data-g="7" aria-hidden="true"></canvas>
       <div class="top"><span class="num">07</span><h3>Backprop &amp; Automatic Differentiation</h3></div>
       <p>The chain rule, industrialized: watch blame flow backwards through a graph, train a neuron with your own hands, and see why a million derivatives cost one sweep.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>7 widgets · 16 checks · 11 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>7 widgets · 16 checks · 11 problems</span></div>
     </a>
     <a class="card" href="unit-08.html" data-unit="8">
       <canvas class="glyph" data-g="8" aria-hidden="true"></canvas>
       <div class="top"><span class="num">08</span><h3>Taylor &amp; MacLaurin Series</h3></div>
       <p>Polynomial impostors: where Taylor's formula comes from, exactly how big the lie (the remainder) is — and the Hessian, the judge that tells a bowl from a dome from a saddle.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>9 widgets · 17 checks · 12 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>9 widgets · 17 checks · 12 problems</span></div>
     </a>
   </div>
 
-  <h2 class="part reveal" data-p="3"><span class="roman">III</span>Part III · Optimization</h2>
+  <h2 class="part reveal" id="part-3" data-p="3"><span class="roman">III</span>Part III · Optimization</h2>
   <p class="part-sub reveal" data-p="3">Walking downhill on purpose: the engines that train every model.</p>
   <div class="grid reveal-stagger" data-p="3">
     <a class="card" href="unit-09.html" data-unit="9">
       <canvas class="glyph" data-g="9" aria-hidden="true"></canvas>
       <div class="top"><span class="num">09</span><h3>Gradient Descent</h3></div>
       <p>Walk downhill in thick fog: the descent rule proved, the step-size speed limit and the zig-zag, exact line search, schedules, gradient checking — and why a random spoonful of the data (stochastic gradient descent) points the right way.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 15 checks · 12 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>11 widgets · 15 checks · 12 problems</span></div>
     </a>
     <a class="card" href="unit-10.html" data-unit="10">
       <canvas class="glyph" data-g="10" aria-hidden="true"></canvas>
       <div class="top"><span class="num">10</span><h3>Optimization I — Gradients that Work</h3></div>
       <p>The four ways the walk goes wrong — a bad start, memorising, the wrong valley or a salt flat, a canyon that makes every step bounce — and the cheapest fix in machine learning: change the units of the data, not the model, and watch the canyon become a bowl.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 15 checks · 12 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>11 widgets · 15 checks · 12 problems</span></div>
     </a>
     <a class="card" href="unit-11.html" data-unit="11">
       <canvas class="glyph" data-g="11" aria-hidden="true"></canvas>
       <div class="top"><span class="num">11</span><h3>Optimization II — Five Ways Down One Valley</h3></div>
       <p>One stride can never suit two directions, so give the walker memory, a private stride per knob, and the ability to forget — momentum, AdaGrad, RMSProp and Adam racing the same valley. Then someone builds a wall, the answer moves onto it while the gradient is still tilted, and you need a new test: the Lagrangian as a fine, complementary slackness, the five conditions, and the price of the wall.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>15 widgets · 20 checks · 14 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>15 widgets · 20 checks · 14 problems</span></div>
     </a>
   </div>
 
-  <h2 class="part reveal" data-p="4"><span class="roman">IV</span>Part IV · Applications</h2>
+  <h2 class="part reveal" id="part-4" data-p="4"><span class="roman">IV</span>Part IV · Applications</h2>
   <p class="part-sub reveal" data-p="4">Everything so far, earning its keep on real data.</p>
   <div class="grid reveal-stagger" data-p="4">
     <a class="card" href="unit-12.html" data-unit="12">
       <canvas class="glyph" data-g="12" aria-hidden="true"></canvas>
       <div class="top"><span class="num">12</span><h3>Principal Component Analysis</h3></div>
       <p>A cloud of a thousand columns has only a few directions that matter. Find the one where the data spreads the most — the leash that turns it into an eigenvector, the spread budget, the rebuild error, the SVD route, power iteration and the Gram trick for wide data — then run the whole recipe on real numbers.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>16 widgets · 22 checks · 12 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>16 widgets · 22 checks · 12 problems</span></div>
     </a>
     <a class="card" href="unit-13.html" data-unit="13">
       <canvas class="glyph" data-g="13" aria-hidden="true"></canvas>
       <div class="top"><span class="num">13</span><h3>Support Vector Machines</h3></div>
       <p>Draw the widest street between two groups. How wide it is, a price on every point, the dual, the few support vectors that hold the street up, soft margins for messy data — and the kernel trick that lifts the data so a straight cut up there becomes a curve down here.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>16 widgets · 20 checks · 16 problems</span></div>
+      <div class="foot"><span class="status ready">Ready</span><span>16 widgets · 20 checks · 16 problems</span></div>
     </a>
   </div>
 
-  <h2 class="part reveal" data-p="5"><span class="roman">V</span>Part V · Models that Read<span class="soon-tag">Upcoming</span></h2>
+  <h2 class="part reveal" id="part-5" data-p="5"><span class="roman">V</span>Part V · Models that Read<span class="soon-tag">Upcoming</span></h2>
   <p class="part-sub reveal" data-p="5">From geometry to uncertainty, then networks that read — each unit ending with the problem the next one solves.</p>
   <div class="grid reveal-stagger" data-p="5">
     <div class="card locked roadmap">
@@ -457,7 +644,7 @@ a.bchip:hover{color:var(--ink);border-color:var(--pc)}
     </div>
   </div>
 
-  <h2 class="part reveal" data-p="6"><span class="roman">VI</span>Part VI · Models that Create<span class="soon-tag">Upcoming</span></h2>
+  <h2 class="part reveal" id="part-6" data-p="6"><span class="roman">VI</span>Part VI · Models that Create<span class="soon-tag">Upcoming</span></h2>
   <p class="part-sub reveal" data-p="6">The two things modern AI does — predict the next word, and turn noise into data — and how almost the whole course lives inside them.</p>
   <div class="grid reveal-stagger" data-p="6">
     <div class="card locked roadmap">
@@ -478,9 +665,14 @@ a.bchip:hover{color:var(--ink);border-color:var(--pc)}
     </div>
   </div>
 
-  <footer class="reveal">
-    <p style="margin:0 0 .5rem">Handcrafted by Prof. Saurabh · every idea a story, every example worked in full · free to learn from</p>
-    <p style="margin:0">Your progress is stored only in this browser, never sent anywhere. <button class="link" id="reset-btn" type="button" hidden>Reset my progress</button></p>
+  <footer class="site-foot">
+    <div class="f-top">
+      <div class="f-brand"><span class="f-mark" aria-hidden="true">Σ</span><div><b>The Math Behind the Machine</b><p>An interactive course in the mathematics of machine learning and AI, handcrafted by Prof. Saurabh. Every idea a story, every example worked in full.</p></div></div>
+      <nav class="f-col" aria-label="Start"><h4>Start</h4><a href="unit-01.html">Unit 1 · Linear systems</a><a href="#journey">The route</a><a href="ideas.html">Big ideas</a></nav>
+      <nav class="f-col" aria-label="Parts"><h4>Parts</h4><a href="#part-1">I · Linear Algebra</a><a href="#part-2">II · Calculus</a><a href="#part-3">III · Optimization</a><a href="#part-4">IV · Applications</a><a href="#part-5">V · Models that Read</a><a href="#part-6">VI · Models that Create</a></nav>
+      <div class="f-col f-keys"><h4>Shortcuts</h4><span><kbd>/</kbd> search everything</span><span><kbd>t</kbd> light or dark</span><span><kbd>?</kbd> every shortcut</span></div>
+    </div>
+    <div class="f-bottom"><p>Your progress is stored only in this browser, never sent anywhere. <button class="link" id="reset-btn" type="button" hidden>Reset my progress</button></p><p>© 2026 Prof. Saurabh · free to learn from</p></div>
   </footer>
 </div>
 <!--@cinema-js-->
@@ -489,7 +681,7 @@ a.bchip:hover{color:var(--ink);border-color:var(--pc)}
   const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   const btn=document.getElementById('theme-btn'); const modes=['dark','light'];
   let mode=store.get('mfml-theme')==='light'?'light':'dark';
-  function apply(){ document.documentElement.setAttribute('data-theme',mode); btn.textContent='Theme: '+mode; }
+  function apply(){ document.documentElement.setAttribute('data-theme',mode); btn.setAttribute('aria-label','Switch to '+(mode==='dark'?'light':'dark')+' theme'); btn.title='Theme: '+mode+' (t)'; btn.innerHTML=mode==='dark'?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>'; }
   btn.addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%2];store.set('mfml-theme',mode);apply();});
   apply();
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
@@ -963,6 +1155,9 @@ a.bchip:hover{color:var(--ink);border-color:var(--pc)}
   new MutationObserver(()=>{ pal=C.colors(); glyphs.forEach(draw); buildHero(); }).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   let rw=innerWidth; addEventListener('resize',()=>{ const wide=innerWidth>=760; if(wide!==(rw>=760)) buildHero(); rw=innerWidth; });
 })();
+</script>
+<script>
+(function(){var b=document.body,f=function(){b.classList.toggle('scrolled',scrollY>24)};addEventListener('scroll',f,{passive:true});f();})();
 </script>
 </body>
 </html>
