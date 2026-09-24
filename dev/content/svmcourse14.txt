@@ -1,0 +1,1662 @@
+ 
+
+ Support Vector Machines — A Complete Interactive Course 
+
+ ☰ 
+ Support Vector Machines 
+
+ ▸ Reveal all 
+ ◐ 
+
+ Support Vector Machines 
+ A complete course — from “which line should I draw?” to kernels in
+ infinite-dimensional spaces. Every formula proved, every proof visualised,
+ every worked example carried out line by line. 
+
+ 18 chapters  ·  3 worked examples  ·  10 practice problems with full solutions 
+ 12-question self-test, printed as an answer key 
+ Every numeric result independently verified against a quadratic-programming solver. 
+ This PDF is a print of the interactive HTML course; figures are shown in their default state.
+
+ Contents 
+ Foundations 
+ 1 The problem, and the idea 
+ 2 The geometry of a hyperplane 
+ 3 The margin, proved 
+ 4 Fixing the scale: where the ±1 comes from 
+ 5 The maximum-margin problem, stated 
+ The machinery 
+ 6 The Lagrangian and the KKT conditions 
+ 7 Stationarity, proved 
+ 8 The dual problem, derived 
+ 9 Support vectors 
+ Worked examples 
+ 10 One dimension 
+ 11 Two points in two dimensions 
+ 12 Eight points, three support vectors 
+ Going further 
+ 13 Soft margin, derived from scratch 
+ 14 Kernels, derived from scratch 
+ 15 The playground 
+ Reference 
+ 16 Practice problems — ten, with full solutions 
+ 17 Beyond the basics 
+ 18 Cheat sheet & self-test 
+
+ A complete, interactive course 
+ Support Vector Machines 
+ From "which line should I draw?" to kernels in infinite-dimensional spaces. Every formula proved, every proof visualised, every example worked line by line. 
+
+ 18 chapters 
+ 5 rotatable 3-D figures 
+ 20 live interactives 
+ every derivation proved in full 
+ a real solver, running in the page 
+
+ ◈ The whole subject in one paragraph 
+ Infinitely many straight lines separate two clouds of points. SVM picks the one with the widest empty street around it. Once you fix an arbitrary scale, that street turns out to be exactly 2/\|\v w\| wide — so widening the street and shrinking \|\v w\| are the same instruction. That is a clean convex optimisation with one right answer. Solving it through its dual reveals two surprises: the answer depends only on a handful of borderline points, and it touches the data only through dot products . Replace the dot product with a kernel and the same machinery draws curved boundaries in spaces far too large to write down. 
+
+ Start here Which line should you draw? 
+ All three separate the data perfectly, and each is pushed out as far as its own tilt allows. Only one tilt gives the widest street. 
+
+ Tilt A Tilt B Tilt C — the widest 
+
+ class y=+1 
+ class y=-1 
+ points touching the street 
+ decision boundary 
+ street edge 
+
+ Read it as: for each tilt the street has already been pushed out until it hits a point on both sides — that is the widest street that tilt allows. Changing the tilt changes the width. Tilt C is the best any orientation can do, and that is the SVM answer. Notice the ringed points change as you switch: which points matter is a consequence of the tilt, not a choice you make. 
+
+ How to use this 
+
+ Read in order — each chapter genuinely depends on the one before it. 
+ Every ▸ reveal holds a complete proof or solution. Try it on paper first. 
+ ▲ Watch out boxes are the exact places students go wrong, and why. 
+ The 3-D figures rotate — drag them. Sliders and points are live; nothing here is a picture of a result. 
+
+ Chapter 1 The problem, and the idea 
+
+ You have n labelled examples (\v x_i, y_i) , where each \v x_i \in \mathbb{R}^d is a vector of measurements and each label is y_i \in \{-1, +1\} . You want a rule that takes a new \v x and predicts its label. 
+
+ Linear classifier. Pick a direction \v w and an offset b , compute the score f(\v x) = \v w \cdot \v x + b , and predict \text{sign} f(\v x) . The set where f(\v x) = 0 is the decision boundary . 
+
+ If the two classes can be separated by such a boundary at all, they can be separated by infinitely many of them — tilt the line a little, slide it a little, and it still gets every training point right. Every one of those lines has zero training error . Training error cannot choose between them. 
+
+ 1.1 So what should choose? 
+ The training points are not the points you care about. You care about the next point, which will land somewhere nearby but not exactly on top of an old one. A boundary that skims within a hair of a training example is one small measurement wobble away from getting that region wrong. A boundary that keeps a wide, empty buffer on both sides can absorb that wobble. 
+
+ ◈ The street 
+ Think of it as paving the widest possible street between the two classes, with no point of either class allowed inside the street. The decision boundary is the white line down the middle. Among all streets you could pave, take the widest. The idea is that simple — the rest of this course is turning "widest street" into equations, and then solving them. 
+
+ Margin. The width of that empty street: the perpendicular distance from the decision boundary out to the nearest training point, doubled. A maximum-margin classifier is the boundary that makes this as large as possible. 
+
+ 1.2 Why the margin is a sensible thing to maximise 
+
+ Robustness. Every training point can move by up to half the margin in any direction without changing its side of the boundary. Wide margin = tolerance to noise, quantified. 
+ Uniqueness. Out of infinitely many zero-error boundaries, "widest" picks exactly one. The problem stops being ill-posed. 
+ Generalisation. There are real theoretical bounds saying test error is controlled by the margin relative to how spread out the data is — not by the number of features. This is why SVMs behave sanely even when you have more features than examples, which sinks many other methods. 
+ Sparsity, for free. As Chapter 9 shows, the answer ends up depending only on the points that touch the street. Everything in the interior of each cloud is irrelevant. 
+
+ Chapter 1 in three lines 
+ Many boundaries have zero training error; training error cannot pick between them. 
+ Pick the one with the widest empty street — it tolerates the most noise and it is unique. 
+ Everything from here on is making "widest street" precise enough to solve. 
+
+ Chapter 2 The geometry of a hyperplane 
+
+ Before we can maximise a width we need to be able to measure one. Two facts do all the work, and both are two lines of algebra. 
+
+ 2.1 Proof that \v w is perpendicular to the boundary 
+ Take any two points \v p and \v q lying on the boundary. Both satisfy the equation: 
+ \v w \cdot \v p + b = 0 \qquad \v w \cdot \v q + b = 0 
+ Subtract the second from the first. The b cancels: 
+ \v w \cdot (\v p - \v q) = 0 
+ the vector \v p - \v q points along the boundary, and \v w is orthogonal to it — for every such pair, hence for every direction in the boundary 
+ So \v w is perpendicular to the entire boundary. It is the normal vector . This is exactly why \|\v w\| is about to control the width: widths are measured perpendicular to the boundary, which means along \v w . 
+ And b ? It slides the boundary back and forth without changing its tilt. Two independent knobs: \v w sets the orientation, b sets the position. 
+
+ 2.2 Proof of the distance formula 
+ Take any point \v z . Walk from it along the unit normal \hat{\v w} = \v w/\|\v w\| until you hit the boundary — say you walk a signed distance t , landing on \v z - t\hat{\v w} . That landing point is on the boundary, so it satisfies \v w \cdot (\v z - t\hat{\v w}) + b = 0 . Expand: 
+ \v w \cdot \v z + b - t\,(\v w \cdot \hat{\v w}) = 0 
+ and \v w \cdot \hat{\v w} = \v w \cdot \v w/\|\v w\| = \|\v w\|^2/\|\v w\| = \|\v w\| , so 
+ t = \frac{\v w \cdot \v z + b}{\|\v w\|} = \frac{f(\v z)}{\|\v w\|} 
+ the signed distance from \v z to the boundary: positive on the \v w side, negative on the other 
+
+ ★ Two different "margins" — do not confuse them 
+
+ Name Formula Behaviour 
+
+ Functional margin y_i(\v w \cdot \v x_i + b) 
+ The raw score. Not a distance — it changes if you rescale \v w . 
+ Geometric margin y_i(\v w \cdot \v x_i + b) / \|\v w\| 
+ An actual distance in the units of your data. Unchanged by rescaling. 
+
+ Multiplying by y_i makes both positive exactly when the point is classified correctly. Chapter 4 is entirely about the relationship between these two. 
+
+ 3-D · drag to rotate A hyperplane and its margin slab in \mathbb{R}^3 
+ In three dimensions the boundary is a genuine plane and the street is a slab . Rotate it — the geometry is identical to 2-D, only the name changes. 
+
+ margin slab 
+ normal vector \v w 
+ perpendicular drops 
+
+ reset view 
+
+ y=+1 
+ y=-1 
+ boundary f=0 
+ slab faces f=\pm 1 
+ \v w 
+
+ The data: six support vectors, three per class, sitting on x_1+x_2+x_3 = 6 and = 2 . The boundary is the plane halfway between, x_1+x_2+x_3 = 4 , with \v w = (\tfrac12,\tfrac12,\tfrac12) and b = -2 . Slab thickness 2/\|\v w\| = 4/\sqrt{3} \approx 2.31 . Rotate until you are looking edge-on along the plane — the whole picture collapses to the 2-D one, which is the point: nothing about the algebra cares how many dimensions there are. 
+
+ Interactive The distance formula, live 
+ Drag the probe. The dashed drop is the perpendicular; its length is |f(\v x)|/\|\v w\| . 
+
+ Notice: the raw score f(\v x) and the true distance differ by exactly the factor \|\v w\| . Keep that factor in view — the next two chapters are built on it. 
+
+ Chapter 2 in three lines 
+ \v w is perpendicular to the boundary; b only slides it. 
+ Signed distance from \v z to the boundary is (\v w\cdot\v z+b)/\|\v w\| . 
+ The raw score is not a distance until you divide by \|\v w\| . 
+
+ Chapter 3 The margin, proved 
+
+ Now build the street. Start from the boundary \v w\cdot\v x+b = 0 and push two parallel planes outward, one to each side, until each just touches the nearest point of its class. Those planes are parallel to the boundary , so they share the same normal \v w and differ only in the constant: 
+
+ \v w \cdot \v x + b = +c \qquad\text{and}\qquad \v w \cdot \v x + b = -c 
+ the two margin planes , for some c > 0 we have not yet chosen 
+
+ Call the touching points \v x_+ (on the +c plane) and \v x_- (on the -c plane): 
+ \v w \cdot \v x_+ + b = +c (i) 
+ \v w \cdot \v x_- + b = -c (ii) 
+ Subtract (ii) from (i). The b cancels — which is the whole reason we subtract: 
+ \v w \cdot (\v x_+ - \v x_-) = 2c (iii) 
+
+ 3.1 One line of Cauchy–Schwarz finishes it 
+ Equation (iii) is a single number, but we want a distance . The shortest route is the Cauchy–Schwarz inequality, which says that for any two vectors 
+ |\v u \cdot \v v| \leq \|\v u\|\,\|\v v\| \qquad\text{with equality exactly when } \v u \text{ and } \v v \text{ are parallel} 
+ Apply it to \v u = \v w and \v v = \v x_+ - \v x_- , using (iii) on the left: 
+
+ 2c = |\v w \cdot (\v x_+ - \v x_-)| \leq \|\v w\|\,\|\v x_+ - \v x_-\| 
+ Cauchy–Schwarz, with the left side rewritten using (iii) 
+
+ \|\v x_+ - \v x_-\| \geq \frac{2c}{\|\v w\|} 
+ divide both sides by \|\v w\| > 0 
+
+ \v x_+ - \v x_- = \lambda \v w \;\Longrightarrow\; \|\v x_+ - \v x_-\| = \frac{2c}{\|\v w\|} 
+ equality case: the two points sit directly opposite each other along the normal 
+
+ ★ What this proves, in one sentence 
+ No point of the +c plane is ever closer than 2c/\|\v w\| to any point of the -c plane, and that lower bound is attained — by the pair joined along \v w . The smallest distance between two sets is the gap between them, so: 
+ \text{margin} \;=\; \text{gap between the two margin planes} \;=\; \frac{2c}{\|\v w\|} 
+
+ Cauchy–Schwarz did two jobs at once here. It produced the formula, and it told us the formula is a minimum over all pairs — which is precisely what "the width of a street" means. A projection argument gets the same number, but you have to add the equality analysis separately. 
+
+ The same result by projection, if you prefer the geometric route 
+ The gap between two parallel planes is measured along their shared unit normal \hat{\v w} = \v w/\|\v w\| . Project the connecting vector onto it: 
+ \hat{\v w} \cdot (\v x_+ - \v x_-) = \frac{\v w \cdot (\v x_+ - \v x_-)}{\|\v w\|} = \frac{2c}{\|\v w\|} 
+ Same number. But notice what this argument does not immediately give you: that \|\v x_+-\v x_-\| is at least this big. For that you still need \|\v v\| \geq |\hat{\v u}\cdot\v v| , which is Cauchy–Schwarz. So the projection route quietly uses the same inequality one step later. 
+
+ ▲ Watch out — the step everyone botches 
+ It is tempting to go straight from \v w \cdot (\v x_+ - \v x_-) = 2c to x₊ − x₋ = 2c/w . That is not a legal move: you cannot divide by a vector. A dot product is a scalar; recovering a length from it needs an inequality or a projection. 
+ And the conclusion reached that way is false in substance too. The margin is 2c/\|\v w\| , but the straight-line distance between the two touching points is \geq that, with equality only in the parallel case. 
+
+ Interactive The Cauchy–Schwarz bound, live 
+ Both points stay on their own margin planes — slide them along. The perpendicular gap never changes; the point-to-point distance can only grow. 
+
+ perpendicular gap — the margin, 2c/\|\v w\| 
+ \|\v x_+ - \v x_-\| 
+ the normal \v w 
+
+ Slide either point. The blue length is pinned at 2/\|\v w\| ; the orange length equals it only when the connecting line runs parallel to \v w — the equality case of Cauchy–Schwarz. In every worked example with exactly two support vectors they do line up, but that is a property of that data, not a rule. 
+
+ Chapter 3 in three lines 
+ The street is bounded by two planes \v w\cdot\v x+b = \pm c , parallel to the boundary. 
+ Subtracting kills b ; Cauchy–Schwarz then gives \|\v x_+-\v x_-\| \geq 2c/\|\v w\| , attained along \v w . 
+ That attained minimum is the margin: 2c/\|\v w\| . 
+
+ Chapter 4 Fixing the scale: where the \pm 1 comes from 
+
+ Chapter 3 left one loose end: the constant c . The margin came out as 2c/\|\v w\| , which still has an unknown in it. This chapter shows that c is not a real quantity at all — it is an artefact of how you happened to write the equations — and that we are free to set it to 1 . 
+
+ 4.1 Three planes, one geometry, infinitely many equations 
+ Fix a triple (\v w, b, c) . It gives three parallel planes: 
+ \v w\cdot\v x+b = +c \qquad \v w\cdot\v x+b = 0 \qquad \v w\cdot\v x+b = -c 
+ Now multiply everything by any k > 0 , giving the triple (k\v w, kb, kc) . Look at what happens to the first plane: 
+ k\v w\cdot\v x + kb = kc \quad\Longleftrightarrow\quad \v w\cdot\v x + b = c 
+ the same equation divided through by k — so it describes the identical set of points 
+ All three planes are exactly where they were. Not approximately — the same sets of points in space. The street has not moved and has not changed width. Yet every number has changed: 
+
+ Quantity Before After scaling by k Geometry? 
+
+ The three planes as point sets — identical ✔ real 
+ \|\v w\| \|\v w\| k\|\v w\| ✘ arbitrary 
+ the constant c c kc ✘ arbitrary 
+ functional margin y_i f(\v x_i) z_i k z_i ✘ arbitrary 
+ margin 2c/\|\v w\| 2c/\|\v w\| 
+ \dfrac{2kc}{k\|\v w\|} = \dfrac{2c}{\|\v w\|} ✔ real 
+
+ ★ The one line to remember 
+ c and \|\v w\| are individually meaningless; only their ratio is geometry. Scaling stretches both by the same factor, so the margin is untouched. 
+
+ 4.2 So choose the scale that makes life easy 
+ Since k is ours to pick and picking it discards nothing, pick k = 1/c . That sets the new constant to exactly 1 : 
+ \v w\cdot\v x+b = +1 \qquad \v w\cdot\v x+b = 0 \qquad \v w\cdot\v x+b = -1 
+ the canonical form — one chosen representative out of an infinite family of equivalent equations 
+ Two consequences drop out, and they are the two facts the rest of the course runs on: 
+
+ The margin is now 2/\|\v w\| 
+ Put c=1 into 2c/\|\v w\| . Only now is "shrink \|\v w\| " the same instruction as "widen the street" — before normalising, that sentence had no meaning, because \|\v w\| could be anything. 
+
+ Every point satisfies y_i f(\v x_i) \geq 1 
+ The margin planes touch the nearest points, so the nearest ones score exactly 1 and everything else scores more. That inequality is the constraint of the SVM. 
+
+ 4.3 Proof that one inequality replaces two 
+ In canonical form the requirement splits by class: 
+ \v w\cdot\v x_i+b \geq +1 \;\text{ when } y_i=+1 \qquad\qquad \v w\cdot\v x_i+b \leq -1 \;\text{ when } y_i=-1 
+ Take the second and multiply both sides by -1 , which flips the inequality: 
+ -(\v w\cdot\v x_i+b) \geq +1 
+ But in that branch y_i = -1 , so -(\v w\cdot\v x_i+b) = y_i(\v w\cdot\v x_i+b) . And in the first branch y_i = +1 , so \v w\cdot\v x_i+b = y_i(\v w\cdot\v x_i+b) too. Both branches are the same statement: 
+ y_i(\v w\cdot\v x_i + b) \geq 1 \qquad \text{for all } i=1,\dots,n 
+ this is the only reason SVM labels classes \pm 1 rather than 0/1 — the label does the sign-flipping for you 
+
+ 4.4 Why not just maximise the raw score? 
+ A natural first idea is to make \min_i y_i(\v w\cdot\v x_i+b) as big as possible. The table above shows why it fails: multiply (\v w,b) by k=10^6 and the score is a million times bigger while the boundary has not moved. The optimiser would run k \to \infty and report infinite confidence in a line it never improved. The problem is ill-posed until you pin the scale. There are exactly two clean ways out, and they are the same thing seen from two sides: 
+
+ Fix the score, minimise the norm. Set c=1 , then minimise \|\v w\| . ← this is what SVM does 
+ Fix the norm, maximise the score. Set \|\v w\|=1 , then maximise c . Same optimum, uglier constraint set. 
+
+ Interactive Rescale everything; nothing moves 
+ One fixed geometry. Slide k and watch c , \|\v w\| and every score change together — while the picture and the true width sit perfectly still. 
+
+ scale k 1.00 
+
+ snap to canonical ( c = 1) 
+
+ y=+1 
+ y=-1 
+ nearest point on each side 
+
+ The tell: the last readouts. c and \|\v w\| both move with k ; the ratio 2c/\|\v w\| is frozen. That frozen number is the only thing with physical meaning, and it is what we are about to maximise. 
+
+ Chapter 4 in three lines 
+ Scaling (\v w,b,c) by k>0 leaves all three planes exactly where they are, but multiplies c , \|\v w\| and every score by k . 
+ Only the ratio 2c/\|\v w\| is real, so set c=1 . That is the canonical form. 
+ Margin = 2/\|\v w\| , and every point obeys y_i(\v w\cdot\v x_i+b) \geq 1 . 
+
+ Chapter 5 The maximum-margin problem, stated 
+
+ Everything so far has been preparation. Here is the problem itself, written out in full, with nothing hidden. 
+
+ ★ The maximum-margin classifier — the problem we are solving 
+ Given: training pairs (\v x_i, y_i) , i=1,\dots,n , with \v x_i\in\mathbb{R}^d and y_i\in\{-1,+1\} . 
+ Find: the \v w \in \mathbb{R}^d and b \in \mathbb{R} whose separating street is widest. 
+
+ \max_{\v w,\, b} \; \frac{2}{\|\v w\|} \qquad\text{subject to}\qquad y_i(\v w\cdot\v x_i+b)\;\geq\;1 \;\;\text{ for every } i 
+ the objective is the street width from Chapter 3 in the canonical scale of Chapter 4; the constraint says every point is correctly classified and outside the street 
+
+ That statement is complete and correct, and you could hand it to a solver — but you should not, because the objective is awkward. Three rewrites make it pleasant. Each must preserve the argmax , the \v w that wins, even though the objective's numerical value changes. 
+
+ \max \frac{2}{\|\v w\|} \quad\Longleftrightarrow\quad \min \|\v w\| 
+ Step 1. The numerator is a constant and t \mapsto 2/t is strictly decreasing for t>0 . Making a fraction large with a fixed numerator is making the denominator small. 
+
+ \min \|\v w\| \quad\Longleftrightarrow\quad \min \|\v w\|^2 
+ Step 2. Squaring is strictly increasing on non-negative numbers, so it cannot reorder anything. What it removes is the square root — and with it a sharp kink at the origin where no derivative exists. 
+
+ \min \|\v w\|^2 \quad\Longleftrightarrow\quad \min \tfrac{1}{2}\|\v w\|^2 
+ Step 3. A positive constant cannot move an argmin. The \tfrac12 makes the gradient come out as \v w rather than 2\v w , which keeps Chapter 7 tidy. 
+
+ ★ The hard-margin SVM — the form we actually solve 
+
+ \min_{\v w,\, b} \; \frac{1}{2}\|\v w\|^2 \qquad\text{subject to}\qquad y_i(\v w\cdot\v x_i+b) \;\geq\; 1, \quad i=1,\dots,n 
+ exactly the same optimal (\v w,b) as the box above — a strictly convex quadratic objective with n linear constraints 
+
+ ▲ Watch out — say the right reason for squaring 
+ A very common answer is "because 2/\|\v w\| is non-convex" . Be careful on two counts. 
+
+ You are maximising that expression, so the property you would want is concavity , not convexity. 
+ \|\v w\| is convex — every norm is. Minimising it is already a perfectly valid convex problem. Nothing is broken. 
+
+ The real reason: \|\v w\| is not differentiable at the origin, while \tfrac12\|\v w\|^2 is smooth and strictly convex. That upgrade turns the problem into a quadratic program — a class with fast, reliable, globally optimal solvers. 
+
+ Interactive The three objectives side by side 
+ One dimension, so \|\v w\| = |w| and both signs are visible. Slide the constraint to see they always agree on the winner. 
+
+ smallest feasible |w| 1.00 
+
+ Read it as: ‖w‖ has a V-shaped kink at the origin — a gradient method has nothing to work with there. ½‖w‖² is a smooth parabola everywhere. 2/‖w‖ blows up at zero and is neither convex nor concave. All three are optimised at the same feasible boundary point, which is the only thing that matters. 
+
+ 5.1 Why "convex QP" is such good news 
+
+ Quadratic objective Degree two with a positive-definite Hessian (the identity) ⇒ strictly convex, exactly one bottom. 
+ Linear constraints Each is a half-space; their intersection is a convex polyhedron. 
+ ⇒ Convex QP Every local minimum is the global minimum. No initialisation, no local optima, no random restarts. 
+
+ That third box has a consequence worth sitting with. Train a neural network twice and you get two different models. Train an SVM twice on the same data and you get bit-for-bit the same answer , because there is only one answer and the solver is guaranteed to find it. 
+
+ ★ Support vectors are an output , never an input 
+ This is the single most common conceptual slip in the subject, so state the logic in the right order: 
+
+ Choose \v w, b to maximise the margin — equivalently, minimise \tfrac12\|\v w\|^2 subject to y_i(\v w\cdot\v x_i+b) \geq 1 . 
+ Solve it. Now the boundary is fixed. 
+ Afterwards , look at which points ended up satisfying y_i(\v w\cdot\v x_i+b) = 1 with equality. Those are the ones the constraints are pressing against. We call them the support vectors . 
+
+ You never pick support vectors and then fit to them. There is no way you could — you do not know which points they are until the problem is solved. Find the widest street; the points it collides with are, by definition, the support vectors. The figure at the top of this course demonstrates it: change the tilt and a different set of points gets ringed, without you touching anything but the tilt. 
+
+ ▲ Hard margin has a hard failure mode 
+ If the classes overlap even by one mislabelled point, no \v w, b satisfies every constraint. The feasible set is empty and the problem has no solution — it does not degrade gracefully, it fails to exist. That is what forces the soft margin in Chapter 13. 
+
+ Chapter 5 in three lines 
+ The problem is \max 2/\|\v w\| subject to y_i(\v w\cdot\v x_i+b)\geq 1 . 
+ It is equivalent to \min \tfrac12\|\v w\|^2 under the same constraints — same winner, far nicer function. 
+ Quadratic objective + linear constraints = convex QP: one unique global optimum, reproducibly. 
+
+ Chapter 6 The Lagrangian and the KKT conditions 
+
+ We have a constrained problem. Constraints are awkward to differentiate through, so we fold them into the objective, each carrying a price tag \alpha_i \geq 0 . Write each constraint in the standard form g_i \geq 0 : 
+ g_i(\v w,b) \;=\; y_i(\v w\cdot\v x_i+b) - 1 \;\geq\; 0 
+ and build the Lagrangian L = f - \sum_i \alpha_i g_i : 
+
+ L(\v w, b, \v\alpha) \;=\; \frac{1}{2}\|\v w\|^2 \;-\; \sum_{i=1}^{n} \alpha_i \left[\, y_i(\v w\cdot\v x_i+b) - 1 \,\right] 
+ with \alpha_i \geq 0 for every i — one multiplier per training point 
+
+ 6.1 Why this is the same problem 
+ The trick is that the constrained problem equals an unconstrained min-max over L . Fix any (\v w,b) and ask what happens when you maximise L over \v\alpha \geq 0 : 
+
+ If some constraint is… then the bracket is… and \max_{\v\alpha\geq 0} L is… 
+
+ violated , y_i f(\v x_i) < 1 negative 
+ +\infty — push \alpha_i\to\infty and -\alpha_i(\text{negative})\to+\infty 
+ satisfied strictly , y_i f(\v x_i) > 1 positive 
+ maximised by \alpha_i = 0 — any positive \alpha_i would only subtract 
+ tight , y_i f(\v x_i) = 1 zero 
+ indifferent — \alpha_i is free to take whatever value the balance requires 
+
+ So \max_{\v\alpha\geq 0} L equals \tfrac12\|\v w\|^2 when every constraint holds, and +\infty when any is violated. Minimising that over (\v w,b) is therefore identical to the original constrained problem — the infinities automatically rule out infeasible points: 
+ \min_{\v w, b} \; \max_{\v\alpha \geq 0} \; L(\v w, b, \v\alpha) \qquad\text{is the hard-margin SVM} 
+
+ ◈ What \alpha_i means, in words 
+ Read \alpha_i as how hard point i is pushing on the boundary , or equivalently as a price: it is the rate at which the optimal objective would improve if you relaxed that one constraint slightly. A point sitting comfortably away pays nothing, \alpha_i = 0 . A point pressed against the edge of the street has a real price. Nothing is allowed to be inside the street at all. 
+
+ 6.2 The four KKT conditions 
+ At the optimum of a convex problem like this one, the Karush–Kuhn–Tucker conditions hold — and, crucially, they are not merely necessary but sufficient : any (\v w,b,\v\alpha) satisfying all four is the global optimum. 
+
+ The KKT conditions for hard-margin SVM 
+ Condition Statement What it buys you 
+
+ 1. Stationarity 
+ \partial L/\partial \v w = \v 0 ,   \partial L/\partial b = 0 
+ Gives \v w = \sum_i \alpha_i y_i \v x_i and \sum_i \alpha_i y_i = 0 — proved in Chapter 7 
+ 2. Primal feasibility 
+ y_i(\v w\cdot\v x_i+b) \geq 1 
+ The answer actually classifies the training data 
+ 3. Dual feasibility 
+ \alpha_i \geq 0 
+ Constraints can only push outward, never pull inward 
+ 4. Complementary slackness 
+ \alpha_i \left[ y_i(\v w\cdot\v x_i+b) - 1 \right] = 0 
+ The support-vector property. All of Chapter 9 falls out of this one line 
+
+ Where condition 4 comes from: read the table in §6.1 again. If a constraint is strictly satisfied the maximiser sets \alpha_i=0 ; if \alpha_i>0 the constraint must therefore be tight. Either way the product of the two is zero. That is the whole content of complementary slackness — for each point, at most one of "has a price" and "has slack" can be true. 
+
+ ▲ Watch out — two sign conventions in the wild 
+ You will also see L = \tfrac12\|\v w\|^2 + \sum_i \alpha_i[1 - y_i(\v w\cdot\v x_i+b)] . It is the same function , since +\alpha(1-z) = -\alpha(z-1) . Either is fine. What is not fine is switching between them halfway through a derivation — that is where sign errors are born. This course uses the form above throughout. 
+
+ Chapter 7 Stationarity, proved 
+
+ Stationarity says the gradient of L vanishes at the optimum. Two derivatives, both proved here from the definition rather than quoted. 
+
+ 7.1 Lemma A: \nabla_{\v w}\,\tfrac12\|\v w\|^2 = \v w 
+ Write the squared norm as an explicit sum over coordinates and differentiate with respect to one of them, say the k -th: 
+
+ \frac{1}{2}\|\v w\|^2 = \frac{1}{2}\sum_{j=1}^{d} w_j^2 
+ definition of the Euclidean norm 
+
+ \frac{\partial}{\partial w_k}\left(\frac{1}{2}\sum_{j=1}^{d} w_j^2\right) = \frac{1}{2}\sum_{j=1}^{d}\frac{\partial\, w_j^2}{\partial w_k} 
+ differentiation is linear, so it passes inside the sum 
+
+ \frac{\partial\, w_j^2}{\partial w_k} = \begin{cases} 2w_k & j=k \\ 0 & j\neq k \end{cases} 
+ every term except j=k treats w_k as a constant 
+
+ \Longrightarrow\quad \frac{\partial}{\partial w_k}\,\frac{1}{2}\|\v w\|^2 = \frac{1}{2}(2w_k) = w_k 
+ only one surviving term. This is where the \tfrac12 pays for itself. 
+
+ Stacking the d coordinates back into a vector, \nabla_{\v w}\,\tfrac12\|\v w\|^2 = (w_1,\dots,w_d) = \v w . ∎ 
+
+ Interactive Lemma A, made visible 
+ The surface is \tfrac12\|\v w\|^2 over the w -plane; the arrows are its gradient field. Drag the point. 
+
+ gradient field 
+ level circles 
+
+ The claim you are checking: at every location \v w , the gradient arrow is the position vector itself — same direction, same length. That is what \nabla(\tfrac12\|\v w\|^2)=\v w means geometrically: the steepest-ascent direction of a bowl centred at the origin always points straight away from the origin, and it gets longer the further out you go. Drag the point around and watch the blue arrow stay locked to the grey one. 
+
+ 7.2 Lemma B: \nabla_{\v w}(\v w\cdot\v x) = \v x 
+
+ \v w\cdot\v x = \sum_{j=1}^{d} w_j x_j \qquad\Longrightarrow\qquad \frac{\partial}{\partial w_k}\sum_{j=1}^{d} w_j x_j = x_k 
+ again only the j=k term survives, and it is linear in w_k with coefficient x_k 
+
+ Stacking coordinates: \nabla_{\v w}(\v w\cdot\v x) = \v x . ∎ 
+
+ 7.3 Differentiating L with respect to \v w 
+ Only two groups of terms in L contain \v w . Expand the bracket first so they are visible: 
+ L = \frac{1}{2}\|\v w\|^2 \;-\; \sum_i \alpha_i y_i (\v w\cdot\v x_i) \;-\; b\sum_i \alpha_i y_i \;+\; \sum_i \alpha_i 
+ The last two terms have no \v w in them, so they differentiate to zero. Applying Lemma A to the first and Lemma B to the second: 
+
+ \frac{\partial L}{\partial \v w} = \v w - \sum_i \alpha_i y_i \v x_i 
+ Lemma A gives \v w ; each term of the sum contributes \alpha_i y_i \v x_i by Lemma B, since \alpha_i y_i is a constant with respect to \v w 
+
+ \frac{\partial L}{\partial \v w} = \v 0 \quad\Longrightarrow\quad \v w = \sum_i \alpha_i y_i \v x_i 
+ set the gradient to zero and rearrange 
+
+ \v w \;=\; \sum_{i=1}^{n} \alpha_i y_i \v x_i 
+ the representer result — the weight vector is a signed, weighted sum of the training points themselves 
+
+ ★ Why this is the most consequential equation in the subject 
+ The model does not store an abstract direction it invented from nothing. It stores the data points, with weights . Three things follow immediately, and each is a chapter later on: 
+
+ Sparsity. Every \alpha_i that comes out zero deletes its point from the sum entirely. Chapter 9 shows most of them do. 
+ Robustness to distant points. A point far on the correct side gets \alpha_i=0 and contributes nothing. Move it further away and the boundary does not budge. 
+ Kernels. If \v w is built from data points, then \v w\cdot\v x is built from dot products between data points — and a dot product is a thing you can swap out. That is Chapter 14, hiding in this line all along. 
+
+ Interactive \v w assembled from its support vectors 
+ Each surviving point contributes the vector \alpha_i y_i \v x_i . Lay them head to tail and you land on \v w . Switch one off and watch \v w move. 
+
+ Read it as: positive-class points pull \v w toward themselves and negative-class points push it away — the y_i supplies the sign — while \alpha_i sets how hard each one pulls. 
+
+ 7.4 Differentiating L with respect to b 
+ Go back to the expanded form. Exactly one group of terms contains b , namely -b\sum_i \alpha_i y_i , and it is linear in b : 
+
+ \frac{\partial L}{\partial b} = \frac{\partial}{\partial b}\left(-b\sum_i \alpha_i y_i\right) = -\sum_i \alpha_i y_i 
+ the coefficient of b is the constant -\sum_i\alpha_i y_i , so that is the derivative 
+
+ \frac{\partial L}{\partial b} = 0 \quad\Longrightarrow\quad \sum_{i=1}^{n} \alpha_i y_i = 0 
+ the balance condition: total push from the positive class equals total push from the negative class 
+
+ ◈ What the balance condition means physically 
+ Sliding b translates the whole street sideways. The \alpha_i are the forces the support vectors exert on it. If the two classes' forces did not cancel, the street would be pushed one way and you could improve the objective by sliding it — so it could not have been optimal. At the solution the tug-of-war is in equilibrium. This is also a practical result: in Chapter 11 you will have three unknowns and only two equations from the margin conditions, and this is the third. 
+
+ Interactive The balance condition as a see-saw 
+ Each support vector applies a force \alpha_i on its own side. Drag the weights — the beam only levels when \sum_i \alpha_i y_i = 0 . 
+
+ Try: make one side heavier. The beam tips, which corresponds to \partial L/\partial b \neq 0 — the objective could still be improved by sliding b . Only the level configuration is a candidate optimum. 
+
+ Chapter 7 in three lines 
+ \nabla_{\v w}\tfrac12\|\v w\|^2 = \v w and \nabla_{\v w}(\v w\cdot\v x)=\v x , both proved coordinate by coordinate. 
+ Hence \v w = \sum_i \alpha_i y_i \v x_i — the model is literally built out of training points. 
+ And \sum_i \alpha_i y_i = 0 — the two classes' pushes balance. Both are needed in Chapter 8. 
+
+ Chapter 8 The dual problem, derived 
+
+ Substitute the two stationarity results back into L . Every trace of \v w and b disappears, leaving a problem purely in \v\alpha — and that new problem has properties the original never had. 
+
+ Expand the bracket 
+ L = \frac{1}{2}\v w\cdot\v w - \sum_i \alpha_i y_i (\v w\cdot\v x_i) - b\sum_i \alpha_i y_i + \sum_i \alpha_i 
+ Three terms out of one bracket. b factors out of the third because it is the same scalar for every i . 
+ Kill the b term using \sum_i \alpha_i y_i = 0 
+ L = \frac{1}{2}\v w\cdot\v w - \v w\cdot\left(\sum_i \alpha_i y_i \v x_i\right) - b\cdot 0 + \sum_i \alpha_i 
+ The middle sum was pulled out of the dot product because \v w is common to every term. Without the b -stationarity condition, b would still be sitting here and the whole exercise would fail. 
+ Recognise the remaining sum as \v w itself 
+ L = \frac{1}{2}\v w\cdot\v w - \v w\cdot\v w + \sum_i \alpha_i \;=\; \sum_i \alpha_i - \frac{1}{2}\v w\cdot\v w 
+ Half minus one is minus a half. The sign flip is why the dual is a maximisation . 
+ Expand \v w\cdot\v w — and a second index appears 
+ \v w\cdot\v w = \left(\sum_i \alpha_i y_i \v x_i\right)\cdot\left(\sum_j \alpha_j y_j \v x_j\right) = \sum_{i}\sum_{j}\alpha_i\alpha_j y_i y_j (\v x_i\cdot\v x_j) 
+ Where does j come from? Squaring a sum always produces cross terms. With \v w = a\v x_1+\beta\v x_2 you get a^2(\v x_1\cdot\v x_1) + \beta^2(\v x_2\cdot\v x_2) + 2a\beta(\v x_1\cdot\v x_2) . The two sums run independently over all points, so they need different letters. 
+ Collect 
+ L = \sum_i \alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_j y_i y_j (\v x_i\cdot\v x_j) 
+
+ ★ The dual problem 
+
+ \max_{\v\alpha} \;\; \sum_{i=1}^{n} \alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n} \alpha_i\alpha_j y_i y_j\, (\v x_i\cdot\v x_j) 
+ subject to   \alpha_i \geq 0   for all i ,  and  \sum_{i} \alpha_i y_i = 0 
+
+ Sit with what changed: 
+
+   Primal Dual 
+
+ Unknowns \v w\in\mathbb{R}^d and b → d+1 numbers \alpha_1,\dots,\alpha_n → n numbers 
+ Scales with the number of features the number of samples 
+ Data enters as individual coordinates of \v x_i only through dot products \v x_i\cdot\v x_j 
+ Sparsity none — \v w is dense most \alpha_i land on exactly zero 
+
+ ★ The line that makes kernels possible 
+ Look at the dual again. Not one coordinate of any \v x_i appears — only the numbers \v x_i\cdot\v x_j . Hand the solver a table of those n^2 numbers, burn the original data, and it would still find the answer. So if some function k(\v x,\v z) happens to equal a dot product in another, much larger space, you can simply use it — and get the boundary from that space without ever visiting it. That is Chapter 14. 
+
+ 8.1 Strong duality — and a free exam check 
+ For a convex problem with feasible points (which this is) the dual's maximum equals the primal's minimum. No gap. That gives you a check that costs nothing: compute \tfrac12\|\v w\|^2 from your answer, compute the dual objective at your \v\alpha , and see whether they agree. 
+
+ 3-D · drag to rotate The dual objective, and the constraint that binds 
+ Two points, so the dual has exactly two variables and the whole thing fits on a surface. Data: \v x_1=(1,2), y=+1 and \v x_2=(3,4), y=-1 . 
+
+ constraint \alpha_1 = \alpha_2 
+ best point ignoring the constraint 
+
+ reset view 
+
+ What you are looking at: the dome is D(\alpha_1,\alpha_2) = \alpha_1+\alpha_2 - \tfrac12(5\alpha_1^2 + 25\alpha_2^2 - 22\alpha_1\alpha_2) . The constraint \sum_i\alpha_i y_i=0 reads \alpha_1 - \alpha_2 = 0 , so only the diagonal is legal — the black curve traced on the surface, peaking at \alpha=\tfrac14 with value \tfrac14 . The orange marker is the best point in view if you ignore the constraint : worth nearly twice as much, and unreachable. The constraint really does bind. 
+
+ Interactive The same thing in one variable 
+ Along the constraint line, set \alpha_1=\alpha_2=\alpha and the dual collapses to a parabola. Drag the marker. 
+
+ Read it as: the dual becomes 2\alpha - 4\alpha^2 , peaking at \alpha=\tfrac14 with value \tfrac14 . That equals the primal \tfrac12\|\v w\|^2 = \tfrac14 exactly — strong duality, confirmed live by the "gap" readout. 
+
+ The algebra behind 2\alpha - 4\alpha^2 , and a shortcut worth memorising 
+ With y_1=+1 , y_2=-1 and Gram entries \v x_1\cdot\v x_1=5 , \v x_1\cdot\v x_2=11 , \v x_2\cdot\v x_2=25 , expand the double sum's four terms: 
+ D = \alpha_1+\alpha_2 - \frac{1}{2}\left[\alpha_1^2(5) + \alpha_2^2(25) + 2\alpha_1\alpha_2(-1)(11)\right] 
+ The cross term carries y_1y_2 = -1 , hence the minus. The constraint \alpha_1(+1)+\alpha_2(-1)=0 forces \alpha_1=\alpha_2=\alpha : 
+ D(\alpha) = 2\alpha - \frac{1}{2}\left[5+25-22\right]\alpha^2 = 2\alpha - 4\alpha^2 
+ D'(\alpha) = 2-8\alpha = 0 \Rightarrow \alpha=\tfrac14 , and D(\tfrac14) = \tfrac12-\tfrac14 = \tfrac14 . 
+ Notice 5+25-22 = 8 = \|\v x_1-\v x_2\|^2 . Not a coincidence — for any two-point problem the same algebra gives D(\alpha) = 2\alpha - \tfrac12\|\v x_1-\v x_2\|^2\alpha^2 , so: 
+ \alpha_1 = \alpha_2 = \frac{2}{\|\v x_1 - \v x_2\|^2} 
+ memorise this — it turns any two-point SVM into a five-second problem 
+
+ Chapter 8 in three lines 
+ Substituting stationarity into L eliminates \v w and b , leaving a maximisation in \v\alpha alone. 
+ The dual sees the data only through dot products \v x_i\cdot\v x_j . That door leads to kernels. 
+ Strong duality: dual optimum = primal optimum, so you can always check your answer. 
+
+ Chapter 9 Support vectors 
+
+ One KKT condition does all the interesting work: 
+ \alpha_i \left[\, y_i(\v w\cdot\v x_i+b) - 1 \,\right] = 0 
+ the left factor is dual information, the right factor is primal ; complementary slackness ties them together 
+ A product is zero only if a factor is. So for every single training point, at least one of these holds: 
+
+ Either \alpha_i = 0 
+ The point contributes nothing to \v w = \sum_i \alpha_i y_i\v x_i . Delete it from the dataset, retrain, get the identical model. 
+
+ Or y_i(\v w\cdot\v x_i+b) = 1 
+ The point sits exactly on a margin plane . It is touching the boundary of what is allowed, and it is pushing. 
+
+ Support vector. A training point with \alpha_i > 0 . By complementary slackness it necessarily lies on a margin plane, and by the representer equation it is one of the points \v w is built from. 
+
+ 9.1 The three regions 
+
+ Hard-margin SVM: every training point lands in exactly one of these 
+ Where the point sits score y_i f(\v x_i) \alpha_i Effect on the model 
+
+ Strictly outside the street > 1 = 0 None whatsoever 
+ Exactly on a margin plane = 1 ≥ 0 Support vector when \alpha_i>0 — holds the street open 
+ Inside the street < 1 — Impossible. Violates primal feasibility — needs Chapter 13 
+
+ ▲ Watch out — >0 is not >1 
+ The condition that forces \alpha_i=0 is y_i f(\v x_i) > 1 — strictly outside the street . It is not >0 , which merely means "correctly classified" and includes points sitting inside the street. Those are very much not free: under a hard margin they are infeasible, and under a soft margin they cost you. 
+
+ ▲ Watch out — "on the margin" does not guarantee "support vector" 
+ Complementary slackness says \alpha_i>0 implies the point lies on a margin plane. It does not say the reverse. KKT permits a point to sit exactly on the margin with \alpha_i=0 — a degenerate support vector . It touches the street but exerts no force, so deleting it changes nothing. 
+ This is not a curiosity: Problem 3 in Chapter 16 contains one, confirmed against a solver. Safe phrasing: "support vectors are the points with \alpha_i>0 ; they necessarily lie on a margin plane, but not every point on a margin plane has \alpha_i>0 ." 
+
+ Interactive Drag a point across the three regions 
+ The boundary is held fixed. Move the probe and watch its score, its region and its multiplier status change. 
+
+ Try: park the probe far out on its own side. The score climbs and climbs, but its influence stays exactly zero. That insensitivity is why SVM shrugs off outliers far on the correct side — and, as Chapter 13 shows, why it is hurt by outliers on the wrong side. 
+
+ 9.2 Sparsity, and the prediction rule 
+ Combine \v w = \sum_i \alpha_i y_i \v x_i with "most \alpha_i are zero" and the sum collapses: 
+ f(\v x) = \v w\cdot\v x + b = \sum_{i \in SV} \alpha_i y_i (\v x_i\cdot\v x) + b 
+ to classify a new point, compare it only against the support vectors 
+ This is what makes kernel SVMs feasible at all. If prediction required all n training points, a kernel SVM on a million examples would be unusable. Because it needs only the support vectors — often a small fraction — it is merely slow. 
+
+ ★ The correct story, in the correct order 
+ Find the widest separating street → the street collides with the closest points on each side → those points are the support vectors → and it happens that the model can be rebuilt from them alone. Every arrow runs forward. There is no step where you choose which points are special; that fact is delivered by the solution, and it is the reward for solving the problem the right way. 
+
+ Chapter 9 in three lines 
+ Complementary slackness: for each point, either \alpha_i=0 or it sits exactly on a margin plane. 
+ Support vectors are the points with \alpha_i>0 ; everything else could be deleted with no effect. 
+ They are produced by the solution, never chosen before it. 
+
+ Chapter 10 Worked example 1 — one dimension 
+
+ Start in one dimension, where every quantity is visible at once. Four points on a line: 
+ x = 2,\, 3 \;\longrightarrow\; y=+1 \qquad\qquad x = -2,\, -3 \;\longrightarrow\; y=-1 
+ Here \v w is a single number w , so \|\v w\| = |w| and f(x) = wx+b . 
+
+ Interactive The 1-D SVM, live 
+ Drag any point along the line. The solution recomputes on every move — watch which points become support vectors. 
+
+ Try: drag the inner positive point from 2 toward 1. The street narrows, |w| grows, and \alpha grows with it. Drag it past the outer point and watch the support-vector role hand over — more evidence that support vectors are chosen by the geometry, not by you. 
+ reset to 2, 3, −2, −3 
+
+ 10.1 Full solution, every step 
+
+ Which points will the street collide with? 
+ The two classes come closest at x=2 and x=-2 . Those are the candidates; \pm 3 lie further out. We will verify this guess at step 5 rather than assume it. 
+
+ Write the margin conditions for the candidates 
+ Canonical form says the touching points score exactly \pm 1 . For x=2 with y=+1 , and for x=-2 with y=-1 : 
+ (+1)\big(2w+b\big) = 1 \qquad\text{and}\qquad (-1)\big(-2w+b\big) = 1 
+ Simplify the second by multiplying out the -1 : 
+ 2w+b = 1 \qquad\text{(A)} \qquad\qquad -2w+b = -1 \qquad\text{(B)} 
+
+ Solve the 2×2 system 
+
+ \text{(A)} + \text{(B)}:\quad 2b = 0 \;\Longrightarrow\; b = 0 
+ the w terms cancel 
+
+ \text{(A)} - \text{(B)}:\quad 4w = 2 \;\Longrightarrow\; w = \tfrac12 
+ the b terms cancel 
+
+ So f(x) = x/2 , and the boundary f(x)=0 sits at x=0 . 
+
+ Margin 
+ \text{margin} = \frac{2}{\|\v w\|} = \frac{2}{1/2} = 4 
+ Check it geometrically: the margin planes are f(x)=\pm 1 , i.e. x=\pm 2 . The street runs from -2 to +2 , width 4 ✓ 
+
+ Verify the guess — are the outer points really free? 
+
+ x y f(x)=x/2 score y f(x) status 
+
+ 2 +1 1 1 on the margin 
+ 3 +1 1.5 1.5 outside ⇒ \alpha=0 
+ −2 −1 −1 1 on the margin 
+ −3 −1 −1.5 1.5 outside ⇒ \alpha=0 
+
+ Every score is \geq 1 , so the solution is feasible , and exactly two points are tight. The guess was right. 
+
+ Recover the multipliers from \v w = \sum_i \alpha_i y_i \v x_i 
+ Only the two support vectors are alive. Call their common multiplier \alpha — they must be equal because \sum_i\alpha_i y_i = \alpha_{(2)} - \alpha_{(-2)} = 0 . Then 
+ w = \alpha(+1)(2) + \alpha(-1)(-2) = 2\alpha + 2\alpha = 4\alpha 
+ \tfrac12 = 4\alpha \;\Longrightarrow\; \alpha = \tfrac18 
+
+ Cross-check three ways 
+
+ Check Value ✓ 
+
+ two-point shortcut 2/\|\v x_1-\v x_2\|^2 2/(2-(-2))^2 = 2/16 = 1/8 ✓ 
+ balance \sum_i \alpha_i y_i \tfrac18 - \tfrac18 = 0 ✓ 
+ primal \tfrac12\|\v w\|^2 \tfrac12(\tfrac12)^2 = \tfrac18 ✓ 
+ dual \sum_i\alpha_i - \tfrac12\|\v w\|^2 2(\tfrac18) - \tfrac18 = \tfrac18 ✓ equal ⇒ strong duality 
+
+ ★ Answers 
+ w = \tfrac12 , b=0 , boundary x=0 , margin 4 , \alpha_{(\pm 2)} = \tfrac18 , \alpha_{(\pm 3)} = 0 . 
+
+ Chapter 11 Worked example 2 — two points in two dimensions 
+
+ The canonical exam question. Two points, opposite classes, find everything. 
+ \v x_1 = (1,\, 2),\; y_1 = +1 \qquad\qquad \v x_2 = (3,\, 4),\; y_2 = -1 
+
+ Interactive The answer — and it re-solves as you drag 
+ Drag either point. Boundary, both margin planes, \alpha , b and the margin all recompute from the closed-form two-point solution. 
+
+ y=+1 support vector 
+ y=-1 support vector 
+ boundary 
+ margin planes 
+ the segment joining them 
+
+ reset to (1,2) and (3,4) 
+ Built-in sanity check: the margin and the point-to-point distance are reported separately. With exactly two points they always coincide — the Cauchy–Schwarz equality case, because the segment joining them is the direction of \v w . 
+
+ 11.1 The dual route, step by step 
+
+ Both points must be support vectors 
+ With one point per class there is nothing else that could hold the street open. If either had \alpha=0 then \v w=\sum\alpha_iy_i\v x_i would be a multiple of a single point and the balance condition \alpha_1 - \alpha_2 = 0 would force the other to zero too, giving \v w = \v 0 — no boundary at all. So both are tight, both have \alpha>0 . 
+ \v w = \alpha_1 y_1 \v x_1 + \alpha_2 y_2 \v x_2 = \alpha_1\v x_1 - \alpha_2\v x_2 
+
+ Compute the Gram matrix 
+ Everything in the dual runs on these three numbers: 
+
+   \v x_1 \v x_2 
+
+ \v x_1 1·1+2·2 = 5 1·3+2·4 = 11 
+ \v x_2 11 3·3+4·4 = 25 
+
+ Write the margin condition at point 1 
+ It has y_1=+1 , so the condition y_1(\v w\cdot\v x_1+b)=1 reads \v w\cdot\v x_1+b = +1 . Substitute \v w : 
+ (\alpha_1\v x_1 - \alpha_2\v x_2)\cdot\v x_1 + b = 1 
+ \alpha_1(\v x_1\cdot\v x_1) - \alpha_2(\v x_2\cdot\v x_1) + b = 1 
+ 5\alpha_1 - 11\alpha_2 + b = 1 (I) 
+
+ Write the margin condition at point 2 
+ Here y_2=-1 , so y_2(\v w\cdot\v x_2+b)=1 means \v w\cdot\v x_2+b = -1 : 
+ \alpha_1(\v x_1\cdot\v x_2) - \alpha_2(\v x_2\cdot\v x_2) + b = -1 
+ 11\alpha_1 - 25\alpha_2 + b = -1 (II) 
+
+ Three unknowns, two equations — where is the third? 
+ It is the b -stationarity condition proved in §7.4: 
+ \sum_i \alpha_i y_i = \alpha_1(+1) + \alpha_2(-1) = 0 \;\Longrightarrow\; \alpha_1 = \alpha_2 (III) 
+ This is the moment KKT stops being theory and starts being arithmetic. 
+
+ Substitute (III) into (I) and (II) 
+
+ 5\alpha_1 - 11\alpha_1 + b = 1 \;\Longrightarrow\; -6\alpha_1 + b = 1 
+ (IV), from (I) 
+
+ 11\alpha_1 - 25\alpha_1 + b = -1 \;\Longrightarrow\; -14\alpha_1 + b = -1 
+ (V), from (II) 
+
+ Solve 
+
+ \text{(IV)} - \text{(V)}:\quad 8\alpha_1 = 2 \;\Longrightarrow\; \alpha_1 = \alpha_2 = \tfrac14 
+ -6\alpha_1 - (-14\alpha_1) = 8\alpha_1 ; 1-(-1)=2 
+
+ \text{(IV)}:\quad -6\left(\tfrac14\right) + b = 1 \;\Longrightarrow\; b = 1 + \tfrac32 = \tfrac52 
+ back-substitute 
+
+ Shortcut check: \alpha = 2/\|\v x_1-\v x_2\|^2 = 2/(4+4) = \tfrac14 ✓ 
+
+ Build \v w 
+
+ \v w = \tfrac14(+1)(1,\,2) + \tfrac14(-1)(3,\,4) 
+ the representer formula with both multipliers equal to \tfrac14 
+
+ = \left(\tfrac14,\; \tfrac12\right) - \left(\tfrac34,\; 1\right) = \left(-\tfrac12,\; -\tfrac12\right) 
+ note \tfrac14\times 4 = 1 , not -1 — a startlingly common slip that puts the whole boundary in the wrong place 
+
+ Write the boundary and the margin planes 
+ -\tfrac12 x_1 - \tfrac12 x_2 + \tfrac52 = 0 \;\Longrightarrow\; x_1 + x_2 = 5 
+ And from \v w\cdot\v x+b=\pm 1 : 
+ x_1+x_2 = 3 \;\;\text{(through } (1,2)\text{)} \qquad x_1+x_2 = 7 \;\;\text{(through } (3,4)\text{)} 
+
+ Check everything 
+
+ Check Value ✓ 
+
+ y_1(\v w\cdot\v x_1+b) (+1)(−0.5−1+2.5) = 1 ✓ 
+ y_2(\v w\cdot\v x_2+b) (−1)(−1.5−2+2.5) = 1 ✓ 
+ margin 2/\|\v w\| 2/0.7071 = 2.8284 = 2\sqrt2 ✓ 
+ \|\v x_1-\v x_2\| \sqrt{4+4} = 2\sqrt2 ✓ Cauchy–Schwarz equality case 
+ primal \tfrac12\|\v w\|^2 ½(0.25+0.25) = 0.25 ✓ 
+ dual at \alpha=\tfrac14 2(¼) − 4(¼)² = 0.25 ✓ strong duality 
+ \sum_i\alpha_i y_i ¼ − ¼ = 0 ✓ 
+
+ Independently confirmed against a QP solver: w = [-0.5, -0.5], b = 2.5, α = [0.25, 0.25] . 
+
+ ◈ The answer had to be x_1+x_2=5 — no algebra required 
+ With exactly two points the widest street is forced: the boundary must be the perpendicular bisector of the segment joining them. The midpoint of (1,2) and (3,4) is (2,3) ; the segment's direction is (2,2)\propto(1,1) ; so the boundary is the line through (2,3) perpendicular to (1,1) , namely x_1+x_2=5 . The width is the full distance between the points, 2\sqrt2 . Use this to check your work in seconds — then present the KKT derivation for the marks. 
+
+ Chapter 12 Worked example 3 — eight points, three support vectors 
+
+ Two-point problems hide something: there, both multipliers are forced equal. With more points they genuinely differ, and you get to use the b -recovery formula for real. 
+
+ Class Points 
+
+ y=+1 (3, 1) · (3, −1) · (6, 1) · (6, −1) 
+ y=-1 (1, 0) · (0, 1) · (0, −1) · (−1, 0) 
+
+ Interactive Eight points, solved live 
+ Hover any point for its score and multiplier. Support vectors are ringed. 
+
+ y=+1 
+ y=-1 
+ support vector 
+ boundary x_1 = 2 
+ margin planes x_1 = 1,\,3 
+
+ Notice the asymmetry: two support vectors on the positive side share the work, one on the negative side does it alone — so its multiplier is exactly the sum of theirs. That is \sum_i\alpha_i y_i = 0 made visible. 
+
+ 12.1 Full solution, every step 
+
+ Read the geometry before touching algebra 
+ The positive cloud lives at x_1\in\{3,6\} and the negative cloud at x_1\in\{-1,0,1\} . The closest approach is between x_1=1 and x_1=3 . Nothing in the x_2 direction distinguishes the classes — both clouds are symmetric about x_2=0 — so expect \v w to point purely along x_1 , and the boundary to be the vertical line halfway between, x_1=2 . 
+
+ Impose the margin conditions on the candidates 
+ Try \v w=(w_1,\,0) . The candidate support vectors are (3,\pm 1) on the positive side and (1,0) on the negative: 
+ (+1)\big(3w_1 + b\big) = 1 \qquad\text{and}\qquad (-1)\big(1\cdot w_1 + b\big) = 1 
+ 3w_1 + b = 1 \qquad\text{(A)} \qquad\qquad w_1 + b = -1 \qquad\text{(B)} 
+ Both points (3,1) and (3,-1) give the same equation, because w_2=0 makes x_2 irrelevant. 
+
+ Solve 
+
+ \text{(A)} - \text{(B)}:\quad 2w_1 = 2 \;\Longrightarrow\; w_1 = 1 
+ the b terms cancel 
+
+ \text{(B)}:\quad 1 + b = -1 \;\Longrightarrow\; b = -2 
+ back-substitute 
+
+ \v w = (1,\,0), \qquad b = -2, \qquad \text{boundary } x_1 = 2 
+
+ Verify feasibility at all eight points 
+ With f(\v x) = x_1 - 2 : 
+
+ point y f = x_1-2 score y f status 
+
+ (3, 1) +1 1 1 on the margin 
+ (3, −1) +1 1 1 on the margin 
+ (6, 1) +1 4 4 free 
+ (6, −1) +1 4 4 free 
+ (1, 0) −1 −1 1 on the margin 
+ (0, 1) −1 −2 2 free 
+ (0, −1) −1 −2 2 free 
+ (−1, 0) −1 −3 3 free 
+
+ All scores \geq 1 ⇒ feasible, and exactly three points are tight. Those three are the only ones that can carry \alpha>0 . 
+
+ Recover the multipliers 
+ Write \alpha_a for (3,1) , \alpha_b for (3,-1) , \alpha_c for (1,0) ; every other \alpha is zero. The representer formula gives two scalar equations, one per coordinate: 
+ \v w = \alpha_a(3,1) + \alpha_b(3,-1) - \alpha_c(1,0) = \big(3\alpha_a+3\alpha_b-\alpha_c,\;\; \alpha_a-\alpha_b\big) 
+
+ \text{2nd coordinate}:\quad \alpha_a - \alpha_b = 0 \;\Longrightarrow\; \alpha_a = \alpha_b 
+ matching w_2 = 0 ; the up–down symmetry of the data, as expected 
+
+ \text{balance}:\quad \alpha_a + \alpha_b - \alpha_c = 0 \;\Longrightarrow\; \alpha_c = 2\alpha_a 
+ \sum_i \alpha_i y_i = 0 with two positives and one negative 
+
+ \text{1st coordinate}:\quad 3(2\alpha_a) - 2\alpha_a = 1 \;\Longrightarrow\; 4\alpha_a = 1 
+ matching w_1 = 1 , after substituting both relations 
+
+ \alpha_a = \alpha_b = \tfrac14, \qquad \alpha_c = \tfrac12 
+
+ Recover b from the formula, two ways 
+ Any support vector satisfies y_s f(\v x_s)=1 , and since y_s^2=1 that rearranges to b = y_s - \v w\cdot\v x_s : 
+ \text{using } (1,0),\, y=-1: \quad b = -1 - (1)(1) = -2 \;\;✓ 
+ \text{using } (3,1),\, y=+1: \quad b = +1 - (1)(3) = -2 \;\;✓ 
+ Every support vector gives the same b , as it must. 
+
+ Margin and duality check 
+ Margin = 2/\|\v w\| = 2/1 = 2 — the street runs from x_1=1 to x_1=3 ✓ 
+
+ \text{primal} = \tfrac12\|\v w\|^2 = \tfrac12 
+ from \v w=(1,0) 
+
+ \text{dual} = \sum_i\alpha_i - \tfrac12\|\v w\|^2 = \left(\tfrac14+\tfrac14+\tfrac12\right) - \tfrac12 = \tfrac12 
+ using the step-3 identity L = \sum\alpha_i - \tfrac12\v w\cdot\v w from Chapter 8 
+
+ Equal ⇒ strong duality holds ⇒ the answer is optimal. 
+
+ ★ Answers 
+ \v w=(1,0) · b=-2 · boundary x_1=2 · margin 2 · support vectors (3,1),(3,-1),(1,0) with \alpha=\tfrac14,\tfrac14,\tfrac12 · every other \alpha=0 . (Solver ✓) 
+
+ ◈ Two things this example teaches that the two-point one cannot 
+
+ Multipliers are not all equal. The lone negative support vector carries \alpha=\tfrac12 while each of the two positives carries \tfrac14 . The class with fewer support vectors puts more weight on each of them — \sum_i\alpha_i y_i=0 in action. 
+ Five of eight points are irrelevant. Delete (6,\pm 1) , (0,\pm 1) and (-1,0) , retrain, and you get the identical model. Move them further away — same model. That is sparsity, and you can verify it by dragging them in the playground. 
+
+ Chapter 13 Soft margin, derived from scratch 
+
+ Real data overlaps. One mislabelled example, one measurement error, one genuinely ambiguous case — and hard margin does not degrade gracefully, it ceases to have a solution . The feasible set is empty and there is nothing to return. Everything in this chapter is the same machinery as Chapters 5–9, redone with one extra variable per point. 
+
+ 13.1 The relaxed problem 
+ Attach a slack variable \xi_i \geq 0 to each point — how much that point is permitted to cheat: 
+ y_i(\v w\cdot\v x_i+b) \;\geq\; 1 - \xi_i 
+ \xi_i=0 → behaves  ·  0<\xi_i\leq 1 → inside the street but still on the right side  ·  \xi_i>1 → actually misclassified 
+ Left unpriced, the optimiser would set every \xi_i enormous and declare victory with a street the width of the universe. So charge for slack: 
+
+ ★ The soft-margin SVM 
+
+ \min_{\v w,\, b,\, \v\xi} \; \frac{1}{2}\|\v w\|^2 + C\sum_{i=1}^{n}\xi_i \qquad\text{s.t.}\qquad y_i(\v w\cdot\v x_i+b) \geq 1-\xi_i, \quad \xi_i \geq 0 
+ two terms with opposite wishes: the first widens the street , the second reduces the cheating . C is the exchange rate. 
+
+ 13.2 The Lagrangian now needs two families of multipliers 
+ There are two families of constraints, so there are two families of prices: \alpha_i \geq 0 for the margin constraints and \mu_i \geq 0 for \xi_i \geq 0 . Writing each in the form g\geq 0 and subtracting: 
+
+ L = \frac{1}{2}\|\v w\|^2 + C\sum_i \xi_i - \sum_i \alpha_i\left[ y_i(\v w\cdot\v x_i+b) - 1 + \xi_i \right] - \sum_i \mu_i \xi_i 
+ with \alpha_i \geq 0 and \mu_i \geq 0 for every i 
+
+ 13.3 Three stationarity conditions 
+
+ \frac{\partial L}{\partial \v w} = \v w - \sum_i \alpha_i y_i \v x_i = \v 0 \;\Longrightarrow\; \v w = \sum_i \alpha_i y_i \v x_i 
+ unchanged. Lemmas A and B from §7.1–7.2; the \xi and \mu terms contain no \v w 
+
+ \frac{\partial L}{\partial b} = -\sum_i \alpha_i y_i = 0 \;\Longrightarrow\; \sum_i \alpha_i y_i = 0 
+ unchanged. Same single linear term in b as before 
+
+ \frac{\partial L}{\partial \xi_i} = C - \alpha_i - \mu_i = 0 \;\Longrightarrow\; \alpha_i + \mu_i = C 
+ new. Collect the three terms containing \xi_i : +C\xi_i , -\alpha_i\xi_i , -\mu_i\xi_i . All linear, so the derivative is just the coefficient 
+
+ ★ The box constraint, proved in one line 
+ From \alpha_i + \mu_i = C we get \mu_i = C - \alpha_i . Dual feasibility demands \mu_i \geq 0 , so C - \alpha_i \geq 0 , i.e. \alpha_i \leq C . Combined with \alpha_i \geq 0 : 
+ 0 \;\leq\; \alpha_i \;\leq\; C 
+
+ 13.4 The dual — and the surprise 
+ Substitute all three conditions back into L . Expand first so every \xi term is visible: 
+
+ L = \frac{1}{2}\v w\cdot\v w + C\sum_i \xi_i - \sum_i \alpha_i y_i(\v w\cdot\v x_i) - b\sum_i\alpha_i y_i + \sum_i\alpha_i - \sum_i\alpha_i\xi_i - \sum_i\mu_i\xi_i 
+ multiply out both bracketed sums 
+
+ = \frac{1}{2}\v w\cdot\v w - \v w\cdot\v w + \sum_i\alpha_i \;+\; \sum_i \xi_i\underbrace{\big(C - \alpha_i - \mu_i\big)}_{=\,0} \;-\; b\underbrace{\sum_i\alpha_i y_i}_{=\,0} 
+ group the three \xi_i terms — the bracket is exactly the third stationarity condition, so it vanishes. The b term vanishes by the second. 
+
+ = \sum_i \alpha_i - \frac{1}{2}\v w\cdot\v w = \sum_i \alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_j y_i y_j(\v x_i\cdot\v x_j) 
+ identical to Chapter 8 from here on 
+
+ ★ The soft-margin dual — spot the difference 
+
+ \max_{\v\alpha} \;\; \sum_i \alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_j y_i y_j (\v x_i\cdot\v x_j) \qquad\text{s.t.}\qquad \sum_i \alpha_i y_i = 0, \quad 0 \leq \alpha_i \leq C 
+ the objective is letter-for-letter identical to the hard-margin dual. Both \xi and \mu have vanished completely. The only change is the upper cap on \alpha_i . 
+
+ That is a genuinely surprising result and worth pausing on. Softening the margin does not change what we are optimising at all — it only caps how much influence any single point may have . That cap is the robustness: no outlier can push harder than C , no matter how badly placed it is. In the hard-margin problem, C=\infty and a single bad point can push arbitrarily hard, which is exactly why one outlier destroys it. 
+
+ 13.5 Proof that the slack collapses to a hinge 
+ You never chose the hinge loss — the optimiser derives it. Rearranging the constraint gives \xi_i two lower bounds: 
+ \xi_i \geq 1 - y_i(\v w\cdot\v x_i+b) \qquad\text{and}\qquad \xi_i \geq 0 
+ The objective contains +C\xi_i with C>0 , so it is strictly increasing in \xi_i . At the optimum \xi_i is therefore as small as both bounds allow — which is the larger of the two: 
+ \xi_i = \max\Big(0,\; 1 - y_i(\v w\cdot\v x_i+b)\Big) 
+ the hinge loss — derived, never chosen 
+ Substituting this back removes the constraints entirely and leaves an unconstrained convex problem, which is how most machine-learning courses present SVM: 
+ \min_{\v w, b} \;\; \frac{1}{2}\|\v w\|^2 + C\sum_{i=1}^{n}\max\big(0,\, 1 - y_i f(\v x_i)\big) 
+ "regulariser + hinge loss" — the same problem, with the constraints absorbed into the objective 
+
+ Writing z = y_i f(\v x_i) for the score 
+ score z \xi = \max(0,1-z) Situation 
+
+ 2.0 0 Comfortably outside — no penalty 
+ 1.0 0 Exactly on a margin plane — still free 
+ 0.5 0.5 Inside the street, still correctly classified 
+ 0.0 1.0 Sitting on the decision boundary itself 
+ −0.5 1.5 Misclassified 
+ −1.0 2.0 Misclassified and confident about it 
+
+ Interactive Hinge loss, and why it beats counting mistakes 
+ Drag the marker along the score axis. Toggle the comparison losses on and off. 
+
+ 0/1 loss 
+ logistic loss 
+ squared hinge 
+
+ Why not simply count mistakes? The 0/1 loss is flat with zero gradient everywhere and a cliff at 0 — there is nothing to optimise. Hinge is its tightest convex upper bound : convex (so a global optimum exists), with a real gradient where it matters, and — uniquely — exactly zero past z=1 . That flat zero region is what makes most \alpha_i vanish and gives SVM its sparsity. Logistic loss never quite reaches zero, which is precisely why logistic regression has no support vectors. 
+
+ 13.6 Proof of the three regimes 
+ Soft margin has two complementary-slackness conditions, one per constraint family: 
+ \alpha_i\left[ y_i f(\v x_i) - 1 + \xi_i \right] = 0 \qquad\text{and}\qquad \mu_i\,\xi_i = 0 
+ Combine them with \mu_i = C - \alpha_i and read off every case: 
+
+ Case \alpha_i = 0 
+ Then \mu_i = C > 0 , and \mu_i\xi_i=0 forces \xi_i = 0 . The first condition is satisfied automatically. Primal feasibility y_i f \geq 1-\xi_i = 1 then says the point is outside or on the street. Non-support vector. 
+ Case 0 < \alpha_i < C 
+ Then \mu_i = C-\alpha_i > 0 , so again \xi_i = 0 . But now \alpha_i \neq 0 , so the first condition forces its bracket to vanish: y_i f - 1 + 0 = 0 , i.e. y_i f(\v x_i) = 1 exactly. Free (margin) support vector — sitting precisely on a margin plane. 
+ Case \alpha_i = C 
+ Then \mu_i = 0 and \mu_i\xi_i=0 is satisfied for any \xi_i \geq 0 — the slack is released. And \alpha_i>0 still forces y_i f = 1-\xi_i \leq 1 . Bounded support vector — inside the street, or misclassified if \xi_i>1 . 
+
+ ★ Read a trained SVM from its multipliers alone 
+
+ \alpha_i \mu_i \xi_i score Name 
+
+ 0 C 0 ≥ 1 Non-support vector 
+ 0 < α < C > 0 0 = 1 Free / margin SV 
+ = C 0 ≥ 0 ≤ 1 Bounded SV 
+
+ 13.7 How to actually compute b 
+ The dual gives you the \alpha 's but never b . Recover it from a free support vector, because those are exactly the ones proved above to satisfy y_s f(\v x_s) = 1 . Since y_s^2 = 1 , multiplying through by y_s gives f(\v x_s) = y_s , so: 
+ b = y_s - \sum_{i \in SV} \alpha_i y_i (\v x_i\cdot\v x_s) \qquad\text{for any } s \text{ with } 0 < \alpha_s < C 
+ a bounded SV has \xi_s>0 and would give the wrong answer 
+ In exact arithmetic every free support vector gives the same b . With floating point they differ in the last digits, so real implementations average over all of them . 
+
+ 13.8 What C does 
+
+ Large C — slack is expensive 
+ Violations cost a lot, so the model contorts to avoid them. Narrow street, few support vectors, low bias, high variance. As C\to\infty you recover hard margin. Chases outliers. Overfits. 
+
+ Small C — slack is cheap 
+ The margin term dominates, so the model buys a wide street and tolerates points inside it. Wide street, many support vectors, high bias, low variance. Ignores individual points. Underfits. 
+
+ ▲ Watch out — C runs backwards from \lambda 
+ C is a regularisation parameter, but it is the inverse of the \lambda you meet in ridge regression. Big \lambda = more regularisation = simpler model. Big C = less regularisation = more complex model. Roughly C \approx 1/\lambda . Mixing them up is a classic exam trap. 
+
+ Interactive Sweep C on data that genuinely overlaps 
+ A real soft-margin solver runs on every slider move. Watch the street, the support-vector count and the total slack trade against each other. 
+
+ penalty C 1.00 
+
+ dataset 
+ overlapping one outlier clean 
+
+ y=+1 
+ y=-1 
+ support vector 
+ boundary 
+ margin planes 
+
+ Try "one outlier" and sweep C left to right. At small C the model shrugs off the rogue point and keeps a sensible wide boundary. At large C it twists itself to accommodate one bad label — a textbook picture of overfitting, and the reason C is the first thing you cross-validate. The "free / bounded" readout is the §13.6 classification, live. 
+
+ Chapter 13 in four lines 
+ Slack \xi_i lets points violate the margin; C prices the violation. 
+ A third stationarity condition \alpha_i+\mu_i=C appears, and it proves 0\leq\alpha_i\leq C . 
+ The dual objective is unchanged — only the cap on \alpha_i is new, and that cap is the robustness. 
+ The optimiser derives the hinge loss on its own; the three \alpha regimes follow from the two slackness conditions. 
+
+ Chapter 14 Kernels, derived from scratch 
+
+ Soft margin handles a bit of noise. It does nothing for data that is not linearly separable in principle — concentric rings, XOR, a checkerboard. No straight line will ever work on those, at any C . The move is to change the space: 
+ \phi : \mathbb{R}^d \to \mathbb{R}^p \qquad\text{with}\qquad p \gg d 
+ a straight cut up there is a curved cut back down here 
+
+ Interactive The lift, in the smallest example that works 
+ 1-D data no single threshold can split. Add one feature — x^2 — and it comes apart under a straight line. 
+
+ lift \phi(x) = (x,\, x^2) 0% 
+
+ Read it as: in 1-D the classes interleave — inner points are one class, outer points the other, so no threshold works. Adding x^2 raises the outer points and a straight line separates them. Project that line back down and it becomes two thresholds — a curved decision rule, obtained by an entirely linear method. 
+
+ 3-D · drag to rotate Rings become separable by lifting to a paraboloid 
+ Two concentric rings in the plane. Lift with \phi(\v x) = (x_1,\, x_2,\, x_1^2+x_2^2) and a single flat plane slices them apart. 
+
+ lift amount 100% 
+
+ separating plane 
+ shadow circle on the floor 
+
+ reset view 
+
+ inner ring, y=+1 
+ outer ring, y=-1 
+ separating plane \phi_3 = 2.9 
+ where it lands back in the plane 
+
+ The single best picture in the subject. Slide the lift to 0 and the rings sit on top of each other — hopeless. Slide to 100% and the inner ring drops to \phi_3 = 1 while the outer rises to \approx 4.84 ; a horizontal plane at 2.9 separates them trivially. Look at the floor: that flat plane, pushed back into the original space, is the circle x_1^2+x_2^2 = 2.9 . Linear up there, curved down here. 
+
+ 14.1 Everything is dot products 
+ Take the prediction rule proved in §9.2 and replace every \v x with \phi(\v x) : 
+ f(\v x) = \sum_{i\in SV}\alpha_i y_i\,\big(\phi(\v x_i)\cdot\phi(\v x)\big) + b 
+ and do the same in the dual objective of §8. In both places \phi appears only inside a dot product with another \phi . Nowhere does an individual coordinate of \phi(\v x) appear on its own. So define 
+ k(\v x, \v z) \;:=\; \phi(\v x)\cdot\phi(\v z) 
+ the kernel . If you can compute this number cheaply, you never need \phi itself. 
+
+ 14.2 Proof that the polynomial kernel is a dot product 
+ Take d=2 , p=2 , c=1 , and expand (\v x\cdot\v z+1)^2 by hand: 
+
+ (\v x\cdot\v z+1)^2 = (x_1z_1 + x_2z_2 + 1)^2 
+ write the dot product out 
+
+ = x_1^2z_1^2 + x_2^2z_2^2 + 1 + 2x_1z_1x_2z_2 + 2x_1z_1 + 2x_2z_2 
+ square of a trinomial: three squares and three cross terms 
+
+ = \underbrace{(1)(1)}_{} + \underbrace{(\sqrt2 x_1)(\sqrt2 z_1)}_{} + \underbrace{(\sqrt2 x_2)(\sqrt2 z_2)}_{} + \underbrace{(x_1^2)(z_1^2)}_{} + \underbrace{(\sqrt2 x_1x_2)(\sqrt2 z_1z_2)}_{} + \underbrace{(x_2^2)(z_2^2)}_{} 
+ group every term as (something in \v x ) × (the same thing in \v z ); the \sqrt2 factors split the coefficient 2 evenly 
+
+ That last line is a dot product of two 6-vectors. Reading off the \v x -halves gives the feature map explicitly: 
+ \phi(\v v) = \big(1,\; \sqrt2\,v_1,\; \sqrt2\,v_2,\; v_1^2,\; \sqrt2\,v_1v_2,\; v_2^2\big) 
+ 6 coordinates = \comb{4}{2} , and k(\v x,\v z)=\phi(\v x)\cdot\phi(\v z) exactly. ∎ 
+ Nothing mysterious happened. The kernel computes a six-dimensional dot product without ever building the six-dimensional vectors — and at degree 5 in 100 dimensions it does the same for ninety-six million coordinates. In general the multinomial theorem expands (\v x\cdot\v z+c)^p into a sum over all monomials of degree \leq p , each with a positive coefficient that splits as \sqrt{\cdot}\times\sqrt{\cdot} between the two arguments — so the same argument works for every d and p . 
+
+ Interactive Check the identity for yourself 
+ Both sides computed live: the explicit feature map, expanded coordinate by coordinate, versus one line of kernel arithmetic. 
+
+ \v x = (x_1, x_2) 
+
+ \v z = (z_1, z_2) 
+
+ degree p 2 
+ kernel (x·z + 1)ᵖ (x·z)ᵖ 
+
+ The claim: the two columns agree for every input and every degree. The left column's cost explodes with p ; the right column's does not move. That gap is the whole kernel trick. 
+
+ 14.3 Proof of the counting formula 
+ How big is that feature space? Count the monomials x_1^{a_1}x_2^{a_2}\cdots x_d^{a_d} with a_1+\cdots+a_d \leq p . 
+
+ a_1+\cdots+a_d \leq p \quad\Longleftrightarrow\quad a_0+a_1+\cdots+a_d = p, \;\; a_0 \geq 0 
+ introduce a slack variable a_0 = p - \sum_j a_j to absorb the deficit — a bijection between the two sets 
+
+ \#\{\text{non-negative integer solutions}\} = \binom{p + d}{d} = \binom{d+p}{p} 
+ stars and bars: distribute p identical units into d+1 labelled bins, which needs d dividers among p+d positions 
+
+ \#\text{features of degree} \leq p \;=\; \comb{d+p}{p} 
+ check: d=2, p=3 \Rightarrow \comb{5}{3} = 10 , matching 1+2+3+4 counted by degree ∎ 
+
+ How fast that grows 
+ d p features \comb{d+p}{p} comment 
+
+ 2 3 10 fine 
+ 10 5 3,003 getting heavy 
+ 100 5 96,560,646 ≈ 96.6 million — per data point 
+ 1000 5 ≈ 8.4 × 10 12 hopeless in every sense 
+
+ Storing 96 million numbers per example, then taking a 96-million-term dot product for every pair — that is not slow, it is impossible. Yet degree-5 polynomial SVMs on 100 features are routine, because the kernel costs d+2 operations regardless of p . 
+
+ Interactive Feature-count calculator 
+ Set the input dimension and the degree. Both kernel families are shown — the difference is §14.4. 
+
+ input dimension d 2 
+ degree p 3 
+ 2, 3 10, 5 100, 5 
+
+ Read it as: the bars are log-scaled because a linear scale is useless here. The horizontal rule marks the cost of a single kernel evaluation, which does not depend on p at all. 
+
+ 14.4 Two polynomial kernels, and they are not the same 
+
+ ▲ Watch out — this is the mistake that quietly changes your model 
+ Setting c=0 changes which monomials survive. In the expansion of (\v x\cdot\v z)^p there is no +c to contribute a "missing degree", so every term uses all p factors: 
+
+ Kernel Feature map contains Dimension d=2, p=3 
+
+ Homogeneous (\v x\cdot\v z)^p monomials of degree exactly p \comb{d+p-1}{p} 4 
+ Inhomogeneous (\v x\cdot\v z + c)^p , c>0 all monomials of degree ≤ p \comb{d+p}{p} 10 
+
+ The counting formula \comb{d+p}{p} describes the inhomogeneous kernel. If you write (\v x\cdot\v z)^5 while quoting \comb{d+p}{p} , those do not match. Worse, the homogeneous kernel in 2-D has only \comb{6}{5}=6 features — no constant, no linear terms, no x^2 — so it cannot represent a plain straight line . This is exactly why sklearn 's SVC exposes coef0 , why its default is coef0=1 , and why setting it to 0 silently changes the model class. Toggle the two in the calculator above and watch the dimension collapse. 
+
+ 14.5 Which functions are legal kernels? 
+ Not every similarity function is a kernel. For the dual to stay a convex QP, the Gram matrix K_{ij} = k(\v x_i,\v x_j) must be symmetric positive semi-definite for every finite set of points. The reason is one line: if k=\phi\cdot\phi then for any vector \v c , 
+ \v c^{\,\top} K \v c = \sum_{i,j} c_i c_j\, \phi(\v x_i)\cdot\phi(\v x_j) = \left\|\sum_i c_i \phi(\v x_i)\right\|^2 \geq 0 
+ so being an inner product forces PSD. Mercer's condition is the converse: a symmetric PSD kernel is guaranteed to be an inner product in some feature space, even if you can never write \phi down. Two facts that save real time: 
+
+ Kernels compose. If k_1 and k_2 are kernels, so are k_1+k_2 , c\,k_1 for c>0 , k_1k_2 , and \exp(k_1) . You can build new ones without ever touching \phi . 
+ If PSD fails, the QP is no longer convex and the solver may not converge to anything meaningful. The sigmoid "kernel" is the well-known offender — PSD only for some parameters, which is why it has largely fallen out of use. 
+
+ 14.6 The kernels worth knowing 
+
+ Kernel k(\v x,\v z) Feature dim When to reach for it 
+
+ Linear \v x\cdot\v z d Many features, text, already separable. Always try first. 
+ Polynomial (\gamma\,\v x\cdot\v z + c)^p \comb{d+p}{p} Feature interactions matter. Keep p at 2 or 3. 
+ RBF / Gaussian \exp(-\gamma\|\v x-\v z\|^2) ∞ The default when you don't know. Two knobs: C and \gamma . 
+ Sigmoid \tanh(\gamma\,\v x\cdot\v z + c) — Rarely. Not PSD for all parameters. 
+
+ ◈ Proof sketch that RBF is infinite-dimensional 
+ Expand the exponential. With \gamma=\tfrac12 for readability, 
+ e^{-\frac12\|\v x-\v z\|^2} = e^{-\frac12\|\v x\|^2}\, e^{-\frac12\|\v z\|^2}\, e^{\v x\cdot\v z} = e^{-\frac12\|\v x\|^2}e^{-\frac12\|\v z\|^2}\sum_{k=0}^{\infty}\frac{(\v x\cdot\v z)^k}{k!} 
+ Every term (\v x\cdot\v z)^k is a homogeneous polynomial kernel, so RBF is a positively-weighted sum of polynomial kernels of every degree. Its feature map therefore contains monomials of unbounded degree — infinitely many coordinates. You could never write it down; you compute k in three operations anyway. 
+ Read \gamma as an inverse radius of influence. Large \gamma ⟹ each support vector affects only its immediate neighbourhood ⟹ a wiggly, overfitting boundary. Small \gamma ⟹ broad, smooth influence ⟹ the boundary approaches a straight line. \gamma controls shape, C controls tolerance , and you cross-validate them together, never one at a time. 
+
+ 3-D · drag to rotate The decision surface f(\v x) , and what \gamma does to it 
+ A trained RBF SVM. The surface is the decision value over the plane; the boundary is where it crosses zero. 
+
+ γ 1.00 
+ data two blobs XOR rings 
+ zero plane 
+
+ reset view 
+
+ Push \gamma to the right. The surface breaks into a separate bump around every training point and the zero contour fragments into islands. Every point becomes a support vector — the readout says so. That is overfitting, rendered in three dimensions. Push \gamma left and the surface flattens into a single smooth ramp: effectively linear, underfitting. The rings preset shows the good regime in between. 
+
+ Interactive XOR — the case that forces a kernel 
+ Four points, no line will ever work. Switch kernels and watch a boundary appear. 
+
+ kernel 
+ linear poly, p =2 RBF 
+ γ (RBF) 1.0 
+
+ Why one extra feature is enough: the single product x_1x_2 equals +1 at both positive points and -1 at both negatives. A degree-2 polynomial kernel contains that term for free — which is exactly why it solves XOR while a linear kernel cannot even reach 75%. 
+
+ 14.7 The final decision function 
+ Swap the dot product for the kernel everywhere and you are done: 
+ f(\v x) = \sum_{i \in SV} \alpha_i y_i\, k(\v x_i, \v x) + b \qquad\text{predict } \text{sign} f(\v x) 
+
+ ▲ Watch out — notice what is missing from that formula 
+ \v w is gone. In an infinite-dimensional feature space it cannot be written down, so it is never formed. Two consequences: prediction costs O(|SV| \cdot d) instead of O(d) — a kernel SVM with 5,000 support vectors is genuinely slow — and you lose the feature weights that make a linear model interpretable. A kernel buys expressiveness with speed and interpretability. Try linear first, and mean it. 
+
+ Chapter 14 in five lines 
+ Not-linearly-separable data becomes separable in a higher-dimensional feature space. 
+ The dual and the prediction rule only ever need \phi(\v x)\cdot\phi(\v z) , so define k to be that number and skip \phi . 
+ Expanding (\v x\cdot\v z+1)^2 by hand exhibits the 6-dimensional \phi explicitly — no magic. 
+ Feature counts grow as \comb{d+p}{p} (stars and bars); kernel cost does not grow at all. 
+ (\v x\cdot\v z+c)^p and (\v x\cdot\v z)^p are different models . RBF is a weighted sum of all polynomial degrees, hence infinite-dimensional. 
+
+ Chapter 15 
+ The playground 
+
+ Everything proved in Chapters 2–14 is now running live. This is not a picture of an SVM; it is an SVM. Every click re-solves the dual from scratch with a real SMO solver in your browser. 
+
+ Sandbox Click to add points · drag to move · shift-click to delete 
+ Support vectors get a ring; the shading is the decision value f(\v x) . Hover any point for its full state — score, slack, \alpha . 
+
+ adding class 
+ ● +1 ◆ −1 
+ kernel 
+ linear poly RBF 
+ C 1.00 
+
+ γ 1.00 
+
+ degree 2 
+
+ value shading 
+ margin contours 
+ α labels 
+
+ separable overlapping 
+ XOR rings moons 
+
+ clear 
+
+ y=+1 
+ y=-1 
+ support vector 
+ f(\v x)=0 
+ f(\v x)=\pm 1 
+
+ Five experiments worth running: 
+ (1) separable + linear + large C — count the support vectors; there will be very few.
+ (2) Drag a non-support-vector around inside its own cloud: the boundary does not move at all until it crosses into the street. That is Chapter 9, verifiable by hand.
+ (3) rings + RBF, then push \gamma up — watch the boundary shatter into islands around individual points. Overfitting, live.
+ (4) overlapping and sweep C left to right — the support-vector count falls as the street narrows.
+ (5) XOR with a linear kernel: it cannot exceed 50%, no matter what you do to C . 
+
+ ◈ What the solver is actually doing 
+ This runs SMO (Sequential Minimal Optimisation), the algorithm that made SVMs practical in the late 1990s. The dual has n variables tied together by \sum_i \alpha_i y_i = 0 , so you cannot move one alone without breaking the constraint. SMO moves exactly two at a time — the smallest change the constraint permits — and that two-variable sub-problem has a closed-form solution. No matrix inversion, no general QP machinery: just millions of tiny exact steps. It converges to the global optimum because the problem is convex (Chapter 5). 
+
+ Chapter 16 
+ Practice problems 
+
+ Ten problems covering everything from Chapter 2 onward. Every answer has been independently verified against a quadratic-programming solver. Work each on paper first — the reveals contain full step-by-step solutions, not just answers. 
+
+ P1 Two points, from scratch 
+ \v x_1 = (1,1),\; y_1 = +1  ·  \v x_2 = (4,5),\; y_2 = -1 
+ Find \alpha_1,\alpha_2,\v w,b , the decision boundary, both margin planes and the margin. 
+ Solution 
+
+ Which points are support vectors? 
+ With only two points, both must be. If either had \alpha=0 the representer formula \v w=\sum_i\alpha_i y_i\v x_i would give \v w parallel to a single data vector with no way to satisfy \sum_i\alpha_i y_i=0 unless both vanish, and \v w=\v 0 classifies nothing. So both are tight. 
+
+ The balance condition pins the two multipliers together 
+
+ \sum_i \alpha_i y_i = \alpha_1(+1) + \alpha_2(-1) = 0 \;\Longrightarrow\; \alpha_1 = \alpha_2 \equiv \alpha 
+ Chapter 7, \partial L/\partial b = 0 
+
+ The three dot products we will need 
+ \v x_1\cdot\v x_1 = 1+1 = 2, \qquad \v x_1\cdot\v x_2 = 4+5 = 9, \qquad \v x_2\cdot\v x_2 = 16+25 = 41 
+
+ Write f using only \alpha and b 
+ By the representer result, f(\v x) = \alpha\,\v x_1\cdot\v x - \alpha\,\v x_2\cdot\v x + b . Impose the two margin conditions y_i f(\v x_i)=1 : 
+
+ (+1)\big[\alpha(2) - \alpha(9) + b\big] = 1 \;\Longrightarrow\; -7\alpha + b = 1 \qquad\text{(A)} 
+ point 1, y=+1 
+
+ (-1)\big[\alpha(9) - \alpha(41) + b\big] = 1 \;\Longrightarrow\; -32\alpha + b = -1 \qquad\text{(B)} 
+ point 2, y=-1 ; multiply through by -1 
+
+ Solve the 2×2 system 
+ \text{(A)} - \text{(B)}:\quad 25\alpha = 2 \;\Longrightarrow\; \alpha = \tfrac{2}{25} = 0.08 
+ Cross-check with the two-point shortcut \alpha = 2/\|\v x_1-\v x_2\|^2 = 2/(9+16) = 2/25 ✓ 
+
+ Back-substitute for b 
+ -7(0.08) + b = 1 \;\Longrightarrow\; b = 1 + 0.56 = 1.56 = \tfrac{39}{25} 
+
+ Build \v w 
+ \v w = 0.08(1,1) - 0.08(4,5) = 0.08(-3,-4) = (-0.24,\, -0.32) 
+ Note \v w \parallel \v x_1 - \v x_2 : the boundary is perpendicular to the segment joining them, exactly as Chapter 2 requires. 
+
+ Boundary and margin planes, cleaned up 
+ The boundary is -0.24x_1 - 0.32x_2 + 1.56 = 0 . Multiply by -25 to clear decimals: 
+ 6x_1 + 8x_2 = 39 
+ The margin planes are \v w\cdot\v x+b=\pm1 , i.e. -0.24x_1-0.32x_2+1.56=\pm 1 ; multiplying by -25 again: 
+ 6x_1+8x_2 = 39 - 25 = 14 \qquad\text{and}\qquad 6x_1+8x_2 = 39+25 = 64 
+ Check: (1,1) gives 6+8=14 ✓ and (4,5) gives 24+40=64 ✓ — each support vector sits exactly on its own margin plane. 
+
+ Margin, two ways 
+
+ Route Value 
+
+ 2/\|\v w\| = 2/(0.08\sqrt{9+16}) = 2/(0.08\cdot 5) = 2/0.4 5 
+ \|\v x_1-\v x_2\| = \sqrt{9+16} = 5 (both points touch, so the street spans them) 5 
+
+ Strong-duality check 
+ \tfrac12\|\v w\|^2 = \tfrac12(0.4)^2 = 0.08 \qquad\text{vs}\qquad \sum_i\alpha_i - \tfrac12\|\v w\|^2 = 0.16 - 0.08 = 0.08 
+ Equal ⇒ the primal and dual optima agree, so the answer is certified. ✓ 
+
+ ★ Answers 
+ \alpha_1=\alpha_2=0.08 · \v w=(-0.24,-0.32) · b=1.56 · boundary 6x_1+8x_2=39 · margin 5 . (Solver: w=[-0.24,-0.32], b=1.56, α=[0.08,0.08] ✓) 
+
+ P2 Five points on a line 
+ x = 1,\, 2,\, 4 \longrightarrow y=+1  ·  x = -1,\, -3 \longrightarrow y=-1 
+ Which points are support vectors? Find w, b , the margin, and every \alpha_i . 
+ Solution 
+
+ Locate the collision 
+ In one dimension the street is an interval. The classes come closest at x=1 and x=-1 , so those are the candidates. We verify at step 5. 
+ Margin conditions for the candidates 
+ (+1)(w\cdot 1+b)=1 \;\Longrightarrow\; w+b=1 \qquad\qquad (-1)(w\cdot(-1)+b)=1 \;\Longrightarrow\; w-b=1 
+ Solve 
+
+ \text{add}:\; 2w=2 \Longrightarrow w=1 \qquad\quad \text{subtract}:\; 2b=0 \Longrightarrow b=0 
+ so f(x)=x and the boundary is x=0 
+
+ Margin 
+ \frac{2}{\|w\|} = \frac{2}{1} = 2 
+ The margin planes f=\pm1 sit at x=\pm1 : the street runs from -1 to +1 , width 2 ✓ 
+ Feasibility check — every point, no exceptions 
+
+ x y f(x)=x score yf \alpha 
+
+ 1 +1 1 1 ½ 
+ 2 +1 2 2 0 
+ 4 +1 4 4 0 
+ −1 −1 −1 1 ½ 
+ −3 −1 −3 3 0 
+
+ All scores \geq 1 ⇒ feasible; exactly two are tight ⇒ the guess was right. 
+ Multipliers 
+ Balance forces the two live multipliers equal; the two-point shortcut gives 
+ \alpha = \frac{2}{\|x_1-x_2\|^2} = \frac{2}{(1-(-1))^2} = \frac{2}{4} = \tfrac12 
+ Verify with the representer formula: w = \tfrac12(+1)(1) + \tfrac12(-1)(-1) = 1 ✓  and  \sum_i\alpha_i y_i = \tfrac12-\tfrac12 = 0 ✓ 
+
+ ★ Answers 
+ w=1 , b=0 , boundary x=0 , margin 2 , support vectors x=\pm1 with \alpha=\tfrac12 , all others \alpha=0 . 
+
+ P3 Three points — and a trap 
+ (1,1) \to +1  ·  (2,0) \to +1  ·  (0,0) \to -1 
+ Find \v w, b and every \alpha_i . Then answer carefully: which points are support vectors? 
+ Solution — and the trap 
+
+ Try the hypothesis that all three are tight 
+ Impose y_i f(\v x_i)=1 on each, writing \v w=(w_1,w_2) : 
+ w_1+w_2+b = 1 \qquad\quad 2w_1+b = 1 \qquad\quad -b = 1 
+ Solve, back to front 
+
+ -b=1 \Longrightarrow b=-1 third equation, from (0,0) with y=-1 
+
+ 2w_1-1=1 \Longrightarrow w_1=1 second equation 
+
+ 1+w_2-1=1 \Longrightarrow w_2=1 first equation 
+
+ \v w=(1,1), \quad b=-1, \quad \text{boundary } x_1+x_2=1, \quad \text{margin } = \frac{2}{\sqrt2} = \sqrt2 
+ Now the multipliers — and this is where it gets interesting 
+ \v w = \alpha_1(+1)(1,1) + \alpha_2(+1)(2,0) + \alpha_3(-1)(0,0) = (\alpha_1+2\alpha_2,\; \alpha_1) 
+
+ \text{2nd coordinate}: \alpha_1 = 1 match against \v w=(1,1) 
+
+ \text{1st coordinate}: 1+2\alpha_2 = 1 \;\Longrightarrow\; \alpha_2 = 0 forced — no freedom left 
+
+ \sum_i\alpha_i y_i = 0 \;\Longrightarrow\; \alpha_3 = \alpha_1+\alpha_2 = 1 balance condition 
+
+ Sanity-check the whole solution 
+ All \alpha_i\geq 0 ✓   all scores =1\geq 1 ✓   complementary slackness holds trivially (every constraint is tight) ✓   and duality: \tfrac12\|\v w\|^2 = 1 vs \sum_i\alpha_i - \tfrac12\|\v w\|^2 = 2-1 = 1 ✓ 
+
+ ▲ The trap 
+ All three points satisfy y_i f(\v x_i)=1 — all three lie exactly on a margin plane. But (2,0) has \alpha=0 . It is a degenerate support vector : it touches the street without pushing on it. Delete it and the model is unchanged. 
+ So the honest answer to "which are support vectors?" is (1,1) and (0,0) — the two with \alpha > 0 . This is exactly why "support vector = point on the margin" is a slightly sloppy definition. A solver confirms α = [1, 0, 1] . 
+ ★ Answers 
+ \v w=(1,1) · b=-1 · boundary x_1+x_2=1 · margin \sqrt2 · \v\alpha=(1,0,1) · support vectors (1,1) and (0,0) only. 
+
+ P4 Soft margin — slacks and the objective 
+ A soft-margin SVM returns \v w = (1,1) , b = -3 on this data: 
+ \v x y 
+ (1, 1) +1 (3, 3) +1 
+ (2, 0) −1 (0, 2) −1 
+ (2, 2) −1 
+ For each point compute the score and the slack. Classify each as free / inside the street / misclassified. Then give the total objective at C=1 and C=10 . 
+ Solution 
+
+ Write the decision function explicitly 
+ f(\v x) = \v w\cdot\v x + b = x_1 + x_2 - 3 
+ Score every point, then apply the hinge formula 
+ From Chapter 13, the optimal slack is \xi_i = \max\big(0,\, 1 - y_i f(\v x_i)\big) — it is derived, not chosen. 
+
+ \v x y f(\v x) z=yf \xi=\max(0,1-z) Status 
+
+ (1,1) +1 −1 −1 2 Misclassified ( \xi>1 ) 
+ (3,3) +1 +3 +3 0 Free, outside the street 
+ (2,0) −1 −1 +1 0 Exactly on a margin plane 
+ (0,2) −1 −1 +1 0 Exactly on a margin plane 
+ (2,2) −1 +1 −1 2 Misclassified ( \xi>1 ) 
+
+ Assemble the two halves of the objective 
+
+ \tfrac12\|\v w\|^2 = \tfrac12(1^2+1^2) = 1 the margin term; margin =2/\sqrt2\approx 1.414 
+
+ \sum_i \xi_i = 2+0+0+0+2 = 4 the cheating term 
+
+ Evaluate at both prices 
+ C=1:\;\; 1 + 1(4) = 5 \qquad\qquad C=10:\;\; 1 + 10(4) = 41 
+ Read the numbers 
+ At C=10 the slack term is 40 of the 41 — the optimiser would gladly shrink the margin a lot to fix those two points. At C=1 the two terms are comparable, so this \v w is a reasonable compromise. That ratio is the bias–variance dial. 
+ Note the symmetry: (1,1) and (2,2) sit on each other's wrong side, so this data genuinely overlaps and no hard-margin solution exists at all. 
+
+ P5 Feature counting, both kernel families 
+ Input dimension d = 3 , polynomial degree p = 4 . 
+ (a) How many features does (\v x\cdot\v z+1)^4 implicitly use?  (b) How many does (\v x\cdot\v z)^4 ?  (c) For 500 training samples, how many kernel evaluations, and how does that compare with building the explicit map? 
+ Solution 
+
+ (a) Inhomogeneous — all monomials of degree \leq 4 
+ Chapter 14's stars-and-bars count says the number of monomials in d variables of degree at most p is \comb{d+p}{p} : 
+ \comb{d+p}{p} = \comb{7}{4} = \frac{7\cdot 6\cdot 5}{3\cdot 2\cdot 1} = 35 
+ Cross-check by degree: 1 + 3 + 6 + 10 + 15 = 35 ✓ (constants, linears, quadratics, cubics, quartics) 
+ (b) Homogeneous — degree exactly 4 
+ \comb{d+p-1}{p} = \comb{6}{4} = \frac{6\cdot 5}{2\cdot 1} = 15 
+ This is a different model : it has no constant, linear, quadratic or cubic terms at all. 
+ (c) Cost of the kernel route 
+ The Gram matrix is 500\times 500 and symmetric, so you need 
+ \frac{500\cdot 501}{2} = 125{,}250 \;\text{ kernel evaluations} 
+ Each is a 3-dimensional dot product, one addition, and one 4th power — about 6 flops. 
+ Compare with the explicit map 
+
+   explicit \phi kernel 
+
+ storage for 500 points 500 × 35 = 17,500 numbers nothing extra 
+ cost of one inner product 35 mults 3 mults + power 
+ at d=100, p=5 96,560,646 coords per point unchanged 
+
+ At d=3, p=4 the trick barely pays. Push to d=100, p=5 and the explicit map needs 96.6 million coordinates per point while the kernel cost does not move. The kernel trick is not an optimisation — past a certain size it is the only thing that runs. 
+
+ P6 Verify the kernel identity by hand 
+ \v x = (2,1) ,   \v z = (1,3) ,   k(\v x,\v z) = (\v x\cdot\v z+1)^2 
+ (a) Evaluate the kernel. (b) Write the explicit 6-dimensional \phi , compute both images, and confirm \phi(\v x)\cdot\phi(\v z) matches. 
+ Solution 
+
+ (a) The kernel route — one line 
+ \v x\cdot\v z = 2(1)+1(3) = 5 \qquad\Longrightarrow\qquad k = (5+1)^2 = 36 
+ (b) The explicit map, from §14.3 
+ \phi(\v v) = \big(1,\; \sqrt2\,v_1,\; \sqrt2\,v_2,\; v_1^2,\; \sqrt2\,v_1v_2,\; v_2^2\big) 
+ Compute both images and multiply coordinate by coordinate 
+
+ coordinate \phi(\v x) \phi(\v z) product 
+
+ 1 1 1 1 
+ \sqrt2\,v_1 2\sqrt2 \sqrt2 4 
+ \sqrt2\,v_2 \sqrt2 3\sqrt2 6 
+ v_1^2 4 1 4 
+ \sqrt2\,v_1v_2 2\sqrt2 3\sqrt2 12 
+ v_2^2 1 9 9 
+ total 36 ✓ 
+
+ Read the comparison 
+ 36 = 36. The left column cost two 6-vectors, six multiplications and five additions; the right cost one dot product, one addition and one square. At degree 2 in 2-D it is a wash. At degree 5 in 100-D the left column has 96.6 million coordinates and the right column is still three operations. 
+
+ P7 Work backwards from the multipliers 
+ A trained hard-margin SVM reports: 
+ \v x_i y_i \alpha_i 
+ (2, 2) +1 0.25 
+ (4, 1) +1 0 
+ (0, 0) −1 0.25 
+
+ Recover \v w and b , give the boundary and margin, verify that (4,1) really deserves \alpha=0 , and classify the new point (1,0) . 
+ Solution 
+
+ \v w from the representer formula 
+ \v w = \sum_i \alpha_i y_i \v x_i = 0.25(+1)(2,2) + 0(+1)(4,1) + 0.25(-1)(0,0) = (0.5,\, 0.5) 
+ The middle point contributes nothing — that is what \alpha=0 means, literally. 
+ Check the balance condition first (a free error-check) 
+ \sum_i\alpha_i y_i = 0.25 + 0 - 0.25 = 0 \;\checkmark 
+ b from any free support vector 
+
+ b = y_s - \v w\cdot\v x_s = -1 - (0.5,0.5)\cdot(0,0) = -1 
+ using (0,0) , which has \alpha>0 
+
+ b = 1 - (0.5,0.5)\cdot(2,2) = 1 - 2 = -1 
+ cross-check with (2,2) — must agree, and does 
+
+ Boundary and margin 
+ 0.5x_1+0.5x_2-1 = 0 \;\Longleftrightarrow\; x_1+x_2 = 2, \qquad \text{margin} = \frac{2}{\|\v w\|} = \frac{2}{\sqrt{0.5}} = 2\sqrt2 \approx 2.83 
+ Does (4,1) deserve \alpha=0 ? 
+ f(4,1) = 0.5(4)+0.5(1)-1 = 1.5, \qquad y f = +1.5 > 1 
+ Strictly outside the street ⇒ its constraint is slack ⇒ complementary slackness forces \alpha=0 ✓ Consistent. 
+ Classify (1,0) 
+ f(1,0) = 0.5+0-1 = -0.5 \;<\; 0 \;\Longrightarrow\; \text{predict } -1 
+ But |f| = 0.5 < 1 , so it lies inside the street — a correct prediction the model is not confident about. Distance to the boundary is 0.5/\sqrt{0.5} \approx 0.71 , well under the half-width \sqrt2\approx 1.41 . 
+
+ P8 Geometric margin from a given hyperplane 
+ A classifier has \v w = (3,4) and b = -10 , in canonical form. 
+ (a) Write the boundary and both margin planes. (b) What is the margin? (c) How far is (1,1) from the boundary, and on which side? (d) If you rescaled to \v w=(6,8), b=-20 , what would change? 
+ Solution 
+
+ (a) The three parallel planes 
+
+ \|\v w\| = \sqrt{9+16} = 5 the 3-4-5 triangle 
+
+ \text{boundary } 3x_1+4x_2 = 10, \qquad f=+1:\; 3x_1+4x_2=11, \qquad f=-1:\; 3x_1+4x_2=9 
+ (b) Margin 
+ \text{margin} = \frac{2}{\|\v w\|} = \frac{2}{5} = 0.4 
+ Sanity check via Chapter 2: each margin plane is |{\pm}1|/\|\v w\| = 1/5 = 0.2 from the boundary, and 0.2+0.2 = 0.4 ✓ 
+ (c) Distance of (1,1) 
+ f(1,1) = 3+4-10 = -3, \qquad \text{distance} = \frac{|f|}{\|\v w\|} = \frac{3}{5} = 0.6 
+ On the negative side. It is outside the street since |f| = 3 > 1 — so as a training point it would have \alpha=0 . 
+ (d) The rescaling — nothing geometric changes 
+
+ Quantity before after \times 2 changed? 
+
+ the boundary itself 3x_1+4x_2=10 6x_1+8x_2=20 no — same line 
+ score f(1,1) −3 −6 yes , doubles 
+ \|\v w\| 5 10 yes , doubles 
+ distance |f|/\|\v w\| 0.6 0.6 no — the ratio is invariant 
+ where f=\pm1 sits at distance 0.2 at distance 0.1 yes — no longer canonical 
+
+ That is Chapter 4's whole point. The rescaled version is not canonical, because its nearest point now scores 2 rather than 1, so reading 2/\|\v w\| = 0.2 off it is simply wrong. Renormalise before you read a margin. 
+
+ P9 Read a trained soft-margin model from its multipliers 
+ A soft-margin SVM was trained with C = 1 and returned these multipliers: 
+
+ point A B C D E 
+ \alpha_i 0 0.4 1.0 1.0 0.15 
+
+ (a) Classify each as non-SV, free SV or bounded SV. (b) For each, what do you know about \xi_i and the score? (c) Which may be used to compute b ? (d) Which are definitely misclassified? 
+ Solution 
+
+ Recall the three regimes from §13.5 
+ \alpha_i = 0 \Rightarrow z_i \geq 1; \qquad 0<\alpha_i<C \Rightarrow z_i = 1; \qquad \alpha_i = C \Rightarrow z_i \leq 1 
+ writing z_i = y_i f(\v x_i) . Each follows from complementary slackness plus \alpha_i+\mu_i=C . 
+ Apply them, remembering C=1 
+
+ point \alpha type \xi score z use for b ? 
+
+ A 0 non-support vector 0 \geq 1 no 
+ B 0.4 free SV ( 0<\alpha<C ) 0 =1 yes 
+ C 1.0 = C bounded SV \geq 0 \leq 1 no 
+ D 1.0 = C bounded SV \geq 0 \leq 1 no 
+ E 0.15 free SV 0 =1 yes 
+
+ (c) Which give a valid b ? 
+ Only B and E . They are the points known to satisfy y_s f(\v x_s)=1 exactly, so 
+ b = y_s - \sum_i \alpha_i y_i\, k(\v x_i,\v x_s) 
+ is valid there. In practice average over all free SVs for numerical stability. A bounded SV has \xi>0 and would give the wrong b . 
+ (d) Which are definitely misclassified? — the subtle part 
+ None, necessarily. \alpha=C tells you \xi\geq 0 and z\leq 1 — the point is at best on the margin and possibly inside the street. Misclassification needs \xi > 1 , which is strictly more than \alpha=C guarantees. So C and D lie somewhere in z\leq 1 , but \alpha alone cannot tell you whether they crossed the boundary. You need the actual \xi values, or equivalently the scores. 
+
+ P10 Choose the kernel — and justify it 
+ For each dataset, say which kernel you would reach for and why: 
+
+ 30,000 documents, 60,000 TF-IDF features, two classes. 
+ Two concentric rings in 2-D. 
+ Two clouds in 2-D that overlap slightly along a straight frontier. 
+ XOR: (-1,-1),(1,1) \to +1 ; (-1,1),(1,-1) \to -1 . 
+ 200 samples, 8 features, and you suspect the answer depends on products of pairs of features. 
+
+ Solution 
+
+ Linear. With far more features than samples the data is almost always linearly separable already — lifting further only invites overfitting, and a linear SVM trains orders of magnitude faster. Text classification is the canonical linear-SVM win. 
+ RBF. The boundary is a circle. Distance-based similarity does exactly the right thing, and §14.6 shows the 3-D picture of why. (A degree-2 polynomial also works, since x_1^2+x_2^2 is one of its features — but RBF needs no degree chosen.) 
+ Linear with a modest C . The frontier is straight; the difficulty is overlap, which is a soft-margin problem, not a kernel problem. Reaching for RBF here is the most common practical mistake — it will happily fit the noise in the overlap region. 
+ Polynomial, p=2 (or RBF). The map must contain the interaction term x_1x_2 , which degree 2 supplies — and that one feature alone separates the four points. Linear cannot exceed 50%: the classes are perfectly balanced on either side of every possible line. 
+ Polynomial, p=2 , with c>0 . "Products of pairs" is literally what degree-2 features are. Use the inhomogeneous form so the linear and constant terms survive; the homogeneous (\v x\cdot\v z)^2 would throw away the main effects and keep only the interactions. With 200 samples and \comb{10}{2}=45 implied features, this is comfortably in range. 
+
+ ★ The rule of thumb 
+ Start linear. Move to RBF only when linear underfits — and when you do, cross-validate C and \gamma jointly on a log grid, because they interact. Polynomial is a narrower tool: reach for it when you have a specific reason to want feature interactions , and keep the degree at 2 or 3. 
+
+ Chapter 17 
+ Beyond the basics 
+
+ 17.1 More than two classes 
+ Everything so far assumed y \in \{-1,+1\} . SVM has no native multiclass formulation, so you compose binary ones: 
+
+ Scheme Models trained Prediction Trade-off 
+
+ One-vs-Rest (OvR) K largest f_k(\v x) wins Few models, but each sees a badly imbalanced problem, and the f_k are not calibrated against each other. 
+ One-vs-One (OvO) K(K-1)/2 majority vote Many models, but each is small, balanced and fast. What sklearn 's SVC does. 
+
+ OvO sounds worse — K=10 means 45 models — but each is trained on only the two relevant classes, so on a large dataset it is usually the faster of the two overall. Since training is at least quadratic in n , splitting one big problem into many small ones is a win. 
+
+ 17.2 Regression: SVR 
+ The same machinery predicts real numbers. Flip the geometry: instead of asking that points stay outside a street, ask that they stay inside a tube of half-width \varepsilon around the prediction. The loss is ε-insensitive : 
+ L_\varepsilon\big(y, f(\v x)\big) = \max\big(0,\; |y - f(\v x)| - \varepsilon\big) 
+ errors smaller than \varepsilon are free; beyond that the penalty is linear 
+ Everything else carries over: the same \tfrac12\|\v w\|^2 regulariser, the same C , the same dual in dot products, the same kernels. Points strictly inside the tube get \alpha = 0 — so SVR is sparse too, and the support vectors are the points on or outside the tube. 
+
+ 17.3 What it costs 
+
+   Training Prediction Memory 
+
+ Linear SVM (primal solvers) O(n\,d) O(d) O(d) 
+ Kernel SVM O(n^2 d) to O(n^3 d) O(|SV|\,d) O(|SV|\,d) 
+
+ That quadratic-to-cubic training cost is the practical ceiling. Beyond roughly 10^5 samples a kernel SVM becomes painful, and the field's answer is either a linear SVM (which scales beautifully) or an explicit random-feature approximation of the kernel. 
+
+ 17.4 When SVM is the right tool 
+
+ Reach for it when… 
+
+ You have modest n (up to ~10⁴–10⁵) and possibly huge d . 
+ Features outnumber samples — SVM is unusually well behaved there. 
+ You need a reproducible, deterministic model with no tuning lottery. 
+ The boundary is genuinely nonlinear but the data is clean. 
+
+ Reach elsewhere when… 
+
+ n is in the millions — use a linear model or gradient boosting. 
+ You need calibrated probabilities — SVM gives a score, not P(y\mid\v x) . Platt scaling bolts one on, at the cost of an extra cross-validation. 
+ Features are heterogeneous and tabular — gradient-boosted trees usually win, and need no scaling. 
+ Interpretability is the deliverable and you need a nonlinear boundary. 
+
+ 17.5 A practical recipe 
+
+ Scale your features. This is not optional. 
+ Both \|\v x-\v z\|^2 in the RBF kernel and \v x\cdot\v z in the linear one are dominated by whichever feature has the largest numeric range. A feature measured in rupees will bury one measured in metres. Standardise to zero mean and unit variance, and fit the scaler on the training split only. 
+ Try linear first, and mean it. 
+ It is faster, it has one hyperparameter instead of two, and it tells you immediately whether the problem even needs a kernel. If linear does well, stop. 
+ If you go RBF, grid-search C and \gamma together on a log scale. 
+ Something like C \in \{10^{-2},\dots,10^{3}\} and \gamma \in \{10^{-4},\dots,10^{1}\} . They interact strongly — a good C for one \gamma is a bad C for another — so tuning them one at a time genuinely does not work. 
+ Watch the support-vector fraction. 
+ If nearly every training point is a support vector, you are overfitting (or \gamma is far too large). A healthy model uses a modest fraction. It is the cheapest diagnostic you have — and the playground in Chapter 15 reports it live. 
+ Check class balance. 
+ With skewed classes the majority class dominates the hinge loss. Use per-class weights ( class_weight='balanced' ), which effectively gives each class its own C , so each contributes proportionally. 
+
+ 17.6 SVM against logistic regression, in one table 
+
+   SVM (hinge) Logistic regression (log loss) 
+
+ Loss past the margin exactly zero small but never zero 
+ Sparsity yes — only support vectors matter no — every point contributes 
+ Output a score; probabilities need Platt scaling calibrated probabilities directly 
+ Nonlinearity kernels, essentially for free needs explicit feature engineering 
+ Outliers on the wrong side capped influence ( \alpha \leq C ) unbounded influence 
+
+ The two are closer relatives than they look: both minimise \tfrac12\|\v w\|^2 plus a convex surrogate for the 0/1 loss. The only real difference is the surrogate — and that single choice is what produces sparsity, support vectors, and the entire kernel story. 
+
+ Chapter 18 
+ Cheat sheet & self-test 
+
+ Primal — hard margin 
+ \min_{\v w, b} \tfrac{1}{2}\|\v w\|^2 \quad\text{s.t.}\quad y_i(\v w\cdot\v x_i+b) \geq 1 
+
+ Primal — soft margin 
+ \min_{\v w, b, \v\xi} \tfrac{1}{2}\|\v w\|^2 + C\sum_i \xi_i \quad\text{s.t.}\quad y_i f(\v x_i) \geq 1-\xi_i,\; \xi_i \geq 0 
+
+ Dual (both cases) 
+ \max_{\v\alpha} \sum_i \alpha_i - \tfrac{1}{2}\sum_{i,j}\alpha_i\alpha_j y_i y_j\, k(\v x_i,\v x_j) 
+ s.t. \sum_i\alpha_i y_i = 0 ;   \alpha_i \geq 0 (hard) or 0\leq\alpha_i\leq C (soft) 
+
+ Recover the model 
+ \v w = \sum_i \alpha_i y_i \v x_i, \qquad b = y_s - \sum_i \alpha_i y_i\, k(\v x_i, \v x_s) 
+ use a free SV ( 0<\alpha_s<C ) for b ; average over all of them 
+
+ The numbers worth having in your head 
+ Quantity Formula Note 
+
+ Margin (street width) 2/\|\v w\| only after normalising so the nearest point scores 1 
+ Distance of a point to the boundary |f(\v x)|/\|\v w\| the geometric margin, vs the raw score f 
+ \alpha for a two-point problem \alpha_1=\alpha_2 = 2/\|\v x_1-\v x_2\|^2 and the boundary is the perpendicular bisector 
+ Slack \xi_i = \max(0,\, 1 - y_i f(\v x_i)) the hinge loss — derived, not chosen 
+ Box constraint 0 \leq \alpha_i \leq C from \alpha_i + \mu_i = C with \mu_i \geq 0 
+ Features up to degree p \comb{d+p}{p} kernel (\v x\cdot\v z+c)^p — the inhomogeneous one 
+ Features of degree exactly p \comb{d+p-1}{p} kernel (\v x\cdot\v z)^p — homogeneous, and a different model 
+ Strong duality check dual value = \tfrac12\|\v w\|^2 a free way to verify any exam answer 
+
+ ◈ The whole course in nine sentences 
+
+ Many boundaries have zero training error; pick the one with the widest empty street. 
+ The street's edges are \v w\cdot\v x+b = \pm c , and Cauchy–Schwarz proves the width is exactly 2c/\|\v w\| . 
+ Rescaling (\v w, b, c) moves nothing geometric, so set c=1 : margin = 2/\|\v w\| , constraint y_i f(\v x_i) \geq 1 . 
+ Widening the street = shrinking \|\v w\| ; square it for a smooth convex QP with one global optimum. 
+ Lagrange plus KKT turns it into a problem in \v\alpha , one multiplier per data point. 
+ Complementary slackness forces almost every \alpha_i to zero. The survivors are the support vectors , and they alone build \v w = \sum_i\alpha_i y_i \v x_i — an output of the solution, never an input to it. 
+ Real data overlaps, so buy slack at price C . The optimiser derives the hinge loss on its own, and \alpha gets capped at C . 
+ The dual touches the data only through \v x_i\cdot\v x_j — so swap in a kernel and get a curved boundary from a space you never build. 
+ Predict with f(\v x) = \sum_{i\in SV} \alpha_i y_i\, k(\v x_i,\v x) + b . 
+
+ Self-test 
+ Twelve questions. Several target places where intuition usually goes wrong. 
+
+ Every numeric result in this document was independently verified against a quadratic-programming solver. 
+ The classifier in the playground is a real SMO implementation running in your browser — nothing here is a pre-rendered picture. 
+ ↑ back to the top 
+

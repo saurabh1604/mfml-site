@@ -1,0 +1,2428 @@
+WILP • BITS PILANI
+Work Integrated Learning Programmes Division
+
+
+
+
+AIMLCZC416 • LECTURE 13
+
+Mathematical Foundations for Machine Learning / Data Science
+
+
+
+
+Principal Components
+Analysis
+
+A self-study companion to the lecture
+Everything the slides say, in the order we said it in class — with the pictures, the full
+derivation, a worked example done to the last decimal, and seven practice questions
+with solutions.
+
+
+
+
+    What is inside
+    §1–§4                      why we chase variance, and the full constrained-optimisation
+                               proof
+    §5–§9                      eigenvectors, the SVD link, low rank, and what to do when D is
+                               huge
+    §10–§12                    choosing components, the four-step recipe, a worked example
+    §13–§15                    traps, a one-page card, and seven solved practice questions
+
+
+Prepared as a companion to the Lecture 13 slide deck. The slide deck stays the authority on what is examinable; this document
+exists to make it easy to follow.
+
+BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+How to read this
+
+This document follows the Lecture 13 slides, but it takes the route we actually took in class:
+start from why we care about variance at all, build the constrained-optimisation view, and only
+then turn to the linear-algebra machinery the slides spend most of their time on.
+
+• Read the one-line summary under each section heading first. If you read only the section
+  titles and those one-liners, you already have the shape of the whole lecture.
+• The coloured boxes each mean one thing. navy is the idea to remember; amber is an
+  everyday picture; slate is something we said in the class; teal is a fully worked example;
+    purple is a point that surprises most people; rust is a trap to avoid.
+• Nothing is skipped. Where the slides write “it can be shown that”, this document shows it.
+• Section 15 is the practice set. Seven questions, each of a different type, each with a full
+  solution and a note on how to attack that type of question.
+
+Symbols used throughout
+
+Symbol      Meaning                                         Symbol   Meaning
+
+N           number of data points (rows)                    λd       the d th eigenvalue of C
+D           number of original features (columns)           wd       the d th eigenvector, a unit vector
+M           number of components we keep, M < D             W        D × M matrix of kept eigenvectors
+X           the centred data matrix, N × D                  Z        the scores, Z = XW, size N × M
+xi          one data point, a row of X                      σd       singular value, or std. dev. (see below)
+C           covariance matrix, N1 X⊤ X                      x̃       a point rebuilt from its scores
+
+
+
+     A note on notation. Different sources write the same objects differently, and this trips people up more
+     than the mathematics does. The slide deck writes S for the covariance matrix and puts data points
+     in the columns of X. In class we wrote C and put data points in the rows, like a spreadsheet. Exam
+     papers often follow the statistics convention and write Σ for the covariance of a random vector
+     X, with α for the direction. All three are the same object. This document uses the spreadsheet
+     convention (C, rows) because it is the one we derived everything in; §3 gives the exact dictionary
+     between them, and §15 switches to Σ and α so that the practice questions look like the real thing.
+
+
+
+
+                                                       2
+Contents
+
+
+1   Start here: pick the better line                      4
+
+2 Why variance is the thing we chase                      4
+
+3 The objects PCA works with — and the three notations    6
+
+4   PCA is a constrained optimisation problem             8
+
+5   From the covariance matrix to the directions         11
+
+6 The same picture through the SVD                       13
+
+7   Low-rank approximation: the Eckart–Young theorem     14
+
+8   Getting the eigenvectors in practice                 16
+
+9 When D is huge: wide data and the Gram trick           17
+
+10 How many components to keep, and how to read them     20
+
+11 The recipe: four steps, end to end                    23
+
+12 A worked example, start to finish                     26
+
+13 Traps, limits, and honest caveats                     29
+
+14 The one-page card                                     32
+
+15 Practice set: seven questions, fully solved           33
+
+
+
+
+                                                   3
+1     Start here: pick the better line
+
+Given a cloud of points and two candidate lines, the whole of PCA is choosing the line the
+points spread out on the most.
+
+Before any definitions, do the thing itself.
+Figure 1 shows the same ninety data points twice. Each panel picks one line through the
+middle of the cloud and slides every point onto it along the shortest path. That sliding is called
+projection, and the coloured dots on the line are the projected points.
+Look only at the coloured dots. On the left they are spread out along a long stretch of the line.
+On the right they are bunched into a short segment.
+
+      Direction A    spread on the line = 5.45            Direction B   spread on the line = 0.41
+x2
+
+
+
+
+                                                     x2
+
+
+
+                         x1                                                 x1
+             Figure 1: Two candidate lines, same data. Grey threads show each point
+             dropping onto the line. How to read it: compare how far apart the coloured
+             dots end up. Direction A keeps the points distinct; direction B squashes
+             different points on top of each other.
+
+If you had to describe each point by a single number — its position along the line — which line
+would you choose?
+Direction A, obviously. On direction B, points that were far apart in the original cloud land
+almost on top of each other, so that single number cannot tell them apart any more. On
+direction A the points stay distinguishable. The number that measures “how far apart the dots
+ended up” is the variance, printed in each panel’s title.
+You have just done PCA by eye.
+
+     The whole method in one sentence
+
+    PCA searches over every possible direction, computes the variance of the data after
+    projecting onto it, and keeps the directions with the highest variance. Everything else in
+    this document is the machinery that does that search efficiently, plus the reason it works.
+
+We went from two dimensions to one here. In real work you go from a hundred columns to
+five, or from twenty thousand to fifty. The principle does not change; only the bookkeeping
+gets bigger.
+
+
+2     Why variance is the thing we chase
+
+Every model says y = f ( x ) + ε; a column of x that never changes can never explain a change in
+y; so “how much does this column change” is the right question, and variance is its answer.
+
+
+                                                 4
+The first section showed what PCA does. This section says why variance — and not some other
+quantity — is the thing worth maximising. It is worth a few minutes, because once you see it,
+everything from the covariance matrix to the eigenvalue ordering feels inevitable.
+
+2.1     Every model you have ever built has the same skeleton
+
+Whatever the model — linear regression, a decision tree, a neural network — you are writing
+the same statement:
+                                     y = f ( x ) + ε.                                    (1)
+The target y is driven by the features x through some relationship f , plus an error ε for every-
+thing you did not, or could not, measure. A linear model makes f a straight line. A tree makes
+f a set of splits. A network makes f a stack of transformations. The skeleton is identical.
+Now read the equation as a statement about change rather than about values:
+
+            a change in y comes either from a change in x, or from a change in the error.
+
+2.2     The statistic that measures change is variance
+
+Ask what tool measures “how much does this thing change”. Not the mean — the mean says
+where things sit, not how much they move. The answer is the variance:
+
+                                           1 N                    1
+                                             ∑                    N∑
+                                                        2
+                              Var( x ) =          xi − µ ,   µ=       xi .                    (2)
+                                           N i =1                   i
+
+This is not a new idea dressed up. You have already used exactly this split before, under
+different names.
+      You have met this split before
+
+  In the analysis of variance you write TSS = SST + SSE: the total variation in y equals
+  the part your factors explain plus the part they do not. The F test is the ratio of the two,
+  “known variance over unknown variance”. And R2 = 1 − SSE/TSS = SST/TSS is simply
+  the share of the variance in y that your features account for.
+  All three are the same accounting exercise: split the movement in y into an explained part
+  and an unexplained part. Variance is the currency in every one of them.
+
+
+2.3     The one surprising move: PCA never looks at y
+
+Here is where PCA departs from everything above. It throws y away.
+Suppose you are predicting salary from four columns: age, experience, number of certifications,
+number of trainings. PCA is handed only the four columns. It never sees a single salary.
+Why is that reasonable? Because of the assumption we just wrote down: if x does not change,
+y cannot change because of x. So a column with almost no variance carries almost no ability
+to explain anything — whatever the target happens to be. You can rank the usefulness of
+directions in x before you ever look at y.
+In Figure 2 the last two columns are near-constant — almost every employee has zero certifica-
+tions and zero trainings. Their variance is essentially zero, so they are dead weight. Dropping
+them costs nothing.
+That leaves age and experience. These two are a different problem: they are highly correlated.
+Older employees generally have more experience, so the two columns largely repeat each other.
+A standard feature-selection method would delete one of them. PCA does something better
+
+                                                     5
+                                         70       64
+
+
+
+                variance of the column
+                                         60
+                                         50
+                                                                     41
+                                         40                                         almost no change
+                                                                                   almost no information
+                                         30
+                                         20
+                                         10
+                                                                                        0.09                  0.04
+                                          0
+                                                  age            experience        certifications          trainings
+               Figure 2: The four columns of the salary table. How to read it: certifications and
+               trainings are almost always zero, so their bars are invisible next to the others.
+               Nothing that never moves can explain something that does.
+
+
+— it builds a single new direction that carries what both columns were saying, and a second
+direction, at right angles to the first, that carries whatever little is left.
+
+      What we said in class
+
+    “PCA doesn’t get bothered by what you have in y. It only takes your x input features. We
+    are only caring about how x changes, without even bothering about what your y is.”
+    That is the defining feature of PCA, and it is also its main weakness — see §13, where we
+    look at a case where the direction PCA discards is exactly the one that predicts y.
+
+
+2.4    Three names for the same operation
+
+Because PCA replaces D old columns with M new ones, people describe it in three different
+vocabularies. All three are correct.
+Called                                        Because                                   Compare with the usual approach
+
+dimension reduction                           D columns go in, M < D columns            the honest description of what happens
+                                              come out
+feature selection                             you are choosing which directions         usual selection needs a model first, then
+                                              survive                                   feature importance, then a cut. PCA se-
+                                                                                        lects before any model is built
+feature engineering                           each new column is a fresh linear         same spirit as building loan/income by
+                                              mix z1 = a1 x1 + · · · + a D x D of the   hand, except PCA finds the weights for
+                                              old ones                                  you
+
+And it throws in a fourth property for free: the new columns are mutually uncorrelated. We
+prove that in §10; Figure 9 shows it happening.
+
+    Section recap. Models explain change in y using change in x. Variance measures change.
+    A feature that does not vary cannot explain anything, so we can rank directions in x
+    without ever looking at y. PCA does exactly that, and the new directions it produces are
+    uncorrelated as a bonus.
+
+
+3      The objects PCA works with — and the three notations
+
+
+
+                                                                              6
+Four objects: the data X, a direction w, the score z, and the rebuilt point x̃. The only real
+difficulty is that three sources write them three different ways.
+
+
+3.1     The four objects
+
+• x ∈ RD — one data point, with D original features. All N points stacked as rows give the
+  data matrix X, size N × D. We always assume X has been centred: the mean of every column
+  has been subtracted, so each column of X averages to zero.
+• W — a D × M matrix whose columns w1 , . . . , w M are the directions we keep. Each is a unit
+  vector, w⊤m wm = 1, and they are mutually perpendicular.
+• z ∈ R M — the scores, or code, of a point: z = W⊤ x. Component zm is how far along direction
+  wm the point sits. For the whole dataset at once, Z = XW.
+• x̃ ∈ RD — the point rebuilt from its scores: x̃ = Wz = WW⊤ x. This lives back in the original
+  D-dimensional space, but only on the M-dimensional slice that W spans.
+
+                                 encode                            decode
+                   x ∈ RD                    z = W⊤ x ∈ R M                      x̃ = Wz ∈ RD
+                                   W⊤                               W
+
+
+
+The covariance matrix ties them together:
+
+                                       1 ⊤                              1 N
+                                                                        N i∑
+                             C =         X X ∈ RD× D ,        Cjk =           xij xik .                  (3)
+                                       N                                   =1
+
+Entry Cjj is the variance of column j. Entry Cjk is the covariance between columns j and k —
+how much they move together. C is symmetric, and it is the only thing about the data that PCA
+ever uses.
+      Divide by N , and centre first
+
+      Two details that cost marks.
+      One. Equation (3) divides by N, not by N − 1. The N − 1 version is the unbiased estimator
+      for a sample, and it is what numpy and R use by default. The slide deck — and therefore
+      this course — uses N. Use N.
+      Two. The formula N1 X⊤ X is only the covariance if X is already centred. If you skip the
+      centring you get the matrix of raw second moments, which is a different matrix with
+      different eigenvectors. Centre first, every time.
+
+
+3.2     The dictionary between the three notations
+
+This is the single most common source of confusion when you move between the slides, the
+class notes and a question paper. They describe identical objects.
+
+                            This document & the class       The slide deck        A typical exam paper
+
+data laid out as                 rows = points           columns = points         a random vector X
+size of X                            N×D                      D×N                         —
+covariance written                 C = N1 X⊤ X              S = N1 XX⊤               Σ = Cov( X )
+a direction written                    w                          b                        α
+the eigen-equation                 Cw = λw                   Sb = λb                   Σα = λα
+the projection                      Z = XW                   z = B⊤ x                  Y1 = α⊤ X
+the rebuilt point                 X̃ = XWW⊤                   x̃ = Bz                     —
+
+
+                                                        7
+Transposing X swaps X⊤ X and XX⊤ ; that is the whole difference between column one and
+column two. Column three drops the data matrix entirely and speaks about the population
+covariance of a random vector, which is the cleanest way to state the theory. Every result in this
+document holds in all three.
+      Σ means two different things
+
+    The slide deck uses the letter Σ for the diagonal matrix of singular values in the SVD,
+    X = UΣV⊤ . Exam papers use the same letter for the covariance matrix. These are unrelated
+    objects that happen to share a symbol.
+    In this document: C is always the covariance matrix, and Σ is always the singular-value
+    matrix — except in §15, where we switch to the exam’s convention and say so explicitly at
+    the top.
+    The lower-case σ is overloaded too, and unavoidably so. Wherever the SVD is in play
+    — §5’s comparison table, §6, §7, the card and Question 7 — σd is the d th singular value.
+    Everywhere standardising is discussed, including Question 3, σd is the standard deviation
+    of column d. Both appear in §15, so read the surrounding sentence rather than the symbol
+    alone.
+
+
+                                              1 ⊤
+    Section recap. Centre the data. Build C = N X X (divide by N). Encode with z = W⊤ x,
+    decode with x̃ = Wz. When a source looks unfamiliar, check whether its data points are
+    rows or columns — that explains almost every apparent disagreement.
+
+
+
+4      PCA is a constrained optimisation problem
+
+Maximise w⊤ Cw subject to w⊤ w = 1; the Lagrangian turns that into Cw = λw, and the
+maximum value is λ itself.
+
+This is the centre of the lecture. Everything before it is motivation and everything after it is
+machinery. Six lines of algebra take us from “find the direction of most spread” to “find the top
+eigenvector of the covariance matrix”, and they explain why eigenvectors appear in a problem
+that never mentioned them.
+
+4.1    Setting up the problem
+
+We want a direction w ∈ RD . Project the centred data onto it:
+
+                                     z = Xw,        zi = x⊤i w.                                (4)
+
+Each zi is one number: where point i lands on the line through w.
+
+Why the direction must have length one. Without a constraint the problem is broken. Double
+the length of w and every zi doubles, so the variance quadruples — you could make it as large
+as you like by stretching w, without pointing it anywhere better. That is cheating: we care about
+the direction, not the length. So we demand
+
+                                           w⊤ w = 1.                                           (5)
+
+Recall from the vectors
+                  √ lecture that the length of a vector is the square root of its dot product
+with itself, ∥w∥ = w⊤ w. Squaring both sides of ∥w∥ = 1 gives w⊤ w = 1, which is the form
+we want because it is polynomial and easy to differentiate.
+
+                                                8
+4.2   The objective, in three lines
+
+The projected values already have mean zero, because X was centred and projection is linear.
+So their variance is just the average of the squares:
+
+                      1 N 2       1 ⊤
+           Var(z) =     ∑
+                      N i =1
+                             zi =
+                                  N
+                                    z z                                                         a sum of squares is a dot product           (6)
+
+                   1
+                  =  ( Xw)⊤ ( Xw)                                                               substitute z = Xw                           (7)
+                   N
+                      ⊤ 
+                    ⊤ X X
+                  =w           w = w⊤ C w.                                                      regroup; the bracket is C                   (8)
+                         N
+
+Equation (8) is worth pausing on. The left side is a statement about the projected data. The
+right side involves only C and w — the data has vanished into the covariance matrix. Every
+direction w now gets a single score, w⊤ Cw, computed without touching the raw data again.
+
+                                                                               every direction scores; two of them are special
+  the data, and the two directions                                                                                             peak = 1 = 5.45
+                                       w C w (variance after projecting)
+
+
+
+
+                                                                           5
+
+      w1                                                                   4
+
+                                                                           3
+                w2
+                                                                           2
+
+                                                                           1
+
+                                                                               0           45           90         135           180
+                                                                                     angle of the unit direction w (degrees)
+              Figure 3: The score w⊤ Cw for every unit direction in the plane. How to read it:
+             sweep the angle from 0◦ to 180◦ and the score traces one smooth hump. Its
+             peak is λ1 and sits exactly along w1 ; its dip is λ2 , exactly 90◦ away.
+
+So the problem is
+                              max w⊤ C w                                           subject to        w⊤ w = 1.                              (9)
+                                w
+
+Maximise something, subject to an equality constraint. That is a constrained optimisation
+problem, and we already know the tool for it.
+
+4.3   The Lagrangian, and where the eigenvectors come from
+
+Write the constraint in the standard form “expression = 0”: w⊤ w − 1 = 0. Then
+
+                              L(w, λ) = w⊤ C w − λ w⊤ w − 1 .
+                                                               
+                                                                                                                                           (10)
+
+Differentiate with respect to w. Both terms are quadratic forms, and for a symmetric matrix A
+the gradient of w⊤ Aw is 2Aw. Here C is symmetric and the identity is symmetric, so
+
+                                      ∂L
+                                         = 2Cw − 2λw = 0.                                                                                  (11)
+                                      ∂w
+
+                                                                                      9
+Divide by two and move one term across:
+
+                                                   Cw = λ w                                          (12)
+
+Look at what happened. We asked a question about spread and got back the definition of an
+eigenvector. Any direction that could possibly maximise the projected variance must be an
+eigenvector of the covariance matrix. Nothing else is even a candidate.
+
+4.4     The payoff: the maximum variance is the eigenvalue
+
+We know the answer is one of the eigenvectors — but which one? Substitute (12) back into the
+objective (8):
+                Var(z) = w⊤ Cw = w⊤ (λw) = λ w⊤ w = λ · 1 = λ.                          (13)
+
+      The result to remember
+
+      The variance you get by projecting onto an eigenvector equals its eigenvalue. So to maximise
+      the variance, pick the eigenvector with the largest eigenvalue. To get the best M directions,
+      take the top M eigenvalues.
+
+                      maximum variance = λmax ,                 best direction = wmax .
+      This also explains the ordering convention λ1 ≥ λ2 ≥ . . . : it is a ranking of the directions
+      by how much of the data’s spread each one captures. And it is why a scree plot works at
+      all.
+
+That single line, (13), answers a whole family of questions at once. “What is the maximum
+variance of the first principal component?” λ1 . “What is the variance along the second?” λ2 .
+No computation required.
+
+      The Lagrange multiplier is the variance
+
+      A question that came up in class: the multiplier λ in (10) is a penalty term — what does it
+      have to do with an eigenvalue?
+      It turns out they are the same number. In (12) the multiplier appears as the eigenvalue,
+      and in (13) the same number turns out to be the maximum variance. So all three readings
+      are one quantity:
+
+
+            Read as                    It is                                      Where you see it
+
+            a Lagrange multiplier      the price of the constraint ∥w∥ = 1        (10)
+            an eigenvalue              the stretch factor of C along w            (12)
+            a variance                 the spread of the data along w             (13)
+
+      Keep the roles straight, though: the principal component is the eigenvector w — a direction.
+      The eigenvalue λ is the variance along it — a number.
+
+
+4.5     The second component, and all the rest
+
+The same argument gives every later component. For the second, add one more constraint — it
+must be perpendicular to the first:
+
+                          max w⊤2 Cw2          subject to    w⊤2 w2 = 1, w⊤2 w1 = 0.                 (14)
+                            w2
+
+
+                                                        10
+Now the Lagrangian carries two multipliers: L = w⊤2 Cw2 − λ(w⊤2 w2 − 1) − µ w⊤2 w1 . Setting
+the gradient to zero gives 2Cw2 − 2λw2 − µw1 = 0. Multiply on the left by w⊤1 and use
+w⊤1 w2 = 0, w⊤1 w1 = 1 and w⊤1 C = λ1 w⊤1 :
+
+                    2λ1 w⊤1 w2 − 2λ w⊤1 w2 − µ w⊤1 w1 = 0              =⇒        µ = 0.                (15)
+                        | {z }      | {z }     | {z }
+                           =0            =0           =1
+
+With µ = 0 the condition collapses back to Cw2 = λw2 : an eigenvector again, and the best
+available one is the eigenvector of the second largest eigenvalue. Repeat for w3 , and so on.
+We never had to impose that the components be perpendicular, incidentally. C is symmetric, and
+the spectral theorem guarantees a symmetric matrix has a full orthonormal set of eigenvectors.
+Perpendicularity comes free.
+
+    This derivation is the most reusable thing in the lecture. It may be asked for in general form (“show
+    that α satisfies Σα = λα”), or with a specific matrix, or for the second component — but it is the
+    same six lines every time. Get it to the point where you can write it from memory and also spot a
+    fault in someone else’s version; Question 2 in §15 trains the second of those.
+
+
+
+    Section recap. PCA is max w⊤ Cw s.t. w⊤ w = 1. The Lagrangian gives Cw = λw, so the
+    candidates are exactly the eigenvectors of C. Substituting back gives Var = λ, so the best
+    direction is the top eigenvector and the maximum variance is the top eigenvalue.
+
+
+
+5      From the covariance matrix to the directions
+
+C is symmetric, so it always has a full set of perpendicular eigenvectors with real eigenvalues;
+their sum is the total variance in the data.
+
+Section 4 reduced PCA to one instruction: find the eigenvectors of C and sort them by eigenvalue.
+This section says why that instruction is always answerable, and records two facts we use
+constantly.
+
+5.1     The spectral theorem does the heavy lifting
+
+For a general square matrix, eigenvectors can be complex, can fail to be perpendicular, and can
+fail to form a basis at all. None of that can happen here, because C is symmetric (Cjk = Ckj —
+the covariance of columns j and k does not care about the order).
+
+      What symmetry buys us
+
+      For a real symmetric D × D matrix C:
+      • all D eigenvalues are real;
+      • eigenvectors for different eigenvalues are automatically perpendicular;
+      • there is a full orthonormal basis w1 , . . . , wD of eigenvectors, so C = WΛW⊤ with
+        W⊤ W = I and Λ = diag(λ1 , . . . , λ D ).
+      And because C is a covariance matrix, every λd ≥ 0: by (13) an eigenvalue is a variance,
+      and a variance cannot be negative.
+
+That is why we can always sort λ1 ≥ λ2 ≥ · · · ≥ λ D ≥ 0 and always take the top M: the list
+is real, ordered, and complete. It is also why the principal components come out mutually
+perpendicular without our asking.
+
+                                                     11
+5.2     The total variance is the sum of the eigenvalues
+
+This one identity powers every “how much variance do we keep” calculation.
+The total variance in the data is the sum of the variances of the individual columns, which is
+the sum of the diagonal entries of C — its trace:
+                                              D                               D
+                      total variance =       ∑ Var(column d) =               ∑ Cdd = tr(C).                (16)
+                                             d =1                            d =1
+
+Now use C = WΛW⊤ and the fact that the trace does not change when you cycle a product,
+tr( AB) = tr( BA):
+                                                                                        D
+                     tr(C ) = tr WΛW⊤ = tr ΛW⊤ W = tr(Λ) =                                 ∑ λd .          (17)
+                                                                                           d =1
+
+
+      Rotating the axes does not create or destroy spread
+
+
+                           C11 + C22 + · · · + CDD =                λ1 + λ2 + · · · + λ D
+                           |         {z          }                  |       {z          }
+                          variance in the original columns        variance along the components
+
+      PCA does not change the total amount of variation in the data. It only redistributes it,
+      pushing as much as possible into the first few directions. That is exactly why keeping the
+      top few components loses so little.
+      Immediate consequence — the formula you will use over and over:
+
+                                                                      λ1 + · · · + λ M  λ + · · · + λM
+           share of variance explained by the top M =                                  = 1             .
+                                                                      λ1 + · · · + λ D     tr(C )
+
+
+5.3     Two ways to actually get the eigenvectors
+
+The slides give two routes, and they are genuinely different computations that give the same
+answer.
+                Route A: eigendecomposition                          Route B: SVD of the data
+
+what you        build C = N1 X⊤ X, then eigendecom- decompose X = UΣV⊤ directly; never
+do              pose C                              build C
+you get         λd and wd straight away             σd and vd ; convert with λd = σd2 /N
+good            it is the definition, and it is what you             more accurate numerically, and it is what
+because         do by hand                                           most software does
+costly          D is large — C alone is D × D                        rarely; you can even stop after the top M
+when                                                                 vectors
+
+Route A is what you will do on paper, and it is what §15’s questions ask for. Route B is the
+subject of the next section.
+
+  Section recap. C is symmetric, so it has D real, non-negative eigenvalues and a full or-
+  thonormal set of eigenvectors. tr(C ) = ∑d λd , so the eigenvalues are just the total variance
+  re-parcelled among perpendicular directions — which is what makes the “percentage of
+  variance explained” calculation possible.
+
+
+
+
+                                                             12
+6      The same picture through the SVD
+
+Any matrix factors as X = UΣV⊤ — turn, stretch, turn — and feeding that into C collapses it
+straight into the eigendecomposition, with λd = σd2 /N.
+
+The singular value decomposition writes any N × D matrix as
+
+                                                       X = U Σ V⊤ ,                                          (18)
+
+where U and V have orthonormal columns (U⊤ U = I, V⊤ V = I) and Σ is diagonal with the
+non-negative singular values σ1 ≥ σ2 ≥ . . . on it.
+
+      Turn, stretch, turn
+
+      Every matrix, however complicated it looks, does exactly three things in sequence: it turns
+      space, it stretches the axes by fixed amounts, and it turns the result again. That is the whole
+      content of the SVD. V⊤ is the first turn, Σ is the stretch, U is the second turn.
+      Follow a unit circle through those three moves and you get an ellipse. The ellipse’s axis
+      lengths are the singular values, and its axis directions are the columns of U.
+
+
+      start: a unit circle           V turns it                       stretches it        U turns it again
+
+
+
+
+                                                                 by 1 = 3.0, 2 = 1.1
+                 Figure 4: The three moves of a matrix, applied to a unit circle. How to read it:
+                 nothing is distorted in panels 2 and 4 — they are pure rotations. All the shape
+                 change happens in panel 3, and the amounts are exactly σ1 and σ2 .
+
+
+6.1     Substituting the SVD into the covariance matrix
+
+Now watch what happens when the SVD meets C. Start from the definition, substitute X =
+UΣV⊤ , and simplify:
+
+                      1 ⊤    1
+                               UΣV⊤ ⊤ UΣV⊤
+                                             
+              C =       X X=                                                                                 (19)
+                      N      N
+                             1
+                           = V Σ⊤ U ⊤
+                                  | {zU} Σ V
+                                            ⊤
+                                                                       U has orthonormal columns             (20)
+                             N
+                                                =I
+                               1  ⊤
+                              = VΣ  Σ V⊤                               Σ is diagonal, so Σ⊤ = Σ              (21)
+                               N |{z}
+                                        = Σ2
+                                       Σ2
+                                           
+                              =V                V⊤ .                                                         (22)
+                                       N
+
+Compare the last line with the eigendecomposition C = WΛW⊤ from §5. They have the same
+shape — an orthonormal matrix, a diagonal matrix, and the transpose of the orthonormal
+
+
+                                                            13
+matrix. So they must be the same decomposition:
+
+                                                                  σd2
+                                       W=V           and   λd =                                (23)
+                                                                  N
+
+The principal directions are the right singular vectors of the centred data, and the eigenvalues
+are the squared singular values divided by N. That is exactly equation (4) of the slides.
+
+      Why squared, and why divided by N
+
+      Both factors have a plain reading.
+      Squared because C is built from X⊤ X — the data matrix appears twice. A stretch of σ in X
+      becomes a stretch of σ2 in X⊤ X.
+      Divided by N because X⊤ X is a sum over all N points, while a variance is an average. The
+      1/N is the averaging step, and nothing more.
+      Sanity check: σd has the units of the data, so σd2 has squared units — which is right for a
+      variance.
+
+      The same result in the slides’ notation
+
+      The slides put the data points in the columns, so X is D × N and S = N1 XX⊤ . Substituting
+      X = UΣV⊤ there gives
+
+                                                                  ΣΣ⊤
+                                                                       
+                                   1      ⊤     ⊤ ⊤
+                               S =   UΣ V
+                                        | {zV} Σ U = U                      U⊤ ,
+                                   N                               N
+                                                =I
+
+      so the columns of U are the eigenvectors of S, and again λd = σd2 /N.
+      Same theorem, different letter, because the data was transposed. If you are ever unsure
+      which of U and V you want, ask which one has D rows — that is the one living in feature
+      space, and that is the one holding the directions.
+
+
+6.2     Why anyone bothers with route B
+
+If the two routes agree, why does almost every library use the SVD?
+
+• It never forms C. Building X⊤ X squares the condition number of the problem, which throws
+  away precision. The SVD works on X itself.
+• It links the two views of PCA. The slides derive PCA twice: once by maximising projected
+  variance, once by minimising reconstruction error. Equation (23) is the bridge — the same
+  U, Σ, V answer both questions. That is why the slides call this “the connection between the
+  maximum variance view and the singular value decomposition”.
+• It hands you low-rank approximation for free, which is the next section.
+
+    Section recap. X = UΣV⊤ is turn–stretch–turn. Substituting it into C = N
+                                                                           1 ⊤
+                                                                             X X collapses
+    to V (Σ2 /N )V⊤ , so the right singular vectors are the principal directions and λd = σd2 /N.
+    For the slides’ column layout the same argument gives the left singular vectors U instead.
+
+
+7      Low-rank approximation: the Eckart–Young theorem
+
+Truncating the SVD after M terms gives the best possible rank-M version of the data — which is
+another way of saying that keeping the top M components loses as little as it is possible to lose.
+
+                                                      14
+This section is short. It is not new machinery; it is a second interpretation of what we have
+already done, and it is worth knowing because it explains the phrase “minimising reconstruction
+error” on the summary slide.
+
+7.1     The question
+
+Ask for the best simplification of the data at a fixed budget:
+
+                                        X̃ M =    arg min       X−A .                                                    (24)
+                                                 rank( A) ≤ M
+
+Among all matrices of rank at most M — that is, all datasets that really live in an M-dimensional
+subspace — which one sits closest to our actual data?
+
+7.2     The answer
+
+      Eckart–Young
+
+      Take the SVD and simply stop after the top M singular values:
+                                                            ⊤
+                                             X̃ M = UM Σ M VM ,
+
+      where UM and VM hold the first M columns of U and V, and Σ M holds the M largest
+      singular values. No rank-M matrix gets closer. This holds for both the spectral norm and
+      the Frobenius norm.
+
+The leftover error is made of exactly the pieces you dropped:
+                                                           q
+                 ∥ X − X̃ M ∥2 = σM+1 ,                      2
+                                           ∥ X − X̃ M ∥ F = σM       2
+                                                               +1 + σM+2 + . . ..                                        (25)
+
+So the error is small precisely when the discarded singular values are small — which, by (23), is
+precisely when the discarded eigenvalues are small.
+
+                                                                                                      error falls fast
+                                                                                                 10
+       rank 1               rank 2               rank 6           the real thing
+                                                                                                  8
+                                                                              error still left
+
+
+
+
+                                                                                                  6
+
+                                                                                                  4
+
+                                                                                                  2
+
+                                                                                                         5       10
+                                                                                                      rank M kept
+                Figure 5: The same matrix rebuilt from its first 1, 2 and 6 singular directions.
+                How to read it: rank 1 catches the dominant blob, rank 2 finds the second, rank 6
+                is already close to the original. The last panel shows the error dropping steeply
+                and then flattening — the shape of almost every real dataset.
+
+
+
+
+                                                       15
+      A packing analogy
+
+      You are packing a suitcase and can take M items. Eckart–Young says the best strategy is
+      exactly what you would guess: pack the biggest, most useful items first, in order, and stop
+      when the case is full. What is not obvious — and is what the theorem actually proves —
+      is that no clever repacking beats this greedy order. Taking the top M singular directions
+      really is optimal, not just sensible.
+
+
+      This is the second derivation of PCA, in disguise
+
+      The slides say PCA can be derived two ways: by maximising the projected variance, or by
+      minimising the average reconstruction error. We did the first in §4. Eckart–Young is the
+      second.
+      Reconstructing every point from M components gives X̃ = XWW⊤ , a rank-M matrix.
+      Asking for the smallest possible N1 ∑i ∥ xi − x̃i ∥2 is exactly problem (24), and its solution is
+      the top M singular directions — the same W we found by maximising variance.
+      Both routes end at the top eigenvectors of C because of (17): total variance is fixed, so
+      keeping the most and losing the least are the same instruction.
+
+
+    Section recap. Truncating the SVD at M terms is the provably best rank-M approximation
+    of the data, with leftover error built from the singular values you dropped. This is the
+    “minimum reconstruction error” view of PCA, and it lands on the same components as the
+    “maximum variance” view.
+
+
+8      Getting the eigenvectors in practice
+
+The characteristic polynomial works by hand up to 4 × 4 and then stops working for anyone, so
+real software iterates — and if you only want the top direction, one very short loop does it.
+
+
+8.1     The textbook method, and where it breaks
+
+By hand you find eigenvalues by solving the characteristic equation
+                                              det(C − λI ) = 0.                                      (26)
+For a 2 × 2 matrix this is a quadratic and you use the usual formula. For 3 × 3 it is a cubic, still
+solvable in radicals. For 4 × 4 it is a quartic — there is a formula, though nobody enjoys it.
+At 5 × 5 the method dies, and not for want of effort.
+
+      Abel–Ruffini: this is not a gap in our cleverness
+
+      The characteristic polynomial of a D × D matrix has degree D. The Abel–Ruffini theorem
+      proves that a general polynomial of degree 5 or more has no solution formula in radicals.
+      Not “none is known” — none can exist.
+      So for D ≥ 5 there is no closed-form route from a matrix to its eigenvalues. Every practical
+      eigenvalue algorithm is therefore iterative: start with a guess and improve it until it stops
+      changing.
+
+This is worth stating clearly because it changes what “solving” means. In an exam, with a 2 × 2
+or 3 × 3 matrix, the characteristic polynomial is the method. In software, on a 500 × 500 matrix,
+nothing of the sort is happening — it is running an iteration.
+
+                                                          16
+8.2     Do not compute what you will throw away
+
+There is a second practical point. A full eigendecomposition of a D × D matrix costs roughly
+O( D3 ) operations and returns all D eigenvectors. But PCA usually wants M = 2 or M = 10 of
+them and discards the other several hundred. Paying the full cost and then binning most of the
+result is wasteful.
+Iterative methods that go directly after the top few eigenvectors are substantially cheaper, and
+they are what libraries call when you ask for a fixed number of components.
+
+8.3     Power iteration: the whole idea in one line
+
+The simplest such method, for the single largest eigenvector, is power iteration. Pick a starting
+vector x0 that has some component along w1 — that is, w⊤1 x0 ̸= 0, which a randomly chosen
+vector satisfies with probability 1 — then repeat
+
+                                                C xk
+                                    x k +1 =           ,    k = 0, 1, 2, . . .                  (27)
+                                               ∥C xk ∥
+Multiply by C; rescale back to unit length; repeat. That is the entire algorithm.
+
+Why it works. Write the starting vector in the eigenbasis — which we may, since the eigenvectors
+form a complete orthonormal set:
+
+                                    x0 = c1 w1 + c2 w2 + · · · + c D wD .                       (28)
+
+Each multiplication by C scales the wd part by λd , so after k steps (before rescaling)
+                                                         "            k           #
+                                                                      λ 2
+             C k x0 = c1 λ1k w1 + c2 λ2k w2 + . . . = λ1k c1 w1 + c2      w2 + . . . .          (29)
+                                                                      λ1
+
+Provided the top eigenvalue is strictly the largest, λ1 > λ2 , every ratio λd /λ1 is less than one,
+so every term except the first shrinks geometrically towards zero. The w1 component takes over.
+The normalisation in (27) just stops the numbers overflowing; it does not affect the direction.
+
+      When power iteration crawls
+
+      The convergence speed is governed by the ratio λ2 /λ1 . If the top two eigenvalues are
+      close — say λ1 = 5.0 and λ2 = 4.9 — the ratio is 0.98 and progress is glacial. In that
+      situation the top two directions carry almost the same variance anyway, so which one
+      comes “first” is not a meaningful question. Real libraries use more sophisticated iterations
+      that handle this case.
+
+
+    Section recap. The characteristic polynomial is a hand method for small matrices; Abel–
+    Ruffini rules it out from 5 × 5 upwards, so software iterates. When you want only the top
+    few directions, iterating directly is far cheaper than a full decomposition. Power iteration
+    is the minimal example: multiply by C, renormalise, repeat.
+
+
+
+9      When D is huge: wide data and the Gram trick
+
+If you have far more columns than rows, never build the D × D covariance matrix — eigende-
+compose the N × N matrix instead and convert the answer back.
+
+
+                                                       17
+                                                                                  and the gap shrinks geometrically
+                                                                                 82.72
+                                                                      102
+each pass swings the arrow further over
+                                                                      101
+
+
+
+
+                                             angle to w1 (degrees)
+                  x0                                                                          2.08
+
+                                        w1                            100
+
+                                                                     10 1
+
+
+                                                                     10 2                                           0.00
+                                                                        0
+                                                                             0           2       4       6      8
+                                                                                             pass number k
+               Figure 6: Power iteration on a 2 × 2 covariance matrix. How to read it: left,
+               each pass rotates the arrow further towards the true top eigenvector w1 (red).
+               Right, the remaining angle on a log scale — a straight-line fall means the error
+               shrinks by a constant factor every pass, here roughly λ2 /λ1 .
+
+
+9.1     Long data and wide data
+
+Most datasets are long: many rows, fewer columns. A hundred thousand customers, forty
+features. Here C is a comfortable 40 × 40 and everything so far applies directly.
+Some datasets are wide: far more columns than rows. Fifty tissue samples against twenty
+thousand genes. Sixty documents against a hundred thousand vocabulary terms. Here N ≪ D,
+and the standard recipe falls over.
+
+9.2     Why the standard recipe fails
+
+Take X of size 50 × 20,000. Then X⊤ X is 20,000 × 20,000: four hundred million numbers, about
+3.2 GB in double precision — for a dataset whose raw form is only 8 MB. And storage is the
+smaller problem. Eigendecomposition costs about D3 operations, which here is 8 × 1012 —
+hours of computing, to extract directions from fifty data points.
+
+      The tempting wrong fix
+
+      The natural reaction is: “X⊤ X is huge, so let us use XX⊤ instead — it is only 50 × 50.”
+      That is the right instinct and the wrong statement. XX⊤ is not the covariance matrix; its
+      rows and columns are indexed by data points, not by features, and its eigenvectors live in
+      the wrong space entirely — they have N components where we need D.
+      The fix below rescues the instinct: use XX⊤ as a stepping stone, then convert its eigenvec-
+      tors into the ones you actually want.
+
+
+9.3     The trick: one multiplication by X
+
+Start from the eigen-equation we are trying to solve, with C = N1 X⊤ X:
+
+                                             1 ⊤
+                                               X X w = λ w.                                                            (30)
+                                             N
+
+
+                                                                        18
+       long data: N D                   wide data: D N                                              just storing S
+                D                                                                                             80 GB
+                                                                                   102
+
+
+
+
+                                                          memory for D × D (GB)
+                                                                                           a 16 GB laptop
+                                                D                                  101
+                                                                                   100
+        N       X                   N           X                                 10 1
+                                                                                  10 2
+                                                                                  10 3
+                                                                                  10 4
+                                                                                         102         103      104      105
+                                                                                               D (number of columns)
+               Figure 7: Long against wide, and what wide costs you. How to read it: the
+               covariance matrix is D × D regardless of how few rows you have, so its size
+               is set by the wide dimension. Past about D = 45,000 it will not fit in a typical
+               laptop at all.
+
+
+Multiply both sides on the left by X — legal, since it is the same operation on both sides:
+                                         1
+                                           X X⊤ Xw = λ Xw .
+                                                        
+                                                                                                                       (31)
+                                         N
+Now name the two pieces. Let K = N1 XX⊤ , which is N × N — the Gram matrix. Let u = Xw,
+which has N components. Then
+                                      Ku = λu                                       (32)
+which is an eigenvalue problem on a matrix of size N × N: 50 × 50 in our example, not
+20,000 × 20,000. And crucially the eigenvalue λ is unchanged — it is the same λ in both equations.
+
+9.4     Converting back
+
+Solving the small problem gives u; we need w. Multiply u by X⊤ and check what happens:
+                                               
+              ⊤       1 ⊤    ⊤       ⊤ 1
+                                           XX u = X⊤ Ku = X⊤ (λu) = λ X⊤ u .
+                                              ⊤
+                                                                             
+          C X u = X XX u = X                                                         (33)
+                      N                  N
+
+So X⊤ u is an eigenvector of C with the very eigenvalue we wanted.
+
+      Do not forget to normalise
+
+      X⊤ u points the right way but has the wrong length — the derivation only ever shows
+      proportionality. Since the entire PCA argument assumed unit directions, finish with
+
+                                                          X⊤ u
+                                               w =             .
+                                                          X⊤ u
+
+      Dropping this step is the most common error in this calculation, and it quietly breaks
+      Var = λ.
+
+
+9.5     The recipe, and its limit
+
+Step 1. Centre X (size N × D, with D ≫ N).
+
+                                                     19
+Step 2. Build the Gram matrix K = N1 XX⊤ , size N × N.
+Step 3. Eigendecompose K: get λ1 ≥ · · · ≥ λ N and vectors u1 , . . . , u N .
+Step 4. Convert and normalise: wm = X⊤ um /∥ X⊤ um ∥.
+Step 5. Project as usual: Z = XW.
+
+   You could not have had more than N components anyway
+
+   A D × D covariance matrix has D eigenvalues — twenty thousand of them in our example.
+   But rank( X ) ≤ min( N, D ) = N, and centring removes one more degree of freedom, so
+
+                                            rank(C ) ≤ N − 1.
+
+   At most N − 1 eigenvalues can be non-zero; all the rest are exactly zero and carry no
+   variance whatsoever.
+   Fifty data points can only ever define a 49-dimensional cloud, no matter how many
+   columns you measured. So the Gram trick is not an approximation that sacrifices some-
+   thing — the small matrix holds every non-zero eigenvalue there was. You lose nothing at
+   all.
+
+   The same trick in the slides’ notation
+
+   With data in columns (X of size D × N, S = N1 XX⊤ ), start from Sbm = λm bm and multiply
+   on the left by X⊤ :
+
+                           1 ⊤
+                             X X X⊤ bm = λm X⊤ bm ,                   cm := X⊤ bm ,
+                                                
+                           N
+
+   so cm is an eigenvector of the small N × N matrix N1 X⊤ X. Going the other way, multiply
+   by X to recover N1 XX⊤ ( Xcm ) = λm ( Xcm ), so Xcm is an eigenvector of S — normalise it.
+   Those are slide equations (7)–(10), with the roles of X and X⊤ swapped because the data is
+   transposed.
+
+
+                                                                     1
+  Section recap. For wide data, eigendecompose the N × N Gram matrix N XX⊤ instead of
+  the D × D covariance matrix. The eigenvalues are identical; recover the directions with
+  w ∝ X⊤ u and normalise. Nothing is lost, because C never had more than N − 1 non-zero
+  eigenvalues to begin with.
+
+
+
+10 How many components to keep, and how to read them
+
+Divide each eigenvalue by their total to get its share of the variance; keep enough components
+to reach the share you need; then read the loadings to find out what those components are
+made of.
+
+
+10.1 The share of variance explained
+
+By (17) the eigenvalues add up to the total variance, so each one’s share is immediate:
+                                                                                        M
+                                              λm                                       ∑m  =1 λ m
+           share of component m =                      ,        share of the top M =              .   (34)
+                                            ∑dD=1 λd                                     D
+                                                                                       ∑ d =1 λ d
+
+                                                           20
+Plot the individual shares against the component number and you get a scree plot; plot the
+running total and you get the curve people actually make decisions from.
+
+                                                          the scree plot                                                         the running total
+                                          98.2%
+                                    102                                                                   100.0
+share of variance (%), log scale
+
+
+
+
+                                    101                                                                    99.5
+
+
+
+
+                                                                                      running total (%)
+                                                  1.62%
+                                                                                                                      the 99% line
+                                    100                                                                    99.0                           two components
+                                                                                                                                          already give 99.8%
+                                   10 1                                                                    98.5
+
+                                   10 2                                                                    98.0
+                                            1       2        3      4         5   6                               1          2        3          4        5    6
+                                                        principal component                                                       components kept
+                                            Figure 8: A real example — the diagnostic dataset shown in class. How to read
+                                            it: left, the first component alone carries 98.2% of the variance and the second
+                                            carries 1.6%; note the log scale, without which bars three onwards would be
+                                            invisible. Right, two components already reach 99.8%, so components three
+                                            onwards are not worth carrying.
+
+Three ways people choose M, in rough order of how often they are used:
+
+ • Hit a target share. Keep adding components until the running total passes 90%, 95% or 99%.
+   Simple, defensible, and the most common choice in practice.
+ • Find the elbow. Look for the point where the scree plot stops falling steeply and flattens out.
+   Everything after the elbow is small and roughly equal — usually noise.
+ • Keep λ > 1 (the Kaiser rule). Only meaningful when you standardised the columns, because
+   then each original column contributes exactly 1 to the total variance. A component with
+   λ < 1 is carrying less than a single original column, so it is not paying its way.
+
+                                   A high percentage is not automatically a good sign
+
+                               If one component explains 98% of the variance, that can mean the data really does lie
+                               almost on a line — or it can mean one column is measured in units thousands of times
+                               larger than the rest and is simply dominating the total. Check that you standardised (§11)
+                               before celebrating.
+
+
+10.2 The components come out uncorrelated — here is the proof
+
+We claimed this back in §2. It follows in two lines.
+The scores are Z = XW, and they have mean zero because X does. So their covariance matrix is
+                                                        ⊤ 
+                       1 ⊤        1       ⊤           ⊤ X X
+            Cov( Z ) =   Z Z =      ( XW ) ( XW ) = W           W = W⊤ C W.             (35)
+                       N          N                       N
+Now use CW = WΛ (that is just the eigen-equation, written for all the columns at once) and
+W⊤ W = I:                                                       
+                                                    λ1
+                  Cov( Z ) = W⊤ WΛ = Λ = 
+                                                       ..       .
+                                                                 
+                                                                                       (36)
+                                                           .
+                                                                                                                                 λM
+
+                                                                                      21
+Every off-diagonal entry is zero. The off-diagonal entries are the covariances between different
+components, so the components are mutually uncorrelated. And the diagonal entries are the
+eigenvalues, which is Var = λ once more, now for all components at once.
+
+          original columns: correlation = 0.78                        after PCA: correlation = 0.00
+      4                                                           4
+      2                                                           2
+
+
+
+
+                                                      PC2 score
+      0                                                           0
+x2
+
+
+
+
+      2                                                           2
+      4                                                           4
+                 5              0            5                             5                0        5
+                               x1                                                     PC1 score
+              Figure 9: Correlation removed. How to read it: left, the two original columns
+              move together, so knowing one tells you a lot about the other — that shared
+              information is redundant. Right, the same points described by their two
+              component scores: the cloud is now axis-aligned and the correlation is zero.
+
+
+     Why this matters downstream
+
+   Correlated inputs cause real trouble: unstable regression coefficients, multicollinearity,
+   models that cannot tell which of two twin features is doing the work. The usual fix is to
+   delete one of each correlated pair, which throws information away.
+   PCA solves it differently. It keeps all the information but re-expresses it in perpendicular
+   directions, so the redundancy is gone by construction. You can hand PC1 , . . . , PC M straight
+   to a model without worrying about correlation between them at all.
+
+
+10.3 Reading a component: factor loadings
+
+A component is a direction, and its entries are the weights of a recipe:
+
+                     z1 =    a1 x1 + a2 x2 + · · · + a D x D ,        w1 = ( a1 , . . . , a D )⊤ .       (37)
+                            |{z}
+                            loading
+
+These weights are called the factor loadings. They are literally the components of the eigenvec-
+tor, and they tell you what the component is made of.
+Suppose three features — age, experience, certifications — give a first component with loadings
+1
+7 (6, 3, 2) ≈ (0.86, 0.43, 0.29). Age dominates, so PC1 is “mostly an age axis”. If the second
+component has loadings √15 (−1, 2, 0) ≈ (−0.45, 0.89, 0), then PC2 is “mostly an experience
+axis”. You have not lost the meaning of your data; you have to look one level deeper for it.
+Both vectors have length 1, and their dot product is 7√1 5 (−6 + 6 + 0) = 0 — as any pair of
+loadings from a real PCA must. If a set of “loadings” fails those two checks, it is not a set of
+principal components.
+
+
+
+
+                                                     22
+                                           reading a principal component off its loadings
+                    1.00
+                                                                                    PC1 loadings             PC2 loadings
+                    0.75
+                    0.50
+weight in the mix
+
+
+
+                    0.25
+                    0.00
+                    0.25
+                    0.50
+                    0.75
+                               worst      mean       area       worst         mean      worst       mean       smooth-
+                               area       area       error    perimeter     perimeter   radius     texture      ness
+                           Figure 10: Loadings for the first two components of the diagnostic dataset. How
+                           to read it: tall bars are the features driving that component. PC1 is dominated
+                           by the area measurements, so it is essentially a “size” axis. Negative bars mean
+                           the feature pushes the score the other way.
+
+
+                People say PCA is a black box. It is less black than that
+
+              A common complaint is that once you replace your features with components you can no
+              longer say anything to the business. That is overstated. Look at the loadings and you can
+              usually say, in plain language, what each component is measuring — “PC1 is basically
+              overall tumour size”, “PC2 contrasts mean area against area error”.
+              There is a real trade-off, but it is not “interpretable versus uninterpretable”. It is: a
+              model on your original features is easy to explain and may be less accurate; a model
+              on engineered or component features is often more accurate and takes one extra step to
+              explain. Which you want depends on whether the client needs to understand the drivers
+              or to predict well.
+
+
+             Section recap. λm / ∑d λd is the share of variance a component carries; keep enough to hit
+            your target, or stop at the elbow. The scores are uncorrelated because Cov( Z ) = W⊤ CW =
+            Λ is diagonal. To interpret a component, read its loadings — they are the weights of the
+            linear mix it represents.
+
+
+
+11 The recipe: four steps, end to end
+
+Centre, standardise, eigendecompose, project — and if you need the answer in the original
+units, undo the first two steps at the end.
+
+Everything so far assembles into four steps. This is the procedure the slides lay out, and it is the
+procedure to follow in an exam.
+
+
+
+
+                                                                 23
+                                                                                                                     (c) step 2       divide by the std. dev.
+             (a) the data you were given                       (b) step 1       subtract the mean           3
+
+ 6                                                    4                                                     2
+
+ 4                                                    2                                                     1
+
+ 2                                                    0                                                     0
+
+                                                      2                                                     1
+ 0
+                                                      4                                                     2
+ 2
+     4        2       0         2       4   6     8        6       4        2    0     2     4          6   3
+                                                                                                                      3       2       1       0   1   2    3
+         (d) step 3           find the eigenvectors       (e) step 4        project onto the top one
+ 3                                                    3                                                         (f) undo the scaling, back to (a)'s units
+ 2                                                    2                                                     6
+
+ 1                                                    1                                                     4
+ 0                                                    0                                                     2
+ 1                                                    1
+                                                                                                            0
+ 2                                                    2
+                                                                                                            2
+ 3                                                    3                                                          4        2       0       2       4   6    8
+         3        2       1         0   1   2    3             3   2        1    0     1     2      3
+
+                      Figure 11: The four steps on a real cloud of points. How to read it: (a) to (b)
+                      shifts the cloud to the origin; (b) to (c) rescales each axis to unit spread; (d)
+                      draws the two eigenvectors, each with length proportional to the square root
+                      of its eigenvalue; (e) flattens every point onto the top one; (f) reverses the
+                      scaling so the answer is back in the original units.
+
+
+11.1 Step 1 — Subtract the mean
+
+Compute the mean of each column and subtract it from every entry in that column:
+
+                                                                                                  1 N
+                                                                                                  N i∑
+                                                 (centred)
+                                                xid        = xid − µd ,                    µd =         xid .                                              (38)
+                                                                                                     =1
+
+Now every column averages to zero, and the cloud is centred on the origin.
+Strictly, centring is not required — you could work with the uncentred second-moment matrix —
+but every formula in this document assumes it, including Var(z) = N1 ∑ z2i in (8). It also keeps
+the arithmetic small and well conditioned. Always centre.
+
+11.2 Step 2 — Divide by the standard deviation
+
+Divide each centred column by that column’s standard deviation:
+
+                                                           (standardised)             xid − µd
+                                                          xid             =                    .                                                           (39)
+                                                                                         σd
+
+Every column now has variance 1 and no units at all.
+
+     Skip this and the biggest unit wins
+
+     PCA maximises variance, and variance depends on units. Measure a length in millimetres
+     instead of metres and its variance grows by a factor of a million; that column will then
+     dominate the first component for no reason other than the choice of unit.
+
+
+                                                                                24
+                    Figure 12 shows this happening: with raw kilograms and metres the first component is
+                    essentially “weight”, because weight’s numbers are simply bigger — its loading on weight
+                    is 1.00 and on height 0.01. After standardising, the two features compete on equal terms
+                    and the component reflects the real relationship.
+                    The exception: if all your columns are already in the same unit and the differences in spread
+                    are real information you want PCA to see, standardising would throw that away. Then
+                    centre only. Decide deliberately — do not let it happen by accident.
+
+
+                                    raw units: weight's variance is                                               so PC1 is almost pure weight
+                                       about 8,566 times larger                                            until the columns are put on equal terms
+                          103                                                                      1.4      before standardising       after standardising
+                          102                                 57.34                                1.2
+variance of the column
+
+
+
+
+                                                                         size of the PC1 loading
+                                                                                                                                    1.00
+                          101                                                                      1.0
+                                                                                                   0.8                 0.71                   0.71
+                          100
+                                                                                                   0.6
+                         10 1
+                                                                                                   0.4
+                         10 2      0.006695
+                                                                                                   0.2
+                                                                                                              0.01
+                                                                                                   0.0
+                                 height (m)                weight (kg)                                         height (m)           weight (kg)
+                                  Figure 12: What raw units do to PCA, for height in metres and weight in
+                                  kilograms. How to read it: left, weight’s variance is over eight thousand times
+                                  larger — not because weight matters more, but because kilograms make bigger
+                                  numbers than metres. Right, the consequence: in raw units PC1 puts a loading
+                                  of 1.00 on weight and 0.01 on height, so it is effectively just the weight column.
+                                  After standardising, the two share the direction equally.
+
+
+11.3 Step 3 — Eigendecompose the covariance matrix
+
+Build C = N1 X⊤ X from the prepared data, then find its eigenvalues and eigenvectors. By the
+spectral theorem (§5) the eigenvectors form an orthonormal basis. Sort by eigenvalue, largest
+first, and collect the top M eigenvectors as the columns of W:
+
+                             W = w1 w2 · · · w M ∈ RD× M .
+                                                       
+                                                                                         (40)
+
+                         Normalise the eigenvectors
+
+                     Solving (C − λI )w = 0 by hand gives a direction, and any multiple of it satisfies the
+                     equation. You must scale it to unit length before using it:
+                                                                                                    w
+                                                                      w ←−                             .
+                                                                                                   ∥w∥
+
+                     If you skip this, the projected variance will not equal λ, W⊤ W will not be I, and the
+                     reconstruction WW⊤ x will be wrong. It is one line, and it is the line most often dropped.
+
+
+
+
+                                                                         25
+11.4 Step 4 — Project
+
+Multiply the prepared data by W:
+
+                                   Z = XW            (size N × M).                                   (41)
+
+Row i of Z holds the M coordinates of point i in the new basis. You began with D columns and
+now have M. That is the dimension reduction, and it is a single matrix multiplication.
+
+Projecting a point you have never seen. For a new point x∗ — a test row, a fresh customer —
+the mechanics are the same, with one condition attached:
+                            (d)
+                (d)        x∗ − µd
+              x∗      ←−           ,         z∗ = W⊤ x∗ ,      x̃∗ = Wz∗ = WW⊤ x∗ .                  (42)
+                              σd
+
+   Use the training mean and standard deviation
+
+   The µd and σd above are the ones computed from the training data. Not from the test set,
+   and not recomputed on the single new point — which would be meaningless anyway,
+   since one point has no spread.
+   The same applies to W. Mean, standard deviation and components are all fitted once, on
+   training data, and then applied unchanged to anything new. Recomputing them on test
+   data leaks information and inflates your reported accuracy.
+
+
+11.5 Step 5 (optional) — Undo the preparation
+
+x̃∗ is still standardised. To read it in the original units, reverse steps 2 and 1, in that order:
+                                       (d)               (d)
+                                   xoriginal units = x̃∗ · σd + µd .                                 (43)
+
+That is panel (f) of Figure 11. The points now lie on a line in the original coordinate system —
+the same data, compressed to M dimensions and unpacked again.
+
+   Why WW⊤ is not the identity, and why that is the point
+
+   W⊤ W = IM always — the columns are orthonormal, so that product is a small M × M
+   identity.
+   But WW⊤ is D × D and equals ID only when M = D. When M < D it is a projector: it flat-
+   tens any vector onto the M-dimensional slice that W spans, and everything perpendicular
+   to that slice is destroyed. That lost perpendicular part is exactly the reconstruction error,
+   and its mean squared length, N1 ∑i ∥ xi − x̃i ∥2 , equals λ M+1 + · · · + λ D — the eigenvalues
+   you chose not to keep.
+   Order matters, and it is a useful check: W⊤ W small and equal to I; WW⊤ big and not equal
+   to I.
+
+
+  Section recap. Centre; standardise; eigendecompose C and keep the top M unit eigenvec-
+  tors as W; project with Z = XW. For new points, reuse the training µ, σ and W. To return
+  to original units, undo the standardising and add the mean back.
+
+
+
+12 A worked example, start to finish
+
+
+                                                    26
+Five points, two columns, every number exact — centre, covariance, characteristic polynomial,
+eigenvectors, projection, and three checks that confirm the answer.
+
+Here is the whole procedure on numbers small enough to verify by hand. This is the shape of
+the calculation a question paper asks for.
+
+   The data
+
+   Five points in two dimensions:
+
+                            (1, 2),    (4, 5),   (7, 8),     (8, 4),       (10, 6).
+
+   Reduce this dataset from two dimensions to one.
+
+Step 1 — Centre the data. Column means:
+
+                 1 + 4 + 7 + 8 + 10   30                          2+5+8+4+6   25
+          µ1 =                      =    = 6,              µ2 =             =    = 5.            (44)
+                         5            5                               5        5
+Subtract (6, 5) from every point:                  
+                                              −5 −3
+                                             −2 0 
+                                                   
+                                          X= 1  3                                              (45)
+                                                   
+                                             2 −1
+                                                   
+                                              4  1
+Check: each column of X must sum to zero. −5 − 2 + 1 + 2 + 4 = 0 and −3 + 0 + 3 − 1 + 1 = 0.
+Good.
+We skip standardisation here: both columns are in the same units and have comparable spread,
+so there is nothing to correct for.
+
+Step 2 — Build the covariance matrix.
+
+                 ∑ x12 = 25 + 4 + 1 + 4 + 16 = 50,                            C11 = 50/5 = 10,   (46)
+                 ∑ x22 = 9 + 0 + 9 + 1 + 1 = 20,                              C22 = 20/5 = 4,    (47)
+              ∑ x1 x2 = 15 + 0 + 3 − 2 + 4 = 20,                              C12 = 20/5 = 4.    (48)
+                                                                      
+                                          1 ⊤                   10 4
+                                      C =   X X =                                                (49)
+                                          N                     4 4
+Divide by N = 5, not by 4. Total variance = tr(C ) = 10 + 4 = 14.
+
+Step 3 — Eigenvalues from the characteristic polynomial.
+
+                        10 − λ     4
+        det(C − λI ) =                 = (10 − λ)(4 − λ) − 16 = λ2 − 14λ + 24 = 0.               (50)
+                           4     4−λ
+                        √
+                   14 ± 196 − 96      14 ± 10
+              λ=                    =               =⇒       λ1 = 12, λ2 = 2.                    (51)
+                           2             2
+Two checks, both instant: λ1 + λ2 = 14 = tr(C ), and λ1 λ2 = 24 = det(C ). Both hold.
+Shares of the variance:
+                        λ1     12                             λ2     2
+                             =    = 85.71%,                        =    = 14.29%.                (52)
+                     λ1 + λ2   14                          λ1 + λ2   14
+One component keeps almost 86% of the variation, so reducing to one dimension is reasonable.
+
+                                                     27
+Step 4 — Eigenvectors, then normalise. For λ1 = 12, solve (C − 12I )w = 0:
+                                              
+                            −2 4              a   0
+                                                =    =⇒ −2a + 4b = 0 =⇒ a = 2b.                                                            (53)
+                            4 −8              b   0
+                                                                                     √             √
+Taking b = 1 gives the direction (2, 1), whose length is                                 4+1 =         5:
+                                                                  
+                                                     1 2      0.8944
+                                                w1 = √     ≈           .                                                                   (54)
+                                                       5 1    0.4472
+
+For λ2 = 2, solve (C − 2I )w = 0: 8a + 4b = 0, so b = −2a, giving (1, −2) and
+                                                                                
+                                                                1             1
+                                                           w2 = √                  .                                                       (55)
+                                                                  5           −2
+
+Check: w⊤1 w2 = (2 · 1 + 1 · (−2))/5 = 0. Perpendicular, as the spectral theorem promised. And
+each has length 1.
+
+Step 5 — Project onto the first component. With W = w1 , compute Z = XW, one dot product
+per row:
+                            (−5, −3) :             √1 (2(−5) + 1(−3)) = − √   13
+                                                                                                  ≈ −5.814
+                                                     5                         5
+                                (−2, 0) :             √1 (2(−2) + 1(0)) = − √4                    ≈ −1.789
+                                                        5                      5
+                                                          1                5
+                                 ( 1, 3) :               √ (2(1) + 1(3)) = √
+                                                           5                 5
+                                                                                                  ≈ 2.236                                  (56)
+                                                       1                   3
+                                ( 2, −1) :            √ (2(2) + 1(−1)) = √
+                                                        5                    5
+                                                                                                  ≈ 1.342
+                                                          1                9
+                                 ( 4, 1) :               √ (2(4) + 1(1)) = √
+                                                           5                 5
+                                                                                                  ≈ 4.025
+Five points, five numbers. The reduction is done.
+
+              the five points, and their mean
+     10
+
+                                              (7,8)                                  centred points, and their PC1 scores
+      8                                                                        4                       w2
+      6
+                                                       (10,6)                  2                                                           w1
+                                                                                                                             +4.02
+                                                                     2
+
+
+
+
+                                (4,5)                                                                                +2.24
+                                                                               0
+x2
+
+
+
+
+                                                                                                                   +1.34
+                                                                 x2
+
+
+
+
+      4                     mean (6, 5)            (8,4)                       2                    -1.79
+
+                (1,2)                                                                    -5.81
+                                                                               4
+      2
+                                                                                   7.5      5.0     2.5          0.0       2.5       5.0    7.5
+                                                                                                            x1         1
+          0      2          4           6      8       10       12
+                                    x1
+              Figure 13: The worked example. How to read it: left, the five raw points with
+              their mean marked. Right, the centred points dropped onto w1 (solid) with
+              their scores written underneath; w2 (dashed) is the direction we discard.
+
+
+
+
+                                                                     28
+Step 6 — Three checks.
+                                                          √      √
+Step 1. The scores average to zero. (−13 − 4 + 5 + 3 + 9)/ 5 = 0/ 5 = 0. As they must,
+        since X was centred.
+Step 2. The variance of the scores equals λ1 .
+
+                              1 169 + 16 + 25 + 9 + 81   300
+                                ·                      =     = 12 = λ1 .✓
+                              5           5              25
+        This is (13) confirmed on real numbers.
+Step 3. The discarded direction accounts for the rest. Projecting onto w2 gives scores
+        √1 (1, −2, −5, 4, 2), whose variance is 1 · 1+4+25+16+4 = 50 = 2 = λ2 , and 12 + 2 =
+          5                                     5        5        25
+        14 = tr(C ). Nothing has gone missing.
+
+Step 7 — A new point. A new observation arrives: x∗ = (12, 9). Centre it with the training mean:
+(12 − 6, 9 − 5) = (6, 4). Then
+                                    
+                                 ⊤ 6     2(6) + 1(4)    16
+                           z∗ = w1     =     √       = √ ≈ 7.155.                           (57)
+                                    4          5          5
+
+Rebuild it from that single number:
+                                                                                  
+                              16  1      2   6.4                          6.4    6    12.4
+        x̃(centred)
+          ∗         = z∗ w1 = √  ·√        =     ,            x̃∗ =            +   =         .      (58)
+                               5    5    1   3.2                          3.2    5    8.2
+
+The reconstruction error is the part that fell off:
+                                2
+                             6   6.4
+                               −      = (−0.4)2 + (0.8)2 = 0.80,                                    (59)
+                             4   3.2
+                                                        √
+which is exactly z22 , where z2 = w⊤2 (6, 4)⊤ = (6 − 8)/ 5 gives z22 = 4/5 = 0.80. The error really
+is the squared score along the direction we threw away.
+
+  A question may hand you the raw data, or it may hand you C directly to save you the arithmetic.
+  If you are given C, start at Step 3 — the rest is identical. Always state which λ is largest, always
+  normalise the eigenvectors, and if you have thirty seconds spare, check ∑ λ = tr(C ) and ∏ λ =
+  det(C ).
+
+
+
+13 Traps, limits, and honest caveats
+
+PCA is linear, unit-sensitive, and blind to your target — knowing when those three things bite
+is most of what separates using it well from using it by habit.
+
+
+13.1 PCA is linear, and only linear
+
+Every component is a straight-line combination z = a1 x1 + · · · + a D x D , so PCA can only find
+flat structure. If your data lies on a curve, a spiral or a sphere, no straight direction describes it
+well and PCA will report that several components are needed when really there is one curved
+one.
+There are non-linear alternatives — kernel PCA, and manifold methods such as t-SNE and
+UMAP. What matters here is knowing the boundary: PCA’s honest claim is about linear struc-
+ture.
+
+                                                  29
+13.2 PCA is blind to your target
+
+This is the deepest limitation, and it is the flip side of §2’s most useful property. PCA ranks
+directions by variance in x. It has no idea whether those directions have anything to do with y,
+and Figure 14 shows a case where it ranks them exactly backwards.
+
+                                                                the component PCA would throw away
+                                                                       is the one that predicts y
+                                                                    y against PC1
+             colour = the target y             2            2       y against PC2
+     4
+                                               1            1
+     2             PC2          PC1
+     0
+x2
+
+
+
+
+                                               0            0
+
+
+                                                   yy
+     2
+     4                                             1        1
+
+              5          0         5               2
+                         x1                                 2
+                                                                     5              0        5
+                                                                          component score
+            Figure 14: A case where PCA gets it exactly wrong. How to read it: colour is
+            the target y, and it changes across the narrow direction of the cloud. On the
+            right, y plotted against each component: PC1 — the one PCA ranks first — has
+            no relationship with y at all, while PC2 , the one you would drop, predicts it
+            perfectly.
+
+Figure 14 is not a contrived picture; this happens whenever the signal you care about is subtle
+and the dominant variation is something else — lighting in images, batch effects in gene
+data, overall loudness in audio. If you need a reduction that keeps target information, use a
+supervised method (partial least squares, linear discriminant analysis) instead of, or alongside,
+PCA.
+
+13.3 Units decide the answer
+
+Covered in §11 and shown in Figure 12: because variance carries units, changing a column’s
+unit changes the components. Always make a deliberate decision about standardising.
+
+13.4 Outliers pull the components around
+
+Variance is a sum of squared deviations, so a single far-away point contributes enormously. One
+mis-keyed value can swing the first component towards itself. Look at the data before running
+PCA, and treat a component that seems to be describing one point as a warning sign.
+
+13.5 The sign of a component is arbitrary
+
+If w satisfies Cw = λw then so does −w, with the same eigenvalue. Both are equally valid
+answers, and different software will hand you different signs for the same dataset. Nothing is
+wrong — the scores simply flip sign with the vector, and every variance is unchanged. Do not
+read meaning into whether a loading is +0.7 or −0.7 on its own; read the pattern of signs within
+a component.
+
+
+                                                       30
+13.6 Components are new features, not old ones
+
+Dropping components is not the same as dropping columns. After PCA you are no longer
+measuring age or experience — you are measuring mixtures. Every original column still
+contributes to every component. If your client needs a model stated in terms of the things they
+actually measured, PCA gives you accuracy at the cost of one extra explanatory step (§10’s
+loadings).
+
+  Section recap. PCA finds linear structure only; it ranks by variance in x and can discard
+  exactly the direction that predicts y; it is sensitive to units and to outliers; component signs
+  are arbitrary; and its outputs are mixtures, not original columns.
+
+
+
+
+                                                31
+14 The one-page card
+
+Everything above, on one page.
+
+  THE PROBLEM
+  Find the unit direction along which the projected data spreads out the most:
+
+                                    max w⊤ C w        subject to    w⊤ w = 1.
+                                      w
+
+  A constrained optimisation problem: the constraint is there because only the direction matters, not the length.
+
+
+  THE DERIVATION, IN SIX LINES
+  1. z = Xw                                        (project)
+  2. Var(z) = N1 z⊤ z = N1 ( Xw)⊤ ( Xw) = w⊤ Cw
+  3. L = w⊤ Cw − λ(w⊤ w − 1)            (Lagrangian)
+  4. ∂L/∂w = 2Cw − 2λw = 0
+  5. Cw = λw            (so w must be an eigenvector)
+  6. w⊤ Cw = w⊤ λw = λ (so the maximum variance is λ)
+
+
+  THE FIVE FACTS
+  Cwd = λd wd                                           directions are eigenvectors of C
+  Var(scored ) = λd                                     eigenvalue = variance along it
+  tr(C ) = ∑d λd                                        PCA moves variance, never creates it
+  Cov( Z ) = W⊤ CW = Λ                                  components are uncorrelated
+  λd = σd2 /N                                           the bridge from the SVD of X
+
+
+  THE RECIPE
+  1. Centre. Subtract each column’s mean.
+  2. Standardise. Divide each column by its standard deviation, unless all columns share a unit.
+  3. Eigendecompose. C = N1 X⊤ X. Solve det(C − λI ) = 0, then (C − λI )w = 0; normalise each
+     w; sort by λ.
+  4. Choose M. Keep enough components for ∑m≤ M λm / tr(C ) to reach your target.
+                                                       
+
+  5. Project. Z = XW. For a new point: standardise with the training µ, σ, then z∗ = W⊤ x∗ ,
+     x̃∗ = WW⊤ x∗ .
+
+
+  THE SIX TRAPS
+  1. Dividing by N − 1. This course divides by N.
+  2. Forgetting to normalise the eigenvectors.
+  3. Forgetting to centre before building C.
+  4. Standardising the test set with its own µ, σ instead of the training ones.
+  5. Expecting WW⊤ = I. Only W⊤ W = I; WW⊤ is a projector.
+  6. Assuming the top component predicts y. PCA never looked at y.
+
+
+  WHEN THINGS GET BIG
+  D ≥ 5, by hand                  no formula exists (Abel–Ruffini); software iterates
+  only the top one                power iteration xk+1 = Cxk /∥Cxk ∥
+  D ≫ N, wide data                eigendecompose K = N1 XX⊤ (N × N); same λ; then w = X⊤ u/∥ X⊤ u∥; at
+                                  most N − 1 are non-zero
+  best rank-M picture             Eckart–Young: X̃ M = U M Σ M V⊤
+                                                                M
+  three quick checks              ∑d λd = tr(C ) • ∏d λd = det(C ) • w⊤
+                                                                      1 w2 = 0 and ∥ wd ∥ = 1
+
+
+
+
+                                                        32
+15 Practice set: seven questions, fully solved
+
+Seven different question types, each with a note on how to attack that type, then a complete
+solution. Try each one before reading on.
+
+  Notation for this section. These questions follow the convention used in question papers rather
+  than the one used in the body of this document: X = ( X1 , . . . , X p )⊤ is a random vector, Σ is its
+  covariance matrix, α is a unit direction, and Y1 = α⊤ X is the first principal component. Read Σ as
+  the C of the earlier sections and α as w; nothing else changes.
+  Total: 40 marks. Work each one on paper first — the solutions are written out in full precisely so
+  that you can compare your method, not just your answer.
+
+
+   Question 1      (6 marks)     from raw data to components
+
+  The following four observations are recorded on two variables:
+
+                               (2, 3),     (4, 7),         (6, 5),   (8, 9).
+
+   (a) Compute the mean vector, write down the centred data matrix, and hence obtain the
+       covariance matrix Σ (divide by N). [2 Marks]
+   (b) Determine the eigenvalues of Σ and the corresponding normalised eigenvectors.
+       [2 Marks]
+
+   (c) Obtain the first principal component score for each observation, and verify that
+       Var(Y1 ) = λ1 . State the proportion of total variance explained by Y1 . [2 Marks]
+
+   Solution 1
+
+  How to attack this type. Always the same five moves: mean → centre → N1 X⊤ X →
+  characteristic polynomial → normalise. Check the centred columns sum to zero before
+  going further; if they do not, everything after is wrong. Use tr and det to check the
+  eigenvalues.
+  (a) Means: µ1 = 2+4+4 6+8 = 5, µ2 = 3+7+4 5+9 = 6. Subtracting (5, 6):
+
+                                −3 −3
+                                     
+                               −1 1 
+                            X=
+                               1 −1 ,
+                                                         columns sum to 0.✓
+                                3  3
+
+            ∑ x12 = 9 + 1 + 1 + 9 = 20,
+                                      ∑ x22 = 20, ∑ x1 x2 = 9 − 1 − 1 + 9 = 16.
+                                                         
+                                 1 ⊤   1 20 16          5 4
+                               Σ= X X=             =          .
+                                 4     4 16 20          4 5
+  (b) Characteristic equation:
+
+           det(Σ − λI ) = (5 − λ)2 − 16 = 0 =⇒ 5 − λ = ±4 =⇒ λ1 = 9, λ2 = 1.
+
+  Check: λ1 + λ2 = 10 = tr(Σ), λ1 λ2 = 9 = det(Σ) = 25 − 16. Both hold.         √
+  For λ1 = 9: (5 − 9) a + 4b = 0 ⇒ −4a + 4b = 0 ⇒ a = b, giving (1, 1) of length 2, so
+                                                
+                                            1 1
+                                      α1 = √       .
+                                             2 1
+
+
+                                                     33
+For λ2 = 1: (5 − 1) a + 4b = 0 ⇒ 4a + 4b = 0 ⇒ b = − a, so
+                                              
+                                          1    1
+                                    α2 = √        .
+                                           2  − 1
+
+Check: α⊤1 α2 = (1 − 1)/2 = 0, and both have length 1.
+(c) Y1 = √1 ( x1 + x2 ) applied to the centred rows:
+             2
+
+     −√
+      3−3
+                             √                    −√
+                                                   1+1               −1          +3
+                                                                                          √
+        2
+          = − √62 = −3           2 ≈ −4.243,
+                                                     2
+                                                       = 0,         1√
+                                                                       2
+                                                                         = 0,   3√
+                                                                                   2
+                                                                                     =3       2 ≈ 4.243.
+
+The scores sum to zero, so their variance is the mean of their squares:
+
+                                         18 + 0 + 0 + 18   36
+                        Var(Y1 ) =                       =    = 9 = λ 1 .✓
+                                                4           4
+Proportion explained:
+                                            λ1      9
+                                                 =    = 90%.
+                                         λ1 + λ2   10
+
+
+Question 2       (6 marks)        find the faults in a derivation
+
+A student is asked to obtain the first principal component of a two-dimensional random
+vector X = ( X1 , X2 )⊤ with                      
+                                              5 2
+                                       Σ=            ,
+                                              2 8
+using Lagrange multipliers. Their complete attempt is reproduced below.
+
+
+  (1) Maximise Var(Y1 ) = α⊤ Σα subject to α⊤ α = 1.
+  (2) L(α, λ) = α⊤ Σα − λ(α⊤ α − 1).
+      ∂L
+  (3)     = 2Σα − λα = 0, so Σα = 21 λα.
+      ∂α
+  (4) det(Σ − λI ) = λ2 − 13λ + 36 = 0, so λ = 9 and λ = 4.
+  (5) For the larger root, (Σ − 9I )α = 0 gives α = (1, 2)⊤ , so Y1 = X1 + 2X2 .
+  (6) Var(Y1 ) = 9, because the maximum variance is the largest eigenvalue.
+
+
+Exactly three of the six lines are faulty.
+ (a) Identify the three faulty lines and state, in one sentence each, what is wrong. [3 Marks]
+ (b) Rewrite the derivation correctly from the first faulty line onwards, and give the
+     correct Y1 and Var(Y1 ). [2 Marks]
+ (c) Line (6) contradicts the student’s own line (5). Compute Var( X1 + 2X2 ) directly from
+     Σ to show this, and state the general relation between Var(α⊤ X ) and λ when α is an
+     eigenvector that has not been normalised. [1 Mark]
+
+Solution 2
+
+How to attack this type. Marking someone else’s work is the fastest way to learn a
+derivation, because you cannot pattern-match your way through it. Walk the six lines in
+
+
+
+                                                     34
+order against the three questions that matter at each step: is the Lagrangian written with
+the constraint in the form ( · ) = 0? is every derivative right? and does the final vector
+satisfy ∥α∥ = 1? Any answer that survives all three is almost certainly correct.
+(a) Lines (1), (2) and (4) are correct. The three faults are:
+(3) The derivative of the constraint term is wrong. ∂(α⊤ α)/∂α = 2α, not α, so the
+     second term should be −2λα. As written, the student’s own algebra makes the
+     multiplier twice the eigenvalue, which destroys the identity Var(Y1 ) = λ they use
+     in line (6).
+(5) The eigenvector
+                √       has not been normalised. (1, 2)⊤ is the right direction, but its
+     length is 5, and the whole derivation assumed α⊤ α = 1.
+(6) The value is wrong, given line (5). With the unnormalised α of line (5) the
+     variance is 45, not 9; Var = λ holds only for a unit eigenvector.
+(b) Corrected from line (3) onwards. Both terms of L are quadratic forms, so
+
+                       ∂L
+                          = 2Σα − 2λα = 0            =⇒      Σα = λα.
+                       ∂α
+
+Line (4) stands: det(Σ − λI ) = (5 − λ)(8 − λ) − 4 = λ2 − 13λ + 36 = 0, so λ = 132±5 ,
+giving λ1 = 9 and λ2 = 4. Check: 9 + 4 = 13 = tr(Σ) and 9 × 4 = 36 = det(Σ) = 40 − 4.
+Both hold.                                                                          √
+For λ1 = 9: (5 − 9)α1 + 2α2 = 0 ⇒ α2 = 2α1 , so the direction is (1, 2)⊤ , of length 5.
+Normalising,
+                            
+                   1        1                X1 + 2X2
+              α1 = √           ,      Y1 =      √     ,      Var(Y1 ) = λ1 = 9.
+                     5      2                     5
+
+(For completeness, λ2 = 4 gives (5 − 4)α1 + 2α2 = 0, so α2 = √15 (−2, 1)⊤ ; note α⊤1 α2 =
+(−2 + 2)/5 = 0.) The first component explains 9/13 = 69.2% of the total variance.
+(c) Compute the variance of the student’s Y1 = X1 + 2X2 directly:
+
+     Var( X1 + 2X2 ) = Var( X1 ) + 4 Var( X2 ) + 4 Cov( X1 , X2 ) = 5 + 4(8) + 4(2) = 45,
+
+or equivalently (1, 2)Σ(1, 2)⊤ = 45 — five times the claimed 9. In general, if Σα = λα then
+
+                             Var(α⊤ X ) = α⊤ Σα = λ α⊤ α = λ ∥α∥2 ,
+
+so the tidy statement Var = λ is true only for a unit vector. Here ∥α∥2 = 5, and indeed
+5 × 9 = 45.
+Now extend it. Run the corrected derivation again with a general p × p covariance matrix
+and no numbers at all, then a third time for the second component, carrying the extra
+constraint α⊤2 α1 = 0. §4 has the model answer for both if you get stuck — but write yours
+first.
+
+
+Question 3     (5 marks)      projecting a new observation
+
+A PCA is fitted on a two-variable training set. The training means are µ = (4, 10)⊤ and
+the training standard deviations are σ = (2, 5)⊤ . On the standardised data the retained
+
+
+
+
+                                               35
+component is
+                                                                                            
+                           3/5                                                            −4/5
+                α1 =             ,       and the discarded one is              α2 =              .
+                           4/5                                                            3/5
+
+A new observation x∗ = (6, 20)⊤ arrives.
+ (a) Standardise x∗ , stating clearly which mean and standard deviation you use and why.
+     [1 Mark]
+
+ (b) Compute the score z∗ = α⊤1 x∗ and the reconstruction x̃∗ = α1 α⊤1 x∗ (both on the
+     standardised scale). [2 Marks]
+ (c) Compute the squared reconstruction error, and verify that it equals the squared score
+     along the discarded direction. [2 Marks]
+
+Solution 3
+
+How to attack this type. The only conceptual point is that µ and σ come from training.
+After that it is arithmetic. For part (c), do not compute the residual the long way twice —
+get it once by subtraction, then confirm it with z22 ; the two must agree because α1 and α2
+form an orthonormal basis and Pythagoras applies.
+(a) Use the training statistics — a single new point has no mean or spread of its own, and
+using test statistics would leak information from the test set into the model:
+                                                                    
+                                                  (6 − 4)/2           1
+                                      xstd
+                                       ∗ =                         =     .
+                                                 (20 − 10)/5          2
+
+(b) The score is a single dot product:
+
+                           z∗ = α⊤1 xstd 3       4       3   8   11
+                                     ∗ = 5 (1) + 5 (2) = 5 + 5 = 5 = 2.2.
+
+The reconstruction puts that number back along α1 :
+                                                                           
+                                                       0.6               1.32
+                                     x̃∗ = z∗ α1 = 2.2           =              .
+                                                       0.8               1.76
+
+Note xstd
+        ∗ = (1, 2) but x̃∗ = (1.32, 1.76): the reconstruction is close, not exact, because we
+kept only one of the two directions.
+(c) The residual is what did not survive:
+                                            
+            std          1 − 1.32       −0.32
+      r = x∗ − x̃∗ =                =            ,     ∥r ∥2 = 0.1024 + 0.0576 = 0.16 .
+                         2 − 1.76        0.24
+
+Now along the discarded direction:
+
+             z2 = α⊤2 xstd   4       3         4   6   2
+                       ∗ = − 5 (1) + 5 (2) = − 5 + 5 = 5 = 0.4,                       z22 = 0.16.✓
+
+They agree. This is Pythagoras in the orthonormal basis {α1 , α2 }: since ∥ x∥2 = z21 + z22 ,
+whatever you do not keep is exactly what shows up as error. Check
+                                                               p the basis first if the two
+numbers disagree: α⊤1 α2 = − 12
+                             25 + 12
+                                  25 = 0 and both have  length   (3/5)2 + (4/5)2 = 1.
+
+
+
+
+                                                      36
+Question 4     (6 marks)    three variables, and using structure
+
+A three-variable random vector X = ( X1 , X2 , X3 )⊤ has covariance matrix
+                                                
+                                           4 2 0
+                                      Σ = 2 4 0 .
+                                           0 0 3
+
+ (a) Without expanding the full cubic det(Σ − λI ) = 0, explain what the pattern of zeros
+     in Σ tells you about X3 , and hence write down all three eigenvalues. Verify your list
+     against tr(Σ) and det(Σ). [2 Marks]
+ (b) Obtain the three normalised eigenvectors and confirm that they are mutually orthog-
+     onal. [2 Marks]
+ (c) Write down Y1 explicitly and state Var(Y1 ). Then show that if only Y1 and Y2 are kept,
+     X3 is reconstructed exactly while X1 and X2 are not; identify the quantity that is lost
+     and verify that its variance is λ3 . [2 Marks]
+
+Solution 4
+
+How to attack this type. Look at the shape of the matrix before you start grinding. Zeros
+in a covariance matrix mean uncorrelated variables, and a variable uncorrelated with all
+the others splits off into a block of its own: its variance is an eigenvalue outright, and its
+axis is an eigenvector outright. That turns a cubic into a quadratic plus a freebie. When
+you do reach the small block, it is the ordinary 2 × 2 routine — characteristic polynomial,
+then (Σ − λI )α = 0, then normalise.
+(a) The third row and column are zero apart from the diagonal, so Cov( X3 , X1 ) =
+Cov( X3 , X2 ) = 0: X3 is uncorrelated with the other two. Σ is therefore block diago-
+nal,                                                  
+                                   A 0               4 2
+                            Σ=           ,    A=           ,
+                                   0 3               2 4
+and the eigenvalues of a block-diagonal matrix are simply the eigenvalues of its blocks
+pooled together. The 1 × 1 block contributes λ = 3. For A,
+
+        det( A − λI ) = (4 − λ)2 − 4 = 0 =⇒ 4 − λ = ±2 =⇒ λ = 6 and λ = 2.
+
+Sorted: λ1 = 6, λ2 = 3, λ3 = 2 . Check: 6 + 3 + 2 = 11 = 4 + 4 + 3 = tr(Σ), and
+6 × 3 × 2 = 36, while det(Σ) = 3 × det( A) = 3(16 − 4) = 36. Both hold.
+(b) Because X3 is decoupled, two of the eigenvectors lie entirely in the ( X1 , X2 ) plane and
+the third is the X3 axis itself.
+For λ1 = 6, inside A: (4 − 6)α1 + 2α2 = 0 ⇒ α1 = α2 , giving (1, 1); embedded in three
+dimensions and normalised,                     
+                                                1
+                                            1
+                                     α1 = √ 1 .
+                                             2 0
+
+For λ2 = 3, the block is already diagonal, so
+                                              
+                                               0
+                                         α2 = 0 .
+                                             
+                                               1
+
+
+
+                                               37
+For λ3 = 2: (4 − 2)α1 + 2α2 = 0 ⇒ α2 = −α1 , giving
+                                             
+                                               1
+                                        1  
+                                  α3 = √      −1 .
+                                         2     0
+
+Orthogonality: α⊤1 α3 = 12 (1 − 1 + 0) = 0, and both α⊤1 α2 = 0 and α⊤3 α2 = 0 because α2
+has zeros in the first two slots. All three have length 1. Spot check: Σα1 = √1 (4 + 2, 2 +
+                                                                                    2
+4, 0)⊤ = √6 (1, 1, 0)⊤ = 6α1 . ✓
+            2
+(c) The first principal component uses the eigenvector of the largest eigenvalue:
+
+                                          X1 + X2
+                          Y1 = α⊤1 X =      √     ,          Var(Y1 ) = λ1 = 6.
+                                              2
+
+Keeping Y1 and Y2 means W = [α1 | α2 ], and the reconstruction of any point is x̃ = WW⊤ x.
+Build that projector:
+                                                              1 1          
+                                                                        2 0
+                                              
+                                     1 1 0           0 0 0           2
+                                 1
+          WW⊤ = α1 α⊤1 + α2 α⊤2 = 1 1 0 + 0 0 0 =  12 12 0 .
+                                                                            
+                                 2
+                                     0 0 0           0 0 1           0 0 1
+
+Applying it to x = ( x1 , x2 , x3 )⊤ :
+                                                                  ⊤
+                                              x1 + x2 x1 + x2
+                                   x̃ =              ,        , x3    .
+                                                 2       2
+
+The third row of the projector is (0, 0, 1), so x̃3 = x3 exactly. But x1 and x2 are both replaced
+by their average, so neither survives unless they happened to be equal.
+What was lost is the residual
+                                                        ⊤
+                            x1 − x2       x1 − x2            x − x2
+                          
+                 x − x̃ =            , −            , 0    = 1       (1, −1, 0)⊤ ,
+                               2              2                 2
+
+which points along the discarded direction α3 . So the quantity
+                                                           √        thrown away is the differ-
+ence X1 − X2 , and its score is Y3 = α⊤3 X = ( X1 − X2 )/ 2. Its variance:
+
+        X1 − X2        Var( X1 ) + Var( X2 ) − 2 Cov( X1 , X2 )   4 + 4 − 2(2)
+                
+  Var     √        =                                            =              = 2 = λ3 .✓
+            2                             2                             2
+
+PCA kept the sum of the correlated pair and discarded their difference — which is exactly
+right, since the pair move together and the difference is the small, quiet part of their joint
+variation.
+Worth noticing: Y2 is just X3 on its own. A variable uncorrelated with all the others
+contributes its variance to the spectrum directly, and here, because 3 is not equal to 6 or 2,
+its axis comes back as a principal component untouched. PCA only mixes variables that
+actually move together. (Had Σ33 been 6, the repeated eigenvalue would have made that
+component non-unique — an honest exception to the rule.)
+Now extend it. Change the (3, 3) entry from 3 to 7 and redo the question — which variable
+becomes the first principal component, and does anything about part (c) change? Then
+take Σ = diag(4, 5, 7), with no correlations at all, and say what PCA does to a covariance
+matrix that is already diagonal.
+
+
+                                                      38
+Question 5      (6 marks)   PCA when D ≫ N
+
+A gene-expression study records D = 12,000 genes on N = 40 tissue samples. The
+centred data matrix X has size 40 × 12,000 (rows are samples), and the covariance matrix
+is Σ = N1 X⊤ X.
+ (a) State the size of Σ and the memory required to hold it in 8-byte doubles. Explain why
+     a direct eigendecomposition is impractical. [2 Marks]
+ (b) Show that if Σw = λw, then u = Xw satisfies Ku = λu, where K = N1 XX⊤ . State the
+     size of K. [2 Marks]
+ (c) Given an eigenvector u of K, recover the corresponding eigenvector of Σ and state the
+     normalisation required. What is the largest possible number of non-zero eigenvalues
+     of Σ? [2 Marks]
+
+Solution 5
+
+How to attack this type. Size questions first — the covariance matrix is always (number
+of features) × (number of features), whatever N is. The derivation in (b) is one move:
+left-multiply the eigen-equation by X and regroup the brackets. In (c) remember that a
+proportionality is not an answer until you normalise, and remember the rank argument —
+centring costs one degree of freedom.
+(a) Σ is D × D = 12,000 × 12,000, which is 1.44 × 108 entries. At 8 bytes each:
+                      1.44 × 108 × 8 = 1.152 × 109 bytes ≈ 1.15 GB.
+Two problems. First, storage — over a gigabyte for a raw dataset of a few megabytes.
+Second, and worse, eigendecomposition costs about O( D3 ) operations, which here is
+≈ 1.7 × 1012 — hours of computation to extract structure from only 40 data points.
+(b) Begin from the eigen-equation and left-multiply by X:
+                      1 ⊤              ×X    1
+                        X Xw = λw −−→          XX⊤ Xw = λXw.
+                      N                     N
+Regroup the left-hand side as N1 XX⊤ ( Xw) and set u = Xw:
+                                    
+
+                                Ku = λu ,         K = N1 XX⊤ .
+K is N × N = 40 × 40 — ninety thousand times fewer entries than Σ, and the eigenvalues
+λ are identical.
+(c) Left-multiply Ku = λu by X⊤ :
+                                 1 ⊤
+             X⊤ Ku = λX⊤ u =⇒      X XX⊤ u = λX⊤ u =⇒ Σ X⊤ u = λ X⊤ u .
+                                                                    
+                                 N
+So X⊤ u is an eigenvector of Σ for the same λ. It is not a unit vector, so normalise:
+
+                                               X⊤ u
+                                        w=
+                                               X⊤ u
+
+For the count: rank( X ) ≤ min( N, D ) = 40, and centring the rows imposes one linear
+relation among them, so rank( X ) ≤ 39 and therefore
+                                 rank(Σ) ≤ N − 1 = 39.
+At most 39 of the 12,000 eigenvalues can be non-zero; the rest are exactly zero. So working
+with the 40 × 40 matrix K loses nothing — it already contains every non-zero eigenvalue
+that exists.
+
+
+                                             39
+Question 6     (5 marks)      eigenvalues, variance shares, and decorrelation
+
+The covariance matrix Σ of a five-variable dataset has eigenvalues
+
+                  λ1 = 4.5,    λ2 = 2.1,        λ3 = 0.9,    λ4 = 0.4,      λ5 = 0.1.
+
+ (a) State the total variance in the data and the value of tr(Σ). [1 Mark]
+ (b) Find the proportion of variance explained by the first two components, and the
+     smallest number of components needed to retain at least 90%. [2 Marks]
+ (c) Let W hold all five orthonormal eigenvectors as columns and let Z = XW be the
+     component scores. Show that Cov( Z ) is diagonal, and state its diagonal entries. What
+     does this tell you about the components? [2 Marks]
+
+Solution 6
+
+How to attack this type. Part (a) is the trace identity, which is worth a mark for one line of
+work — do not skip it. In (b) build the cumulative list once and read both answers off it.
+Part (c) is a three-line proof; the only facts you need are ΣW = WΛ and W⊤ W = I.
+(a) Rotating to the principal axes does not change the total spread, so the total variance is
+the sum of the eigenvalues, and this equals the trace:
+                                5
+                    tr(Σ) = ∑ λd = 4.5 + 2.1 + 0.9 + 0.4 + 0.1 = 8.0.
+                               d =1
+
+(b) Individual and cumulative shares:
+
+                  component               1         2        3       4          5
+                  λd                     4.5       2.1       0.9     0.4        0.1
+                  share (%)             56.25     26.25     11.25   5.00       1.25
+                  cumulative (%)        56.25     82.50     93.75   98.75     100.00
+
+The first two components explain
+                                      4.5 + 2.1   6.6
+                                                =     = 82.5%.
+                                         8.0      8.0
+Two components fall short of 90%; three reach 93.75%. So M = 3 components are
+required.
+(c) X is centred, so Z = XW is centred too, and
+                                                   ⊤ 
+                        1 ⊤       1      ⊤       ⊤ X X
+             Cov( Z ) = Z Z = ( XW ) ( XW ) = W          W = W⊤ ΣW.
+                        N        N                   N
+The eigen-equations for all five vectors written together give ΣW = WΛ, and W is
+orthogonal, so W⊤ W = I. Therefore
+                  Cov( Z ) = W⊤ WΛ = Λ = diag(4.5, 2.1, 0.9, 0.4, 0.1).
+Every off-diagonal entry is zero. Off-diagonal entries of a covariance matrix are the
+covariances between different components, so the principal components are mutually un-
+correlated. The diagonal entries confirm once more that the variance of the d th component
+is λd .
+Practically: the scores can be fed straight into a regression without any multicollinearity
+between them — which is one of the main reasons PCA is used as a preprocessing step at
+all.
+
+
+                                                   40
+Question 7      (6 marks)    from singular values to components
+
+The centred data matrix X has N = 100 rows and D = 4 columns, and its singular values
+are
+                     σ1 = 20,    σ2 = 10,    σ3 = 5,    σ4 = 1.
+ (a) Obtain the eigenvalues of Σ = N1 X⊤ X, and state where the principal directions appear
+     in the decomposition X = UΣs V⊤ . [2 Marks]
+ (b) Find the proportion of variance explained by the first two components, and the
+     smallest number of components retaining at least 95%. [2 Marks]
+ (c) Write down the best rank-2 approximation of X, and compute the resulting error in
+     both the spectral and the Frobenius norm. [2 Marks]
+Here Σs denotes the diagonal matrix of singular values, to keep it distinct from the covariance
+matrix Σ.
+
+Solution 7
+
+How to attack this type. One formula does part (a): λd = σd2 /N. Take care over which
+of U and V carries the directions — the one whose rows are indexed by features. Part
+(c) is Eckart–Young: truncate, and the leftover error is built from the singular values you
+dropped.
+(a) From X = UΣs V⊤ ,
+
+                               Σs                                         σd2
+                               2
+                       1 ⊤
+                     Σ= X X=V      V⊤                  =⇒          λd =       .
+                       N       N                                          N
+
+With N = 100:
+                400                100               25                       1
+         λ1 =       = 4,    λ2 =       = 1,   λ3 =       = 0.25,    λ4 =         = 0.01.
+                100                100               100                     100
+The principal directions are the columns of V — the right singular vectors — because with
+data in rows it is V that has D = 4 rows and so lives in feature space. (Had the data been
+stored in columns, they would be the columns of U.)
+(b) Total variance = 4 + 1 + 0.25 + 0.01 = 5.26.
+                                          4+1     5
+                             first two:        =      = 95.06%.
+                                          5.26   5.26
+The first component alone gives 4/5.26 = 76.05%, which is below 95%, and two compo-
+nents give 95.06%, which clears it. So M = 2 .
+(c) By the Eckart–Young theorem the best rank-2 approximation is the SVD truncated after
+two terms:
+                          X̃2 = U2 Σs,2 V2⊤ = σ1 u1 v⊤          ⊤
+                                                     1 + σ2 u2 v2 ,
+
+using the first two columns of U and V and the two largest singular values. The errors are
+made entirely of the discarded singular values:
+                                              q            √           √
+        X − X̃2 2 = σ3 = 5,       X − X̃2 F = σ32 + σ42 = 25 + 1 = 26 ≈ 5.10.
+
+No rank-2 matrix, however cleverly constructed, gets closer to X than this one.
+
+
+
+
+                                              41
+What the seven questions were testing
+Q1   the full computation, from raw numbers to scores
+Q2   auditing a derivation — knowing it well enough to find a fault in it
+Q3   applying a fitted PCA to new data, and where the error goes
+Q4   reading structure out of a matrix before computing anything
+Q5   what changes when there are more columns than rows
+Q6   eigenvalues as a variance budget, and why components decorrelate
+Q7   the SVD route, and best low-rank approximation
+If a question type gave you trouble, the matching section is §12 (Q1), §4 (Q2, Q4), §11 (Q3),
+§9 (Q5), §10 (Q6) and §6–§7 (Q7).
+
+
+
+
+                   Companion notes for AIMLCZC416, Lecture 13 • WILP, BITS Pilani
+
+
+
+
+                                                42
+

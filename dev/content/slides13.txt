@@ -1,0 +1,410 @@
+              MFML AND MFDS
+                       MFML and MFDS Team
+BITS Pilani                   WILPD - CSIS
+                                             BITS Pilani
+
+
+
+
+           *
+               ZC416 Mathematical Foundations for
+                Machine Learning / Data Science
+         Topic: # 13 Principle Components Analysis
+1 / 24
+  I NTRODUCTION
+
+
+
+         In the previous lecture, we discussed dimensionality
+         reduction using PCA
+         In this lecture, we will see the use of linear algebra in
+         practical implmentation of PCA.
+         We will also study the challenges encountered when PCA
+         is used in problems of larger dimensions.
+         Finally, we elaborate the key steps of PCA in practice.
+
+
+
+
+2 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  R EVISION OF PCA PROBLEM
+
+
+
+         We derived the matrix B used in generation of
+         lower-dimensional representation z and the compressed
+         data x̃.
+         The data covariance matrix S was used to derive B
+         Recall that linear relationship connecting the original data
+         x, its low-dimensional code z and the compressed data x̃:
+         z = B T x, and x̃ = Bz.
+
+
+
+
+3 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E IGENVECTOR C OMPUTATION AND L OW R ANK
+  A PPROXIMATION
+         In the previous sections, we obtained the basis of the
+         principal subspace as the eigenvectors that are associated
+         with the largest eigenvalues of the data covariance matrix.
+                                          N
+                                     1 X
+                               S=               xn xnT                                     (1)
+                                    N
+                                         i =1
+
+         Equivalently we get
+                                        1
+                                 S=         XX T                                           (2)
+                                        N
+
+                          X = [x1 , ....., xN ] ∈ RD×N                                     (3)
+         Note that X is a D × N matrix,
+4 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E IGENVECTOR C OMPUTATION AND L OW R ANK
+  A PPROXIMATION
+
+         To get the eigenvalues and the corresponding eigenvectors
+         of S, we can follow two approaches
+         We can perform an eigendecomposition and compute the
+         eigenvalues and eigenvectors of S directly.
+         We can also use a singular value decomposition. Since S
+         is symmetric and factorizes into XX T , the eigenvalues of S
+         are the squared singular values of X.
+         Assume the SVD of X as X = U ΣV T . Then
+                               1              1
+                         S=        XX T =         U ΣΣT U T
+                              N              N
+
+
+5 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E IGENVECTOR C OMPUTATION AND L OW R ANK
+  A PPROXIMATION
+
+
+         The columns of U are the eigenvectors of S.
+         The eigenvalues λd of S are related to the singular values
+         of X via
+                                           σd2
+                                  λd =                           (4)
+                                         N
+         This relationship between the eigenvalues of S and the
+         singular values of X provides the connection between the
+         maximum variance view and the singular value
+         decomposition.
+
+
+
+6 / 24
+                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  PCA U SING L OW-R ANK M ATRIX
+  A PPROXIMATIONS
+
+         To maximize the variance of the projected data PCA
+         chooses the columns of U to be the eigenvectors that are
+         associated with the M largest eigenvalues of the data
+         covariance matrix S
+         The Eckart-Young theoremoffers a direct way to estimate
+         the low-dimensional representation.
+         Consider the best rank-M approximation of X defined as X̃M
+
+                     X̃M = argminrank (A)<=M ∥X − A∥2                                     (5)
+
+
+
+7 / 24
+                                   BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  PCA U SING L OW-R ANK M ATRIX
+  A PPROXIMATIONS
+
+
+         The Eckart-Young theorem states that the best rank M
+         approximation X̃M is given by truncating the SVD at the
+         top-M singular value.
+
+                              X̃M = UM ΣM VMT
+
+         UM is an orthogonal matrix
+         VM is an orthogonal matrix
+         ΣM has M largest singular values of X as diagonal entries
+
+
+
+8 / 24
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    P RACTICAL A SPECTS OF PCA
+
+
+         Finding eigenvalues and eigenvectors is also important in
+         other fundamental machine learning methods that require
+         matrix decompositions
+         In theory we can solve for the eigenvalues as roots of the
+         characteristic polynomial.
+         However for matrices larger than 4 by 4 this is not possible
+         because we would need to find the roots of polynomial of
+         degree 5 or higher.
+
+
+
+
+9 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    P RACTICAL A SPECTS OF PCA
+
+
+
+          However the Abel-Ruffini theorem states that there exists
+          no algebraic solution to this problem for polynomials of
+          degree 5 or more.
+          Therefore, in practice, solve for eigenvalues or singular
+          values using iterative methods, which are implemented in
+          all modern packages for linear algebra
+          In many applications we only require a few eigenvectors.
+
+
+
+
+10 / 24
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    P RACTICAL A SPECTS OF PCA
+
+
+
+          It would be wasteful to compute the full decomposition,and
+          then discard all eigenvectors with eigenvalues that are
+          beyond the first few.
+          It turns out that if we are interested in only the first few
+          eigenvectors (with the largest eigenvalues), then iterative
+          processes, which directly optimize these eigenvectors, are
+          computationally more efficient than a full
+          eigendecomposition
+
+
+
+
+11 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  P RACTICAL A SPECTS OF PCA
+
+
+          In the extreme case of only needing the first eigenvector, a
+          simple method called the power iteration is very efficient.
+          Power iteration chooses a random vector x0 that is not in
+          the null space of S and follows the iteration for k = 0, 1, ...
+
+                                                Sxk
+                                  xk +1 =                                                     (6)
+                                             ∥Sxk ∥
+          This sequence of vectors converges to the eigenvector
+          associated with the largest eigenvalue of S.
+
+
+
+
+12 / 24
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    PCA IN H IGH D IMENSION
+
+          1   In order to do PCA, we need to compute the data
+              covariance matrix.
+          2   In D dimensions, the data covariance matrix is a D × D
+              matrix.
+          3   Computing the eigenvalues and eigenvectors of this matrix
+              is computationally expensive as it scales cubically in D.
+          4   Therefore, PCA, as we discussed earlier, will be infeasible
+              in very high dimensions.
+          5   In the following, we provide a solution to this problem for
+              the case that we have substantially fewer data points than
+              dimensions, i.e., N << D
+
+
+13 / 24
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    PCA IN H IGH D IMENSION
+
+          Assume we have a centered dataset x1 , ..., xN , xn ∈ RD .
+          Then the data covariance matrix is given as S = N1 XX T
+
+                                         1
+                           Sbm =             XX T bm = λm bm                                        (7)
+                                         N
+                               1
+                                   X T XX T bm = λm X T bm                                          (8)
+                               N
+                                    1
+                                        X T Xcm = λm cm                                             (9)
+                                    N
+          Here cm = X T bm .
+          The nonzeroeigenvalues of XX T is same as the nonzero
+          eigenvalues of X T X .
+
+14 / 24
+                                             BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    PCA IN H IGH D IMENSION
+
+
+
+          Now that we have the eigenvectors of N1 X T X ,
+          We need to derive the eigenvectors of XX T , which we still
+          need for PCA
+                             1
+                               XX T Xcm = λm Xcm                 (10)
+                             N
+          Here, we recover the data covariance matrix again.
+          This now also means that we recover Xcm as an
+          eigenvector of S.
+
+
+
+
+15 / 24
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    K EY S TEPS OF PCA IN P RACTICE
+
+
+          In the following, we will go through the individual steps of
+          PCA using a running example.
+          We are given a two dimensional dataset and we want to
+          use PCA to project it onto a one-dimensional subspace.
+          The key steps are given below
+            ▶ Mean subtraction
+            ▶ Standardization
+            ▶ Eigendecomposition of the covariance matrix
+
+            ▶ Projection
+
+
+
+
+16 / 24
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    K EY S TEPS OF PCA IN P RACTICE
+
+
+
+          Mean subtraction
+            1   We start by centering the data by computing the mean of
+                the dataset and subtracting it from every single data point.
+            2   This ensures that the dataset has mean 0.
+            3   Mean subtraction is not strictly necessary but reduces the
+                risk of numerical problems
+
+
+
+
+17 / 24
+                                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    K EY S TEPS OF PCA IN P RACTICE
+
+
+
+          Standardization
+            1   Divide the data points by the standard deviation σd of the
+                dataset for every dimension d.
+            2   Now the data is unit free, and it has variance 1 along each
+                axis, which is indicated by the standardization
+            3   This step completes the standardization of the data.
+
+
+
+
+18 / 24
+                                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    K EY S TEPS OF PCA IN P RACTICE
+
+
+
+                      Figure: PCA
+
+
+
+
+19 / 24
+                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    K EY S TEPS OF PCA IN P RACTICE
+
+
+          Eigendecomposition of the covariance matrix
+            1   Compute the data covariance matrix and its eigenvalues
+                and corresponding eigenvectors.
+            2   Since the covariance matrix is symmetric, the spectral
+                theorem states that we can find an orthonormal basis of
+                eigenvectors.
+            3   The eigenvectors are scaled by the magnitude of the
+                corresponding eigenvalue.
+
+
+
+
+20 / 24
+                                          BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    K EY S TEPS OF PCA IN P RACTICE
+
+          Projection
+            1   We can project any data point x∗ ∈ Rd onto the principal
+                subspace:
+            2   To get this right, we need to standardize x∗ using the mean
+                and standard deviation of the training data in the d th
+                dimension
+                                        (d )
+                                  (d ) x∗ − µ d
+                                 x∗ =           ,             d = 1, ...., D                          (11)
+                                            σd
+                       (d )
+            3   Here x∗       is the d th component of x∗ .
+
+
+
+21 / 24
+                                                 BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    K EY S TEPS OF PCA IN P RACTICE
+
+          1   We obtain the projection as
+
+                                      x̃ = BB T x∗                                            (12)
+
+          2   The coordinates are
+
+                                       z∗ = B T x∗                                            (13)
+
+              with respect to the basis of the principal subspace.
+          3   Here, B is the matrix that contains the eigenvectors that are
+              associated with the largest eigenvalues of the data
+              covariance matrix as columns.
+
+
+22 / 24
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    K EY S TEPS OF PCA IN P RACTICE
+
+
+                      Figure: PCA
+
+
+
+
+23 / 24
+                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+    S UMMARY OF PCA
+
+          1   We derived PCA from two perspectives: (a) maximizing the
+              variance in the projected space; (b) minimizing the average
+              reconstruction error.
+          2   We took high-dimensional data x ∈ RD and used a matrix B
+              to find a lower-dimensional representation z ∈ RM
+          3   The columns of B are the eigenvectors of the data
+              covariance matrix S that are associated with the largest
+              eigenvalues.
+          4   Once we have a low-dimensional representation z, we can
+              get a high-dimensional version of it as Bz.
+
+
+
+24 / 24
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+

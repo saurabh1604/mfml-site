@@ -1,0 +1,330 @@
+       A Detailed Mathematical Guide to
+      Principal Component Analysis (PCA)
+
+
+Contents
+
+1 The Intuition: Why Do We Need PCA?                                                           2
+
+2 Developing the Mathematical Intuition: From Variance to Eigenvectors                         2
+  2.1 1. The Goal: Maximizing Variance . . . . . . . . . . . . . . . . . . . . . . . . . .     2
+  2.2 2. How to Measure Variance in a Specific Direction? . . . . . . . . . . . . . . . .      2
+  2.3 3. The Emergence of the Covariance Matrix . . . . . . . . . . . . . . . . . . . . .      3
+  2.4 4. Connecting to Eigendecomposition . . . . . . . . . . . . . . . . . . . . . . . .      3
+
+3 The Two Sides of PCA: The Core Optimization Problems                                         4
+  3.1 Perspective 1: Maximizing Variance . . . . . . . . . . . . . . . . . . . . . . . . .     4
+  3.2 Perspective 2: Minimizing Reconstruction Error . . . . . . . . . . . . . . . . . . .     4
+
+4 Detailed 3D Example: From Data to Projection                                                 5
+  4.1 Original Data Matrix (X) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   5
+  4.2 Step 1: Mean Center the Data . . . . . . . . . . . . . . . . . . . . . . . . . . . .     5
+  4.3 Step 2: Calculate the 3x3 Covariance Matrix . . . . . . . . . . . . . . . . . . . .      5
+  4.4 Step 3: Find Eigenvalues and Eigenvectors . . . . . . . . . . . . . . . . . . . . . .    5
+  4.5 Step 4: Project the Data onto the Principal Components . . . . . . . . . . . . . .       6
+1     The Intuition: Why Do We Need PCA?
+Imagine you have a dataset with many features—say, hundreds or even thousands. Trying
+to visualize or model such high-dimensional data is incredibly difficult. Often, many of these
+features are redundant or correlated. For example, in a dataset about houses, features like
+”square footage” and ”number of bedrooms” are likely to be highly correlated.
+    Principal Component Analysis (PCA) gives us a way to tackle this complexity. Its core idea
+is to change the coordinate system in which we view our data. Instead of using the original
+feature axes, PCA finds a new set of axes, called principal components, that are better
+aligned with the ”shape” of the data cloud.
+
+    What makes these new axes ”better”?
+
+      1. They capture the maximum variance: The first principal component (PC1) is
+         a line drawn through the data that captures the most possible variation. The second
+         principal component (PC2) is perpendicular to the first and captures the next most
+         variation, and so on.
+
+      2. They are uncorrelated: Each principal component is orthogonal (at a right angle)
+         to the others, meaning the new ”features” are not redundant.
+
+     By using only the first few principal components, we can often represent the data in a much
+lower-dimensional space while losing very little of the essential information (i.e., the variance).
+This makes PCA a powerful tool for dimensionality reduction, data visualization, and noise
+filtering.
+
+
+2     Developing the Mathematical Intuition: From Variance to
+      Eigenvectors
+The entire method of PCA is born from a single, clear goal: find the direction in the data
+with the most ”spread” or variance. Let’s walk through how this goal mathematically leads us
+directly to the concepts of covariance matrices and eigenvectors.
+
+2.1    1. The Goal: Maximizing Variance
+Let’s formalize our setup. Our data is a matrix X of size n × d, where n is the number of data
+points and d is the number of features. The first step, which is crucial, is to mean-center the
+data by subtracting the mean of each feature. We’ll call this centered data matrix X̂.
+   We are looking for a direction in our d-dimensional space. Any direction can be represented
+by a unit vector u (with dimension d × 1). We use a unit vector because we only care about
+the direction, not its magnitude, so we enforce the constraint that uT u = 1.
+
+2.2    2. How to Measure Variance in a Specific Direction?
+To find the variance of our data along the direction u, we first need to project each data point
+(each row of X̂) onto this direction. The projection of a single data point x̂i (a row vector) onto
+the direction vector u is given by the dot product: x̂i u.
+    If we do this for all n data points, we get a new vector of projected values: P = X̂u. This
+vector P is of size n × 1, and it represents our entire dataset transformed into a single dimension
+along the direction u.
+    Now, we calculate the variance of this new 1D dataset, P . Since the data was mean-centered,
+the variance is simply the average of the squared values (with a factor of n − 1 for the sample
+
+                                                2
+variance):
+                                                           n
+                                                 1 X 2
+                                      Var(P ) =     Pi
+                                                n−1
+                                                           i=1
+
+In matrix notation, this sum of squares is simply P T P . So:
+                                                     1
+                                       Var(P ) =        PTP
+                                                    n−1
+
+2.3   3. The Emergence of the Covariance Matrix
+This is the key step. Let’s substitute our expression for P back into the variance formula:
+                                                  1
+                                    Var(X̂u) =       (X̂u)T (X̂u)
+                                                 n−1
+Using the rule of transposes (AB)T = B T AT , we get:
+                                                  1
+                                 Var(X̂u) =          (uT X̂ T )(X̂u)
+                                                 n−1
+Rearranging the brackets (since matrix multiplication is associative):
+                                                           
+                                           T      1     T
+                               Var(X̂u) = u          X̂ X̂ u
+                                                n−1
+Look closely at the term in the parentheses. This is precisely the mathematical definition of
+the sample covariance matrix of our data!
+                                                  1
+                                          C=         X̂ T X̂
+                                                 n−1
+So, the variance of the data projected onto any direction u is given by the expression:
+
+                                    Var(projected data) = uT Cu
+
+2.4   4. Connecting to Eigendecomposition
+Our problem has now been transformed into a formal optimization problem:
+
+                            maximize     uT Cu subject to uT u = 1
+                                u
+
+This is a classic constrained optimization problem that can be solved using Lagrange multipliers.
+The solution reveals that the vectors u that maximize this expression are the eigenvectors of
+the matrix C.
+   Let’s see why. The equation for an eigenvector v and eigenvalue λ of a matrix C is:
+
+                                              Cv = λv
+
+Now, let’s pre-multiply both sides by v T :
+
+                                     v T Cv = v T (λv) = λ(v T v)
+
+Since eigenvectors are chosen to be unit vectors, we have v T v = 1. This leaves us with:
+
+                                              v T Cv = λ
+
+This is the punchline! This equation tells us that the variance of the data projected onto
+an eigenvector v is simply its corresponding eigenvalue λ. To find the direction of maximum
+variance, we just need to find the eigenvector of the covariance matrix that has the largest
+eigenvalue. This is the first principal component.
+
+                                                   3
+3     The Two Sides of PCA: The Core Optimization Problems
+As we’ve just seen, the mathematical foundation of PCA can be derived directly from the goal
+of maximizing variance. This leads to one of two equivalent ways to frame the core optimization
+problem.
+
+3.1    Perspective 1: Maximizing Variance
+    • The Optimization Problem:
+                                  maximize          uT Cu subject to uT u = 1
+                                       u
+
+The solution is that the optimal vectors u are the eigenvectors of the covariance matrix C.
+
+3.2    Perspective 2: Minimizing Reconstruction Error
+This perspective asks how to project data to a lower dimension while minimizing the information
+loss, measured by reconstruction error. To see how this connects to maximizing variance, let’s
+derive it.
+    The error for a single data point x̂i (treated as a column vector) is the squared distance
+between the original point and its reconstruction:
+                                        Errori = ∥x̂i − (x̂Ti u)u∥2
+Let’s expand the squared norm, where (x̂Ti u) is a scalar projection:
+                                        T
+                Errori = x̂i − (x̂Ti u)u   x̂i − (x̂Ti u)u
+                                                          
+
+                         = (x̂Ti − (x̂Ti u)uT )(x̂i − (x̂Ti u)u)
+                         = x̂Ti x̂i − x̂Ti (x̂Ti u)u − (x̂Ti u)uT x̂i + ((x̂Ti u)uT )((x̂Ti u)u)
+                         = x̂Ti x̂i − (x̂Ti u)2 − (x̂Ti u)2 + (x̂Ti u)2 (uT u)
+Since u is a unit vector, uT u = 1. The expression simplifies to:
+                                           Errori = x̂Ti x̂i − (x̂Ti u)2
+                                                                           Pn
+Our goal is to minimize the total error over all points, J =          i=1 Errori :
+                            Xn                          n              n
+                                                     X               X
+                         J=     x̂Ti x̂i − (x̂Ti u)2 =     x̂Ti x̂i −     (x̂Ti u)2
+                            i=1                        i=1            i=1
+                 P T
+The first term,      x̂i x̂i , is the total variance of the data, which is a constant value with respect
+to ourPchoice of u. Therefore, to minimize the total error J, we must maximize the second
+term, (x̂Ti u)2 .
+    This second term is the sum of the squared projected lengths. This is exactly proportional
+to the variance of the projected data we sought to maximize in the first perspective!
+          n                n                          n
+                                                                 !
+        X                X                           X
+               T   2              T       T       T
+            (x̂i u) =          (u x̂i )(x̂i u) = u       x̂i x̂i u = uT (X̂ T X̂)u = (n − 1)uT Cu
+                                                               T
+
+        i=1            i=1                             i=1
+Thus, minimizing reconstruction error is equivalent to maximizing variance.
+    • The Optimization Problem:
+                                        n
+                                        X
+                         minimize                ∥x̂i − (x̂Ti u)u∥2   subject to uT u = 1
+                              u
+                                           i=1
+
+Both paths lead to the same destination: the solution is to choose the eigenvectors of the
+covariance matrix as the principal components.
+
+                                                          4
+4     Detailed 3D Example: From Data to Projection
+Let’s walk through a concrete example with 3 features (d = 3) and 5 data points (n = 5).
+
+4.1   Original Data Matrix (X)
+Suppose our data measures three features (e.g., Height, Weight, Age):
+                                                    
+                                             2 4 5
+                                           3 6 7
+                                                    
+                                     X=   4 5 6
+                                                     
+                                           5 7 8
+                                             6 8 8
+
+4.2   Step 1: Mean Center the Data
+First, calculate the mean of each column:
+
+    • µ1 = (2 + 3 + 4 + 5 + 6)/5 = 4.0
+
+    • µ2 = (4 + 6 + 5 + 7 + 8)/5 = 6.0
+
+    • µ3 = (5 + 7 + 6 + 8 + 8)/5 = 6.8
+
+Now, subtract the means to get the centered matrix X̂:
+                                                       
+                                         −2 −2 −1.8
+                                       −1 0        0.2 
+                                                       
+                                  X̂ =  0 −1 −0.8
+                                       
+                                                        
+                                       1     1     1.2 
+                                          2   2     1.2
+
+4.3   Step 2: Calculate the 3x3 Covariance Matrix
+                              1
+The covariance matrix is C = n−1 X̂ T X̂. Here, n − 1 = 4.
+                                                           
+                                                −2 −2 −1.8
+                          −2 −1     0    1   2  −1 0  0.2 
+                      1                                    
+                   C=      −2   0   −1   1   2   0 −1 −0.8
+                                                 
+                      4                                     
+                          −1.8 0.2 −0.8 1.2 1.2  1  1  1.2 
+                                                   2 2  1.2
+
+The resulting covariance matrix is:
+                                                        
+                                 10 9  7      2.5 2.25 1.75
+                            1
+                        C=        9 10 8  = 2.25 2.5 2.0 
+                            4
+                                  7 8 6.8     1.75 2.0 1.7
+
+4.4   Step 3: Find Eigenvalues and Eigenvectors
+To find the eigenvalues, we must solve the characteristic equation det(C − λI) = 0.
+                                                            
+                                   2.5 − λ    2.25     1.75
+                             det  2.25     2.5 − λ    2.0  = 0
+                                     1.75      2.0   1.7 − λ
+
+
+                                               5
+Expanding this determinant yields a cubic polynomial in λ:
+
+  (2.5 − λ)[(2.5 − λ)(1.7 − λ) − 4] − 2.25[2.25(1.7 − λ) − 3.5] + 1.75[4.5 − 1.75(2.5 − λ)] = 0
+
+Solving this polynomial analytically is highly complex. For practical purposes, numerical meth-
+ods are used. These methods give us the eigenvalues:
+   • λ1 ≈ 6.43
+   • λ2 ≈ 0.22
+   • λ3 ≈ 0.05
+To find the eigenvector v1 corresponding to λ1 ≈ 6.43, we solve (C − λ1 I)v1 = 0:
+                                                                        
+     2.5 − 6.43     2.25        1.75        v11     −3.93 2.25       1.75      v11    0
+   2.25         2.5 − 6.43      2.0      v12 =
+                                                   2.25 −3.93      2.0     v12 = 0
+                                                                                    
+        1.75         2.0     1.7 − 6.43     v13      1.75     2.0   −4.73      v13    0
+
+This gives us a system of linear equations. Solving it (e.g., using Gaussian elimination) reveals
+the relationships between the components, such as v12 ≈ 1.05v11 and v13 ≈ 0.88v11 . We can
+choose
+√      v11 = 1 to get a vector (1, 1.05, 0.88). To make it a unit vector, we divide by its magnitude
+  12 + 1.052 + 0.882 ≈ 1.69.                                 
+                                                   1        0.59
+                                            1 
+                                   v1 ≈          1.05 = 0.62
+                                          1.69
+                                                 0.88       0.52
+Repeating this process for λ2 and λ3 gives the other eigenvectors:
+                 
+            −0.79
+   • v2 ≈  0.21 
+             0.58
+                 
+             0.18
+   • v3 ≈ −0.76
+             0.63
+
+4.5   Step 4: Project the Data onto the Principal Components
+Let’s reduce our data from 3D to 2D by projecting it onto the first two principal components.
+We form a projection matrix V whose columns are the first two eigenvectors:
+                                                           
+                                               0.59 −0.79
+                              V = v1 v2 = 0.62 0.21 
+                                                0.52 0.58
+
+The final projected data, Z, is obtained by multiplying our centered data X̂ by this projection
+matrix V :
+                                           Z = X̂V
+                                                                         
+                        −2 −2 −1.8                          −3.36 0.12
+                      −1 0
+                                        0.59 −0.79
+                                   0.2                     −0.49 0.91 
+                                                                          
+                 Z =  0 −1 −0.8 0.62 0.21
+                                                     = −1.04 −0.67
+                                                                            
+                      1      1    1.2  0.52 0.58           1.83    0.10 
+                         2    2    1.2                         2.98 −0.46
+This 5 × 2 matrix Z is our final result. We have successfully transformed our original 3-
+dimensional data into a new 2-dimensional representation that captures the maximum possible
+variance (approximately λ1λ+λ
+                            1 +λ2
+                               2 +λ3
+                                     ≈ 99.2% of the total variance).
+
+                                                 6
+

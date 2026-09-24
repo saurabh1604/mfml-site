@@ -1,0 +1,492 @@
+              MFML AND MFDS
+                       MFML and MFDS Team
+BITS Pilani                   WILPD - CSIS
+                                             BITS Pilani
+
+
+
+
+           *
+               ZC416 Mathematical Foundations for
+                Machine Learning / Data Science
+         Topic: # 12 Principle Components Analysis
+1 / 28
+  I NTRODUCTION
+
+         We will look at principle components analysis and
+         dimension reduction in this lecture.
+         High-dimensional data is hard to visulaize and interpret,
+         can we project this data into lower dimensions while
+         preserving the semantics of the data so as to draw the
+         same conclusions as if we interpreted the higher
+         dimensional data?
+         Higher dimensional data is often overcomplete, in that there
+         are redundant dimensions which can be explained by a
+         combination of other dimensions.
+         Dimensions in higher-dimensional data might be correlated,
+         so the actual data may have an intrinsic lower-dimensional
+         structure
+
+2 / 28
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  P RINCIPLE COMPONENTS ANALYSIS
+
+         PCA is a technique for linear dimensionality reduction. It
+         was first proposed by Pearson in 1900 and was
+         independently rediscovered by Hotelling in 1933.
+
+
+
+
+3 / 28
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  P ROBLEM SETTING
+
+         Given : Let {x1 , x2 , . . . , xn }, xn ∈ RD an independent,
+         identically distributed dataset, with mean 0.
+                                                               Pn=N
+         Thus, the data covariance matrix S = N1                            T
+                                                                    n=1 xn xn .
+         Aim : To find projections x˜n ∈ U ⊆ RD of datapoints
+         xn ∈ RD which are as similar as possible to the original
+         datapoints but dim(U ) = M < D.
+         We are looking for a lower-dimensional compressed
+         representation zn of xn such that zn = B T xn where the
+         projection matrix B = [b1 , . . . , bm ] ∈ RD×M .
+         The columns of B are orthonormal which means biT bj = 0
+         when i ̸= j and biT bi = 1.
+
+
+4 / 28
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  P ROBLEM SETTING
+
+         The figure below shows how z represents the
+         lower-dimensional representation of the compressed data
+         x̃ and plays the role of a bottleneck which controls the
+         information flow between x and x̃.
+
+
+
+
+         There exists a linear relationship between the original data
+         x, its low-dimensional code z and the compressed data x̃:
+         z = B T x, and x̃ = Bz for a suitable matrix B.
+
+5 / 28
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M AXIMUM VARIANCE PERSPECTIVE
+
+         We can interpret information content in the data as how
+         ”space-filling” it is and describe the information contained in
+         the data by looking at the spread of the data.
+         We can capture spread of the data using the concept of
+         variance.
+         PCA can then be viewed as a dimensionality reduction
+         algorithm that maximizes the variance in the
+         low-dimensional representation of the data to retain as
+         much information as possible.
+         Mathematically our aim is to find a matrix B so that we can
+         retain as much information as possible by projecting the
+         data on the columns b1 , b2 , . . . bM of the matrix.
+
+6 / 28
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  C ENTRED DATA
+
+         If µ is the mean of the data. Centred data means that we
+         work with data columns x − µ, rather than the original
+         columns x.
+         Note that
+         Vz (z ) = Vx (B T (x − µ)) = Vx (B T x − B T µ) = Vx (B T x ).
+         Thus by considering x − µ, the variance does not change.
+         Therefore we assume that the data has a mean of 0 for this
+         lecture.
+         Letting the mean be Ex (x ) = 0 means
+         Ez (z ) = Ex (B T x ) = B T Ex (x ) = 0
+                                                           Pn=N
+         And the data covariance matrix S = N1                          T
+                                                                n=1 xn xn .
+
+
+
+
+7 / 28
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D IRECTION WITH MAXIMAL VARIANCE
+
+
+         We maximize the variance of the low-dimensional code by
+         following a sequential approach.
+         Aim 1 : To maximize the variance V1 of the first coordinate
+         z1n of z ∈ R M
+                                              Pn=N
+         i.e to maximize V1 = V(z1 ) = N1               2
+                                                   n=1 z1n since the data x
+         is independent.
+         Now z1n = b1T xn , and can be viewed as the orthogonal
+         projection of xn onto the one-dimensional subspace
+         spanned by b1 .
+
+
+
+
+8 / 28
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D IRECTION WITH MAXIMAL VARIANCE
+
+                                                     n=N
+                                                 1 X
+                     Then we have V1 =                      (b1T xn )2
+                                                N
+                                                      n=1
+                                                   n=N
+                                                 1 X
+                                         =                   b1T xn xnT b1
+                                                N
+                                                      n=1
+                                                        n=N
+                                                        X                
+                                         = b1T                  xn xnT b1
+                                                    n=1
+                                                 T
+                                         =      b1 Sb1      .
+
+         Arbitrarily increasing the magnitude of the vector b1 wil increase
+         the variance - so we seek to maximize the variance subject to
+         ∥b1 ∥ = 1.
+9 / 28
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  D IRECTION WITH MAXIMAL VARIANCE
+
+
+
+          Therefore to find the direction b1 that maximizes variance
+          can be set up as a constrained optimization problem
+
+                          max b1T Sb1 subject to
+                                         ∥b1 ∥ = 1
+
+          To solve this problem we set up the Lagrangian
+          L(x , λ) = b1T Sb1 + λ(1 − b1T b1 ).
+
+
+
+
+10 / 28
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  S OLVING THE L AGRANGIAN
+
+          To solve the Lagrangian, let ∂L
+                                       ∂λ
+                                          = 0 and ∂∂L
+                                                    b1
+                                                       = 0.
+          So, we get
+
+                          ∂L
+                              = 1 − b1T b1 = 0
+                          ∂λ
+                         ∂L
+                              = 2b1T S − 2λb1T = 0
+                         ∂ b1
+
+          On simplification, we have Sb1 = λb1 and b1T b = 1.
+          Thus we find that the direction b1 we seek is an eigenvector
+          of the covariance matrix S and λ is its corresponding
+          eigenvalue.
+
+
+11 / 28
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  F IRST PRINCIPAL COMPONENT
+
+
+          Putting the result of the previous slide into the objective
+          function of the constrained optimization problem ie.
+          max b1T Sb1 we have b1T Sb1 = b1T λb1 = λ.
+          Our objective function boils to maximizing λ which means
+          we are looking for the eigenvector of S that corresponds to
+          its largest eigenvalue.
+          This is the first principal component.
+          Let us now examine the inner workings of the Lagrangian
+          method.
+
+
+
+
+12 / 28
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  W HY DOES THIS METHOD WORK ?
+
+          Suppose we have the following constrained optimization
+          problem:
+
+                             max f (x , y ) subject to
+                                          g (x , y ) = c
+
+          We note that at the optimal solution (x0 , y0 ), if we move a
+          small distance (δ x , δ y ), we must continue to remain on the
+          surface g (x , y ) = c. This means
+          g (x0 + δ x , y0 + δ y ) = c = g (x , y ).
+          But dg = g (x0 + δ x , y0 + δ y ) − g (x , y ) = ∇g .(δ x , δ y ) = 0.
+          Therefore ∇g is orthogonal to the displacement vector
+          (δ x , δ y ).
+
+13 / 28
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  W HY DOES THIS METHOD WORK ?
+
+          As we move along the displacement vector (δ x , δ y ), the
+          value of the objective function also cannot change because
+          otherwise we can get a better solution by moving along the
+          displacement vector or its negative direction.
+          Thus we have ∇f .(δ x , δ y ) = 0, so ∇f is orthogonal to the
+          displacement vector (δ x , δ y ).
+          Therefore, ∇f and ∇g are orthogonal to the displacement
+          vector (δ x , δ y ) and hence ∇f = λ∇g
+          This leads us to ∂∂L
+                             b1
+                                = 0.
+          ∂L
+          ∂λ
+             = 0 merely enforces the constraint in the original
+          constrained optimization problem.
+
+
+14 / 28
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M - DIMENSIONAL SUBSPACE WITH MAXIMUM
+  VARIANCE
+
+          Assume that we have found the first m − 1 principal
+          components as the m − 1 eigenvectors of S that are
+          associated with the largest m − 1 eigenvalues of S.
+          Since S is symmetric we can use the spectral theorem to
+          use the m − 1 eigenvectors to construct an orthonormal
+          basis of an m − 1-dimensional basis of RD .
+          The mth principal component can be found by subtracting
+          from the data the contribution of the first m − 1 components
+          b1 , b2 , . . . bm−1 . Essentially we are trying to find principal
+          components that compress the remainder of the
+          information.
+
+15 / 28
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M - DIMENSIONAL SUBSPACE WITH MAXIMUM
+  VARIANCE
+
+
+          X = [x1 , x2 , . . . , xN ] ∈ RD×N contains the data points xk as
+          column vectors.
+          Then, new data matrix X̂ is given by
+
+                                              m−1
+                                              X
+                             X̂   = X−                bi biT X
+                                               i =1
+                                  = X − Bm−1 X
+                         Pm−1
+          Here Bm−1 = i =1 bi biT is a projection matrix that
+          projects X onto the subspace spanned by b1 , b2 , . . . bm−1 .
+
+
+16 / 28
+                                       BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M - DIMENSIONAL SUBSPACE WITH MAXIMUM
+  VARIANCE
+
+          To find the mth principal component we maximize
+
+                                                   n=N
+                                              1 X          2
+                       Vm = V[zm ] =                      zmn
+                                              N
+                                                   n=1
+                                                   n=N
+                                              1 X
+                                      =                  (bmT xˆn )2
+                                              N
+                                                   n=1
+                                              T
+                                      =      bm Ŝbm       .
+
+          Here Ŝ is the data covariance matrix of the transformed
+          data set represented by x̂ = [x̂1 , x̂2 , . . . x̂N ].
+
+17 / 28
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  M - DIMENSIONAL SUBSPACE WITH MAXIMUM
+  VARIANCE
+
+
+
+          As before we set up a constrained optimization problem to
+          find the first principal component, and establish that the
+          optimal solution bm is the eignevector of Ŝ that corresponds
+          to the largest eigenvalue.
+          We now establish that bm is an eigenvector of the original
+          data matrix X .
+          More generally the sets of eigenvectors for Ŝ and S are the
+          same.
+
+
+
+
+18 / 28
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E IGENVECTORS OF S AND Ŝ
+
+          We now show that the eigenvectors of S and Ŝ are the
+          same.
+          Let bi be an eigenvector of S, i.e Sbi = λbi .
+          Now we can write
+                         1
+              Ŝbi   =   (X − Bm−1 X )(X − Bm−1 X )T bi
+                       N
+                     = (S − SBmT −1 − Bm−1 S + Bm−1 SBmT −1 )bi
+                     = (S − SBm−1 − Bm−1 S + Bm−1 SBm−1 )bi
+
+          Note that in the last line we have used the fact that Bm−1 is
+          a projection matrix and is therefore symmetric.
+
+
+19 / 28
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E IGENVECTORS OF S AND Ŝ
+
+
+          Case 1: i ≥ m.
+          bi is an eigenvector not among the first m − 1 components.
+                         Pm − 1
+          Since Bm−1 = i =1 bi biT and bm is orthogonal to the
+          bi , 1 ≤ i ≤ m − 1, we have Bm−1 bi = 0.
+          Plugging this into the last equation on the previous slide,
+          we see that Ŝbi = (S − Bm−1 S )bi = Sbi = λi bi .
+          Thus Sbm = λm bm . λm is the mth largest eigenvalue of S
+          and is also the largest eigenvalue of Ŝ because of the way
+          the constrained optimization problem is set up.
+
+
+
+
+20 / 28
+                                      BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  E IGENVECTORS OF S AND Ŝ
+
+
+
+          Case 2: i ≤ m − 1.
+                                Pm−1
+          We have Bm−1 bi =       j =1   bj bjT bi = bi .
+          Plugging this into
+          Ŝbi = (S − SBm−1 − Bm−1 S + Bm−1 SBm−1 )bi , we get
+          Sbi = 0.
+          Thus the vectors b1 , b2 , . . . bm−1 are eigenvectors for Ŝ
+          which are associated with the eigenvalue 0.
+
+
+
+
+21 / 28
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+                        T
+          Since Vm = bm   Sbm = λm , we see that the variance of the
+          data projected onto the mth principal component is λm .
+          To find an M-dimensional susbspace that retains as much
+          information as possible, PCA tells us to choose the
+          columns of the matrix B as the M eigenvectors of the data
+          covariance matrix S that have the largest eigenvalues.
+
+
+
+
+22 / 28
+                                    BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  P ROJECTION PERSPECTIVE
+
+
+
+          We derived the PCA as an algorithm that maximizes the
+          variance in the projected space to retain as much
+          information as possible.
+          Now we can also derive the PCA using a projection
+          perspective to minimize the average reconstruction error.
+          The original data is modeled as xn and the reconstruction is
+          modeled as x̃n . We seek to minimize the distance between
+          xn and xn .
+
+
+
+
+23 / 28
+                                     BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  A N E XAMPLE
+
+          Consider the data given below:
+
+
+            x1     x2     x3     x4     x5         x6           x7           x8           x9            Me
+           1.11   1.21   1.36   1.49   1.63       1.68         1.83         1.88         1.95        1.5711
+            10     12     13     15     16         17           18           19           20         15.555
+
+          Data when plotted, we get
+
+
+
+
+24 / 28
+                                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+          After subtracting mean from the data, then we get
+
+                             1
+                      S =        XX ′
+                             9
+                                                                          
+                                 0.079498765 0.888271605
+                         =
+                                 0.888271605 10.02469136
+
+          The largest eigenvalue of S is 10.103 and the corresponding
+          eigenvector with unit norm (first principal component ) is b1 =
+          [0.088269, 0.996097]T .
+
+
+
+
+25 / 28
+                                         BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+          The compressed or the reduced data is then given by z = b1T X
+
+
+             z1      z2      z3      z4     z5           z6          z7           z8           z9
+           -5.57   -3.57   -2.56   -0.56   0.45         1.45        2.46         3.46         4.46
+
+          We can project the data onto the principal subspace by X̃ = b1 z.
+          To obtain our projection in the original data space (i.e., before
+          standardization), we need to undo the standardization.
+
+                                     X̃ = X̃ + µ
+
+
+
+
+26 / 28
+                                           BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  P ROJECTED DATA ONTO THE P RINCIPAL
+  S UBSPACE
+
+
+
+
+27 / 28
+                        BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+  P ROJECTED DATA ONTO THE P RINCIPAL
+  S UBSPACE IN THE ORIGINAL DATA SPACE
+
+
+
+
+28 / 28
+                        BITS Pilani, Deemed to be University under Section 3 of UGC Act, 1956
+
