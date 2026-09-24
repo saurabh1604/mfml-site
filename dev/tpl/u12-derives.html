@@ -1,0 +1,195 @@
+<!--@D s3-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · what each entry of C measures</span>
+    <p class="dgoal"><b>Claim.</b> For centred data \(X\) (\(N\times D\), rows \(\mathbf x_i\)), the entry \(C_{jk}\) of \(C=\tfrac1N X^\top X\) is \(\tfrac1N\sum_i x_{ij}x_{ik}\): the variance of column \(j\) when \(j=k\), and the covariance of columns \(j\) and \(k\) otherwise. \(C\) is symmetric.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Entry \((j,k)\) of \(X^\top X\) is row \(j\) of \(X^\top\) times column \(k\) of \(X\). Row \(j\) of \(X^\top\) is column \(j\) of \(X\). So
+      \[(X^\top X)_{jk}=\sum_{i=1}^N x_{ij}\,x_{ik}.\]
+      <span class="dwhy">"Multiply the two columns row by row and add" — the recipe used on the five points.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Each column has mean \(0\), so \(x_{ij}\) is already "distance from the mean". Hence \(C_{jj}=\tfrac1N\sum_i x_{ij}^2\) is the average squared distance from the mean — the variance of column \(j\) — and \(C_{jk}=\tfrac1N\sum_i x_{ij}x_{ik}\) is the covariance of columns \(j\) and \(k\).
+      <span class="dwhy">A product \(x_{ij}x_{ik}\) is positive when both columns are on the same side of their means, negative when they are on opposite sides. The average says which usually happens.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Swapping \(j\) and \(k\) does not change \(\sum_i x_{ij}x_{ik}\), so \(C_{jk}=C_{kj}\): \(C^\top=C\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Symmetry is what later guarantees real eigenvalues and perpendicular eigenvectors (Unit 4's spectral theorem).</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · forgetting to centre adds the mean</span>
+    <p class="dgoal"><b>Claim.</b> If \(\tilde X\) holds the raw (uncentred) points with mean \(\boldsymbol\mu\), then \(\tfrac1N\tilde X^\top\tilde X=C+\boldsymbol\mu\boldsymbol\mu^\top\). For the five points this is \(\begin{bmatrix}10&4\\4&4\end{bmatrix}+\begin{bmatrix}36&30\\30&25\end{bmatrix}=\begin{bmatrix}46&34\\34&29\end{bmatrix}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write each raw point as mean plus deviation, \(\tilde{\mathbf x}_i=\boldsymbol\mu+\mathbf x_i\), where the deviations \(\mathbf x_i\) add up to \(\mathbf 0\). Then
+      \[\begin{aligned}&\frac1N\sum_i\tilde{\mathbf x}_i\tilde{\mathbf x}_i^\top\\ &=\frac1N\sum_i(\boldsymbol\mu+\mathbf x_i)(\boldsymbol\mu+\mathbf x_i)^\top\\ &=\boldsymbol\mu\boldsymbol\mu^\top+\boldsymbol\mu\bar{\mathbf x}^\top+\bar{\mathbf x}\boldsymbol\mu^\top\\ &\quad+\frac1N\sum_i\mathbf x_i\mathbf x_i^\top,\end{aligned}\]
+      where \(\bar{\mathbf x}=\tfrac1N\sum_i\mathbf x_i\) is the mean of the deviations.
+      <span class="dwhy">\(\tfrac1N X^\top X\) is the same as \(\tfrac1N\sum_i\mathbf x_i\mathbf x_i^\top\): a sum of one small table per point.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The deviations add up to zero, so \(\bar{\mathbf x}=\mathbf 0\) and the two middle terms vanish. The last term is \(C\). So the raw table is \(C+\boldsymbol\mu\boldsymbol\mu^\top\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The extra piece \(\boldsymbol\mu\boldsymbol\mu^\top\) points along the mean. That is why the uncentred matrix's top direction swings toward \((6,5)\) — it is describing where the cloud sits, not how it spreads.</span></div></div>
+  </div>
+<!--@D s4-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the spread along w is wᵀCw</span>
+    <p class="dgoal"><b>Claim.</b> For centred data \(X\) and a unit vector \(\mathbf w\), the landing positions \(z_i=\mathbf x_i^\top\mathbf w\) have mean \(0\) and variance \(\mathbf w^\top C\mathbf w\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The mean of the \(z_i\) is \(\tfrac1N\sum_i\mathbf x_i^\top\mathbf w=\big(\tfrac1N\sum_i\mathbf x_i\big)^\top\mathbf w=\mathbf 0^\top\mathbf w=0\).
+      <span class="dwhy">Projection is linear, so the projected mean is the projection of the mean — and the mean is \(\mathbf 0\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">With mean \(0\), the variance is the average square. Stack the \(z_i\) as \(\mathbf z=X\mathbf w\):
+      \[\operatorname{Var}(z)=\frac1N\sum_i z_i^2=\frac1N\,\mathbf z^\top\mathbf z.\]
+      <span class="dwhy">A sum of squares is a dot product of a vector with itself.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Substitute and regroup, using \((AB)^\top=B^\top A^\top\):
+      \[\begin{aligned}&\frac1N(X\mathbf w)^\top(X\mathbf w)\\ &=\frac1N\,\mathbf w^\top X^\top X\,\mathbf w\\ &=\mathbf w^\top\Big(\frac1N X^\top X\Big)\mathbf w=\mathbf w^\top C\,\mathbf w.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The data is gone — only \(C\) is left. This is also why \(C\) can never have a negative eigenvalue: \(\mathbf w^\top C\mathbf w\) is an average of squares, so it is never below \(0\).</span></div></div>
+  </div>
+<!--@D s5-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the fine turns into Cw = λw</span>
+    <p class="dgoal"><b>Claim.</b> Any \(\mathbf w\) that maximises \(\mathbf w^\top C\mathbf w\) subject to \(\mathbf w^\top\mathbf w=1\) satisfies \(C\mathbf w=\lambda\mathbf w\) for some number \(\lambda\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">For a symmetric matrix \(A\), the gradient of \(q(\mathbf w)=\mathbf w^\top A\mathbf w\) is \(2A\mathbf w\). Write \(q=\sum_{j,k}A_{jk}w_jw_k\) and differentiate by \(w_m\):
+      \[\begin{aligned}\frac{\partial q}{\partial w_m}&=\sum_k A_{mk}w_k+\sum_j A_{jm}w_j\\ &=2\,(A\mathbf w)_m.\end{aligned}\]
+      <span class="dwhy">\(w_m\) appears once as \(w_j\) and once as \(w_k\); symmetry \(A_{jm}=A_{mj}\) makes the two sums equal. With \(A=I\) this gives \(\nabla(\mathbf w^\top\mathbf w)=2\mathbf w\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The Lagrangian is \(L(\mathbf w,\lambda)=\mathbf w^\top C\mathbf w-\lambda(\mathbf w^\top\mathbf w-1)\). Setting both partial derivatives to zero:
+      \[\begin{gathered}\frac{\partial L}{\partial\mathbf w}=2C\mathbf w-2\lambda\mathbf w=\mathbf 0,\\ \frac{\partial L}{\partial\lambda}=-(\mathbf w^\top\mathbf w-1)=0.\end{gathered}\]
+      <span class="dwhy">The second equation just gives the leash back. The first is the new information.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Divide the first by \(2\): \(C\mathbf w=\lambda\mathbf w\), with \(\mathbf w\ne\mathbf 0\) because it has length 1. So \(\mathbf w\) is an eigenvector of \(C\) and \(\lambda\) its eigenvalue.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The slides write the fine with the opposite sign, \(L=\mathbf b^\top S\mathbf b+\lambda(1-\mathbf b^\top\mathbf b)\). It is the same function, so the same answer.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · why the two arrows must line up</span>
+    <p class="dgoal"><b>Claim.</b> If \(\mathbf w^\star\) maximises \(f(\mathbf w)\) on the curve \(g(\mathbf w)=c\), and \(\nabla g(\mathbf w^\star)\ne\mathbf 0\), then \(\nabla f(\mathbf w^\star)=\lambda\,\nabla g(\mathbf w^\star)\) for some \(\lambda\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Take a tiny step \(\boldsymbol\delta\) that stays on the curve. Then \(g\) does not change, so to first order \(\nabla g\cdot\boldsymbol\delta=0\): the step is at right angles to \(\nabla g\).
+      <span class="dwhy">On the unit circle, \(\nabla g=2\mathbf w\) points straight out, and every step along the circle is at right angles to it.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">At the best point, that step cannot change \(f\) either: if \(\nabla f\cdot\boldsymbol\delta>0\) you would step forward, and if it were \(<0\) you would step backward, and \(f\) would go up. So \(\nabla f\cdot\boldsymbol\delta=0\) as well.
+      <span class="dwhy">This is the "you would take it" argument from the page, written as one line.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">In two dimensions the steps along the curve form one line, and both \(\nabla f\) and \(\nabla g\) are at right angles to it. Two arrows at right angles to the same line are parallel: \(\nabla f=\lambda\nabla g\). (In more dimensions the same holds, because both are at right angles to every allowed step.) With \(f=\mathbf w^\top C\mathbf w\), \(g=\mathbf w^\top\mathbf w\): \(2C\mathbf w=2\lambda\mathbf w\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The Lagrangian is just bookkeeping for this picture: \(\partial L/\partial\mathbf w=\mathbf 0\) is "the arrows line up", and \(\partial L/\partial\lambda=0\) is "stay on the curve".</span></div></div>
+  </div>
+<!--@D s6-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · spread = λ, and nothing beats λ₁</span>
+    <p class="dgoal"><b>Claim.</b> (a) If \(C\mathbf w=\lambda\mathbf w\), then \(\mathbf w^\top C\mathbf w=\lambda\|\mathbf w\|^2\), which is \(\lambda\) for a unit vector. (b) For every unit \(\mathbf w\), \(\lambda_D\le\mathbf w^\top C\mathbf w\le\lambda_1\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">(a) \(\mathbf w^\top C\mathbf w=\mathbf w^\top(\lambda\mathbf w)=\lambda\,\mathbf w^\top\mathbf w=\lambda\|\mathbf w\|^2\).
+      <span class="dwhy">So the unit length is not optional: for \((1,2)\) with \(\lambda=9\) the "spread" is \(9\times5=45\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">(b) Write any unit \(\mathbf w\) in the orthonormal eigenvectors: \(\mathbf w=c_1\mathbf w_1+\dots+c_D\mathbf w_D\), with \(c_1^2+\dots+c_D^2=1\). Then
+      \[\mathbf w^\top C\mathbf w=\sum_d\lambda_d\,c_d^2.\]
+      <span class="dwhy">The cross terms vanish because the eigenvectors are at right angles: \(\mathbf w_j^\top C\mathbf w_k=\lambda_k\mathbf w_j^\top\mathbf w_k=0\) for \(j\ne k\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">That is a weighted average of the \(\lambda_d\) with weights \(c_d^2\) adding to \(1\). An average can never exceed the largest value or fall below the smallest:
+      \[\begin{aligned}\lambda_D=\lambda_D\sum_d c_d^2&\le\sum_d\lambda_d c_d^2\\ &\le\lambda_1\sum_d c_d^2=\lambda_1.\end{aligned}\]
+      The top is reached only when all the weight sits on \(\mathbf w_1\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">This is the hump from §1 in one line: every direction's spread is a blend of the eigenvalues, and the blend is biggest when it is pure \(\lambda_1\).</span></div></div>
+  </div>
+<!--@D s7-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the second fine is free (μ = 0)</span>
+    <p class="dgoal"><b>Claim.</b> Maximising \(\mathbf w_2^\top C\mathbf w_2\) subject to \(\mathbf w_2^\top\mathbf w_2=1\) and \(\mathbf w_2^\top\mathbf w_1=0\), where \(C\mathbf w_1=\lambda_1\mathbf w_1\), gives \(C\mathbf w_2=\lambda\mathbf w_2\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Two rules, two fines: \(L=\mathbf w_2^\top C\mathbf w_2-\lambda(\mathbf w_2^\top\mathbf w_2-1)-\mu\,\mathbf w_2^\top\mathbf w_1\). Setting the gradient to zero:
+      \[2C\mathbf w_2-2\lambda\mathbf w_2-\mu\mathbf w_1=\mathbf 0.\]
+      <span class="dwhy">The gradient of \(\mathbf w_2^\top\mathbf w_1\) with respect to \(\mathbf w_2\) is just \(\mathbf w_1\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Multiply on the left by \(\mathbf w_1^\top\), and use \(\mathbf w_1^\top C=(C\mathbf w_1)^\top=\lambda_1\mathbf w_1^\top\). The three terms become \(2\lambda_1(\mathbf w_1^\top\mathbf w_2)\), \(2\lambda(\mathbf w_1^\top\mathbf w_2)\) and \(\mu(\mathbf w_1^\top\mathbf w_1)\), and \(\mathbf w_1^\top\mathbf w_2=0\), \(\mathbf w_1^\top\mathbf w_1=1\):
+      \[0-0-\mu\cdot1=0\ \Longrightarrow\ \mu=0.\]
+      <span class="dwhy">\(C\) is symmetric, so \(\mathbf w_1^\top C\) is the transpose of \(C\mathbf w_1\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">With \(\mu=0\), step 1 reads \(C\mathbf w_2=\lambda\mathbf w_2\). Among eigenvectors at right angles to \(\mathbf w_1\), the spread \(\lambda\) is biggest for \(\lambda_2\). Repeat for \(\mathbf w_3\) with two right-angle rules, and so on.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The right-angle rule costs nothing because the best free answer already obeys it: eigenvectors of a symmetric matrix are perpendicular anyway.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · peeling keeps the eigenvectors (both cases)</span>
+    <p class="dgoal"><b>Claim.</b> Let \(B=\mathbf w_1\mathbf w_1^\top+\dots+\mathbf w_{m-1}\mathbf w_{m-1}^\top\) (the flattener onto the used directions) and \(\hat X=X-XB\). Then \(\hat C=\tfrac1N\hat X^\top\hat X=(I-B)C(I-B)\) has every eigenvector \(\mathbf w_i\) of \(C\): with eigenvalue \(0\) if \(i\le m-1\), and with the same \(\lambda_i\) if \(i\ge m\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(B\) is symmetric and \(\hat X=X(I-B)\), so
+      \[\begin{aligned}\hat C&=\frac1N(I-B)^\top X^\top X(I-B)\\ &=(I-B)\,C\,(I-B)\\ &=C-CB-BC+BCB.\end{aligned}\]
+      <span class="dwhy">This is the slides' expansion \(S-SB-BS+BSB\), in our row layout.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody"><b>Case \(i\ge m\)</b> (not yet used). \(\mathbf w_i\) is at right angles to every used direction, so \(B\mathbf w_i=\mathbf 0\). Also \(BC\mathbf w_i=\lambda_iB\mathbf w_i=\mathbf 0\). Hence
+      \[\hat C\mathbf w_i=C\mathbf w_i=\lambda_i\mathbf w_i\]
+      (the other three terms are \(\mathbf 0\)).
+      <span class="dwhy">Untouched directions keep exactly their spread.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody"><b>Case \(i\le m-1\)</b> (already used). Now \(B\mathbf w_i=\mathbf w_i\), so \((I-B)\mathbf w_i=\mathbf 0\), and therefore
+      \[\hat C\mathbf w_i=(I-B)\,C\,(I-B)\mathbf w_i=\mathbf 0,\]
+      because the last factor \((I-B)\mathbf w_i\) is already \(\mathbf 0\).
+      So the used directions are still eigenvectors, now with eigenvalue \(0\). The largest eigenvalue of \(\hat C\) is therefore \(\lambda_m\), with eigenvector \(\mathbf w_m\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So peeling never invents a new direction. It just switches off the ones you have, and the next eigenvector of the original \(C\) moves to the top.</span></div></div>
+  </div>
+<!--@D s8-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the trace is the sum of the eigenvalues</span>
+    <p class="dgoal"><b>Claim.</b> \(\operatorname{tr}(C)=\sum_d C_{dd}=\sum_d\lambda_d\): the total spread of the original columns equals the total spread along the principal directions.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The spectral theorem gives \(C=W\Lambda W^\top\) with \(W^\top W=I\) (all \(D\) eigenvectors as columns).
+      <span class="dwhy">Symmetric \(C\) always has a full set of perpendicular unit eigenvectors.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The trace does not change when you move the first factor of a product to the end: \(\operatorname{tr}(AB)=\operatorname{tr}(BA)\). So
+      \[\begin{aligned}\operatorname{tr}(C)&=\operatorname{tr}\big(W\,\Lambda W^\top\big)\\ &=\operatorname{tr}\big(\Lambda W^\top W\big)\\ &=\operatorname{tr}(\Lambda)=\sum_d\lambda_d.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Why \(\operatorname{tr}(AB)=\operatorname{tr}(BA)\): both are \(\sum_{j,k}A_{jk}B_{kj}\) — the same terms added in a different order.</span></div></div>
+  </div>
+<!--@D s9-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the average error is the dropped eigenvalues</span>
+    <p class="dgoal"><b>Claim.</b> With orthonormal kept directions \(W\) (\(D\times M\)) and \(\tilde{\mathbf x}=WW^\top\mathbf x\): \(\|\mathbf x-\tilde{\mathbf x}\|^2=\|\mathbf x\|^2-\|W^\top\mathbf x\|^2\), and averaged over the centred data \(\tfrac1N\sum_i\|\mathbf x_i-\tilde{\mathbf x}_i\|^2=\operatorname{tr}(C)-\operatorname{tr}(W^\top CW)\). With \(W\) = the top \(M\) eigenvectors this is \(\lambda_{M+1}+\dots+\lambda_D\), the smallest possible.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Expand the square, using \(W^\top W=I\):
+      \[\begin{aligned}&\|\mathbf x-WW^\top\mathbf x\|^2\\ &=\mathbf x^\top\mathbf x-2\,\mathbf x^\top WW^\top\mathbf x\\ &\quad+\mathbf x^\top W(W^\top W)W^\top\mathbf x\\ &=\|\mathbf x\|^2-\|W^\top\mathbf x\|^2.\end{aligned}\]
+      <span class="dwhy">For one direction: error \(=\|\mathbf x\|^2-(\mathbf x^\top\mathbf w)^2\) — Pythagoras, in symbols.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Average over the points. \(\tfrac1N\sum_i\|\mathbf x_i\|^2=\operatorname{tr}(C)\), and \(\tfrac1N\sum_i\|W^\top\mathbf x_i\|^2=\operatorname{tr}(W^\top CW)\), the total spread kept. So average error \(=\) total \(-\) kept.
+      <span class="dwhy">The total does not depend on \(W\). Minimising the error and maximising the kept spread are the same problem — the seesaw.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">With \(W=[\mathbf w_1\cdots\mathbf w_M]\), \(W^\top CW=\operatorname{diag}(\lambda_1,\dots,\lambda_M)\), so the kept spread is \(\lambda_1+\dots+\lambda_M\) and the average error is \(\lambda_{M+1}+\dots+\lambda_D\). Choosing the top eigenvectors keeps the most, so it loses the least.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Five points, \(M=1\): the error is \(\lambda_2=2\) on average; the new point \((12,9)\) happens to lose \(0.80\).</span></div></div>
+  </div>
+<!--@D s10-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the scores are uncorrelated</span>
+    <p class="dgoal"><b>Claim.</b> The scores \(Z=XW\), with \(W\) holding unit eigenvectors of \(C\) as columns, have mean \(\mathbf 0\) and covariance \(\operatorname{Cov}(Z)=\Lambda=\operatorname{diag}(\lambda_1,\dots,\lambda_M)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Each score column averages to zero, because \(X\) does (§4, step 1). So its covariance is \(\tfrac1N Z^\top Z\):
+      \[\begin{aligned}\frac1N Z^\top Z&=\frac1N W^\top X^\top XW\\ &=W^\top CW.\end{aligned}\]
+      <span class="dwhy">The same three-line move as \(\mathbf w^\top C\mathbf w\), with a whole matrix of directions at once.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">All eigen-equations side by side read \(CW=W\Lambda\). And \(W^\top W=I\). So
+      \[W^\top CW=W^\top W\Lambda=\Lambda.\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Off-diagonal zeros: no two components move together. Diagonal: each component's spread is its eigenvalue. For the five-eigenvalue example, \(\operatorname{Cov}(Z)=\operatorname{diag}(4.5,\,2.1,\,0.9,\,0.4,\,0.1)\).</span></div></div>
+  </div>
+<!--@D s11-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the SVD hands you the components</span>
+    <p class="dgoal"><b>Claim.</b> If the centred \(X=U\Sigma V^\top\) (\(U^\top U=I\), \(V^\top V=I\), \(\Sigma\) diagonal), then \(C=V\big(\Sigma^2/N\big)V^\top\): the columns of \(V\) are the principal directions and \(\lambda_d=\sigma_d^2/N\). The scores are \(Z=XV=U\Sigma\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Substitute and simplify:
+      \[\begin{aligned}C&=\frac1N(U\Sigma V^\top)^\top(U\Sigma V^\top)\\ &=\frac1N V\Sigma^\top(U^\top U)\Sigma V^\top\\ &=V\,\frac{\Sigma^2}{N}\,V^\top.\end{aligned}\]
+      <span class="dwhy">\(U^\top U=I\) because \(U\)'s columns are orthonormal; \(\Sigma^\top=\Sigma\) because it is diagonal.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Multiply on the right by \(V\): \(CV=V(\Sigma^2/N)\). Column \(d\) of this says \(C\mathbf v_d=(\sigma_d^2/N)\mathbf v_d\). So \(\mathbf v_d\) is a unit eigenvector with eigenvalue \(\sigma_d^2/N\). And \(XV=U\Sigma V^\top V=U\Sigma\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">In the slides' layout (points as columns), \(S=\tfrac1N XX^\top=U(\Sigma\Sigma^\top/N)U^\top\), so there the directions are the columns of \(U\). Pick the factor with \(D\) rows.</span></div></div>
+  </div>
+  <div class="derive reveal">
+    <span class="tag">Prove it · the error of the truncated SVD</span>
+    <p class="dgoal"><b>Claim.</b> With \(\tilde X_M=\sum_{d\le M}\sigma_d\mathbf u_d\mathbf v_d^\top\): \(\|X-\tilde X_M\|_2=\sigma_{M+1}\) and \(\|X-\tilde X_M\|_F^2=\sum_{d>M}\sigma_d^2\). (Eckart–Young adds that no rank-\(M\) matrix does better; that part is stated, not proved here.)</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The SVD is a sum of layers, \(X=\sum_d\sigma_d\mathbf u_d\mathbf v_d^\top\). So the leftover is itself an SVD, made only of the dropped layers:
+      \[X-\tilde X_M=\sum_{d>M}\sigma_d\,\mathbf u_d\mathbf v_d^\top.\]
+      <span class="dwhy">Its singular values are exactly \(\sigma_{M+1},\sigma_{M+2},\dots\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The spectral norm of any matrix is its largest singular value, so \(\|X-\tilde X_M\|_2=\sigma_{M+1}\). The squared Frobenius norm is the sum of its squared singular values (it is \(\operatorname{tr}(E^\top E)\), and the trace is the sum of the eigenvalues \(\sigma_d^2\)), so \(\|X-\tilde X_M\|_F=\sqrt{\sigma_{M+1}^2+\sigma_{M+2}^2+\cdots}\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Singular values \(20,10,5,1\), \(M=2\): errors \(5\) and \(\sqrt{26}\approx5.10\). And \(\|X-\tilde X_M\|_F^2/N=\sum_{d>M}\sigma_d^2/N=\sum_{d>M}\lambda_d\) — the rebuild error of §9 again.</span></div></div>
+  </div>
+<!--@D s12-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · power iteration closes in by λ₂/λ₁</span>
+    <p class="dgoal"><b>Claim.</b> If \(\lambda_1>|\lambda_2|\ge\dots\) and \(\mathbf x_0\) has a non-zero part \(c_1\) along \(\mathbf w_1\), the direction of \(C^k\mathbf x_0\) tends to \(\pm\mathbf w_1\), and in two dimensions the tangent of the angle to \(\mathbf w_1\) is multiplied by exactly \(\lambda_2/\lambda_1\) each pass.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The rescaling in \(\mathbf x_{k+1}=C\mathbf x_k/\|C\mathbf x_k\|\) only changes the length, never the direction, so \(\mathbf x_k\) points the same way as \(C^k\mathbf x_0\).
+      <span class="dwhy">The division by the length only stops the numbers overflowing.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Expand \(\mathbf x_0=\sum_d c_d\mathbf w_d\). Each multiplication scales the \(d\)-th part by \(\lambda_d\):
+      \[\begin{aligned}C^k\mathbf x_0&=\sum_d c_d\lambda_d^{\,k}\mathbf w_d\\ &=\lambda_1^{\,k}\Big(c_1\mathbf w_1+\sum_{d\ge2}c_d\,r_d^{\,k}\,\mathbf w_d\Big),\end{aligned}\]
+      where \(r_d=\lambda_d/\lambda_1\).
+      <span class="dwhy">Every ratio \(\lambda_d/\lambda_1\) is less than 1 in size, so every term but the first fades geometrically.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">In two dimensions the angle \(\theta_k\) to \(\mathbf w_1\) has \(\tan\theta_k=\dfrac{|c_2|\lambda_2^{\,k}}{|c_1|\lambda_1^{\,k}}=\tan\theta_0\Big(\dfrac{\lambda_2}{\lambda_1}\Big)^{k}\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">For \(C=\begin{bmatrix}5&4\\4&5\end{bmatrix}\) from \((1,0)\): \(\theta_0=45^\circ\), then \(\tan\theta_1=1/9\) (\(6.34^\circ\)), \(\tan\theta_2=1/81\) (\(0.71^\circ\)). On a log scale, a straight line with slope \(\log(\lambda_2/\lambda_1)\).</span></div></div>
+  </div>
+<!--@D s13-->
+  <div class="derive reveal">
+    <span class="tag">Prove it · the Gram trick, both ways</span>
+    <p class="dgoal"><b>Claim.</b> With \(C=\tfrac1N X^\top X\) (\(D\times D\)) and \(K=\tfrac1N XX^\top\) (\(N\times N\)): (a) if \(C\mathbf w=\lambda\mathbf w\) with \(\lambda\ne0\), then \(\mathbf u=X\mathbf w\) satisfies \(K\mathbf u=\lambda\mathbf u\) and \(\mathbf u\ne\mathbf 0\); (b) if \(K\mathbf u=\lambda\mathbf u\) with \(\lambda\ne0\), then \(C(X^\top\mathbf u)=\lambda(X^\top\mathbf u)\), and for a unit \(\mathbf u\), \(\|X^\top\mathbf u\|=\sqrt{N\lambda}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">(a) Multiply \(\tfrac1N X^\top X\mathbf w=\lambda\mathbf w\) on the left by \(X\) and regroup:
+      \[\begin{aligned}\frac1N XX^\top(X\mathbf w)&=\lambda\,(X\mathbf w),\\ \text{that is}\quad K\mathbf u&=\lambda\mathbf u.\end{aligned}\]
+      \(\mathbf u\) is not zero: \(\|X\mathbf w\|^2=N\,\mathbf w^\top C\mathbf w=N\lambda>0\).
+      <span class="dwhy">So every non-zero eigenvalue of \(C\) is also an eigenvalue of \(K\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">(b) Multiply \(\tfrac1N XX^\top\mathbf u=\lambda\mathbf u\) on the left by \(X^\top\):
+      \[\begin{aligned}\frac1N X^\top X\,(X^\top\mathbf u)&=\lambda\,(X^\top\mathbf u),\\ \text{that is}\quad C\,(X^\top\mathbf u)&=\lambda\,(X^\top\mathbf u).\end{aligned}\]
+      <span class="dwhy">And every non-zero eigenvalue of \(K\) is one of \(C\). The two lists of non-zero eigenvalues are identical.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Its length: \(\|X^\top\mathbf u\|^2=\mathbf u^\top XX^\top\mathbf u=N\,\mathbf u^\top K\mathbf u=N\lambda\,\mathbf u^\top\mathbf u=N\lambda\). So \(\mathbf w=X^\top\mathbf u/\sqrt{N\lambda}\) is the unit direction.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Not normalising leaves a vector of length \(\sqrt{N\lambda}\), and its "spread" comes out \(N\lambda\) times too big. Rank: \(X\) has \(N\) rows adding to \(\mathbf 0\), so \(\operatorname{rank}X\le N-1\) and at most \(N-1\) eigenvalues are non-zero.</span></div></div>
+  </div>

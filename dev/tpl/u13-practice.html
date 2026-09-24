@@ -1,0 +1,333 @@
+<!-- ================= 17 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head reveal"><span class="sec-num">17</span><h2>Practice arena — sixteen problems, solved in full</h2></div>
+  <div class="prose reveal">
+    <p>Sixteen problems, easy to hard: a margin read off a given line, a two-point street from scratch, five points on a line, the kernel identity checked by hand, counting hidden features, rebuilding a model from its prices, adding a point in one dimension, verifying a claimed answer in two, the "on the edge but no price" trap, reading a soft-margin model, auditing a proposed soft-margin answer — and then five full kernel problems, including one whose boundary is a hyperbola and one where a point's price is zero. Every number here was checked by machine.</p>
+    <p>Three habits do most of the work. <strong>Write the two identities first</strong>: \(\sum_i\alpha_iy_i=0\) and \(\mathbf w=\sum_i\alpha_iy_i\mathbf x_i\) (or the kernel vote \(f(\mathbf x)=\sum_i\alpha_iy_iK(\mathbf x_i,\mathbf x)+b\)). <strong>Dots first, kernel second</strong>: finish every dot product before you square it. And <strong>find \(b\) from a support vector, then check it with a second one</strong> — never assume \(b=0\).</p>
+  </div>
+
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span><span class="chip">geometry</span></div>
+    <p class="pq">A classifier has \(\mathbf w=(3,4)\) and \(b=-10\), in canonical form (the nearest points score exactly \(\pm1\)). <b>(a)</b> Write the boundary and both street edges. <b>(b)</b> What is the width of the street? <b>(c)</b> How far is the point \((1,1)\) from the boundary, and on which side? <b>(d)</b> You rescale to \(\mathbf w=(6,8)\), \(b=-20\). What changes and what does not?</p>
+    <p class="ptest"><b>What this tests.</b> That geometry lives in ratios like \(|f|/\|\mathbf w\|\), and that "width \(=2/\|\mathbf w\|\)" is only true in canonical form. <b>Plan.</b> \(\|\mathbf w\|\) first; then the three parallel lines; then the distance formula; for (d), list what moves and what does not.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the length of w.</b> \(\|\mathbf w\|=\sqrt{9+16}=5\) (the 3-4-5 triangle).</div>
+      <div class="pstep"><b>Step 2 — the three lines (a).</b> Set \(f=3x_1+4x_2-10\) to \(0\) and \(\pm1\):
+      \[\begin{aligned}\text{boundary: }&3x_1+4x_2=10,\\ f=+1:\ &3x_1+4x_2=11,\\ f=-1:\ &3x_1+4x_2=9.\end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — the width (b).</b> \(2/\|\mathbf w\|=2/5=0.4\). Check: each edge is \(1/\|\mathbf w\|=0.2\) from the boundary, and \(0.2+0.2=0.4\).</div>
+      <div class="pstep"><b>Step 4 — the distance of (1, 1) (c).</b>
+      \[\begin{gathered}f(1,1)=3+4-10=-3,\\ \frac{|f|}{\|\mathbf w\|}=\frac35=0.6.\end{gathered}\]
+      It is on the negative side. Since \(|f|=3&gt;1\), it is outside the street; as a training point it would have \(\alpha=0\).</div>
+      <div class="pstep"><b>Step 5 — the rescaling (d).</b>
+      <table class="plain"><thead><tr><th>quantity</th><th>before</th><th>after ×2</th><th>changed?</th></tr></thead><tbody>
+        <tr><td>the boundary itself</td><td>\(3x_1+4x_2=10\)</td><td>\(6x_1+8x_2=20\)</td><td>no — the same line</td></tr>
+        <tr><td>score \(f(1,1)\)</td><td>\(-3\)</td><td>\(-6\)</td><td>yes, doubles</td></tr>
+        <tr><td>\(\|\mathbf w\|\)</td><td>\(5\)</td><td>\(10\)</td><td>yes, doubles</td></tr>
+        <tr><td>distance \(|f|/\|\mathbf w\|\)</td><td>\(0.6\)</td><td>\(0.6\)</td><td>no</td></tr>
+        <tr><td>where \(f=\pm1\) sits</td><td>\(0.2\) away</td><td>\(0.1\) away</td><td>yes — no longer canonical</td></tr>
+      </tbody></table>
+      The rescaled version is not canonical: its nearest points now score 2, not 1. Reading "\(2/\|\mathbf w\|=0.2\)" off it would be wrong.</div>
+      <p class="pans">answers at a glance: (a) boundary \(3x_1+4x_2=10\), edges \(=11\) and \(=9\). (b) width \(0.4\). (c) \(0.6\) away, negative side, outside the street. (d) the line and every distance stay; the scores and \(\|\mathbf w\|\) double, and the form is no longer canonical.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A score is not a distance until you divide by \(\|\mathbf w\|\), and \(2/\|\mathbf w\|\) is the width only when the nearest points score exactly 1. Renormalise before you quote a margin.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span><span class="chip">hard margin</span></div>
+    <p class="pq">Two training points: \(\mathbf x_1=(1,1)\) with \(y_1=+1\), \(\mathbf x_2=(4,5)\) with \(y_2=-1\). <b>(a)</b> Find \(\alpha_1,\alpha_2\). <b>(b)</b> Find \(\mathbf w\) and \(b\). <b>(c)</b> Give the boundary, both edges and the width. <b>(d)</b> Check that the primal and dual values agree.</p>
+    <p class="ptest"><b>What this tests.</b> The whole machinery on the smallest problem there is: balance, the edge conditions, \(\mathbf w=\sum\alpha_iy_i\mathbf x_i\) — then two independent checks. <b>Plan.</b> With two points both must be support vectors. Balance makes the prices equal; the two edge conditions give two equations in \(\alpha\) and \(b\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — both points must push.</b> If \(\alpha_1=0\), balance \(\alpha_1-\alpha_2=0\) forces \(\alpha_2=0\), then \(\mathbf w=\mathbf 0\), which cannot give any point a score of 1. So both prices are positive and both points sit on an edge. Balance: \(\alpha_1=\alpha_2=\alpha\).</div>
+      <div class="pstep"><b>Step 2 — the dot products.</b> \(\mathbf x_1\cdot\mathbf x_1=2\), \(\mathbf x_1\cdot\mathbf x_2=4+5=9\), \(\mathbf x_2\cdot\mathbf x_2=16+25=41\).</div>
+      <div class="pstep"><b>Step 3 — the two edge conditions.</b> With \(f(\mathbf x)=\alpha(\mathbf x_1\cdot\mathbf x)-\alpha(\mathbf x_2\cdot\mathbf x)+b\):
+      \[\begin{aligned}&(+1)\big[2\alpha-9\alpha+b\big]=1\\ &\qquad\Rightarrow\ -7\alpha+b=1,\\ &(-1)\big[9\alpha-41\alpha+b\big]=1\\ &\qquad\Rightarrow\ 32\alpha-b=1.\end{aligned}\]</div>
+      <div class="pstep"><b>Step 4 — solve (a).</b> Add the two equations; \(b\) cancels: \(25\alpha=2\), so \(\alpha=\tfrac{2}{25}=0.08\). Check with the two-point shortcut: \(2/\|\mathbf x_1-\mathbf x_2\|^2=2/(9+16)=0.08\) ✓.</div>
+      <div class="pstep"><b>Step 5 — w and b (b).</b> \(b=1+7(0.08)=1.56\), and
+      \[\begin{aligned}\mathbf w&=0.08\big[(1,1)-(4,5)\big]\\ &=0.08(-3,-4)\\ &=(-0.24,\,-0.32).\end{aligned}\]
+      \(\mathbf w\) points along \(\mathbf x_1-\mathbf x_2\): the boundary is at right angles to the segment joining the two points.</div>
+      <div class="pstep"><b>Step 6 — the lines and the width (c).</b> Multiply \(-0.24x_1-0.32x_2+1.56=0\) by \(-25\): the boundary is \(6x_1+8x_2=39\), and the edges \(f=\pm1\) are \(6x_1+8x_2=39\mp25\), i.e. \(14\) and \(64\). Check: \((1,1)\) gives \(14\) ✓, \((4,5)\) gives \(64\) ✓. \(\|\mathbf w\|=0.08\cdot5=0.4\), so the width is \(2/0.4=5\) — the distance between the two points, \(\sqrt{9+16}=5\) ✓.</div>
+      <div class="pstep"><b>Step 7 — strong duality (d).</b> Primal: \(\tfrac12\|\mathbf w\|^2=\tfrac12(0.16)=0.08\). Dual: \(\sum\alpha_i-\tfrac12\|\mathbf w\|^2=0.16-0.08=0.08\). Equal ✓.</div>
+      <p class="pans">answers at a glance: \(\alpha_1=\alpha_2=0.08\); \(\mathbf w=(-0.24,-0.32)\), \(b=1.56\); boundary \(6x_1+8x_2=39\), edges \(=14\) and \(=64\), width \(5\); primal \(=\) dual \(=0.08\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>With exactly two points, \(\alpha=2/\|\mathbf x_1-\mathbf x_2\|^2\), \(\mathbf w\) is parallel to \(\mathbf x_1-\mathbf x_2\), and the width is the distance between them. Use it as a five-second check.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span><span class="chip">hard margin · 1-D</span></div>
+    <p class="pq">One-dimensional data: \(x=1,2,4\) have \(y=+1\); \(x=-1,-3\) have \(y=-1\). <b>(a)</b> Which points are support vectors? <b>(b)</b> Find \(w\), \(b\) and the width. <b>(c)</b> Find every \(\alpha_i\). <b>(d)</b> Which points could be deleted without changing the answer?</p>
+    <p class="ptest"><b>What this tests.</b> Guessing the active points from a sketch, then proving the guess; and complementary slackness in its most useful form. <b>Plan.</b> In 1-D the street is an interval, so the classes touch at the closest opposite pair. Solve their two edge equations, then check every other point.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the collision.</b> The classes come closest at \(x=1\) and \(x=-1\). These are the candidates.</div>
+      <div class="pstep"><b>Step 2 — two edge equations.</b> \((+1)(w+b)=1\) and \((-1)(-w+b)=1\), i.e. \(w+b=1\) and \(w-b=1\). Adding: \(w=1\); subtracting: \(b=0\). So \(f(x)=x\), boundary \(x=0\), width \(2/|w|=2\): the street runs from \(-1\) to \(1\).</div>
+      <div class="pstep"><b>Step 3 — check every point.</b>
+      <table class="plain"><thead><tr><th>\(x\)</th><th>\(y\)</th><th>score \(yf(x)\)</th><th>\(\alpha\)</th></tr></thead><tbody>
+        <tr><td>1</td><td>+1</td><td>1</td><td>\(\tfrac12\)</td></tr><tr><td>2</td><td>+1</td><td>2</td><td>0</td></tr><tr><td>4</td><td>+1</td><td>4</td><td>0</td></tr><tr><td>−1</td><td>−1</td><td>1</td><td>\(\tfrac12\)</td></tr><tr><td>−3</td><td>−1</td><td>3</td><td>0</td></tr>
+      </tbody></table>
+      All scores are at least 1, so the street is legal; exactly two are tight.</div>
+      <div class="pstep"><b>Step 4 — the prices (c).</b> Balance makes the two live prices equal, and the two-point shortcut gives \(\alpha=2/(1-(-1))^2=\tfrac12\). Check: \(w=\tfrac12(1)(1)+\tfrac12(-1)(-1)=1\) ✓. The others score more than 1, so their prices are 0.</div>
+      <div class="pstep"><b>Step 5 — what can go (d).</b> \(x=2\), \(4\) and \(-3\) — any of them, or all three at once. Delete \(x=1\) or \(x=-1\) and the street widens immediately.</div>
+      <p class="pans">answers at a glance: support vectors \(x=1\) and \(x=-1\); \(w=1\), \(b=0\), boundary \(x=0\), width \(2\); \(\alpha=\tfrac12\) for \(x=\pm1\), \(0\) for the rest; \(x=2,4,-3\) are deletable.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff easy">easy</span><span class="chip">kernel</span></div>
+    <p class="pq">\(\mathbf x=(2,1)\), \(\mathbf z=(1,3)\), \(K(\mathbf x,\mathbf z)=(\mathbf x\cdot\mathbf z+1)^2\). <b>(a)</b> Evaluate the kernel. <b>(b)</b> Write the six-feature map \(\varphi\), compute \(\varphi(\mathbf x)\) and \(\varphi(\mathbf z)\), and confirm \(\varphi(\mathbf x)\cdot\varphi(\mathbf z)\) matches. <b>(c)</b> Count the arithmetic each route costs.</p>
+    <p class="ptest"><b>What this tests.</b> That \(K=\varphi\cdot\varphi\) is an identity, not an analogy — and that you can write \(\varphi\) when the degree is small. <b>Plan.</b> One line for the kernel; then the map from §14 at both points, multiplied coordinate by coordinate.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the kernel route (a).</b> \(\mathbf x\cdot\mathbf z=2(1)+1(3)=5\), so \(K=(5+1)^2=36\).</div>
+      <div class="pstep"><b>Step 2 — the map (b).</b> \(\varphi(\mathbf v)=(v_1^2,\,v_2^2,\,\sqrt2v_1v_2,\,\sqrt2v_1,\,\sqrt2v_2,\,1)\).
+      <table class="plain"><thead><tr><th>coordinate</th><th>\(\varphi(\mathbf x)\)</th><th>\(\varphi(\mathbf z)\)</th><th>product</th></tr></thead><tbody>
+        <tr><td>\(v_1^2\)</td><td>4</td><td>1</td><td>4</td></tr><tr><td>\(v_2^2\)</td><td>1</td><td>9</td><td>9</td></tr>
+        <tr><td>\(\sqrt2v_1v_2\)</td><td>\(2\sqrt2\)</td><td>\(3\sqrt2\)</td><td>12</td></tr><tr><td>\(\sqrt2v_1\)</td><td>\(2\sqrt2\)</td><td>\(\sqrt2\)</td><td>4</td></tr>
+        <tr><td>\(\sqrt2v_2\)</td><td>\(\sqrt2\)</td><td>\(3\sqrt2\)</td><td>6</td></tr><tr><td>\(1\)</td><td>1</td><td>1</td><td>1</td></tr>
+      </tbody></table>
+      Total \(4+9+12+4+6+1=36\) ✓. Every \(\sqrt2\) meets another \(\sqrt2\) and becomes a plain 2.</div>
+      <div class="pstep"><b>Step 3 — the cost (c).</b> Kernel route: two multiplications and one addition for the dot product, one addition for the \(+1\), one squaring — five operations. Explicit route: build two six-long vectors (with square roots), then six multiplications and five additions. At degree 2 in 2-D it is close; at degree 5 in 100-D the explicit vectors have about 96.6 million coordinates, and the kernel is still a handful of operations.</div>
+      <p class="pans">answers at a glance: \(K=36\); \(\varphi(\mathbf v)=(v_1^2,v_2^2,\sqrt2v_1v_2,\sqrt2v_1,\sqrt2v_2,1)\), \(\varphi(\mathbf x)\cdot\varphi(\mathbf z)=4+9+12+4+6+1=36\) ✓; five operations against a six-dimensional construction.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff easy">easy</span><span class="chip">kernel theory</span></div>
+    <p class="pq">Input dimension \(n=3\), polynomial degree \(d=4\). <b>(a)</b> How many features does \((\mathbf x\cdot\mathbf z+1)^4\) secretly use? <b>(b)</b> And \((\mathbf x\cdot\mathbf z)^4\)? <b>(c)</b> With 500 training points, how many kernel evaluations does the kernel table need, and how does that compare with building the lift?</p>
+    <p class="ptest"><b>What this tests.</b> The two counting formulas — and that they describe two different models, not two ways of counting one. <b>Plan.</b> With the \(+1\): every degree up to \(d\), \(\binom{n+d}{d}\). Without: degree exactly \(d\), \(\binom{n+d-1}{d}\). Then count the entries of a symmetric \(500\times500\) table.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — non-homogeneous (a).</b> \(\binom{3+4}{4}=\binom74=\dfrac{7\cdot6\cdot5}{3\cdot2\cdot1}=35\). Check degree by degree in 3 variables: \(1+3+6+10+15=35\) ✓.</div>
+      <div class="pstep"><b>Step 2 — homogeneous (b).</b> \(\binom{3+4-1}{4}=\binom64=\dfrac{6\cdot5}{2\cdot1}=15\). This is a genuinely different model: it has only the 15 quartic products — no constant, no linear, no quadratic, no cubic terms.</div>
+      <div class="pstep"><b>Step 3 — the table (c).</b> A symmetric \(500\times500\) table needs \(\dfrac{500\cdot501}{2}=125\,250\) distinct kernel values, each a 3-term dot product, one addition and one fourth power — about six operations.</div>
+      <div class="pstep"><b>Step 4 — against the lift.</b> The explicit lift stores \(500\times35=17\,500\) numbers and takes 35-term dot products. At \(n=3,d=4\) the trick barely pays. At \(n=100,d=5\) the lift has \(\binom{105}{5}=96\,560\,646\) coordinates per point, and the kernel cost does not move. Past some size the kernel is not a speed-up; it is the only thing that runs at all.</div>
+      <p class="pans">answers at a glance: (a) \(\binom74=35\). (b) \(\binom64=15\). (c) \(125\,250\) evaluations at about six operations each, against \(17\,500\) stored coordinates and 35-term dot products for the lift — a gap that explodes with \(n\) and \(d\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span><span class="chip">hard margin</span></div>
+    <p class="pq">A trained hard-margin SVM reports: \((2,2)\), \(y=+1\), \(\alpha=0.25\); \((4,1)\), \(y=+1\), \(\alpha=0\); \((0,0)\), \(y=-1\), \(\alpha=0.25\). <b>(a)</b> Recover \(\mathbf w\) and \(b\). <b>(b)</b> Give the boundary and the width. <b>(c)</b> Verify that \((4,1)\) deserves \(\alpha=0\). <b>(d)</b> Classify \((1,0)\).</p>
+    <p class="ptest"><b>What this tests.</b> Using \(\mathbf w=\sum\alpha_iy_i\mathbf x_i\) the way you do in practice, recovering \(b\) (which the dual never hands you), and knowing that \(\alpha=0\) is a claim you can check. <b>Plan.</b> \(\mathbf w\) straight from the sum; balance as a free error check; \(b\) from one support vector, confirmed by the other.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — w (a).</b>
+      \[\begin{aligned}\mathbf w&=0.25(+1)(2,2)+0\cdot(4,1)\\ &\quad+0.25(-1)(0,0)\\ &=(0.5,\ 0.5).\end{aligned}\]
+      Balance: \(0.25+0-0.25=0\) ✓.</div>
+      <div class="pstep"><b>Step 2 — b.</b> From \((0,0)\): \(b=y_s-\mathbf w\cdot\mathbf x_s=-1-0=-1\). Confirm from \((2,2)\): \(b=1-(0.5,0.5)\cdot(2,2)=1-2=-1\) ✓. Two support vectors must agree; if they do not, the prices are wrong.</div>
+      <div class="pstep"><b>Step 3 — boundary and width (b).</b> \(0.5x_1+0.5x_2-1=0\iff x_1+x_2=2\). \(\|\mathbf w\|=1/\sqrt2\), so the width is \(2\sqrt2\approx2.83\).</div>
+      <div class="pstep"><b>Step 4 — does (4, 1) deserve α = 0? (c)</b> \(f(4,1)=2+0.5-1=1.5\), score \(1.5&gt;1\): strictly outside the street, so complementary slackness forces \(\alpha=0\) ✓.</div>
+      <div class="pstep"><b>Step 5 — classify (1, 0) (d).</b> \(f(1,0)=0.5-1=-0.5&lt;0\): class \(-1\). But \(|f|&lt;1\), so the point is inside the street — a correct but unsure call. Its distance to the boundary is \(0.5\sqrt2\approx0.71\), less than the half-width \(\sqrt2\approx1.41\).</div>
+      <p class="pans">answers at a glance: \(\mathbf w=(0.5,0.5)\), \(b=-1\); boundary \(x_1+x_2=2\), width \(2\sqrt2\); \((4,1)\) scores \(1.5&gt;1\), so \(\alpha=0\) is right; \((1,0)\to-1\) with \(f=-0.5\), inside the street.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span><span class="chip">hard margin · KKT</span></div>
+    <p class="pq">A hard-margin SVM, \(\min\tfrac12w^2\) s.t. \(y_i(wx_i+b)\ge1\), is trained on \(x_1=4,y_1=+1\); \(x_2=7,y_2=+1\); \(x_3=1,y_3=-1\); \(x_4=-3,y_4=-1\). <b>(a)</b> Write the KKT conditions, find the active points and solve for \(w,b\) and all \(\alpha_i\). <b>(b)</b> Give the width and check strong duality. <b>(c)</b> A fifth point \(x_5=3\), \(y_5=+1\), is added. Is the old answer still optimal? If not, find the new one.</p>
+    <p class="ptest"><b>What this tests.</b> Writing all four KKT conditions, using a sketch to spot the active points, and reasoning about a new point without starting over. <b>Plan.</b> Draw the number line: the closest opposite pair is \(1\) and \(4\). For (c), test the new point against the old \(f\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — KKT.</b> With \(L=\tfrac12w^2-\sum_i\alpha_i[y_i(wx_i+b)-1]\): stationarity \(w=\sum\alpha_iy_ix_i\) and \(\sum\alpha_iy_i=0\); primal feasibility \(y_i(wx_i+b)\ge1\); dual feasibility \(\alpha_i\ge0\); complementary slackness \(\alpha_i[y_i(wx_i+b)-1]=0\).</div>
+      <div class="pstep"><b>Step 2 — the active pair.</b> \((+1)(4w+b)=1\) and \((-1)(w+b)=1\). Subtract: \(3w=2\), so \(w=\tfrac23\) and \(b=-1-\tfrac23=-\tfrac53\). Boundary: \(f=0\) at \(x=2.5\).</div>
+      <div class="pstep"><b>Step 3 — check the rest.</b> \(f(7)=\tfrac{14}3-\tfrac53=3\ge1\) ✓; \(f(-3)=-2-\tfrac53=-\tfrac{11}3\), score \(\tfrac{11}3\ge1\) ✓. So \(\alpha_2=\alpha_4=0\).</div>
+      <div class="pstep"><b>Step 4 — the prices.</b> Balance: \(\alpha_1=\alpha_3\). Stationarity: \(w=4\alpha_1-1\cdot\alpha_3=3\alpha_1=\tfrac23\), so \(\alpha_1=\alpha_3=\tfrac29\). Shortcut check: \(2/(4-1)^2=\tfrac29\) ✓. All four KKT items hold, so \((w,b)=(\tfrac23,-\tfrac53)\) is optimal, with \(\boldsymbol\alpha=(\tfrac29,0,\tfrac29,0)\).</div>
+      <div class="pstep"><b>Step 5 — width and duality (b).</b> Width \(2/|w|=3\): the street runs from 1 to 4. Primal \(\tfrac12w^2=\tfrac29\). Dual: \(\sum\alpha_i-\tfrac12w^2=\tfrac49-\tfrac29=\tfrac29\). Equal ✓.</div>
+      <div class="pstep"><b>Step 6 — the new point (c).</b> \(f(3)=2-\tfrac53=\tfrac13\), score \(\tfrac13&lt;1\): the new point sits inside the old street, so the old answer is no longer legal. The new closest pair is \(1\) and \(3\): \(3w+b=1\), \(w+b=-1\), so \(w=1\), \(b=-2\). Check: \(f(4)=2\), \(f(7)=5\), \(f(-3)=-5\) — all fine. Prices: \(\alpha_3=\alpha_5\) and \(w=3\alpha_5-\alpha_3=2\alpha_5=1\), so \(\alpha_3=\alpha_5=\tfrac12\), the rest 0. The point \(x=4\) has been released: it now scores 2.</div>
+      <p class="pans">answers at a glance: (a) \(w=\tfrac23\), \(b=-\tfrac53\), \(\boldsymbol\alpha=(\tfrac29,0,\tfrac29,0)\). (b) width 3; primal \(=\) dual \(=\tfrac29\). (c) \(f(3)=\tfrac13&lt;1\), so the answer changes: \(w=1\), \(b=-2\), \(\alpha_3=\alpha_5=\tfrac12\), others 0; width 2.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span><span class="chip">hard margin · KKT</span></div>
+    <p class="pq">A hard-margin SVM is trained on \(\mathbf x_1=(0,3)\), \(y=+1\); \(\mathbf x_2=(-2,2)\), \(y=+1\); \(\mathbf x_3=(2,1)\), \(y=-1\); \(\mathbf x_4=(3,0)\), \(y=-1\). The answer is claimed to be \(\mathbf w=(-\tfrac12,\tfrac12)\), \(b=-\tfrac12\). <b>(a)</b> Use KKT to find all \(\alpha_i\) and so verify the claim. <b>(b)</b> Give the width, the support vectors, the boundary and both edges. Does removing \(\mathbf x_2\) change the answer? <b>(c)</b> Classify \((1,1)\). Is it inside the street?</p>
+    <p class="ptest"><b>What this tests.</b> Verification rather than discovery: score every point, zero the prices of the ones with room, solve for the rest, then tick every KKT item. <b>Plan.</b> \(f(\mathbf x)=-\tfrac12x_1+\tfrac12x_2-\tfrac12\); score all four; solve the two-component equation \(\mathbf w=\sum\alpha_iy_i\mathbf x_i\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — score everyone.</b>
+      <table class="plain"><thead><tr><th>point</th><th>\(y\)</th><th>\(f\)</th><th>score</th><th>status</th></tr></thead><tbody>
+        <tr><td>\((0,3)\)</td><td>+1</td><td>\(0+\tfrac32-\tfrac12=1\)</td><td>1</td><td>on the + edge</td></tr>
+        <tr><td>\((-2,2)\)</td><td>+1</td><td>\(1+1-\tfrac12=\tfrac32\)</td><td>\(\tfrac32\)</td><td>outside ⇒ \(\alpha_2=0\)</td></tr>
+        <tr><td>\((2,1)\)</td><td>−1</td><td>\(-1+\tfrac12-\tfrac12=-1\)</td><td>1</td><td>on the − edge</td></tr>
+        <tr><td>\((3,0)\)</td><td>−1</td><td>\(-\tfrac32-\tfrac12=-2\)</td><td>2</td><td>outside ⇒ \(\alpha_4=0\)</td></tr>
+      </tbody></table></div>
+      <div class="pstep"><b>Step 2 — stationarity, two components.</b> \(\mathbf w=\alpha_1(0,3)-\alpha_3(2,1)\):
+      \[\begin{aligned}\text{first: }&-2\alpha_3=-\tfrac12\\ &\Rightarrow\ \alpha_3=\tfrac14,\\ \text{second: }&3\alpha_1-\alpha_3=\tfrac12\\ &\Rightarrow\ \alpha_1=\tfrac14.\end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — tick the list.</b> Balance \(\tfrac14+0-\tfrac14-0=0\) ✓; all \(\alpha\ge0\) ✓; all scores \(\ge1\) ✓; the two priced points are exactly the tight ones ✓. The problem is convex, so the claim is the answer: \(\boldsymbol\alpha=(\tfrac14,0,\tfrac14,0)\). Shortcut check: \(2/\|(0,3)-(2,1)\|^2=2/8=\tfrac14\) ✓.</div>
+      <div class="pstep"><b>Step 4 — geometry (b).</b> \(\|\mathbf w\|=\tfrac1{\sqrt2}\), width \(2\sqrt2\approx2.83\) — the distance between the two support vectors \((0,3)\) and \((2,1)\). Multiply \(f=0\) by \(-2\): boundary \(x_2=x_1+1\); edge \(f=+1\): \(x_2=x_1+3\) (through \((0,3)\)); edge \(f=-1\): \(x_2=x_1-1\) (through \((2,1)\)). Removing \(\mathbf x_2\) changes nothing: its price is 0 and its rule has room.</div>
+      <div class="pstep"><b>Step 5 — classify (1, 1) (c).</b> \(f(1,1)=-\tfrac12+\tfrac12-\tfrac12=-\tfrac12\): class \(-1\), and \(|f|&lt;1\), so it is inside the street — \(\tfrac12\sqrt2\approx0.71\) from the boundary, less than the half-width \(\sqrt2\approx1.41\).</div>
+      <p class="pans">answers at a glance: (a) \(\boldsymbol\alpha=(\tfrac14,0,\tfrac14,0)\); every KKT item holds, so the claim is optimal. (b) width \(2\sqrt2\); support vectors \((0,3)\), \((2,1)\); boundary \(x_2=x_1+1\), edges \(x_2=x_1+3\) and \(x_2=x_1-1\); removing \(\mathbf x_2\) changes nothing. (c) \((1,1)\to-1\), \(f=-\tfrac12\), inside the street.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span><span class="chip">hard margin · a trap</span></div>
+    <p class="pq">Three points: \((1,1)\to+1\), \((2,0)\to+1\), \((0,0)\to-1\). <b>(a)</b> Find \(\mathbf w\), \(b\) and the width. <b>(b)</b> Find every \(\alpha_i\). <b>(c)</b> Which points are support vectors? Answer carefully.</p>
+    <p class="ptest"><b>What this tests.</b> The one definitional trap in the subject: a point can sit exactly on an edge and still have \(\alpha=0\). <b>Plan.</b> Try "all three on an edge": three linear equations for \(w_1,w_2,b\). Then get the prices from \(\mathbf w=\sum\alpha_iy_i\mathbf x_i\) and see what is forced.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — all three tight.</b> \(w_1+w_2+b=1\), \(2w_1+b=1\), \(-(0+b)=1\).</div>
+      <div class="pstep"><b>Step 2 — solve back to front.</b> \(b=-1\); then \(2w_1-1=1\Rightarrow w_1=1\); then \(1+w_2-1=1\Rightarrow w_2=1\). So \(\mathbf w=(1,1)\), \(b=-1\), boundary \(x_1+x_2=1\), width \(2/\sqrt2=\sqrt2\).</div>
+      <div class="pstep"><b>Step 3 — the prices (b).</b>
+      \[\begin{aligned}\mathbf w&=\alpha_1(1,1)+\alpha_2(2,0)\\ &\quad-\alpha_3(0,0)\\ &=(\alpha_1+2\alpha_2,\ \alpha_1)=(1,1).\end{aligned}\]
+      Second coordinate: \(\alpha_1=1\). First: \(1+2\alpha_2=1\Rightarrow\alpha_2=0\) — forced. Balance: \(\alpha_1+\alpha_2-\alpha_3=0\Rightarrow\alpha_3=1\).</div>
+      <div class="pstep"><b>Step 4 — check.</b> All \(\alpha\ge0\) ✓; all scores equal 1 ✓; complementary slackness holds since every rule is tight ✓; duality: \(\tfrac12\|\mathbf w\|^2=1\) and \(\sum\alpha_i-\tfrac12\|\mathbf w\|^2=2-1=1\) ✓.</div>
+      <div class="pstep"><b>Step 5 — the trap (c).</b> All three points lie exactly on an edge, but \((2,0)\) has \(\alpha=0\): it touches the street without pushing on it. Delete it and nothing changes; delete either of the others and the boundary moves. So the support vectors are \((1,1)\) and \((0,0)\) only — the points with \(\alpha&gt;0\).</div>
+      <p class="pans">answers at a glance: \(\mathbf w=(1,1)\), \(b=-1\), boundary \(x_1+x_2=1\), width \(\sqrt2\); \(\boldsymbol\alpha=(1,0,1)\); support vectors \((1,1)\) and \((0,0)\) — \((2,0)\) is on an edge with \(\alpha=0\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Say it this way: support vectors are the points with \(\alpha_i&gt;0\); they always lie on an edge, but not every point on an edge is one.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff medium">medium</span><span class="chip">soft margin</span></div>
+    <p class="pq">A soft-margin SVM trained with \(C=1\) returns these prices: A: \(\alpha=0\); B: \(0.4\); C: \(1.0\); D: \(1.0\); E: \(0.15\). <b>(a)</b> Classify each as a non-support vector, a free support vector or a bounded one. <b>(b)</b> What do you know about each point's slack and score? <b>(c)</b> Which may be used to compute \(b\)? <b>(d)</b> Which are definitely misclassified?</p>
+    <p class="ptest"><b>What this tests.</b> The three price regimes of §10, read from the prices to the geometry. <b>Plan.</b> Compare each \(\alpha\) with 0 and with \(C=1\); that alone fixes the regime, and the regime fixes \(\xi\) and the score.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the three regimes</b> (with \(z=y\,f(\mathbf x)\)): \(\alpha=0\Rightarrow z\ge1\); \(0&lt;\alpha&lt;C\Rightarrow z=1\); \(\alpha=C\Rightarrow z\le1\).</div>
+      <div class="pstep"><b>Step 2 — apply them (a), (b), (c).</b>
+      <table class="plain"><thead><tr><th>point</th><th>\(\alpha\)</th><th>type</th><th>\(\xi\)</th><th>score \(z\)</th><th>for \(b\)?</th></tr></thead><tbody>
+        <tr><td>A</td><td>0</td><td>not a support vector</td><td>0</td><td>\(\ge1\)</td><td>no</td></tr>
+        <tr><td>B</td><td>0.4</td><td>free</td><td>0</td><td>\(=1\)</td><td>yes</td></tr>
+        <tr><td>C</td><td>1.0</td><td>bounded</td><td>\(\ge0\)</td><td>\(\le1\)</td><td>no</td></tr>
+        <tr><td>D</td><td>1.0</td><td>bounded</td><td>\(\ge0\)</td><td>\(\le1\)</td><td>no</td></tr>
+        <tr><td>E</td><td>0.15</td><td>free</td><td>0</td><td>\(=1\)</td><td>yes</td></tr>
+      </tbody></table>
+      Only B and E are known to score exactly 1, so only they give \(b=y_s-\sum_i\alpha_iy_iK(\mathbf x_i,\mathbf x_s)\). In practice, average over all free support vectors.</div>
+      <div class="pstep"><b>Step 3 — misclassified? (d)</b> None, necessarily. \(\alpha=C\) says only \(z\le1\): at best on the edge, at worst deep on the wrong side. Misclassified needs \(z&lt;0\) (\(\xi&gt;1\)), which the price alone cannot tell you.</div>
+      <p class="pans">answers at a glance: A non-support; B and E free (\(\xi=0\), \(z=1\)); C and D bounded (\(\xi\ge0\), \(z\le1\)); only B and E give \(b\); none is definitely misclassified.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff hard">hard</span><span class="chip">soft margin</span></div>
+    <p class="pq">A colleague proposes \(\mathbf w=(1,1)\), \(b=-3\) for: \((1,1)\to+1\), \((3,3)\to+1\), \((2,0)\to-1\), \((0,2)\to-1\), \((2,2)\to-1\). <b>(a)</b> For each point compute the score \(z\) and slack \(\xi\), and say where it is. <b>(b)</b> Give the total objective \(\tfrac12\|\mathbf w\|^2+C\sum\xi_i\) at \(C=1\) and \(C=10\). <b>(c)</b> Could this \((\mathbf w,b)\) be the soft-margin answer for any \(C&gt;0\)?</p>
+    <p class="ptest"><b>What this tests.</b> The hinge formula and the two halves of the objective; then running complementary slackness backwards to audit someone else's answer. <b>Plan.</b> Tabulate score and slack; add the halves; in (c), give each point its price regime and test the balance condition.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — scores and slacks (a).</b> \(f=x_1+x_2-3\), \(\xi=\max(0,1-z)\):
+      <table class="plain"><thead><tr><th>point</th><th>\(y\)</th><th>\(f\)</th><th>\(z\)</th><th>\(\xi\)</th><th>where</th></tr></thead><tbody>
+        <tr><td>\((1,1)\)</td><td>+1</td><td>−1</td><td>−1</td><td>2</td><td>misclassified</td></tr>
+        <tr><td>\((3,3)\)</td><td>+1</td><td>+3</td><td>3</td><td>0</td><td>outside the street</td></tr>
+        <tr><td>\((2,0)\)</td><td>−1</td><td>−1</td><td>1</td><td>0</td><td>on an edge</td></tr>
+        <tr><td>\((0,2)\)</td><td>−1</td><td>−1</td><td>1</td><td>0</td><td>on an edge</td></tr>
+        <tr><td>\((2,2)\)</td><td>−1</td><td>+1</td><td>−1</td><td>2</td><td>misclassified</td></tr>
+      </tbody></table></div>
+      <div class="pstep"><b>Step 2 — the objective (b).</b> \(\tfrac12\|\mathbf w\|^2=\tfrac12(1+1)=1\) and \(\sum\xi_i=4\). At \(C=1\): \(1+4=5\). At \(C=10\): \(1+40=41\).</div>
+      <div class="pstep"><b>Step 3 — regimes (c).</b> \((3,3)\): \(z&gt;1\Rightarrow\alpha=0\). \((1,1)\) and \((2,2)\): \(\xi&gt;0\Rightarrow\alpha=C\). \((2,0)\) and \((0,2)\): \(z=1\Rightarrow\alpha=p,q\in[0,C]\).</div>
+      <div class="pstep"><b>Step 4 — balance fails.</b>
+      \[\begin{aligned}\sum_i\alpha_iy_i&=C+0-p-q-C\\ &=-(p+q)=0\\ &\Rightarrow\ p=q=0.\end{aligned}\]
+      Then \(\mathbf w=\sum\alpha_iy_i\mathbf x_i=C(1,1)-C(2,2)=(-C,-C)\). To equal \((1,1)\) we would need \(C=-1\), impossible. So the proposal is not optimal for any \(C&gt;0\).</div>
+      <div class="pstep"><b>Step 5 — for comparison.</b> At \(C=1\) the true answer is \(\mathbf w=(\tfrac12,\tfrac12)\), \(b=-2\): slacks \((2,0,0,0,1)\), objective \(\tfrac12\cdot\tfrac12+3=3.25\) — better than 5, as it must be. (The points \((1,1)\) and \((2,2)\) sit on each other's wrong side, so no hard-margin answer exists at all.)</div>
+      <p class="pans">answers at a glance: \(\boldsymbol\xi=(2,0,0,0,2)\) — two misclassified, two on an edge, one outside; objective 5 at \(C=1\), 41 at \(C=10\); (c) no — balance forces the edge prices to 0 and then \(\mathbf w=(-C,-C)\). The true \(C=1\) answer is \(\mathbf w=(\tfrac12,\tfrac12)\), \(b=-2\), objective 3.25.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff medium">medium</span><span class="chip">kernel SVM</span></div>
+    <p class="pq">Four points form an XNOR pattern (same signs ⇒ class \(+1\)): \(\mathbf x_1=(1,2)\), \(y_1=+1\); \(\mathbf x_2=(-1,-2)\), \(y_2=+1\); \(\mathbf x_3=(1,-2)\), \(y_3=-1\); \(\mathbf x_4=(-1,2)\), \(y_4=-1\). Use \(K(\mathbf x,\mathbf z)=(\mathbf x\cdot\mathbf z)^2\). <b>(a)</b> Compute the \(4\times4\) kernel table. <b>(b)</b> Solve the hard-margin dual and name the support vectors. <b>(c)</b> Find \(b\), then classify \((2,1)\) and \((-1,3)\).</p>
+    <p class="ptest"><b>What this tests.</b> A kernel table without slips, symmetry to shrink the dual to one unknown, the balance condition, \(b\) from a support vector, and classification by kernel values. <b>Plan.</b> Dots first, square second. Rows 1–2 and 3–4 are identical ⇒ equal prices. One-variable dual, then \(b\) from \(\mathbf x_1\), then the two classifications.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — dot products.</b> Row 1: \(5,-5,-3,3\). By the same arithmetic the full table of \(\mathbf x_i\cdot\mathbf x_j\) is
+      \[\begin{bmatrix}5&-5&-3&3\\-5&5&3&-3\\-3&3&5&-5\\3&-3&-5&5\end{bmatrix}.\]</div>
+      <div class="pstep"><b>Step 2 — square every entry (a).</b>
+      \[K=\begin{bmatrix}25&25&9&9\\25&25&9&9\\9&9&25&25\\9&9&25&25\end{bmatrix}.\]
+      The diagonal is \(\|\mathbf x_i\|^4=25\) and the table is symmetric.</div>
+      <div class="pstep"><b>Step 3 — symmetry and balance.</b> Rows 1–2 are identical with the same label, as are rows 3–4, so take \(\alpha_1=\alpha_2=a\), \(\alpha_3=\alpha_4=c\). Balance: \(2a-2c=0\Rightarrow c=a\).</div>
+      <div class="pstep"><b>Step 4 — the dual with numbers.</b> \(\sum\alpha_i=4a\). The double sum, block by block: same-class blocks \(2\times4\) entries of 25 give \(+200a^2\); cross blocks, 8 entries of 9 with \(y_iy_j=-1\), give \(-72a^2\). Total \(128a^2\):
+      \[\begin{aligned}D(a)&=4a-\tfrac12\cdot128a^2\\ &=4a-64a^2,\\ D'(a)&=4-128a=0\\ \Rightarrow\ a&=\tfrac1{32}.\end{aligned}\]
+      All four prices are \(\tfrac1{32}&gt;0\): every point is a support vector (b).</div>
+      <div class="pstep"><b>Step 5 — b (c).</b> From \(\mathbf x_1\) (column 1 of \(K\)): \(\tfrac1{32}(25+25-9-9)+b=1\Rightarrow1+b=1\Rightarrow b=0\). Confirm with \(\mathbf x_3\): \(-\big[\tfrac1{32}(9+9-25-25)+0\big]=-[-1]=1\) ✓.</div>
+      <div class="pstep"><b>Step 6 — classify.</b> \((2,1)\): dots \(4,-4,0,0\), squares \(16,16,0,0\), \(f=\tfrac{32}{32}=1\): class \(+1\), exactly on the edge. \((-1,3)\): dots \(5,-5,-7,7\), squares \(25,25,49,49\), \(f=\tfrac{50-98}{32}=-1.5\): class \(-1\).</div>
+      <div class="pstep"><b>Step 7 — the curve (optional).</b> \(f(\mathbf x)=\tfrac1{32}\big[2(x_1+2x_2)^2-2(x_1-2x_2)^2\big]=\tfrac{x_1x_2}{2}\): the boundary is the pair of axes, and \(f=\pm1\) are \(x_1x_2=\pm2\), through all four points. Upstairs, \(\mathbf w=(0,\tfrac{\sqrt2}4,0)\) and the width is \(4\sqrt2\).</div>
+      <p class="pans">answers at a glance: \(K\) as above; \(\alpha_i=\tfrac1{32}\) for all four (all support vectors); \(b=0\); \((2,1)\to+1\) with \(f=1\), \((-1,3)\to-1\) with \(f=-1.5\); \(f=x_1x_2/2\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Here \(\mathbf x_1\) and \(\mathbf x_2\) look identical to the kernel, so only \(\alpha_1+\alpha_2\) is really fixed; the equal split is the natural (smallest) choice, and \(\mathbf w\), \(b\), \(f\) are the same for any split. The slip to avoid: squaring the coordinates before finishing the dot product.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 13 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 13</span><span class="pdiff hard">hard</span><span class="chip">kernel SVM</span></div>
+    <p class="pq">An inner point and two outer ones: \(\mathbf x_1=(0,0)\), \(y_1=+1\); \(\mathbf x_2=(2,0)\), \(y_2=-1\); \(\mathbf x_3=(0,-2)\), \(y_3=-1\). Use \(K(\mathbf x,\mathbf z)=(\mathbf x\cdot\mathbf z+1)^2\). <b>(a)</b> Compute the \(3\times3\) kernel table. <b>(b)</b> Solve the dual for the \(\alpha_i\) and find \(b\). <b>(c)</b> Classify \((1,1)\) and \((1,-1)\).</p>
+    <p class="ptest"><b>What this tests.</b> The "add 1, then square" habit, a dual whose classes are not balanced (one point against two), and reading a curved boundary out of \(f\). <b>Plan.</b> Rows 2 and 3 are mirror images, so \(\alpha_2=\alpha_3=c\); balance then gives \(\alpha_1=2c\). One-variable dual; \(b\) from \(\mathbf x_1\), whose column is all ones.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — dots, add 1, square (a).</b> \(\mathbf x_1\) is the origin, so every dot product with it is 0; \(\mathbf x_2\cdot\mathbf x_2=4\), \(\mathbf x_2\cdot\mathbf x_3=0\), \(\mathbf x_3\cdot\mathbf x_3=4\). Then \((0+1)^2=1\) and \((4+1)^2=25\):
+      \[K=\begin{bmatrix}1&1&1\\1&25&1\\1&1&25\end{bmatrix}.\]
+      Without the \(+1\), the origin's row would be all zeros and it would carry no information at all.</div>
+      <div class="pstep"><b>Step 2 — balance and symmetry.</b> \(\alpha_1-\alpha_2-\alpha_3=0\), and \(\alpha_2=\alpha_3=c\), so \(\alpha_1=2c\).</div>
+      <div class="pstep"><b>Step 3 — the dual.</b> \(\sum\alpha_i=4c\). The double sum, term by term: \((1,1)\): \(4c^2\); \((2,2)\), \((3,3)\): \(25c^2\) each; \((1,2)\)+\((2,1)\): \(2(2c)(c)(-1)(1)=-4c^2\); \((1,3)\)+\((3,1)\): \(-4c^2\); \((2,3)\)+\((3,2)\): \(2c^2\). Total \(48c^2\):
+      \[\begin{aligned}D(c)&=4c-24c^2,\\ D'(c)&=4-48c=0\\ \Rightarrow\ c&=\tfrac1{12}.\end{aligned}\]
+      So \(\alpha_1=\tfrac16\), \(\alpha_2=\alpha_3=\tfrac1{12}\) — all support vectors.</div>
+      <div class="pstep"><b>Step 4 — b (b).</b> From \(\mathbf x_1\): \(\tfrac16-\tfrac1{12}-\tfrac1{12}+b=1\Rightarrow b=1\). Confirm with \(\mathbf x_2\): \(-\big[\tfrac16-\tfrac{25}{12}-\tfrac1{12}+1\big]=-[-1]=1\) ✓.</div>
+      <div class="pstep"><b>Step 5 — classify (c).</b> \((1,1)\): dots \(0,2,-2\) → kernel \(1,9,1\): \(f=\tfrac16-\tfrac9{12}-\tfrac1{12}+1=\tfrac13\) → class \(+1\). \((1,-1)\): dots \(0,2,2\) → \(1,9,9\): \(f=\tfrac16-\tfrac9{12}-\tfrac9{12}+1=-\tfrac13\) → class \(-1\). Both are inside the street.</div>
+      <div class="pstep"><b>Step 6 — the circle (optional).</b> \(f=\tfrac76-\tfrac1{12}\big[(2x_1+1)^2+(2x_2-1)^2\big]\), so \(f=0\iff(x_1+\tfrac12)^2+(x_2-\tfrac12)^2=3.5\): a circle centred at \((-\tfrac12,\tfrac12)\), radius \(\sqrt{3.5}\approx1.87\).</div>
+      <p class="pans">answers at a glance: \(K=\begin{bmatrix}1&1&1\\1&25&1\\1&1&25\end{bmatrix}\); \(\boldsymbol\alpha=(\tfrac16,\tfrac1{12},\tfrac1{12})\), all support vectors; \(b=1\); \((1,1)\to+1\) (\(f=\tfrac13\)), \((1,-1)\to-1\) (\(f=-\tfrac13\)); boundary: the circle \((x_1+\tfrac12)^2+(x_2-\tfrac12)^2=3.5\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 14 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 14</span><span class="pdiff hard">hard</span><span class="chip">kernel SVM · b ≠ 0</span></div>
+    <p class="pq">\(\mathbf x_1=(1,1)\), \(y_1=+1\); \(\mathbf x_2=(-1,-1)\), \(y_2=+1\); \(\mathbf x_3=(2,0)\), \(y_3=-1\); \(\mathbf x_4=(-2,0)\), \(y_4=-1\). Use \(K=(\mathbf x\cdot\mathbf z)^2\). <b>(a)</b> Compute the kernel table. <b>(b)</b> Solve the dual and name the support vectors. <b>(c)</b> Find \(b\) and classify \((0,2)\) and \((3,0)\).</p>
+    <p class="ptest"><b>What this tests.</b> The same skills as Problem 12 — but the bias is not zero, so anyone who "remembers \(b=0\)" loses the classifications. It also shows a kernel SVM drawing a hyperbola. <b>Plan.</b> Dots, square; rows 1–2 and 3–4 identical ⇒ equal prices; balance; one-variable dual; \(b\) from \(\mathbf x_1\), confirmed from \(\mathbf x_3\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — dots (a).</b> \(\mathbf x_1\cdot\mathbf x_1=2\), \(\mathbf x_1\cdot\mathbf x_2=-2\), \(\mathbf x_1\cdot\mathbf x_3=2\), \(\mathbf x_1\cdot\mathbf x_4=-2\); \(\mathbf x_3\cdot\mathbf x_3=4\), \(\mathbf x_3\cdot\mathbf x_4=-4\). Square:
+      \[K=\begin{bmatrix}4&4&4&4\\4&4&4&4\\4&4&16&16\\4&4&16&16\end{bmatrix}.\]</div>
+      <div class="pstep"><b>Step 2 — symmetry, balance, dual (b).</b> \(\alpha_1=\alpha_2=a\), \(\alpha_3=\alpha_4=c\), balance \(c=a\). Blocks: \(4\times4\) gives \(16a^2\), \(4\times16\) gives \(64a^2\), cross blocks \(8\times4\) with a minus: \(-32a^2\). Total \(48a^2\):
+      \[D(a)=4a-24a^2\ \Rightarrow\ a=\tfrac1{12}.\]
+      All four prices are \(\tfrac1{12}\): all support vectors.</div>
+      <div class="pstep"><b>Step 3 — b (c).</b> From \(\mathbf x_1\): \(\tfrac1{12}(4+4-4-4)+b=1\Rightarrow b=1\). Confirm from \(\mathbf x_3\): \(-\big[\tfrac1{12}(4+4-16-16)+1\big]=-[-2+1]=1\) ✓. Had you assumed \(b=0\), \(\mathbf x_1\) would score 0 — on the boundary, which is absurd for a support vector.</div>
+      <div class="pstep"><b>Step 4 — classify.</b> \((0,2)\): dots \(2,-2,0,0\) → \(4,4,0,0\): \(f=\tfrac8{12}+1=\tfrac53\) → \(+1\). \((3,0)\): dots \(3,-3,6,-6\) → \(9,9,36,36\): \(f=\tfrac{18-72}{12}+1=-3.5\) → \(-1\).</div>
+      <div class="pstep"><b>Step 5 — the curve (optional).</b> \(f=\dfrac{(x_1+x_2)^2-4x_1^2}{6}+1\). The boundary is \((x_1+x_2)^2-4x_1^2=-6\), i.e. \((x_2-x_1)(x_2+3x_1)=-6\) — a hyperbola. Upstairs the four points collapse to two, \((1,\sqrt2,1)\) and \((4,0,0)\); \(\mathbf w=\tfrac16(-3,\sqrt2,1)\), \(\|\mathbf w\|=\tfrac1{\sqrt3}\), width \(2\sqrt3\) — the distance between those two points.</div>
+      <p class="pans">answers at a glance: \(K\) as above; \(\alpha_i=\tfrac1{12}\), all support vectors; \(b=1\); \((0,2)\to+1\) (\(f=\tfrac53\)), \((3,0)\to-1\) (\(f=-3.5\)); boundary a hyperbola \((x_2-x_1)(x_2+3x_1)=-6\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 15 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 15</span><span class="pdiff hard">hard</span><span class="chip">kernel SVM · given prices</span></div>
+    <p class="pq">\(\mathbf x_1=(0,0)\), \(y_1=+1\); \(\mathbf x_2=(1,1)\), \(y_2=-1\); \(\mathbf x_3=(1,-1)\), \(y_3=-1\); \(\mathbf x_4=(3,0)\), \(y_4=-1\). A hard-margin SVM with \(K=(\mathbf x\cdot\mathbf z+1)^2\) reports \(\alpha_1=\tfrac12\), \(\alpha_2=\tfrac14\), \(\alpha_3=\tfrac14\), \(\alpha_4=0\). <b>(a)</b> Compute the kernel table. <b>(b)</b> Check the balance, name the support vectors and explain \(\alpha_4=0\). <b>(c)</b> Find \(b\) from one support vector and confirm it from another. <b>(d)</b> Classify \((1,0)\) and \((-2,1)\).</p>
+    <p class="ptest"><b>What this tests.</b> The table again; what a zero price means; \(b\) when the prices are handed to you; classifying with support vectors only. <b>Plan.</b> Dots, add 1, square. Balance in one line. \(b\) from \(\mathbf x_1\) (its column is all ones), confirm with \(\mathbf x_2\), then check \(\mathbf x_4\) really is outside the street.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the table (a).</b> Dots: everything with \(\mathbf x_1\) is 0; \(\mathbf x_2\cdot\mathbf x_2=2\), \(\mathbf x_2\cdot\mathbf x_3=0\), \(\mathbf x_2\cdot\mathbf x_4=3\), \(\mathbf x_3\cdot\mathbf x_3=2\), \(\mathbf x_3\cdot\mathbf x_4=3\), \(\mathbf x_4\cdot\mathbf x_4=9\). Add 1 and square:
+      \[K=\begin{bmatrix}1&1&1&1\\1&9&1&16\\1&1&9&16\\1&16&16&100\end{bmatrix}.\]</div>
+      <div class="pstep"><b>Step 2 — balance and support vectors (b).</b> \(\tfrac12-\tfrac14-\tfrac14-0=0\) ✓. Support vectors: \(\mathbf x_1,\mathbf x_2,\mathbf x_3\). \(\alpha_4=0\) means \(\mathbf x_4\)'s rule has room: it lies strictly outside the street and plays no part in \(f\) (checked in Step 4).</div>
+      <div class="pstep"><b>Step 3 — b (c).</b> From \(\mathbf x_1\): \(\tfrac12-\tfrac14-\tfrac14-0+b=1\Rightarrow b=1\). Confirm with \(\mathbf x_2\) (column \(1,9,1,16\)): \(\tfrac12-\tfrac94-\tfrac14=-2\), and \(y_2(-2+1)=(-1)(-1)=1\) ✓.</div>
+      <div class="pstep"><b>Step 4 — is x₄ really outside?</b> Column 4 is \(1,16,16,100\): \(f(\mathbf x_4)=\tfrac12-4-4+1=-6.5\), score \(6.5&gt;1\) ✓. Consistent with \(\alpha_4=0\). (If a given price ever fails this check, the numbers are not an answer — say so.)</div>
+      <div class="pstep"><b>Step 5 — classify (d).</b> \((1,0)\): dots with the support vectors \(0,1,1\) → \(1,4,4\): \(f=\tfrac12-1-1+1=-\tfrac12\) → \(-1\). \((-2,1)\): dots \(0,-1,-3\) → \(1,0,4\): \(f=\tfrac12-0-1+1=\tfrac12\) → \(+1\).</div>
+      <div class="pstep"><b>Step 6 — the circle (optional).</b> \(f=\tfrac32-\tfrac12\big[(x_1+1)^2+x_2^2\big]\), so \(f=0\iff(x_1+1)^2+x_2^2=3\): a circle centred at \((-1,0)\) with radius \(\sqrt3\approx1.73\). The origin gives \(f=1\), \((1,\pm1)\) give \(f=-1\), \((3,0)\) gives \(-6.5\) ✓.</div>
+      <p class="pans">answers at a glance: \(K\) as above; balance holds; support vectors \(\mathbf x_1,\mathbf x_2,\mathbf x_3\), and \(\mathbf x_4\) is outside the street (score 6.5); \(b=1\); \((1,0)\to-1\) (\(f=-\tfrac12\)), \((-2,1)\to+1\) (\(f=\tfrac12\)); boundary \((x_1+1)^2+x_2^2=3\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 16 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 16</span><span class="pdiff hard">hard</span><span class="chip">kernel SVM · 1-D</span></div>
+    <p class="pq">One-dimensional data: \(x_1=1\), \(y_1=+1\); \(x_2=-1\), \(y_2=+1\); \(x_3=3\), \(y_3=-1\); \(x_4=-3\), \(y_4=-1\). No single threshold separates them. Use \(K(x,z)=(xz+1)^2\). <b>(a)</b> Compute the kernel table. <b>(b)</b> Solve the hard-margin dual. <b>(c)</b> Find \(b\), write \(f(x)\) in closed form, give the boundary on the line, and classify \(x=2\) and \(x=-2.5\). <b>(d)</b> Write the feature map \(\varphi(x)\) and use it to check \(K(1,3)\).</p>
+    <p class="ptest"><b>What this tests.</b> Whether the recipe survives with scalars instead of vectors; mirror-image symmetry; turning \(f\) into a formula; the meaning of \(\varphi\). <b>Plan.</b> Products, add 1, square. Reflecting \(x\to-x\) swaps the points in pairs, so \(\alpha_1=\alpha_2\), \(\alpha_3=\alpha_4\); balance equates them.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the table (a).</b> Products \(x_ix_j\), add 1, square: \((1+1)^2=4\), \((-1+1)^2=0\), \((3+1)^2=16\), \((-3+1)^2=4\), \((9+1)^2=100\), \((-9+1)^2=64\):
+      \[K=\begin{bmatrix}4&0&16&4\\0&4&4&16\\16&4&100&64\\4&16&64&100\end{bmatrix}.\]
+      \(K_{12}=0\): the points \(1\) and \(-1\) are at right angles upstairs — kernel values may be zero.</div>
+      <div class="pstep"><b>Step 2 — symmetry and balance.</b> \(\alpha_1=\alpha_2=a\), \(\alpha_3=\alpha_4=c\); balance \(2a-2c=0\Rightarrow c=a\).</div>
+      <div class="pstep"><b>Step 3 — the dual (b).</b> Same-class blocks: \((4+0+0+4)a^2=8a^2\) and \((100+64+64+100)a^2=328a^2\); cross blocks: \(-2(16+4+4+16)a^2=-80a^2\). Total \(256a^2\):
+      \[D(a)=4a-128a^2\ \Rightarrow\ a=\tfrac1{64}.\]
+      All four prices \(\tfrac1{64}\): all support vectors.</div>
+      <div class="pstep"><b>Step 4 — b and f (c).</b> From \(x_1=1\) (column \(4,0,16,4\)): \(\tfrac1{64}(4+0-16-4)+b=1\Rightarrow b=1+\tfrac14=\tfrac54\). Confirm from \(x_3\): \(-\big[\tfrac1{64}(16+4-100-64)+\tfrac54\big]=-\big[-\tfrac{144}{64}+\tfrac{80}{64}\big]=1\) ✓. Closed form, using \((u+1)^2+(1-u)^2=2u^2+2\):
+      \[\begin{aligned}f(x)&=\tfrac1{64}\big[(2x^2+2)\\ &\qquad-(18x^2+2)\big]+\tfrac54\\ &=\frac{5-x^2}{4}.\end{aligned}\]</div>
+      <div class="pstep"><b>Step 5 — boundary and classification.</b> \(f=0\iff x=\pm\sqrt5\approx\pm2.24\): two thresholds, "class \(+1\) if \(|x|&lt;\sqrt5\)". Checks: \(f(\pm1)=1\), \(f(\pm3)=-1\) ✓. \(f(2)=\tfrac{5-4}4=\tfrac14\) → \(+1\) (inside the street); \(f(-2.5)=\tfrac{5-6.25}4=-0.3125\) → \(-1\).</div>
+      <div class="pstep"><b>Step 6 — the feature map (d).</b> \((xz+1)^2=x^2z^2+2xz+1=(x^2)(z^2)+(\sqrt2x)(\sqrt2z)+(1)(1)\), so \(\varphi(x)=(x^2,\sqrt2x,1)\). Check: \(\varphi(1)=(1,\sqrt2,1)\), \(\varphi(3)=(9,3\sqrt2,1)\), dot product \(9+6+1=16=(3+1)^2\) ✓. Upstairs \(\mathbf w=(-\tfrac14,0,0)\): the cut is \(x^2=5\), with edges \(x^2=1\) and \(x^2=9\) — a flat street 8 wide in the lifted space, two thresholds on the line.</div>
+      <p class="pans">answers at a glance: \(K\) as above; \(\alpha_i=\tfrac1{64}\) for all four; \(b=\tfrac54\); \(f(x)=(5-x^2)/4\), boundary \(x=\pm\sqrt5\); \(x=2\to+1\), \(x=-2.5\to-1\); \(\varphi(x)=(x^2,\sqrt2x,1)\), \(K(1,3)=16\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>As in Problem 12, symmetry picks the natural prices, but here other price sets give the very same machine too (for example \(\boldsymbol\alpha=(0,\tfrac1{32},\tfrac1{96},\tfrac1{48})\)); \(b\) and \(f\) never change. And a kernel SVM in one dimension can still draw two thresholds: flat upstairs, curved down here.</p></div>
+    </details>
+  </div>
+
+  <div class="next-card reveal">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 14 · Encoder–Decoder Maths &amp; RNNs</strong> <span style="color:var(--ink-muted)">— upcoming</span></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">After straight streets and curved ones, machines that read. A sentence is not a point on a page but a sequence, one word after another, and the machine must carry a memory from each word to the next. Unit 14 builds that memory out of the matrices and chain rules you already own — and meets again the move that ended this unit: score what you have stored by its similarity to what you see, then take a weighted vote.</p>
+    <p style="margin:0;font-size:.85rem"><a href="unit-12.html">← Unit 12 · Principal Component Analysis</a> · <a href="index.html">All units</a></p>
+  </div>
+</section>

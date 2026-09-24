@@ -1,0 +1,304 @@
+<!-- ================= ACT IV · THE KERNEL TRICK ================= -->
+<!-- ================= 12 · THE VOTE ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>Dot products are everywhere — and the classifier is a vote</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A new student joins the class, and the teacher must guess which house she will fit into. The teacher asks a few senior students to vote.</p>
+    <p>Each voter's say depends on three things: how <strong>important</strong> that voter is, <strong>which house</strong> the voter is in, and how <strong>similar</strong> the new student is to the voter. Add up the votes, and the sign tells you the house.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Look back at the dual (§8). The data appears <strong>only as dot products</strong> \(\mathbf x_i\cdot\mathbf x_j\) — never a single coordinate on its own. Now look at how the trained machine classifies a new point \(\mathbf x\). Put \(\mathbf w=\sum_i\alpha_iy_i\mathbf x_i\) into \(f(\mathbf x)=\mathbf w\cdot\mathbf x+b\):</p>
+    \[\begin{aligned}f(\mathbf x)=\sum_i\ &\underbrace{\alpha_i}_{\text{importance}}\cdot\underbrace{y_i}_{\text{which side}}\\ &\cdot\underbrace{(\mathbf x_i\cdot\mathbf x)}_{\text{similarity}}+\underbrace{b}_{\text{offset}}.\end{aligned}\]
+    <p>Again, only dot products. And read it as a vote. Each support vector votes for its own side (\(y_i=\pm1\)), with a strength set by its importance \(\alpha_i\) and by how similar the new point is to it. A dot product <em>is</em> a similarity score — Unit 3's "agreement" between two lists. Points with \(\alpha_i=0\) do not vote at all.</p>
+    <p><strong>A tiny example.</strong> The twelve points of §6 have three voters: \((1,3)\) and \((3,5)\) with \(\alpha=\tfrac18\), and \((4,2)\) with \(\alpha=\tfrac14\), and \(b=0\). For the new point \(\mathbf x=(2,4)\):</p>
+    \[\begin{aligned}f(2,4)&=\tfrac18(1\cdot2+3\cdot4)\\ &\quad+\tfrac18(3\cdot2+5\cdot4)\\ &\quad-\tfrac14(4\cdot2+2\cdot4)\\ &=1.75+3.25-4=1.\end{aligned}\]
+    <p>Positive, so blue — and exactly 1, so \((2,4)\) sits right on the blue edge of the street.</p>
+  </div>
+
+  <div class="widget reveal" id="w-vote">
+    <div class="widget-head"><span class="w-title">The classifier as a vote</span><span class="w-sub">Drag the gold star. Each support vector casts a vote αᵢ · yᵢ · similarity; the votes plus b add up to f, and its sign is the answer.</span></div>
+    <p class="try"><b>Try:</b> Drag the star towards the orange voter and watch its bar grow while the blue bars shrink. Then open <em>a kernel machine</em>: the same vote, but the similarity is \((\mathbf x_i\cdot\mathbf x)^2\) — and the regions are no longer split by a straight line.</p>
+    <div class="tabs" id="vt-tabs"><button data-t="lin" aria-selected="true">straight: similarity xᵢ·x</button><button data-t="ker">a kernel machine: similarity (xᵢ·x)²</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage stage-canvas"><svg id="vt-svg" viewBox="0 0 560 450" class="svg-lab grabbable" role="img" aria-label="The trained machine's points, its support vectors ringed in gold, the two decision regions softly shaded, and a draggable gold star. Thin lines join the star to each support vector, blue for a vote for class +1 and orange for a vote for class −1, thicker for a bigger vote."></svg></div><p class="stage-tap">drag the star</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="votes" id="vt-bars"></div>
+        <div id="vt-verdict" class="verdict info" style="margin-top:.7rem">—</div>
+        <p class="note" id="vt-note"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">The observation that makes the trick possible</span>
+    <p>Building the street (the dual) and using it (the vote) both touch the data <strong>only through dot products</strong>. So if we replace "dot product" by some other similarity score, the whole machine keeps running with no other change. The next two sections show which replacements are allowed, and what they buy.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[f(\mathbf x)=\sum_{i\in\text{SV}}\alpha_i\,y_i\,(\mathbf x_i\cdot\mathbf x)+b\]</p>
+    <p>Classifying is a <strong>vote</strong>: each support vector says how similar the new point is to it, weighted by its importance, pulling towards its own side. Keep this picture — the kernel trick changes only the similarity.</p>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With the three voters above (\(\alpha=\tfrac18,\tfrac18\) blue at \((1,3)\), \((3,5)\); \(\alpha=\tfrac14\) orange at \((4,2)\); \(b=0\)), what is \(f(4,1)\)?</p>
+    <div class="opts">
+      <button data-why="The orange vote carries a minus sign (y = −1). Check: ⅛·7 + ⅛·17 − ¼·18 = 0.875 + 2.125 − 4.5.">\(+7.5\)</button>
+      <button data-correct data-why="Similarities: (1,3)·(4,1) = 7, (3,5)·(4,1) = 17, (4,2)·(4,1) = 18. Votes: ⅛·7 = 0.875, ⅛·17 = 2.125, −¼·18 = −4.5. Total f = −1.5, so the point is orange, and outside the street since |f| > 1. (Check: w·x = −0.5·4 + 0.5·1 = −1.5.)">\(-1.5\) — orange, outside the street</button>
+      <button data-why="f is the sum of the three weighted votes plus b; it is not zero here. ⅛·7 + ⅛·17 − ¼·18 = −1.5.">\(0\) — exactly on the boundary</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> The data enters both the training and the prediction only through dot products, and \(f(\mathbf x)=\sum\alpha_iy_i(\mathbf x_i\cdot\mathbf x)+b\) is a vote: importance × side × similarity, plus an offset.</p>
+</section>
+
+<!-- ================= 13 · LIFT ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>When no straight line will do — lift the data</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Blue and orange marbles lie mixed on a table, the blue ones in the middle and the orange ones around them. No straight ruler laid on the table can separate them.</p>
+    <p>Now slap the middle of the table from below. The blue marbles jump <strong>higher</strong> than the orange ones. For that instant, a flat sheet of glass slid in sideways could separate them perfectly.</p>
+  </div>
+  <div class="prose reveal">
+    <p>An SVM can only draw a straight line (a flat plane, in more dimensions). Plenty of data refuses. Three small examples show the way out.</p>
+    <p><strong>One dimension.</strong> Blue points at \(x=\pm1\), orange points at \(x=\pm2\). The blue ones sit between the orange ones, so no single threshold separates them. Add one new feature, \(x^2\). The blue points go to \((\pm1,1)\) and the orange to \((\pm2,4)\): the orange points have been lifted higher, and the flat line \(x^2=2.5\) separates them. Push that line back down to the original line and it becomes <strong>two thresholds</strong>, \(x=\pm\sqrt{2.5}\approx\pm1.58\).</p>
+    <p><strong>XOR.</strong> Blue at \((1,1)\) and \((-1,-1)\), orange at \((1,-1)\) and \((-1,1)\). Every straight line leaves one colour on both sides. Add the feature \(x_1x_2\): for the blue points it is \(+1\), for the orange ones \(-1\). One colour rises, the other sinks, and the flat plane "height = 0" separates them. Back on the floor that plane is \(x_1x_2=0\) — the pair of axes.</p>
+    <p><strong>Rings.</strong> Blue points in an inner ring, orange points in an outer ring. Add \(x_1^2+x_2^2\), the squared distance from the centre. Every point rises onto a bowl, the outer ring higher than the inner one, and a flat plane slices between them. Its shadow on the floor is a <strong>circle</strong>.</p>
+  </div>
+
+  <div class="widget reveal" id="w-lift">
+    <div class="widget-head"><span class="w-title">Lift, cut, look down</span><span class="w-sub">Add one feature, lift every point by it, slice the lifted points with a flat plane — and see what that plane looks like from the floor.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ lift and cut</em> on each tab. Then drag the <em>lift</em> slider back to 0 and up again slowly: the separation only exists up there, but its shadow stays on the floor.</p>
+    <div class="tabs" id="lf-tabs">
+      <button data-t="line" aria-selected="true">1-D · add x²</button>
+      <button data-t="xor">XOR · add x₁x₂</button>
+      <button data-t="rings">rings · add x₁² + x₂²</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="lf-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene with three tabs. One-dimensional: four beads on a line rise onto a parabola, the orange ones higher; a glass plane at height 2.5 slides between them and two glowing marks drop to the line at plus and minus root 2.5. XOR: four beads on a floor, two blue rising to height +1 and two orange sinking to −1 on a saddle-shaped sheet; the glass plane at height 0 separates them and its shadow is the pair of axes. Rings: an inner blue ring and outer orange ring rise onto a bowl, a glass plane slices between them and a glowing circle appears on the bowl and, as its shadow, on the floor."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls"><div class="ctl"><label for="lf-u">lift</label><input id="lf-u" type="range" min="0" max="1" step="0.01" value="0"><output id="lf-u-o">0</output></div></div>
+        <div class="presets"><button class="play" id="lf-play">▶ lift and cut</button></div>
+        <div class="readout" id="lf-read" style="margin-top:.6rem;line-height:1.8"></div>
+        <div id="lf-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{flat cut in the lifted space}\\ \Big\Downarrow\\ \text{curved rule on the floor}\end{gathered}\]</p>
+    <p>Take the data to a higher-dimensional space by adding new features. Up there, fit an ordinary linear SVM — a flat boundary. Its shadow back home is curved. <strong>The SVM never stopped being linear; it is linear in the higher space.</strong></p>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the 1-D example the cut up there is \(x^2=2.5\). What is the rule back on the original line?</p>
+    <div class="opts">
+      <button data-why="A single threshold cannot work: the blue points sit between the orange ones on both sides.">Blue if \(x&lt;2.5\)</button>
+      <button data-correct data-why="x² < 2.5 means |x| < √2.5 ≈ 1.58. So the one flat cut becomes two thresholds, x = ±1.58: blue in the middle, orange outside.">Blue if \(-1.58&lt;x&lt;1.58\) — two thresholds at \(\pm\sqrt{2.5}\)</button>
+      <button data-why="2.5 is the height of the cut in the lifted space, where the feature is x². On the original line the thresholds are at ±√2.5.">Blue if \(-2.5&lt;x&lt;2.5\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> Add features so the data rises into a higher space, cut it there with a flat plane, and the cut comes back down as a curve — the machine stays linear, just not in the space you started in.</p>
+</section>
+
+<!-- ================= 14 · THE TRICK ================= -->
+<section class="unit" id="s14">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>The trick — similarity without visiting the big space</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You want to know how alike two cities are across every product in their markets — lakhs of prices each. You could fly to both, write down every price, and compare them one by one.</p>
+    <p>Or someone hands you a formula that takes a <strong>two-line summary</strong> of each city and gives the same answer. You get the full comparison without ever making the trip.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Lifting works, but adding features costs time and memory. Here is the trick that avoids the cost. Take 2-D points and the quadratic lift, with one odd-looking \(\sqrt2\):</p>
+    \[\varphi(\mathbf x)=\big(x_1^2,\ \sqrt2\,x_1x_2,\ x_2^2\big).\]
+    <p>Compute the dot product up there, coordinate by coordinate:</p>
+    \[\begin{aligned}\varphi(\mathbf x)\cdot\varphi(\mathbf z)&=x_1^2z_1^2+x_2^2z_2^2\\ &\quad+(\sqrt2x_1x_2)(\sqrt2z_1z_2)\\ &=(x_1z_1)^2+2(x_1z_1)(x_2z_2)\\ &\quad+(x_2z_2)^2\\ &=(x_1z_1+x_2z_2)^2=(\mathbf x\cdot\mathbf z)^2.\end{aligned}\]
+    <p>Read the last line slowly. The similarity in the 3-D space is the ordinary 2-D dot product, <strong>squared</strong>. You never have to build \(\varphi\) at all. And now the \(\sqrt2\) makes sense: the square \((a+b)^2\) has a middle term \(2ab\), and the \(\sqrt2\) splits that 2 evenly between the \(\mathbf x\) half and the \(\mathbf z\) half, \(\sqrt2\cdot\sqrt2=2\).</p>
+    <p><strong>A tiny example.</strong> \(\mathbf x=(1,2)\), \(\mathbf z=(3,1)\). The short route: \(\mathbf x\cdot\mathbf z=3+2=5\), squared, \(25\). The long route: \(\varphi(\mathbf x)=(1,2\sqrt2,4)\), \(\varphi(\mathbf z)=(9,3\sqrt2,1)\), and \(9+12+4=25\). Same number.</p>
+    <p>So the <em>kernel trick</em> is one sentence: choose a function \(K(\mathbf x,\mathbf z)\) that equals \(\varphi(\mathbf x)\cdot\varphi(\mathbf z)\) for some lift \(\varphi\), and replace every dot product by it —</p>
+    \[\begin{gathered}\mathbf x_i\cdot\mathbf x_j\ \longrightarrow\ K(\mathbf x_i,\mathbf x_j),\\ \mathbf x_i\cdot\mathbf x\ \longrightarrow\ K(\mathbf x_i,\mathbf x).\end{gathered}\]
+    <p>The SVM then draws a flat boundary in the lifted space and a curved one down here, while all the arithmetic stays in the small space.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>kernel</th><th>\(K(\mathbf x,\mathbf z)\)</th><th>what it means</th></tr></thead>
+    <tbody>
+      <tr><td>linear</td><td>\(\mathbf x\cdot\mathbf z\)</td><td>no lift at all: the SVM of §1–§11</td></tr>
+      <tr><td>polynomial, homogeneous</td><td>\((\mathbf x\cdot\mathbf z)^d\)</td><td>all products of exactly \(d\) coordinates; \(d=2\) is the quadratic lift above</td></tr>
+      <tr><td>polynomial, non-homogeneous</td><td>\((\mathbf x\cdot\mathbf z+1)^d\)</td><td>the same plus every lower degree and a constant; for \(d=2\) in 2-D, six features: \((x_1^2,\,x_2^2,\,\sqrt2x_1x_2,\,\sqrt2x_1,\,\sqrt2x_2,\,1)\)</td></tr>
+      <tr><td>RBF (Gaussian)</td><td>\(e^{-\gamma\|\mathbf x-\mathbf z\|^2}\)</td><td>similarity that fades with distance; its lift has <strong>infinitely many</strong> coordinates — yet the kernel costs three operations</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>Why may we use a kernel whose \(\varphi\) nobody can write down? A result called <em>Mercer's theorem</em> says: if \(K\) is symmetric and every kernel table it produces is positive semi-definite (no "negative lengths"), then \(K\) is a dot product in <em>some</em> lifted space, even an infinite one. That is what makes the RBF kernel legal. It is one of the quiet engines of applied mathematics; you only need to know it exists.</p>
+    <p><strong>How big is the space we never visit?</strong> With \(n\) original features and degree \(d\), the homogeneous kernel uses every product of exactly \(d\) coordinates: \(\binom{n+d-1}{d}\) features. The non-homogeneous one uses every degree up to \(d\): \(\binom{n+d}{d}\). For \(n=2,d=2\) that is \(3\) and \(6\) — the two lifts above. For \(n=10,d=4\) it is \(715\) and \(1001\). The kernel still costs one 10-term dot product and one power.</p>
+  </div>
+
+  <div class="widget reveal" id="w-kernel">
+    <div class="widget-head"><span class="w-title">Two routes to one number</span><span class="w-sub">Route A builds the lift and takes a long dot product. Route B takes the short dot product and applies the kernel. Change x and z and watch them agree.</span></div>
+    <p class="try"><b>Try:</b> Keep \(\mathbf x=(1,2)\), \(\mathbf z=(3,1)\) and switch between the kernels: both routes print 5, 25, 36. Then slide \(n\) to 100 and \(d\) to 5 in the feature counter and compare the two bars.</p>
+    <div class="vin">
+      <label>x =</label>(<input id="kc-x1" type="number" step="0.5" value="1">, <input id="kc-x2" type="number" step="0.5" value="2">)
+      <label>z =</label>(<input id="kc-z1" type="number" step="0.5" value="3">, <input id="kc-z2" type="number" step="0.5" value="1">)
+    </div>
+    <div class="tabs" id="kc-tabs" style="margin-top:.7rem"><button data-t="lin">linear</button><button data-t="poly" aria-selected="true">(x·z)²</button><button data-t="polyc">(x·z + 1)²</button><button data-t="rbf">RBF, γ = 0.5</button></div>
+    <div class="kcalc">
+      <div class="kroute" id="kc-a"><h4>Route A · build φ, then dot</h4><div class="ln" id="kc-a-body"></div><div class="res" id="kc-a-res"></div></div>
+      <div class="kroute" id="kc-b"><h4>Route B · dot first, then the kernel</h4><div class="ln" id="kc-b-body"></div><div class="res" id="kc-b-res"></div></div>
+    </div>
+    <div class="substage">
+      <p class="w-sub2">How many features are we secretly using? <span>n original features, degree d</span></p>
+      <div class="controls">
+        <div class="ctl"><label for="kc-n">features n</label><input id="kc-n" type="range" min="1" max="100" step="1" value="10"><output id="kc-n-o">10</output></div>
+        <div class="ctl"><label for="kc-d">degree d</label><input id="kc-d" type="range" min="1" max="6" step="1" value="4"><output id="kc-d-o">4</output></div>
+      </div>
+      <div class="costbars" id="kc-cost"></div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\varphi(\mathbf x)\cdot\varphi(\mathbf z)=(\mathbf x\cdot\mathbf z)^2\\ \Longrightarrow\quad \mathbf x_i\cdot\mathbf x_j\ \to\ K(\mathbf x_i,\mathbf x_j)\end{gathered}\]</p>
+    <p>A kernel is a dot product in a bigger space, computed <strong>without going there</strong>. Swap every dot product in the dual and in the vote for \(K\), and the linear machine draws curves — at the cost of the small space, whatever the size of the big one.</p>
+  </div>
+  <div class="check reveal" data-check="c18">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(\mathbf x=(1,2)\) and \(\mathbf z=(3,1)\), what is \(K(\mathbf x,\mathbf z)=(\mathbf x\cdot\mathbf z)^2\)? And what goes wrong if you square the coordinates first?</p>
+    <div class="opts">
+      <button data-correct data-why="Finish the dot product first: 1·3 + 2·1 = 5, then square: 25. Squaring coordinates first gives (1,4)·(9,1) = 9 + 4 = 13 — the missing 12 is exactly the √2·√2 cross term 2(x₁z₁)(x₂z₂) = 2·3·2.">25 — squaring the coordinates first gives 13, which loses the cross term</button>
+      <button data-why="13 is what you get by squaring each coordinate first: (1,4)·(9,1). The kernel squares the finished dot product: (3 + 2)² = 25.">13</button>
+      <button data-why="5 is the plain dot product x·z. The kernel squares it.">5</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c19">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With \(n=10\) features and degree \(d=4\), how many features do \((\mathbf x\cdot\mathbf z)^4\) and \((\mathbf x\cdot\mathbf z+1)^4\) secretly use?</p>
+    <div class="opts">
+      <button data-why="10⁴ counts ordered products, where x₁x₂ and x₂x₁ are different. The lift keeps each product once: C(13, 4) = 715.">10 000 and 14 641</button>
+      <button data-correct data-why="Homogeneous: C(n+d−1, d) = C(13, 4) = 13·12·11·10/24 = 715. Non-homogeneous: C(n+d, d) = C(14, 4) = 14·13·12·11/24 = 1001 — every degree from 0 to 4.">715 and 1001</button>
+      <button data-why="These count only degree 4 in the second case too. The +1 brings in every lower degree as well: C(14, 4) = 1001.">715 and 715</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s14-->
+  <p class="onesent reveal"><b>In one sentence:</b> Because \(\varphi(\mathbf x)\cdot\varphi(\mathbf z)=(\mathbf x\cdot\mathbf z)^2\), a kernel gives the similarity of the lifted points from the small space alone — so we swap every dot product for \(K\) and never build the huge (even infinite) lift.</p>
+</section>
+
+<!-- ================= 15 · START TO FINISH ================= -->
+<section class="unit" id="s15">
+  <div class="sec-head reveal"><span class="sec-num">15</span><h2>A kernel SVM, start to finish</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A good recipe for dal is a fixed order of steps: wash, soak, boil, temper. Follow the order and it comes out right every time, whoever is cooking.</p>
+    <p>A kernel SVM on paper has the same kind of recipe. Eight steps, always in the same order.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>The recipe.</strong></p>
+    <ol>
+      <li><strong>Kernel table.</strong> Dot products first, then apply the kernel to each number. Use the symmetry \(K_{ij}=K_{ji}\) and check the diagonal.</li>
+      <li><strong>Look for symmetry.</strong> If two rows of the table look alike (or are mirror images) with the same label, take their prices equal. Four unknowns often become one.</li>
+      <li><strong>Use \(\sum_i\alpha_iy_i=0\)</strong> to tie the remaining unknowns together.</li>
+      <li><strong>Write the dual with numbers</strong>, block by block: same-class entries carry \(y_iy_j=+1\), cross-class entries \(-1\). Reduce to one unknown, differentiate, solve.</li>
+      <li><strong>Check \(\alpha_i\ge0\)</strong> and note the support vectors.</li>
+      <li><strong>Find \(b\)</strong> from a support vector: \(y_s\big(\sum_i\alpha_iy_iK_{is}+b\big)=1\). Confirm with a second one. Never assume \(b=0\).</li>
+      <li><strong>Classify</strong> a new point: \(f(\mathbf x)=\sum_i\alpha_iy_iK(\mathbf x_i,\mathbf x)+b\), read the sign.</li>
+      <li><strong>Optional finish:</strong> simplify \(f\) in \(x_1,x_2\) to see the curve. It doubles as a check: every support vector must score exactly \(\pm1\).</li>
+    </ol>
+    <p><strong>Worked through once.</strong> Four points: \(\mathbf x_1=(1,2)\) and \(\mathbf x_2=(-1,-2)\) blue; \(\mathbf x_3=(1,-2)\) and \(\mathbf x_4=(-1,2)\) orange. Kernel \(K=(\mathbf x\cdot\mathbf z)^2\).</p>
+    <p><em>Step 1.</em> Row 1 of dot products: \(\mathbf x_1\cdot\mathbf x_1=5\), \(\mathbf x_1\cdot\mathbf x_2=-5\), \(\mathbf x_1\cdot\mathbf x_3=-3\), \(\mathbf x_1\cdot\mathbf x_4=3\). Square each: \(25,25,9,9\). The whole table:</p>
+    \[K=\begin{bmatrix}25&25&9&9\\25&25&9&9\\9&9&25&25\\9&9&25&25\end{bmatrix}.\]
+    <p><em>Steps 2–3.</em> Rows 1–2 are identical and share a label; so are rows 3–4. Take \(\alpha_1=\alpha_2=a\) and \(\alpha_3=\alpha_4=c\). Balance: \(2a-2c=0\), so \(c=a\): all four prices equal \(a\).</p>
+    <p><em>Step 4.</em> Each row of \(y_iy_jK_{ij}\) is \(25+25-9-9=32\), so the double sum is \(4\cdot32\,a^2=128a^2\) and</p>
+    \[\begin{aligned}D(a)&=4a-\tfrac12\cdot128a^2\\ &=4a-64a^2,\\ D'(a)&=4-128a=0\\ \Rightarrow\ a&=\tfrac1{32}.\end{aligned}\]
+    <p><em>Step 5.</em> All four prices are \(\tfrac1{32}&gt;0\): every point is a support vector.</p>
+    <p><em>Step 6.</em> From \(\mathbf x_1\): \(\tfrac1{32}(25+25-9-9)+b=1\), so \(1+b=1\) and \(b=0\).</p>
+    <p><em>Step 7.</em> For the new point \((2,1)\): the dot products with the four points are \(4,-4,0,0\); squared, \(16,16,0,0\). So \(f=\tfrac1{32}(16+16)=1\): class \(+1\), right on the edge.</p>
+    <p><em>Step 8.</em> Put the kernel into \(f\) and simplify:</p>
+    \[\begin{aligned}f(\mathbf x)&=\tfrac1{32}\big[2(x_1+2x_2)^2-2(x_1-2x_2)^2\big]\\ &=\frac{x_1x_2}{2}.\end{aligned}\]
+    <p>The boundary \(x_1x_2=0\) is the pair of axes, and \(f=\pm1\) are the curves \(x_1x_2=\pm2\), passing through all four points.</p>
+    <p>And upstairs? The lift \(\varphi(\mathbf x)=(x_1^2,\sqrt2x_1x_2,x_2^2)\) sends both blue points to the <strong>same</strong> place, \((1,2\sqrt2,4)\), and both orange points to \((1,-2\sqrt2,4)\). Four points became two, and a two-point SVM is the easiest there is.</p>
+  </div>
+
+  <div class="widget reveal" id="w-upstairs">
+    <div class="widget-head"><span class="w-title">Four points become two</span><span class="w-sub">The four points on the floor, then lifted by φ(x) = (x₁², √2·x₁x₂, x₂²). Up there the problem is a two-point street; down here its shadow is the pair of axes.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ lift</em> and watch each pair of same-coloured points fly to one spot. The street between the two spots is \(4\sqrt2\approx5.66\) wide — exactly the distance between them.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="up-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. Four beads on a floor at (1,2), (−1,−2) blue and (1,−2), (−1,2) orange, with the pair of axes glowing on the floor as the curved boundary's shadow. When lifted, the two blue beads fly to one point (1, 2√2, 4) and the two orange beads to (1, −2√2, 4) in the feature space. A glass plane φ2 = 0 stands between them with two violet margin planes through the points, and a green arrow for w along the φ2 axis."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls"><div class="ctl"><label for="up-u">lift</label><input id="up-u" type="range" min="0" max="1" step="0.01" value="0"><output id="up-u-o">0</output></div></div>
+        <div class="presets"><button class="play" id="up-play">▶ lift</button></div>
+        <table class="kv" id="up-kv"></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Now try everything at once. Pick a data set, pick a kernel, set the fine, and a live solver draws the boundary \(f=0\) (white) and the street edges \(f=\pm1\) (violet). For the four-point set with \((\mathbf x\cdot\mathbf z)^2\), the recipe panel walks the eight steps with live numbers.</p>
+  </div>
+  <div class="widget reveal" id="w-playground">
+    <div class="widget-head"><span class="w-title">The kernel playground</span><span class="w-sub">Five data sets, four kernels, a fine C, and a live solver. Click to add points; drag to move them.</span></div>
+    <p class="try"><b>Try:</b> On <em>rings</em>, start with <em>linear</em> — no street exists. Switch to \((\mathbf x\cdot\mathbf z+1)^2\): a circle appears. Then try <em>RBF</em> and raise \(\gamma\) until the boundary starts hugging single points. Open the <em>landscape</em> tab to see \(f\) as hills and valleys with the boundary as the shoreline.</p>
+    <div class="toolbar" id="pg-sets"><span class="lbl">data</span><button class="preset" data-s="xnor" aria-pressed="true">four points</button><button class="preset" data-s="rings">rings</button><button class="preset" data-s="moons">two moons</button><button class="preset" data-s="blobs">overlapping blobs</button><button class="preset" data-s="line">1-D ±1 / ±2</button></div>
+    <div class="toolbar" id="pg-kers"><span class="lbl">kernel</span><button class="preset" data-k="lin">linear</button><button class="preset" data-k="poly" aria-pressed="true">(x·z)²</button><button class="preset" data-k="polyc">(x·z + 1)²</button><button class="preset" data-k="rbf">RBF</button></div>
+    <div class="tabs" id="pg-tabs"><button data-t="map" aria-selected="true">map</button><button data-t="land">landscape (3-D)</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px">
+        <div class="svgstage stage-canvas" data-tab="map"><svg id="pg-svg" viewBox="0 0 600 480" class="svg-lab grabbable" role="img" aria-label="The playground map: the data points, the two decision regions softly shaded blue and orange, the boundary f = 0 as a white curve and the street edges f = ±1 as dashed violet curves, with support vectors ringed in gold."></svg></div>
+        <div data-tab="land" style="display:none"><div id="pg-3d" class="stage3d tall" role="img" aria-label="The decision function f drawn as a lit landscape over the data plane: blue points sit on hills where f is positive, orange points in valleys where f is negative, a glass sea at height zero cuts the landscape along the decision boundary, and the support vectors stand on the contour lines f = ±1."></div></div>
+        <p class="stage-tap">tap to add a point · drag to move</p>
+      </div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="pg-c">fine C</label><input id="pg-c" type="range" min="-1" max="3.5" step="0.05" value="3.5"><output id="pg-c-o">∞</output></div>
+          <div class="ctl" id="pg-gctl"><label for="pg-g">RBF γ</label><input id="pg-g" type="range" min="-1" max="1.3" step="0.05" value="0"><output id="pg-g-o">1</output></div>
+        </div>
+        <div class="toolbar" id="pg-add"><span class="lbl">tap adds</span><button class="preset" data-y="1" aria-pressed="true">blue +1</button><button class="preset" data-y="-1">orange −1</button><button class="preset" id="pg-reset">reset data</button></div>
+        <table class="kv" id="pg-kv"></table>
+        <div id="pg-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+    <div class="recipe" id="pg-recipe">
+      <div class="rnav" id="pg-rnav"></div>
+      <div id="pg-rsteps"></div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\max_{\boldsymbol\alpha}\sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_jK_{ij}\\ b=y_s-\sum_i\alpha_iy_iK_{is}\\ f(\mathbf x)=\sum_i\alpha_iy_iK(\mathbf x_i,\mathbf x)+b\end{gathered}\]</p>
+    <p>The kernel table is always \(N\times N\) — four points give a \(4\times4\) table whatever the degree. The degree only changes the size of the lifted space, which we never build. \(\mathbf w\) still exists, \(\mathbf w=\sum\alpha_iy_i\varphi(\mathbf x_i)\), but it lives up there; we keep the prices and the support vectors instead.</p>
+  </div>
+  <div class="check reveal" data-check="c20">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the worked example (\(\alpha_i=\tfrac1{32}\), \(b=0\), \(K=(\mathbf x\cdot\mathbf z)^2\)), classify the new point \((-1,3)\).</p>
+    <div class="opts">
+      <button data-why="Check the kernel values: the dot products with the four points are 5, −5, −7, 7, so the squares are 25, 25, 49, 49 — the orange votes are bigger.">\(+1\), with \(f=1.5\)</button>
+      <button data-correct data-why="Dot products: −1+6 = 5, 1−6 = −5, −1−6 = −7, 1+6 = 7. Squared: 25, 25, 49, 49. f = (25 + 25 − 49 − 49)/32 = −48/32 = −1.5, so class −1, outside the street. Check with the closed form: f = x₁x₂/2 = −3/2.">\(-1\), with \(f=-1.5\)</button>
+      <button data-why="The kernel values are not zero here — only points on an axis give f = 0. f = x₁x₂/2 = (−1)(3)/2 = −1.5.">It lies on the boundary, \(f=0\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s15-->
+  <p class="onesent reveal"><b>In one sentence:</b> Build the kernel table (dots first, kernel second), shrink the dual with symmetry and balance, find the prices, get \(b\) from a support vector, and classify by the vote — the boundary is flat upstairs and curved down here.</p>
+</section>
+
+<!-- ================= 16 · CARRY FORWARD ================= -->
+<section class="unit" id="s16">
+  <div class="sec-head reveal"><span class="sec-num">16</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>One idea, built up in four acts: the widest street, prices on points, a fine for trespassers, and a similarity that measures a bigger space without going there.</p>
+  </div>
+  <div class="cards reveal-stagger">
+    <div class="cd"><h4>The problem</h4>\[\min\ \tfrac12\|\mathbf w\|^2\ \ \text{s.t.}\ \ y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\]<p>The widest street is \(2/\|\mathbf w\|\) wide once the nearest points score 1. A bowl with straight walls: one answer.</p></div>
+    <div class="cd"><h4>The dual</h4>\[\max\sum\alpha_i-\tfrac12\sum\alpha_i\alpha_jy_iy_j\,\mathbf x_i\cdot\mathbf x_j\]<p>with \(\alpha_i\ge0\), \(\sum\alpha_iy_i=0\). Its peak equals the primal minimum.</p></div>
+    <div class="cd"><h4>The two identities</h4>\[\mathbf w=\sum_i\alpha_iy_i\mathbf x_i,\qquad\sum_i\alpha_iy_i=0\]<p>The street is built from the points; the two classes' pushes balance.</p></div>
+    <div class="cd"><h4>Three kinds of points</h4><p>Outside the street: \(\alpha=0\), deletable. On an edge: \(\alpha\ge0\), support vectors when \(\alpha&gt;0\). Inside: impossible with a hard margin, fined with a soft one.</p></div>
+    <div class="cd"><h4>Soft margin's one change</h4>\[0\le\alpha_i\le C,\qquad \xi_i=\max(0,1-z_i)\]<p>A fine per unit of trespass; in the dual, a ceiling on every price. Big \(C\) = strict and narrow.</p></div>
+    <div class="cd"><h4>The kernel swap</h4>\[\mathbf x_i\cdot\mathbf x_j\to K(\mathbf x_i,\mathbf x_j)=\varphi(\mathbf x_i)\cdot\varphi(\mathbf x_j)\]<p>Flat upstairs, curved down here, and the table stays \(N\times N\).</p></div>
+    <div class="cd"><h4>The recipe</h4><p>Dots first, kernel second · symmetry · balance · dual with numbers · check \(\alpha\ge0\) · \(b\) from a support vector · classify by the vote · simplify \(f\) to see the curve.</p></div>
+  </div>
+  <div class="callout aha reveal"><span class="tag">The thread to Units 14 and 15</span>
+    <p>Look at the vote once more: <strong>score every stored item by its similarity to the new one, then take a weighted sum.</strong> Hold on to that sentence. When machines start reading sentences (Unit 14) and then paying <em>attention</em> to words (Unit 15), the core operation will be exactly this: similarity by a dot product, then a weighted vote.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
+    <p><strong>Draw the widest street, and let the few points that touch it decide.</strong> Everything else — the dual, the fine, the kernel — is how you find that street when the world is large, noisy and curved.</p>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> An SVM is the widest street between two groups, held up by a few support vectors, softened by a fine, and bent by a kernel — and it only ever meets the data through dot products.</p>
+</section>
+
+<!--@PRACTICE-->

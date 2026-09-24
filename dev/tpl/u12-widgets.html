@@ -1,0 +1,308 @@
+<!--@W1-->
+  <div class="widget reveal" id="w-photo">
+    <div class="widget-head"><span class="w-title">Photograph the cloud</span><span class="w-sub">Four hundred points shaped like a cricket bat. The lamp behind you throws every point's shadow onto the glass screen — that shadow is the photo. The chip says how much of the cloud's spread the photo keeps. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> press <em>end-on</em> — the photo shrinks to a blob and keeps only about 5% of the spread. Then press <em>side-on</em>: over 99%. Now press ▶ and watch the number rise and fall as the camera walks around the bat.</p>
+    <div class="presets" id="ph-pre"><button class="play" id="ph-play">▶ walk around the bat</button><button class="preset" id="ph-side" aria-pressed="true">side-on · the best photo</button><button class="preset" id="ph-edge">edge-on</button><button class="preset" id="ph-end">end-on · down the handle</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="ph-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A long, flat cloud of blue points shaped like a cricket bat floats in space. Behind it stands a glass screen, and every point throws a small glowing shadow onto the screen along the viewing direction, which is drawn as a faint beam. Turning the camera makes the shadow on the screen grow long and wide (side-on), thin (edge-on) or collapse into a small blob (end-on)."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="ph-turn">turn</label><input id="ph-turn" type="range" min="0" max="180" step="1" value="90"><output id="ph-turn-o">90°</output></div>
+          <div class="ctl"><label for="ph-tilt">tilt</label><input id="ph-tilt" type="range" min="-90" max="90" step="1" value="0"><output id="ph-tilt-o">0°</output></div>
+        </div>
+        <svg id="ph-photo" viewBox="0 0 300 200" class="svg-lab" role="img" aria-label="The photo itself: the shadow of the cloud on the screen, drawn flat, with a frame and the share of spread it keeps." style="margin-top:.6rem"></svg>
+        <div class="readout" id="ph-read" style="margin-top:.6rem;line-height:1.8"></div>
+        <div id="ph-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+<!--@W2-->
+  <div class="widget reveal" id="w-line">
+    <div class="widget-head"><span class="w-title">Pick the better line</span><span class="w-sub">Every point drops onto the line along a grey thread. The coloured dots on the line are where they land. The meter measures how spread out those dots are.</span></div>
+    <p class="try"><b>Try:</b> drag the orange tip round, or press ▶ <em>sweep</em>. Watch the marker ride the hump below: it peaks at \(\lambda_1\) and dips to \(\lambda_2\) exactly a quarter-turn later. Then switch to <em>the five points</em> and find the angle where the spread is \(12\).</p>
+    <div class="tabs" id="ln-tabs">
+      <button data-t="cloud" aria-selected="true">90 points</button>
+      <button data-t="five">the five points</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><svg id="ln-svg" viewBox="0 0 560 440" class="svg-lab grabbable" role="img" aria-label="A tilted cloud of blue points with a glowing orange line through its middle. From every point a thin grey thread drops at right angles onto the line, and a small coloured dot marks where it lands. A spread meter bar at the top grows when the landing dots are spread out and shrinks when they bunch together."></svg><p class="drag-hint">drag the orange tip to turn the line</p></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="controls">
+          <div class="ctl"><label for="ln-ang">angle</label><input id="ln-ang" type="range" min="0" max="180" step="0.5" value="120"><output id="ln-ang-o">120°</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ln-sweep">▶ sweep</button><button class="preset" id="ln-a">line A · the best</button><button class="preset" id="ln-b">line B · the worst</button></div>
+        <svg id="ln-hump" viewBox="0 0 360 210" class="svg-lab" role="img" aria-label="The spread of the landing dots plotted against the angle of the line from 0 to 180 degrees: one smooth hump with its peak marked lambda one and its dip marked lambda two, ninety degrees apart, and a marker at the current angle." style="margin-top:.4rem"></svg>
+        <div class="readout" id="ln-read" style="margin-top:.5rem;line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+<!--@W3-->
+  <div class="widget reveal" id="w-change">
+    <div class="widget-head"><span class="w-title">Which columns can explain anything?</span><span class="w-sub">Left: how much each column of the salary table changes. Right: age against experience for the same forty employees — the twins.</span></div>
+    <p class="try"><b>Try:</b> switch the bars to a log scale to see the two tiny columns at all. Then press <em>combine the twins</em>: one new direction appears through the cloud, and the readout says how much of the twins' spread it carries on its own.</p>
+    <div class="presets"><button class="preset" id="ch-log" aria-pressed="false">log scale</button><button class="play" id="ch-twins">▶ combine the twins</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1 1 320px"><svg id="ch-bars" viewBox="0 0 420 320" class="svg-lab" role="img" aria-label="Bar chart of the variances of four columns: age 64, experience 41, certifications 0.09 and trainings 0.04. The last two bars are almost invisible on a normal scale."></svg></div>
+      <div class="wcol" style="flex:1 1 320px"><svg id="ch-scatter" viewBox="0 0 420 320" class="svg-lab" role="img" aria-label="Scatter plot of experience against age for forty employees. The points lie close to a rising line. Pressing combine the twins draws a glowing orange arrow along the cloud and a short green arrow across it."></svg></div>
+    </div>
+    <div class="readout" id="ch-read" style="margin-top:.6rem;line-height:1.8"></div>
+  </div>
+<!--@W4-->
+  <div class="widget reveal" id="w-cov">
+    <div class="widget-head"><span class="w-title">Build C by hand</span><span class="w-sub">Drag any of the five points. The cross marks the mean; the table shows every point measured from it; the matrix is built from the table. Hover a cell of the matrix to see which columns it compares.</span></div>
+    <p class="try"><b>Try:</b> drag the top-right point up and right, and watch the off-diagonal entry grow as the cloud tilts. Then switch to <em>forgot to centre</em> and see every entry jump — and the ellipse's long axis swing toward the mean.</p>
+    <div class="presets" id="cv-pre"><button class="preset" id="cv-n" aria-pressed="true">divide by N</button><button class="preset" id="cv-n1" aria-pressed="false">divide by N − 1</button><button class="preset" id="cv-raw" aria-pressed="false">forgot to centre</button><button class="preset" id="cv-reset">reset the five points</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 400px"><svg id="cv-svg" viewBox="0 0 540 420" class="svg-lab grabbable" role="img" aria-label="Five draggable blue points on a grid, a gold cross at their mean, thin lines from the mean to each point, and the covariance ellipse drawn around the cloud with its long axis in orange."></svg><p class="drag-hint">drag the points</p></div>
+      <div class="wcol" style="flex:1 1 280px">
+        <div id="cv-table"></div>
+        <div id="cv-C" style="margin-top:.7rem"></div>
+        <div class="readout" id="cv-read" style="margin-top:.6rem;line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+<!--@W5-->
+  <div class="widget reveal" id="w-bowl">
+    <div class="widget-head"><span class="w-title">The score bowl</span><span class="w-sub">Over every arrow \((w_1,w_2)\) stands the height \(\mathbf w^\top C\mathbf w\). The glowing ring is every arrow of length 1, lifted onto the bowl. Its highest point is PC1 (orange); its lowest is PC2 (green). Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> press ▶ and ride the marker around the ring. It climbs to \(12\) and drops to \(2\), twice each lap, because \(\mathbf w\) and \(-\mathbf w\) are the same line. Switch to \(\begin{bmatrix}5&4\\4&5\end{bmatrix}\): the high points swing to \(45^\circ\).</p>
+    <div class="presets" id="bw-pre"><button class="play" id="bw-play">▶ ride the ring</button><button class="preset" id="bw-a" aria-pressed="true">C = [[10, 4], [4, 4]]</button><button class="preset" id="bw-b">C = [[5, 4], [4, 5]]</button><button class="preset" id="bw-c">C = [[5, 2], [2, 8]]</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="bw-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D surface: an upward bowl, stretched along one diagonal, coloured from blue at the bottom to orange at the top. A glowing ring lies on the bowl directly above the unit circle drawn on the floor. An orange rod marks the highest point of the ring and a green rod the lowest. A bright marker slides along the ring with a thin stem down to the floor circle."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <div class="controls">
+          <div class="ctl"><label for="bw-ang">direction</label><input id="bw-ang" type="range" min="0" max="360" step="0.5" value="45"><output id="bw-ang-o">45°</output></div>
+        </div>
+        <div class="readout" id="bw-read" style="margin-top:.6rem;line-height:1.9"></div>
+        <div id="bw-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">The height at an arrow of length 1 is the spread of the data along it. Only the ring matters: inside it the arrows are too short, outside too long.</p>
+      </div>
+    </div>
+  </div>
+<!--@W6-->
+  <div class="widget reveal" id="w-leash">
+    <div class="widget-head"><span class="w-title">The leash and the two arrows</span><span class="w-sub">Contour rings of the score \(\mathbf w^\top C\mathbf w\), and the unit circle — the leash. At the bead: the uphill arrow of the score \(\nabla f=2C\mathbf w\) (orange) and the uphill arrow of the rule \(\nabla g=2\mathbf w\) (grey).</span></div>
+    <p class="try"><b>Try:</b> drag the bead around the circle and watch the parallel meter. The two arrows line up — angle \(0^\circ\) — at exactly two kinds of place: the top of the score (PC1) and the bottom (PC2). Everywhere else the orange arrow leans along the circle, telling you which way is uphill.</p>
+    <div class="tabs" id="ls-tabs">
+      <button data-c="a" aria-selected="true">C = [[10, 4], [4, 4]]</button>
+      <button data-c="b">C = [[5, 4], [4, 5]]</button>
+      <button data-c="c">C = [[5, 2], [2, 8]]</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 420px"><svg id="ls-svg" viewBox="0 0 540 460" class="svg-lab grabbable" role="img" aria-label="A contour map of the quadratic score: nested ellipses. The unit circle is drawn on top as a glowing ring with a draggable bead on it. At the bead an orange arrow shows the gradient of the score and a grey arrow shows the gradient of the constraint, which points straight out of the circle. A dotted tangent line shows the only way the bead may move."></svg><p class="drag-hint">drag the bead along the circle</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="ls-ang">bead at</label><input id="ls-ang" type="range" min="0" max="360" step="0.5" value="70"><output id="ls-ang-o">70°</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ls-climb">▶ climb to the top</button></div>
+        <svg id="ls-meter" viewBox="0 0 300 140" role="img" aria-label="The parallel meter: a half-dial showing the angle between the two arrows, reading zero degrees when they line up." style="margin-top:.4rem"></svg>
+        <div class="readout" id="ls-read" style="margin-top:.5rem;line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+<!--@W7-->
+  <div class="widget reveal" id="w-three">
+    <div class="widget-head"><span class="w-title">One number, three readings</span><span class="w-sub">Turn one arrow \(\mathbf w\) and watch three panels. Left: how much \(C\) stretches \(\mathbf w\). Middle: the spread of the data along \(\mathbf w\). Right: the fine in the Lagrangian. At an eigenvector all three say the same number.</span></div>
+    <p class="try"><b>Try:</b> press <em>snap to PC1</em>. The orange arrow \(C\mathbf w\) lies exactly on top of \(\mathbf w\), the landing dots spread as wide as they can, and all three panels read \(\lambda_1\). Now turn \(\mathbf w\) a little: the three numbers split apart.</p>
+    <div class="presets" id="th-pre"><button class="preset" id="th-a" aria-pressed="true">C = [[5, 4], [4, 5]]</button><button class="preset" id="th-b">C = [[10, 4], [4, 4]]</button><button class="preset" id="th-c">C = [[5, 2], [2, 8]]</button><button class="play" id="th-snap">▶ snap to PC1</button><button class="preset" id="th-snap2">snap to PC2</button></div>
+    <div class="controls" style="max-width:34rem">
+      <div class="ctl"><label for="th-ang">arrow w at</label><input id="th-ang" type="range" min="0" max="180" step="0.5" value="20"><output id="th-ang-o">20°</output></div>
+    </div>
+    <div class="wrow" style="margin-top:.5rem">
+      <div class="wcol" style="flex:1 1 250px"><svg id="th-p1" viewBox="0 0 320 320" class="svg-lab" role="img" aria-label="Panel one: the unit circle, the arrow w in white and the arrow C w in orange. At an eigenvector the orange arrow lies along w, stretched by lambda."></svg></div>
+      <div class="wcol" style="flex:1 1 250px"><svg id="th-p2" viewBox="0 0 320 320" class="svg-lab" role="img" aria-label="Panel two: a cloud of points with exactly this covariance matrix, the line along w, and each point's landing dot on the line."></svg></div>
+      <div class="wcol" style="flex:1 1 250px"><svg id="th-p3" viewBox="0 0 320 320" class="svg-lab" role="img" aria-label="Panel three: the gradient of the score, 2 C w, broken into a part along w and a part along the circle. The fine lambda is the size of the part along w divided by the size of 2 w."></svg></div>
+    </div>
+    <div class="readout" id="th-read" style="margin-top:.6rem;line-height:1.8"></div>
+  </div>
+<!--@W8-->
+  <div class="widget reveal" id="w-peel">
+    <div class="widget-head"><span class="w-title">Find it, peel it, repeat</span><span class="w-sub">A 3-D cloud with spreads \(9,\ 4,\ 1\) along its hidden axes. Find the top direction, then peel it off: every point slides along that direction onto the glass plane through the middle. The bars on the right are the eigenvalues of what is left. Drag to orbit.</span></div>
+    <p class="try"><b>Try:</b> press the buttons in order. After the first peel the orange bar falls to \(0\) and the other two do not move at all — then the top of what is left is exactly the second direction. Or press ▶ and watch the whole story.</p>
+    <div class="presets" id="pl-pre"><button class="play" id="pl-play">▶ the whole story</button><button class="preset" id="pl-find">find the top direction</button><button class="preset" id="pl-peel">peel it off</button><button class="preset" id="pl-reset">start again</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="pl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D cloud of blue points shaped like a flattened rugby ball. Finding the top direction lights an orange rod through its long axis. Peeling slides every point along the rod onto a glass plane at right angles to it, leaving a flat disc. Finding again lights a green rod inside the disc; peeling again squeezes the disc onto a single cyan line, the third direction."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 230px">
+        <svg id="pl-bars" viewBox="0 0 300 220" class="svg-lab" role="img" aria-label="Three bars: the eigenvalues of the covariance matrix of what is left, coloured orange, green and cyan for the three directions."></svg>
+        <div class="readout" id="pl-read" style="margin-top:.6rem;line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+<!--@W9-->
+  <div class="widget reveal" id="w-scree">
+    <div class="widget-head"><span class="w-title">The scree plot and three rules</span><span class="w-sub">Bars: each eigenvalue's share of the budget. Line: the running total. The kept bars light up. Below: how many components each of the three rules would keep.</span></div>
+    <p class="try"><b>Try:</b> on the practice-set eigenvalues, move the target to \(90\%\): the third bar lights up, because two components only reach \(82.5\%\). Then open the <em>noisy tail</em> and compare the three rules — they do not agree, and that is normal.</p>
+    <div class="presets" id="sc-pre"><button class="preset" id="sc-five" aria-pressed="true">4.5, 2.1, 0.9, 0.4, 0.1</button><button class="preset" id="sc-svd">σ = 20, 10, 5, 1 · N = 100</button><button class="preset" id="sc-noisy">a noisy tail</button><button class="preset" id="sc-std">six standardised features</button><button class="preset" id="sc-log" aria-pressed="false">log scale</button></div>
+    <div class="controls" style="max-width:34rem">
+      <div class="ctl"><label for="sc-target">target share</label><input id="sc-target" type="range" min="50" max="99" step="1" value="90"><output id="sc-target-o">90 %</output></div>
+    </div>
+    <svg id="sc-svg" viewBox="0 0 760 320" class="svg-lab" role="img" aria-label="A scree plot: one bar per component, tallest first, with the kept bars lit orange and the rest dim, a glowing running-total curve climbing towards one hundred percent, and a dashed horizontal line at the target share."></svg>
+    <div id="sc-rules" class="rules3"></div>
+    <div class="readout" id="sc-read" style="margin-top:.6rem;line-height:1.8"></div>
+  </div>
+<!--@W10-->
+  <div class="widget reveal" id="w-rebuild">
+    <div class="widget-head"><span class="w-title">The seesaw: kept against lost</span><span class="w-sub">Every point is rebuilt from its landing spot. The red threads are what the rebuild loses. The bar underneath is one fixed total, split into kept (blue) and lost (red).</span></div>
+    <p class="try"><b>Try:</b> turn the line slowly. The red part of the bar grows exactly as the blue part shrinks — the total never moves. The lost part is smallest precisely where the kept part is biggest. Then open the 3-D tab and tilt a glass plane through a 3-D cloud.</p>
+    <div class="tabs" id="rb-tabs">
+      <button data-t="line" aria-selected="true">a line through 2-D data</button>
+      <button data-t="plane">a plane through 3-D data</button>
+    </div>
+    <div class="pane on" data-pane="line">
+      <div class="wrow">
+        <div class="wcol" style="flex:3 1 420px"><svg id="rb-svg" viewBox="0 0 560 420" class="svg-lab grabbable" role="img" aria-label="A cloud of blue points with an orange line through its middle. Every point is joined to its rebuilt copy on the line by a red thread; the threads get shorter as the line lines up with the cloud."></svg><p class="drag-hint">drag the orange tip to turn the line</p></div>
+        <div class="wcol" style="flex:1 1 250px">
+          <div class="controls"><div class="ctl"><label for="rb-ang">angle</label><input id="rb-ang" type="range" min="0" max="180" step="0.5" value="100"><output id="rb-ang-o">100°</output></div></div>
+          <div class="presets"><button class="play" id="rb-best">▶ find the smallest loss</button></div>
+          <svg id="rb-bar" viewBox="0 0 320 150" role="img" aria-label="One stacked bar of fixed length: the blue part is the spread kept, the red part is the average squared rebuild error." style="margin-top:.4rem"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="pane" data-pane="plane">
+      <div class="wrow">
+        <div class="wcol" style="flex:3 1 460px"><div id="rb-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D cloud of blue points with a glass plane through its middle. Each point is joined to its shadow on the plane by a short red thread. Tilting the plane toward the cloud's flat side makes the threads shrink."></div><p class="stage-tap">drag the picture to orbit</p></div>
+        <div class="wcol" style="flex:1 1 230px">
+          <div class="controls">
+            <div class="ctl"><label for="rb-yaw">turn plane</label><input id="rb-yaw" type="range" min="0" max="180" step="1" value="120"><output id="rb-yaw-o">120°</output></div>
+            <div class="ctl"><label for="rb-pitch">tilt plane</label><input id="rb-pitch" type="range" min="-90" max="90" step="1" value="45"><output id="rb-pitch-o">45°</output></div>
+          </div>
+          <div class="presets"><button class="play" id="rb-best3">▶ the PC1–PC2 plane</button></div>
+          <svg id="rb-bar3" viewBox="0 0 320 150" role="img" aria-label="One stacked bar of fixed length: spread kept by the plane in blue, lost in red." style="margin-top:.4rem"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="readout" id="rb-read" style="margin-top:.6rem;line-height:1.8"></div>
+  </div>
+<!--@W11-->
+  <div class="widget reveal" id="w-decor">
+    <div class="widget-head"><span class="w-title">Twins no more</span><span class="w-sub">Left tab: two correlated columns, turned into their principal-component scores. Right tab: three columns — age, experience, certifications — and each component read as a recipe: walk its loading along age, then along experience, then up certifications, and you arrive at the tip of the component's arrow.</span></div>
+    <p class="try"><b>Try:</b> press ▶ <em>rotate</em> and watch the correlation fall from \(0.78\) to \(0.00\) as the cloud turns to lie along the axes. On the loadings tab, press <em>flip the signs</em>: every bar changes sign, and nothing about the meaning changes.</p>
+    <div class="tabs" id="dc-tabs">
+      <button data-t="two" aria-selected="true">two columns · rotate</button>
+      <button data-t="three">three columns · loadings</button>
+    </div>
+    <div class="pane on" data-pane="two">
+      <div class="wrow">
+        <div class="wcol" style="flex:3 1 420px"><svg id="dc-svg" viewBox="0 0 560 420" class="svg-lab" role="img" aria-label="A tilted cloud of points with an orange PC1 arrow and a green PC2 arrow. As the slider moves, the whole cloud and its arrows rotate together until PC1 lies along the horizontal axis and PC2 along the vertical axis."></svg></div>
+        <div class="wcol" style="flex:1 1 250px">
+          <div class="controls"><div class="ctl"><label for="dc-t">turn</label><input id="dc-t" type="range" min="0" max="1" step="0.01" value="0"><output id="dc-t-o">0 %</output></div></div>
+          <div class="presets"><button class="play" id="dc-play">▶ rotate</button></div>
+          <div class="readout" id="dc-read" style="margin-top:.6rem;line-height:1.9"></div>
+        </div>
+      </div>
+    </div>
+    <div class="pane" data-pane="three">
+      <div class="wrow">
+        <div class="wcol" style="flex:3 1 420px"><div id="dc-3d" class="stage3d" role="img" aria-label="Orbitable 3D cloud of points on three axes labelled age, experience and certifications. An orange PC1 arrow and a green PC2 arrow of length one start at the centre. Beside each arrow a staircase path walks its loadings: so far along age, then so far along experience, then so far up certifications, ending exactly at the arrow's tip; each step is labelled with its loading."></div><p class="stage-tap">drag the picture to orbit</p></div>
+        <div class="wcol" style="flex:1 1 280px">
+          <svg id="dc-load" viewBox="0 0 420 250" class="svg-lab" role="img" aria-label="Grouped bar chart of the loadings: for each of age, experience and certifications, an orange bar for PC1 and a green bar for PC2."></svg>
+          <div class="presets"><button class="preset" id="dc-flip">flip the signs</button></div>
+          <div class="readout" id="dc-read3" style="margin-top:.6rem;line-height:1.8"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--@W12-->
+  <div class="widget reveal" id="w-eckart">
+    <div class="widget-head"><span class="w-title">Keep the biggest layers</span><span class="w-sub">A drawn picture of a village scene is just a table of numbers. Its SVD splits it into layers, biggest first. Keep \(k\) layers and see what comes back — and how big the error is in both norms.</span></div>
+    <p class="try"><b>Try:</b> drag \(k\) from 1 upward. By \(k=6\) you can see the sun, the hills and the tree; by \(k=20\) it is hard to tell from the original. The error readout always equals the first dropped singular value (spectral) and the root of the sum of the dropped squares (Frobenius). Then open the data cloud tab.</p>
+    <div class="tabs" id="ek-tabs">
+      <button data-t="pic" aria-selected="true">a picture</button>
+      <button data-t="cloud">a data cloud</button>
+    </div>
+    <div class="pane on" data-pane="pic">
+      <div class="controls" style="max-width:34rem">
+        <div class="ctl"><label for="ek-k">layers kept k</label><input id="ek-k" type="range" min="1" max="64" step="1" value="6"><output id="ek-k-o">6</output></div>
+      </div>
+      <div class="wrow">
+        <div class="wcol" style="flex:1 1 260px"><div class="ek-cap">the original</div><canvas id="ek-orig" class="ek-cv" width="384" height="256" role="img" aria-label="The original drawn picture: a sun above two hills, a tree, a small hut and a path, in shades of grey."></canvas></div>
+        <div class="wcol" style="flex:1 1 260px"><div class="ek-cap" id="ek-cap2">rebuilt from 6 layers</div><canvas id="ek-rebuilt" class="ek-cv" width="384" height="256" role="img" aria-label="The picture rebuilt from the top k singular layers."></canvas></div>
+      </div>
+      <svg id="ek-sv" viewBox="0 0 680 190" class="svg-lab" role="img" aria-label="Bars of all singular values of the picture on a log scale, largest first, with the kept ones lit and the dropped ones dim." style="margin-top:.6rem"></svg>
+    </div>
+    <div class="pane" data-pane="cloud">
+      <div class="wrow">
+        <div class="wcol" style="flex:3 1 460px"><div id="ek-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D cloud of faint blue points and, over it, their rebuilt copies in bright colour: at rank 1 they all lie on one orange line, at rank 2 on a glass plane, at rank 3 they sit exactly on the original points. Thin red threads join each point to its copy."></div><p class="stage-tap">drag the picture to orbit</p></div>
+        <div class="wcol" style="flex:1 1 230px">
+          <div class="presets" id="ek-rk"><button class="preset" id="ek-r1">rank 1 · a line</button><button class="preset" id="ek-r2" aria-pressed="true">rank 2 · a plane</button><button class="preset" id="ek-r3">rank 3 · everything</button></div>
+          <div class="readout" id="ek-read2" style="margin-top:.6rem;line-height:1.8"></div>
+        </div>
+      </div>
+    </div>
+    <div class="readout" id="ek-read" style="margin-top:.6rem;line-height:1.8"></div>
+  </div>
+<!--@W13-->
+  <div class="widget reveal" id="w-power">
+    <div class="widget-head"><span class="w-title">The howl: power iteration</span><span class="w-sub">Multiply by \(C\), shrink back to length 1, repeat. Left: the arrow swings toward the top direction pass by pass, leaving a faint trail. Right: its remaining angle on a log scale — a straight line whose slope is set by \(\lambda_2/\lambda_1\).</span></div>
+    <p class="try"><b>Try:</b> at \(\lambda_2/\lambda_1=1/9\) press ▶: the arrow lands in two or three passes. Drag the ratio to \(0.98\) and press ▶ again — it crawls, and the line on the right barely slopes. The 3-D tab runs the same loop on a \(3\times3\) matrix, hopping across a sphere.</p>
+    <div class="tabs" id="pw-tabs">
+      <button data-t="two" aria-selected="true">2-D · watch the angle</button>
+      <button data-t="three">3-D · on the sphere</button>
+    </div>
+    <div class="pane on" data-pane="two">
+      <div class="controls" style="max-width:40rem">
+        <div class="ctl"><label for="pw-ratio">λ₂ / λ₁</label><input id="pw-ratio" type="range" min="0.05" max="0.98" step="0.001" value="0.111"><output id="pw-ratio-o">0.111</output></div>
+        <div class="ctl"><label for="pw-start">start at</label><input id="pw-start" type="range" min="0" max="180" step="1" value="0"><output id="pw-start-o">0°</output></div>
+      </div>
+      <div class="presets"><button class="play" id="pw-play">▶ run</button><button class="preset" id="pw-step">one pass</button><button class="preset" id="pw-reset">reset</button></div>
+      <div class="wrow">
+        <div class="wcol" style="flex:1 1 300px"><svg id="pw-svg" viewBox="0 0 420 420" class="svg-lab" role="img" aria-label="The ellipse traced by C times the unit circle, with its long axis (the top eigenvector) in orange. A white arrow on the unit circle hops toward the orange axis with each pass, leaving fading ghost arrows behind it."></svg></div>
+        <div class="wcol" style="flex:1 1 300px"><svg id="pw-log" viewBox="0 0 420 320" class="svg-lab" role="img" aria-label="The angle between the arrow and the top eigenvector, on a log scale, against pass number: the dots fall along a straight line."></svg></div>
+      </div>
+    </div>
+    <div class="pane" data-pane="three">
+      <div class="wrow">
+        <div class="wcol" style="flex:3 1 460px"><div id="pw-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene: a faint unit sphere and, inside it, the lit glass ellipsoid that C makes of it, with its three axes in orange, green and cyan. A white arrow from the centre hops across the sphere toward the orange axis, leaving a glowing trail of dots on the sphere's surface."></div><p class="stage-tap">drag the picture to orbit</p></div>
+        <div class="wcol" style="flex:1 1 230px">
+          <div class="presets"><button class="play" id="pw3-play">▶ run</button><button class="preset" id="pw3-step">one pass</button><button class="preset" id="pw3-reset">new random start</button></div>
+          <p class="note">Here \(C\) has eigenvalues \(6,\ 3,\ 1\), so each pass shrinks the part along \(\mathbf w_2\) to half and the part along \(\mathbf w_3\) to a sixth.</p>
+        </div>
+      </div>
+    </div>
+    <div class="readout" id="pw-read" style="margin-top:.6rem;line-height:1.8"></div>
+  </div>
+<!--@W14-->
+  <div class="widget reveal" id="w-wide">
+    <div class="widget-head"><span class="w-title">Long data, wide data</span><span class="w-sub">Top: the memory needed to store \(C\) (\(D\times D\)) and \(K\) (\(N\times N\)), on a log scale, against a 16 GB laptop. Bottom: a tiny wide dataset, solved both ways.</span></div>
+    <p class="try"><b>Try:</b> press <em>gene study</em>: \(C\) needs over a gigabyte, \(K\) a few kilobytes. Push \(D\) to \(100{,}000\) and \(C\) will not fit in the laptop at all. Then press <em>new random data</em> below: the non-zero eigenvalues of the \(5\times5\) and \(3\times3\) matrices always agree, and the recovered direction always matches.</p>
+    <div class="presets" id="wd-pre"><button class="preset" id="wd-gene" aria-pressed="true">gene study · N = 40, D = 12,000</button><button class="preset" id="wd-cust">customers · N = 100,000, D = 40</button></div>
+    <div class="controls" style="max-width:40rem">
+      <div class="ctl"><label for="wd-n">rows N</label><input id="wd-n" type="range" min="1" max="5" step="0.01" value="1.602"><output id="wd-n-o">40</output></div>
+      <div class="ctl"><label for="wd-d">columns D</label><input id="wd-d" type="range" min="1" max="5" step="0.01" value="4.079"><output id="wd-d-o">12,000</output></div>
+    </div>
+    <svg id="wd-mem" viewBox="0 0 760 220" class="svg-lab" role="img" aria-label="Two horizontal bars on a log scale of bytes: the memory for the D by D covariance matrix and for the N by N Gram matrix, with a vertical line marking 16 gigabytes."></svg>
+    <div class="substage">
+      <p class="w-sub2">A wide dataset you can hold in your hand <span>N = 3 points, D = 5 columns, centred</span></p>
+      <div class="presets"><button class="play" id="wd-roll">▶ new random data</button></div>
+      <div id="wd-demo"></div>
+    </div>
+    <div class="readout" id="wd-read" style="margin-top:.6rem;line-height:1.8"></div>
+  </div>
+<!--@W15-->
+  <div class="widget reveal" id="w-recipe">
+    <div class="widget-head"><span class="w-title">The recipe, step by step — and two traps</span><span class="w-sub">One cloud of points, taken through the recipe with an animated move between every step. Then the unit trap and the target PCA cannot see.</span></div>
+    <p class="try"><b>Try:</b> step through (a) to (f). Then on <em>the unit trap</em>, switch standardising off and on: PC1 swings from "all weight" to an equal mix. On <em>blind to y</em>, compare the two small plots — the component PCA would keep says nothing about \(y\).</p>
+    <div class="tabs" id="rc-tabs">
+      <button data-t="steps" aria-selected="true">the recipe</button>
+      <button data-t="units">the unit trap</button>
+      <button data-t="blind">blind to y</button>
+    </div>
+    <div class="stagebar" id="rc-steps"><button data-s="0" aria-selected="true">(a) the data</button><button data-s="1">(b) centre</button><button data-s="2">(c) standardise</button><button data-s="3">(d) eigenvectors</button><button data-s="4">(e) project</button><button data-s="5">(f) undo</button><button class="play" id="rc-play">▶ play</button></div>
+    <div class="presets" id="rc-u" style="display:none"><button class="preset" id="rc-raw" aria-pressed="true">raw units: metres and kilograms</button><button class="preset" id="rc-std">standardised</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><svg id="rc-svg" viewBox="0 0 600 430" class="svg-lab" role="img" aria-label="A stage that shows one step of the PCA recipe at a time: the raw cloud, the cloud moved to the origin, rescaled, with its two eigenvectors, flattened onto the top one, and finally moved back to the original units."></svg></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="readout" id="rc-read" style="line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+<!--@W16-->
+  <div class="widget reveal" id="w-worked">
+    <div class="widget-head"><span class="w-title">A PCA calculator that shows its work</span><span class="w-sub">Pick a dataset, drag any point, or type your own. Every step of §15 is redone live, with its checks.</span></div>
+    <p class="try"><b>Try:</b> start with the five points and check every card against the page above. Then load the slides' nine points: \(\lambda_1\approx10.103\) and \(\mathbf w_1\approx(0.088,\ 0.996)\). Then drag one point far away and watch one outlier drag PC1 toward itself.</p>
+    <div class="presets" id="wk-pre"><button class="preset" id="wk-five" aria-pressed="true">the five points</button><button class="preset" id="wk-four">Problem 1's four points</button><button class="preset" id="wk-nine">the slides' nine points</button></div>
+    <div class="wk-in"><label for="wk-input">your points</label><input id="wk-input" type="text" value="(1,2) (4,5) (7,8) (8,4) (10,6)" spellcheck="false" autocomplete="off"><button class="preset" id="wk-apply">use these</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 400px"><svg id="wk-svg" viewBox="0 0 540 420" class="svg-lab grabbable" role="img" aria-label="The data points, their mean, the PC1 line in orange and PC2 in green through the mean, and grey threads from each point to its landing spot on PC1 with the score written beside it."></svg><p class="drag-hint">drag the points</p></div>
+      <div class="wcol" style="flex:1 1 300px"><div id="wk-cards" class="wk-cards"></div></div>
+    </div>
+  </div>

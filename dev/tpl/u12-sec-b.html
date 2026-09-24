@@ -1,0 +1,201 @@
+<!-- ================= 5 · THE LEASH ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>The leash — why the arrow must have length one</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>School sports day. The rule: "whoever throws the ball farthest wins". One boy quietly walks ten metres past the line before he throws. Of course he wins.</p>
+    <p>But he did not throw better. He <strong>changed the rules</strong>. For a fair contest, everyone has to throw from the same line.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Our contest has the same loophole. Take the winning direction from §4, \(\mathbf w=\tfrac1{\sqrt5}(2,1)\), with spread \(12\). Now double the arrow to \(2\mathbf w\). Every landing number \(z_i\) doubles, so every square grows four times, and the "spread" jumps to \(48\). Triple it and you get \(108\).</p>
+    <p>The arrow did not point anywhere better. It just got longer. We care about the <strong>direction</strong>, not the length.</p>
+    <p>So we put the arrow on a <strong>leash of length 1</strong>. The length of an arrow is \(\|\mathbf w\|=\sqrt{\mathbf w^\top\mathbf w}\), so "length 1" is the same as \(\mathbf w^\top\mathbf w=1\). Now the question is fair:</p>
+    \[\max_{\mathbf w}\ \mathbf w^\top C\,\mathbf w\qquad\text{subject to}\qquad \mathbf w^\top\mathbf w=1.\]
+    <p>Make something as big as possible, while obeying a rule. You met exactly this in Unit 11: there was a wall, and we turned the wall into a <strong>fine</strong>. Do the same here. Write the rule as "something \(=0\)", namely \(\mathbf w^\top\mathbf w-1=0\), and charge a fine \(\lambda\) for breaking it:</p>
+    \[L(\mathbf w,\lambda)=\mathbf w^\top C\,\mathbf w-\lambda\,(\mathbf w^\top\mathbf w-1).\]
+    <p>At the best point, the slope of \(L\) with respect to \(\mathbf w\) is zero. The slope of \(\mathbf w^\top C\mathbf w\) is \(2C\mathbf w\), and the slope of \(\mathbf w^\top\mathbf w\) is \(2\mathbf w\). So</p>
+    \[2C\mathbf w-2\lambda\mathbf w=\mathbf 0\qquad\Longrightarrow\qquad C\mathbf w=\lambda\,\mathbf w.\]
+    <p>Stop and look at that. We asked a question about <strong>spread</strong>, and the answer came back as the definition of an <strong>eigenvector</strong> (Unit 4): an arrow that \(C\) only stretches, never turns. The best direction must be an eigenvector of \(C\). Nothing else is even a candidate.</p>
+    <h3>Why the fine works — the picture</h3>
+    <p>The leash lets \(\mathbf w\) walk only on the unit circle. Stand at the best point on the circle. If a tiny step along the circle made the score go up, you would take it — so at the top, a step along the circle changes nothing.</p>
+    <p>That means the uphill arrow of the score, \(\nabla f=2C\mathbf w\), has <strong>no part along the circle</strong>. It must point straight out of the circle. And "straight out of the circle" is the direction of \(\mathbf w\) itself — the uphill arrow of the rule, \(\nabla g=2\mathbf w\). Two arrows pointing the same way: \(\nabla f=\lambda\nabla g\), which is \(C\mathbf w=\lambda\mathbf w\) again.</p>
+  </div>
+<!--@W6-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[C\mathbf w=\lambda\,\mathbf w\]</p>
+    <p>On the leash, the best direction is the place where the uphill arrow \(2C\mathbf w\) points <strong>straight along \(\mathbf w\)</strong>. That is exactly what an eigenvector is. <strong>The directions PCA is looking for are the eigenvectors of \(C\).</strong></p>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why can't we simply maximise \(\mathbf w^\top C\mathbf w\) with no leash at all?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Doubling w doubles every landing number and multiplies the spread by 4. With no leash you can make the score as big as you like just by stretching the arrow, so there is no best answer.">Because stretching \(\mathbf w\) makes the score as big as you like — there would be no best answer</button>
+      <button data-why="The score is never negative for a covariance matrix, with or without a leash. The problem is the other way round: without a leash it has no top at all.">Because the score could go negative</button>
+      <button data-why="The eigenvectors exist whether or not there is a leash. The leash is needed because otherwise the score has no maximum: a longer arrow always wins.">Because otherwise \(C\) would have no eigenvectors</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You slide \(\mathbf w\) around the unit circle. At the best point, which way does the uphill arrow \(2C\mathbf w\) point?</p>
+    <div class="opts">
+      <button data-why="If it pointed along the circle, a small step along the circle would raise the score, and you would not be at the best point yet.">Along the circle, the way you should keep walking</button>
+      <button data-correct data-why="Right. At the best point it points straight out of the circle, which is the direction of w itself. So 2Cw is a multiple of w: Cw = λw.">Straight out of the circle, along \(\mathbf w\) itself</button>
+      <button data-why="If it were zero, then Cw = 0 and the spread would be 0 — that is the worst possible direction, not the best.">Nowhere — it is the zero arrow at the best point</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s5-->
+  <p class="onesent reveal"><b>In one sentence:</b> fix the arrow's length to 1, turn that rule into a fine, and setting the slope to zero leaves \(C\mathbf w=\lambda\mathbf w\) — the best directions are eigenvectors of \(C\).</p>
+</section>
+
+<!-- ================= 6 · THE MULTIPLIER IS THE VARIANCE ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>The fine turns out to be the spread</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>The commentator says, "the required run rate is 9". That one number means three things at once. It is <strong>runs per over</strong>. It is <strong>how fast the score must climb</strong>. And it is <strong>the slope of the worm chart</strong>.</p>
+    <p>Three readings, one number. The \(\lambda\) in PCA is like that.</p>
+  </div>
+  <div class="prose reveal">
+    <p>We know the best direction is an eigenvector. But \(C\) has several. Which one wins? Put \(C\mathbf w=\lambda\mathbf w\) back into the score:</p>
+    \[\mathbf w^\top C\mathbf w=\mathbf w^\top(\lambda\mathbf w)=\lambda\,\mathbf w^\top\mathbf w=\lambda\cdot1=\lambda.\]
+    <p>The spread along an eigenvector is <strong>its eigenvalue</strong>. So the winner is simple: the eigenvector with the <strong>largest</strong> eigenvalue.</p>
+    <p>Check it on \(C=\begin{bmatrix}5&4\\4&5\end{bmatrix}\) with \(\mathbf w=\tfrac1{\sqrt2}(1,1)\). Then \(C\mathbf w=\tfrac1{\sqrt2}(9,9)=9\,\mathbf w\), so \(\lambda=9\). And \(\mathbf w^\top C\mathbf w=\tfrac12(5+4+4+5)=9\). The other eigenvector, \(\tfrac1{\sqrt2}(1,-1)\), has \(\lambda=1\) and spread \(1\). No direction does better than \(9\), and none does worse than \(1\).</p>
+    <p>So the same number \(\lambda\) plays three parts:</p>
+    <table class="plain">
+      <thead><tr><th>Read it as</th><th>it is</th><th>where you see it</th></tr></thead>
+      <tbody>
+        <tr><td>the fine (Lagrange multiplier)</td><td>the price of the rule \(\|\mathbf w\|=1\)</td><td>\(L=\mathbf w^\top C\mathbf w-\lambda(\mathbf w^\top\mathbf w-1)\)</td></tr>
+        <tr><td>an eigenvalue</td><td>how much \(C\) stretches \(\mathbf w\)</td><td>\(C\mathbf w=\lambda\mathbf w\)</td></tr>
+        <tr><td>a variance</td><td>the spread of the data along \(\mathbf w\)</td><td>\(\mathbf w^\top C\mathbf w=\lambda\)</td></tr>
+      </tbody>
+    </table>
+    <p>Keep the two roles apart. The <strong>principal component</strong> is the eigenvector \(\mathbf w\) — a direction. The <strong>eigenvalue</strong> \(\lambda\) is the spread along it — a number.</p>
+  </div>
+<!--@W7-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf w^\top C\mathbf w=\lambda\]</p>
+    <p>The spread along an eigenvector is its eigenvalue. So the largest spread is the largest eigenvalue, and it lives along that eigenvector. The same number is the stretch, the spread and the fine. That is why we always list eigenvalues from biggest to smallest, \(\lambda_1\ge\lambda_2\ge\dots\): it is a ranking of directions by how much of the data they show.</p>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(C=\begin{bmatrix}5&4\\4&5\end{bmatrix}\), what is the largest spread you can get along any unit direction?</p>
+    <div class="opts">
+      <button data-why="5 is the spread along either axis. The slanted direction (1, 1)/√2 does better, because the two columns move together.">5</button>
+      <button data-why="10 is the trace: the total spread over both directions together. One direction can carry at most the largest eigenvalue.">10</button>
+      <button data-correct data-why="Right. The eigenvalues are 9 and 1. The largest spread is λ₁ = 9, along (1, 1)/√2.">9</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(C=\begin{bmatrix}5&2\\2&8\end{bmatrix}\) the top eigenvalue is \(9\), with eigenvector direction \((1,2)\). A student forgets to shrink it to length 1 and computes the spread along \((1,2)\) itself. What does she get?</p>
+    <div class="opts">
+      <button data-why="9 is the answer for the unit vector (1, 2)/√5. For (1, 2) itself the length squared is 5, and the spread comes out 5 times bigger.">9, as usual</button>
+      <button data-correct data-why="Right. the spread along (1, 2) is 5·1² + 2·(2·1·2) + 8·2² = 5 + 8 + 32 = 45 = 5 × 9, because its length squared is 5. 'Spread = λ' only holds for a unit arrow — which is exactly why the leash matters.">45 — five times too big, because \((1,2)\) has length \(\sqrt5\)</button>
+      <button data-why="Dividing would happen if the arrow were shorter than 1. (1, 2) is longer: its length squared is 5, so the spread is multiplied by 5, giving 45.">9/5 = 1.8</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s6-->
+  <p class="onesent reveal"><b>In one sentence:</b> put \(C\mathbf w=\lambda\mathbf w\) back into the score and it becomes \(\lambda\), so the fine, the stretch and the spread are one number, and the top eigenvector wins.</p>
+</section>
+
+<!-- ================= 7 · THE SECOND DIRECTION ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>The second direction, and all the rest</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You give an auto driver directions: "Go straight down MG Road for 3 km." That covers most of the trip.</p>
+    <p>Then: "Now turn left, 400 metres." The second instruction only helps because it goes <strong>a new way</strong>. Telling him "go straight another 400 m" would just repeat the first instruction.</p>
+  </div>
+  <div class="prose reveal">
+    <p>The first component gets the biggest share of the spread. The second one should get the biggest share of <strong>what is left</strong> — without repeating the first. There are two ways to say this, and they give the same answer.</p>
+    <p><strong>Route A — add a second leash.</strong> Ask for the best unit direction \(\mathbf w_2\) that is also at right angles to the first: \(\mathbf w_2^\top\mathbf w_1=0\). That is one more rule, so one more fine, \(\mu\):</p>
+    \[L=\mathbf w_2^\top C\mathbf w_2-\lambda(\mathbf w_2^\top\mathbf w_2-1)-\mu\,\mathbf w_2^\top\mathbf w_1.\]
+    <p>Set the slope to zero, then multiply by \(\mathbf w_1^\top\). Almost every term dies, and you are left with \(\mu=0\). The second fine is free! So the condition is again \(C\mathbf w_2=\lambda\mathbf w_2\): the second component is also an eigenvector, the one with the <strong>second-largest</strong> eigenvalue.</p>
+    <p><strong>Route B — peel off what you already have.</strong> This is the way the slides do it. Take the part of every point that lies along \(\mathbf w_1\), and remove it:</p>
+    \[\hat X=X-X\mathbf w_1\mathbf w_1^\top.\]
+    <p>(The slides store points as columns, so they write \(\hat X=X-\mathbf b_1\mathbf b_1^\top X\). Same thing.) The cloud is squashed flat along \(\mathbf w_1\). Now find the top direction of <em>this</em> cloud. Its covariance \(\hat C\) has the same eigenvectors as \(C\), except that \(\mathbf w_1\)'s eigenvalue has dropped to \(0\). So the new winner is \(\mathbf w_2\). Peel again to get \(\mathbf w_3\), and so on.</p>
+    <table class="plain">
+      <thead><tr><th></th><th>Route A · second leash</th><th>Route B · peel it off</th></tr></thead>
+      <tbody>
+        <tr><td>the idea</td><td>best direction at right angles to the ones you have</td><td>best direction of what the old ones did not explain</td></tr>
+        <tr><td>what you solve</td><td>\(C\mathbf w_2=\lambda\mathbf w_2\), after showing \(\mu=0\)</td><td>the top eigenvector of \(\hat C\)</td></tr>
+        <tr><td>the answer</td><td>\(\mathbf w_2\), with spread \(\lambda_2\)</td><td>\(\mathbf w_2\), with spread \(\lambda_2\)</td></tr>
+      </tbody>
+    </table>
+    <p>One more gift. We never had to <em>force</em> the components to be at right angles. \(C\) is symmetric, and Unit 4's spectral theorem says a symmetric matrix always has a full set of eigenvectors that are all at right angles to each other. <strong>Perpendicular comes free.</strong> Its eigenvalues are also real and never negative — they are spreads, after all.</p>
+  </div>
+<!--@W8-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}C\mathbf w_d=\lambda_d\mathbf w_d\\ \lambda_1\ge\lambda_2\ge\dots\ge\lambda_D\ge0\end{gathered}\]</p>
+    <p>Each new component is the best direction of <strong>what is left</strong>. Whether you add a leash or peel off the old components, you land on the next eigenvector of the same \(C\) — and they all meet at right angles for free.</p>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A 3-D cloud has eigenvalues \(9,\ 4,\ 1\). You peel off the first component. What are the eigenvalues of what is left?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Peeling sends the used direction's eigenvalue to 0 and leaves the others alone: 0, 4, 1. The top of what is left is 4, along the second component.">\(0,\ 4,\ 1\) — the top of what is left is \(4\), along \(\mathbf w_2\)</button>
+      <button data-why="The other two directions are untouched by the peeling: their spread stays exactly 4 and 1. Nothing is shared out.">\(0,\ 6.5,\ 3.5\) — the lost 9 is shared out</button>
+      <button data-why="Peeling does change something: the first direction is squashed flat, so its spread drops from 9 to 0.">\(9,\ 4,\ 1\) — nothing changes</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> every later component is the top eigenvector of what the earlier ones left behind, and because \(C\) is symmetric they all come out at right angles.</p>
+</section>
+
+<!-- ================= 8 · THE SPREAD BUDGET ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The spread budget is fixed</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A family has ₹50,000 a month. They can move money between rent, groceries and school fees however they like. But no amount of moving creates one extra rupee.</p>
+    <p>PCA does the same with spread. Turning the axes <strong>moves</strong> spread between directions. It never creates it and never destroys it.</p>
+  </div>
+  <div class="prose reveal">
+    <p>For the five points, the total spread in the original columns is \(10+4=14\) — the sum of the diagonal of \(C\), called the <strong>trace</strong>. Along the two principal directions the spreads are \(\lambda_1=12\) and \(\lambda_2=2\). And \(12+2=14\). The same budget, split differently.</p>
+    <p>This always holds, for any number of columns:</p>
+    \[\operatorname{tr}(C)=C_{11}+C_{22}+\dots+C_{DD}=\lambda_1+\lambda_2+\dots+\lambda_D.\]
+    <p>So each eigenvalue is a <strong>slice</strong> of one fixed budget, and its share is easy:</p>
+    \[\text{share kept by the top }M=\frac{\lambda_1+\dots+\lambda_M}{\lambda_1+\dots+\lambda_D}.\]
+    <p>For the five points, one component keeps \(12/14=85.71\%\) of the spread. Plot every eigenvalue as a bar, biggest first, and you have a <strong>scree plot</strong> (scree is the pile of stones at the foot of a cliff — the bars fall like one). Plot the running total and you get the curve people actually decide from.</p>
+    <p>How many components \(M\) should you keep? People use three rules:</p>
+    <table class="plain">
+      <thead><tr><th>rule</th><th>how it works</th><th>good for</th><th>watch out</th></tr></thead>
+      <tbody>
+        <tr><td><strong>hit a target share</strong></td><td>keep adding components until the running total passes 90 %, 95 % or 99 %</td><td>the most common choice; easy to defend</td><td>you must pick the target</td></tr>
+        <tr><td><strong>find the elbow</strong></td><td>stop where the scree stops falling steeply and flattens out</td><td>a long, flat tail of noise</td><td>some plots have no clear elbow</td></tr>
+        <tr><td><strong>keep \(\lambda&gt;1\)</strong> (Kaiser)</td><td>keep a component only if it carries more than one original column's worth</td><td>standardised data, where every column contributes exactly 1</td><td>meaningless if the columns were not standardised</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout watch reveal"><span class="tag">A big percentage is not always good news</span>
+    <p>"PC1 explains 98 %" can mean the data really lies near a line. It can also mean one column is measured in units that make its numbers huge — say, salary in rupees next to age in years — and it simply dominates the total. Check that you standardised (§14) before you celebrate.</p>
+  </div>
+<!--@W9-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\operatorname{tr}(C)=\lambda_1+\lambda_2+\dots+\lambda_D\]</p>
+    <p>Turning the axes never changes the total spread. PCA just pushes as much of it as possible into the first few directions — which is exactly why keeping only those few loses so little.</p>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A five-column dataset has eigenvalues \(4.5,\ 2.1,\ 0.9,\ 0.4,\ 0.1\). What is the total spread, and what share do the first two keep?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Total = 4.5 + 2.1 + 0.9 + 0.4 + 0.1 = 8.0, which is also tr(C). The first two keep (4.5 + 2.1)/8.0 = 6.6/8.0 = 82.5 %.">Total \(8.0\); the first two keep \(82.5\%\)</button>
+      <button data-why="The total is right, 8.0, but 6.6 out of 8.0 is 82.5 %, not 66 %. Divide by the total, not by 10.">Total \(8.0\); the first two keep \(66\%\)</button>
+      <button data-why="The total spread is the sum of all five eigenvalues, 8.0, not only the first two. The first two keep 6.6 of it: 82.5 %.">Total \(6.6\); the first two keep \(100\%\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Same eigenvalues. What is the smallest number of components that keeps at least \(90\%\)?</p>
+    <div class="opts">
+      <button data-why="Two components keep 82.5 %, which is short of 90 %.">\(M=2\)</button>
+      <button data-correct data-why="Right. The running totals are 56.25 %, 82.5 %, 93.75 % … Two fall short; three reach 93.75 %.">\(M=3\), which keeps \(93.75\%\)</button>
+      <button data-why="Four would keep 98.75 %, but three already clear 90 % (93.75 %). The question asks for the smallest M.">\(M=4\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s8-->
+  <p class="onesent reveal"><b>In one sentence:</b> the eigenvalues add up to the trace, so they split one fixed spread budget, and you keep the biggest slices until you have the share you need.</p>
+</section>

@@ -1,0 +1,278 @@
+<!-- ================= 17 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head reveal"><span class="sec-num">17</span><h2>Practice arena — twelve problems, solved in full</h2></div>
+  <div class="prose reveal">
+    <p>Twelve problems, each a different shape: raw data all the way to scores, a derivation with three faults to find, a new point pushed through a fitted model, a \(3\times3\) matrix read by its pattern of zeros, data far wider than it is tall, a spread budget, singular values turned into components — then the nine-point example from the slides, two passes of power iteration, a question asked backwards, a loadings audit, and the Gram trick on real numbers. Every number is machine-verified.</p>
+    <p>Many books write \(\Sigma\) for the covariance matrix and \(\alpha\) for a direction, and call the first score \(Y_1=\alpha^\top X\). They are exactly our \(C\), \(\mathbf w\) and \(z_1\). Three habits do most of the work. <strong>Check as you go:</strong> centred columns add to zero, \(\sum\lambda=\operatorname{tr}C\), \(\prod\lambda=\det C\). <strong>Always make eigenvectors length 1</strong> before you use them. And <strong>divide by \(N\)</strong>.</p>
+  </div>
+
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">Four observations on two variables: \((2,3),\ (4,7),\ (6,5),\ (8,9)\). <b>(a)</b> Find the mean, write the centred data matrix, and build the covariance matrix (divide by \(N\)). <b>(b)</b> Find its eigenvalues and unit eigenvectors. <b>(c)</b> Find the first principal component score of each observation, check that their spread equals \(\lambda_1\), and give the share of the total spread that the first component keeps.</p>
+    <p class="ptest"><b>What this tests.</b> The full computation from raw numbers to scores. <b>How to attack it.</b> Always the same five moves: mean → centre → \(\tfrac1N X^\top X\) → characteristic polynomial → length 1. Check the centred columns add to zero before going on; check the eigenvalues with the trace and the determinant.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Mean and centring.</b> \(\mu_1=\tfrac{2+4+6+8}{4}=5\), \(\mu_2=\tfrac{3+7+5+9}{4}=6\). Subtract \((5,6)\) from every row:
+      \[X=\begin{bmatrix}-3&-3\\-1&1\\1&-1\\3&3\end{bmatrix}\qquad\text{columns add to }0\ \checkmark\]</div>
+      <div class="pstep"><b>(a) Covariance.</b> \(\sum x_1^2=9+1+1+9=20\), \(\sum x_2^2=20\), \(\sum x_1x_2=9-1-1+9=16\). Divide by \(N=4\):
+      \[C=\frac14\begin{bmatrix}20&16\\16&20\end{bmatrix}=\begin{bmatrix}5&4\\4&5\end{bmatrix}.\]</div>
+      <div class="pstep"><b>(b) Eigenvalues.</b>
+      \[\det(C-\lambda I)=(5-\lambda)^2-16=0\ \Rightarrow\ 5-\lambda=\pm4\ \Rightarrow\ \lambda_1=9,\ \lambda_2=1.\]
+      Checks: \(9+1=10=\operatorname{tr}C\) ✓ and \(9\times1=9=25-16=\det C\) ✓.</div>
+      <div class="pstep"><b>(b) Eigenvectors.</b> For \(\lambda_1=9\): \(-4a+4b=0\), so \(a=b\), the direction \((1,1)\) of length \(\sqrt2\). For \(\lambda_2=1\): \(4a+4b=0\), so \(b=-a\).
+      \[\mathbf w_1=\frac1{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix},\qquad \mathbf w_2=\frac1{\sqrt2}\begin{bmatrix}1\\-1\end{bmatrix},\qquad \mathbf w_1^\top\mathbf w_2=\tfrac12(1-1)=0\ \checkmark\]</div>
+      <div class="pstep"><b>(c) Scores.</b> \(z=\tfrac1{\sqrt2}(x_1+x_2)\) on each centred row:
+      \[\frac{-6}{\sqrt2}=-3\sqrt2\approx-4.243,\qquad \frac{0}{\sqrt2}=0,\qquad 0,\qquad \frac{6}{\sqrt2}=3\sqrt2\approx4.243.\]
+      They add to zero, so their spread is the mean of their squares: \(\tfrac{18+0+0+18}{4}=9=\lambda_1\) ✓. Share: \(\tfrac{9}{9+1}=90\%\).</div>
+      <p class="pans">answers at a glance: \(\boldsymbol\mu=(5,6)\); \(C=\begin{bmatrix}5&4\\4&5\end{bmatrix}\); \(\lambda=9,\ 1\); \(\mathbf w_1=\tfrac1{\sqrt2}(1,1)\), \(\mathbf w_2=\tfrac1{\sqrt2}(1,-1)\); scores \(-4.243,\ 0,\ 0,\ 4.243\); spread \(9\); share \(90\%\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">A student finds the first principal component of \(C=\begin{bmatrix}5&2\\2&8\end{bmatrix}\) with a Lagrange multiplier. Their complete attempt:</p>
+    <ol class="pq">
+      <li>Maximise \(\mathbf w^\top C\mathbf w\) subject to \(\mathbf w^\top\mathbf w=1\).</li>
+      <li>\(L(\mathbf w,\lambda)=\mathbf w^\top C\mathbf w-\lambda(\mathbf w^\top\mathbf w-1)\).</li>
+      <li>\(\partial L/\partial\mathbf w=2C\mathbf w-\lambda\mathbf w=\mathbf 0\), so \(C\mathbf w=\tfrac12\lambda\mathbf w\).</li>
+      <li>\(\det(C-\lambda I)=\lambda^2-13\lambda+36=0\), so \(\lambda=9\) and \(\lambda=4\).</li>
+      <li>For the larger root, \((C-9I)\mathbf w=\mathbf 0\) gives \(\mathbf w=(1,2)\), so \(z_1=x_1+2x_2\).</li>
+      <li>The spread of \(z_1\) is \(9\), because the maximum spread is the largest eigenvalue.</li>
+    </ol>
+    <p class="pq">Exactly three lines are faulty. <b>(a)</b> Name them and say in one sentence each what is wrong. <b>(b)</b> Redo the derivation correctly from the first faulty line, and give the correct \(z_1\) and its spread. <b>(c)</b> Compute the spread of the student's \(x_1+2x_2\) directly from \(C\), and state the general rule for an eigenvector that was not made length 1.</p>
+    <p class="ptest"><b>What this tests.</b> Knowing the six-line derivation well enough to mark someone else's. <b>How to attack it.</b> At each line ask three questions: is the rule written as "something \(=0\)"? is every derivative right? does the final vector have length 1? A line that survives all three is almost certainly fine.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) The three faults.</b> Lines 1, 2 and 4 are correct.
+      <ul>
+        <li><b>Line 3:</b> the derivative of \(\mathbf w^\top\mathbf w\) is \(2\mathbf w\), not \(\mathbf w\). The second term must be \(-2\lambda\mathbf w\). As written, the multiplier would be twice the eigenvalue.</li>
+        <li><b>Line 5:</b> \((1,2)\) is the right direction but has length \(\sqrt5\); the derivation assumed length 1.</li>
+        <li><b>Line 6:</b> with the \(\mathbf w\) of line 5, the spread is not \(9\). "Spread \(=\lambda\)" holds only for a unit vector.</li>
+      </ul></div>
+      <div class="pstep"><b>(b) Corrected.</b> Both terms of \(L\) are quadratic forms:
+      \[\frac{\partial L}{\partial\mathbf w}=2C\mathbf w-2\lambda\mathbf w=\mathbf 0\ \Rightarrow\ C\mathbf w=\lambda\mathbf w.\]
+      Line 4 stands: \((5-\lambda)(8-\lambda)-4=\lambda^2-13\lambda+36=0\), so \(\lambda=\tfrac{13\pm5}{2}\): \(\lambda_1=9\), \(\lambda_2=4\). Checks: \(9+4=13=\operatorname{tr}C\) ✓, \(9\times4=36=40-4=\det C\) ✓.</div>
+      <div class="pstep"><b>(b) The direction.</b> For \(\lambda_1=9\): \(-4w_1+2w_2=0\), so \(w_2=2w_1\): direction \((1,2)\), length \(\sqrt5\).
+      \[\mathbf w_1=\frac1{\sqrt5}\begin{bmatrix}1\\2\end{bmatrix},\qquad z_1=\frac{x_1+2x_2}{\sqrt5},\qquad \text{spread}=\lambda_1=9.\]
+      For completeness, \(\lambda_2=4\) gives \(\mathbf w_2=\tfrac1{\sqrt5}(-2,1)\), and \(\mathbf w_1^\top\mathbf w_2=\tfrac15(-2+2)=0\) ✓. The first component keeps \(9/13\approx69.2\%\).</div>
+      <div class="pstep"><b>(c) The student's spread.</b>
+      \[\operatorname{Var}(x_1+2x_2)=\operatorname{Var}(x_1)+4\operatorname{Var}(x_2)+4\operatorname{Cov}(x_1,x_2)=5+32+8=45.\]
+      Five times the claimed \(9\). In general, if \(C\mathbf w=\lambda\mathbf w\) then \(\mathbf w^\top C\mathbf w=\lambda\|\mathbf w\|^2\). Here \(\|\mathbf w\|^2=5\), and \(5\times9=45\).</div>
+      <p class="pans">answers at a glance: faulty lines 3, 5, 6; \(C\mathbf w=\lambda\mathbf w\); \(\lambda=9,\ 4\); \(\mathbf w_1=\tfrac1{\sqrt5}(1,2)\); \(z_1=(x_1+2x_2)/\sqrt5\) with spread \(9\) (\(69.2\%\)); \(\operatorname{Var}(x_1+2x_2)=45=\lambda\|\mathbf w\|^2\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">A PCA is fitted on a two-variable training set with means \(\boldsymbol\mu=(4,10)\) and standard deviations \(\boldsymbol\sigma=(2,5)\). On the standardised data the kept direction is \(\mathbf w_1=(3/5,\ 4/5)\) and the dropped one is \(\mathbf w_2=(-4/5,\ 3/5)\). A new observation \(\mathbf x^\ast=(6,20)\) arrives. <b>(a)</b> Standardise it, saying which mean and standard deviation you use and why. <b>(b)</b> Find its score \(z^\ast\) and its rebuild \(\tilde{\mathbf x}^\ast=z^\ast\mathbf w_1\) (standardised scale). <b>(c)</b> Find the squared rebuild error and check that it equals \(z_2^2\). <b>(d)</b> Undo the standardising to give the rebuilt point in the original units, and its squared error there. Is it still \(z_2^2\)?</p>
+    <p class="ptest"><b>What this tests.</b> Using a fitted PCA on new data, and where the error goes. <b>How to attack it.</b> The only idea is that \(\boldsymbol\mu\), \(\boldsymbol\sigma\) and \(W\) come from training. After that it is arithmetic. Get the error once by subtraction and confirm it with \(z_2^2\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Standardise with the training numbers.</b> One point has no mean or spread of its own, and using test statistics would leak the test data into the model:
+      \[\mathbf x^\ast_{\text{std}}=\Big(\frac{6-4}{2},\ \frac{20-10}{5}\Big)=(1,\ 2).\]</div>
+      <div class="pstep"><b>(b) Score and rebuild.</b>
+      \[\begin{aligned}z^\ast&=\tfrac35(1)+\tfrac45(2)=\tfrac{11}{5}=2.2,\\ \tilde{\mathbf x}^\ast&=2.2\,(0.6,\ 0.8)=(1.32,\ 1.76).\end{aligned}\]
+      Close to \((1,2)\), but not equal: we kept one of two directions.</div>
+      <div class="pstep"><b>(c) The error.</b>
+      \[\begin{aligned}\mathbf r&=(1-1.32,\ 2-1.76)=(-0.32,\ 0.24),\\ \|\mathbf r\|^2&=0.1024+0.0576=0.16.\end{aligned}\]
+      Along the dropped direction: \(z_2=-\tfrac45(1)+\tfrac35(2)=\tfrac25=0.4\), and \(z_2^2=0.16\) ✓. Pythagoras in the basis \(\{\mathbf w_1,\mathbf w_2\}\), which is orthonormal: \(-\tfrac{12}{25}+\tfrac{12}{25}=0\), and both lengths are \(1\).</div>
+      <div class="pstep"><b>(d) Back to original units.</b> Undo in reverse order — multiply by \(\sigma\), then add \(\mu\):
+      \[\tilde{\mathbf x}^\ast_{\text{orig}}=(1.32\times2+4,\ \ 1.76\times5+10)=(6.64,\ 18.8).\]
+      The error there is \((6-6.64)^2+(20-18.8)^2=0.4096+1.44=1.8496\). That is <em>not</em> \(0.16\): undoing the standardising stretches the two axes by different amounts (\(2\) and \(5\)), so Pythagoras in the <em>standardised</em> basis no longer gives the raw error. The clean "error \(=z_2^2\)" lives on the scale where the PCA was fitted.</div>
+      <p class="pans">answers at a glance: (a) \((1,2)\), using the training \(\boldsymbol\mu,\boldsymbol\sigma\); (b) \(z^\ast=2.2\), \(\tilde{\mathbf x}^\ast=(1.32,\ 1.76)\); (c) error \(0.16=z_2^2\) with \(z_2=0.4\); (d) \((6.64,\ 18.8)\), squared error \(1.8496\) — not \(z_2^2\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Three variables have covariance matrix \(C=\begin{bmatrix}4&2&0\\2&4&0\\0&0&3\end{bmatrix}\). <b>(a)</b> Without expanding the full cubic, say what the zeros tell you about \(x_3\), and write down all three eigenvalues. Check them against \(\operatorname{tr}C\) and \(\det C\). <b>(b)</b> Find the three unit eigenvectors and confirm they meet at right angles. <b>(c)</b> Write \(z_1\) and its spread. Then show that keeping \(z_1\) and \(z_2\) rebuilds \(x_3\) exactly but not \(x_1,x_2\); name what is lost and check that its spread is \(\lambda_3\).</p>
+    <p class="ptest"><b>What this tests.</b> Reading structure before grinding. <b>How to attack it.</b> A variable uncorrelated with all the others splits off: its variance is an eigenvalue, and its axis is an eigenvector. That turns a cubic into a quadratic plus a freebie.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) The pattern of zeros.</b> \(\operatorname{Cov}(x_3,x_1)=\operatorname{Cov}(x_3,x_2)=0\): \(x_3\) moves independently of the other two. So \(C\) splits into blocks, \(A=\begin{bmatrix}4&2\\2&4\end{bmatrix}\) and \([3]\), and its eigenvalues are the blocks' eigenvalues pooled. The \(1\times1\) block gives \(3\). For \(A\): \((4-\lambda)^2-4=0\Rightarrow4-\lambda=\pm2\Rightarrow\lambda=6,\ 2\).
+      \[\lambda_1=6,\quad\lambda_2=3,\quad\lambda_3=2.\]
+      Checks: \(6+3+2=11=4+4+3\) ✓; \(6\times3\times2=36=3\times(16-4)=\det C\) ✓.</div>
+      <div class="pstep"><b>(b) Eigenvectors.</b> For \(6\): \(-2a+2b=0\Rightarrow a=b\). For \(3\): the \(x_3\) axis itself. For \(2\): \(2a+2b=0\Rightarrow b=-a\).
+      \[\mathbf w_1=\frac1{\sqrt2}\begin{bmatrix}1\\1\\0\end{bmatrix},\quad \mathbf w_2=\begin{bmatrix}0\\0\\1\end{bmatrix},\quad \mathbf w_3=\frac1{\sqrt2}\begin{bmatrix}1\\-1\\0\end{bmatrix}.\]
+      \(\mathbf w_1^\top\mathbf w_3=\tfrac12(1-1)=0\), and \(\mathbf w_2\) has zeros where the others do not, so all three pairs meet at right angles. Spot check: \(C\mathbf w_1=\tfrac1{\sqrt2}(6,6,0)=6\mathbf w_1\) ✓.</div>
+      <div class="pstep"><b>(c) Keep two.</b> \(z_1=\tfrac{x_1+x_2}{\sqrt2}\) with spread \(\lambda_1=6\). With \(W=[\mathbf w_1\ \mathbf w_2]\), the flattener is
+      \[WW^\top=\mathbf w_1\mathbf w_1^\top+\mathbf w_2\mathbf w_2^\top=\begin{bmatrix}\tfrac12&\tfrac12&0\\ \tfrac12&\tfrac12&0\\0&0&1\end{bmatrix},\qquad \tilde{\mathbf x}=\Big(\frac{x_1+x_2}2,\ \frac{x_1+x_2}2,\ x_3\Big).\]
+      So \(x_3\) comes back exactly, while \(x_1\) and \(x_2\) are both replaced by their average.</div>
+      <div class="pstep"><b>(c) What is lost.</b> \(\mathbf x-\tilde{\mathbf x}=\tfrac{x_1-x_2}{2}(1,-1,0)\), which lies along \(\mathbf w_3\). The lost quantity is the difference \(x_1-x_2\), with score \(z_3=\tfrac{x_1-x_2}{\sqrt2}\):
+      \[\operatorname{Var}(z_3)=\frac{\operatorname{Var}x_1+\operatorname{Var}x_2-2\operatorname{Cov}(x_1,x_2)}{2}=\frac{4+4-4}{2}=2=\lambda_3\ \checkmark\]
+      PCA kept the sum of the correlated pair and dropped their difference — the small, quiet part of how they move together. And \(z_2\) is simply \(x_3\): PCA only mixes variables that actually move together.</div>
+      <p class="pans">answers at a glance: \(x_3\) is uncorrelated with the others, so \(C\) is block-diagonal; \(\lambda=6,\ 3,\ 2\); \(\mathbf w_1=\tfrac1{\sqrt2}(1,1,0)\), \(\mathbf w_2=(0,0,1)\), \(\mathbf w_3=\tfrac1{\sqrt2}(1,-1,0)\); \(z_1=(x_1+x_2)/\sqrt2\), spread \(6\); keeping two loses \(x_1-x_2\), spread \(2=\lambda_3\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">A gene study records \(D=12{,}000\) genes on \(N=40\) tissue samples. The centred \(X\) is \(40\times12{,}000\) and \(C=\tfrac1N X^\top X\). <b>(a)</b> Give the size of \(C\) and the memory it needs in 8-byte numbers, and explain why a direct eigen-split is impractical. <b>(b)</b> Show that if \(C\mathbf w=\lambda\mathbf w\), then \(\mathbf u=X\mathbf w\) satisfies \(K\mathbf u=\lambda\mathbf u\) with \(K=\tfrac1N XX^\top\). Give the size of \(K\). <b>(c)</b> From an eigenvector \(\mathbf u\) of \(K\), recover the eigenvector of \(C\), with the rescaling it needs. What is the largest possible number of non-zero eigenvalues of \(C\)?</p>
+    <p class="ptest"><b>What this tests.</b> What changes when there are more columns than rows. <b>How to attack it.</b> Sizes first: the covariance matrix is always (features) × (features). The derivation is one move: multiply the eigen-equation on the left by \(X\) and regroup. A proportionality is not an answer until you rescale, and centring costs one dimension.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Size.</b> \(C\) is \(12{,}000\times12{,}000=1.44\times10^8\) entries.
+      \[1.44\times10^8\times8=1.152\times10^9\ \text{bytes}\approx1.152\ \text{GB}.\]
+      Storage is the smaller problem. An eigen-split costs about \(D^3=1.728\times10^{12}\) operations — hours of work to find structure in only 40 samples.</div>
+      <div class="pstep"><b>(b) The small problem.</b> Multiply \(\tfrac1N X^\top X\mathbf w=\lambda\mathbf w\) on the left by \(X\):
+      \[\frac1N XX^\top(X\mathbf w)=\lambda(X\mathbf w)\quad\Longrightarrow\quad K\mathbf u=\lambda\mathbf u,\qquad \mathbf u=X\mathbf w.\]
+      \(K\) is \(N\times N=40\times40\): \(1{,}600\) entries instead of \(1.44\times10^8\), and the eigenvalue \(\lambda\) is the same.</div>
+      <div class="pstep"><b>(c) Back to genes.</b> Multiply \(K\mathbf u=\lambda\mathbf u\) on the left by \(X^\top\):
+      \[\frac1N X^\top X(X^\top\mathbf u)=\lambda(X^\top\mathbf u)\ \Longrightarrow\ C(X^\top\mathbf u)=\lambda(X^\top\mathbf u),\qquad \mathbf w=\frac{X^\top\mathbf u}{\|X^\top\mathbf u\|}.\]
+      Count: \(\operatorname{rank}X\le\min(N,D)=40\), and centring makes the 40 rows add to zero, so \(\operatorname{rank}C\le N-1=39\). At most <b>39</b> of the 12,000 eigenvalues are non-zero, and \(K\) holds all of them.</div>
+      <p class="pans">answers at a glance: \(C\) is \(12{,}000\times12{,}000\), \(\approx1.152\) GB, eigen-split \(\sim1.7\times10^{12}\) operations; \(K=\tfrac1N XX^\top\) is \(40\times40\) with the same \(\lambda\); \(\mathbf w=X^\top\mathbf u/\|X^\top\mathbf u\|\); at most \(39\) non-zero eigenvalues.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff easy">easy</span></div>
+    <p class="pq">The covariance matrix of a five-variable dataset has eigenvalues \(4.5,\ 2.1,\ 0.9,\ 0.4,\ 0.1\). <b>(a)</b> Give the total spread and \(\operatorname{tr}C\). <b>(b)</b> Find the share kept by the first two components, and the smallest number of components that keeps at least \(90\%\). <b>(c)</b> With \(W\) holding all five unit eigenvectors and \(Z=XW\), show that \(\operatorname{Cov}(Z)\) is diagonal and name its diagonal. What does that say about the components?</p>
+    <p class="ptest"><b>What this tests.</b> Eigenvalues as a spread budget, and why components never repeat each other. <b>How to attack it.</b> (a) is the trace identity — one line. In (b) build the running total once and read both answers off it. (c) is three lines using \(CW=W\Lambda\) and \(W^\top W=I\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) The budget.</b> Turning the axes never changes the total spread:
+      \[\operatorname{tr}C=\sum_d\lambda_d=4.5+2.1+0.9+0.4+0.1=8.0.\]</div>
+      <div class="pstep"><b>(b) Shares.</b>
+      <table class="plain"><thead><tr><th>component</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody><tr><td>\(\lambda_d\)</td><td>4.5</td><td>2.1</td><td>0.9</td><td>0.4</td><td>0.1</td></tr>
+      <tr><td>share</td><td>56.25 %</td><td>26.25 %</td><td>11.25 %</td><td>5.00 %</td><td>1.25 %</td></tr>
+      <tr><td>running total</td><td>56.25 %</td><td>82.50 %</td><td>93.75 %</td><td>98.75 %</td><td>100 %</td></tr></tbody></table>
+      The first two keep \(6.6/8.0=82.5\%\). Two fall short of \(90\%\); three reach \(93.75\%\). So \(M=3\).</div>
+      <div class="pstep"><b>(c) Uncorrelated.</b> \(Z\) is centred because \(X\) is, so
+      \[\begin{aligned}\operatorname{Cov}(Z)&=\frac1N(XW)^\top(XW)=W^\top CW=W^\top W\Lambda\\ &=\Lambda=\operatorname{diag}(4.5,\,2.1,\,0.9,\,0.4,\,0.1).\end{aligned}\]
+      Every off-diagonal entry is zero: no two components move together. The diagonal says once more that the spread of component \(d\) is \(\lambda_d\). In practice the scores can go straight into a regression with no twin-column trouble.</div>
+      <p class="pans">answers at a glance: total \(=\operatorname{tr}C=8.0\); first two keep \(82.5\%\); \(M=3\) (\(93.75\%\)); \(\operatorname{Cov}(Z)=\operatorname{diag}(4.5,2.1,0.9,0.4,0.1)\) — uncorrelated components, each with spread \(\lambda_d\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">A centred data matrix has \(N=100\) rows, \(D=4\) columns and singular values \(20,\ 10,\ 5,\ 1\). <b>(a)</b> Find the eigenvalues of \(C=\tfrac1N X^\top X\), and say where the principal directions sit in \(X=U\Sigma V^\top\). <b>(b)</b> Find the share kept by the first two components and the smallest number that keeps at least \(95\%\). <b>(c)</b> Write the best rank-2 copy of \(X\) and its error in the spectral and the Frobenius norm.</p>
+    <p class="ptest"><b>What this tests.</b> The SVD route and the best low-rank copy. <b>How to attack it.</b> One formula does (a): \(\lambda=\sigma^2/N\). The directions sit in the factor whose rows are indexed by features. (c) is Eckart–Young: cut the SVD, and the error is built from the singular values you dropped.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Eigenvalues.</b> \(C=V\,\tfrac{\Sigma^2}{N}\,V^\top\), so \(\lambda_d=\sigma_d^2/N\):
+      \[\lambda_1=\frac{400}{100}=4,\quad \lambda_2=\frac{100}{100}=1,\quad \lambda_3=\frac{25}{100}=0.25,\quad \lambda_4=\frac{1}{100}=0.01.\]
+      The directions are the columns of \(V\): with points in rows, \(V\) has \(D=4\) rows and lives in feature space. (With points in columns, as on the slides, they would be the columns of \(U\).)</div>
+      <div class="pstep"><b>(b) Shares.</b> Total \(=4+1+0.25+0.01=5.26\). The first alone keeps \(4/5.26=76.05\%\), short of \(95\%\). The first two keep \(5/5.26=95.06\%\), which clears it. So \(M=2\).</div>
+      <div class="pstep"><b>(c) Eckart–Young.</b> Cut after two layers:
+      \[\tilde X_2=U_2\Sigma_2V_2^\top=\sigma_1\mathbf u_1\mathbf v_1^\top+\sigma_2\mathbf u_2\mathbf v_2^\top=20\,\mathbf u_1\mathbf v_1^\top+10\,\mathbf u_2\mathbf v_2^\top.\]
+      The error is made only of the dropped layers:
+      \[\|X-\tilde X_2\|_2=\sigma_3=5,\qquad \|X-\tilde X_2\|_F=\sqrt{5^2+1^2}=\sqrt{26}\approx5.10.\]
+      No rank-2 matrix gets closer.</div>
+      <p class="pans">answers at a glance: \(\lambda=4,\ 1,\ 0.25,\ 0.01\); directions = columns of \(V\); total \(5.26\); first two keep \(95.06\%\) (first alone \(76.05\%\)), so \(M=2\); \(\tilde X_2=20\mathbf u_1\mathbf v_1^\top+10\mathbf u_2\mathbf v_2^\top\); errors \(5\) (spectral) and \(\sqrt{26}\approx5.10\) (Frobenius).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">The slides' nine-point example. Two variables are measured on nine items:</p>
+    <div class="svgwrap"><table class="plain"><thead><tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th></tr></thead>
+    <tbody><tr><td>\(x_1\)</td><td>1.11</td><td>1.21</td><td>1.36</td><td>1.49</td><td>1.63</td><td>1.68</td><td>1.83</td><td>1.88</td><td>1.95</td></tr>
+    <tr><td>\(x_2\)</td><td>10</td><td>12</td><td>13</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td></tr></tbody></table></div>
+    <p class="pq">After centring, the covariance matrix (divided by \(N=9\)) is \(C=\begin{bmatrix}0.0794988&0.8882716\\0.8882716&10.0246914\end{bmatrix}\). <b>(a)</b> Find the means and \(\lambda_1\). <b>(b)</b> Find the unit direction \(\mathbf w_1\). <b>(c)</b> Find the scores of the first three items, and rebuild item 1 in the original units. <b>(d)</b> \(\mathbf w_1\) is almost exactly the \(x_2\) axis. Is that because \(x_2\) matters more? What would standardising change?</p>
+    <p class="ptest"><b>What this tests.</b> The recipe on unfriendly decimals, and the unit trap in a real example. <b>How to attack it.</b> Use the trace and determinant to get \(\lambda\) from the quadratic formula; build the eigenvector from one row of \(C-\lambda I\); keep five or six decimals until the end.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Means and \(\lambda_1\).</b> \(\mu_1=\tfrac{14.14}{9}=1.571111\) and \(\mu_2=\tfrac{140}{9}=15.555556\). For a \(2\times2\) matrix, \(\lambda^2-(\operatorname{tr}C)\lambda+\det C=0\):
+      \[\begin{aligned}\operatorname{tr}C&=0.0794988+10.0246914=10.1041901,\\ \det C&=0.0794988\times10.0246914-0.8882716^2=0.0079241,\\ \lambda_1&=\frac{10.1041901+\sqrt{10.1041901^2-4(0.0079241)}}{2}=10.103406.\end{aligned}\]
+      The other root is \(\lambda_2=10.1041901-10.103406=0.000784\). The first component keeps \(99.99\%\).</div>
+      <div class="pstep"><b>(b) The direction.</b> The first row of \((C-\lambda_1I)\mathbf w=\mathbf 0\) reads \((0.0794988-10.103406)a+0.8882716\,b=0\), so \(b=11.284\,a\). Take \(a=1\): \((1,\ 11.2847)\), of length \(11.3289\). Divide:
+      \[\mathbf w_1\approx(0.08827,\ 0.99610).\]</div>
+      <div class="pstep"><b>(c) Scores.</b> Centre each item, then \(z=0.08827\,x_1+0.99610\,x_2\):
+      \[\begin{aligned}z_1&=0.08827(-0.461111)+0.99610(-5.555556)=-5.5746,\\ z_2&=0.08827(-0.361111)+0.99610(-3.555556)=-3.5736,\\ z_3&=0.08827(-0.211111)+0.99610(-2.555556)=-2.5642.\end{aligned}\]
+      These match the slides' \(-5.57,\ -3.57,\ -2.56\). Rebuild item 1: \(z_1\mathbf w_1=(-0.4921,\ -5.5528)\); add the mean back: \((1.0790,\ 10.0027)\) — very close to the original \((1.11,\ 10)\).</div>
+      <div class="pstep"><b>(d) The unit trap, in the wild.</b> No. \(x_2\)'s spread (\(10.02\)) is about \(126\) times \(x_1\)'s (\(0.0795\)), simply because of the units the two were written in. PCA chases spread, so it follows \(x_2\). The two columns are in fact almost perfectly related: their correlation is \(0.8882716/\sqrt{0.0794988\times10.0246914}=0.9950\). Standardise, and \(C\) becomes \(\begin{bmatrix}1&0.9950\\0.9950&1\end{bmatrix}\): now \(\mathbf w_1=\tfrac1{\sqrt2}(1,1)\), an equal mix, with \(\lambda_1=1.9950\) out of \(2\).</div>
+      <p class="pans">answers at a glance: \(\boldsymbol\mu=(1.571111,\ 15.555556)\); \(\lambda_1=10.1034\) (\(\lambda_2=0.000784\), \(99.99\%\)); \(\mathbf w_1\approx(0.0883,\ 0.9961)\); scores \(-5.5746,\ -3.5736,\ -2.5642\); item 1 rebuilt as \((1.0790,\ 10.0027)\); standardised: correlation \(0.9950\), \(\mathbf w_1=\tfrac1{\sqrt2}(1,1)\), \(\lambda_1=1.9950\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Run power iteration on \(C=\begin{bmatrix}5&2\\2&8\end{bmatrix}\) from \(\mathbf x_0=(1,0)\). <b>(a)</b> Compute \(\mathbf x_1\) and \(\mathbf x_2\). <b>(b)</b> The true top direction is \(\tfrac1{\sqrt5}(1,2)\), at \(63.43^\circ\). Find the angle of each \(\mathbf x_k\) to it and show the tangent of that angle shrinks by \(\lambda_2/\lambda_1\) each pass. <b>(c)</b> Estimate \(\lambda_1\) from \(\mathbf x_2\) with \(\mathbf x_2^\top C\mathbf x_2\). <b>(d)</b> How many passes until the arrow is within \(1^\circ\) of the answer?</p>
+    <p class="ptest"><b>What this tests.</b> Running the loop by hand, and the rate it closes in. <b>How to attack it.</b> You may skip the rescaling in the middle — it never changes the direction — and rescale only when you need an actual unit vector.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Two passes.</b> \(C\mathbf x_0=(5,2)\), length \(\sqrt{29}=5.3852\), so \(\mathbf x_1=(0.92848,\ 0.37139)\). Next, work with the unscaled vector: \(C(5,2)=(29,\ 26)\), length \(\sqrt{1517}=38.9487\), so \(\mathbf x_2=(0.74457,\ 0.66755)\).</div>
+      <div class="pstep"><b>(b) The angle.</b> The eigenvalues are \(9\) and \(4\), so \(\lambda_2/\lambda_1=4/9\). The start is at \(0^\circ\), \(\mathbf x_1\) at \(21.80^\circ\), \(\mathbf x_2\) at \(41.88^\circ\). Measured from \(63.43^\circ\):
+      \[\begin{aligned}\tan63.43^\circ&=2,\\ \tan(63.43^\circ-21.80^\circ)&=\tan41.63^\circ=0.8889=2\times\tfrac49,\\ \tan(63.43^\circ-41.88^\circ)&=\tan21.56^\circ=0.3951=2\times\big(\tfrac49\big)^2.\end{aligned}\]
+      Exactly as the eigen-expansion predicts: the wrong part shrinks by \(4/9\) each pass.</div>
+      <div class="pstep"><b>(c) Estimate \(\lambda_1\).</b> \(\mathbf x_2^\top C\mathbf x_2=5(0.74457)^2+2\cdot2(0.74457)(0.66755)+8(0.66755)^2=8.3250\), about \(7.5\%\) below \(9\). Its error is \((\lambda_1-\lambda_2)\sin^2\theta_2=5\sin^2 21.56^\circ=0.675\), and because it goes with \(\sin^2\theta\) it shrinks by about \((4/9)^2\) per pass — twice as fast as the angle, on a log scale.</div>
+      <div class="pstep"><b>(d) Within \(1^\circ\).</b> Need \(2\,(4/9)^k<\tan1^\circ=0.017455\), so \(k>\dfrac{\ln(0.0087275)}{\ln(4/9)}=5.85\). Six passes: the angle is then \(0.88^\circ\) (after five it is still \(1.99^\circ\)).</div>
+      <p class="pans">answers at a glance: \(\mathbf x_1=(0.9285,\ 0.3714)\), \(\mathbf x_2=(0.7446,\ 0.6675)\); angles to \(\mathbf w_1\): \(63.43^\circ\to41.63^\circ\to21.56^\circ\), tangents \(2\to0.889\to0.395\) (ratio \(4/9\)); estimate \(\lambda_1\approx8.3250\); \(6\) passes for \(1^\circ\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">A three-feature PCA has \(\operatorname{tr}C=10\). Keeping only PC1, the average squared rebuild error over the training data is \(4.0\). Keeping PC1 and PC2, it is \(1.0\). <b>(a)</b> Recover \(\lambda_1,\lambda_2,\lambda_3\). <b>(b)</b> Give each component's share, and the smallest \(M\) that keeps at least \(95\%\). <b>(c)</b> A new centred point has scores \((z_1,z_2,z_3)=(2,\ -1,\ 0.5)\). Find its squared rebuild error when keeping one component, and when keeping two.</p>
+    <p class="ptest"><b>What this tests.</b> The rebuild-error view, asked backwards. <b>How to attack it.</b> The average error is the sum of the dropped eigenvalues, and the trace is the sum of all of them. For a single point, the error is the sum of its squared dropped scores.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Read the eigenvalues off the errors.</b> Keeping two, the error is the one dropped eigenvalue: \(\lambda_3=1.0\). Keeping one, it is the two dropped: \(\lambda_2+\lambda_3=4.0\), so \(\lambda_2=3.0\). The trace gives the rest: \(\lambda_1=10-4=6.0\). Check the order: \(6\ge3\ge1\) ✓.</div>
+      <div class="pstep"><b>(b) Shares.</b> \(6/10=60\%\), \(3/10=30\%\), \(1/10=10\%\). Running totals \(60\%,\ 90\%,\ 100\%\). Two components keep \(90\%\), short of \(95\%\), so \(M=3\) — which means keeping everything. A \(95\%\) target is too strict for this data.</div>
+      <div class="pstep"><b>(c) One point.</b> The directions are orthonormal, so \(\|\mathbf x\|^2=z_1^2+z_2^2+z_3^2=4+1+0.25=5.25\), and each kept direction keeps exactly its \(z^2\).
+      \[\text{keep 1: }z_2^2+z_3^2=1+0.25=1.25,\qquad \text{keep 2: }z_3^2=0.25.\]
+      This point loses less than the average (\(4.0\) and \(1.0\)); a single point can land anywhere, only the average is fixed by the eigenvalues.</div>
+      <p class="pans">answers at a glance: \(\lambda=6,\ 3,\ 1\); shares \(60\%,\ 30\%,\ 10\%\); \(M=3\) for \(95\%\); the point loses \(1.25\) keeping one and \(0.25\) keeping two.</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">medium</span></div>
+    <p class="pq">Three analysts each propose the first two loadings of a three-feature PCA:</p>
+    <ul class="pq">
+      <li><b>A:</b> \(\ \mathbf a=\tfrac13(2,\,1,\,2)\) and \(\mathbf b=\tfrac1{\sqrt5}(1,\,-2,\,0)\)</li>
+      <li><b>B:</b> \(\ \mathbf a=(0.6,\ 0.8,\ 0)\) and \(\mathbf b=(0,\ 0.6,\ 0.8)\)</li>
+      <li><b>C:</b> \(\ \mathbf a=\tfrac13(1,\,2,\,2)\) and \(\mathbf b=(2,\,1,\,-2)\)</li>
+    </ul>
+    <p class="pq"><b>(a)</b> Run the two checks on each pair and say which could really be principal components. <b>(b)</b> For the valid pair, find the third direction. <b>(c)</b> Repair the pair that fails only one check. <b>(d)</b> With the valid pair kept, find the scores and the squared rebuild error of the centred point \(\mathbf x=(3,\ 0,\ 3)\), and confirm the error with the third direction.</p>
+    <p class="ptest"><b>What this tests.</b> The two checks every set of loadings must pass, and using them. <b>How to attack it.</b> Length 1: add the squares. Right angles: the dot product must be zero. In three dimensions, the direction at right angles to two others is their cross product, rescaled.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) The audit.</b>
+      <table class="plain"><thead><tr><th>pair</th><th>\(\|\mathbf a\|^2\)</th><th>\(\|\mathbf b\|^2\)</th><th>\(\mathbf a^\top\mathbf b\)</th><th>verdict</th></tr></thead>
+      <tbody><tr><td>A</td><td>\(\tfrac{4+1+4}{9}=1\)</td><td>\(\tfrac{1+4+0}{5}=1\)</td><td>\(\tfrac{2-2+0}{3\sqrt5}=0\)</td><td>valid</td></tr>
+      <tr><td>B</td><td>\(0.36+0.64=1\)</td><td>\(0.36+0.64=1\)</td><td>\(0+0.48+0=0.48\)</td><td>not at right angles</td></tr>
+      <tr><td>C</td><td>\(\tfrac{1+4+4}{9}=1\)</td><td>\(4+1+4=9\)</td><td>\(\tfrac{2+2-4}{3}=0\)</td><td>\(\mathbf b\) has length 3</td></tr></tbody></table>
+      Only A passes both checks.</div>
+      <div class="pstep"><b>(b) The third direction.</b> Cross product of \((2,1,2)\) and \((1,-2,0)\):
+      \[\begin{gathered}(1\cdot0-2\cdot(-2),\ 2\cdot1-2\cdot0,\ 2\cdot(-2)-1\cdot1)=(4,\ 2,\ -5),\\ \text{length }\sqrt{45}=3\sqrt5.\end{gathered}\]
+      So \(\mathbf c=\tfrac1{3\sqrt5}(4,2,-5)\). Check: \((8+2-10)=0\) and \((4-4+0)=0\) ✓.</div>
+      <div class="pstep"><b>(c) Repair C.</b> Its only fault is the length of \(\mathbf b\). Divide by 3: \(\mathbf b=\tfrac13(2,1,-2)\), length 1, still at right angles to \(\mathbf a\). (B cannot be repaired by rescaling — the angle is wrong.)</div>
+      <div class="pstep"><b>(d) One point.</b> \(z_1=\mathbf a^\top\mathbf x=\tfrac{6+0+6}{3}=4\) and \(z_2=\mathbf b^\top\mathbf x=\tfrac{3-0+0}{\sqrt5}=1.3416\). Then
+      \[\|\mathbf x\|^2-z_1^2-z_2^2=18-16-1.8=0.2.\]
+      Along \(\mathbf c\): \(z_3=\tfrac{12+0-15}{3\sqrt5}=-\tfrac1{\sqrt5}\), and \(z_3^2=0.2\) ✓.</div>
+      <p class="pans">answers at a glance: only A is valid (B has \(\mathbf a^\top\mathbf b=0.48\); C's \(\mathbf b\) has length 3); third direction \(\tfrac1{3\sqrt5}(4,2,-5)\); C repaired as \(\tfrac13(2,1,-2)\); for \((3,0,3)\): \(z_1=4\), \(z_2=1.3416\), error \(0.2=z_3^2\).</p>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff hard">hard</span></div>
+    <p class="pq">A tiny "wide" dataset: \(N=3\) points, \(D=4\) features, already centred:</p>
+    \[X=\begin{bmatrix}1&2&0&1\\0&-1&1&-2\\-1&-1&-1&1\end{bmatrix}.\]
+    <p class="pq"><b>(a)</b> Check that \(X\) is centred, and build \(K=\tfrac1N XX^\top\). <b>(b)</b> Find the eigenvalues of \(K\) and unit eigenvectors. <b>(c)</b> Recover the first principal direction \(\mathbf w_1=X^\top\mathbf u_1/\|X^\top\mathbf u_1\|\) and check that \(\|X^\top\mathbf u_1\|=\sqrt{N\lambda_1}\). <b>(d)</b> Confirm \(C\mathbf w_1=\lambda_1\mathbf w_1\) directly with \(C=\tfrac1N X^\top X\), recover \(\mathbf w_2\), and explain why \(C\) (\(4\times4\)) has only two non-zero eigenvalues.</p>
+    <p class="ptest"><b>What this tests.</b> The Gram trick on actual numbers. <b>How to attack it.</b> \(K\)'s entries are dot products between rows. Its rows add to zero (because the data is centred), so \((1,1,1)\) is always an eigenvector with eigenvalue \(0\). Guess the others from the pattern, then check.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>(a) Centred, and \(K\).</b> Column sums: \(1+0-1=0\), \(2-1-1=0\), \(0+1-1=0\), \(1-2+1=0\) ✓. The row dot products are \(\mathbf r_1\cdot\mathbf r_1=6\), \(\mathbf r_2\cdot\mathbf r_2=6\), \(\mathbf r_3\cdot\mathbf r_3=4\), \(\mathbf r_1\cdot\mathbf r_2=-4\), \(\mathbf r_1\cdot\mathbf r_3=-2\), \(\mathbf r_2\cdot\mathbf r_3=-2\):
+      \[K=\frac13\begin{bmatrix}6&-4&-2\\-4&6&-2\\-2&-2&4\end{bmatrix}.\]</div>
+      <div class="pstep"><b>(b) Eigenvalues of \(K\).</b> Try the patterns. \(XX^\top(1,-1,0)=(10,-10,0)\), eigenvalue \(10\). \(XX^\top(1,1,-2)=(6,6,-12)\), eigenvalue \(6\). \(XX^\top(1,1,1)=(0,0,0)\), eigenvalue \(0\). Divide by \(N=3\):
+      \[\begin{gathered}\lambda_1=\tfrac{10}{3}\approx3.3333,\quad \lambda_2=2,\quad \lambda_3=0,\\ \mathbf u_1=\tfrac1{\sqrt2}(1,-1,0),\qquad \mathbf u_2=\tfrac1{\sqrt6}(1,1,-2).\end{gathered}\]
+      Check: \(\tfrac{10}{3}+2+0=\tfrac{16}{3}=\operatorname{tr}K\) ✓.</div>
+      <div class="pstep"><b>(c) Back to four features.</b> \(X^\top(1,-1,0)=\mathbf r_1-\mathbf r_2=(1,\ 3,\ -1,\ 3)\), length \(\sqrt{20}\). With the unit \(\mathbf u_1\) this is \(\tfrac1{\sqrt2}(1,3,-1,3)\), length \(\sqrt{10}\), and indeed \(\sqrt{N\lambda_1}=\sqrt{3\cdot\tfrac{10}{3}}=\sqrt{10}\) ✓.
+      \[\mathbf w_1=\frac{1}{2\sqrt5}(1,\ 3,\ -1,\ 3)\approx(0.2236,\ 0.6708,\ -0.2236,\ 0.6708).\]</div>
+      <div class="pstep"><b>(d) Direct check.</b> The column dot products give
+      \[X^\top X=\begin{bmatrix}2&3&1&0\\3&6&0&3\\1&0&2&-3\\0&3&-3&6\end{bmatrix},\qquad X^\top X\,(1,3,-1,3)=(10,\ 30,\ -10,\ 30).\]
+      That is \(10\,(1,3,-1,3)\), so \(C\mathbf w_1=\tfrac{10}{3}\mathbf w_1\) ✓ — the same \(\lambda_1\). Second direction: \(X^\top(1,1,-2)=\mathbf r_1+\mathbf r_2-2\mathbf r_3=(3,3,3,-3)\), length \(6\), so \(\mathbf w_2=\tfrac12(1,1,1,-1)\), with \(\lambda_2=2\) and \(\mathbf w_1^\top\mathbf w_2=\tfrac1{4\sqrt5}(1+3-1-3)=0\) ✓. Three centred points span at most \(N-1=2\) dimensions, so the other two eigenvalues of \(C\) are \(0\): \(\operatorname{tr}C=\tfrac{2+6+2+6}{3}=\tfrac{16}{3}=\tfrac{10}{3}+2\) ✓.</div>
+      <p class="pans">answers at a glance: \(K=\tfrac13\begin{bmatrix}6&-4&-2\\-4&6&-2\\-2&-2&4\end{bmatrix}\); \(\lambda=\tfrac{10}{3},\ 2,\ 0\); \(\mathbf w_1=\tfrac1{2\sqrt5}(1,3,-1,3)\), \(\|X^\top\mathbf u_1\|=\sqrt{10}=\sqrt{N\lambda_1}\); \(\mathbf w_2=\tfrac12(1,1,1,-1)\); only \(N-1=2\) non-zero eigenvalues.</p>
+    </details>
+  </div>
+
+  <div class="next-card reveal">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong><a href="unit-13.html">Unit 13 · Support Vector Machines →</a></strong></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">PCA asked for the direction of widest spread; Unit 13 asks for the widest street between two groups of points — another geometric wish that becomes a constrained optimisation with a fine for every point. You already built a two-point version at the end of Unit 11; now it grows into a full classifier, and its dual sees the data only through a Gram matrix of dot products.</p>
+    <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
+  </div>
+</section>

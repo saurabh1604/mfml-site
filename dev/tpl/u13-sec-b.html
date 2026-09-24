@@ -1,0 +1,271 @@
+<!-- ================= ACT II · PRICES ON POINTS ================= -->
+<!-- ================= 6 · PRICE TAGS ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Every point gets a price tag</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A crowd leans on a rope barrier at a cricket ground. People standing back from the rope put no force on it at all. Only the ones <strong>pressed right against it</strong> push.</p>
+    <p>If you want to know where the rope will settle, you do not need to know about the whole crowd. You need the few who touch it, and how hard each one pushes.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Section 5 left us with a bowl and walls. Walls are awkward to work with directly, so we do what Unit 11 taught (§8–§11): turn each wall into a <strong>price</strong>. Every training point \(i\) gets its own number \(\alpha_i\ge0\) (read "alpha"). Write each wall as "something \(\ge0\)":</p>
+    \[g_i(\mathbf w,b)=y_i(\mathbf w\cdot\mathbf x_i+b)-1\;\ge\;0,\]
+    <p>and fold all the walls into one expression, the <em>Lagrangian</em>:</p>
+    \[\begin{aligned}L(\mathbf w,b,\boldsymbol\alpha)=\ &\tfrac12\|\mathbf w\|^2\\ &-\sum_i\alpha_i\big[y_i(\mathbf w\cdot\mathbf x_i+b)-1\big],\\ &\alpha_i\ge0.\end{aligned}\]
+    <p>Why is this the same problem? Fix a street \((\mathbf w,b)\) and ask the prices to make \(L\) as <em>large</em> as they can. Look at one point:</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>If the point is…</th><th>its bracket is…</th><th>the best price \(\alpha_i\) is…</th></tr></thead>
+    <tbody>
+      <tr><td>inside the street or on the wrong side, \(y_if(\mathbf x_i)&lt;1\)</td><td>negative</td><td>\(+\infty\): \(L\) blows up — this street is ruled out</td></tr>
+      <tr><td>comfortably outside, \(y_if(\mathbf x_i)&gt;1\)</td><td>positive</td><td>\(0\): any price would only lower \(L\)</td></tr>
+      <tr><td>exactly on the edge, \(y_if(\mathbf x_i)=1\)</td><td>zero</td><td>free: any \(\alpha_i\ge0\) gives the same \(L\)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>So the largest \(L\) equals \(\tfrac12\|\mathbf w\|^2\) for a legal street and \(+\infty\) for an illegal one. Minimising that over all streets is exactly our problem. The walls did not disappear; they became prices that punish any trespass without limit.</p>
+    <p>Read \(\alpha_i\) as <strong>how hard point \(i\) pushes on the street</strong>. A point standing back pays nothing and pushes nothing. A point pressed against an edge has a real price. Drag the points below and watch the prices.</p>
+  </div>
+
+  <div class="widget reveal" id="w-push">
+    <div class="widget-head"><span class="w-title">Who is pushing the street?</span><span class="w-sub">Twelve points and their solved street. Each point's price αᵢ is its pressure bar. A live solver re-solves the street every time you move a point.</span></div>
+    <p class="try"><b>Try:</b> Drag a point from deep inside a group — its price stays 0 and the street does not move, until you drag it into the street. Then drag one of the gold-ringed points: the whole street follows it.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage stage-canvas"><svg id="ps-svg" viewBox="0 0 560 470" class="svg-lab grabbable" role="img" aria-label="Twelve points, six blue discs and six orange diamonds, with the solved street between them: a white centre line, violet edges, a green arrow for w. The three points touching the edges carry gold rings labelled with their prices, one eighth, one eighth and one quarter. Every point can be dragged and the street is re-solved live."></svg></div><p class="stage-tap">drag any point</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="preset" id="ps-reset" aria-pressed="true">reset the points</button></div>
+        <div class="abars" id="ps-bars"></div>
+        <table class="kv" id="ps-kv"></table>
+        <div id="ps-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>At the answer, four conditions hold together. They are called the <em>KKT conditions</em> (after Karush, Kuhn and Tucker). For this problem the bowl is convex and the walls are straight, so they are not just necessary: <strong>any \((\mathbf w,b,\boldsymbol\alpha)\) that satisfies all four is the answer</strong>.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>Condition</th><th>In symbols</th><th>In words</th></tr></thead>
+    <tbody>
+      <tr><td>1 · stationarity</td><td>\(\partial L/\partial\mathbf w=\mathbf 0,\ \partial L/\partial b=0\)</td><td>the pushes are in balance; gives \(\mathbf w=\sum_i\alpha_iy_i\mathbf x_i\) and \(\sum_i\alpha_iy_i=0\) (§7)</td></tr>
+      <tr><td>2 · primal feasibility</td><td>\(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\)</td><td>the street really is legal</td></tr>
+      <tr><td>3 · dual feasibility</td><td>\(\alpha_i\ge0\)</td><td>a point can push the street away, never pull it in</td></tr>
+      <tr><td>4 · complementary slackness</td><td>\(\alpha_i\big[y_i(\mathbf w\cdot\mathbf x_i+b)-1\big]=0\)</td><td>for each point, room to spare or a price — never both</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout watch reveal"><span class="tag">Watch out — two sign conventions</span>
+    <p>You will also see \(L=\tfrac12\|\mathbf w\|^2+\sum_i\alpha_i\big[1-y_i(\mathbf w\cdot\mathbf x_i+b)\big]\). It is the same function, since \(+\alpha(1-z)=-\alpha(z-1)\). Either is fine. Switching between them in the middle of a calculation is where sign mistakes are born. This unit uses the minus form throughout.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}L=\tfrac12\|\mathbf w\|^2-\sum_i\alpha_i\big[y_if(\mathbf x_i)-1\big]\\ \alpha_i\ge0,\qquad \alpha_i\big[y_if(\mathbf x_i)-1\big]=0\end{gathered}\]</p>
+    <p>Every point gets a price \(\alpha_i\): how hard it pushes on the street. Points with room to spare pay <strong>nothing</strong>. Only points pressed against an edge carry a price.</p>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At the answer, a point has score \(y_if(\mathbf x_i)=2.4\). What is its price \(\alpha_i\)?</p>
+    <div class="opts">
+      <button data-why="A big score means the point is far from the street, which is the opposite of pushing hard. Complementary slackness forces its price to zero.">Large — it is very sure of its side, so it pushes hard</button>
+      <button data-correct data-why="Its bracket is 2.4 − 1 = 1.4, not zero, so complementary slackness α(1.4) = 0 forces α = 0. The point has room to spare and exerts no force.">Exactly 0 — it has room to spare, so complementary slackness forces a zero price</button>
+      <button data-why="1 is the score of a point on the edge, not a price. This point is well outside, and its price must be 0.">Exactly 1</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s6-->
+  <p class="onesent reveal"><b>In one sentence:</b> Turn each wall into a price \(\alpha_i\ge0\); the prices punish any trespass without limit, and at the answer only the points pressed against the street carry a price.</p>
+</section>
+
+<!-- ================= 7 · BUILT FROM THE DATA ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>The boundary is built from the data</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A tug-of-war at the village fair. The rope does not move when the two teams pull <strong>equally hard</strong>. If one side pulled harder, the rope would slide, and the match would not be over.</p>
+    <p>The street works the same way. Each price is a pull. At the answer the pulls from the two classes cancel, and the direction of the street is made of those very pulls.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Stationarity means: the slope of \(L\) is zero in every direction of \(\mathbf w\) and \(b\). Two facts do all the work, both proved in the drawer below. The slope of \(\tfrac12\|\mathbf w\|^2\) is \(\mathbf w\), and the slope of \(\mathbf w\cdot\mathbf x\) is \(\mathbf x\). So:</p>
+    \[\begin{aligned}\frac{\partial L}{\partial\mathbf w}&=\mathbf w-\sum_i\alpha_iy_i\mathbf x_i=\mathbf 0\\ \Longrightarrow\quad\mathbf w&=\sum_i\alpha_iy_i\mathbf x_i,\end{aligned}\]
+    \[\frac{\partial L}{\partial b}=-\sum_i\alpha_iy_i=0\quad\Longrightarrow\quad \sum_i\alpha_iy_i=0.\]
+    <p>Read the first one slowly. The answer \(\mathbf w\) is not some new direction invented from nothing. It is <strong>the training points themselves</strong>, added up with weights. Blue points (\(y_i=+1\)) pull \(\mathbf w\) towards themselves; orange points (\(y_i=-1\)) push it away; \(\alpha_i\) says how hard.</p>
+    <p>For our twelve points only three prices are not zero: \(\alpha=\tfrac18\) for \((1,3)\) and \((3,5)\), and \(\alpha=\tfrac14\) for \((4,2)\). Build \(\mathbf w\):</p>
+    \[\begin{aligned}\mathbf w&=\tfrac18(1,3)+\tfrac18(3,5)-\tfrac14(4,2)\\ &=(0.125+0.375-1,\\ &\qquad 0.375+0.625-0.5)\\ &=(-0.5,\ 0.5).\end{aligned}\]
+    <p>The second fact is the tug-of-war: the blue prices add to \(\tfrac18+\tfrac18=\tfrac14\), the orange price is \(\tfrac14\). Balanced. If they were not, you could slide the street sideways (change \(b\)) and do better, so it would not be the answer.</p>
+  </div>
+
+  <div class="widget reveal" id="w-build">
+    <div class="widget-head"><span class="w-title">w, assembled from its support vectors</span><span class="w-sub">Each surviving point adds the arrow αᵢyᵢxᵢ. Laid tip to tail they land on w. The beam weighs the two classes' prices.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ build w</em>. Then drag the orange price \(\alpha_3\) up to 0.35: the beam tips (the pulls no longer balance) and \(\mathbf w\) swings away from the true answer.</p>
+    <div class="svgstage stage-canvas"><svg id="bd-svg" viewBox="0 0 900 400" class="svg-lab" role="img" aria-label="Left: three arrows laid tip to tail from the origin — one eighth of (1,3) and one eighth of (3,5) in blue, minus one quarter of (4,2) in orange — ending exactly at w = (−0.5, 0.5), drawn in green. Right: a balance beam with the blue prices on the left pan and the orange price on the right pan; it is level when the two sides are equal."></svg></div>
+    <div class="wrow" style="margin-top:.7rem">
+      <div class="wcol">
+        <div class="controls">
+          <div class="ctl"><label for="bd-a1">α₁ · blue (1, 3)</label><input id="bd-a1" type="range" min="0" max="0.5" step="0.005" value="0.125"><output id="bd-a1-o">0.125</output></div>
+          <div class="ctl"><label for="bd-a2">α₂ · blue (3, 5)</label><input id="bd-a2" type="range" min="0" max="0.5" step="0.005" value="0.125"><output id="bd-a2-o">0.125</output></div>
+          <div class="ctl"><label for="bd-a3">α₃ · orange (4, 2)</label><input id="bd-a3" type="range" min="0" max="0.5" step="0.005" value="0.25"><output id="bd-a3-o">0.25</output></div>
+        </div>
+        <div class="presets"><button class="play" id="bd-play">▶ build w</button><button class="preset" id="bd-reset" aria-pressed="true">the solver's prices</button></div>
+      </div>
+      <div class="wcol"><table class="kv" id="bd-kv"></table><div id="bd-verdict" class="verdict info" style="margin-top:.6rem">—</div></div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why this line matters most</span>
+    <p><strong>Sparsity.</strong> Every zero price deletes its point from the sum. Most prices are zero (§9).</p>
+    <p><strong>Calm about far-away points.</strong> A point far on its correct side has \(\alpha_i=0\). Move it further away and \(\mathbf w\) does not change at all.</p>
+    <p><strong>Kernels.</strong> If \(\mathbf w\) is built from data points, then \(\mathbf w\cdot\mathbf x\) is built from dot products between data points — and a dot product is something you can swap out. That is §12–§15, hiding in this one line.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf w=\sum_i\alpha_iy_i\mathbf x_i,\qquad\sum_i\alpha_iy_i=0\]</p>
+    <p>The direction of the street is <strong>a weighted sum of the training points</strong>, and the two classes' prices balance like a tug-of-war that has come to rest.</p>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A solver reports \(\alpha=0.25\) for \((2,2)\) with \(y=+1\), \(\alpha=0\) for \((4,1)\) with \(y=+1\), and \(\alpha=0.25\) for \((0,0)\) with \(y=-1\). What is \(\mathbf w\)?</p>
+    <div class="opts">
+      <button data-correct data-why="w = 0.25(+1)(2,2) + 0·(4,1) + 0.25(−1)(0,0) = (0.5, 0.5). The zero price drops (4,1) out, and (0,0) adds nothing because it sits at the origin — but it still balances the prices: 0.25 − 0.25 = 0.">\((0.5,\ 0.5)\)</button>
+      <button data-why="The point (4,1) has α = 0, so it contributes nothing. Only (2,2) and (0,0) enter the sum.">\((1.5,\ 0.75)\)</button>
+      <button data-why="The orange point enters with y = −1, but it sits at (0,0), so its arrow is zero. The blue arrow is 0.25 × (2,2) = (0.5, 0.5), not (−0.5, −0.5).">\((-0.5,\ -0.5)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> Setting the slopes of \(L\) to zero gives \(\mathbf w=\sum_i\alpha_iy_i\mathbf x_i\) — the street's direction is built from the points themselves — and \(\sum_i\alpha_iy_i=0\), the balance of the two classes' pushes.</p>
+</section>
+
+<!-- ================= 8 · THE DUAL ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The dual — a problem only in the prices</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You can plan a wedding by choosing the hall, the food and the decorations. Or you can hand the whole job to a caterer and only argue about <strong>prices</strong>.</p>
+    <p>The second way can be easier — and if the deal is fair, you end up with the same wedding. The SVM has such a "prices only" version too, and it is the version everybody solves.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Take the two facts from §7 and put them back into \(L\). Every trace of \(\mathbf w\) and \(b\) disappears (the steps are in the drawer), and what is left is a problem in the prices alone — the <em>dual</em>:</p>
+    \[\begin{gathered}\max_{\boldsymbol\alpha}\ \sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,\mathbf x_i\cdot\mathbf x_j\\ \text{s.t.}\quad\alpha_i\ge0,\quad\sum_i\alpha_iy_i=0.\end{gathered}\]
+    <p><strong>A tiny example.</strong> Two points: \((1,1)\) blue and \((-1,-1)\) orange. The dot products are \(\mathbf x_1\cdot\mathbf x_1=2\), \(\mathbf x_2\cdot\mathbf x_2=2\), \(\mathbf x_1\cdot\mathbf x_2=-2\). The balance condition \(\alpha_1-\alpha_2=0\) makes both prices equal, call it \(\alpha\). Then</p>
+    \[\begin{aligned}D(\alpha)&=2\alpha-\tfrac12\big[\alpha^2(2)+\alpha^2(2)\\ &\qquad+2\alpha^2(-1)(-2)\big]\\ &=2\alpha-4\alpha^2.\end{aligned}\]
+    <p>The top of this hill is where the slope \(2-8\alpha\) is zero: \(\alpha=\tfrac14\), with \(D=\tfrac12-\tfrac14=\tfrac14\). Rebuild the street: \(\mathbf w=\tfrac14(1,1)-\tfrac14(-1,-1)=(\tfrac12,\tfrac12)\). A point on the edge scores exactly 1: \((\tfrac12,\tfrac12)\cdot(1,1)+b=1\) gives \(b=0\). The width is \(2/\|\mathbf w\|=2/0.707=2\sqrt2\approx2.83\) — exactly the distance between the two points, as it must be.</p>
+    <p>And a free check: the primal value is \(\tfrac12\|\mathbf w\|^2=\tfrac12\cdot\tfrac12=\tfrac14\). The dual peak is also \(\tfrac14\). For a convex problem like this, <strong>the two always agree</strong> (strong duality). Compute both, and if they differ, you made a slip.</p>
+  </div>
+
+  <div class="widget reveal" id="w-dual">
+    <div class="widget-head"><span class="w-title">The dual objective, and the line that binds it</span><span class="w-sub">The height is D(α). Only the prices on the glowing balance line are allowed; the peak along it is the answer.</span></div>
+    <p class="try"><b>Try:</b> On <em>two points</em>, slide \(\alpha\) along the balance line and watch the bead climb to the peak at \(\tfrac14\). Notice the whole ridge is equally high — only the balance line picks one point on it. Then open <em>three points</em>: the free peak asks for a negative price, so the answer sits on the wall \(\alpha_3=0\).</p>
+    <div class="tabs" id="du-tabs">
+      <button data-t="two" aria-selected="true">two points · (1,1) and (−1,−1)</button>
+      <button data-t="three">three points · add (2, 0.5)</button>
+    </div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="du-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On the two-point tab a lit surface D over the alpha-1, alpha-2 floor rises to a long straight ridge at alpha-1 plus alpha-2 equals one half. A glowing line marks alpha-1 = alpha-2 on the floor and on the surface; a bead rides along it and a gold marker sits at the peak (1/4, 1/4) with height 1/4. On the three-point tab the surface is drawn over the plane of allowed prices; the free peak floats beyond the wall alpha-3 = 0, drawn as a red glass wall, and the gold marker sits on that wall at alpha-1 = 1/4."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls" data-tab="two"><div class="ctl"><label for="du-a">price α</label><input id="du-a" type="range" min="0" max="0.5" step="0.005" value="0.1"><output id="du-a-o">0.1</output></div></div>
+        <div class="controls" data-tab="three" style="display:none"><div class="ctl"><label for="du-a1">price α₁</label><input id="du-a1" type="range" min="0" max="0.6" step="0.005" value="0.1"><output id="du-a1-o">0.1</output></div><div class="ctl"><label for="du-a3">price α₃</label><input id="du-a3" type="range" min="0" max="0.4" step="0.005" value="0.1"><output id="du-a3-o">0.1</output></div></div>
+        <div class="presets"><button class="play" id="du-play">▶ climb to the peak</button></div>
+        <table class="kv" id="du-kv"></table>
+        <div id="du-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Sit with what changed between the two versions:</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th></th><th>Primal (street)</th><th>Dual (prices)</th></tr></thead>
+    <tbody>
+      <tr><td>unknowns</td><td>\(\mathbf w\) and \(b\): one per feature, plus one</td><td>\(\alpha_1,\dots,\alpha_n\): one per training point</td></tr>
+      <tr><td>data enters as</td><td>the coordinates of each \(\mathbf x_i\)</td><td><strong>only</strong> the dot products \(\mathbf x_i\cdot\mathbf x_j\)</td></tr>
+      <tr><td>zeros</td><td>none — \(\mathbf w\) is dense</td><td>most \(\alpha_i\) come out exactly 0</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>That middle row is the most important line in the subject. Hand a solver the table of numbers \(\mathbf x_i\cdot\mathbf x_j\), throw the original points away, and it still finds the answer. Section 12 opens that door.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\max_{\boldsymbol\alpha}\ \sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_j(\mathbf x_i\cdot\mathbf x_j)\\ \text{s.t.}\quad\alpha_i\ge0,\ \ \sum_i\alpha_iy_i=0\end{gathered}\]</p>
+    <p>A hill in the prices alone. Its peak equals the primal minimum (a free check), and the data appears <strong>only through dot products</strong>.</p>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For the two points \((1,1)\) blue and \((-1,-1)\) orange, the dual along the balance line is \(D(\alpha)=2\alpha-4\alpha^2\). What are \(\alpha\) and the primal value \(\tfrac12\|\mathbf w\|^2\)?</p>
+    <div class="opts">
+      <button data-why="α = ½ is where D returns to 0, not its peak. The peak is where 2 − 8α = 0.">\(\alpha=\tfrac12\), and \(\tfrac12\|\mathbf w\|^2=0\)</button>
+      <button data-correct data-why="2 − 8α = 0 gives α = ¼ and D = ½ − ¼ = ¼. Then w = ¼(1,1) + ¼(1,1) = (½,½) and ½‖w‖² = ½ · ½ = ¼ — equal to the dual peak, as strong duality promises.">\(\alpha=\tfrac14\), and \(\tfrac12\|\mathbf w\|^2=\tfrac14\) — the same as the dual peak</button>
+      <button data-why="With α = ¼ the dual value is ¼, and strong duality says the primal value equals it. ½ would be a gap, which a convex problem like this never has.">\(\alpha=\tfrac14\), and \(\tfrac12\|\mathbf w\|^2=\tfrac12\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s8-->
+  <p class="onesent reveal"><b>In one sentence:</b> Substituting \(\mathbf w=\sum\alpha_iy_i\mathbf x_i\) and \(\sum\alpha_iy_i=0\) back into \(L\) leaves a hill in the prices alone, whose peak equals the primal minimum and which sees the data only through dot products.</p>
+</section>
+
+<!-- ================= 9 · SUPPORT VECTORS ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>Support vectors — the few points holding up the street</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A shamiana is held up by a handful of bamboo poles. The rest of the ground under it could be cleared of every chair and table, and the tent would stand exactly as before.</p>
+    <p>Pull out even one pole, though, and the roof sags into a new shape. The poles are the only things that matter.</p>
+  </div>
+  <div class="prose reveal">
+    <p>One condition does all the interesting work — complementary slackness:</p>
+    \[\alpha_i\big[y_i(\mathbf w\cdot\mathbf x_i+b)-1\big]=0.\]
+    <p>A product is zero only if one of its factors is. So every training point is in one of three places:</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>Where the point sits</th><th>score \(y_if(\mathbf x_i)\)</th><th>price \(\alpha_i\)</th><th>effect on the street</th></tr></thead>
+    <tbody>
+      <tr><td>outside the street</td><td>\(&gt;1\)</td><td>\(=0\)</td><td>none at all — delete it and nothing moves</td></tr>
+      <tr><td>exactly on an edge</td><td>\(=1\)</td><td>\(\ge0\)</td><td>a support vector when \(\alpha_i&gt;0\): it holds the street up</td></tr>
+      <tr><td>inside the street</td><td>\(&lt;1\)</td><td>—</td><td>impossible with a hard margin (§10 allows it)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>A <em>support vector</em> is a training point with \(\alpha_i&gt;0\). It must sit on an edge, and it is one of the points \(\mathbf w\) is built from. Everything else could be deleted. To classify a new point you only need the support vectors:</p>
+    \[f(\mathbf x)=\sum_{i\in\text{SV}}\alpha_iy_i\,(\mathbf x_i\cdot\mathbf x)+b.\]
+    <p>This is why kernel SVMs are practical at all: a million training points, a few hundred support vectors, and prediction only looks at those.</p>
+  </div>
+
+  <div class="widget reveal" id="w-sparse">
+    <div class="widget-head"><span class="w-title">The answer depends on a few points</span><span class="w-sub">A live SVM on twenty points. Add, drag or delete points; the street re-solves as you move. Gold rings mark the support vectors, with their prices.</span></div>
+    <p class="try"><b>Try:</b> Press <em>delete every non-support point</em>: seventeen points vanish and the street does not move by a hair. Then choose <em>delete</em> and click a gold-ringed point: now the street jumps.</p>
+    <div class="toolbar" id="sp-modes"><span class="lbl">click to</span><button class="preset" data-m="move" aria-pressed="true">move</button><button class="preset" data-m="pos">add blue (+1)</button><button class="preset" data-m="neg">add orange (−1)</button><button class="preset" data-m="del">delete</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage stage-canvas"><svg id="sp-svg" viewBox="0 0 600 470" class="svg-lab grabbable" role="img" aria-label="Twenty points, ten blue discs upper left and ten orange diamonds lower right, with the solved street between them. Three points touching the street carry gold rings and their prices. A counter reads how many of the points the answer depends on."></svg></div><p class="stage-tap">tap to add or delete · drag to move</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="play" id="sp-prune">delete every non-support point</button><button class="preset" id="sp-reset">reset</button></div>
+        <table class="kv" id="sp-kv"></table>
+        <div id="sp-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <div class="legend"><span><i class="lp"></i>class +1</span><span><i class="ln"></i>class −1</span><span><i class="ls"></i>support vector</span><span><i class="le"></i>street edge</span><span><i class="lb"></i>boundary</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Watch out — "on the edge" is not the same as "support vector"</span>
+    <p>Complementary slackness says: a price above zero forces the point onto an edge. It does <strong>not</strong> say the reverse. A point can sit exactly on an edge and still have \(\alpha_i=0\). It touches the street but does not push; delete it and nothing changes.</p>
+    <p>Example: \((1,1)\) and \((2,0)\) blue, \((0,0)\) orange. The answer is \(\mathbf w=(1,1)\), \(b=-1\), and all three points score exactly 1. But the prices come out \(\alpha=(1,0,1)\): \((2,0)\) is on the edge with a zero price. The safe sentence: <em>support vectors are the points with \(\alpha_i&gt;0\); they always lie on an edge, but not every point on an edge is one.</em></p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\alpha_i&gt;0\ \Rightarrow\ y_if(\mathbf x_i)=1\\ y_if(\mathbf x_i)&gt;1\ \Rightarrow\ \alpha_i=0\\ f(\mathbf x)=\sum_{i\in\text{SV}}\alpha_iy_i(\mathbf x_i\cdot\mathbf x)+b\end{gathered}\]</p>
+    <p>Find the widest street → it collides with a few points → those are the support vectors → the whole model can be rebuilt from them alone. <strong>Every arrow runs forward.</strong> You never choose them; the solution hands them to you.</p>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">After training, a point sits exactly on the \(+1\) edge but its price is \(\alpha_i=0\). Is it a support vector, and what happens if you delete it?</p>
+    <div class="opts">
+      <button data-why="Being on the edge is necessary for a positive price, but not enough. A support vector is defined by α > 0, and this point has α = 0.">Yes — every point on an edge is a support vector, so the street moves</button>
+      <button data-correct data-why="Support vectors are the points with α > 0. This one touches the street but exerts no force (a 'degenerate' case), so it contributes nothing to w = Σαᵢyᵢxᵢ. Delete it and the answer is unchanged.">No — support vectors are the points with \(\alpha_i&gt;0\); this one touches the street but pushes nothing, so deleting it changes nothing</button>
+      <button data-why="A zero price cannot come from being on the wrong side: in a hard margin every point is on its correct side with score at least 1.">It must be misclassified, because its price is zero</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A trained SVM has 10 000 training points and 30 support vectors. You delete the other 9 970 points and train again. What do you get?</p>
+    <div class="opts">
+      <button data-correct data-why="All 9 970 have α = 0: their constraints have room and they appear nowhere in w = Σαᵢyᵢxᵢ. The same w, b and α for the 30 still satisfy all four KKT conditions on the smaller set, so it is exactly the same machine.">Exactly the same street — the deleted points all had zero prices</button>
+      <button data-why="The street only 'feels' points pressed against it. The 9 970 points had room to spare, so removing them removes no force at all.">A wider street, because there are fewer points in the way</button>
+      <button data-why="The support vectors are the points closest to the street. Deleting far-away points cannot bring any point closer, so no new support vectors appear.">A new street with a new set of support vectors</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s9-->
+  <p class="onesent reveal"><b>In one sentence:</b> Complementary slackness splits the points into those with room (price 0, deletable) and those pressed on an edge; the few with a positive price — the support vectors — hold the street up on their own.</p>
+</section>

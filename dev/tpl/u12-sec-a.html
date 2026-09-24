@@ -1,0 +1,223 @@
+<!-- ================= 1 · PICK THE BETTER LINE ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>Pick the better line</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Your cousin wants a photo of his new cricket bat for his WhatsApp status.</p>
+    <p>Hold the bat <strong>side-on</strong> and the photo shows everything: the long blade, the handle, how wide it is. Now point the camera <strong>straight down the handle</strong>. The photo shows a small dark rectangle. You cannot even tell it is a bat.</p>
+    <p>Same bat. Same camera. The only thing you changed is <strong>the direction you looked from</strong>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>A cloud of data points works the same way. From some directions it looks spread out, and you can tell the points apart. From others it collapses into a blob. Try it on a cloud shaped like a bat.</p>
+  </div>
+<!--@W1-->
+  <div class="prose reveal">
+    <p>Now make it smaller. Here are five points: \((1,2),\ (4,5),\ (7,8),\ (8,4),\ (10,6)\). Say you are allowed to keep <strong>only one number</strong> per point. Which number should it be?</p>
+    <p><strong>Option 1: keep only the first number.</strong> You get \(1,\,4,\,7,\,8,\,10\). Their average is \(6\). The distances from the average are \(-5,\,-2,\,1,\,2,\,4\). Square them and take the average: \((25+4+1+4+16)/5=10\).</p>
+    <p>That number, the average squared distance from the middle, is how we measure <strong>spread</strong>. Its proper name is the <em>variance</em>.</p>
+    <p><strong>Option 2: keep only the second number.</strong> You get \(2,\,5,\,8,\,4,\,6\), and the spread is only \(4\).</p>
+    <p><strong>Option 3: a slanted line</strong> that goes 2 steps right for every 1 step up. Drop each point onto it and read where it lands. The spread comes out to \(12\). That beats both axes.</p>
+    <p>So the best single number is not one of the columns you were given. It is a <strong>mix</strong> of them, read along a slanted line. Finding that line is the whole job of this unit.</p>
+    <p>Here is the same game with 90 points. Each point drops onto the line along a grey thread, the shortest way. That drop is called <em>projecting</em> the point onto the line.</p>
+  </div>
+<!--@W2-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>Look at the cloud from every direction. For each one, drop the points onto the line and measure how spread out they land. <strong>Keep the direction with the biggest spread.</strong></p>
+    <p>That is principal component analysis (PCA). Everything else in this unit is the machinery that does this search quickly, and the reason it works. On the 90 points, line A has spread \(5.45\) and line B only \(0.41\). You have just done PCA by eye.</p>
+  </div>
+  <div class="check reveal" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">On line B the 90 dots crowd into a short stretch. What goes wrong if you describe each point only by where it lands on B?</p>
+    <div class="opts">
+      <button data-why="The line itself is fine to draw. The trouble is what happens to the points: two points that were far apart in the cloud land almost on top of each other, so one number can no longer tell them apart.">Nothing — any line through the middle works equally well</button>
+      <button data-correct data-why="Right. Points that were far apart in the cloud land almost on the same spot on B. Their one number is nearly the same, so you can no longer tell them apart. A small spread means the line has thrown the differences away.">Points that were far apart land almost on top of each other, so you cannot tell them apart any more</button>
+      <button data-why="The numbers on B are not wrong, and they are not bigger. They are just bunched together. Bunched numbers cannot tell far-apart points apart.">The numbers on B come out too large to use</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Sweep the line through every angle and the spread traces one smooth hump. How far apart are the best angle and the worst angle?</p>
+    <div class="opts">
+      <button data-why="The hump repeats every 180°, because a line at 200° is the same line as one at 20°. Within one turn of 180° the best and the worst sit halfway apart.">180° — the worst is the best line turned around</button>
+      <button data-why="45° would be the halfway angle between the peak and the dip. Watch the marker on the hump: the lowest point comes a full quarter-turn after the highest.">45°</button>
+      <button data-correct data-why="Right. The worst direction is always exactly at right angles to the best one. Keep that in mind: in §5 you will see that both are special directions of one matrix, and such directions always meet at 90°.">Exactly 90° — the worst direction is at right angles to the best</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="prose reveal">
+    <p>Here is the path through this unit, one step at a time:</p>
+    <ul class="rules">
+      <li><b class="k">①</b><span class="r"><strong>Why spread is the information</strong> — a column that never changes can never explain anything.</span></li>
+      <li><b class="k">②</b><span class="r"><strong>Centre, then build one small table</strong> — the covariance matrix \(C\) holds every spread you will need.</span></li>
+      <li><b class="k">③</b><span class="r"><strong>One score per direction</strong> — the spread along any direction \(\mathbf w\) is \(\mathbf w^\top C\mathbf w\).</span></li>
+      <li><b class="k">④</b><span class="r"><strong>The leash</strong> — fix the length of \(\mathbf w\) and the best directions turn out to be eigenvectors.</span></li>
+      <li><b class="k">⑤</b><span class="r"><strong>The multiplier is the spread</strong> — the eigenvalue tells you how much spread each direction keeps.</span></li>
+      <li><b class="k">⑥</b><span class="r"><strong>The second, the third, the rest</strong> — and a fixed budget that says how many to keep.</span></li>
+      <li><b class="k">⑦</b><span class="r"><strong>Three more views of one answer</strong> — smallest rebuild error, columns that never repeat each other, and the SVD.</span></li>
+      <li><b class="k">⑧</b><span class="r"><strong>PCA in the real world</strong> — finding eigenvectors by just multiplying, data wider than it is tall, the recipe, the traps, and one example done start to finish.</span></li>
+    </ul>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> PCA looks at a cloud of data from every direction and keeps the direction along which the points land most spread out.</p>
+</section>
+
+<!-- ================= 2 · WHY SPREAD IS THE INFORMATION ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>Why spread is the information</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A chai stall owner wants to know why he sells 300 cups on some days and only 80 on others. So every evening he writes down a few things: the temperature, whether it rained, the day of the week — and the colour of his kettle.</p>
+    <p>The kettle is the same steel kettle every single day. Can it explain why sales go up and down?</p>
+    <p>Of course not. <strong>Something that never changes cannot explain something that changes.</strong></p>
+  </div>
+  <div class="prose reveal">
+    <p>Every model you will ever build has the same skeleton. Something you want to predict, \(y\), is driven by your inputs \(\mathbf x\), plus some noise \(\varepsilon\) for everything you did not measure:</p>
+    \[y=f(\mathbf x)+\varepsilon\]
+    <p>A straight line, a decision tree and a neural network are all just different choices of \(f\).</p>
+    <p>Now read that line as a statement about <strong>change</strong>. If \(y\) moves, it moved because \(\mathbf x\) moved, or because of the noise. So for every input column, the useful question is simple: <em>how much does this column change?</em> The tool that measures change is the one you met in §1 — the variance.</p>
+    <p>Here is a small example. We want to predict salaries from four columns: <strong>age, years of experience, number of certifications</strong> and <strong>number of trainings</strong>. Their variances are:</p>
+    <table class="plain">
+      <thead><tr><th>column</th><th>variance</th><th>what it means</th></tr></thead>
+      <tbody>
+        <tr><td>age</td><td>\(64\)</td><td>changes a lot from person to person</td></tr>
+        <tr><td>experience</td><td>\(41\)</td><td>changes a lot too</td></tr>
+        <tr><td>certifications</td><td>\(0.09\)</td><td>almost everyone has zero</td></tr>
+        <tr><td>trainings</td><td>\(0.04\)</td><td>almost everyone has zero</td></tr>
+      </tbody>
+    </table>
+    <p>The last two columns hardly move. Like the steel kettle, they cannot explain why one salary is higher than another. Dropping them costs almost nothing.</p>
+    <p>That leaves age and experience. These two have a different problem: they are <strong>twins</strong>. Older people usually have more experience, so the two columns mostly say the same thing. A normal feature-selection method would delete one twin. PCA does something smarter. It builds <strong>one new direction</strong> that carries what both were saying, and a second direction, at right angles, that carries the little that is left.</p>
+  </div>
+<!--@W3-->
+  <div class="callout intuition reveal"><span class="tag">The one surprising move</span>
+    <p>Look at what PCA was given: only the four columns. <strong>It never sees a single salary.</strong> As Prof. Saurabh puts it in class: <em>"PCA doesn't get bothered by what you have in y. It only takes your x input features."</em></p>
+    <p>That is its strength — you can rank directions before you ever look at the target. It is also its main weakness, and §14 shows a case where it bites.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Because PCA swaps \(D\) old columns for \(M\) new ones, people describe it with three different names. All three are right:</p>
+    <table class="plain">
+      <thead><tr><th>People call it</th><th>because</th><th>compared with the usual way</th></tr></thead>
+      <tbody>
+        <tr><td><strong>dimension reduction</strong></td><td>\(D\) columns go in, fewer (\(M\)) come out</td><td>the plain description of what happens</td></tr>
+        <tr><td><strong>feature selection</strong></td><td>you choose which directions survive</td><td>the usual way needs a model first, then feature importance, then a cut; PCA chooses before any model exists</td></tr>
+        <tr><td><strong>feature engineering</strong></td><td>each new column is a fresh mix \(z_1=a_1x_1+\dots+a_Dx_D\)</td><td>like building "loan ÷ income" by hand, except PCA finds the weights for you</td></tr>
+      </tbody>
+    </table>
+    <p>And you get a bonus for free: the new columns never repeat each other. §10 shows why.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>A model can only explain change in \(y\) using change in \(\mathbf x\). So a direction along which the data <strong>barely changes</strong> carries almost no information, whatever the target is.</p>
+    <p>That is why PCA ranks directions by their spread — and why it can do so <strong>without ever looking at \(y\)</strong>.</p>
+  </div>
+  <div class="check reveal" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A fifth column is added: "works in the Pune office". Every employee in this data works in Pune, so the column is the same for everyone. How much of the difference in salaries can it explain?</p>
+    <div class="opts">
+      <button data-why="It does not matter how important the office sounds. The column has the same value for everyone, so its variance is 0. A column that never changes cannot account for salaries that do.">A lot — where you work matters for pay</button>
+      <button data-why="Even a little would need the column to change a little. Here it does not change at all: variance exactly 0.">A little — about as much as certifications</button>
+      <button data-correct data-why="Right. Its variance is exactly 0. If x never changes, no change in salary can come from it. PCA would give it no weight at all.">None at all — it never changes, so it cannot explain a change</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> a column that barely changes cannot explain anything, so PCA ranks directions by their spread, and it does this without ever looking at the thing you want to predict.</p>
+</section>
+
+<!-- ================= 3 · CENTRE FIRST, THEN BUILD C ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Centre first, then build one small table</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A PT teacher measures every child's height <strong>from the floor</strong>: 142 cm, 150 cm, 138 cm, 146 cm. Every number is big, and most of each number is just the distance up from the floor.</p>
+    <p>Now she measures <strong>from the class average</strong> instead: \(-2\), \(+6\), \(-6\), \(+2\). Suddenly every number tells you something: who is taller than usual, and by how much.</p>
+    <p>Measuring from the average is called <strong>centring</strong>. PCA always does it first.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Take the five points from §1 again: \((1,2),\ (4,5),\ (7,8),\ (8,4),\ (10,6)\).</p>
+    <p><strong>Step 1: find the middle.</strong> The average of the first numbers is \(30/5=6\). The average of the second numbers is \(25/5=5\). So the middle of the cloud is \((6,5)\).</p>
+    <p><strong>Step 2: subtract the middle from every point.</strong> Write the answers as the rows of a table. That table is the centred data matrix \(X\): one row per point (\(N=5\) rows), one column per feature (\(D=2\) columns).</p>
+    \[X=\begin{bmatrix}-5&-3\\ -2&0\\ 1&3\\ 2&-1\\ 4&1\end{bmatrix}\]
+    <p>Quick check: each column now adds up to zero. \(-5-2+1+2+4=0\) and \(-3+0+3-1+1=0\). The cloud now sits around the origin.</p>
+    <p><strong>Step 3: build one small table.</strong> For every pair of columns, multiply them row by row, add up, and divide by the number of points.</p>
+    <ul>
+      <li>column 1 with itself: \((25+4+1+4+16)/5=50/5=10\)</li>
+      <li>column 2 with itself: \((9+0+9+1+1)/5=20/5=4\)</li>
+      <li>column 1 with column 2: \((15+0+3-2+4)/5=20/5=4\)</li>
+    </ul>
+    <p>Put the three numbers in a square:</p>
+    \[C=\frac1N X^\top X=\begin{bmatrix}10&4\\ 4&4\end{bmatrix}\]
+    <p>This is the <strong>covariance matrix</strong>. Read it like this:</p>
+    <ul>
+      <li>The <strong>diagonal</strong> holds each column's own spread: \(10\) for the first column, \(4\) for the second. These are exactly the numbers you found in §1.</li>
+      <li>The <strong>off-diagonal</strong> number says how much the two columns <em>move together</em>. It is positive here, so when a point is to the right of the middle, it also tends to be above it.</li>
+      <li>\(C\) is <strong>symmetric</strong>: "column 1 with column 2" is the same as "column 2 with column 1".</li>
+    </ul>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Two details that cost marks</span>
+    <p><strong>Divide by \(N\), not \(N-1\).</strong> Here \(N=5\), so we divide by \(5\). Many software packages divide by \(N-1=4\) by default, which gives \(\begin{bmatrix}12.5&5\\5&5\end{bmatrix}\) — the same directions, but different numbers. This course divides by \(N\).</p>
+    <p><strong>Centre first.</strong> The formula \(\tfrac1N X^\top X\) is the covariance only when every column averages to zero. Skip the centring and you get a different matrix with different eigenvectors.</p>
+  </div>
+<!--@W4-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[C=\frac1N X^\top X\]</p>
+    <p>After centring, one small \(D\times D\) table says <strong>how much each column moves</strong> (the diagonal) and <strong>which columns move together</strong> (the rest). From here on, \(C\) is the only thing about the data that PCA will ever use.</p>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For the five centred points, which covariance matrix does this course use?</p>
+    <div class="opts">
+      <button data-why="That is what you get by dividing by N − 1 = 4, which is what many software packages do by default. This course divides by N = 5.">[[12.5, 5], [5, 5]]</button>
+      <button data-correct data-why="Right. The sums are 50, 20 and 20. Divide by N = 5 and you get 10, 4 and 4.">[[10, 4], [4, 4]]</button>
+      <button data-why="These are the sums before dividing. Divide each one by N = 5.">[[50, 20], [20, 20]]</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You forget to centre and compute \(\tfrac15 X^\top X\) on the raw points \((1,2),\dots,(10,6)\). You get \(\begin{bmatrix}46&34\\34&29\end{bmatrix}\). What is wrong with it?</p>
+    <div class="opts">
+      <button data-why="The numbers are bigger, but that is not the real problem. The real problem is that the matrix now also measures how far the whole cloud sits from the origin, so its best direction points at the cloud's middle instead of along its spread.">Nothing — it is the same matrix, just scaled up</button>
+      <button data-correct data-why="Right. Without centring, every number also includes how far the cloud sits from the origin. The matrix is really C plus a piece from the mean, and its top direction swings toward the point (6, 5) instead of lying along the spread.">It mixes in the position of the whole cloud, so its best direction points toward the middle (6, 5), not along the spread</button>
+      <button data-why="The matrix is still symmetric: 34 appears in both corners. The problem is what it measures: distance from the origin, not spread around the middle.">It is no longer symmetric</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s3-->
+  <p class="onesent reveal"><b>In one sentence:</b> subtract the average from every column, then one small symmetric table \(C=\tfrac1N X^\top X\) records how much each column moves and which columns move together.</p>
+</section>
+
+<!-- ================= 4 · ONE SCORE PER DIRECTION ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>Every direction gets one score</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Your tailor takes your measurements once and writes them in a small notebook. After that, you never need to stand in his shop again. He can tell how <strong>any</strong> new kurta design will fit you — straight from the notebook.</p>
+    <p>\(C\) is the data's notebook. Once you have it, you can work out the spread along <strong>any</strong> direction without touching the data again.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Pick a direction and write it as an arrow of length 1, \(\mathbf w\). Each centred point \(\mathbf x_i\) lands on the line at \(z_i=\mathbf x_i^\top\mathbf w\) — one dot product per point. All of them together are \(\mathbf z=X\mathbf w\).</p>
+    <p>The landing spots average to zero, because the data is centred. So their spread is just the average of their squares. Watch the data disappear:</p>
+    \[\begin{aligned}\text{spread of }\mathbf z&=\frac1N\,\mathbf z^\top\mathbf z=\frac1N\,(X\mathbf w)^\top(X\mathbf w)\\ &=\mathbf w^\top\Big(\frac1N X^\top X\Big)\mathbf w=\mathbf w^\top C\,\mathbf w.\end{aligned}\]
+    <p>The left side talks about the projected points. The right side has only \(C\) and \(\mathbf w\). The data has <strong>vanished into \(C\)</strong>.</p>
+    <p>Try it on the five points, with \(C=\begin{bmatrix}10&4\\4&4\end{bmatrix}\):</p>
+    <ul>
+      <li>\(\mathbf w=(1,0)\): \(\ \mathbf w^\top C\mathbf w=10\). The spread of the first column, as in §1.</li>
+      <li>\(\mathbf w=(0,1)\): \(\ \mathbf w^\top C\mathbf w=4\). The second column.</li>
+      <li>\(\mathbf w=\tfrac1{\sqrt5}(2,1)\): \(\ \mathbf w^\top C\mathbf w=\tfrac15(40+8+8+4)=12\). The slanted line from §1.</li>
+    </ul>
+    <p>The same three numbers as in §1. This time, not one data point was touched.</p>
+    <p>So every direction gets <strong>one score</strong>. You can picture all the scores at once as a surface: over each arrow \((w_1,w_2)\), stand a height \(\mathbf w^\top C\mathbf w\). It is a bowl. The directions of length 1 form a ring on the floor, and the ring lifted onto the bowl is a wavy rim. Its highest point is the best direction.</p>
+  </div>
+<!--@W5-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\text{spread along }\mathbf w=\mathbf w^\top C\,\mathbf w\]</p>
+    <p>For any arrow \(\mathbf w\) of length 1: one number for every direction, and no data needed. PCA is now a clean question: <strong>which unit arrow \(\mathbf w\) makes \(\mathbf w^\top C\mathbf w\) as big as possible?</strong></p>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With \(C=\begin{bmatrix}10&4\\4&4\end{bmatrix}\), what is the spread along the 45° direction \(\mathbf w=\tfrac1{\sqrt2}(1,1)\)?</p>
+    <div class="opts">
+      <button data-why="That is the sum of all four entries, 10 + 4 + 4 + 4 = 22. You still have to multiply by the two factors of 1/√2, which together give 1/2.">22</button>
+      <button data-correct data-why="Right. wᵀCw = ½(10 + 4 + 4 + 4) = 22/2 = 11. That is more than either axis (10 and 4) but less than the best, 12, which sits at about 26.6°.">11</button>
+      <button data-why="14 is the total of the diagonal, 10 + 4. That is the total spread over all directions together, not the spread along one direction.">14</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s4-->
+  <p class="onesent reveal"><b>In one sentence:</b> the spread along any unit direction \(\mathbf w\) is \(\mathbf w^\top C\mathbf w\), so once you have \(C\) every direction gets a score without looking at the data again.</p>
+</section>

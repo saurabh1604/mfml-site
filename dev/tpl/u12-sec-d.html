@@ -1,0 +1,171 @@
+<!-- ================= 13 · THE GRAM TRICK ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>When columns outnumber rows — the Gram trick</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A hospital lab has tissue from <strong>40 patients</strong>. For each one, a machine reads <strong>12,000 genes</strong>. The spreadsheet is 40 rows tall and 12,000 columns wide — a class register with 40 students and twelve thousand subjects.</p>
+    <p>Most data is <strong>long</strong>: many rows, few columns. This data is <strong>wide</strong>. And the usual recipe falls over on it.</p>
+  </div>
+  <div class="prose reveal">
+    <p>The covariance matrix is always <strong>(number of columns) × (number of columns)</strong>, no matter how few rows you have. Here that is \(12{,}000\times12{,}000=1.44\times10^8\) numbers. At 8 bytes each, that is about <strong>1.152 GB</strong> — for a dataset that is only a few megabytes. Worse, an eigen-split costs about \(D^3\approx1.7\times10^{12}\) steps. Hours of work, to learn from 40 patients.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">The tempting wrong fix</span>
+    <p>"\(X^\top X\) is huge, so use \(XX^\top\) instead — it is only \(40\times40\)!" Right instinct, wrong statement. \(XX^\top\) is not the covariance matrix. Its rows and columns are indexed by <em>patients</em>, not genes, and its eigenvectors have 40 entries, when we need 12,000. We can still use it — as a stepping stone.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>The trick is one multiplication.</strong> Start from the eigen-equation we want, \(\tfrac1N X^\top X\,\mathbf w=\lambda\mathbf w\), and multiply both sides on the left by \(X\):</p>
+    \[\frac1N X X^\top\,(X\mathbf w)=\lambda\,(X\mathbf w).\]
+    <p>Give the two pieces names. \(K=\tfrac1N XX^\top\) is the small \(N\times N\) table, called the <strong>Gram matrix</strong>. And \(\mathbf u=X\mathbf w\) has \(N\) entries. Then</p>
+    \[K\mathbf u=\lambda\,\mathbf u.\]
+    <p>An eigen-problem on a \(40\times40\) table. And the \(\lambda\) is <strong>the same</strong> \(\lambda\).</p>
+    <p><strong>Getting back.</strong> Solving the small problem gives \(\mathbf u\). To get \(\mathbf w\), multiply by \(X^\top\): then \(C(X^\top\mathbf u)=\lambda(X^\top\mathbf u)\), so \(X^\top\mathbf u\) is an eigenvector of \(C\) with that same \(\lambda\). It points the right way but has the wrong length, so finish with</p>
+    \[\mathbf w=\frac{X^\top\mathbf u}{\|X^\top\mathbf u\|}.\]
+    <p>Forgetting this last step is the most common slip, and it quietly breaks "spread \(=\lambda\)".</p>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Nothing is lost</span>
+    <p>\(C\) has 12,000 eigenvalues. But 40 points can only span a flat piece of space of at most 40 dimensions — and centring (making the rows add to zero) takes away one more. So at most \(N-1=39\) eigenvalues can be non-zero. The other 11,961 are exactly zero and carry no spread at all.</p>
+    <p>The small table \(K\) already holds every non-zero eigenvalue there was. The Gram trick is not an approximation. It is the whole answer, bought cheaply.</p>
+  </div>
+<!--@W14-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}K=\frac1N XX^\top,\qquad K\mathbf u=\lambda\mathbf u\\ \mathbf w=\frac{X^\top\mathbf u}{\|X^\top\mathbf u\|}\end{gathered}\]</p>
+    <p>When columns outnumber rows, solve the small \(N\times N\) problem instead. The non-zero eigenvalues are identical, and one multiplication by \(X^\top\) — then a rescale — turns each small eigenvector into a principal direction.</p>
+  </div>
+  <div class="check reveal" data-check="c20">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">12,000 genes, 40 patients, centred. How much memory does \(C\) need in 8-byte numbers, and how many of its eigenvalues can be non-zero?</p>
+    <div class="opts">
+      <button data-why="12,000 × 40 × 8 bytes is the size of the data itself (3.84 MB). The covariance matrix is 12,000 × 12,000, whatever N is.">about 3.84 MB; up to 12,000 non-zero</button>
+      <button data-correct data-why="Right. 12,000² × 8 = 1.152 × 10⁹ bytes ≈ 1.152 GB. But the rank is at most N − 1 = 39 after centring, so at most 39 eigenvalues are non-zero — and the 40 × 40 matrix K holds all of them.">about 1.152 GB; at most 39 non-zero</button>
+      <button data-why="The memory is right, but not the count. Centring makes the 40 rows add to zero, which removes one more dimension: at most 39.">about 1.152 GB; at most 40 non-zero</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s13-->
+  <p class="onesent reveal"><b>In one sentence:</b> when \(D\gg N\), eigen-split the small \(N\times N\) Gram matrix instead — same non-zero eigenvalues — and turn each \(\mathbf u\) into a direction with \(\mathbf w=X^\top\mathbf u/\|X^\top\mathbf u\|\).</p>
+</section>
+
+<!-- ================= 14 · THE RECIPE AND THE TRAPS ================= -->
+<section class="unit" id="s14">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>The recipe, and the traps</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Dosa batter has a recipe: soak, grind, ferment, cook. Skip a step and you still get <em>something</em> on the tawa — just not a dosa.</p>
+    <p>PCA has a recipe too. Each step is there for a reason, and each skipped step has a way of going quietly wrong.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Everything so far fits in four steps, plus an optional fifth:</p>
+    <ol>
+      <li><strong>Centre.</strong> Subtract each column's mean \(\mu_d\). Now every column averages to zero.</li>
+      <li><strong>Standardise.</strong> Divide each column by its standard deviation \(\sigma_d\) (the square root of its spread). Now every column has spread 1 and no units.</li>
+      <li><strong>Eigen-split.</strong> Build \(C=\tfrac1N X^\top X\), find its eigenvalues and eigenvectors, <strong>make each eigenvector length 1</strong>, and sort biggest first. Keep the top \(M\) as the columns of \(W\).</li>
+      <li><strong>Project.</strong> \(Z=XW\). You started with \(D\) columns and now have \(M\). That one multiplication is the dimension reduction.</li>
+      <li><em>(optional)</em> <strong>Undo.</strong> To see a rebuilt point in the original units, undo steps 2 and 1 in reverse order: \(x=\tilde x\,\sigma_d+\mu_d\).</li>
+    </ol>
+    <p><strong>A new point</strong> (a fresh customer, a test row) goes through the same steps with <strong>the training \(\mu\), \(\sigma\) and \(W\)</strong>. Never its own — one point has no spread — and never the test set's, which quietly leaks the test data into the model.</p>
+    <p>Try it. Training means \(\mu=(4,10)\), standard deviations \(\sigma=(2,5)\), kept direction \(\mathbf w_1=(0.6,\ 0.8)\), dropped direction \(\mathbf w_2=(-0.8,\ 0.6)\). A new point \((6,20)\) arrives.</p>
+    <ul>
+      <li>Standardise: \(\big(\tfrac{6-4}{2},\ \tfrac{20-10}{5}\big)=(1,2)\).</li>
+      <li>Score: \(z=0.6(1)+0.8(2)=2.2\). Rebuild: \(2.2\,(0.6,\ 0.8)=(1.32,\ 1.76)\).</li>
+      <li>Error: \((1-1.32)^2+(2-1.76)^2=0.1024+0.0576=0.16\). And along the dropped direction, \(z_2=-0.8+1.2=0.4\), so \(z_2^2=0.16\). The same, as §9 promised.</li>
+    </ul>
+    <h3>The traps</h3>
+    <p><strong>1 · Units decide the answer.</strong> PCA chases spread, and spread depends on units. Measure height in metres and weight in kilograms: weight's numbers are simply bigger, so its spread is about 8,600 times larger. The raw PC1 then puts a loading of \(1.00\) on weight and \(0.01\) on height — it is just the weight column. After standardising, both columns compete fairly and the loadings come out \(0.71\) and \(0.71\). (If all columns share one unit and their spreads are real information, centre only. Decide on purpose.)</p>
+    <p><strong>2 · PCA is blind to \(y\).</strong> It ranks directions by spread in \(\mathbf x\), and it has no idea whether that spread has anything to do with what you want to predict. It can rank them exactly backwards. In photos, the biggest spread is often the <em>lighting</em>, not the face. In gene data it is often which <em>machine or batch</em> ran the test. If you need the target kept, use a method that looks at \(y\) (such as partial least squares or linear discriminant analysis) instead of, or alongside, PCA.</p>
+    <p><strong>3 · Outliers pull the components.</strong> Spread adds up squared distances, so one far-away point counts enormously. One mistyped value can swing PC1 toward itself. Look at the data first.</p>
+    <p><strong>4 · Signs are arbitrary.</strong> \(-\mathbf w\) is as good as \(\mathbf w\). Read patterns, not signs.</p>
+    <p><strong>5 · Straight lines only.</strong> Every component is a straight mix of the columns. Data on a curve or a spiral needs several components to describe one curved direction. (Curved cousins exist — kernel PCA, t-SNE, UMAP — but that is another story.)</p>
+  </div>
+<!--@W15-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{centre}\ \to\ \text{standardise}\\ \to\ \text{eigen-split}\ \to\ \text{project}\end{gathered}\]</p>
+    <p>Fit \(\mu\), \(\sigma\) and \(W\) once, on training data, and reuse them for everything new. And remember what PCA cannot see: units nobody told it about, the target \(y\), and curves.</p>
+  </div>
+  <div class="check reveal" data-check="c21">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A second new point \((8,5)\) arrives for the same fitted PCA (\(\mu=(4,10)\), \(\sigma=(2,5)\), \(\mathbf w_1=(0.6,\ 0.8)\)). What is its score \(z\)?</p>
+    <div class="opts">
+      <button data-why="That uses the raw point: 0.6·8 + 0.8·5 = 8.8. First standardise with the training numbers: ((8 − 4)/2, (5 − 10)/5) = (2, −1).">\(8.8\)</button>
+      <button data-correct data-why="Right. Standardise with the training μ and σ: ((8 − 4)/2, (5 − 10)/5) = (2, −1). Then z = 0.6·2 + 0.8·(−1) = 1.2 − 0.8 = 0.4.">\(0.4\)</button>
+      <button data-why="A single point has no spread of its own, so you cannot standardise it with its own numbers. Use the training μ = (4, 10) and σ = (2, 5): (2, −1), and z = 1.2 − 0.8 = 0.4.">It cannot be computed without re-fitting on the new point</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> centre, standardise, eigen-split and project with numbers fitted once on training data — and never forget that PCA is blind to units you did not fix, to the target, and to curves.</p>
+</section>
+
+<!-- ================= 15 · ONE EXAMPLE START TO FINISH ================= -->
+<section class="unit" id="s15">
+  <div class="sec-head reveal"><span class="sec-num">15</span><h2>One example, start to finish</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You have seen every part of the engine on its own. Now take the car out for a full drive — from the five raw points to their one-number summary, with every check along the way.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>The data:</strong> \((1,2),\ (4,5),\ (7,8),\ (8,4),\ (10,6)\). Reduce it from two numbers per point to one.</p>
+    <p><strong>Step 1 · Centre.</strong> The mean is \((6,5)\). Subtract it:</p>
+    \[X=\begin{bmatrix}-5&-3\\ -2&0\\ 1&3\\ 2&-1\\ 4&1\end{bmatrix}\qquad\text{(each column adds to }0\text{ }\checkmark\text{)}\]
+    <p>We skip standardising: both columns are in the same units with similar spreads.</p>
+    <p><strong>Step 2 · Build \(C\)</strong> (divide by \(N=5\)):</p>
+    \[C=\frac15\begin{bmatrix}50&20\\20&20\end{bmatrix}=\begin{bmatrix}10&4\\4&4\end{bmatrix},\qquad\operatorname{tr}(C)=14.\]
+    <p><strong>Step 3 · Eigenvalues.</strong></p>
+    \[\begin{aligned}\det(C-\lambda I)&=(10-\lambda)(4-\lambda)-16\\ &=\lambda^2-14\lambda+24=0,\end{aligned}\]
+    \[\lambda=\frac{14\pm\sqrt{196-96}}{2}=\frac{14\pm10}{2}\ \Longrightarrow\ \lambda_1=12,\ \ \lambda_2=2.\]
+    <p>Two instant checks: \(12+2=14=\operatorname{tr}(C)\) ✓ and \(12\times2=24=\det C\) ✓. Shares: \(12/14=85.71\%\) and \(2/14=14.29\%\).</p>
+    <p><strong>Step 4 · Eigenvectors, then length 1.</strong> For \(\lambda_1=12\): \(-2a+4b=0\), so \(a=2b\): the direction \((2,1)\), length \(\sqrt5\). For \(\lambda_2=2\): \(8a+4b=0\), so \(b=-2a\): the direction \((1,-2)\).</p>
+    \[\mathbf w_1=\frac1{\sqrt5}\begin{bmatrix}2\\1\end{bmatrix}\approx\begin{bmatrix}0.894\\0.447\end{bmatrix},\qquad \mathbf w_2=\frac1{\sqrt5}\begin{bmatrix}1\\-2\end{bmatrix}.\]
+    <p>Check: \(\mathbf w_1^\top\mathbf w_2=\tfrac15(2-2)=0\) ✓, and both have length 1 ✓.</p>
+    <p><strong>Step 5 · Project.</strong> One dot product per row, \(z_i=\mathbf w_1^\top\mathbf x_i\):</p>
+    \[\mathbf z=\frac1{\sqrt5}\big(-13,\ -4,\ 5,\ 3,\ 9\big)\approx\big(-5.814,\ -1.789,\ 2.236,\ 1.342,\ 4.025\big).\]
+    <p>Five points, five numbers. The reduction is done.</p>
+    <p><strong>Step 6 · Three checks.</strong></p>
+    <ul>
+      <li>The scores average to zero: \(-13-4+5+3+9=0\) ✓.</li>
+      <li>Their spread is \(\lambda_1\): \(\tfrac15\cdot\tfrac{169+16+25+9+81}{5}=\tfrac{300}{25}=12\) ✓.</li>
+      <li>The dropped direction holds the rest: scores \(\tfrac1{\sqrt5}(1,-2,-5,4,2)\), spread \(\tfrac{50}{25}=2=\lambda_2\), and \(12+2=14\) ✓. Nothing went missing.</li>
+    </ul>
+    <p>Now run it yourself — on these points, on the four points of Practice Problem 1, on the nine-point example from the slides, or on any points you drag around.</p>
+  </div>
+<!--@W16-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>Mean → centre → \(C=\tfrac1N X^\top X\) → \(\det(C-\lambda I)=0\) → eigenvectors of length 1 → scores. And three free checks at the end: \(\sum\lambda=\operatorname{tr}C\), \(\prod\lambda=\det C\), and "spread of the scores \(=\lambda_1\)".</p>
+  </div>
+  <div class="check reveal" data-check="c22">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A classmate gets eigenvalues \(13\) and \(1\) for \(C=\begin{bmatrix}10&4\\4&4\end{bmatrix}\). Which quick check catches the mistake?</p>
+    <div class="opts">
+      <button data-why="13 + 1 = 14 = tr(C), so the trace check passes. It cannot catch this mistake.">The trace check: \(13+1\ne14\)</button>
+      <button data-correct data-why="Right. 13 + 1 = 14 passes the trace check, but 13 × 1 = 13 ≠ 24 = det C. The true values are 12 and 2, which pass both.">The determinant check: \(13\times1=13\ne24\)</button>
+      <button data-why="Nothing here can be negative: both are positive, as spreads should be. The product check is the one that fails: 13 × 1 = 13, but det C = 24.">Neither — both numbers are positive, so they are fine</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> centre, build \(C\), solve the quadratic, make the eigenvectors length 1, project — and let the trace, the determinant and the spread of the scores check your work for free.</p>
+</section>
+
+<!-- ================= 16 · CARRY FORWARD ================= -->
+<section class="unit" id="s16">
+  <div class="sec-head reveal"><span class="sec-num">16</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>One question ran through this whole unit: <em>from which direction does the data look most spread out?</em> It turned into a matrix, then a leash, then an eigenvector — and then it showed up three more times, wearing different clothes. Here is the whole unit on one card.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>Part</th><th>What to remember</th></tr></thead>
+    <tbody>
+      <tr><td><strong>The problem</strong></td><td>\(\max_{\mathbf w}\ \mathbf w^\top C\mathbf w\) subject to \(\mathbf w^\top\mathbf w=1\) — only the direction matters, never the length</td></tr>
+      <tr><td><strong>The derivation, in six lines</strong></td><td>① \(\mathbf z=X\mathbf w\) ② \(\tfrac1N\mathbf z^\top\mathbf z=\mathbf w^\top C\mathbf w\) ③ \(L=\mathbf w^\top C\mathbf w-\lambda(\mathbf w^\top\mathbf w-1)\) ④ \(2C\mathbf w-2\lambda\mathbf w=\mathbf 0\) ⑤ \(C\mathbf w=\lambda\mathbf w\) ⑥ \(\mathbf w^\top C\mathbf w=\lambda\)</td></tr>
+      <tr><td><strong>The five facts</strong></td><td>directions are eigenvectors, \(C\mathbf w_d=\lambda_d\mathbf w_d\) · spread along each is \(\lambda_d\) · \(\operatorname{tr}C=\sum\lambda_d\) · \(\operatorname{Cov}(Z)=W^\top CW=\Lambda\) · \(\lambda_d=\sigma_d^2/N\)</td></tr>
+      <tr><td><strong>The recipe</strong></td><td>centre · standardise · \(C=\tfrac1N X^\top X\), eigen-split, length 1, sort · keep \(M\) for your target share · \(Z=XW\); new points use the training \(\mu,\sigma,W\)</td></tr>
+      <tr><td><strong>The six traps</strong></td><td>dividing by \(N-1\) · not making eigenvectors length 1 · not centring · standardising new data with its own \(\mu,\sigma\) · expecting \(WW^\top=I\) (only \(W^\top W=I\)) · assuming the top component predicts \(y\)</td></tr>
+      <tr><td><strong>When things get big</strong></td><td>\(D\ge5\): no formula exists, so iterate · only the top one: \(\mathbf x_{k+1}=C\mathbf x_k/\|C\mathbf x_k\|\) · \(D\gg N\): use \(K=\tfrac1N XX^\top\), then \(\mathbf w=X^\top\mathbf u/\|X^\top\mathbf u\|\) · best rank-\(M\) copy: \(U_M\Sigma_MV_M^\top\)</td></tr>
+      <tr><td><strong>Three views, one answer</strong></td><td>most spread kept · least rebuild error · best truncated SVD — all the top eigenvectors of \(C\)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
+    <p><strong>Ask a geometric wish, put it on a leash, and the answer is an eigenvector.</strong></p>
+    <p>"Most spread" became \(\mathbf w^\top C\mathbf w\). The leash \(\mathbf w^\top\mathbf w=1\) became a fine. The fine became the eigenvalue, and the eigenvalue became the spread. Everything else — the budget, the rebuild error, the uncorrelated scores, the SVD, the Gram trick — is that one idea seen from another side.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>Where this goes next.</strong> Unit 13 is about support vector machines. It makes the same move you just made: it takes a geometric wish — <em>the widest possible street between two groups of points</em> — and turns it into a constrained optimisation with fines. You already met a two-point version at the end of Unit 11. And when Unit 13 solves the problem from the fines' side, the data shows up only through dot products between points: a Gram matrix, just like the \(K\) of §13.</p>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> PCA turns "which way does the data spread most?" into "which eigenvector of \(C\) has the biggest eigenvalue?", and every other view of it — budget, rebuild error, uncorrelated scores, SVD — lands on the same answer.</p>
+</section>
+
+<!--@PRACTICE-->

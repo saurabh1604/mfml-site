@@ -1,0 +1,344 @@
+<!-- ================= ACT I · THE WIDEST STREET ================= -->
+<!-- ================= 1 · WHICH LINE ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>Which line should you draw?</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>It is sports day. The blue house is warming up on one side of the school field, the orange house on the other. The PT teacher must chalk <strong>one straight line</strong> between them.</p>
+    <p>Many lines would do. Any line with every blue child on one side and every orange child on the other makes no mistake today.</p>
+    <p>But a good teacher chalks it down the middle of the <strong>widest empty strip</strong>. Then a child who steps a little forward tomorrow is still on her own side.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Here is the same problem with points. Twelve points on a page: six <span class="k-pos">blue</span> ones (class \(+1\)) and six <span class="k-neg">orange</span> ones (class \(-1\)). We want a straight line with all the blue points on one side and all the orange points on the other.</p>
+    <p>Draw one such line. Now tilt it a little, or slide it a little. It still splits the points perfectly. So there are <strong>infinitely many</strong> lines with zero mistakes. Counting mistakes on the training points cannot choose between them.</p>
+    <p>What should choose, then? Think about the <em>next</em> point. It will land somewhere near an old point, but not exactly on top of it. A line that passes within a hair of an old point will get that neighbourhood wrong the moment a point wobbles. A line with a wide, empty buffer on both sides can absorb the wobble.</p>
+    <p>So here is the whole idea of this unit in one line: <strong>pave the widest empty street between the two groups, and draw the line down its middle.</strong> No point of either group may stand inside the street. The width of that street is called the <em>margin</em>.</p>
+    <p>For each tilt, there is a best street: push its two edges outwards until each one touches a point. Then change the tilt and do it again. Try it below.</p>
+  </div>
+
+  <div class="widget reveal" id="w-tilt">
+    <div class="widget-head"><span class="w-title">The widest street, one tilt at a time</span><span class="w-sub">For every tilt the street is already pushed out until it touches a point on each side. Only one tilt gives the widest street.</span></div>
+    <p class="try"><b>Try:</b> Slide the tilt slowly and watch the ringed points: they change as the tilt changes. Then press <em>▶ find the widest</em> and watch the dot on the width curve climb to its peak.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="tl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. Twelve glowing beads stand on a glass floor, six blue and six orange. A translucent violet-edged street with a bright centre line lies across the floor between them at the chosen tilt, pushed out until each edge touches a bead; the touching beads carry thin rings and a label floats beside the street with its width. At the best tilt the rings turn gold and a green arrow for w points across the street."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="tl-t">tilt of the street</label><input id="tl-t" type="range" min="5" max="95" step="0.5" value="20"><output id="tl-t-o">20°</output></div>
+        </div>
+        <div class="presets" id="tl-pre"><button class="play" id="tl-play">▶ find the widest</button><button class="preset" id="tl-p-a" aria-pressed="true">tilt A · 20°</button><button class="preset" id="tl-p-b">tilt B · 70°</button><button class="preset" id="tl-p-c">tilt C · 45°</button></div>
+        <div class="svgstage mini"><svg id="tl-curve" viewBox="0 0 320 190" class="svg-lab" role="img" aria-label="Street width plotted against tilt: a hill that is zero at about 11 degrees and 90 degrees and peaks at 45 degrees with width 2.83."></svg></div>
+        <div class="readout" id="tl-read" style="margin-top:.6rem;line-height:1.85"></div>
+        <div id="tl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Notice two things. First, the width changes a lot with the tilt: about \(0.84\) at \(20^\circ\), about \(1.5\) at \(70^\circ\), and \(2.83\) at the best tilt, \(45^\circ\). Second, the <strong>ringed points change</strong> as you tilt. Which points touch the street is a result of the tilt, not something you choose.</p>
+    <p>Why is the widest street a good choice? Four reasons.</p>
+    <ul>
+      <li><strong>It forgives wobble.</strong> Every point can move by up to half the street width in any direction and still stay on its own side.</li>
+      <li><strong>It picks one answer.</strong> Out of infinitely many perfect lines, "widest" picks exactly one.</li>
+      <li><strong>It travels well to new data.</strong> There is real theory saying that the error on new points is controlled by the margin compared with how spread out the data is, not by how many features you measured.</li>
+      <li><strong>It is cheap to keep.</strong> The answer ends up depending only on the few points that touch the street. The points deep inside each group do not matter at all. (Section 9 proves this.)</li>
+    </ul>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\text{margin}=2\times d_{\text{nearest}}\]</p>
+    <p>The margin is the width of the widest empty street: twice the distance \(d_{\text{nearest}}\) from the line to the nearest point. Training error cannot choose between the many perfect lines. <strong>The margin can.</strong> Among all lines that make no mistake, take the one whose street is widest. Everything else in this unit is turning that sentence into mathematics and solving it.</p>
+  </div>
+  <div class="check reveal" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Three straight lines all split the training points with zero mistakes. Why can't the number of mistakes pick the best one?</p>
+    <div class="opts">
+      <button data-why="All three make zero mistakes, so the mistake count is the same for all of them. It gives no reason to prefer any one.">Because the mistake count is zero for all three — it cannot tell them apart</button>
+      <button data-correct data-why="Right. All three score zero mistakes, so the count is a tie. What separates them is how close each one passes to the points — and a line that skims a point will misjudge the next nearby point. The street width measures exactly that.">Because they all score zero, the count is a tie — we need a different measure, like how wide an empty street each one leaves</button>
+      <button data-why="The count is not unreliable here; it is simply a three-way tie at zero. We need a second measure to break the tie.">Because the mistake count is random and changes every time you count</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="prose reveal">
+    <p><strong>The road ahead.</strong> The unit has four acts.</p>
+    <ol class="roadmap">
+      <li><strong>The widest street</strong> (§2–§5): measure distances to a line, find the street's width, fix a hidden scale, and write the problem down.</li>
+      <li><strong>Prices on points</strong> (§6–§9): give every point a price, build the boundary out of those prices, solve a second problem that uses only the prices, and meet the few points that hold the street up.</li>
+      <li><strong>The messy world</strong> (§10–§11): let a few points break the rule, pay a fine for it, and watch the hinge loss appear.</li>
+      <li><strong>The kernel trick</strong> (§12–§15): see that the data only ever meets itself through dot products, lift the data so a flat cut becomes a curve, and do it all without visiting the big space.</li>
+    </ol>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> Many lines make no mistakes, so choose the one with the widest empty street around it — it forgives wobble, it is unique, and it rests on only a few points.</p>
+</section>
+
+<!-- ================= 2 · THE COMPASS ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>The boundary's compass</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A straight road runs across a field. You stand somewhere in the grass and want to know how far you are from the road.</p>
+    <p>You would not walk at a slant. You would walk <strong>straight across</strong>, at a right angle to the road. That shortest walk is your distance.</p>
+    <p>So every straight road comes with a hidden arrow: the direction that points straight across it. Know that arrow, and you can measure anything.</p>
+  </div>
+  <div class="prose reveal">
+    <p>A straight line in the plane can be written as \(\mathbf w\cdot\mathbf x+b=0\). Take the line \(x_1+2x_2=6\). Move the 6 across: \(x_1+2x_2-6=0\). So \(\mathbf w=(1,2)\) and \(b=-6\).</p>
+    <p>For any point \(\mathbf x\), the number \(f(\mathbf x)=\mathbf w\cdot\mathbf x+b\) is its <em>score</em>. The score is zero on the line, positive on one side and negative on the other. The classifier says "blue" when the score is positive and "orange" when it is negative.</p>
+    <p><strong>Fact 1: \(\mathbf w\) points straight across the line.</strong> Take two points on the line, \(\mathbf p=(6,0)\) and \(\mathbf q=(0,3)\). Both have score 0. Subtract the two scores and \(b\) cancels: \(\mathbf w\cdot(\mathbf p-\mathbf q)=0\). Check: \(\mathbf p-\mathbf q=(6,-3)\) and \((1,2)\cdot(6,-3)=6-6=0\). The arrow \(\mathbf p-\mathbf q\) runs along the line, and \(\mathbf w\) is at a right angle to it. So \(\mathbf w\) is the "straight across" arrow — the <em>normal</em>.</p>
+    <p><strong>Fact 2: \(b\) only slides the line.</strong> Change \(b\) and the line moves sideways, staying parallel. It never turns. The tilt is set by \(\mathbf w\) alone.</p>
+    <p><strong>Fact 3: the score divided by the length of \(\mathbf w\) is the distance.</strong> Take the point \((4.4,\,5.2)\). Its score is \(4.4+10.4-6=8.8\). The length of \(\mathbf w\) is \(\|\mathbf w\|=\sqrt{1+4}=\sqrt5\approx2.236\). The true distance to the line is \(8.8/2.236\approx3.935\). The score alone is not a distance; divide by \(\|\mathbf w\|\) and it becomes one.</p>
+  </div>
+
+  <div class="widget reveal" id="w-probe">
+    <div class="widget-head"><span class="w-title">The distance formula, live</span><span class="w-sub">Drag the probe. The dashed drop is the straight-across walk, and its length is |f(x)| / ‖w‖.</span></div>
+    <p class="try"><b>Try:</b> Drag the probe onto the line and watch the score hit 0. Then turn the <em>b</em> knob: the line slides but never turns. Turn <em>w's angle</em>: now it turns, and the green arrow \(\hat{\mathbf w}\) turns with it, always at a right angle.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage stage-canvas"><svg id="pb-svg" viewBox="0 0 560 470" class="svg-lab grabbable" role="img" aria-label="A plane from 0 to 8 in both directions with the line x1 + 2x2 = 6 drawn in white. A draggable probe point has a dashed perpendicular dropped onto the line, labelled with its length; the unit arrow w-hat stands at the foot of the perpendicular. Two marked points p and q on the line are joined by an arrow along the line."></svg></div><p class="stage-tap">drag the probe</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="pb-ang">w's angle</label><input id="pb-ang" type="range" min="0" max="180" step="0.5" value="63.4"><output id="pb-ang-o">63.4°</output></div>
+          <div class="ctl"><label for="pb-b">slide b</label><input id="pb-b" type="range" min="-14" max="2" step="0.1" value="-6"><output id="pb-b-o">−6</output></div>
+        </div>
+        <div class="presets"><button class="preset" id="pb-reset" aria-pressed="true">x₁ + 2x₂ = 6</button><button class="preset" id="pb-on">probe on the line</button></div>
+        <table class="kv" id="pb-kv"></table>
+        <div id="pb-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Two different "margins" hide in this picture, and people mix them up.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>Name</th><th>Formula</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td>functional margin</td><td>\(y_i(\mathbf w\cdot\mathbf x_i+b)\)</td><td>the raw score, made positive when the point is on its correct side. Not a distance: double \(\mathbf w\) and \(b\) and it doubles.</td></tr>
+      <tr><td>geometric margin</td><td>\(y_i(\mathbf w\cdot\mathbf x_i+b)/\|\mathbf w\|\)</td><td>a real distance, in the units of your data. Double \(\mathbf w\) and \(b\) and it does not change.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal"><p>Multiplying by the label \(y_i=\pm1\) makes both numbers positive exactly when the point is on the correct side. Section 4 is all about the gap between these two.</p></div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[d(\mathbf z)=\frac{\mathbf w\cdot\mathbf z+b}{\|\mathbf w\|}=\frac{f(\mathbf z)}{\|\mathbf w\|}\]</p>
+    <p>\(\mathbf w\) is the compass: it points straight across the boundary and sets its tilt. \(b\) only slides the boundary. And a score becomes a distance only after you <strong>divide by \(\|\mathbf w\|\)</strong>.</p>
+  </div>
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">How far is the point \((6,3)\) from the line \(x_1+2x_2=6\), and on which side?</p>
+    <div class="opts">
+      <button data-why="6 is the score f = 6 + 6 − 6, not the distance. A score becomes a distance only after dividing by ‖w‖ = √5.">6, on the positive side</button>
+      <button data-correct data-why="The score is f = 6 + 2·3 − 6 = 6, which is positive, so the point is on the side w points to. Divide by ‖w‖ = √5 ≈ 2.236: the distance is 6/2.236 ≈ 2.683.">About 2.683, on the positive side (the side w points to)</button>
+      <button data-why="The score 6 is positive, so the point is on the positive side. The size is right only if you divide by ‖w‖: 6/√5 ≈ 2.683, not 6/5.">1.2, on the negative side</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You keep \(\mathbf w=(1,2)\) but change \(b\) from \(-6\) to \(-10\). What happens to the line?</p>
+    <div class="opts">
+      <button data-why="Turning needs a new direction for w. Here w did not change, so the tilt cannot change.">It turns to a new angle</button>
+      <button data-correct data-why="Only b changed, so the line slides sideways and stays parallel: x₁ + 2x₂ = 10 is parallel to x₁ + 2x₂ = 6, and 4/√5 ≈ 1.79 further out along w.">It slides sideways, parallel to itself, about 1.79 further along w</button>
+      <button data-why="The line does move: the points with x₁ + 2x₂ = 10 are different points from those with x₁ + 2x₂ = 6.">Nothing — b does not affect the line</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s2-->
+  <p class="onesent reveal"><b>In one sentence:</b> In \(\mathbf w\cdot\mathbf x+b=0\), \(\mathbf w\) points straight across the line and sets its tilt, \(b\) slides it, and the score \(f(\mathbf z)\) divided by \(\|\mathbf w\|\) is the true distance.</p>
+</section>
+
+<!-- ================= 3 · HOW WIDE ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>How wide is the street?</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Two rows of autos are parked on either side of a road. The road's width is the gap between the two rows.</p>
+    <p>You could measure from any auto on the left to any auto on the right. Measure at a slant and you get a bigger number. Only the <strong>straight-across</strong> measurement gives the true width.</p>
+    <p>That is the whole of this section: the slanted measurements are always at least the true width, and the straight one is exactly it.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Start from the boundary \(\mathbf w\cdot\mathbf x+b=0\). Push two parallel lines outwards, one to each side, until each one touches the nearest point of its group. Parallel lines share the same \(\mathbf w\) and differ only in the constant:</p>
+    \[\mathbf w\cdot\mathbf x+b=+c\qquad\text{and}\qquad \mathbf w\cdot\mathbf x+b=-c.\]
+    <p>Call the touching points \(\mathbf x^+\) (on the \(+c\) edge) and \(\mathbf x^-\) (on the \(-c\) edge). Write both equations and subtract. The \(b\) cancels, which is the whole reason we subtract:</p>
+    \[\mathbf w\cdot(\mathbf x^+-\mathbf x^-)=2c.\]
+    <p>This is one number, a dot product. We want a distance. The tool is the <em>Cauchy–Schwarz inequality</em>: for any two arrows, \(|\mathbf u\cdot\mathbf v|\le\|\mathbf u\|\,\|\mathbf v\|\), with equality only when they point along the same line. Use it with \(\mathbf u=\mathbf w\):</p>
+    \[\begin{aligned}2c&=\mathbf w\cdot(\mathbf x^+-\mathbf x^-)\\ &\le\|\mathbf w\|\,\|\mathbf x^+-\mathbf x^-\|\\ \Longrightarrow\quad\|\mathbf x^+-\mathbf x^-\|&\ge\frac{2c}{\|\mathbf w\|}.\end{aligned}\]
+    <p>Read it in words. Any point of one edge is at least \(2c/\|\mathbf w\|\) away from any point of the other edge. And the bound is reached — by the pair of points that face each other straight across, along \(\mathbf w\). The smallest distance between the two edges is the width of the street:</p>
+  </div>
+
+  <div class="widget reveal" id="w-gap">
+    <div class="widget-head"><span class="w-title">The Cauchy–Schwarz bound, live</span><span class="w-sub">Each point slides along its own edge. The straight-across gap stays pinned; the point-to-point distance can only be bigger.</span></div>
+    <p class="try"><b>Try:</b> Drag the blue point along the lower edge and the orange point along the upper edge. Make the orange length as short as you can. It reaches the blue gap only when the joining line runs parallel to the green arrow \(\mathbf w\).</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage stage-canvas"><svg id="gp-svg" viewBox="0 0 560 470" class="svg-lab grabbable" role="img" aria-label="A street between the parallel edges x1 + x2 = 3 and x1 + x2 = 7 with its centre line x1 + x2 = 5. A blue point slides on the lower edge and an orange point slides on the upper edge; an orange segment joins them and a blue perpendicular shows the street width. A green arrow shows w."></svg></div><p class="stage-tap">drag either point along its edge</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="play" id="gp-play">▶ slide to the shortest</button><button class="preset" id="gp-p-slant">a slanted pair</button><button class="preset" id="gp-p-face">face to face</button></div>
+        <table class="kv" id="gp-kv"></table>
+        <div id="gp-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <p class="note">Here \(\mathbf w=(-\tfrac12,-\tfrac12)\), \(b=\tfrac52\), \(c=1\): the edges are \(x_1+x_2=3\) (score \(+1\)) and \(x_1+x_2=7\) (score \(-1\)), so \(\|\mathbf w\|=\sqrt{0.5}\approx0.707\) and the width is \(2/0.707\approx2.828\).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Watch out — the step people botch</span>
+    <p>From \(\mathbf w\cdot(\mathbf x^+-\mathbf x^-)=2c\) it is tempting to write "\(\mathbf x^+-\mathbf x^-=2c/\mathbf w\)". That is not allowed: <strong>you cannot divide by a vector.</strong> A dot product squashes two arrows into one number, and you cannot un-squash it by dividing.</p>
+    <p>The conclusion is also wrong in substance: the two touching points can be much further apart than the width. Only the inequality, or a projection onto \(\mathbf w/\|\mathbf w\|\), turns the number \(2c\) into a width.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\text{street width}\;=\;\frac{2c}{\|\mathbf w\|}\]</p>
+    <p>Subtracting the two edge equations kills \(b\) and leaves \(\mathbf w\cdot(\mathbf x^+-\mathbf x^-)=2c\). Cauchy–Schwarz turns that single number into a distance, and tells us it is the <strong>shortest</strong> distance across — which is exactly what the width of a street means.</p>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A classmate writes: "\(\mathbf w\cdot(\mathbf x^+-\mathbf x^-)=2c\), so \(\mathbf x^+-\mathbf x^-=2c/\mathbf w\), so the width is \(2c/\|\mathbf w\|\)." What is wrong?</p>
+    <div class="opts">
+      <button data-why="The final formula is right, but the reasoning is not. Getting the right answer by an illegal step is still an illegal step.">Nothing — the final answer is correct, so the working is fine</button>
+      <button data-correct data-why="Dividing by a vector is not defined. And the conclusion is false in substance too: x⁺ − x⁻ can be much longer than the width. The honest route is Cauchy–Schwarz (or projecting onto w/‖w‖), which gives ‖x⁺ − x⁻‖ ≥ 2c/‖w‖ with equality only along w.">You cannot divide by a vector; and the two touching points can be further apart than the width</button>
+      <button data-why="Subtracting is exactly the right first move: it is what makes b disappear. The mistake comes one line later.">The subtraction step is wrong — you must add the two equations</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s3-->
+  <p class="onesent reveal"><b>In one sentence:</b> The street's edges are \(\mathbf w\cdot\mathbf x+b=\pm c\); subtracting leaves \(\mathbf w\cdot(\mathbf x^+-\mathbf x^-)=2c\), and Cauchy–Schwarz turns that into the width \(2c/\|\mathbf w\|\), reached only straight across.</p>
+</section>
+
+<!-- ================= 4 · THE SCALE ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>The scale is yours to choose</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A cricket pitch is 22 yards long. In feet that is 66. In inches, 792. The pitch did not change at all. Only the numbers did.</p>
+    <p>The street has the same kind of freedom. Its equations can be written with many different sets of numbers, and the street stays exactly where it is. So we may pick the <strong>most convenient</strong> numbers.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Section 3 left one loose end: the constant \(c\). Take the three lines</p>
+    \[\begin{gathered}\mathbf w\cdot\mathbf x+b=+c,\\ \mathbf w\cdot\mathbf x+b=0,\\ \mathbf w\cdot\mathbf x+b=-c,\end{gathered}\]
+    <p>and multiply every number by \(k=3\). The first line becomes \(3\mathbf w\cdot\mathbf x+3b=3c\). Divide by 3 and you are back where you started. It is the <strong>same set of points</strong>. All three lines stay put. But every number has tripled: \(\|\mathbf w\|\), \(c\) and every score.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>Quantity</th><th>Before</th><th>After multiplying by \(k\)</th><th>Real geometry?</th></tr></thead>
+    <tbody>
+      <tr><td>the three lines, as sets of points</td><td>—</td><td>identical</td><td>✔ real</td></tr>
+      <tr><td>\(\|\mathbf w\|\)</td><td>\(\|\mathbf w\|\)</td><td>\(k\|\mathbf w\|\)</td><td>✘ your choice</td></tr>
+      <tr><td>the constant \(c\)</td><td>\(c\)</td><td>\(kc\)</td><td>✘ your choice</td></tr>
+      <tr><td>the scores \(y_if(\mathbf x_i)\)</td><td>\(z_i\)</td><td>\(kz_i\)</td><td>✘ your choice</td></tr>
+      <tr><td>the width \(2c/\|\mathbf w\|\)</td><td>\(2c/\|\mathbf w\|\)</td><td>\(2kc/(k\|\mathbf w\|)=2c/\|\mathbf w\|\)</td><td>✔ real</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>So \(c\) and \(\|\mathbf w\|\) mean nothing on their own; only their ratio is geometry. Since the choice is ours, choose \(k=1/c\). That makes the constant exactly 1:</p>
+    \[\begin{gathered}\mathbf w\cdot\mathbf x+b=+1,\\ \mathbf w\cdot\mathbf x+b=0,\\ \mathbf w\cdot\mathbf x+b=-1.\end{gathered}\]
+    <p>This is the <em>canonical form</em>. Two gifts follow. The width is now \(2/\|\mathbf w\|\), so "shrink \(\|\mathbf w\|\)" finally means "widen the street". And the nearest points score exactly 1, so every point obeys a score of at least 1.</p>
+    <p>The same thing happens in three dimensions, where the street is a slab between two parallel planes. Slide \(k\) below and watch every number move while the slab stays frozen.</p>
+  </div>
+
+  <div class="widget reveal" id="w-scale">
+    <div class="widget-head"><span class="w-title">Rescale everything; nothing moves</span><span class="w-sub">A slab in 3-D between the planes x₁+x₂+x₃ = 2 and = 6. Multiply w, b and c by k: the arrow for w stretches, every score changes, the slab does not.</span></div>
+    <p class="try"><b>Try:</b> Drag \(k\) from 1 to 3. The green arrow \(k\mathbf w\) grows three times longer, the scores read \(\pm3\), and the slab does not move a millimetre. Then press <em>look edge-on</em>: the whole 3-D picture collapses to the familiar 2-D street.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="sc-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene with three parallel glass planes: the boundary x1+x2+x3 = 4 in white between two violet planes x1+x2+x3 = 2 and 6. Three blue beads sit on the plane x1+x2+x3 = 6 and three orange beads on the plane = 2, each ringed in gold; a few more beads float beyond them. A green arrow for k times w rises out of the boundary along the direction (1,1,1), its length growing with k while the planes stay fixed."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="sc-k">scale k</label><input id="sc-k" type="range" min="0.25" max="4" step="0.05" value="1"><output id="sc-k-o">1</output></div>
+        </div>
+        <div class="presets"><button class="preset" id="sc-p1" aria-pressed="true">k = 1 · canonical</button><button class="preset" id="sc-p3">k = 3</button><button class="preset" id="sc-edge">look edge-on</button></div>
+        <table class="kv" id="sc-kv"></table>
+        <div id="sc-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>In canonical form the rule for a correct point splits by class: blue points need \(\mathbf w\cdot\mathbf x_i+b\ge+1\), orange points need \(\mathbf w\cdot\mathbf x_i+b\le-1\). Multiply the orange rule by \(-1\) (which flips the inequality) and it reads \(-(\mathbf w\cdot\mathbf x_i+b)\ge1\). But for an orange point \(y_i=-1\), so that is \(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\). The blue rule is the same sentence with \(y_i=+1\). <strong>One inequality does the work of two:</strong></p>
+    \[y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\qquad\text{for every point }i.\]
+    <p>This is the only reason SVMs label the classes \(\pm1\) and not 0 and 1: the label does the sign-flipping for you.</p>
+    <p>One more trap. Why not simply make the smallest score as large as possible? Because of this very table. Multiply \(\mathbf w\) and \(b\) by a million and every score is a million times bigger, while the line has not moved. An optimiser would run \(k\to\infty\) and report infinite confidence in a line it never improved. Fixing the scale — score 1 for the nearest points, then make \(\|\mathbf w\|\) small — is what makes the question sensible.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{width}=\frac{2}{\|\mathbf w\|}\\ y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\end{gathered}\]</p>
+    <p>Scaling \((\mathbf w,b,c)\) by \(k\) changes every number but not the street. Only the ratio \(2c/\|\mathbf w\|\) is real. Set \(c=1\) and "widest street" becomes "<strong>smallest \(\|\mathbf w\|\)</strong>".</p>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A street in canonical form has \(\|\mathbf w\|=0.5\). You multiply \(\mathbf w\), \(b\) and \(c\) by \(k=3\). Which statement is true?</p>
+    <div class="opts">
+      <button data-why="The width is the ratio 2c/‖w‖, and both c and ‖w‖ triple. The ratio does not change.">The street becomes three times wider</button>
+      <button data-correct data-why="‖w‖ becomes 1.5 and c becomes 3, so every score triples — but the width 2c/‖w‖ = 6/1.5 = 4 is exactly the old 2/0.5 = 4. The street has not moved. It is just no longer in canonical form.">‖w‖ becomes 1.5 and the scores triple, but the width stays 4 — the street has not moved</button>
+      <button data-why="If you read the width as 2/‖w‖ after scaling, you get 2/1.5 ≈ 1.33. That formula needs canonical form (c = 1), which you just left. With c = 3, the width is 2·3/1.5 = 4.">The street shrinks to about 1.33 wide</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why do SVMs use the labels \(+1\) and \(-1\) instead of 1 and 0?</p>
+    <div class="opts">
+      <button data-correct data-why="With y = ±1, the two rules 'score ≥ 1 for blue' and 'score ≤ −1 for orange' become one rule: y·score ≥ 1. A 0 label would wipe out the orange rule entirely (0 × anything = 0).">So that one inequality \(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\) covers both classes — the label flips the sign for you</button>
+      <button data-why="Any two numbers could name the classes. The reason ±1 is chosen is what it does inside the constraint, not a tradition.">Only by tradition — any two numbers would work the same way</button>
+      <button data-why="The labels have nothing to do with the street's width; they only decide which side a point should be on.">Because the street is always exactly 2 units wide</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s4-->
+  <p class="onesent reveal"><b>In one sentence:</b> Multiplying \((\mathbf w,b,c)\) by any \(k\) leaves the street untouched, so we pin the nearest scores to 1; then the width is \(2/\|\mathbf w\|\) and every point obeys \(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\).</p>
+</section>
+
+<!-- ================= 5 · THE PROBLEM ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>The problem, stated — and why we square</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You drop a marble into a round steel bowl from Mummy's kitchen. It rolls and comes to rest at the one lowest spot. Drop it again from anywhere, and it ends up at the same spot.</p>
+    <p>Now put a few straight cardboard walls inside the bowl that the marble may not cross. It rolls until it rests against a wall. Again there is <strong>one</strong> resting place, and every drop finds it.</p>
+    <p>That is what the SVM problem looks like: a bowl, straight walls, and one answer.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Everything so far fits in one line. We want the widest street that keeps every point on its correct side and outside the street:</p>
+    \[\begin{gathered}\max_{\mathbf w,b}\ \frac{2}{\|\mathbf w\|}\\ \text{subject to}\ \ y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\ \text{ for every }i.\end{gathered}\]
+    <p>That is correct, but the thing being maximised is awkward. Three rewrites make it pleasant, and none of them changes <em>which</em> \(\mathbf w\) wins:</p>
+    <ol>
+      <li><strong>Making \(2/\|\mathbf w\|\) big is making \(\|\mathbf w\|\) small.</strong> A fraction with a fixed top gets bigger as its bottom gets smaller.</li>
+      <li><strong>Making \(\|\mathbf w\|\) small is making \(\|\mathbf w\|^2\) small.</strong> Squaring never reorders positive numbers.</li>
+      <li><strong>Put a \(\tfrac12\) in front.</strong> A positive constant cannot move the lowest point, and it makes the slope come out as \(\mathbf w\) instead of \(2\mathbf w\).</li>
+    </ol>
+    <p>The result is the form everyone actually solves, the <em>hard-margin SVM</em>:</p>
+    \[\begin{gathered}\min_{\mathbf w,b}\ \tfrac12\|\mathbf w\|^2\\ \text{subject to}\ \ y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\ \text{ for every }i.\end{gathered}\]
+    <p>The picture below makes this real for four points: blue \((1,2)\) and \((2.5,0)\), orange \((-1,-1)\) and \((-1,1)\). Fix \(b\) at its best value \(-0.6\), so only \(\mathbf w=(w_1,w_2)\) is free. The floor is the \(\mathbf w\)-plane. The bowl above it is \(\tfrac12\|\mathbf w\|^2\). Each data point's rule \(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\) is a straight wall on that floor. The allowed region glows.</p>
+  </div>
+
+  <div class="widget reveal" id="w-qp">
+    <div class="widget-head"><span class="w-title">A bowl, four walls, one resting place</span><span class="w-sub">The floor is the plane of all possible w. Each point cuts it with a straight wall; the ball rolls to the lowest allowed spot — and that spot is the SVM.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ drop the ball</em> and watch it slide down to a wall and then along it into the corner at \(\mathbf w=(0.8,0.4)\). Then press <em>add an overlapping point</em>: a blue point lands between the two orange ones, and the glowing region disappears.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="qp-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A glowing bowl, the height one half of w squared, rises over the w1 w2 floor. Four straight lines are drawn on the floor, one per data point; the two that matter stand up as glass walls. The region on the correct side of every line glows on the floor and on the bowl above it. A ball rolls from high on the bowl down to the corner of the glowing region at w = (0.8, 0.4), where half w squared = 0.4. When an overlapping point is added, a fifth line cuts away the whole glowing region and it fades to red."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="play" id="qp-play">▶ drop the ball</button><button class="preset" id="qp-over" aria-pressed="false">add an overlapping point</button></div>
+        <div class="readout" id="qp-read" style="margin-top:.6rem;line-height:1.85"></div>
+        <div id="qp-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <div class="substage">
+          <p class="w-sub2">Three objectives, one winner <span>1-D: ‖w‖ = |w|</span></p>
+          <div class="svgstage mini"><svg id="qp-1d" viewBox="0 0 320 200" class="svg-lab" role="img" aria-label="Three curves over one-dimensional w: the V-shaped |w| with a kink at zero, the smooth parabola one half w squared, and 2 over |w| which blows up at zero. The allowed region is w at least w-min; all three are best at w-min."></svg></div>
+          <div class="controls"><div class="ctl"><label for="qp-wmin">wall at w ≥</label><input id="qp-wmin" type="range" min="0.2" max="2" step="0.05" value="0.8"><output id="qp-wmin-o">0.8</output></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Why is this such good news? The bowl \(\tfrac12\|\mathbf w\|^2\) curves up the same amount in every direction, so it has exactly one bottom. Each wall is straight, and a region cut out by straight walls has no dents. A bowl over a dent-free region is called a <em>convex quadratic program</em>, and for these <strong>every local lowest point is the global lowest point</strong>. There are no false valleys to get stuck in. Train an SVM twice on the same data and you get exactly the same answer, every time.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Watch out — say the right reason for squaring</span>
+    <p>A common answer is "we square because \(2/\|\mathbf w\|\) is not convex". Careful. We are <em>maximising</em> that, so the property we would want is not convexity anyway. And \(\|\mathbf w\|\) itself is convex — every length is. Minimising \(\|\mathbf w\|\) is already a fine convex problem.</p>
+    <p>The real reason: \(\|\mathbf w\|\) has a <strong>sharp point at \(\mathbf w=\mathbf 0\)</strong>, like the tip of a cone, where there is no slope at all. \(\tfrac12\|\mathbf w\|^2\) is smooth everywhere, its slope is simply \(\mathbf w\), and that turns the problem into a quadratic program with fast, reliable solvers.</p>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Two more things to hold on to</span>
+    <p><strong>Support vectors are an output, never an input.</strong> You solve the problem first. Only then do you look at which points ended up exactly on the street's edges. You never pick them in advance — you could not, since you do not know them until the problem is solved.</p>
+    <p><strong>A hard margin fails hard.</strong> If even one point sits among the other group, no line satisfies every wall. The allowed region is empty and the problem has no answer at all — not a bad one, none. Section 10 fixes that.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\min_{\mathbf w,b}\ \tfrac12\|\mathbf w\|^2\quad\text{s.t.}\quad y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\]</p>
+    <p>A bowl with straight walls. Same winner as "maximise \(2/\|\mathbf w\|\)", but smooth, with exactly one bottom. The points pressing against the walls at that bottom are the <strong>support vectors</strong>.</p>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why do we minimise \(\tfrac12\|\mathbf w\|^2\) instead of \(\|\mathbf w\|\)?</p>
+    <div class="opts">
+      <button data-why="‖w‖ is convex — every norm is. Convexity is not what squaring buys.">Because \(\|\mathbf w\|\) is not convex</button>
+      <button data-correct data-why="Squaring never reorders positive numbers, so the winner is the same. What it removes is the sharp point of ‖w‖ at w = 0, where there is no slope. ½‖w‖² is smooth, its slope is w, and the problem becomes a quadratic program.">Same winner, but \(\tfrac12\|\mathbf w\|^2\) is smooth everywhere (slope \(\mathbf w\)), while \(\|\mathbf w\|\) has a sharp point at \(\mathbf 0\)</button>
+      <button data-why="Squaring cannot change which w is best — it keeps the order of positive numbers. The winner is exactly the same.">Because squaring gives a wider street</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s5-->
+  <p class="onesent reveal"><b>In one sentence:</b> The widest street is the lowest point of the bowl \(\tfrac12\|\mathbf w\|^2\) inside straight walls \(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\) — a convex quadratic program with exactly one answer, and none at all if the groups overlap.</p>
+</section>

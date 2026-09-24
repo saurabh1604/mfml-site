@@ -1,0 +1,206 @@
+<!-- ================= 9 · SMALLEST REBUILD ERROR ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>The second view — the smallest rebuild error</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You text a friend where a dhaba is, using just one number: "7.2 km along the highway from the toll plaza". Your friend drives 7.2 km and stops on the highway.</p>
+    <p>If the dhaba is actually 300 m off the road, those 300 m are lost. They never fitted into your one number. That gap is the <strong>rebuild error</strong>.</p>
+    <p>If you get to choose the road, pick the one the dhabas <strong>hug most closely</strong>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>So far PCA has been about <strong>keeping</strong> the most spread. Here is the same thing seen from the other side: <strong>losing</strong> the least.</p>
+    <p>With the kept directions as the columns of \(W\), a point is squeezed into a short code and then rebuilt:</p>
+    \[\begin{aligned}\text{encode:}\quad&\mathbf z=W^\top\mathbf x\quad\text{(one number per kept direction)}\\ \text{decode:}\quad&\tilde{\mathbf x}=W\mathbf z=WW^\top\mathbf x\quad\text{(back to a point on the line)}\end{aligned}\]
+    <p>With one direction \(\mathbf w\), the rebuilt point \(\tilde{\mathbf x}\) is the foot of the thread from \(\mathbf x\) to the line. The point, the foot and the origin make a right-angled triangle. Pythagoras says:</p>
+    \[\|\mathbf x\|^2=\underbrace{(\mathbf x^\top\mathbf w)^2}_{\text{kept}}+\underbrace{\|\mathbf x-\tilde{\mathbf x}\|^2}_{\text{lost}}.\]
+    <p>Add this up over all the points. The left side is the total spread — fixed, whatever line you choose. So whatever you gain in "kept", you lose in "lost". It is a <strong>seesaw</strong>. The line that keeps the most spread is exactly the line that loses the least.</p>
+    <p>And the average loss has a clean value: it is the sum of the eigenvalues you <strong>dropped</strong>. For the five points, keeping one direction loses on average \(\lambda_2=2\) per point.</p>
+    <h3>One point, all the way through</h3>
+    <p>A new point arrives: \((12,9)\). Use the five points' mean \((6,5)\) and their top direction \(\mathbf w_1=\tfrac1{\sqrt5}(2,1)\).</p>
+    <ul>
+      <li><strong>Centre it:</strong> \((12-6,\ 9-5)=(6,4)\).</li>
+      <li><strong>Encode:</strong> \(z=\mathbf w_1^\top(6,4)=\tfrac{12+4}{\sqrt5}=\tfrac{16}{\sqrt5}\approx7.155\).</li>
+      <li><strong>Decode:</strong> \(z\,\mathbf w_1=\tfrac{16}{5}(2,1)=(6.4,\ 3.2)\). Add the mean back: \(\tilde{\mathbf x}=(12.4,\ 8.2)\).</li>
+      <li><strong>The error:</strong> \((6-6.4)^2+(4-3.2)^2=0.16+0.64=0.80\).</li>
+    </ul>
+    <p>And here is the neat part. Along the direction we threw away, \(\mathbf w_2=\tfrac1{\sqrt5}(1,-2)\), the point's score is \(z_2=\tfrac{6-8}{\sqrt5}\), and \(z_2^2=\tfrac45=0.80\). <strong>The error is exactly the squared score along the dropped direction.</strong></p>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Two products that look alike</span>
+    <p>\(W^\top W=I\): a small \(M\times M\) table. It just says the kept directions have length 1 and meet at right angles.</p>
+    <p>\(WW^\top\) is the big \(D\times D\) one, and it is <strong>the flattener</strong>. It squashes any point onto the kept line (or plane). It equals \(I\) only if you keep every direction. Whatever it squashes away is the rebuild error.</p>
+  </div>
+<!--@W10-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{lost}=\text{total}-\text{kept}\\ \frac1N\sum_i\|\mathbf x_i-\tilde{\mathbf x}_i\|^2=\lambda_{M+1}+\dots+\lambda_D\end{gathered}\]</p>
+    <p>Because the total is fixed, "keep the most spread" and "lose the least" are <strong>one instruction</strong>. The slides call these the maximum-variance view and the projection view of PCA. They are two sides of one seesaw.</p>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The new point \((12,9)\) was rebuilt from one number as \((12.4,\ 8.2)\). Its squared error is \(0.80\). Why is that the same as \(z_2^2\), the square of its score along \(\mathbf w_2\)?</p>
+    <div class="opts">
+      <button data-why="It is not a coincidence of these numbers. It holds for every point, because of a right angle.">A coincidence of these particular numbers</button>
+      <button data-correct data-why="Right. w₁ and w₂ are at right angles and have length 1, so ‖x‖² = z₁² + z₂² (Pythagoras). The rebuild keeps z₁ and loses exactly the w₂ part, whose squared length is z₂².">Because \(\mathbf w_1\) and \(\mathbf w_2\) meet at right angles, so \(\|\mathbf x\|^2=z_1^2+z_2^2\), and the rebuild drops exactly the \(z_2\) part</button>
+      <button data-why="The eigenvalue λ₂ = 2 is the average error over the five training points. One particular point can have any error; this one's is z₂² = 0.80.">Because the error always equals \(\lambda_2\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For the five points (\(\lambda_1=12,\ \lambda_2=2\)) you keep one component. What is the average squared rebuild error over the five points?</p>
+    <div class="opts">
+      <button data-why="12 is what you keep, not what you lose. The loss is the eigenvalue you dropped.">\(12\)</button>
+      <button data-correct data-why="Right. The average error is the sum of the dropped eigenvalues, here just λ₂ = 2. Check: the squared scores along w₂ are 1/5, 4/5, 25/5, 16/5, 4/5, which average to 2.">\(2\)</button>
+      <button data-why="14 is the total spread. Keeping one component saves 12 of it, so the loss is 14 − 12 = 2.">\(14\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s9-->
+  <p class="onesent reveal"><b>In one sentence:</b> by Pythagoras, what a direction keeps plus what it loses always adds up to the same total, so the line with the most spread is also the line with the smallest rebuild error.</p>
+</section>
+
+<!-- ================= 10 · UNCORRELATED COLUMNS ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>New columns that never repeat each other</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Two friends rush in with the same news, at the same moment, in almost the same words. From the second one you learn nothing new.</p>
+    <p>Age and experience are like those two friends: when one goes up, the other usually does too. PCA swaps them for new columns that <strong>never echo each other</strong>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>The new columns are the scores \(Z=XW\): one column per kept direction. What does their covariance look like? Do the same three-line move as §4:</p>
+    \[\begin{aligned}\operatorname{Cov}(Z)&=\frac1N Z^\top Z=W^\top\Big(\frac1N X^\top X\Big)W\\ &=W^\top C\,W=\Lambda=\begin{bmatrix}\lambda_1&&\\&\ddots&\\&&\lambda_M\end{bmatrix}.\end{aligned}\]
+    <p>The last step uses \(CW=W\Lambda\) (all the eigen-equations side by side) and \(W^\top W=I\).</p>
+    <p>Everything off the diagonal is zero. Off-diagonal entries are how much two columns move together — so the new columns are <strong>uncorrelated</strong>. And each new column's spread is its eigenvalue: "spread \(=\lambda\)" once more, for all components at once.</p>
+    <p>This is why PCA is popular before a regression. Correlated inputs make a model unsure which twin is doing the work. The usual fix deletes one twin and throws information away. PCA keeps all the information but re-expresses it along directions that never overlap.</p>
+    <h3>Reading a component: the loadings</h3>
+    <p>"But then I no longer know what my columns mean!" Not quite. Each component is a <strong>recipe</strong>:</p>
+    \[z_1=a_1x_1+a_2x_2+\dots+a_Dx_D,\qquad \mathbf w_1=(a_1,\dots,a_D).\]
+    <p>The weights \(a_d\) are called the <strong>loadings</strong>. They are just the entries of the eigenvector. Say three columns — age, experience, certifications — give</p>
+    \[\mathbf w_1=\tfrac17(6,\,3,\,2)\approx(0.86,\ 0.43,\ 0.29),\qquad \mathbf w_2=\tfrac1{\sqrt5}(-1,\,2,\,0)\approx(-0.45,\ 0.89,\ 0).\]
+    <p>Age has the biggest weight in \(\mathbf w_1\), so PC1 is "mostly an age axis". Experience leads \(\mathbf w_2\), so PC2 is "mostly an experience axis". The meaning is still there; you just read it one level deeper.</p>
+    <p>Any real set of loadings must pass <strong>two checks</strong>:</p>
+    <ul>
+      <li><strong>Length 1:</strong> \(\tfrac1{49}(36+9+4)=1\) and \(\tfrac15(1+4+0)=1\). ✓</li>
+      <li><strong>Right angles:</strong> \(\mathbf w_1^\top\mathbf w_2=\tfrac1{7\sqrt5}(-6+6+0)=0\). ✓</li>
+    </ul>
+    <p>If a proposed pair fails either check, it is not a pair of principal components.</p>
+    <p>One more thing: the <strong>sign</strong> of a component means nothing. If \(C\mathbf w=\lambda\mathbf w\), then also \(C(-\mathbf w)=\lambda(-\mathbf w)\). Two programs may hand you opposite signs for the same data. Read the <strong>pattern</strong> — which loadings are big, which have the same sign — not whether one is \(+0.7\) or \(-0.7\).</p>
+  </div>
+<!--@W11-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\operatorname{Cov}(Z)=W^\top C\,W=\Lambda\]</p>
+    <p>The new columns are uncorrelated by construction, and each one's spread is its eigenvalue. The loadings are the recipe for each new column: read the pattern, not the sign.</p>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Someone hands you three proposed pairs of loadings for two columns. Which pair could really be the two principal components?</p>
+    <div class="opts">
+      <button data-why="Both have length 1 (0.36 + 0.64 = 1), but they do not meet at right angles: 0.6·0.8 + 0.8·0.6 = 0.96, not 0.">\((0.6,\ 0.8)\) and \((0.8,\ 0.6)\)</button>
+      <button data-correct data-why="Right. Both have length 1 (0.36 + 0.64 = 1), and 0.6·(−0.8) + 0.8·0.6 = 0, so they meet at right angles. Both checks pass.">\((0.6,\ 0.8)\) and \((-0.8,\ 0.6)\)</button>
+      <button data-why="They meet at right angles (1 − 1 = 0), but neither has length 1: each has length √2. They would need dividing by √2.">\((1,\ 1)\) and \((1,\ -1)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s10-->
+  <p class="onesent reveal"><b>In one sentence:</b> the scores have covariance \(W^\top CW=\Lambda\), so the new columns never repeat each other, and the loadings are the recipe that says what each one is made of.</p>
+</section>
+
+<!-- ================= 11 · THE SVD ROUTE ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Turn, stretch, turn — the SVD route</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>When you send a photo on WhatsApp, it is squeezed so it travels fast. Squeeze it a little and nobody notices. Squeeze it too hard and faces turn to blocks.</p>
+    <p>A photo is just a big table of numbers — a matrix. The best possible way to squeeze a matrix turns out to be PCA again, in a different coat.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Unit 5 showed that every matrix, however messy, does three simple things in a row: <strong>turn, stretch, turn</strong>. That is the singular value decomposition (SVD):</p>
+    \[X=U\,\Sigma\,V^\top.\]
+    <p>\(U\) and \(V\) are pure turns (their columns have length 1 and meet at right angles), and \(\Sigma\) is a diagonal stretch with the singular values \(\sigma_1\ge\sigma_2\ge\dots\ge0\).</p>
+    <p>Now feed the SVD into the covariance matrix. The inner \(U^\top U\) is \(I\), so it drops out:</p>
+    \[\begin{aligned}C=\frac1N X^\top X&=\frac1N\,V\Sigma\,U^\top U\,\Sigma V^\top\\ &=V\,\frac{\Sigma^2}{N}\,V^\top.\end{aligned}\]
+    <p>Compare that with the eigen-split \(C=W\Lambda W^\top\). Same shape: a turn, a diagonal, the turn back. So they must be the same thing:</p>
+    \[W=V,\qquad \lambda_d=\frac{\sigma_d^2}{N}.\]
+    <ul>
+      <li><strong>Why squared?</strong> \(C\) is built from \(X^\top X\): the data appears twice, so a stretch of \(\sigma\) becomes \(\sigma^2\).</li>
+      <li><strong>Why divide by \(N\)?</strong> \(X^\top X\) is a sum over all \(N\) points, and a variance is an average.</li>
+      <li><strong>\(U\) or \(V\)?</strong> Ask which one has \(D\) rows — that one lives in feature space and holds the directions. With points in rows (our way) it is \(V\). The slides store points in columns, so for them it is \(U\).</li>
+    </ul>
+    <p>Most software takes this route. It never builds \(C\) at all, which keeps more decimal places, and it can stop after the top few pieces.</p>
+    <h3>The best squeeze: Eckart–Young</h3>
+    <p>The SVD writes \(X\) as a sum of simple layers, each one a single stretch \(\sigma_d\,\mathbf u_d\mathbf v_d^\top\). Keep only the top \(M\) layers:</p>
+    \[\begin{aligned}\tilde X_M&=\sigma_1\mathbf u_1\mathbf v_1^\top+\dots+\sigma_M\mathbf u_M\mathbf v_M^\top\\ &=U_M\Sigma_MV_M^\top.\end{aligned}\]
+    <p>The <strong>Eckart–Young theorem</strong> says no matrix of rank \(M\) comes closer to \(X\). And the error is made of exactly what you dropped:</p>
+    \[\begin{gathered}\|X-\tilde X_M\|_2=\sigma_{M+1},\\ \|X-\tilde X_M\|_F=\sqrt{\sigma_{M+1}^2+\sigma_{M+2}^2+\cdots}\end{gathered}\]
+    <p>(The first is the biggest stretch left over; the second is the square root of the sum of every squared entry of the error.)</p>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Packing for the trip home</span>
+    <p>You are going home for Diwali and the suitcase fits \(M\) things. The obvious plan: pack the biggest, most useful things first, and stop when it is full.</p>
+    <p>What is <em>not</em> obvious — and what Eckart–Young actually proves — is that <strong>no clever repacking beats this greedy order</strong>. Taking the top \(M\) singular layers is not just sensible. It is the best there is.</p>
+  </div>
+<!--@W12-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}C=V\,\frac{\Sigma^2}{N}\,V^\top\\ W=V,\qquad \lambda_d=\frac{\sigma_d^2}{N}\end{gathered}\]</p>
+    <p>The principal directions are the right singular vectors of the centred data. Cutting the SVD after \(M\) layers is the best possible rank-\(M\) copy of the data — PCA again, seen as compression.</p>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A centred data matrix has \(N=100\) rows and singular values \(20,\ 10,\ 5,\ 1\). What are the eigenvalues of \(C\)?</p>
+    <div class="opts">
+      <button data-why="These are σ/N. The eigenvalues use the square: λ = σ²/N.">\(0.2,\ 0.1,\ 0.05,\ 0.01\)</button>
+      <button data-why="These are σ², but you still have to divide by N = 100.">\(400,\ 100,\ 25,\ 1\)</button>
+      <button data-correct data-why="Right. λ = σ²/N: 400/100 = 4, 100/100 = 1, 25/100 = 0.25, 1/100 = 0.01. Total 5.26, and the first two keep 5/5.26 = 95.06 %.">\(4,\ 1,\ 0.25,\ 0.01\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c18">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Same matrix. You keep the best rank-2 copy. How big is the error in the two norms?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The dropped singular values are 5 and 1. The spectral norm is the biggest one dropped, 5. The Frobenius norm is √(5² + 1²) = √26 ≈ 5.10.">spectral \(5\); Frobenius \(\sqrt{26}\approx5.10\)</button>
+      <button data-why="6 is 5 + 1. Norms of the error do not add the dropped singular values. The spectral norm is the largest one dropped, and the Frobenius norm adds their squares under a root.">spectral \(6\); Frobenius \(6\)</button>
+      <button data-why="These are the kept singular values. The error is made of the ones you dropped: 5 and 1.">spectral \(20\); Frobenius \(\sqrt{500}\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s11-->
+  <p class="onesent reveal"><b>In one sentence:</b> substituting \(X=U\Sigma V^\top\) into \(C\) gives \(W=V\) and \(\lambda=\sigma^2/N\), and cutting the SVD after \(M\) layers is the best rank-\(M\) copy of the data, with an error made of the dropped singular values.</p>
+</section>
+
+<!-- ================= 12 · POWER ITERATION ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>Finding the top direction by just multiplying</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>At the school function, the microphone gets too close to the speaker. Any small sound goes round the loop — mic, amplifier, speaker, mic — and every trip makes <strong>one pitch</strong> a little louder than all the others.</p>
+    <p>A few seconds later that one pitch is all you can hear: the howl. Power iteration is that loop, used on purpose.</p>
+  </div>
+  <div class="prose reveal">
+    <p>By hand, you find eigenvalues by solving \(\det(C-\lambda I)=0\). For a \(2\times2\) matrix that is a quadratic. For \(3\times3\) it is a cubic, and \(4\times4\) a quartic — there are formulas, though nobody enjoys them.</p>
+    <p>At \(5\times5\) the method dies, and not because nobody has been clever enough. The <strong>Abel–Ruffini theorem</strong> proves that a general polynomial of degree 5 or more has <strong>no</strong> formula for its roots using \(+,-,\times,\div\) and roots. Not "none is known" — <strong>none can exist</strong>. So every real eigenvalue program <em>iterates</em>: start with a guess, improve it, stop when it stops changing.</p>
+    <p>There is a second reason to iterate. A full eigen-split of a \(D\times D\) matrix costs about \(D^3\) steps and returns all \(D\) directions. PCA usually wants two, or ten. Paying for hundreds and binning most of them is waste.</p>
+    <p>The simplest iteration goes straight for the top direction. Start with any arrow \(\mathbf x_0\) and repeat:</p>
+    \[\mathbf x_{k+1}=\frac{C\,\mathbf x_k}{\|C\,\mathbf x_k\|}.\]
+    <p>Multiply by \(C\), shrink back to length 1, repeat. That is the whole method.</p>
+    <p>Try it on \(C=\begin{bmatrix}5&4\\4&5\end{bmatrix}\) from \(\mathbf x_0=(1,0)\). First pass: \(C\mathbf x_0=(5,4)\), whose length is \(\sqrt{41}\), so \(\mathbf x_1\approx(0.781,\ 0.625)\). Second pass: \(C(5,4)=(41,40)\), so \(\mathbf x_2\approx(0.716,\ 0.698)\). It is closing in on the answer \(\tfrac1{\sqrt2}(1,1)\approx(0.707,\ 0.707)\) fast.</p>
+    <p><strong>Why it works.</strong> Write the start in terms of the eigenvectors: \(\mathbf x_0=c_1\mathbf w_1+c_2\mathbf w_2\). Each multiplication by \(C\) stretches the \(\mathbf w_1\) part by \(\lambda_1\) and the \(\mathbf w_2\) part by \(\lambda_2\). After \(k\) passes:</p>
+    \[\begin{aligned}C^k\mathbf x_0&=c_1\lambda_1^{\,k}\mathbf w_1+c_2\lambda_2^{\,k}\mathbf w_2\\ &=\lambda_1^{\,k}\Big(c_1\mathbf w_1+c_2\Big(\frac{\lambda_2}{\lambda_1}\Big)^{k}\mathbf w_2\Big).\end{aligned}\]
+    <p>The ratio \(\lambda_2/\lambda_1\) is less than 1, so the wrong part fades away pass after pass. Here \(\lambda_2/\lambda_1=1/9\): each pass shrinks the wrong part <strong>nine times</strong>.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">When it crawls</span>
+    <p>If the top two eigenvalues are close — say \(5.0\) and \(4.9\) — the ratio is \(0.98\), and each pass shrinks the wrong part by only 2 %. Progress is very slow. But then the top two directions carry almost the same spread anyway, so "which one comes first" hardly matters. Real libraries use smarter versions of this loop for that case.</p>
+  </div>
+<!--@W13-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf x_{k+1}=\frac{C\mathbf x_k}{\|C\mathbf x_k\|}\]</p>
+    <p>No formula can find the eigenvalues of a big matrix, so software multiplies instead. Each multiplication by \(C\) favours the direction \(C\) stretches most: the wrong part shrinks by \(\lambda_2/\lambda_1\) every pass, until only the top direction is left.</p>
+  </div>
+  <div class="check reveal" data-check="c19">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Power iteration on \(C=\begin{bmatrix}5&4\\4&5\end{bmatrix}\) from \(\mathbf x_0=(1,0)\). After one pass, where is the arrow, and by how much has the wrong part shrunk?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. C(1, 0) = (5, 4); divide by √41 ≈ 6.403 to get (0.781, 0.625). The wrong part shrinks by λ₂/λ₁ = 1/9 each pass.">\(\mathbf x_1\approx(0.781,\ 0.625)\); the wrong part shrinks to \(1/9\) of its size</button>
+      <button data-why="(5, 4) is Cx₀ before rescaling. The method divides by its length √41 to get (0.781, 0.625).">\(\mathbf x_1=(5,\ 4)\); the wrong part shrinks by half</button>
+      <button data-why="(0.707, 0.707) is where the arrow is heading, not where it is after one pass. One pass gives (0.781, 0.625).">\(\mathbf x_1=(0.707,\ 0.707)\) already; it lands in one pass</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s12-->
+  <p class="onesent reveal"><b>In one sentence:</b> no formula finds the eigenvalues of a big matrix, so software multiplies by \(C\) and rescales, and each pass shrinks everything except the top direction by the factor \(\lambda_2/\lambda_1\).</p>
+</section>

@@ -1,0 +1,145 @@
+<!-- ================= ACT III · THE MESSY WORLD ================= -->
+<!-- ================= 10 · SOFT MARGIN ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Soft margin — allowing a few trespassers</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A traffic constable keeps a lane clear. In a perfect world nobody ever stops in it. In real Bengaluru, a few autos always do.</p>
+    <p>A sensible rule is not "the lane must be perfectly empty, or there is no lane". It is: <strong>stop inside if you must, but pay a fine</strong> for every metre you intrude. Now the constable can keep a wide lane and still deal with the odd rule-breaker.</p>
+  </div>
+  <div class="prose reveal">
+    <p>The hard margin fails hard. Real data is noisy: one blue point lands among the orange ones, and suddenly no line satisfies every wall — the problem has no answer at all (§5). The fix keeps the same rule but gives every point a small allowance \(\xi_i\) (the Greek letter xi), its <em>slack</em>:</p>
+    \[y_i(\mathbf w\cdot\mathbf x_i+b)\ge1-\xi_i,\qquad \xi_i\ge0.\]
+    <p>Think of \(\xi_i\) as a record of <strong>how far point \(i\) breaks the old rule</strong>, measured in half-street widths. Read its value like this:</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>\(\xi_i\)</th><th>the rule becomes</th><th>where the point is</th></tr></thead>
+    <tbody>
+      <tr><td>\(0\)</td><td>\(y_if(\mathbf x_i)\ge1\)</td><td>the old rule: outside the street, or exactly on its edge</td></tr>
+      <tr><td>between 0 and 1</td><td>\(y_if(\mathbf x_i)\ge1-\xi_i&gt;0\)</td><td>inside the street, but still on its own side — still classified correctly</td></tr>
+      <tr><td>\(1\)</td><td>\(y_if(\mathbf x_i)\ge0\)</td><td>exactly on the centre line</td></tr>
+      <tr><td>more than 1</td><td>the right side is negative</td><td>crossed to the wrong side — misclassified; the bigger \(\xi_i\), the deeper</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>If slack were free, the optimiser would cheat: make every \(\xi_i\) huge and pave a street as wide as the world. So every unit of slack costs a fine \(C&gt;0\):</p>
+    \[\begin{gathered}\min_{\mathbf w,b,\boldsymbol\xi}\ \underbrace{\tfrac12\|\mathbf w\|^2}_{\text{widen the street}}+\underbrace{C\sum_i\xi_i}_{\text{total fine}}\\ \text{s.t.}\quad y_i(\mathbf w\cdot\mathbf x_i+b)\ge1-\xi_i,\ \ \xi_i\ge0.\end{gathered}\]
+    <p>Two wishes now pull against each other. The first term wants a wide street. The second wants nobody inside it. \(C\) is the exchange rate between them.</p>
+    <p>Now the surprise. Run the same Lagrangian-and-dual walk as §6–§8 with one extra family of prices \(\mu_i\) for the rule \(\xi_i\ge0\). Setting the slope in \(\xi_i\) to zero gives \(\alpha_i+\mu_i=C\). Since \(\mu_i\ge0\), that means \(\alpha_i\le C\). Everything else is <strong>letter for letter the hard-margin dual</strong>:</p>
+    \[\begin{gathered}\max_{\boldsymbol\alpha}\ \sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_j(\mathbf x_i\cdot\mathbf x_j)\\ \text{s.t.}\quad \boxed{0\le\alpha_i\le C},\quad\sum_i\alpha_iy_i=0.\end{gathered}\]
+    <p>The slack variables have vanished. The <strong>only change is a ceiling on every price</strong>. In a hard margin one badly placed point can push infinitely hard — that is why one outlier wrecks everything. With a soft margin nobody can push harder than \(C\). That ceiling is the robustness.</p>
+  </div>
+
+  <div class="widget reveal" id="w-slack">
+    <div class="widget-head"><span class="w-title">The fine dial</span><span class="w-sub">Six blue and six orange points, plus one rogue blue point near the orange group. Each red pillar is a point's slack ξᵢ — how far it trespasses. Turn the fine C.</span></div>
+    <p class="try"><b>Try:</b> Sweep \(C\) from 0.01 up to 1000. At small \(C\) the street is wide and the rogue point simply stands inside it (a tall red pillar). As \(C\) grows the fine bites, the pillars shrink, and the street narrows until it honours the rogue point exactly — the hard margin.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="sl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. Thirteen beads on a glass floor: blue discs upper left, orange diamonds lower right, and one blue bead close to the orange group. A translucent street with a white centre line and violet edges lies between them. Every point that trespasses carries a red glowing pillar whose height is its slack, labelled with its value. Points holding up the street carry gold rings; points whose price has hit the ceiling C carry red rings. Turning the fine up narrows the street and shrinks the pillars."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls"><div class="ctl"><label for="sl-c">fine C</label><input id="sl-c" type="range" min="-2" max="3" step="0.05" value="-1.7"><output id="sl-c-o">0.02</output></div></div>
+        <div class="presets" id="sl-pre"><button class="play" id="sl-play">▶ sweep the fine</button><button class="preset" id="sl-p-lo" aria-pressed="true">C = 0.02</button><button class="preset" id="sl-p-1">C = 1</button><button class="preset" id="sl-p-hi">C = 1000</button></div>
+        <table class="kv" id="sl-kv"></table>
+        <div id="sl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+        <div class="legend"><span><i class="ls"></i>free price, 0 &lt; α &lt; C</span><span><i class="ls" style="border-color:var(--critical)"></i>at the ceiling, α = C</span></div>
+      </div>
+    </div>
+    <div class="snaps">
+      <figure><div class="svgstage"><svg id="sl-snap-lo" viewBox="0 0 420 300" role="img" aria-label="Snapshot at C = 0.02: a wide street; the rogue blue point stands inside it on the orange side."></svg></div><figcaption id="sl-cap-lo">small fine</figcaption></figure>
+      <figure><div class="svgstage"><svg id="sl-snap-hi" viewBox="0 0 420 300" role="img" aria-label="Snapshot at C = 1000: a narrow street that bends to keep the rogue point outside it."></svg></div><figcaption id="sl-cap-hi">large fine</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Reading \(C\).</strong> A <em>small</em> fine makes cheating cheap: the optimiser buys a wide street and shrugs when a few points step inside or even cross. Wide street, more support vectors, a calm boundary that ignores single points. A <em>large</em> fine makes every unit of slack expensive: the street narrows until nobody trespasses. As \(C\to\infty\) you get the hard margin back exactly. So \(C\) runs <strong>opposite</strong> to the \(\lambda\) of ridge regression: big \(C\) means less smoothing, not more. In practice \(C\) is chosen by trying several values on held-out data.</p>
+    <p><strong>Reading the prices.</strong> With the ceiling, complementary slackness gives three kinds of points:</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>price</th><th>slack and score</th><th>where the point is</th></tr></thead>
+    <tbody>
+      <tr><td>\(\alpha_i=0\)</td><td>\(\xi_i=0\), \(y_if(\mathbf x_i)\ge1\)</td><td>outside the street — not a support vector</td></tr>
+      <tr><td>\(0&lt;\alpha_i&lt;C\)</td><td>\(\xi_i=0\), \(y_if(\mathbf x_i)=1\)</td><td>exactly on an edge — a <em>free</em> support vector</td></tr>
+      <tr><td>\(\alpha_i=C\)</td><td>\(\xi_i\ge0\), \(y_if(\mathbf x_i)\le1\)</td><td>on the edge, inside the street or across the line — a <em>bounded</em> support vector</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>One practical rule follows. \(b\) is found exactly as before, \(b=y_s-\sum_i\alpha_iy_i(\mathbf x_i\cdot\mathbf x_s)\) — but <strong>only from a free support vector</strong>, where the score is known to be exactly 1. A bounded one may be inside the street, and would give the wrong \(b\).</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\min\ \tfrac12\|\mathbf w\|^2+C\sum_i\xi_i\\ \Longleftrightarrow\ \text{the same dual with }0\le\alpha_i\le C\end{gathered}\]</p>
+    <p>Let points trespass, but <strong>fine them</strong> \(C\) per unit. In the dual the fine becomes a ceiling on how hard any one point can push. Small \(C\): wide and forgiving. Large \(C\): narrow and strict. \(C\to\infty\): the hard margin.</p>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">After training, a point has slack \(\xi_i=1.4\). Where is it?</p>
+    <div class="opts">
+      <button data-why="Inside the street but on the correct side means 0 < ξ < 1. Here ξ is bigger than 1.">Inside the street, but still on its own side</button>
+      <button data-why="ξ = 1 means exactly on the centre line. 1.4 is further.">Exactly on the centre line</button>
+      <button data-correct data-why="ξ > 1 makes the rule y·f ≥ 1 − 1.4 = −0.4, so the score can be negative: the point has crossed the centre line and is misclassified, 0.4 half-widths past it.">Across the centre line — it is misclassified</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You lower the fine \(C\) from 100 to 0.1. What usually happens?</p>
+    <div class="opts">
+      <button data-correct data-why="Cheap slack means the optimiser happily lets points step inside in exchange for a smaller ‖w‖: the street widens, and more points end up touching or inside it, so more of them carry a price (more support vectors).">The street gets wider and more points become support vectors</button>
+      <button data-why="That is what raising C does. A big fine makes trespassing expensive, so the street shrinks to keep points out.">The street gets narrower and fewer points trespass</button>
+      <button data-why="C is exactly the knob that trades street width against trespassing, so changing it by a factor of 1000 almost always changes the street.">Nothing — C only changes the prices, not the street</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s10-->
+  <p class="onesent reveal"><b>In one sentence:</b> Give each point a slack \(\xi_i\), fine it \(C\) per unit, and the dual stays the same except for a ceiling \(0\le\alpha_i\le C\) — the knob that trades a wide street against trespassers.</p>
+</section>
+
+<!-- ================= 11 · HINGE ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>The hinge loss falls out of the slack</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A phone plan: the first 2 GB are free. After that you pay ₹10 for every extra GB. The bill is flat at zero, then rises in a straight line.</p>
+    <p>Nobody sat down and chose that shape for the SVM. It falls out of the slack by itself — and it has exactly this "free, then a straight line" look.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Write \(z_i=y_i(\mathbf w\cdot\mathbf x_i+b)\) for the score of point \(i\). The soft rule \(z_i\ge1-\xi_i\) says \(\xi_i\ge1-z_i\). We also asked \(\xi_i\ge0\). So the slack has two floors, and since every unit of slack costs \(C\), the optimiser never pays more than the higher floor:</p>
+    \[\xi_i=\max\big(0,\ 1-z_i\big).\]
+    <p>This is the <em>hinge loss</em>. Put in a few scores:</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>score \(z_i\)</th><th>\(2\)</th><th>\(1\)</th><th>\(0.5\)</th><th>\(0\)</th><th>\(-0.5\)</th><th>\(-2\)</th></tr></thead>
+    <tbody>
+      <tr><td>hinge loss \(\xi_i\)</td><td>0</td><td>0</td><td>0.5</td><td>1</td><td>1.5</td><td>3</td></tr>
+      <tr><td>where it is</td><td>well outside</td><td>on the edge</td><td>inside, correct side</td><td>on the centre line</td><td>wrong side</td><td>wrong side, far</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>Put the hinge back into the problem and the constraints disappear altogether. What is left is the form most machine-learning books start from — a regulariser plus a loss, like every other classifier:</p>
+    \[\begin{aligned}\min_{\mathbf w,b}\ &\tfrac12\|\mathbf w\|^2\\ &+C\sum_i\max\big(0,\ 1-y_i(\mathbf w\cdot\mathbf x_i+b)\big).\end{aligned}\]
+  </div>
+
+  <div class="widget reveal" id="w-hinge">
+    <div class="widget-head"><span class="w-title">Drag a point across the street</span><span class="w-sub">Left: a street and one point. Right: its score z on the hinge (solid) and on the "count the mistakes" loss (dashed).</span></div>
+    <p class="try"><b>Try:</b> Drag the point from far outside, through the street, across the centre line and beyond. The hinge stays flat at 0 until the edge, then climbs one-for-one. The counting loss does nothing, then jumps.</p>
+    <div class="presets" id="hg-pre"><span class="lbl" style="font-family:var(--ui);font-size:.76rem;color:var(--ink-muted)">put the score at</span><button class="preset" data-z="2">z = 2</button><button class="preset" data-z="1">1</button><button class="preset" data-z="0.5">0.5</button><button class="preset" data-z="0">0</button><button class="preset" data-z="-0.5">−0.5</button><button class="preset" data-z="-2">−2</button><button class="preset" id="hg-flip">switch the point's class</button></div>
+    <div class="svgstage stage-canvas"><svg id="hg-svg" viewBox="0 0 900 380" class="svg-lab grabbable" role="img" aria-label="Left: a street between violet edges x1 + x2 = 6 and x1 + x2 = 2 around the centre line x1 + x2 = 4, with one draggable blue point. Right: a chart of loss against the score z, with the hinge max(0, 1 − z) as a solid line and the zero-one loss as a dashed step; a marker shows the point's current score on both."></svg></div>
+    <div class="wrow" style="margin-top:.6rem"><div class="wcol"><table class="kv" id="hg-kv"></table></div><div class="wcol"><div id="hg-verdict" class="verdict info">—</div></div></div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Why not simply count mistakes? Because counting is <strong>flat everywhere with a cliff at zero</strong>. A slope-following method stands on flat ground and learns nothing about which way to go. The hinge has a slope exactly where it matters — inside the street and beyond — and is exactly zero beyond the edge. That flat zero is what makes most prices vanish, and so it is what gives an SVM its few support vectors.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\xi_i=\max\big(0,\,1-z_i\big)\\ z_i=y_i(\mathbf w\cdot\mathbf x_i+b)\end{gathered}\]</p>
+    <p>The hinge loss is not a design choice. It is the <strong>cheapest slack</strong> that obeys both floors: zero when a point is safely outside the street, growing one-for-one as it walks in and across.</p>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A point has score \(z=0.5\). What is its hinge loss, and what does the 0/1 "count the mistakes" loss say?</p>
+    <div class="opts">
+      <button data-correct data-why="Hinge: max(0, 1 − 0.5) = 0.5, because the point is halfway into the street. The 0/1 loss is 0, because z > 0 means it is still classified correctly — counting mistakes cannot see that it is too close.">Hinge 0.5; the 0/1 loss is 0 (it is still on the correct side)</button>
+      <button data-why="A score of 0.5 is inside the street, where the hinge is already positive: max(0, 1 − 0.5) = 0.5.">Hinge 0; the 0/1 loss is 0</button>
+      <button data-why="The 0/1 loss is 1 only for a mistake, which needs z < 0. At z = 0.5 the point is still on its correct side.">Hinge 0.5; the 0/1 loss is 1</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s11-->
+  <p class="onesent reveal"><b>In one sentence:</b> The cheapest slack that obeys both floors is \(\xi_i=\max(0,1-z_i)\) — the hinge loss, flat beyond the edge and a straight slope inside, which turns the SVM into "regulariser plus loss".</p>
+</section>

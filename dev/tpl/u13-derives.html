@@ -1,0 +1,219 @@
+<!--@D s2-->
+  <div class="derive">
+    <span class="tag">Prove it · w points straight across the line</span>
+    <p class="dgoal"><b>Claim.</b> For the line \(\mathbf w\cdot\mathbf x+b=0\), the vector \(\mathbf w\) is at a right angle to every direction that runs along the line. Changing \(b\) moves the line parallel to itself.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Take any two points \(\mathbf p,\mathbf q\) on the line. Both have score zero:
+      \[\begin{gathered}\mathbf w\cdot\mathbf p+b=0,\\ \mathbf w\cdot\mathbf q+b=0.\end{gathered}\]
+      <span class="dwhy">Being "on the line" means exactly this.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Subtract the second from the first. The \(b\) cancels:
+      \[\mathbf w\cdot(\mathbf p-\mathbf q)=0.\]
+      <span class="dwhy">A zero dot product means a right angle. And \(\mathbf p-\mathbf q\) is an arrow from one point of the line to another, so it runs along the line.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Every direction along the line is such a difference, so \(\mathbf w\) is at a right angle to all of them: \(\mathbf w\) is the normal. The set \(\{\mathbf x:\mathbf w\cdot\mathbf x=-b\}\) for a new \(b\) has the same normal, so it is a parallel line, shifted along \(\mathbf w\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Example: on \(x_1+2x_2=6\), \(\mathbf p=(6,0)\), \(\mathbf q=(0,3)\) give \((1,2)\cdot(6,-3)=0\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the distance formula</span>
+    <p class="dgoal"><b>Claim.</b> The signed distance from a point \(\mathbf z\) to the line \(\mathbf w\cdot\mathbf x+b=0\) is \(t=\dfrac{\mathbf w\cdot\mathbf z+b}{\|\mathbf w\|}\) — positive on the side \(\mathbf w\) points to.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Walk from \(\mathbf z\) straight across, along the unit normal \(\hat{\mathbf w}=\mathbf w/\|\mathbf w\|\), a signed distance \(t\), landing at \(\mathbf z-t\hat{\mathbf w}\). The landing point is on the line:
+      \[\mathbf w\cdot(\mathbf z-t\hat{\mathbf w})+b=0.\]
+      <span class="dwhy">The shortest route to a line is the straight-across one, so this \(t\) is the distance.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Open the bracket, and use \(\mathbf w\cdot\hat{\mathbf w}=\mathbf w\cdot\mathbf w/\|\mathbf w\|=\|\mathbf w\|^2/\|\mathbf w\|=\|\mathbf w\|\):
+      \[\begin{aligned}&\mathbf w\cdot\mathbf z+b-t\,\|\mathbf w\|=0\\ &\Rightarrow\ t=\frac{\mathbf w\cdot\mathbf z+b}{\|\mathbf w\|}=\frac{f(\mathbf z)}{\|\mathbf w\|}.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">For \((4.4,5.2)\) and \(x_1+2x_2=6\): \(t=8.8/\sqrt5\approx3.935\). The raw score and the distance differ by exactly the factor \(\|\mathbf w\|\).</span></div></div>
+  </div>
+<!--@D s3-->
+  <div class="derive">
+    <span class="tag">Prove it · the street is 2c/‖w‖ wide</span>
+    <p class="dgoal"><b>Claim.</b> If \(\mathbf x^+\) lies on \(\mathbf w\cdot\mathbf x+b=c\) and \(\mathbf x^-\) on \(\mathbf w\cdot\mathbf x+b=-c\), then \(\|\mathbf x^+-\mathbf x^-\|\ge 2c/\|\mathbf w\|\), with equality exactly when \(\mathbf x^+-\mathbf x^-\) points along \(\mathbf w\). So the smallest distance between the two edges — the width — is \(2c/\|\mathbf w\|\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Subtract the two edge equations; \(b\) cancels:
+      \[\begin{aligned}&\mathbf w\cdot\mathbf x^++b-(\mathbf w\cdot\mathbf x^-+b)\\ &\quad=c-(-c)\\ &\Longrightarrow\ \mathbf w\cdot(\mathbf x^+-\mathbf x^-)=2c.\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Cauchy–Schwarz says \(|\mathbf u\cdot\mathbf v|\le\|\mathbf u\|\,\|\mathbf v\|\), with equality only when \(\mathbf u\) and \(\mathbf v\) are parallel. With \(\mathbf u=\mathbf w\), \(\mathbf v=\mathbf x^+-\mathbf x^-\):
+      \[\begin{aligned}2c&=|\mathbf w\cdot(\mathbf x^+-\mathbf x^-)|\\ &\le\|\mathbf w\|\,\|\mathbf x^+-\mathbf x^-\|,\end{aligned}\] so \[\|\mathbf x^+-\mathbf x^-\|\ge\frac{2c}{\|\mathbf w\|}.\]
+      <span class="dwhy">We may divide by \(\|\mathbf w\|\), a positive number. Dividing by the vector \(\mathbf w\) is what is not allowed.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">The bound is reached. Start at any \(\mathbf x^+\) and walk straight across by \(\mathbf x^-=\mathbf x^+-\dfrac{2c}{\|\mathbf w\|^2}\mathbf w\). Its score is \(c-\dfrac{2c}{\|\mathbf w\|^2}\|\mathbf w\|^2=-c\), so it lies on the other edge, and its distance from \(\mathbf x^+\) is \(\dfrac{2c}{\|\mathbf w\|^2}\|\mathbf w\|=\dfrac{2c}{\|\mathbf w\|}\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The smallest distance between the two edges is the width of the street, so the width is \(2c/\|\mathbf w\|\). One inequality did two jobs: it gave the number, and it proved nothing is closer.</span></div></div>
+  </div>
+<!--@D s4-->
+  <div class="derive">
+    <span class="tag">Prove it · rescaling moves nothing</span>
+    <p class="dgoal"><b>Claim.</b> For any \(k>0\), the triple \((k\mathbf w,kb,kc)\) describes the same three lines as \((\mathbf w,b,c)\), and the width \(2c/\|\mathbf w\|\) is unchanged. So we may choose \(c=1\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">A point \(\mathbf x\) lies on the new \(+\) edge when \(k\mathbf w\cdot\mathbf x+kb=kc\). Divide by \(k>0\): \(\mathbf w\cdot\mathbf x+b=c\). Same condition, same points. The same holds for the other two lines.
+      <span class="dwhy">An equation and a multiple of it describe the same set.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The numbers change: \(\|k\mathbf w\|=k\|\mathbf w\|\), the constant becomes \(kc\), each score \(y_if(\mathbf x_i)\) becomes \(k\,y_if(\mathbf x_i)\). But the width
+      \[\frac{2(kc)}{\|k\mathbf w\|}=\frac{2kc}{k\|\mathbf w\|}=\frac{2c}{\|\mathbf w\|}\]
+      does not.</div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Pick \(k=1/c\). The new constant is \(1\), the nearest points score exactly 1, and the width is \(2/\|\mathbf w\|\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">In the 3-D slab: \(\mathbf w=(\tfrac12,\tfrac12,\tfrac12)\), \(b=-2\), \(\|\mathbf w\|=\tfrac{\sqrt3}{2}\), thickness \(2/\|\mathbf w\|=4/\sqrt3\approx2.309\) — which is also the distance between the planes \(x_1+x_2+x_3=2\) and \(=6\), namely \(4/\sqrt3\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · one inequality replaces two</span>
+    <p class="dgoal"><b>Claim.</b> With labels \(y_i=\pm1\), "\(\mathbf w\cdot\mathbf x_i+b\ge1\) for blue and \(\le-1\) for orange" is the same as \(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\) for every \(i\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Blue, \(y_i=+1\): \(y_i(\mathbf w\cdot\mathbf x_i+b)=\mathbf w\cdot\mathbf x_i+b\), so the two statements are identical.</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Orange, \(y_i=-1\): multiply \(\mathbf w\cdot\mathbf x_i+b\le-1\) by \(-1\), which flips the inequality: \(-(\mathbf w\cdot\mathbf x_i+b)\ge1\), and \(-(\mathbf w\cdot\mathbf x_i+b)=y_i(\mathbf w\cdot\mathbf x_i+b)\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A label of 0 would destroy this: \(0\times\) anything is 0, which can never be \(\ge1\).</span></div></div>
+  </div>
+<!--@D s5-->
+  <div class="derive">
+    <span class="tag">Prove it · the three rewrites keep the winner</span>
+    <p class="dgoal"><b>Claim.</b> Under the same constraints, \(\max 2/\|\mathbf w\|\), \(\min\|\mathbf w\|\), \(\min\|\mathbf w\|^2\) and \(\min\tfrac12\|\mathbf w\|^2\) are all won by the same \((\mathbf w,b)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Every allowed \(\mathbf w\) is non-zero (with \(\mathbf w=\mathbf 0\) every score is \(y_ib\), and \(b\) cannot be \(\ge1\) for one class and \(\le-1\) for the other). On positive numbers, \(t\mapsto2/t\) is strictly decreasing, \(t\mapsto t^2\) is strictly increasing, and \(t\mapsto\tfrac12t\) is strictly increasing.
+      <span class="dwhy">A strictly increasing function never changes which input is smallest; a strictly decreasing one turns the smallest into the largest.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">So \(\|\mathbf w_1\|<\|\mathbf w_2\|\iff \tfrac12\|\mathbf w_1\|^2<\tfrac12\|\mathbf w_2\|^2\iff 2/\|\mathbf w_1\|>2/\|\mathbf w_2\|\). Whichever \(\mathbf w\) wins one contest wins all four.
+      <span class="dwhy">The values differ; the winner does not.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Why the squared form is the one to solve: in one coordinate, \(|w|\) has slope \(-1\) on the left of 0 and \(+1\) on the right — no slope at 0. And \(\tfrac12\|\mathbf w\|^2=\tfrac12\sum_jw_j^2\) has partial derivatives \(\partial/\partial w_k=w_k\), smooth everywhere; its gradient is \(\mathbf w\) itself and its second derivatives form the identity matrix, so it curves up equally in every direction and has exactly one bottom.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">In the four-point picture: the corner \(\mathbf w=(0.8,0.4)\) gives \(\tfrac12\|\mathbf w\|^2=\tfrac12(0.64+0.16)=0.4\) and width \(2/\sqrt{0.8}=\sqrt5\approx2.236\), the distance between the two touching points \((1,2)\) and \((-1,1)\).</span></div></div>
+  </div>
+<!--@D s6-->
+  <div class="derive">
+    <span class="tag">Prove it · the prices rebuild the walls</span>
+    <p class="dgoal"><b>Claim.</b> For a fixed street \((\mathbf w,b)\), \(\displaystyle\max_{\boldsymbol\alpha\ge\mathbf 0}L(\mathbf w,b,\boldsymbol\alpha)\) equals \(\tfrac12\|\mathbf w\|^2\) if every \(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1\), and \(+\infty\) otherwise. So \(\min_{\mathbf w,b}\max_{\boldsymbol\alpha\ge\mathbf 0}L\) is exactly the hard-margin problem, and at its answer \(\alpha_i\big[y_if(\mathbf x_i)-1\big]=0\) for every \(i\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write \(g_i=y_i(\mathbf w\cdot\mathbf x_i+b)-1\), so \(L=\tfrac12\|\mathbf w\|^2-\sum_i\alpha_ig_i\). The prices enter separately, one term \(-\alpha_ig_i\) each, so maximise each term on its own.
+      <span class="dwhy">No price appears in any other point's term.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">If \(g_i&lt;0\) (a trespasser), \(-\alpha_ig_i=\alpha_i|g_i|\) grows without limit as \(\alpha_i\to\infty\). If \(g_i&gt;0\), \(-\alpha_ig_i\le0\) and the best choice is \(\alpha_i=0\). If \(g_i=0\), the term is 0 for every \(\alpha_i\).</div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">So the maximum is \(+\infty\) as soon as one wall is broken, and otherwise it is \(\tfrac12\|\mathbf w\|^2+0\). Minimising over streets never picks an infinite value, so it solves the original problem. In every case the best prices satisfy \(\alpha_ig_i=0\): either \(g_i=0\) or \(\alpha_i=0\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">That last line is complementary slackness, the fourth KKT condition. It came for free from "the prices try to make \(L\) as large as possible".</span></div></div>
+  </div>
+<!--@D s7-->
+  <div class="derive">
+    <span class="tag">Prove it · Lemma A: the slope of ½‖w‖² is w</span>
+    <p class="dgoal"><b>Claim.</b> \(\nabla_{\mathbf w}\tfrac12\|\mathbf w\|^2=\mathbf w\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write it as a sum: \(\tfrac12\|\mathbf w\|^2=\tfrac12\sum_{j=1}^dw_j^2\). Differentiate with respect to one coordinate \(w_k\): every term with \(j\ne k\) is a constant, and \(\partial(w_k^2)/\partial w_k=2w_k\):
+      \[\frac{\partial}{\partial w_k}\tfrac12\sum_jw_j^2=\tfrac12\cdot2w_k=w_k.\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Stack the \(d\) answers: the gradient is \((w_1,\dots,w_d)=\mathbf w\). This is where the \(\tfrac12\) pays for itself. Picture: on the bowl, the uphill arrow at any point is the position arrow itself.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · Lemma B: the slope of w·x is x</span>
+    <p class="dgoal"><b>Claim.</b> For a fixed \(\mathbf x\), \(\nabla_{\mathbf w}(\mathbf w\cdot\mathbf x)=\mathbf x\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(\mathbf w\cdot\mathbf x=\sum_jw_jx_j\). Only the \(j=k\) term contains \(w_k\), and it is \(w_kx_k\), whose slope in \(w_k\) is \(x_k\). Stacking gives \(\mathbf x\).
+      <span class="nw"><span class="dqed">∎</span></span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · stationarity in w</span>
+    <p class="dgoal"><b>Claim.</b> \(\partial L/\partial\mathbf w=\mathbf 0\) gives \(\mathbf w=\sum_i\alpha_iy_i\mathbf x_i\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Open the bracket in \(L\):
+      \[\begin{aligned}L=\ &\tfrac12\|\mathbf w\|^2-\sum_i\alpha_iy_i\,\mathbf w\cdot\mathbf x_i\\ &-b\sum_i\alpha_iy_i+\sum_i\alpha_i.\end{aligned}\]
+      <span class="dwhy">The last two terms contain no \(\mathbf w\), so their slope in \(\mathbf w\) is zero.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Lemma A on the first term, Lemma B on each term of the second (\(\alpha_iy_i\) is just a number):
+      \[\begin{aligned}\frac{\partial L}{\partial\mathbf w}&=\mathbf w-\sum_i\alpha_iy_i\mathbf x_i=\mathbf 0\\ \Rightarrow\ \mathbf w&=\sum_i\alpha_iy_i\mathbf x_i.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · stationarity in b</span>
+    <p class="dgoal"><b>Claim.</b> \(\partial L/\partial b=0\) gives \(\sum_i\alpha_iy_i=0\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">In the opened-up \(L\), exactly one term contains \(b\): \(-b\sum_i\alpha_iy_i\). It is a straight line in \(b\), so
+      \[\begin{gathered}\frac{\partial L}{\partial b}=-\sum_i\alpha_iy_i=0\\ \Rightarrow\ \sum_i\alpha_iy_i=0.\end{gathered}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Physically: sliding \(b\) moves the whole street sideways. If the two classes' pushes did not cancel, sliding would still help, so it could not be the answer. In a problem with unknowns \(\alpha\) and \(b\), this is often the equation you are missing.</span></div></div>
+  </div>
+<!--@D s8-->
+  <div class="derive">
+    <span class="tag">Prove it · from L to the dual</span>
+    <p class="dgoal"><b>Claim.</b> Substituting \(\mathbf w=\sum_i\alpha_iy_i\mathbf x_i\) and \(\sum_i\alpha_iy_i=0\) into \(L\) gives \(D(\boldsymbol\alpha)=\sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_j(\mathbf x_i\cdot\mathbf x_j)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Start from \(L=\tfrac12\mathbf w\cdot\mathbf w-\sum_i\alpha_iy_i(\mathbf w\cdot\mathbf x_i)-b\sum_i\alpha_iy_i+\sum_i\alpha_i\). The \(b\) term is \(b\cdot0\) by the balance condition.
+      <span class="dwhy">Without the balance condition \(b\) would still be sitting here and the substitution would fail.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Pull \(\mathbf w\) out of the middle sum: \(\sum_i\alpha_iy_i(\mathbf w\cdot\mathbf x_i)=\mathbf w\cdot\sum_i\alpha_iy_i\mathbf x_i=\mathbf w\cdot\mathbf w\). So
+      \[\begin{aligned}L&=\tfrac12\mathbf w\cdot\mathbf w-\mathbf w\cdot\mathbf w+\textstyle\sum_i\alpha_i\\ &=\textstyle\sum_i\alpha_i-\tfrac12\,\mathbf w\cdot\mathbf w.\end{aligned}\]
+      <span class="dwhy">Half minus one is minus a half: that sign flip is why the dual is a maximisation.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Expand \(\mathbf w\cdot\mathbf w\) with two separate counters, because squaring a sum makes every pair meet:
+      \[\begin{aligned}\mathbf w\cdot\mathbf w&=\Big(\sum_i\alpha_iy_i\mathbf x_i\Big)\\ &\quad\cdot\Big(\sum_j\alpha_jy_j\mathbf x_j\Big)\\ &=\sum_{i,j}\alpha_i\alpha_jy_iy_j\,\mathbf x_i\cdot\mathbf x_j.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The constraints on the prices remain: \(\alpha_i\ge0\) and \(\sum_i\alpha_iy_i=0\). The dual value at any allowed \(\boldsymbol\alpha\) is a lower bound on the primal; at the peak the two are equal.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the two-point shortcut</span>
+    <p class="dgoal"><b>Claim.</b> For one blue point \(\mathbf x_1\) and one orange point \(\mathbf x_2\), \(\alpha_1=\alpha_2=\dfrac{2}{\|\mathbf x_1-\mathbf x_2\|^2}\), and the width equals \(\|\mathbf x_1-\mathbf x_2\|\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Balance gives \(\alpha_1=\alpha_2=\alpha\). The double sum has four terms: \(\alpha^2\|\mathbf x_1\|^2+\alpha^2\|\mathbf x_2\|^2-2\alpha^2\,\mathbf x_1\cdot\mathbf x_2=\alpha^2\|\mathbf x_1-\mathbf x_2\|^2\). So
+      \[D(\alpha)=2\alpha-\tfrac12\|\mathbf x_1-\mathbf x_2\|^2\alpha^2.\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">\(D'(\alpha)=2-\|\mathbf x_1-\mathbf x_2\|^2\alpha=0\) gives \(\alpha=2/\|\mathbf x_1-\mathbf x_2\|^2\). Then \(\mathbf w=\alpha(\mathbf x_1-\mathbf x_2)\), so \(\|\mathbf w\|=2/\|\mathbf x_1-\mathbf x_2\|\) and the width \(2/\|\mathbf w\|=\|\mathbf x_1-\mathbf x_2\|\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">For \((1,1)\) and \((-1,-1)\): \(\|\mathbf x_1-\mathbf x_2\|^2=8\), so \(\alpha=\tfrac14\) and the width is \(\sqrt8=2\sqrt2\). Any two-point problem becomes a five-second problem.</span></div></div>
+  </div>
+<!--@D s9-->
+  <div class="derive">
+    <span class="tag">Prove it · far-away points can be deleted</span>
+    <p class="dgoal"><b>Claim.</b> Let \((\mathbf w,b,\boldsymbol\alpha)\) be the answer on a data set. Delete any points with \(\alpha_i=0\). The same \((\mathbf w,b)\) with the remaining prices is the answer on the smaller set.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Check the four KKT conditions on the smaller set. Stationarity: \(\mathbf w=\sum\alpha_iy_i\mathbf x_i\) and \(\sum\alpha_iy_i=0\) did not use the deleted points, since their terms were \(0\cdot y_i\mathbf x_i\). Primal feasibility: the remaining points still score at least 1 — nothing about them changed. Dual feasibility and complementary slackness: unchanged for the points that remain.
+      <span class="dwhy">Fewer points means fewer conditions to satisfy, and none of the remaining ones changed.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">For a convex problem, satisfying all four KKT conditions means being the answer. So the street is the same.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The reverse fails: delete a point with \(\alpha_i&gt;0\) and stationarity breaks, so the old street is no longer the answer — it moves.</span></div></div>
+  </div>
+<!--@D s10-->
+  <div class="derive">
+    <span class="tag">Prove it · the soft-margin dual, in outline</span>
+    <p class="dgoal"><b>Claim.</b> The dual of \(\min\tfrac12\|\mathbf w\|^2+C\sum_i\xi_i\) s.t. \(y_i(\mathbf w\cdot\mathbf x_i+b)\ge1-\xi_i\), \(\xi_i\ge0\) is the hard-margin dual with the extra condition \(\alpha_i\le C\); and the three price regimes follow.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Two families of walls, two families of prices: \(\alpha_i\ge0\) for the margin rule, \(\mu_i\ge0\) for \(\xi_i\ge0\):
+      \[\begin{aligned}L=\ &\tfrac12\|\mathbf w\|^2+C\sum_i\xi_i\\ &-\sum_i\mu_i\xi_i\\ &-\sum_i\alpha_i\big(z_i-1+\xi_i\big),\end{aligned}\] where \(z_i=y_i(\mathbf w\cdot\mathbf x_i+b)\) is point \(i\)'s score.</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The slopes in \(\mathbf w\) and \(b\) are exactly as before: \(\mathbf w=\sum\alpha_iy_i\mathbf x_i\), \(\sum\alpha_iy_i=0\). The only terms with \(\xi_i\) are \(C\xi_i-\alpha_i\xi_i-\mu_i\xi_i\), so
+      \[\begin{gathered}\frac{\partial L}{\partial\xi_i}=C-\alpha_i-\mu_i=0\\ \Rightarrow\ \alpha_i+\mu_i=C.\end{gathered}\]
+      Since \(\mu_i\ge0\), this says \(\alpha_i\le C\).</div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Substitute. All the \(\xi_i\) terms collect into \(\sum_i\xi_i(C-\alpha_i-\mu_i)=0\), every \(b\) term dies by the balance condition, and the rest is the hard-margin algebra of §8. The dual is the same hill with the box \(0\le\alpha_i\le C\).</div></div>
+    <div class="dstep"><span class="dn">4</span><div class="dbody">The regimes. Complementary slackness now has two parts: \(\alpha_i\big[y_if(\mathbf x_i)-1+\xi_i\big]=0\) and \(\mu_i\xi_i=0\). If \(\alpha_i=0\) then \(\mu_i=C&gt;0\), so \(\xi_i=0\) and \(y_if\ge1\). If \(0&lt;\alpha_i&lt;C\) then \(\mu_i&gt;0\), so \(\xi_i=0\), and the bracket is zero: \(y_if=1\). If \(\alpha_i=C\) then \(\mu_i=0\), \(\xi_i\ge0\) and \(y_if=1-\xi_i\le1\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Only the middle case pins the score at exactly 1 — which is why \(b\) must be read off a free support vector.</span></div></div>
+  </div>
+<!--@D s11-->
+  <div class="derive">
+    <span class="tag">Prove it · the slack is the hinge</span>
+    <p class="dgoal"><b>Claim.</b> At the soft-margin answer, \(\xi_i=\max\big(0,\,1-y_i(\mathbf w\cdot\mathbf x_i+b)\big)\) for every \(i\). So the problem equals the unconstrained \(\min\tfrac12\|\mathbf w\|^2+C\sum_i\max(0,1-y_if(\mathbf x_i))\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Fix \((\mathbf w,b)\) and write \(z_i=y_i(\mathbf w\cdot\mathbf x_i+b)\). The constraints on \(\xi_i\) are \(\xi_i\ge1-z_i\) and \(\xi_i\ge0\), that is \(\xi_i\ge\max(0,1-z_i)\).
+      <span class="dwhy">Rearranging \(z_i\ge1-\xi_i\) moves \(\xi_i\) to the left; the inequality keeps its direction.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The objective charges \(C\xi_i\) with \(C&gt;0\), and each \(\xi_i\) appears in nothing else. So the cheapest allowed value is the floor: \(\xi_i=\max(0,1-z_i)\). Put it in and the constraints are gone.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Check the table: \(z=2\to0\), \(z=1\to0\), \(z=0.5\to0.5\), \(z=0\to1\), \(z=-0.5\to1.5\), \(z=-2\to3\).</span></div></div>
+  </div>
+<!--@D s14-->
+  <div class="derive">
+    <span class="tag">Prove it · the quadratic kernel is a dot product upstairs</span>
+    <p class="dgoal"><b>Claim.</b> With \(\varphi(\mathbf x)=(x_1^2,\sqrt2x_1x_2,x_2^2)\), \(\varphi(\mathbf x)\cdot\varphi(\mathbf z)=(\mathbf x\cdot\mathbf z)^2\) for all \(\mathbf x,\mathbf z\in\mathbb R^2\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Multiply matching coordinates and add:
+      \[\begin{aligned}&\varphi(\mathbf x)\cdot\varphi(\mathbf z)\\ &=x_1^2z_1^2+x_2^2z_2^2\\ &\quad+(\sqrt2x_1x_2)(\sqrt2z_1z_2)\\ &=x_1^2z_1^2+x_2^2z_2^2+2x_1z_1x_2z_2.\end{aligned}\]
+      <span class="dwhy">\(\sqrt2\cdot\sqrt2=2\): that is the only job of the \(\sqrt2\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Regroup as \(a^2+2ab+b^2\) with \(a=x_1z_1\), \(b=x_2z_2\): the sum is \((x_1z_1+x_2z_2)^2=(\mathbf x\cdot\mathbf z)^2\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Without the \(\sqrt2\) the middle term would be \(x_1z_1x_2z_2\), and the sum would not be a perfect square of anything simple.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · (x·z + 1)² uses six features</span>
+    <p class="dgoal"><b>Claim.</b> In 2-D, \((\mathbf x\cdot\mathbf z+1)^2=\varphi(\mathbf x)\cdot\varphi(\mathbf z)\) with \(\varphi(\mathbf v)=(v_1^2,\,v_2^2,\,\sqrt2v_1v_2,\,\sqrt2v_1,\,\sqrt2v_2,\,1)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Expand the square of three terms:
+      \[\begin{aligned}&(x_1z_1+x_2z_2+1)^2\\ &=x_1^2z_1^2+x_2^2z_2^2+1\\ &\quad+2x_1z_1x_2z_2\\ &\quad+2x_1z_1+2x_2z_2.\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Write each term as "something in \(\mathbf x\)" times "the same thing in \(\mathbf z\)": \((x_1^2)(z_1^2)\), \((x_2^2)(z_2^2)\), \((\sqrt2x_1x_2)(\sqrt2z_1z_2)\), \((\sqrt2x_1)(\sqrt2z_1)\), \((\sqrt2x_2)(\sqrt2z_2)\), \((1)(1)\). The \(\mathbf x\)-halves are \(\varphi(\mathbf x)\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So the "+1" quietly adds the two linear features and a constant to the three quadratic ones. Check with \(\mathbf x=(2,1)\), \(\mathbf z=(1,3)\): \(4+9+12+4+6+1=36=(5+1)^2\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · counting the hidden features</span>
+    <p class="dgoal"><b>Claim.</b> With \(n\) variables there are \(\binom{n+d-1}{d}\) products of degree exactly \(d\), and \(\binom{n+d}{d}\) of degree at most \(d\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">A product of degree \(d\) is a choice of how many times each variable appears: \(k_1+\dots+k_n=d\) with each \(k_i\ge0\). Picture \(d\) stars split into \(n\) groups by \(n-1\) bars: an arrangement of \(d+n-1\) symbols, of which \(d\) are stars. There are \(\binom{n+d-1}{d}\) of them.
+      <span class="dwhy">Example: \(n=2,d=2\): \(x_1^2,x_1x_2,x_2^2\), and \(\binom{3}{2}=3\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Degree at most \(d\): add a dummy variable \(x_0=1\). Every product of degree \(\le d\) in \(x_1..x_n\) is exactly one product of degree \(d\) in \(x_0..x_n\). That gives \(\binom{(n+1)+d-1}{d}=\binom{n+d}{d}\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(n=10,d=4\): \(\binom{13}{4}=715\) and \(\binom{14}{4}=1001\). \(n=3,d=4\): \(15\) and \(35\).</span></div></div>
+  </div>
+<!--@D s15-->
+  <div class="derive">
+    <span class="tag">Prove it · the four-point machine is f = x₁x₂/2</span>
+    <p class="dgoal"><b>Claim.</b> For \(\mathbf x_1=(1,2)^+\), \(\mathbf x_2=(-1,-2)^+\), \(\mathbf x_3=(1,-2)^-\), \(\mathbf x_4=(-1,2)^-\) with \(K=(\mathbf x\cdot\mathbf z)^2\), \(\alpha_i=\tfrac1{32}\) and \(b=0\), the decision function is \(f(\mathbf x)=x_1x_2/2\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(K(\mathbf x_1,\mathbf x)=(x_1+2x_2)^2=K(\mathbf x_2,\mathbf x)\), and \(K(\mathbf x_3,\mathbf x)=(x_1-2x_2)^2=K(\mathbf x_4,\mathbf x)\). So
+      \[\begin{aligned}f(\mathbf x)=\tfrac1{32}\big[&2(x_1+2x_2)^2\\ &-2(x_1-2x_2)^2\big].\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Use \((p+q)^2-(p-q)^2=4pq\) with \(p=x_1\), \(q=2x_2\): the bracket is \(2\cdot4\cdot2x_1x_2=16x_1x_2\), so \(f=\tfrac{16}{32}x_1x_2=\tfrac{x_1x_2}2\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Checks: each training point has \(x_1x_2=\pm2\), so \(f=\pm1\) — all four sit on the street's edges. Upstairs, \(\mathbf w=\sum\alpha_iy_i\varphi(\mathbf x_i)=(0,\tfrac{\sqrt2}{4},0)\) and the width is \(2/\|\mathbf w\|=4\sqrt2\), the distance between the two lifted points.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · why the symmetric prices are the natural answer</span>
+    <p class="dgoal"><b>Claim.</b> In the four-point problem the prices are not unique — any \(\alpha_1+\alpha_2=\tfrac1{16}=\alpha_3+\alpha_4\) with \(\alpha_i\ge0\) gives the same machine — and the equal split \(\tfrac1{32}\) each is the one of smallest size.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(\mathbf x_1\) and \(\mathbf x_2\) have the same kernel row (the kernel sees them as the same point: \(\varphi(\mathbf x_1)=\varphi(\mathbf x_2)\)), and so do \(\mathbf x_3\) and \(\mathbf x_4\). In \(D\) and in \(f\), \(\alpha_1\) and \(\alpha_2\) only ever appear as the sum \(\alpha_1+\alpha_2\); likewise \(\alpha_3+\alpha_4\).</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">So only the two sums are fixed, at \(\tfrac1{16}\) each. Among all splits of a fixed sum, \(\alpha_1^2+\alpha_2^2\) is smallest when the two are equal. That is the answer "by symmetry", and the one this page's solver reports.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(\mathbf w\), \(b\) and \(f\) are the same for every split — the prediction never depends on the choice.</span></div></div>
+  </div>
