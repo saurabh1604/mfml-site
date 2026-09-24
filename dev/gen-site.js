@@ -15,11 +15,11 @@ const UPCOMING = [
 /* ---- threads: one idea followed across the course. [unit, sectionId, label] ; sectionId null = upcoming ---- */
 const THREADS = [
   { id: 'dot', name: 'Agreement', lede: 'One number that says how much two lists agree — it measures angles, casts shadows, points the gradient, and finally decides what a transformer pays attention to.',
-    stops: [[1, 's6', 'rows as dot products'], [3, 's2d', 'the dot product'], [3, 's6', 'angles'], [3, 's10', 'projection'], [6, 's6', 'the gradient compass'], [11, 's14', 'the widest street'], [15, null, 'attention scores']] },
+    stops: [[1, 's6', 'rows as dot products'], [3, 's2d', 'the dot product'], [3, 's6', 'angles'], [3, 's10', 'projection'], [6, 's6', 'the gradient compass'], [11, 's14', 'the widest street'], [13, 's12', 'the classifier as a vote'], [15, null, 'attention scores']] },
   { id: 'eig', name: 'Directions a matrix leaves alone', lede: 'Eigenvectors keep turning up: they unpack a matrix, judge a landscape, explain why a valley is slow, and name the directions that matter in data.',
-    stops: [[4, 's5', 'eigenvectors'], [4, 's7', 'spectral theorem'], [5, 's7', 'the SVD'], [8, 's10', 'the Hessian judge'], [10, 's8', 'the canyon'], [11, 's6', 'the stiffness dial'], [12, null, 'principal components']] },
+    stops: [[4, 's5', 'eigenvectors'], [4, 's7', 'spectral theorem'], [5, 's7', 'the SVD'], [8, 's10', 'the Hessian judge'], [10, 's8', 'the canyon'], [11, 's6', 'the stiffness dial'], [12, 's5', 'principal components']] },
   { id: 'null', name: 'What the machine cannot see', lede: 'Some inputs vanish without a trace. The blind spot of a matrix explains missing solutions, redundant features and why a model can memorise.',
-    stops: [[1, 's10', 'the null space'], [1, 's13', 'rank'], [2, 's5', 'a subspace'], [2, 's11', 'dimension'], [5, 's10', 'low rank'], [10, 's3', 'knobs versus facts']] },
+    stops: [[1, 's10', 'the null space'], [1, 's13', 'rank'], [2, 's5', 'a subspace'], [2, 's11', 'dimension'], [5, 's10', 'low rank'], [10, 's3', 'knobs versus facts'], [12, 's13', 'the Gram trick']] },
   { id: 'chain', name: 'Blame flowing backwards', lede: 'The chain rule, promoted step by step: a product of slopes, a product of Jacobians, a sweep backwards through a graph — and later, through time.',
     stops: [[6, 's10', 'chain rule as matrices'], [7, 's3', 'two rules'], [7, 's6', 'a whole layer'], [7, 's8', 'one sweep'], [14, null, 'backprop through time']] },
   { id: 'curve', name: 'Bowls, domes and saddles', lede: 'Curvature decides everything near a flat spot — how good an approximation is, whether you found a minimum, and how big a step you can dare.',
@@ -27,7 +27,7 @@ const THREADS = [
   { id: 'down', name: 'Follow the slope down', lede: 'One rule — step against the gradient — then every refinement of it: how far, how often, with how much memory.',
     stops: [[6, 's11', 'walking down'], [9, 's4', 'the rule'], [9, 'svar', 'batch vs stochastic'], [10, 's10', 'fix the units'], [11, 's2', 'momentum'], [11, 's5', 'Adam']] },
   { id: 'pd', name: 'Always uphill', lede: 'Positive definite matrices are the “honest bowls” of the course: they define rulers, have a square root, certify a minimum and make a problem safe to solve.',
-    stops: [[3, 's4', 'the engine room'], [4, 's7', 'spectral theorem'], [4, 's10', 'Cholesky'], [8, 's10', 'the Hessian test'], [11, 's12', 'problems you can trust'], [13, null, 'the SVM dual']] },
+    stops: [[3, 's4', 'the engine room'], [4, 's7', 'spectral theorem'], [4, 's10', 'Cholesky'], [8, 's10', 'the Hessian test'], [11, 's12', 'problems you can trust'], [13, 's8', 'the SVM dual']] },
 ];
 
 /* ---------------- parsing ---------------- */
