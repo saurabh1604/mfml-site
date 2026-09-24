@@ -6,26 +6,27 @@
 const fs = require('fs'), path = require('path');
 const ROOT = __dirname, SRC = path.join(ROOT, 'src');
 
-const PARTS = { 1: 'Linear Algebra', 2: 'Calculus & Differentiation', 3: 'Optimization', 4: 'Applications', 5: 'Models that Read' };
-const PART_OF = u => u <= 5 ? 1 : u <= 8 ? 2 : u <= 11 ? 3 : u <= 13 ? 4 : 5;
+const PARTS = { 1: 'Linear Algebra', 2: 'Calculus & Differentiation', 3: 'Optimization', 4: 'Applications', 5: 'Models that Read', 6: 'Models that Create' };
+const PART_OF = u => u <= 5 ? 1 : u <= 8 ? 2 : u <= 11 ? 3 : u <= 13 ? 4 : u <= 18 ? 5 : 6;
 const UPCOMING = [
   [12, 'Principal Component Analysis'], [13, 'Support Vector Machines'],
-  [14, 'Encoder–Decoder Maths & RNNs'], [15, 'Transformers & Attention'], [16, 'The Finale']];
+  [14, 'Thinking in Probabilities'], [15, 'The Network, Whole'], [16, 'Words as Vectors'], [17, 'Machines with Memory'],
+  [18, 'Attention and Transformers'], [19, 'The Maths Inside an LLM'], [20, 'From Noise to Pictures: VAEs and Diffusion']];
 
 /* ---- threads: one idea followed across the course. [unit, sectionId, label] ; sectionId null = upcoming ---- */
 const THREADS = [
   { id: 'dot', name: 'Agreement', lede: 'One number that says how much two lists agree — it measures angles, casts shadows, points the gradient, and finally decides what a transformer pays attention to.',
-    stops: [[1, 's6', 'rows as dot products'], [3, 's2d', 'the dot product'], [3, 's6', 'angles'], [3, 's10', 'projection'], [6, 's6', 'the gradient compass'], [11, 's14', 'the widest street'], [13, 's12', 'the classifier as a vote'], [15, null, 'attention scores']] },
+    stops: [[1, 's6', 'rows as dot products'], [3, 's2d', 'the dot product'], [3, 's6', 'angles'], [3, 's10', 'projection'], [6, 's6', 'the gradient compass'], [11, 's14', 'the widest street'], [13, 's12', 'the classifier as a vote'], [18, null, 'attention scores']] },
   { id: 'eig', name: 'Directions a matrix leaves alone', lede: 'Eigenvectors keep turning up: they unpack a matrix, judge a landscape, explain why a valley is slow, and name the directions that matter in data.',
-    stops: [[4, 's5', 'eigenvectors'], [4, 's7', 'spectral theorem'], [5, 's7', 'the SVD'], [8, 's10', 'the Hessian judge'], [10, 's8', 'the canyon'], [11, 's6', 'the stiffness dial'], [12, 's5', 'principal components']] },
+    stops: [[4, 's5', 'eigenvectors'], [4, 's7', 'spectral theorem'], [5, 's7', 'the SVD'], [8, 's10', 'the Hessian judge'], [10, 's8', 'the canyon'], [11, 's6', 'the stiffness dial'], [12, 's5', 'principal components'], [17, null, 'memory that fades']] },
   { id: 'null', name: 'What the machine cannot see', lede: 'Some inputs vanish without a trace. The blind spot of a matrix explains missing solutions, redundant features and why a model can memorise.',
     stops: [[1, 's10', 'the null space'], [1, 's13', 'rank'], [2, 's5', 'a subspace'], [2, 's11', 'dimension'], [5, 's10', 'low rank'], [10, 's3', 'knobs versus facts'], [12, 's13', 'the Gram trick']] },
   { id: 'chain', name: 'Blame flowing backwards', lede: 'The chain rule, promoted step by step: a product of slopes, a product of Jacobians, a sweep backwards through a graph — and later, through time.',
-    stops: [[6, 's10', 'chain rule as matrices'], [7, 's3', 'two rules'], [7, 's6', 'a whole layer'], [7, 's8', 'one sweep'], [14, null, 'backprop through time']] },
+    stops: [[6, 's10', 'chain rule as matrices'], [7, 's3', 'two rules'], [7, 's6', 'a whole layer'], [7, 's8', 'one sweep'], [15, null, 'the whole network'], [17, null, 'backprop through time']] },
   { id: 'curve', name: 'Bowls, domes and saddles', lede: 'Curvature decides everything near a flat spot — how good an approximation is, whether you found a minimum, and how big a step you can dare.',
     stops: [[6, 's4', 'Taylor, first look'], [8, 's5', 'Taylor built by hand'], [8, 's10', 'the Hessian'], [9, 's3', 'three kinds of flat'], [9, 's5', 'the step-size limit'], [10, 's8', 'the canyon']] },
   { id: 'down', name: 'Follow the slope down', lede: 'One rule — step against the gradient — then every refinement of it: how far, how often, with how much memory.',
-    stops: [[6, 's11', 'walking down'], [9, 's4', 'the rule'], [9, 'svar', 'batch vs stochastic'], [10, 's10', 'fix the units'], [11, 's2', 'momentum'], [11, 's5', 'Adam']] },
+    stops: [[6, 's11', 'walking down'], [9, 's4', 'the rule'], [9, 'svar', 'batch vs stochastic'], [10, 's10', 'fix the units'], [11, 's2', 'momentum'], [11, 's5', 'Adam'], [20, null, 'walking back from noise']] },
   { id: 'pd', name: 'Always uphill', lede: 'Positive definite matrices are the “honest bowls” of the course: they define rulers, have a square root, certify a minimum and make a problem safe to solve.',
     stops: [[3, 's4', 'the engine room'], [4, 's7', 'spectral theorem'], [4, 's10', 'Cholesky'], [8, 's10', 'the Hessian test'], [11, 's12', 'problems you can trust'], [13, 's8', 'the SVM dual']] },
 ];
@@ -98,7 +99,7 @@ fs.writeFileSync(path.join(ROOT, 'tpl/site-index.json'), JSON.stringify(idx));
 const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const pad = n => String(n).padStart(2, '0');
 const secLabel = (u, s) => { const U = units.find(x => x.n === u); const S = U && U.sections.find(x => x.id === s); return S ? S.t : ''; };
-const PCV = { 1: 'var(--s1)', 2: 'var(--s3)', 3: 'var(--s2)', 4: 'var(--s7)', 5: 'var(--s6)' };
+const PCV = { 1: 'var(--s1)', 2: 'var(--s3)', 3: 'var(--s2)', 4: 'var(--s7)', 5: 'var(--s6)', 6: 'var(--s5)' };
 
 let threadsHtml = THREADS.map(th => {
   const stops = th.stops.map(([u, s, l], i) => {
@@ -113,7 +114,7 @@ let unitsHtml = '';
 let lastPart = 0;
 units.forEach(u => {
   const p = PART_OF(u.n);
-  if (p !== lastPart) { unitsHtml += `<h2 class="part-h" data-p="${p}" id="part-${p}"><span class="roman">${['', 'I', 'II', 'III', 'IV', 'V'][p]}</span>Part ${['', 'I', 'II', 'III', 'IV', 'V'][p]} · ${esc(PARTS[p])}</h2>\n`; lastPart = p; }
+  if (p !== lastPart) { unitsHtml += `<h2 class="part-h" data-p="${p}" id="part-${p}"><span class="roman">${['', 'I', 'II', 'III', 'IV', 'V', 'VI'][p]}</span>Part ${['', 'I', 'II', 'III', 'IV', 'V', 'VI'][p]} · ${esc(PARTS[p])}</h2>\n`; lastPart = p; }
   const items = u.sections.filter(sc => sc.id !== 'spractice' && (sc.real || sc.one)).map(sc => `
     <li class="idea reveal" id="u${u.n}-${sc.id}">
       <a class="i-head" href="unit-${pad(u.n)}.html#${sc.id}"><span class="i-num">${esc(sc.num || '')}</span><span class="i-t">${esc(sc.t)}</span><span class="i-go" aria-hidden="true">→</span></a>
@@ -128,7 +129,7 @@ units.forEach(u => {
 });
 UPCOMING.filter(([n]) => !LIVE.has(n)).forEach(([n, t]) => {
   const p = PART_OF(n);
-  if (p !== lastPart) { unitsHtml += `<h2 class="part-h" data-p="${p}" id="part-${p}"><span class="roman">${['', 'I', 'II', 'III', 'IV', 'V'][p]}</span>Part ${['', 'I', 'II', 'III', 'IV', 'V'][p]} · ${esc(PARTS[p])}<span class="soon-tag">Upcoming</span></h2>\n`; lastPart = p; }
+  if (p !== lastPart) { unitsHtml += `<h2 class="part-h" data-p="${p}" id="part-${p}"><span class="roman">${['', 'I', 'II', 'III', 'IV', 'V', 'VI'][p]}</span>Part ${['', 'I', 'II', 'III', 'IV', 'V', 'VI'][p]} · ${esc(PARTS[p])}<span class="soon-tag">Upcoming</span></h2>\n`; lastPart = p; }
   unitsHtml += `<section class="u-block soon" data-p="${p}" id="unit-${n}"><div class="u-head"><span class="u-num">${pad(n)}</span><h3>${esc(t)}</h3><span class="u-open">Upcoming</span></div></section>\n`;
 });
 

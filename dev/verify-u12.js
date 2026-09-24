@@ -31,7 +31,7 @@ const okay = m => console.log('  ok   ' + m);
   expect(/^Unit 12 · Principal Component Analysis/.test(c.title), 'title: ' + c.title, 'title ' + c.title);
   const chips = await text('.hero .meta');
   expect(/16 interactive widgets · 7 in 3D/.test(chips) && /22 inline checks/.test(chips) && /15 proofs/.test(chips) && /12 solved practice problems/.test(chips), 'hero chips match the counts', 'hero chips: ' + chips);
-  const kick = await text('.hero .kicker'); expect(/Unit 12 of 16 · by Prof\. Saurabh/i.test(kick), 'kicker: ' + kick, 'kicker ' + kick);
+  const kick = await text('.hero .kicker'); expect(/Unit 12 of 20 · by Prof\. Saurabh/i.test(kick), 'kicker: ' + kick, 'kicker ' + kick);
   const crumb = await text('.topbar .crumb'); expect(crumb === '/ Unit 12 · Principal Component Analysis', 'crumb: ' + crumb, 'crumb ' + crumb);
   const leak = await page.evaluate(() => { const t = document.body.innerText + ' ' + [...document.querySelectorAll('[aria-label],[title],[data-why]')].map(e => (e.getAttribute('aria-label') || '') + (e.getAttribute('title') || '') + (e.getAttribute('data-why') || '')).join(' ') + document.title;
     return ((t.match(/MFML|ZC416|BITS|WILP/) || t.match(/exam paper|question bank/i)) || [''])[0]; });

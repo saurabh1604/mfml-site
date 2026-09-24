@@ -29,7 +29,7 @@ const okay = m => console.log('  ok   ' + m);
   if (c.widgets === 16 && c.w3d === 8 && c.derives === 21 && c.probs === 16 && c.drawers === 12) okay('16 widgets (8 in 3D) · 21 derivations in 12 drawers · 16 problems'); else fail('counts ' + JSON.stringify(c));
   if (c.stages >= 1 && c.stages <= 4) okay(c.stages + ' WebGL stage(s) mounted at load (lazy)'); else fail('stages ' + c.stages);
   if (!c.katex) okay('no KaTeX errors'); else fail('katex-error ×' + c.katex);
-  if (/^Unit 13 · Support Vector Machines/.test(c.T) && /Unit 13 · Support Vector Machines/.test(c.crumb) && /Unit 13 of 16/.test(c.kicker)) okay('title, crumb and kicker say Unit 13'); else fail('title/crumb ' + JSON.stringify([c.T, c.crumb, c.kicker]));
+  if (/^Unit 13 · Support Vector Machines/.test(c.T) && /Unit 13 · Support Vector Machines/.test(c.crumb) && /Unit 13 of 20/.test(c.kicker)) okay('title, crumb and kicker say Unit 13'); else fail('title/crumb ' + JSON.stringify([c.T, c.crumb, c.kicker]));
   const chips = norm(await text('.hero .meta'));
   if (/16 interactive widgets · 8 in 3D/.test(chips) && /20 inline checks/.test(chips) && /21 proofs/.test(chips) && /16 solved practice problems/.test(chips)) okay('hero chips match the counts'); else fail('hero chips: ' + chips);
   const wide = await page.evaluate(() => [...document.querySelectorAll('.katex-display')].filter(k => k.scrollWidth > k.clientWidth + 2).length);
