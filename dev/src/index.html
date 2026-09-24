@@ -201,6 +201,59 @@ footer p:first-child{color:var(--ink-2)}
 }
 @media (prefers-reduced-motion:reduce){.hero-hint::before{animation:none}}
 @media print{.hero-stage{min-height:auto}#hero-3d,.hero-scrim,.hero-hint,.card .glyph{display:none!important}}
+
+/* ===== ROUND 15 · hub finish: route map, part subtitles, upcoming parts ===== */
+[data-p="5"]{--pc:var(--s6)}
+a.ghost.navlink{font-family:var(--ui);font-size:.8rem;background:var(--surface);border:1px solid var(--ring);color:var(--ink-2);border-radius:999px;padding:.28rem .8rem;text-decoration:none;margin-right:.45rem;transition:color .2s,border-color .2s}
+a.ghost.navlink:hover{color:var(--ink);border-color:color-mix(in srgb,var(--s7) 55%,transparent)}
+a.cta-2{flex-basis:100%;font-family:var(--ui);font-size:.82rem;font-weight:600;color:var(--s6);text-decoration:none;opacity:.9}
+a.cta-2:hover{text-decoration:underline;opacity:1}
+h2.part .soon-tag{order:3;font-family:var(--ui);font-size:.62rem;letter-spacing:.14em;font-weight:700;color:var(--pc);border:1px dashed color-mix(in srgb,var(--pc) 55%,transparent);border-radius:999px;padding:.32rem .6rem .3rem;background:color-mix(in srgb,var(--pc) 8%,transparent)}
+h2.part::after{order:4}
+h2.part{margin-bottom:.35rem}
+.part-sub{font-family:var(--body);font-style:italic;font-size:1.02rem;color:var(--ink-2);margin:0 0 1.3rem 2.05rem;max-width:44rem}
+@media (max-width:640px){.part-sub{margin-left:0;font-size:.95rem}}
+.journey{margin:3.2rem 0 .6rem;position:relative}
+.j-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1.2rem;margin-bottom:.6rem}
+.j-title{font-family:var(--display);font-weight:500;font-size:clamp(1.7rem,3.2vw,2.3rem);letter-spacing:-.015em;margin:0;color:var(--ink)}
+.j-sub{font-family:var(--body);font-size:1.02rem;color:var(--ink-2);margin:0;max-width:40rem}
+.j-map{position:relative;border-radius:var(--r-lg);background:var(--stage-bg);border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 30px 60px -40px rgba(0,0,0,.8);padding:.4rem .4rem .2rem;overflow:hidden}
+:root[data-theme="light"] .j-map{box-shadow:0 20px 50px -35px rgba(13,16,32,.3)}
+.j-map svg{display:block;width:100%;height:auto;overflow:visible}
+.j-map .seg{fill:none;stroke-width:2.6;stroke-linecap:round}
+.j-map .seg.soon{stroke-dasharray:2 7;stroke-width:2;opacity:.55}
+.j-map .seg.draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:jdraw 1.1s var(--ease-out) forwards}
+@keyframes jdraw{to{stroke-dashoffset:0}}
+.j-map .node{cursor:pointer;outline:none}
+.j-map .node .disc{fill:var(--surface);stroke-width:2;transition:r .25s var(--ease)}
+.j-map .node .ring{fill:none;stroke-width:3.2;stroke-linecap:round}
+.j-map .node .num{font-family:var(--ui);font-weight:700;font-size:11px;text-anchor:middle;dominant-baseline:central;fill:var(--ink)}
+.j-map .node .lbl{font-family:var(--ui);font-weight:600;font-size:10.5px;text-anchor:middle;fill:var(--ink-2)}
+.j-map .node.soon{cursor:default}
+.j-map .node.soon .disc{stroke-dasharray:3 3;fill:color-mix(in srgb,var(--surface) 60%,transparent)}
+.j-map .node.soon .num,.j-map .node.soon .lbl{fill:var(--ink-muted)}
+.j-map .node.done .disc{fill:color-mix(in srgb,var(--pc) 28%,var(--surface))}
+.j-map a.node:hover .disc,.j-map a.node:focus-visible .disc{r:17}
+.j-map a.node:hover .lbl,.j-map a.node:focus-visible .lbl{fill:var(--ink)}
+.j-map a.node:focus-visible .disc{stroke-width:3}
+.j-map .halo{fill:none;stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center;animation:jhalo 2.4s ease-out infinite}
+@keyframes jhalo{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(2.2)}}
+.j-map .pcap{font-family:var(--ui);font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;text-anchor:middle;opacity:.85}
+.j-map .pline2{stroke-width:1;opacity:.35}
+.card.locked{opacity:.8}
+.nl-short{display:none}
+@media (max-width:560px){.topbar{flex-wrap:nowrap!important;gap:.4rem!important}.topbar .brand{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.84rem;display:flex;align-items:center}.topbar .brand::before{flex:none}.nl-long{display:none}.nl-short{display:inline}a.ghost.navlink{margin-right:0;padding:.28rem .6rem}#theme-btn{white-space:nowrap}}
+.j-map .here{font-family:var(--ui);font-weight:700;font-size:9px;letter-spacing:.12em;text-transform:uppercase;text-anchor:middle}
+:root:not([data-theme="light"]) .j-map .node:not(.soon) .disc{filter:drop-shadow(0 0 6px var(--pc))}
+:root:not([data-theme="light"]) .j-map .seg:not(.soon){filter:drop-shadow(0 0 4px var(--pc))}
+.j-legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;font-family:var(--ui);font-size:.72rem;color:var(--ink-muted);margin:.6rem .2rem 0}
+.j-legend span{display:inline-flex;align-items:center;gap:.4rem}
+.j-legend .lg{width:.8rem;height:.8rem;border-radius:50%;border:2px solid var(--s1);display:inline-block}
+.j-legend .lg.part{background:conic-gradient(var(--s1) 0 40%,transparent 40%)}
+.j-legend .lg.done{background:color-mix(in srgb,var(--s1) 40%,transparent)}
+.j-legend .lg.soon{border-style:dashed;border-color:var(--ink-muted)}
+@media (prefers-reduced-motion:reduce){.j-map .seg.draw{animation:none;stroke-dashoffset:0}.j-map .halo{animation:none;opacity:.5}}
+@media print{.journey{display:none}}
 </style>
 </head>
 <body>
@@ -210,6 +263,7 @@ footer p:first-child{color:var(--ink-2)}
     <div class="topbar">
       <span class="brand">The Math Behind the Machine</span>
       <span class="spacer"></span>
+      <a class="ghost navlink" href="ideas.html"><span class="nl-long">Big ideas</span><span class="nl-short">Ideas</span></a>
       <button class="ghost" id="theme-btn">Theme: dark</button>
     </div>
   </div>
@@ -223,12 +277,12 @@ footer p:first-child{color:var(--ink-2)}
     <p class="lede reveal">All the math you need to truly understand modern machine learning and AI — told simply, built to be touched. Every idea opens as a story, every concept is something you can drag, spin, and break, and every unit ends with its full problem set solved step by step. Curiosity is the only prerequisite.</p>
     <div class="meta-chips reveal-stagger">
       <span class="chip">📐 16 units · 11 live so far</span>
-      <span class="chip">🎛 113 hands-on widgets</span>
+      <span class="chip">🎛 118 hands-on widgets</span>
       <span class="chip">✅ 165 pause-and-predict checks</span>
       <span class="chip">✍ 124 problems solved step by step</span>
       <span class="chip">🧾 132 rules derived step by step, nothing on faith</span>
     </div>
-    <div class="start-row reveal" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 →</a><span class="start-note">Each unit is a story you can play with — about an hour, no prerequisites.</span></div>
+    <div class="start-row reveal" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 →</a><span class="start-note">Each unit is a story you can play with — about an hour, no prerequisites.</span><a class="cta-2" href="ideas.html">Or read the whole course in one page of big ideas →</a></div>
     <div class="progress-row reveal" id="progress-row">
       <a class="cta" id="continue-link" href="unit-01.html" hidden>Continue where you left off →</a>
       <div class="overall" id="overall" hidden>
@@ -242,7 +296,16 @@ footer p:first-child{color:var(--ink-2)}
 </section>
 
 <div class="wrap units-wrap">
+  <section class="journey reveal" id="journey" aria-labelledby="journey-h">
+    <div class="j-head">
+      <h2 class="j-title" id="journey-h">The route</h2>
+      <p class="j-sub">Sixteen stops, from one straight line to a machine that reads. Each stop uses the ones before it. Tap a stop to jump in.</p>
+    </div>
+    <div class="j-map" id="j-map" role="navigation" aria-label="Course route: all sixteen units"></div>
+    <div class="j-legend" aria-hidden="true"><span><i class="lg live"></i>open</span><span><i class="lg part"></i>in progress</span><span><i class="lg done"></i>complete</span><span><i class="lg soon"></i>upcoming</span></div>
+  </section>
   <h2 class="part reveal" id="units" data-p="1"><span class="roman">I</span>Part I · Linear Algebra</h2>
+  <p class="part-sub reveal" data-p="1">Where vectors live, and the matrices that move them.</p>
   <div class="grid reveal-stagger" data-p="1">
     <a class="card" href="unit-01.html" data-unit="1">
       <canvas class="glyph" data-g="1" aria-hidden="true"></canvas>
@@ -254,7 +317,7 @@ footer p:first-child{color:var(--ink-2)}
       <canvas class="glyph" data-g="2" aria-hidden="true"></canvas>
       <div class="top"><span class="num">02</span><h3>Vector Spaces</h3></div>
       <p>The universe where vectors live: groups, subspaces, span, independence, basis, dimension — the architecture of ML math.</p>
-      <div class="foot"><span class="status ready">✓ Ready</span><span>6 widgets · 11 checks · 18 problems</span></div>
+      <div class="foot"><span class="status ready">✓ Ready</span><span>11 widgets · 11 checks · 18 problems</span></div>
     </a>
     <a class="card" href="unit-03.html" data-unit="3">
       <canvas class="glyph" data-g="3" aria-hidden="true"></canvas>
@@ -277,6 +340,7 @@ footer p:first-child{color:var(--ink-2)}
   </div>
 
   <h2 class="part reveal" data-p="2"><span class="roman">II</span>Part II · Calculus &amp; Differentiation</h2>
+  <p class="part-sub reveal" data-p="2">How a tiny nudge in the input changes the output — the language of learning.</p>
   <div class="grid reveal-stagger" data-p="2">
     <a class="card" href="unit-06.html" data-unit="6">
       <canvas class="glyph" data-g="6" aria-hidden="true"></canvas>
@@ -299,6 +363,7 @@ footer p:first-child{color:var(--ink-2)}
   </div>
 
   <h2 class="part reveal" data-p="3"><span class="roman">III</span>Part III · Optimization</h2>
+  <p class="part-sub reveal" data-p="3">Walking downhill on purpose: the engines that train every model.</p>
   <div class="grid reveal-stagger" data-p="3">
     <a class="card" href="unit-09.html" data-unit="9">
       <canvas class="glyph" data-g="9" aria-hidden="true"></canvas>
@@ -320,37 +385,43 @@ footer p:first-child{color:var(--ink-2)}
     </a>
   </div>
 
-  <h2 class="part reveal" data-p="4"><span class="roman">IV</span>Part IV · Applications</h2>
+  <h2 class="part reveal" data-p="4"><span class="roman">IV</span>Part IV · Applications<span class="soon-tag">Upcoming</span></h2>
+  <p class="part-sub reveal" data-p="4">Everything so far, earning its keep on real data.</p>
   <div class="grid reveal-stagger" data-p="4">
     <div class="card locked">
       <canvas class="glyph" data-g="12" aria-hidden="true"></canvas>
-      <div class="top"><span class="num">12</span><h3>PCA I — Foundations</h3></div>
-      <p>Compress a thousand dimensions without losing the story: variance, projections, eigenvectors.</p>
-      <div class="foot"><span class="status soon">Coming soon</span></div>
+      <div class="top"><span class="num">12</span><h3>Principal Component Analysis</h3></div>
+      <p>A cloud of a thousand columns has only a few directions that matter. Find the one where the data spreads the most, then the next — variance, projection, eigenvectors and SVD finally working together on real data.</p>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
     <div class="card locked">
       <canvas class="glyph" data-g="13" aria-hidden="true"></canvas>
-      <div class="top"><span class="num">13</span><h3>PCA II — In Action</h3></div>
-      <p>Principal components at work — linear algebra earning its keep on real data.</p>
-      <div class="foot"><span class="status soon">Coming soon</span></div>
+      <div class="top"><span class="num">13</span><h3>Support Vector Machines</h3></div>
+      <p>Draw the widest street between two groups. The margin, the Lagrangian and its dual, the few points that hold the street up, soft margins for messy data — and the kernel trick that bends a straight street into a curve.</p>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
+  </div>
+
+  <h2 class="part reveal" data-p="5"><span class="roman">V</span>Part V · Models that Read<span class="soon-tag">Upcoming</span></h2>
+  <p class="part-sub reveal" data-p="5">Sequences, memory and attention — the maths inside models that read and write.</p>
+  <div class="grid reveal-stagger" data-p="5">
     <div class="card locked">
       <canvas class="glyph" data-g="14" aria-hidden="true"></canvas>
-      <div class="top"><span class="num">14</span><h3>SVM I — Constrained Optimization &amp; Kernels</h3></div>
-      <p>Lagrange multipliers, KKT conditions, duality, and the kernel trick — the math that draws the widest possible line.</p>
-      <div class="foot"><span class="status soon">Coming soon</span></div>
+      <div class="top"><span class="num">14</span><h3>Encoder–Decoder Maths &amp; RNNs</h3></div>
+      <p>A network with a memory. One small matrix reused at every word, a hidden state that carries the story forward, backprop through time and why gradients fade — then an encoder that squeezes a sentence into a vector and a decoder that unfolds it again.</p>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
     <div class="card locked">
       <canvas class="glyph" data-g="15" aria-hidden="true"></canvas>
-      <div class="top"><span class="num">15</span><h3>SVM II — Solving the SVM</h3></div>
-      <p>From primal to dual to solution — and soft margins for a messy world.</p>
-      <div class="foot"><span class="status soon">Coming soon</span></div>
+      <div class="top"><span class="num">15</span><h3>Transformers &amp; Attention</h3></div>
+      <p>Every word asks every other word a question. Queries, keys and values as dot products, the softmax that turns scores into weights, many heads, positions — the matrix algebra inside the models that write.</p>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
     <div class="card locked">
       <canvas class="glyph" data-g="16" aria-hidden="true"></canvas>
       <div class="top"><span class="num">16</span><h3>The Finale</h3></div>
-      <p>Where every thread ties together — the last stop on the route from lines to learning machines.</p>
-      <div class="foot"><span class="status soon">Coming soon</span></div>
+      <p>Every thread tied together — from one straight line to a machine that reads.</p>
+      <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
   </div>
 
@@ -424,6 +495,77 @@ footer p:first-child{color:var(--ink-2)}
     try{ Object.keys(localStorage).filter(k=>/^mfml-/.test(k)&&k!=='mfml-theme').forEach(k=>localStorage.removeItem(k)); }catch(e){}
     location.reload();
   });
+})();
+</script>
+<script>
+/* ================= ROUND 15 · the route map (16 stops, live progress) ================= */
+(function(){
+  const el=document.getElementById('j-map'); if(!el) return;
+  const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+  const U=[
+    [1,'Linear systems','Systems of Linear Equations',1,11],[2,'Vector spaces','Vector Spaces',1,11],[3,'Geometry','Analytic Geometry',1,13],
+    [4,'Eigenvalues','Determinants, Eigenvalues & the Spectral Theorem',1,13],[5,'SVD','Matrix Decompositions & SVD',1,17],
+    [6,'Derivatives','Differentiation',2,17],[7,'Backprop','Backprop & Automatic Differentiation',2,16],[8,'Taylor','Taylor & MacLaurin Series',2,17],
+    [9,'Gradient descent','Gradient Descent',3,15],[10,'Optim.\u00a0I','Optimization I — Gradients that Work',3,15],[11,'Optim.\u00a0II','Optimization II — Five Ways Down One Valley',3,20],
+    [12,'PCA','Principal Component Analysis',4,0],[13,'SVM','Support Vector Machines',4,0],
+    [14,'RNNs','Encoder–Decoder Maths & RNNs',5,0],[15,'Transformers','Transformers & Attention',5,0],[16,'Finale','The Finale',5,0]];
+  const PC={1:'--s1',2:'--s3',3:'--s2',4:'--s7',5:'--s6'};
+  const last=+((get('mfml-last')||'').split('|')[0])||0;
+  const NS='http://www.w3.org/2000/svg';
+  const mk=(t,a,p)=>{const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e;};
+  let drawn=false, lastW=0;
+  function render(){
+    const W=el.clientWidth; if(!W||Math.abs(W-lastW)<2) return; lastW=W;
+    const cols=W>=940?16:W>=560?8:4, rows=16/cols, padX=cols===16?40:cols===8?44:40, rowH=cols===16?120:112, top=cols===16?70:46;
+    const H=top+(rows-1)*rowH+62;
+    const dx=(W-2*padX)/(cols-1);
+    const pos=U.map((u,i)=>{ const r=Math.floor(i/cols), c=i%cols, cc=r%2?cols-1-c:c;
+      const wave=cols===16?Math.sin(i/15*Math.PI*2.2)*14:0; return [padX+cc*dx, top+r*rowH+wave]; });
+    el.innerHTML='';
+    const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
+    /* part captions over each group (wide layout only) */
+    if(cols===16){ const PN={1:'I · Linear algebra',2:'II · Calculus',3:'III · Optimization',4:'IV · Applications',5:'V · Models that read'};
+      for(let p=1;p<=5;p++){ const idx=U.map((u,i)=>u[3]===p?i:-1).filter(i=>i>=0); const xa=pos[idx[0]][0], xb=pos[idx[idx.length-1]][0];
+        const t=mk('text',{x:(xa+xb)/2,y:16,class:'pcap'},svg); t.style.fill=`var(${PC[p]})`; t.textContent=PN[p];
+        mk('line',{x1:xa-12,x2:xb+12,y1:24,y2:24,class:'pline2'},svg).style.stroke=`var(${PC[p]})`; } }
+    /* segments */
+    for(let i=0;i<15;i++){
+      const [x0,y0]=pos[i],[x1,y1]=pos[i+1]; let d;
+      if(Math.abs(y1-y0)>rowH*.5){ const side=x0>W/2?1:-1, bx=x0+side*Math.min(46,padX+10); d=`M${x0},${y0} C${bx},${y0} ${bx},${y1} ${x1},${y1}`; }
+      else { const mx=(x0+x1)/2; d=`M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}`; }
+      const live=U[i+1][4]>0, path=mk('path',{d,class:'seg'+(live?'':' soon')},svg);
+      path.style.setProperty('--pc',`var(${PC[U[i+1][3]]})`); path.style.stroke=`var(${PC[U[i+1][3]]})`;
+      if(live && !drawn && !matchMedia('(prefers-reduced-motion: reduce)').matches){ const L=path.getTotalLength?0:0; path.classList.add('draw'); path.style.animationDelay=(i*.07)+'s'; }
+    }
+    /* nodes */
+    U.forEach((u,i)=>{
+      const [n,short,full,part,fb]=u, [x,y]=pos[i], live=fb>0, col=`var(${PC[part]})`;
+      const tot=+(get('mfml-u'+n+'-total')||fb||0), dn=live?Math.min((get('mfml-u'+n+'-checks')||'').split(',').filter(Boolean).length,tot):0;
+      const state=!live?'soon':(tot&&dn>=tot?'done':dn>0?'part':'open');
+      const g=live?mk('a',{href:'unit-'+String(n).padStart(2,'0')+'.html',class:'node '+state,'aria-label':`Unit ${n}: ${full}`+(dn?` — ${dn} of ${tot} checks`:'')},svg):mk('g',{class:'node soon',role:'img','aria-label':`Unit ${n}: ${full} — upcoming`},svg);
+      g.style.setProperty('--pc',col);
+      mk('title',{},g).textContent=`Unit ${n} · ${full}`+(live?(dn?` · ${dn}/${tot} checks`:''):' · upcoming');
+      if(live && (n===last || (!last && n===1))){ mk('circle',{cx:x,cy:y,r:15,class:'halo',stroke:col},g);
+        const t=mk('text',{x,y:y-26,class:'here',fill:col},g); t.textContent=last?'you are here':'start here'; }
+      mk('circle',{cx:x,cy:y,r:14,class:'disc',stroke:live?col:'var(--ink-muted)'},g);
+      if(state==='part'||state==='done'){ const R=19, C=2*Math.PI*R, f=dn/tot;
+        const ring=mk('circle',{cx:x,cy:y,r:R,class:'ring',stroke:col,transform:`rotate(-90 ${x} ${y})`},g);
+        ring.setAttribute('stroke-dasharray',`${(C*f).toFixed(1)} ${C.toFixed(1)}`); ring.style.opacity=state==='done'?1:.9; }
+      const num=mk('text',{x,y,class:'num'},g); num.textContent=state==='done'?'✓':n;
+      const words=short.split(' '), lbl=mk('text',{x,y:y+32,class:'lbl'},g);
+      if(cols===16 && words.length>1){ words.forEach((w,k)=>{ const ts=mk('tspan',{x,dy:k?'1.15em':'0'},lbl); ts.textContent=w; }); }
+      else lbl.textContent=short;
+    });
+    el.appendChild(svg);
+    /* measure paths for the draw-on */
+    svg.querySelectorAll('.seg.draw').forEach(p=>{ try{ p.style.setProperty('--len',Math.ceil(p.getTotalLength())); }catch(e){ p.classList.remove('draw'); } });
+    drawn=true;
+  }
+  let started=false;
+  const go=()=>{ if(started) return; started=true; render(); new ResizeObserver(()=>render()).observe(el); };
+  if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ go(); io.disconnect(); } },{rootMargin:'200px'}); io.observe(el); } else go();
+  /* print / no-JS safety: render immediately if the map is already on screen */
+  if(el.getBoundingClientRect().top<innerHeight) go();
 })();
 </script>
 <script>
@@ -670,26 +812,44 @@ footer p:first-child{color:var(--ink-2)}
       N.forEach((ns,l)=>ns.forEach(([x,y])=>{ const out=l===3, inp=l===0; const col=out?pal.s2:inp?pal.s1:pal.s7; g.fillStyle=col; glow(g,col,out?14:8); g.beginPath(); g.arc(x,y,out?5:3.6,0,7); g.fill();
         g.fillStyle=pal.page; noglow(g); g.beginPath(); g.arc(x,y,out?2.2:1.5,0,7); g.fill(); })); }
   };
-  /* locked units: a dim outline, drawn once */
+  /* upcoming units: dim outline glyphs that breathe slowly (t = phase, pal.ink2 stroke set by draw) */
   const LOCKED={
-    8(g,w,h){ const cx=w/2, cy=h*.55; g.beginPath(); for(let x=-50;x<=50;x+=2){ const y=Math.sin(x*.11)*16; x===-50?g.moveTo(cx+x,cy-y):g.lineTo(cx+x,cy-y);} g.stroke();
-      g.setLineDash([3,3]); g.beginPath(); for(let x=-50;x<=50;x+=2){ const s=x*.11; const y=(s-s*s*s/6+s*s*s*s*s/120)*16; if(Math.abs(y)<40) x===-50?g.moveTo(cx+x,cy-y):g.lineTo(cx+x,cy-y);} g.stroke(); g.setLineDash([]); },
-    9(g,w,h){ const cx=w/2, cy=h*.52; for(let r=1;r<=3;r++){ g.beginPath(); g.ellipse(cx,cy,r*13,r*7,-.3,0,7); g.stroke(); }
-      g.beginPath(); g.moveTo(cx+42,cy-22); g.lineTo(cx+26,cy-4); g.lineTo(cx+12,cy-9); g.lineTo(cx+5,cy+2); g.lineTo(cx+1,cy); g.stroke(); },
-    10(g,w,h){ const cx=w/2, cy=h*.5; g.beginPath(); for(let x=-50;x<=50;x+=2){ const y=(x*x)/110-Math.cos(x*.25)*5; x===-50?g.moveTo(cx+x,cy+y-14):g.lineTo(cx+x,cy+y-14);} g.stroke();
-      g.beginPath(); g.moveTo(cx-40,cy-1); g.lineTo(cx-31,cy+2); g.lineTo(cx-23,cy+4); g.lineTo(cx-15,cy+6); g.stroke(); },
-    11(g,w,h){ const cx=w/2, cy=h*.5; for(let r=1;r<=3;r++){ g.beginPath(); g.ellipse(cx,cy,r*16,r*5,0,0,7); g.stroke(); }
-      [[-.9,pal.s1],[-.3,0],[.3,0],[.9,0],[1.5,0]].forEach(([k])=>{ g.beginPath(); g.moveTo(cx-48,cy-22+k*4); g.quadraticCurveTo(cx-10+k*14,cy+6*k,cx,cy); g.stroke(); }); },
-    12(g,w,h){ const cx=w/2, cy=h*.52; let s=1; const rnd=()=>{ s=(s*16807)%2147483647; return s/2147483647; };
-      for(let k=0;k<22;k++){ const a=(rnd()-.5)*90, b=(rnd()-.5)*14; g.beginPath(); g.arc(cx+a*.85-b*.5,cy+a*.32+b*.9,1.6,0,7); g.stroke(); }
-      g.beginPath(); g.moveTo(cx-46,cy-17); g.lineTo(cx+46,cy+17); g.stroke(); },
-    13(g,w,h){ LOCKED[12](g,w,h); const cx=w/2, cy=h*.52; g.setLineDash([2,3]); g.beginPath(); g.moveTo(cx+12,cy-30); g.lineTo(cx-12,cy+30); g.stroke(); g.setLineDash([]); },
-    14(g,w,h){ const cx=w/2, cy=h*.52; for(let k=0;k<6;k++){ g.beginPath(); g.arc(cx-30+(k%3)*9,cy-16+Math.floor(k/3)*10+(k%2)*4,2,0,7); g.stroke(); g.beginPath(); g.rect(cx+16+(k%3)*9,cy+4+Math.floor(k/3)*10+(k%2)*4,4,4); g.stroke(); }
-      g.beginPath(); g.moveTo(cx-34,cy+30); g.lineTo(cx+34,cy-30); g.stroke(); g.setLineDash([3,3]); g.beginPath(); g.moveTo(cx-44,cy+22); g.lineTo(cx+24,cy-38); g.moveTo(cx-24,cy+38); g.lineTo(cx+44,cy-22); g.stroke(); g.setLineDash([]); },
-    15(g,w,h){ LOCKED[14](g,w,h); },
-    16(g,w,h){ const cx=w/2, cy=h*.52; const P=[[-40,-10],[-18,14],[0,-16],[22,8],[42,-6],[8,20]];
-      g.beginPath(); P.forEach(([x,y],i)=>i?g.lineTo(cx+x,cy+y):g.moveTo(cx+x,cy+y)); g.lineTo(cx+P[0][0],cy+P[0][1]); g.stroke();
-      P.forEach(([x,y])=>{ g.beginPath(); g.arc(cx+x,cy+y,2.4,0,7); g.stroke(); }); }
+    /* 12 · PCA — a tilted cloud; the principal axis sweeps until it locks onto the spread */
+    12(g,w,h,t){ const cx=w/2, cy=h*.52; let s=7; const rnd=()=>{ s=(s*16807)%2147483647; return s/2147483647; };
+      const tilt=-.36;
+      for(let k=0;k<26;k++){ const a=(rnd()-.5)*92, b=(rnd()-.5)*16; const x=a*Math.cos(tilt)-b*Math.sin(tilt), y=a*Math.sin(tilt)+b*Math.cos(tilt); g.beginPath(); g.arc(cx+x*.9,cy+y*.9,1.5,0,7); g.stroke(); }
+      const ang=tilt+.55*Math.sin(t*.5)*Math.max(0,Math.cos(t*.25)); const L=50;
+      g.save(); g.strokeStyle=pal.s7; g.globalAlpha=.75; g.lineWidth=1.4; g.beginPath(); g.moveTo(cx-Math.cos(ang)*L,cy-Math.sin(ang)*L); g.lineTo(cx+Math.cos(ang)*L,cy+Math.sin(ang)*L); g.stroke();
+      g.setLineDash([2,3]); g.globalAlpha=.4; g.beginPath(); g.moveTo(cx+Math.sin(ang)*18,cy-Math.cos(ang)*18); g.lineTo(cx-Math.sin(ang)*18,cy+Math.cos(ang)*18); g.stroke(); g.restore(); },
+    /* 13 · SVM — two groups, the widest street; the street breathes to its widest width */
+    13(g,w,h,t){ const cx=w/2, cy=h*.52; const A=[[-30,-14],[-22,-22],[-36,-4],[-14,-12],[-26,0]], B=[[14,14],[26,6],[20,24],[34,16],[8,26]];
+      A.forEach(([x,y])=>{ g.beginPath(); g.arc(cx+x,cy+y,2.1,0,7); g.stroke(); });
+      B.forEach(([x,y])=>{ g.beginPath(); g.rect(cx+x-2,cy+y-2,4,4); g.stroke(); });
+      const m=7+4*(.5+.5*Math.sin(t*.7)); const d=[Math.SQRT1_2,-Math.SQRT1_2], n=[Math.SQRT1_2,Math.SQRT1_2];
+      const seg=(o)=>{ g.beginPath(); g.moveTo(cx+n[0]*o-d[0]*44,cy+n[1]*o-d[1]*44); g.lineTo(cx+n[0]*o+d[0]*44,cy+n[1]*o+d[1]*44); g.stroke(); };
+      g.save(); g.strokeStyle=pal.s7; g.globalAlpha=.8; g.lineWidth=1.4; seg(0); g.setLineDash([3,3]); g.globalAlpha=.5; seg(m); seg(-m); g.restore(); },
+    /* 14 · encoder → context vector → decoder, a pulse of memory travelling along the chain */
+    14(g,w,h,t){ const cy=h*.5, xs=[-54,-36,-18,18,36,54].map(x=>w/2+x);
+      xs.forEach((x,i)=>{ g.beginPath(); g.roundRect?g.roundRect(x-6,cy-6,12,12,3):g.rect(x-6,cy-6,12,12); g.stroke();
+        g.beginPath(); if(i<3){ g.moveTo(x,cy+20); g.lineTo(x,cy+7); } else { g.moveTo(x,cy-7); g.lineTo(x,cy-20); } g.stroke(); });
+      for(let i=0;i<5;i++){ if(i===2) continue; g.beginPath(); g.moveTo(xs[i]+6,cy); g.lineTo(xs[i+1]-6,cy); g.stroke(); }
+      g.beginPath(); g.moveTo(xs[2]+6,cy); g.lineTo(w/2-4,cy); g.moveTo(w/2+4,cy); g.lineTo(xs[3]-6,cy); g.stroke();
+      const u=(t*.32)%1, px=xs[0]+(xs[5]-xs[0])*u;
+      g.save(); g.fillStyle=pal.s7; g.globalAlpha=.9; g.beginPath(); g.arc(w/2,cy,3+1.2*Math.sin(t*2),0,7); g.fill();
+      g.globalAlpha=.8; g.fillStyle=pal.s4; g.beginPath(); g.arc(px,cy,2.2,0,7); g.fill(); g.restore(); },
+    /* 15 · attention — one word looks at every other word; line weight = attention */
+    15(g,w,h,t){ const n=6, y0=h*.78, y1=h*.24, xs=[...Array(n)].map((_,i)=>w/2-50+i*20);
+      xs.forEach(x=>{ g.beginPath(); g.arc(x,y0,2.4,0,7); g.stroke(); g.beginPath(); g.arc(x,y1,2.4,0,7); g.stroke(); });
+      const q=Math.floor(t*.45)%n, fr=(t*.45)%1, W=[.08,.5,.1,.22,.05,.05].map((_,j)=>Math.exp(-Math.abs(j-((q*2+1)%n))*.9)); const Z=W.reduce((a,b)=>a+b,0);
+      g.save(); g.strokeStyle=pal.s7;
+      xs.forEach((x,j)=>{ const a=W[j]/Z; g.globalAlpha=Math.min(1,.35+a*2)*Math.min(1,.25+fr*3); g.lineWidth=.7+a*4; g.beginPath(); g.moveTo(xs[q],y1+3); g.bezierCurveTo(xs[q],h*.52,x,h*.52,x,y0-3); g.stroke(); });
+      g.globalAlpha=.95; g.fillStyle=pal.s4; g.beginPath(); g.arc(xs[q],y1,3,0,7); g.fill(); g.restore(); },
+    /* 16 · the finale — a constellation that slowly connects */
+    16(g,w,h,t){ const cx=w/2, cy=h*.52; const P=[[-44,-10],[-24,14],[-6,-18],[12,10],[30,-12],[46,8],[4,22],[-38,20]];
+      P.forEach(([x,y])=>{ g.beginPath(); g.arc(cx+x,cy+y,2,0,7); g.stroke(); });
+      const k=(t*.8)%(P.length+3);
+      g.save(); g.strokeStyle=pal.s7; g.globalAlpha=.7; g.lineWidth=1.2; g.beginPath();
+      for(let i=0;i<Math.min(P.length,Math.floor(k)+1);i++){ const [x,y]=P[i]; i?g.lineTo(cx+x,cy+y):g.moveTo(cx+x,cy+y); } g.stroke(); g.restore(); }
   };
 
   function setupGlyph(cv){
@@ -703,11 +863,11 @@ footer p:first-child{color:var(--ink-2)}
   }
   function draw(G){ let {g,w,h}=G; if(!w) return; const k=h/70; g.setTransform(DPR,0,0,DPR,0,0); g.clearRect(0,0,w,h); g.setTransform(DPR*k,0,0,DPR*k,0,0); w/=k; h/=k;
     g.shadowBlur=0; g.globalAlpha=1; g.lineJoin='round';
-    if(G.locked){ g.strokeStyle=pal.ink2; g.lineWidth=1.1; g.globalAlpha=.6; (LOCKED[G.id]||LOCKED[16])(g,w,h); g.globalAlpha=1; return; }
+    if(G.locked){ g.strokeStyle=pal.ink2; g.lineWidth=1.1; g.globalAlpha=.6; (LOCKED[G.id]||LOCKED[16])(g,w,h,G.ph); g.globalAlpha=1; return; }
     DRAW[G.id](g,w,h,G.ph); }
   let lastT=performance.now();
   function loop(now){ const dt=Math.min(.05,(now-lastT)/1000); lastT=now;
-    for(const G of glyphs){ if(!G.vis||G.locked) continue; G.ph+=dt*G.speed; draw(G); }
+    for(const G of glyphs){ if(!G.vis) continue; G.ph+=dt*G.speed*(G.locked?.6:1); draw(G); }
     requestAnimationFrame(loop); }
   document.querySelectorAll('canvas.glyph').forEach(setupGlyph);
   if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>es.forEach(e=>{ const G=glyphs.find(x=>x.cv===e.target); if(G) G.vis=e.isIntersecting; }),{threshold:.05}); glyphs.forEach(G=>io.observe(G.cv)); }

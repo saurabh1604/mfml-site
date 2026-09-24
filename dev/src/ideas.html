@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big Ideas — The Math Behind the Machine</title>
+<meta name="description" content="The whole course on one page: every realization and one-sentence summary from every unit, plus the threads that tie linear algebra, calculus and optimization to modern machine learning. By Prof. Saurabh.">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%235b93ff"/><text x="32" y="44" font-family="Georgia,serif" font-size="36" fill="white" text-anchor="middle">Σ</text></svg>'>
+<meta property="og:site_name" content="The Math Behind the Machine">
+<meta property="og:title" content="Big Ideas — the whole course on one page">
+<meta property="og:description" content="Every realization from every unit, in order, plus the threads that tie the maths of machine learning together.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://linearalgebra.info/ideas.html">
+<meta property="og:image" content="https://linearalgebra.info/social-card.png">
+<meta name="theme-color" content="#070a12">
+<style>
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink)}
+.wrap{max-width:62rem;margin:0 auto;padding:0 1.25rem 5rem}
+.topbar{position:sticky;top:0;z-index:30}
+.topbar-in{max-width:62rem;margin:0 auto;display:flex;align-items:center;gap:.6rem;padding:.7rem 1.25rem;font-size:.86rem}
+.brand{font-weight:750;color:var(--ink);text-decoration:none;letter-spacing:-.01em;display:inline-flex;align-items:center;gap:.55rem}
+.brand::before{content:"Σ";display:inline-grid;place-items:center;width:1.55rem;height:1.55rem;border-radius:.45rem;background:linear-gradient(135deg,var(--s1),var(--s7));color:#fff;font-family:Georgia,serif;font-size:.95rem}
+.crumb{color:var(--ink-muted)}
+.spacer{flex:1}
+button.ghost{white-space:nowrap;font-size:.8rem;border:1px solid var(--line);color:var(--ink-2);border-radius:999px;padding:.28rem .75rem;cursor:pointer}
+.i-hero{padding:4rem 0 1.5rem;position:relative}
+#weave{position:absolute;right:-2rem;top:2.2rem;width:24rem;height:18rem;pointer-events:none;opacity:.95}
+@media (max-width:900px){#weave{display:none}}
+@media (min-width:901px){.i-hero .lede{max-width:33rem}}
+.i-hero .lede{font-size:1.25rem;line-height:1.55;color:var(--ink-2);max-width:42rem;margin:0}
+.i-hero h1 .hl{color:var(--s4)}
+.stats{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.3rem}
+.stats span{font-family:var(--ui);font-size:.78rem;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:.3rem .75rem;background:color-mix(in srgb,var(--surface) 60%,transparent)}
+.tools{position:sticky;top:3.05rem;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding:.65rem 1.25rem;margin:1.2rem -1.25rem 0;background:color-mix(in srgb,var(--page) 88%,transparent);backdrop-filter:blur(12px)}
+.tools button{font-family:var(--ui);font-size:.8rem;font-weight:600;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 70%,transparent);color:var(--ink-2);border-radius:999px;padding:.34rem .85rem;cursor:pointer}
+.tools button[aria-pressed="true"]{color:var(--ink);border-color:color-mix(in srgb,var(--s1) 60%,transparent);background:color-mix(in srgb,var(--s1) 16%,var(--surface));box-shadow:var(--glow-1)}
+.tools .sep{width:1px;height:1.3rem;background:var(--line);margin:0 .2rem}
+.jump{display:flex;flex-wrap:wrap;gap:.35rem;margin:.6rem 0 0}
+.jump a{font-family:var(--ui);font-size:.74rem;color:var(--ink-2);text-decoration:none;border:1px solid var(--line);border-radius:.5rem;padding:.25rem .5rem;display:inline-flex;gap:.35rem}
+.jump a b{color:var(--pc)}
+.jump a:hover{color:var(--ink);border-color:var(--pc)}
+h2.sec{font-size:clamp(1.6rem,3vw,2.2rem);margin:3.2rem 0 .4rem}
+.sec-lede{color:var(--ink-2);margin:0 0 1.4rem;max-width:42rem}
+.threads{display:grid;grid-template-columns:repeat(auto-fill,minmax(19rem,1fr));gap:1rem}
+.thread{border:1px solid var(--line);border-radius:var(--r-lg);padding:1.1rem 1.15rem 1rem;background:var(--stage-bg);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.thread h3{font-family:var(--display);font-weight:600;font-size:1.3rem;line-height:1.2;margin:0 0 .45rem;letter-spacing:-.01em}
+.thread p{font-size:.98rem;color:var(--ink-2);margin:0 0 .9rem;line-height:1.55}
+.stops{list-style:none;margin:0;padding:0 0 0 .2rem;position:relative}
+.stops::before{content:"";position:absolute;left:.52rem;top:.6rem;bottom:.6rem;width:2px;background:linear-gradient(var(--s1),var(--s3),var(--s2),var(--s7));opacity:.45;border-radius:2px}
+.stop a,.stop.soon{display:grid;grid-template-columns:1.1rem 4.4rem 1fr;align-items:center;gap:.45rem;padding:.22rem 0;text-decoration:none;font-family:var(--ui);font-size:.82rem}
+.stop .dot{width:.72rem;height:.72rem;border-radius:50%;background:var(--pc);box-shadow:0 0 10px var(--pc);position:relative;z-index:1;margin-left:.16rem}
+:root[data-theme="light"] .stop .dot{box-shadow:none}
+.stop .su{color:var(--ink-muted);font-weight:700;white-space:nowrap}
+.stop .sl{color:var(--ink)}
+.stop a:hover .sl{color:var(--pc);text-decoration:underline}
+.stop.soon .dot{background:none;border:1.5px dashed var(--ink-muted);box-shadow:none}
+.stop.soon .sl{color:var(--ink-muted);font-style:italic}
+h2.part-h{position:relative;display:flex;align-items:center;gap:1rem;font-family:var(--ui);font-weight:700;font-size:.76rem;letter-spacing:.26em;text-transform:uppercase;color:var(--pc);margin:3.6rem 0 1.2rem;line-height:1}
+h2.part-h .roman{font-family:var(--display);font-weight:400;font-size:2.6rem;letter-spacing:-.02em;color:color-mix(in srgb,var(--pc) 55%,transparent);text-transform:none}
+h2.part-h::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,color-mix(in srgb,var(--pc) 70%,transparent),transparent)}
+.soon-tag{font-size:.62rem;letter-spacing:.14em;border:1px dashed color-mix(in srgb,var(--pc) 55%,transparent);border-radius:999px;padding:.32rem .6rem .3rem}
+[data-p="1"]{--pc:var(--s1)} [data-p="2"]{--pc:var(--s3)} [data-p="3"]{--pc:var(--s2)} [data-p="4"]{--pc:var(--s7)} [data-p="5"]{--pc:var(--s6)}
+.u-block{margin:0 0 2.2rem}
+.u-head{position:sticky;top:6.2rem;margin-left:-.5rem;z-index:10;display:flex;align-items:center;gap:.8rem;padding:.6rem .9rem;border-radius:var(--r-md);background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border:1px solid var(--line);margin-bottom:.8rem}
+.u-num{font-family:var(--ui);font-weight:800;font-size:.8rem;color:var(--pc);border:1px solid color-mix(in srgb,var(--pc) 50%,transparent);border-radius:.45rem;padding:.12rem .4rem}
+.u-head h3{margin:0;font-size:1.05rem;flex:1}
+.u-head h3 a{color:var(--ink);text-decoration:none}
+.u-open{font-family:var(--ui);font-size:.78rem;font-weight:600;color:var(--pc);text-decoration:none;white-space:nowrap}
+.u-block.soon{opacity:.6}
+.ideas{list-style:none;margin:0;padding:0 0 0 1.1rem;border-left:2px solid color-mix(in srgb,var(--pc) 35%,transparent)}
+.idea{position:relative;margin:0 0 1.35rem;padding-left:.6rem}
+.idea::before{content:"";position:absolute;left:-1.48rem;top:.55rem;width:.6rem;height:.6rem;border-radius:50%;background:var(--page);border:2px solid var(--pc)}
+.i-head{display:flex;align-items:baseline;gap:.55rem;text-decoration:none;color:var(--ink);font-family:var(--ui);font-weight:700;font-size:1rem}
+.i-num{color:var(--pc);font-size:.8rem;min-width:1.2rem}
+.i-go{opacity:0;color:var(--pc);transition:opacity .2s,transform .2s}
+.i-head:hover .i-t{text-decoration:underline;text-decoration-color:var(--pc)}
+.i-head:hover .i-go{opacity:1;transform:translateX(3px)}
+.i-real{margin:.45rem 0 0;padding:.75rem 1rem;border-radius:var(--r-sm);background:color-mix(in srgb,var(--pc) 7%,var(--surface));border:1px solid color-mix(in srgb,var(--pc) 22%,transparent);font-size:1.02rem;line-height:1.6}
+.i-real p{margin:.35rem 0}
+.i-real .katex-display{margin:.5rem 0;overflow-x:auto;overflow-y:hidden}
+.i-one{margin:.5rem 0 0;font-size:1rem;color:var(--ink-2)}
+.i-one b{font-family:var(--ui);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--pc)}
+body.quick .i-real{display:none}
+body.quick .idea{margin-bottom:.8rem}
+.hidden-p{display:none!important}
+footer{margin-top:4rem;padding-top:1.2rem;border-top:1px solid var(--line);font-family:var(--ui);font-size:.8rem;color:var(--ink-muted)}
+footer a{color:var(--ink-2)}
+@media (max-width:640px){.crumb{display:none}.brand{font-size:.84rem;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;display:block}.brand::before{display:none}.topbar-in{gap:.4rem}.tools{position:static;margin:1rem 0 0;padding:.4rem 0;background:none;backdrop-filter:none}.u-head{top:3.2rem}.i-hero{padding-top:2.6rem}.stop a,.stop.soon{grid-template-columns:1.1rem 3.8rem 1fr}}
+@media print{.topbar,.tools,.jump{display:none}.u-head{position:static}.reveal{opacity:1!important;transform:none!important}body.quick .i-real{display:block}}
+</style>
+<!--@cinema-css-->
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+  <a class="brand" href="index.html">The Math Behind the Machine</a><span class="crumb">/ Big ideas</span>
+  <span class="spacer"></span>
+  <button class="ghost" id="theme-btn" type="button">Theme: dark</button>
+</div></div>
+<main class="wrap">
+  <header class="i-hero">
+    <canvas id="weave" aria-hidden="true"></canvas>
+    <div class="kicker reveal">The whole course on one page</div>
+    <h1 class="reveal">Big <span class="hl">ideas</span></h1>
+    <p class="lede reveal">Every section of every unit ends with a realization — the formula turned into a sentence you could have written yourself. Here they all are, in order. Read it the night before an exam, or read it first to see where the road goes.</p>
+    <div class="stats reveal"><span>11 units live</span><span>140 big ideas</span><span>7 threads across the course</span></div>
+  </header>
+
+  <h2 class="sec reveal" id="threads">Threads</h2>
+  <p class="sec-lede reveal">A handful of ideas keep coming back, each time in bigger clothes. Follow one from its first appearance to the place where it runs a real machine.</p>
+  <div class="threads">
+<article class="thread reveal" id="thread-dot"><h3>Agreement</h3><p>One number that says how much two lists agree — it measures angles, casts shadows, points the gradient, and finally decides what a transformer pays attention to.</p><ol class="stops"><li class="stop" style="--pc:var(--s1)"><a href="unit-01.html#s6" title="One equation, three windows"><span class="dot"></span><span class="su">Unit 1</span><span class="sl">rows as dot products</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-03.html#s2d" title="The dot product — one number that reads two vectors"><span class="dot"></span><span class="su">Unit 3</span><span class="sl">the dot product</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-03.html#s6" title="Angles — the similarity dial"><span class="dot"></span><span class="su">Unit 3</span><span class="sl">angles</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-03.html#s10" title="The shadow machine — projection"><span class="dot"></span><span class="su">Unit 3</span><span class="sl">projection</span></a></li><li class="stop" style="--pc:var(--s3)"><a href="unit-06.html#s6" title="The gradient — a compass that always points uphill"><span class="dot"></span><span class="su">Unit 6</span><span class="sl">the gradient compass</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-11.html#s14" title="Two points and a line — where all of this is going"><span class="dot"></span><span class="su">Unit 11</span><span class="sl">the widest street</span></a></li><li class="stop soon" style="--pc:var(--s6)"><span class="dot"></span><span class="su">Unit 15 · soon</span><span class="sl">attention scores</span></li></ol></article>
+<article class="thread reveal" id="thread-eig"><h3>Directions a matrix leaves alone</h3><p>Eigenvectors keep turning up: they unpack a matrix, judge a landscape, explain why a valley is slow, and name the directions that matter in data.</p><ol class="stops"><li class="stop" style="--pc:var(--s1)"><a href="unit-04.html#s5" title="Eigenvectors — the directions a matrix cannot turn"><span class="dot"></span><span class="su">Unit 4</span><span class="sl">eigenvectors</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-04.html#s7" title="The Spectral Theorem — symmetric matrices come apart cleanly"><span class="dot"></span><span class="su">Unit 4</span><span class="sl">spectral theorem</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-05.html#s7" title="Step 3 · SVD — two frames, every matrix, no exceptions"><span class="dot"></span><span class="su">Unit 5</span><span class="sl">the SVD</span></a></li><li class="stop" style="--pc:var(--s3)"><a href="unit-08.html#s10" title="The judge of extrema — the Hessian"><span class="dot"></span><span class="su">Unit 8</span><span class="sl">the Hessian judge</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-10.html#s8" title="The canyon — why the fastest way down is the wrong way down"><span class="dot"></span><span class="su">Unit 10</span><span class="sl">the canyon</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-11.html#s6" title="Five walkers, one valley — and the dial that decides the race"><span class="dot"></span><span class="su">Unit 11</span><span class="sl">the stiffness dial</span></a></li><li class="stop soon" style="--pc:var(--s7)"><span class="dot"></span><span class="su">Unit 12 · soon</span><span class="sl">principal components</span></li></ol></article>
+<article class="thread reveal" id="thread-null"><h3>What the machine cannot see</h3><p>Some inputs vanish without a trace. The blind spot of a matrix explains missing solutions, redundant features and why a model can memorise.</p><ol class="stops"><li class="stop" style="--pc:var(--s1)"><a href="unit-01.html#s10" title="The null space — the machine's blind spot"><span class="dot"></span><span class="su">Unit 1</span><span class="sl">the null space</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-01.html#s13" title="Rank — one number that settles everything"><span class="dot"></span><span class="su">Unit 1</span><span class="sl">rank</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-02.html#s5" title="The promised passport: the null space is a subspace"><span class="dot"></span><span class="su">Unit 2</span><span class="sl">a subspace</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-02.html#s11" title="Dimension — how big is the board, really?"><span class="dot"></span><span class="su">Unit 2</span><span class="sl">dimension</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-05.html#s10" title="The layer cake — low-rank approximation, live"><span class="dot"></span><span class="su">Unit 5</span><span class="sl">low rank</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-10.html#s3" title="Full marks by memorising — knobs versus facts"><span class="dot"></span><span class="su">Unit 10</span><span class="sl">knobs versus facts</span></a></li></ol></article>
+<article class="thread reveal" id="thread-chain"><h3>Blame flowing backwards</h3><p>The chain rule, promoted step by step: a product of slopes, a product of Jacobians, a sweep backwards through a graph — and later, through time.</p><ol class="stops"><li class="stop" style="--pc:var(--s3)"><a href="unit-06.html#s10" title="The chain rule becomes matrix multiplication — and that is backpropagation"><span class="dot"></span><span class="su">Unit 6</span><span class="sl">chain rule as matrices</span></a></li><li class="stop" style="--pc:var(--s3)"><a href="unit-07.html#s3" title="The whole algorithm is two rules"><span class="dot"></span><span class="su">Unit 7</span><span class="sl">two rules</span></a></li><li class="stop" style="--pc:var(--s3)"><a href="unit-07.html#s6" title="A whole layer at once — backprop with matrices"><span class="dot"></span><span class="su">Unit 7</span><span class="sl">a whole layer</span></a></li><li class="stop" style="--pc:var(--s3)"><a href="unit-07.html#s8" title="Why it's so cheap — one sweep, everything reused"><span class="dot"></span><span class="su">Unit 7</span><span class="sl">one sweep</span></a></li><li class="stop soon" style="--pc:var(--s6)"><span class="dot"></span><span class="su">Unit 14 · soon</span><span class="sl">backprop through time</span></li></ol></article>
+<article class="thread reveal" id="thread-curve"><h3>Bowls, domes and saddles</h3><p>Curvature decides everything near a flat spot — how good an approximation is, whether you found a minimum, and how big a step you can dare.</p><ol class="stops"><li class="stop" style="--pc:var(--s3)"><a href="unit-06.html#s4" title="Taylor — rebuilding a whole function out of its derivatives"><span class="dot"></span><span class="su">Unit 6</span><span class="sl">Taylor, first look</span></a></li><li class="stop" style="--pc:var(--s3)"><a href="unit-08.html#s5" title="Taylor's theorem, built by hand"><span class="dot"></span><span class="su">Unit 8</span><span class="sl">Taylor built by hand</span></a></li><li class="stop" style="--pc:var(--s3)"><a href="unit-08.html#s10" title="The judge of extrema — the Hessian"><span class="dot"></span><span class="su">Unit 8</span><span class="sl">the Hessian</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-09.html#s3" title="Where the walk ends — flat ground comes in three kinds"><span class="dot"></span><span class="su">Unit 9</span><span class="sl">three kinds of flat</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-09.html#s5" title="How long a step — the bouncing ball"><span class="dot"></span><span class="su">Unit 9</span><span class="sl">the step-size limit</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-10.html#s8" title="The canyon — why the fastest way down is the wrong way down"><span class="dot"></span><span class="su">Unit 10</span><span class="sl">the canyon</span></a></li></ol></article>
+<article class="thread reveal" id="thread-down"><h3>Follow the slope down</h3><p>One rule — step against the gradient — then every refinement of it: how far, how often, with how much memory.</p><ol class="stops"><li class="stop" style="--pc:var(--s3)"><a href="unit-06.html#s11" title="Walking down the valley"><span class="dot"></span><span class="su">Unit 6</span><span class="sl">walking down</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-09.html#s4" title="The rule, and the trench that makes it zig-zag"><span class="dot"></span><span class="su">Unit 9</span><span class="sl">the rule</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-09.html#svar" title="Three ways to walk — batch, minibatch, stochastic"><span class="dot"></span><span class="su">Unit 9</span><span class="sl">batch vs stochastic</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-10.html#s10" title="Change the units, not the model — the canyon becomes a bowl"><span class="dot"></span><span class="su">Unit 10</span><span class="sl">fix the units</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-11.html#s2" title="Momentum — give the walker weight"><span class="dot"></span><span class="su">Unit 11</span><span class="sl">momentum</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-11.html#s5" title="Adam — two notebooks and a warm-up"><span class="dot"></span><span class="su">Unit 11</span><span class="sl">Adam</span></a></li></ol></article>
+<article class="thread reveal" id="thread-pd"><h3>Always uphill</h3><p>Positive definite matrices are the “honest bowls” of the course: they define rulers, have a square root, certify a minimum and make a problem safe to solve.</p><ol class="stops"><li class="stop" style="--pc:var(--s1)"><a href="unit-03.html#s4" title="The engine room — symmetric positive-definite matrices"><span class="dot"></span><span class="su">Unit 3</span><span class="sl">the engine room</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-04.html#s7" title="The Spectral Theorem — symmetric matrices come apart cleanly"><span class="dot"></span><span class="su">Unit 4</span><span class="sl">spectral theorem</span></a></li><li class="stop" style="--pc:var(--s1)"><a href="unit-04.html#s10" title="Cholesky — the square root of a matrix"><span class="dot"></span><span class="su">Unit 4</span><span class="sl">Cholesky</span></a></li><li class="stop" style="--pc:var(--s3)"><a href="unit-08.html#s10" title="The judge of extrema — the Hessian"><span class="dot"></span><span class="su">Unit 8</span><span class="sl">the Hessian test</span></a></li><li class="stop" style="--pc:var(--s2)"><a href="unit-11.html#s12" title="Which problems you can trust"><span class="dot"></span><span class="su">Unit 11</span><span class="sl">problems you can trust</span></a></li><li class="stop soon" style="--pc:var(--s7)"><span class="dot"></span><span class="su">Unit 13 · soon</span><span class="sl">the SVM dual</span></li></ol></article>
+  </div>
+
+  <h2 class="sec reveal" id="all">Every idea, unit by unit</h2>
+  <p class="sec-lede reveal">Click any title to open that exact section.</p>
+  <div class="tools" role="toolbar" aria-label="Filter the ideas">
+    <button type="button" data-f="0" aria-pressed="true">All</button>
+    <button type="button" data-f="1">I · Linear algebra</button>
+    <button type="button" data-f="2">II · Calculus</button>
+    <button type="button" data-f="3">III · Optimization</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="quick" aria-pressed="false">One sentence only</button>
+  </div>
+  <nav class="jump" aria-label="Jump to a unit"><a href="#unit-1" style="--pc:var(--s1)"><b>01</b>Systems of Linear Equations</a><a href="#unit-2" style="--pc:var(--s1)"><b>02</b>Vector Spaces</a><a href="#unit-3" style="--pc:var(--s1)"><b>03</b>Analytic Geometry</a><a href="#unit-4" style="--pc:var(--s1)"><b>04</b>Determinants, Eigenvalues &amp; the Spectral Theorem</a><a href="#unit-5" style="--pc:var(--s1)"><b>05</b>Matrix Decompositions &amp; SVD</a><a href="#unit-6" style="--pc:var(--s3)"><b>06</b>Differentiation</a><a href="#unit-7" style="--pc:var(--s3)"><b>07</b>Backpropagation &amp; Automatic Differentiation</a><a href="#unit-8" style="--pc:var(--s3)"><b>08</b>Taylor &amp; MacLaurin Series</a><a href="#unit-9" style="--pc:var(--s2)"><b>09</b>Gradient Descent</a><a href="#unit-10" style="--pc:var(--s2)"><b>10</b>Optimization I — Gradients that Work</a><a href="#unit-11" style="--pc:var(--s2)"><b>11</b>Optimization II — Five Ways Down One Valley</a></nav>
+<h2 class="part-h" data-p="1" id="part-1"><span class="roman">I</span>Part I · Linear Algebra</h2>
+<section class="u-block" data-p="1" id="unit-1">
+  <div class="u-head"><span class="u-num">01</span><h3><a href="unit-01.html">Systems of Linear Equations</a></h3><a class="u-open" href="unit-01.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u1-s1">
+      <a class="i-head" href="unit-01.html#s1"><span class="i-num">1</span><span class="i-t">Why are we even talking about lines?</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>Up close, every smooth curve is a straight line.</strong> The error of pretending shrinks like the <em>square</em> of how far you look. So we can study the easy, straight version and trust the answer nearby.</p></div>
+      <p class="i-one"><b>In one sentence:</b> almost everything looks straight when you zoom in, so linear equations are the tool machine learning reaches for first.</p>
+    </li>
+    <li class="idea reveal" id="u1-s2">
+      <a class="i-head" href="unit-01.html#s2"><span class="i-num">2</span><span class="i-t">What is a vector, really?</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A vector is not a mysterious arrow. <strong>It is a list of numbers you are allowed to add and scale.</strong> Houses, photos, words and shopping slips all follow the same two rules, so one set of tools works on all of them. That is why linear algebra powers machine learning.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a vector is an ordered list of numbers that you can add slot by slot and scale, and almost any data can be written that way.</p>
+    </li>
+    <li class="idea reveal" id="u1-s3">
+      <a class="i-head" href="unit-01.html#s3"><span class="i-num">3</span><span class="i-t">A small problem you can solve by hand</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Everything fancy in this unit (matrices, Gaussian elimination, echelon form) is <strong>just these two moves, done by a machine at scale</strong>: remove an unknown by subtracting rules, then substitute back.</p>
+    <p>One more thing: four rules for three unknowns usually have <em>no</em> answer at all. This one does because the rules happen to agree. When real data disagrees, which is the everyday case in machine learning, <strong>linear regression</strong> finds the best <em>almost</em>-answer instead.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a system of linear equations is a set of rules that must all be true at once, and you solve it by subtracting rules to remove unknowns one at a time.</p>
+    </li>
+    <li class="idea reveal" id="u1-s4">
+      <a class="i-head" href="unit-01.html#s4"><span class="i-num">4</span><span class="i-t">The three fates: zero, one, or infinity</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>A linear system never has exactly two answers.</strong> Suppose \(\mathbf{u}\) and \(\mathbf{v}\) are both answers. Then the point halfway between them is an answer too, and so is every point on the line through them. Two answers always grow into infinitely many. So the only possible counts are <strong>zero, one, or infinity</strong>.</p></div>
+      <p class="i-one"><b>In one sentence:</b> each equation is a straight line (or flat plane), and they can meet nowhere, at one point, or along a whole line, so a system has zero, one or infinitely many solutions.</p>
+    </li>
+    <li class="idea reveal" id="u1-s5">
+      <a class="i-head" href="unit-01.html#s5"><span class="i-num">5</span><span class="i-t">Meet the matrix — a spreadsheet with superpowers</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>A matrix is a function, and multiplying matrices means doing one function after another.</strong> "Blur, then darken" is one combined filter, and that filter is \(AB\) (read right to left: \(B\) acts first). The strange row-times-column rule is exactly the arithmetic that makes \((AB)\mathbf{x}=A(B\mathbf{x})\) true.</p>
+    <p>That is also why order matters. Socks then shoes is not shoes then socks. In general \(AB\neq BA\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> a matrix is a grid of numbers, and multiplying two matrices means "row times column" for every cell, which is the same as doing one filter after another.</p>
+    </li>
+    <li class="idea reveal" id="u1-s6">
+      <a class="i-head" href="unit-01.html#s6"><span class="i-num">6</span><span class="i-t">One equation, three windows</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n\]</p>
+    <p>Rows give you <strong>rules to obey</strong>. Columns give you <strong>ingredients to mix</strong>. The machine view asks <strong>which input made this output</strong>. Three pictures, one equation. And the big questions (is there an answer? just one?) belong to the machine \(A\) itself, not to the particular \(\mathbf{b}\) you happen to be holding.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Ax = b can be read as rules to obey (rows), ingredients to mix (columns), or a machine to run backwards, and switching windows is the key skill of linear algebra.</p>
+    </li>
+    <li class="idea reveal" id="u1-s7">
+      <a class="i-head" href="unit-01.html#s7"><span class="i-num">7</span><span class="i-t">A matrix is a Photoshop filter for space</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>The columns of a matrix are where î and ĵ land.</strong> Once you know those two landing spots, you know where every point goes: \(A\mathbf{x}=x_1(A\hat\imath)+x_2(A\hat\jmath)\). And \(\det A\) is the area of the tile those two arrows make: how much the machine grows or shrinks area, with a minus sign if it flips space over.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a matrix moves space by sending î and ĵ to its columns, and its determinant is how much it scales area (or volume), with det = 0 meaning space got squashed flat.</p>
+    </li>
+    <li class="idea reveal" id="u1-s8">
+      <a class="i-head" href="unit-01.html#s8"><span class="i-num">8</span><span class="i-t">The undo button — the inverse</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>The inverse exists exactly when \(\det A\neq0\)</strong>, because you cannot un-squash something that was squashed flat. And even when it exists, a determinant <em>close</em> to zero makes the inverse huge and the answer shaky. In practice we solve with elimination and never build \(A^{-1}\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> the inverse is the undo button for a matrix; it exists only when det A is not zero, and in real work we solve with elimination instead of computing it.</p>
+    </li>
+    <li class="idea reveal" id="u1-s9">
+      <a class="i-head" href="unit-01.html#s9"><span class="i-num">9</span><span class="i-t">A system with training wheels</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p style="text-align:center"><strong>all solutions = one solution + every "invisible" direction</strong></p>
+    <p>The invisible directions are the arrows the matrix sends to zero: solutions of \(A\mathbf{x}=\mathbf{0}\). Together they are called the <strong>null space</strong> of \(A\). You will meet "one answer plus the null space" again in regression, in optimization, and inside neural networks.</p></div>
+      <p class="i-one"><b>In one sentence:</b> when a system has infinitely many solutions, they all look like one particular answer plus any mix of the directions the matrix sends to zero.</p>
+    </li>
+    <li class="idea reveal" id="u1-s10">
+      <a class="i-head" href="unit-01.html#s10"><span class="i-num">10</span><span class="i-t">The null space — the machine's blind spot</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p style="text-align:center"><strong>solutions of \(A\mathbf{x}=\mathbf{b}\) = \(\mathbf{x}_p\) + all of \(N(A)\)</strong></p>
+    <p>One anchor, plus the whole blind spot. If the blind spot is only \(\{\mathbf{0}\}\), there are no look-alikes, and a solution (when there is one) is unique. You already know that case by its other names: \(\det\neq0\), invertible.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the null space holds every input the matrix sends to zero, and adding any of them to a solution gives another solution, which is why answers come in families.</p>
+    </li>
+    <li class="idea reveal" id="u1-s11">
+      <a class="i-head" href="unit-01.html#s11"><span class="i-num">11</span><span class="i-t">Gaussian elimination — the algorithm</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>Elimination rewrites the same problem until the answer is obvious.</strong> Every move can be undone, so the solutions never change. At the end, the staircase tells you everything: pivot columns are pinned-down unknowns, columns without a pivot are free, and a row that says \(0=\) something non-zero means no solution. In the big example the last row became "\(0=a+1\)", so there is a solution only when \(a=-1\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> Gaussian elimination uses swap, scale and add-a-multiple to turn the augmented matrix into a staircase, without ever changing the solutions, and the staircase then shows the answer and the system's fate.</p>
+    </li>
+    <li class="idea reveal" id="u1-s12">
+      <a class="i-head" href="unit-01.html#s12"><span class="i-num">12</span><span class="i-t">RREF — finish the job, and two tricks fall out</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>In RREF, every pivot column is a clean "1 and zeros" column</strong>, so the answer can be read straight off the bar. Every column <em>without</em> a pivot is a free variable, and each one gives exactly one invisible direction. So the size of the null space is</p>
+    <p style="text-align:center">\(\dim N(A) = n - \operatorname{rank}(A)\)</p>
+    <p>unknowns minus pivots: freedom left over = unknowns minus the rules that really pin something down. (This is the <em>rank–nullity theorem</em>.)</p></div>
+      <p class="i-one"><b>In one sentence:</b> RREF keeps eliminating until every pivot is a lone 1, so solutions, null-space directions and even the inverse can be read straight off the page.</p>
+    </li>
+    <li class="idea reveal" id="u1-s13">
+      <a class="i-head" href="unit-01.html#s13"><span class="i-num">13</span><span class="i-t">Rank — one number that settles everything</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Rank answers "how many solutions?" completely. Compare \(\operatorname{rank}(A)\) with \(\operatorname{rank}([A|\mathbf{b}])\) and with \(n\), the number of unknowns:</p>
+    <p>① <strong>At least one</strong> solution \(\iff\operatorname{rank}(A)=\operatorname{rank}([A|\mathbf{b}])\). Adding \(\mathbf{b}\) brought no new direction, so \(\mathbf{b}\) is in the column space.</p>
+    <p>② <strong>Exactly one</strong> \(\iff\) ① holds and \(\operatorname{rank}(A)=n\): no free variables.</p>
+    <p>③ <strong>Infinitely many</strong> \(\iff\) ① holds and \(\operatorname{rank}(A)&lt;n\): free variables exist, and the null space is alive.</p></div>
+      <p class="i-one"><b>In one sentence:</b> rank is the number of pivots, the number of truly independent rows and of columns, and comparing rank(A), rank([A|b]) and n tells you whether a system has zero, one or infinitely many solutions.</p>
+    </li>
+    <li class="idea reveal" id="u1-s14">
+      <a class="i-head" href="unit-01.html#s14"><span class="i-num">14</span><span class="i-t">The whole story, in five lines</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>One picture:</strong> a matrix is a machine that moves space; solving \(A\mathbf{x}=\mathbf{b}\) asks which input the machine turned into that output. <strong>One method:</strong> elimination on \([A|\mathbf{b}]\) until the staircase appears. <strong>One number:</strong> rank, which counts the dimensions that survive and decides all three fates.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a matrix moves space, elimination reveals what it did, and rank tells you whether Ax = b has zero, one or infinitely many answers.</p>
+    </li>
+  </ol>
+</section>
+<section class="u-block" data-p="1" id="unit-2">
+  <div class="u-head"><span class="u-num">02</span><h3><a href="unit-02.html">Vector Spaces</a></h3><a class="u-open" href="unit-02.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u2-s1">
+      <a class="i-head" href="unit-02.html#s1"><span class="i-num">1</span><span class="i-t">The universe upgrade</span><span class="i-go" aria-hidden="true">→</span></a>
+      
+      <p class="i-one"><b>In one sentence:</b> every object in machine learning is a list of numbers, and this unit maps the world those lists live in and the rules for moving around it.</p>
+    </li>
+    <li class="idea reveal" id="u2-s2">
+      <a class="i-head" href="unit-02.html#s2"><span class="i-num">2</span><span class="i-t">Groups — the bare skeleton of "combining things"</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A group is a set with a <strong>trustworthy undo button</strong>. You can combine any two members and stay inside, brackets never matter, there is a do-nothing member \(e\), and every \(x\) has a partner that brings you back to \(e\).</p>
+    <p>When a set fails, it is nearly always the last promise. The counting numbers have no \(-5\). The whole numbers under multiplication have no \(\tfrac12\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> a group is any world where combining keeps you inside and every move can be undone.</p>
+    </li>
+    <li class="idea reveal" id="u2-s3">
+      <a class="i-head" href="unit-02.html#s3"><span class="i-num">3</span><span class="i-t">Vector spaces = group + scaling</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\lambda(\mathbf{u}+\mathbf{v})=\lambda\mathbf{u}+\lambda\mathbf{v}\]</p>
+    <p>Adding and scaling can be done in either order, and you never leave the world. <strong>Anything you can add and scale by these rules counts as a vector.</strong> Every "linear" idea in this course, from gradients to averages, is this route-swapping trick.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a vector space is any world where you can add and scale freely and never fall off the board.</p>
+    </li>
+    <li class="idea reveal" id="u2-s4">
+      <a class="i-head" href="unit-02.html#s4"><span class="i-num">4</span><span class="i-t">Subspaces — spaces inside spaces</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>In \(\mathbb{R}^n\), <strong>the subspaces are exactly the flat things through the origin</strong>: the origin alone, lines through \(\mathbf{0}\), planes through \(\mathbf{0}\), and so on up to the whole space. A set that is shifted, curved or fenced in always lets something escape.</p>
+    <p>This is a theorem, not just a pattern. Sections 10 and 11 show why: every subspace is the span of a few independent arrows, and such a span is always a flat through \(\mathbf{0}\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> a subspace is a flat world through the origin where adding and scaling never take you outside.</p>
+    </li>
+    <li class="idea reveal" id="u2-s5">
+      <a class="i-head" href="unit-02.html#s5"><span class="i-num">5</span><span class="i-t">The promised passport: the null space is a subspace</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{aligned}A(\mathbf{x}+\mathbf{y})&=A\mathbf{x}+A\mathbf{y}=\mathbf{0}+\mathbf{0}=\mathbf{0}\\ A(\lambda\mathbf{x})&=\lambda A\mathbf{x}=\mathbf{0}\end{aligned}\]</p>
+    <p><strong>Zero in, zero out.</strong> Invisible plus invisible is invisible, and a stretched invisible change is still invisible. So the null space \(N(A)\) is always a subspace. The same two rules make the <strong>column space</strong> \(C(A)=\{A\mathbf{x}\}\), all the outputs the machine can produce, a subspace too.</p>
+    <p>But the solutions of \(A\mathbf{x}=\mathbf{b}\) with \(\mathbf{b}\neq\mathbf{0}\) are never a subspace: two of them add up to \(2\mathbf{b}\), not \(\mathbf{b}\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> whatever a matrix cannot see forms a subspace, because zero plus zero is zero and a stretched zero is still zero.</p>
+    </li>
+    <li class="idea reveal" id="u2-s6">
+      <a class="i-head" href="unit-02.html#s6"><span class="i-num">6</span><span class="i-t">Span — everywhere you can reach</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The span is every mix \(\lambda_1\mathbf{v}_1+\cdots+\lambda_k\mathbf{v}_k\). It is always a <strong>flat through the origin</strong>, so it is always a subspace: a point, a line, a plane, or more.</p>
+    <p>Its size depends on how many <em>different directions</em> the arrows point in. A new arrow that lies inside the current span adds nothing. An arrow that points out of it adds a whole new direction.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the span is everywhere your arrows can take you, and it only grows when a new arrow points somewhere new.</p>
+    </li>
+    <li class="idea reveal" id="u2-s7">
+      <a class="i-head" href="unit-02.html#s7"><span class="i-num">7</span><span class="i-t">Linear independence — the art of non-redundancy</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Vectors are <strong>independent</strong> when the only way to make \(\lambda_1\mathbf{x}_1+\cdots+\lambda_k\mathbf{x}_k=\mathbf{0}\) is with every \(\lambda_i=0\). You can only get home by never leaving.</p>
+    <p>If some other weights bring you home, the set is <strong>dependent</strong>, and at least one vector is a mix of the rest: extra baggage.</p></div>
+      <p class="i-one"><b>In one sentence:</b> vectors are independent when the only walk that brings you home is the one where you never leave.</p>
+    </li>
+    <li class="idea reveal" id="u2-s8">
+      <a class="i-head" href="unit-02.html#s8"><span class="i-num">8</span><span class="i-t">The detector: elimination hunts redundancy</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Stack the vectors as columns and eliminate. <strong>A pivot column brings a new direction. A column without a pivot is a mix of earlier columns</strong>, and in the reduced form its numbers are the exact recipe.</p>
+    <p>The number of pivots, the <strong>rank</strong>, is the number of truly different directions. If every column has a pivot, the vectors are independent.</p></div>
+      <p class="i-one"><b>In one sentence:</b> eliminate the columns, and every column without a pivot is exposed as a mix of the pivot columns before it.</p>
+    </li>
+    <li class="idea reveal" id="u2-s9">
+      <a class="i-head" href="unit-02.html#s9"><span class="i-num">9</span><span class="i-t">The recipes theorem — independence survives translation</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>If the ingredients \(\mathbf{b}_i\) are independent, then the dishes \(\mathbf{x}_j=B\boldsymbol{\lambda}_j\) are independent <strong>exactly when their recipe cards \(\boldsymbol{\lambda}_j\) are</strong>. So you can always do the check on the small, simple cards instead of the big dishes.</p>
+    <p>And <strong>more cards than ingredients (\(m&gt;k\)) always means dependent</strong>.</p></div>
+      <p class="i-one"><b>In one sentence:</b> with independent ingredients, dishes are independent exactly when their recipe cards are, so you can always check the cards instead.</p>
+    </li>
+    <li class="idea reveal" id="u2-s10">
+      <a class="i-head" href="unit-02.html#s10"><span class="i-num">10</span><span class="i-t">Basis — the just-right toolkit</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A basis reaches everything with nothing extra. Because of that, <strong>every vector has exactly one address</strong>:</p>
+    <p>\[\mathbf{x}=\lambda_1\mathbf{b}_1+\cdots+\lambda_k\mathbf{b}_k\]</p>
+    <p>The \(\lambda_i\) are the coordinates. Change the basis and the address changes, but the point itself stays put. A dependent pair cannot be a basis: the graph paper collapses to a line.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a basis is a set of directions that reaches everything with nothing to spare, so every vector gets exactly one address.</p>
+    </li>
+    <li class="idea reveal" id="u2-s11">
+      <a class="i-head" href="unit-02.html#s11"><span class="i-num">11</span><span class="i-t">Dimension — how big is the board, really?</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Every basis of a space has the same number of vectors. That number is the <strong>dimension</strong>: the count of independent directions, the number of knobs you really have.</p>
+    <p><strong>Components count the room you are written in. Dimension counts the room you actually use.</strong> And more vectors than the dimension always means redundancy.</p></div>
+      <p class="i-one"><b>In one sentence:</b> dimension is the number of independent directions a space really has, and every basis agrees on it.</p>
+    </li>
+    <li class="idea reveal" id="u2-s12">
+      <a class="i-head" href="unit-02.html#s12"><span class="i-num">12</span><span class="i-t">Finding a basis — the algorithm</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>To find a basis of a span: <strong>stack, reduce, and keep the original vectors in the pivot columns.</strong> The number you keep is the dimension.</p>
+    <p>For the slide example: a basis of \(U\) is \(\{\mathbf{x}_1,\mathbf{x}_2,\mathbf{x}_4\}\), and \(\dim(U)=3\). Four vectors walked in, one was a mix, and three genuine directions remain.</p></div>
+      <p class="i-one"><b>In one sentence:</b> to shrink a pile of vectors to a basis, keep each vector only if it points outside the span of the ones you already kept.</p>
+    </li>
+    <li class="idea reveal" id="u2-s13">
+      <a class="i-head" href="unit-02.html#s13"><span class="i-num">13</span><span class="i-t">The whole story, in six lines</span><span class="i-go" aria-hidden="true">→</span></a>
+      
+      <p class="i-one"><b>In one sentence:</b> know your space, spot the redundancy, find the span, and pick the smartest basis.</p>
+    </li>
+  </ol>
+</section>
+<section class="u-block" data-p="1" id="unit-3">
+  <div class="u-head"><span class="u-num">03</span><h3><a href="unit-03.html">Analytic Geometry</a></h3><a class="u-open" href="unit-03.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u3-s1">
+      <a class="i-head" href="unit-03.html#s1"><span class="i-num">1</span><span class="i-t">The quest for "similar"</span><span class="i-go" aria-hidden="true">→</span></a>
+      
+      <p class="i-one"><b>In one sentence:</b> machine learning keeps asking "how similar are these two things?", and this unit is about the rulers that answer it.</p>
+    </li>
+    <li class="idea reveal" id="u3-s2">
+      <a class="i-head" href="unit-03.html#s2"><span class="i-num">2</span><span class="i-t">Norms — what "length" is allowed to mean</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A norm is just <strong>a rule for measuring length</strong>. Different rules give different shapes of "all points at distance 1": a circle for the crow, a diamond for the taxi. When a machine-learning model measures error or closeness, it has quietly picked one of these rules, and the pick changes the answer.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a norm is any rule for length that scales properly, allows no shortcuts, and gives zero only to "nowhere".</p>
+    </li>
+    <li class="idea reveal" id="u3-s2d">
+      <a class="i-head" href="unit-03.html#s2d"><span class="i-num">3</span><span class="i-t">The dot product — one number that reads two vectors</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\mathbf{x}^T\mathbf{y}=\sum_i x_iy_i\]</p>
+    <p>The dot product is an <strong>agreement score</strong>. Every "people like you also watched…" system is built on this one line of arithmetic.</p></div>
+      <p class="i-one"><b>In one sentence:</b> multiply matching entries and add them up; the total says how much two lists agree, and a list's agreement with itself is its length squared.</p>
+    </li>
+    <li class="idea reveal" id="u3-s3">
+      <a class="i-head" href="unit-03.html#s3"><span class="i-num">4</span><span class="i-t">Inner products — the blueprint under the dot product</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>Any score with these three ingredients is called an inner product.</strong> The dot product is just the most famous one. Every inner product gives you its own length, its own distance and its own angle, and they all behave sensibly. The natural next question: how do we cook up new ones? (Next section.)</p></div>
+      <p class="i-one"><b>In one sentence:</b> an inner product is any agreement score that is fair with sums, the same both ways, and always positive for a list with itself.</p>
+    </li>
+    <li class="idea reveal" id="u3-s4">
+      <a class="i-head" href="unit-03.html#s4"><span class="i-num">5</span><span class="i-t">The engine room — symmetric positive-definite matrices</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The matrix \(A\) <strong>reshapes the unit ball</strong>. The identity gives a round ball. A diagonal \(A\) squashes it into an egg along the axes. Off-diagonal numbers tilt the egg. A matrix that is <em>not</em> positive-definite tears the ball open, because some arrows would get a negative length squared.</p></div>
+      <p class="i-one"><b>In one sentence:</b> to design a ruler, pick a symmetric matrix that gives every non-zero arrow a positive length squared, and test it with the top-left number and the determinant.</p>
+    </li>
+    <li class="idea reveal" id="u3-s5">
+      <a class="i-head" href="unit-03.html#s5"><span class="i-num">6</span><span class="i-t">Lengths, distances — and the inequality that runs everything</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[|\langle\mathbf{x},\mathbf{y}\rangle|\le\|\mathbf{x}\|\,\|\mathbf{y}\|\qquad\text{and}\qquad\|\mathbf{x}+\mathbf{y}\|\le\|\mathbf{x}\|+\|\mathbf{y}\|\]</p>
+    <p>A shadow never beats the stick, and a detour never beats the straight road. The first fact makes angles possible (next section). The second fact makes sure every inner product gives a proper length.</p></div>
+      <p class="i-one"><b>In one sentence:</b> length and distance come free with every inner product, and the score can never beat the product of the lengths, just as a shadow can never beat the stick.</p>
+    </li>
+    <li class="idea reveal" id="u3-s6">
+      <a class="i-head" href="unit-03.html#s6"><span class="i-num">7</span><span class="i-t">Angles — the similarity dial</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(\cos\omega\) is the <strong>shadow of a length-1 arrow</strong>. Shrink both arrows to length 1, then drop the shadow of one onto the other: its length is \(\cos\omega\). Full shadow: same direction. No shadow: right angle. Negative shadow: opposite. Length never enters. Only direction does.</p></div>
+      <p class="i-one"><b>In one sentence:</b> cosine similarity is the agreement score with the lengths divided out, so it measures direction only: +1 same, 0 unrelated, −1 opposite.</p>
+    </li>
+    <li class="idea reveal" id="u3-s7">
+      <a class="i-head" href="unit-03.html#s7"><span class="i-num">8</span><span class="i-t">The high-dimension miracle</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>In 2D, two random arrows can point any which way. In 1000D, <strong>two random arrows are almost always at almost exactly 90°</strong>. The spread of the cosine shrinks like \(1/\sqrt{n}\): about 0.03 when \(n=1000\).</p>
+    <p>Why this matters: a 1000-number embedding space has room for millions of ideas that barely get in each other's way. It also means a cosine of 0.3 between two real embeddings is <em>huge</em>. Random chance would give about 0.</p></div>
+      <p class="i-one"><b>In one sentence:</b> in many dimensions, random arrows are almost always at right angles, so real similarity stands out clearly.</p>
+    </li>
+    <li class="idea reveal" id="u3-s8">
+      <a class="i-head" href="unit-03.html#s8"><span class="i-num">9</span><span class="i-t">Orthogonality is in the eye of the ruler</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>"At a right angle" is not a fact about two arrows alone. It is a fact about two arrows <em>and a ruler</em>.</strong> Measuring with \(A=\operatorname{diag}(2,1)\) is exactly the same as stretching the page sideways by \(\sqrt2\) and then measuring normally. Choosing the ruler to fit the problem is what feature weighting and the Mahalanobis distance do in machine learning. (Section 5's lens shows the same thing: press <strong>diag(2, 1)</strong>.)</p></div>
+      <p class="i-one"><b>In one sentence:</b> change the ruler and the same two arrows can stop being at a right angle.</p>
+    </li>
+    <li class="idea reveal" id="u3-s9">
+      <a class="i-head" href="unit-03.html#s9"><span class="i-num">10</span><span class="i-t">Orthonormal matrices — the motions that don't lie</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[A^TA=I\]</p>
+    <p>This one line is the test for an honest motion. Pass it, and every length, distance and angle is safe. The shear keeps the <em>area</em> (its determinant is 1), but it fails this test, and you can see its arrows slide off the measuring rings.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a matrix with \(A^TA=I\) turns or flips space like a stiff tile, so every length and angle survives.</p>
+    </li>
+    <li class="idea reveal" id="u3-s10">
+      <a class="i-head" href="unit-03.html#s10"><span class="i-num">11</span><span class="i-t">The shadow machine — projection</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>Any arrow = its shadow along a direction + a leftover at a right angle.</strong> The shadow amount is \(\alpha=\langle\mathbf{a},\mathbf{b}\rangle/\langle\mathbf{b},\mathbf{b}\rangle\). If the stick leans backwards (angle past 90°), \(\alpha\) turns negative and the shadow falls behind you. This single split is the heart of least squares, attention scores and PCA.</p></div>
+      <p class="i-one"><b>In one sentence:</b> to find a shadow, ask for the leftover to be at a right angle, and the amount comes out as \(\langle\mathbf{a},\mathbf{b}\rangle/\langle\mathbf{b},\mathbf{b}\rangle\).</p>
+    </li>
+    <li class="idea reveal" id="u3-s11">
+      <a class="i-head" href="unit-03.html#s11"><span class="i-num">12</span><span class="i-t">Gram–Schmidt — cleaning a messy basis</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>Gram–Schmidt = cut off the shadows, then resize to 1.</strong> Each new direction loses the parts that point along the clean ones, so what is left must be at a right angle to them. Any basis at all can be cleaned this way.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Gram–Schmidt turns any crooked basis into a square one by cutting off shadows and resizing to length 1.</p>
+    </li>
+  </ol>
+</section>
+<section class="u-block" data-p="1" id="unit-4">
+  <div class="u-head"><span class="u-num">04</span><h3><a href="unit-04.html">Determinants, Eigenvalues &amp; the Spectral Theorem</a></h3><a class="u-open" href="unit-04.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u4-s1">
+      <a class="i-head" href="unit-04.html#s1"><span class="i-num">1</span><span class="i-t">What survives the machine?</span><span class="i-go" aria-hidden="true">→</span></a>
+      
+      <p class="i-one"><b>In one sentence:</b> a matrix moves everything, but it has simple fingerprints: one number for how much it grows space, and special directions it only stretches.</p>
+    </li>
+    <li class="idea reveal" id="u4-s2">
+      <a class="i-head" href="unit-04.html#s2"><span class="i-num">2</span><span class="i-t">The determinant — how much a matrix grows area</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(\det A\) is the area of the tile that the unit square becomes. Its size says how much <em>every</em> area grows. A minus sign means the tile was flipped over. Zero means it was squashed flat, and then nothing can undo \(A\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> the determinant is the signed area of the tile the unit square becomes: its size is the growth, a minus means flipped, and zero means squashed flat for good.</p>
+    </li>
+    <li class="idea reveal" id="u4-s3">
+      <a class="i-head" href="unit-04.html#s3"><span class="i-num">3</span><span class="i-t">Computing it — small pieces and the lazy row</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A big determinant is a sum of small ones: entry × sign × minor, along any row or column. Pick the line with the most zeros. For big matrices, eliminate down to a triangle and multiply the diagonal. Every road gives the same number.</p></div>
+      <p class="i-one"><b>In one sentence:</b> break a big determinant into small signed pieces along the laziest line, or eliminate to a triangle and multiply the diagonal.</p>
+    </li>
+    <li class="idea reveal" id="u4-s4">
+      <a class="i-head" href="unit-04.html#s4"><span class="i-num">4</span><span class="i-t">The trace — a quick pulse check</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(\operatorname{tr}A\) is the sum of the diagonal. It ignores everything off the diagonal, and \(\operatorname{tr}(AB)=\operatorname{tr}(BA)\) always. Soon you will see it is also the sum of the eigenvalues.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the trace adds up the diagonal, ignores the order of a product, and turns out to be the sum of the eigenvalues.</p>
+    </li>
+    <li class="idea reveal" id="u4-s5">
+      <a class="i-head" href="unit-04.html#s5"><span class="i-num">5</span><span class="i-t">Eigenvectors — the directions a matrix cannot turn</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>An eigenvector is an arrow that \(A\) only stretches: \(A\mathbf{x}=\lambda\mathbf{x}\). The stretch number \(\lambda\) is its eigenvalue. To test a guess, multiply once and check if the answer is a multiple of the arrow.</p></div>
+      <p class="i-one"><b>In one sentence:</b> an eigenvector is a direction the matrix only stretches, and its eigenvalue says by how much: \(A\mathbf{x}=\lambda\mathbf{x}\).</p>
+    </li>
+    <li class="idea reveal" id="u4-s6">
+      <a class="i-head" href="unit-04.html#s6"><span class="i-num">6</span><span class="i-t">Hunting eigenvalues — the characteristic equation</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\det(A-\lambda I)=0\]</p>
+    <p>An eigenvalue is a setting of the dial \(\lambda\) where \(A-\lambda I\) squashes space flat. Solve this equation for the eigenvalues, then solve \((A-\lambda I)\mathbf{x}=\mathbf{0}\) for the directions. Check: sum = trace, product = determinant.</p></div>
+      <p class="i-one"><b>In one sentence:</b> eigenvalues are the values of \(\lambda\) where \(\det(A-\lambda I)=0\); they always add up to the trace and multiply to the determinant.</p>
+    </li>
+    <li class="idea reveal" id="u4-s7">
+      <a class="i-head" href="unit-04.html#s7"><span class="i-num">7</span><span class="i-t">The Spectral Theorem — symmetric matrices come apart cleanly</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[A=Q\Lambda Q^{\top}\]</p>
+    <p>A symmetric matrix is: turn into the grain, stretch each grain direction by its \(\lambda\), turn back. Its eigenvalues are real, its eigen-directions are at right angles, and undoing \(Q\) is just flipping it.</p></div>
+      <p class="i-one"><b>In one sentence:</b> every symmetric matrix has a hidden right-angle grain, so it is just turn, stretch along the grain, turn back: \(A=Q\Lambda Q^{\top}\).</p>
+    </li>
+    <li class="idea reveal" id="u4-s8">
+      <a class="i-head" href="unit-04.html#s8"><span class="i-num">8</span><span class="i-t">The theorem in 3D — a ball becomes an egg</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A symmetric 3×3 matrix turns the round ball into an egg. The egg's axes are the eigen-directions, their lengths are the \(|\lambda|\)'s, and the volume grows by \(|\lambda_1\lambda_2\lambda_3|=|\det A|\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> in 3D a symmetric matrix squeezes the ball into an egg along three right-angle axes, and the volume grows by the product of the three eigenvalues.</p>
+    </li>
+    <li class="idea reveal" id="u4-s9">
+      <a class="i-head" href="unit-04.html#s9"><span class="i-num">9</span><span class="i-t">When nothing lines up — turns and complex eigenvalues</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A pure turn has no real eigen-directions. Its eigenvalues are the twins \(\cos\theta\pm i\sin\theta\), which sit on the unit circle. The angle of \(\lambda\) is the turn, and the size of \(\lambda\) is the stretch.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a matrix that turns has no real eigen-directions, and its complex eigenvalues \(\cos\theta\pm i\sin\theta\) are the turn written as a number.</p>
+    </li>
+    <li class="idea reveal" id="u4-s10">
+      <a class="i-head" href="unit-04.html#s10"><span class="i-num">10</span><span class="i-t">Cholesky — the square root of a matrix</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[A=LL^{\top}\]</p>
+    <p>Fill in \(L\) from the top-left corner, one entry at a time. It only works when \(A\) is positive-definite, so it doubles as a test. And \(\mathbf{x}=L\mathbf{z}\) bends a round random cloud into one with covariance \(\Sigma\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> a positive-definite matrix has a triangular square root \(L\), found corner by corner, and \(L\) is exactly the lens that turns plain random numbers into realistic data.</p>
+    </li>
+    <li class="idea reveal" id="u4-s11">
+      <a class="i-head" href="unit-04.html#s11"><span class="i-num">11</span><span class="i-t">The fine print — missing directions, and the bridge to ML</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Different eigenvalues, or a symmetric matrix, guarantee a full set of eigen-directions. A repeated eigenvalue in a non-symmetric matrix can come up short (\(\operatorname{gm}&lt;\operatorname{am}\)). And the data matrix \(A^{\top}A\) is always in the safe, symmetric, positive-definite club.</p></div>
+      <p class="i-one"><b>In one sentence:</b> only non-symmetric matrices with repeated eigenvalues can run short of eigen-directions, and the data matrix \(A^{\top}A\) never does.</p>
+    </li>
+  </ol>
+</section>
+<section class="u-block" data-p="1" id="unit-5">
+  <div class="u-head"><span class="u-num">05</span><h3><a href="unit-05.html">Matrix Decompositions &amp; SVD</a></h3><a class="u-open" href="unit-05.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u5-s1">
+      <a class="i-head" href="unit-05.html#s1"><span class="i-num">1</span><span class="i-t">Taking things apart — the oldest trick in mathematics</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A matrix looks like a block of numbers. Underneath, it is a short list of simple moves. Writing \(A=(\text{turn})\,(\text{resize})\,(\text{turn})\) does not change \(A\) at all. It only lets you <em>see</em> what \(A\) does.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a decomposition rewrites a matrix as a few simple moves — turn, resize, turn — without changing what it does.</p>
+    </li>
+    <li class="idea reveal" id="u5-s2">
+      <a class="i-head" href="unit-05.html#s2"><span class="i-num">2</span><span class="i-t">The goal — diagonal matrices are easy</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A diagonal matrix is a resize tool: one handle per axis. Repeating, undoing and measuring area all work one number at a time: \(D^k=\operatorname{diag}(d_1^k,\dots,d_n^k)\). The only danger is a handle set to 0 — that axis is flattened for good.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a diagonal matrix is easy because each axis minds its own business — so this unit is a hunt for the diagonal hiding inside every matrix.</p>
+    </li>
+    <li class="idea reveal" id="u5-s3">
+      <a class="i-head" href="unit-05.html#s3"><span class="i-num">3</span><span class="i-t">Diagonalizable — same machine, better glasses</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(A=PDP^{-1}\) says: in its own favourite directions, \(A\) is just a resize tool. The columns of \(P\) are those directions (the eigenvectors). The diagonal of \(D\) says how much each is stretched (the eigenvalues).</p></div>
+      <p class="i-one"><b>In one sentence:</b> \(A=PDP^{-1}\) just says: put \(A\)'s eigenvectors in the columns of \(P\) and their eigenvalues in \(D\).</p>
+    </li>
+    <li class="idea reveal" id="u5-s4">
+      <a class="i-head" href="unit-05.html#s4"><span class="i-num">4</span><span class="i-t">Step 1 · Spectral — the perfect case, read a new way</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A symmetric matrix is an equalizer. It splits the input along directions at right angles, turns each part up by its own \(\lambda\), and adds them back: \(A=\sum_i\lambda_i\,\mathbf q_i\mathbf q_i^{\top}=Q\Lambda Q^{\top}\). Undoing the split is free, because \(Q^{-1}=Q^{\top}\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> a symmetric matrix is a set of perpendicular directions, each turned up by its own eigenvalue — nothing more.</p>
+    </li>
+    <li class="idea reveal" id="u5-s5">
+      <a class="i-head" href="unit-05.html#s5"><span class="i-num">5</span><span class="i-t">Step 2 · Eigendecomposition — the matrix's own language</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(A=PDP^{-1}\) is a translator: into the matrix's own directions, resize, and back. Its best trick is repetition: \(A^k=PD^kP^{-1}\). Powers of a matrix become powers of plain numbers.</p></div>
+      <p class="i-one"><b>In one sentence:</b> \(P^{-1}\) translates into the matrix's own language, \(D\) does a simple resize there, and \(P\) translates back.</p>
+    </li>
+    <li class="idea reveal" id="u5-s6">
+      <a class="i-head" href="unit-05.html#s6"><span class="i-num">6</span><span class="i-t">Where eigendecomposition fails — and the fix</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>An eigenvector is a direction the matrix does not turn. Eigendecomposition needs \(n\) independent ones for an \(n\times n\) matrix. The shear has one, the rotation has none, and a rectangular matrix cannot even ask the question.</p></div>
+      <p class="i-one"><b>In one sentence:</b> eigendecomposition fails whenever one set of axes must serve both input and output — the shear, the rotation, and every rectangular matrix.</p>
+    </li>
+    <li class="idea reveal" id="u5-s7">
+      <a class="i-head" href="unit-05.html#s7"><span class="i-num">7</span><span class="i-t">Step 3 · SVD — two frames, every matrix, no exceptions</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Every matrix is turn · resize · turn: \(A=U\Sigma V^{\top}\). There are two frames at right angles — \(V\) for inputs, \(U\) for outputs — and a list of stretches \(\sigma_1\ge\sigma_2\ge\dots\ge0\). No exceptions: not rotations, not shears, not rectangles.</p></div>
+      <p class="i-one"><b>In one sentence:</b> every matrix is turn · resize · turn — \(V^{\top}\), then \(\Sigma\), then \(U\) — no exceptions.</p>
+    </li>
+    <li class="idea reveal" id="u5-s8">
+      <a class="i-head" href="unit-05.html#s8"><span class="i-num">8</span><span class="i-t">Building U, Σ, V — the symmetric-matrix bridge</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>To find the SVD, take the round trip. The eigenvectors of \(A^{\top}A\) are the input frame \(V\), and \(\sigma_i=\sqrt{\lambda_i}\). The output frame comes free: \(\mathbf u_i=A\mathbf v_i/\sigma_i\). \(\Sigma\) always has the same shape as \(A\), padded with zeros.</p></div>
+      <p class="i-one"><b>In one sentence:</b> to break down \(A\), break down the symmetric round trip \(A^{\top}A\) instead: \(V\) and the σ's fall out, and \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\) finishes the job.</p>
+    </li>
+    <li class="idea reveal" id="u5-s9">
+      <a class="i-head" href="unit-05.html#s9"><span class="i-num">9</span><span class="i-t">Seeing a rectangular matrix — 2-D in, 3-D out</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A rectangular matrix maps one world into another. A \(3\times2\) matrix can only fill a flat sheet inside 3-D space. The SVD's \(\mathbf u_1,\mathbf u_2\) span that sheet, and \(\mathbf u_3\) is the direction it can never reach.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a rectangular matrix maps one world into another: its image is a flat slice of the bigger world, and \(\mathbf{u}_3\) is the direction it can never reach.</p>
+    </li>
+    <li class="idea reveal" id="u5-s10">
+      <a class="i-head" href="unit-05.html#s10"><span class="i-num">10</span><span class="i-t">The layer cake — low-rank approximation, live</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Sort the layers biggest first and keep the top \(k\): \(\hat A(k)=\sum_{i\le k}\sigma_i\mathbf u_i\mathbf v_i^{\top}\). No rank-\(k\) matrix does better, and the error is \(\sigma_{k+1}\). Each layer costs only \(m+n+1\) numbers — so this is compression, for photos and for tables of ratings alike.</p></div>
+      <p class="i-one"><b>In one sentence:</b> sort the layers biggest first and keep the top few — the best possible summary of any matrix, whether it is a photograph or a table of tastes.</p>
+    </li>
+    <li class="idea reveal" id="u5-s11">
+      <a class="i-head" href="unit-05.html#s11"><span class="i-num">11</span><span class="i-t">The spectral norm — and the family portrait</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(\sigma_1\) is the biggest boost a matrix can give: \(\|A\|_2=\sigma_1\). The ratio \(\sigma_1/\sigma_2\) says how uneven the boosts are. When it is huge, undoing the matrix blows up tiny errors.</p></div>
+      <p class="i-one"><b>In one sentence:</b> \(\sigma_1\) is the loudest a matrix can ever be, and \(\sigma_1/\sigma_2\) says how uneven its boosts are.</p>
+    </li>
+    <li class="idea reveal" id="u5-s12">
+      <a class="i-head" href="unit-05.html#s12"><span class="i-num">12</span><span class="i-t">The whole story, in five lines</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>Every matrix is turn · resize · turn.</strong> Sort the stretches biggest first and keep the top few, and you have the best short summary a matrix can have. Photo compression, noise removal, PCA and recommenders are all that one move.</p></div>
+      <p class="i-one"><b>In one sentence:</b> find the two frames and the sorted stretches, and any matrix becomes simple enough to read, repeat, undo and compress.</p>
+    </li>
+  </ol>
+</section>
+<h2 class="part-h" data-p="2" id="part-2"><span class="roman">II</span>Part II · Calculus &amp; Differentiation</h2>
+<section class="u-block" data-p="2" id="unit-6">
+  <div class="u-head"><span class="u-num">06</span><h3><a href="unit-06.html">Differentiation</a></h3><a class="u-open" href="unit-06.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u6-s1">
+      <a class="i-head" href="unit-06.html#s1"><span class="i-num">1</span><span class="i-t">You are standing in fog, and you want to get down</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The slope tells you which way is up. So you step the <strong>other</strong> way. Slope positive? Step left. Slope negative? Step right.</p>
+    <p>\[w_{\text{new}} = w - \eta\,L'(w)\]</p>
+    <p>Here \(L'(w)\) (read it: "L-prime of w") is the slope where you stand. \(\eta\) (read it: "eta") is a small number that sets your step size. The minus sign is the "go the other way" part.</p></div>
+      <p class="i-one"><b>In one sentence:</b> training is walking downhill in fog: you cannot see the valley, but you can always feel the slope under your feet, and that is enough.</p>
+    </li>
+    <li class="idea reveal" id="u6-s2">
+      <a class="i-head" href="unit-06.html#s2"><span class="i-num">2</span><span class="i-t">The derivative, built from a shrinking triangle</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\frac{df}{dx}=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}\]</p>
+    <p>The derivative is rise ÷ run between two points, as the two points squeeze into one. It never divides by zero. It only asks what the ratio gets close to.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the derivative is the slope of a two-point line as the two points squeeze into one, and it exists exactly where the curve looks straight up close.</p>
+    </li>
+    <li class="idea reveal" id="u6-s3">
+      <a class="i-head" href="unit-06.html#s3"><span class="i-num">3</span><span class="i-t">Four rules, and the only one that really matters</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\frac{d}{dx}\,g\big(f(x)\big)=g'\big(f(x)\big)\cdot f'(x)\]</p>
+    <p>Machines in a row: their rates multiply. Work out the outer rate at the inner value, then multiply by the inner rate. A deep network is a long row of machines, so this one rule runs all of machine learning.</p></div>
+      <p class="i-one"><b>In one sentence:</b> rates in a row multiply, and a deep network is a long row, which is why the chain rule runs machine learning.</p>
+    </li>
+    <li class="idea reveal" id="u6-s4">
+      <a class="i-head" href="unit-06.html#s4"><span class="i-num">4</span><span class="i-t">Taylor — rebuilding a whole function out of its derivatives</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[T_n(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(x_0)}{2!}(x-x_0)^2+\cdots\]</p>
+    <p>Each term copies one more derivative at the anchor: first the value, then the slope, then the bend. Near the anchor the copy is excellent. Far away it can fail, so Taylor is a local promise.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a Taylor polynomial copies a function's value, slope, bend and more at one point, and the \(k!\) keeps the copies from disturbing each other.</p>
+    </li>
+    <li class="idea reveal" id="u6-s5">
+      <a class="i-head" href="unit-06.html#s5"><span class="i-num">5</span><span class="i-t">Many knobs at once — partial derivatives</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\frac{\partial f}{\partial x}=\text{the slope when only } x \text{ moves}\]</p>
+    <p>Freeze every other input, then differentiate as usual. Each partial derivative is the slope of one slice through the landscape.</p></div>
+      <p class="i-one"><b>In one sentence:</b> to take a partial derivative, freeze every other input and differentiate as usual.</p>
+    </li>
+    <li class="idea reveal" id="u6-s6">
+      <a class="i-head" href="unit-06.html#s6"><span class="i-num">6</span><span class="i-t">The gradient — a compass that always points uphill</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\mathbf{w}_{\text{new}}=\mathbf{w}_{\text{old}}-\eta\,\nabla L(\mathbf{w})\]</p>
+    <p>The gradient points steepest uphill, and its length says how steep. So minus the gradient is steepest downhill. This one line, repeated, is how almost every model in machine learning is trained.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the gradient puts all the partial derivatives in one arrow: it points steepest uphill, its length is the steepness, and minus it is the direction of training.</p>
+    </li>
+    <li class="idea reveal" id="u6-s7">
+      <a class="i-head" href="unit-06.html#s7"><span class="i-num">7</span><span class="i-t">The five shapes a derivative can take</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\text{shape of the derivative}=(\text{number of outputs})\times(\text{number of inputs})\]</p>
+    <p>Two rows of the table do almost all the work in machine learning. The <strong>gradient</strong>: the loss is one number and the weights are a list, so the derivative is a list shaped like the weights. That is why you can subtract it from them. The <strong>Jacobian</strong>: a layer turns a list into a list, so its derivative is a matrix.</p></div>
+      <p class="i-one"><b>In one sentence:</b> count before you compute: one sensitivity per (output, input) pair, with outputs as rows and inputs as columns.</p>
+    </li>
+    <li class="idea reveal" id="u6-s8">
+      <a class="i-head" href="unit-06.html#s8"><span class="i-num">8</span><span class="i-t">The Jacobian — a local rulebook for a curved map</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[J_{ij}=\frac{\partial f_i}{\partial x_j}\]</p>
+    <p>Row \(i\), column \(j\): how much output \(i\) moves when input \(j\) is nudged. Zoom in on any smooth map and it becomes this matrix.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the Jacobian is the matrix a curved map turns into when you zoom in close.</p>
+    </li>
+    <li class="idea reveal" id="u6-s9">
+      <a class="i-head" href="unit-06.html#s9"><span class="i-num">9</span><span class="i-t">The Jacobian determinant — area, invertibility, one warning</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\text{area after}\approx|\det\mathbf J|\times\text{area before}\]</p>
+    <p>\(\det\mathbf J\) is the local area factor. Not zero means you can undo the map near that point. But being undoable near every point still allows the map to wrap around and repeat.</p></div>
+      <p class="i-one"><b>In one sentence:</b> \(\det\mathbf J\) is the local area factor: non-zero means you can undo the map nearby, but not always everywhere at once.</p>
+    </li>
+    <li class="idea reveal" id="u6-s10">
+      <a class="i-head" href="unit-06.html#s10"><span class="i-num">10</span><span class="i-t">The chain rule becomes matrix multiplication — and that is backpropagation</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\frac{\partial L}{\partial \mathbf x}=\underbrace{\frac{\partial L}{\partial \mathbf a}}_{\text{row}}\;\mathbf J_{\tanh}\;\mathbf J_{W}\]</p>
+    <p>The chain rule for lists is matrix multiplication, later layer on the left. Backpropagation just multiplies from the loss end, so it only ever carries a thin row.</p></div>
+      <p class="i-one"><b>In one sentence:</b> backpropagation is the chain rule as matrix multiplication, done from the loss end backwards so that nothing bigger than a row is ever built.</p>
+    </li>
+    <li class="idea reveal" id="u6-s11">
+      <a class="i-head" href="unit-06.html#s11"><span class="i-num">11</span><span class="i-t">Walking down the valley</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\mathbf w\leftarrow\mathbf w-\eta\,\nabla L(\mathbf w)\]</p>
+    <p>The gradient says which way. The learning rate \(\eta\) says how far to trust it. Too small and you crawl. Too big and you overshoot, again and again.</p></div>
+      <p class="i-one"><b>In one sentence:</b> gradient descent is \(\mathbf w \leftarrow \mathbf w-\eta\nabla L\): the gradient picks the direction, and \(\eta\) decides how far to trust it.</p>
+    </li>
+    <li class="idea reveal" id="u6-s12">
+      <a class="i-head" href="unit-06.html#s12"><span class="i-num">12</span><span class="i-t">Fine print worth knowing</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\text{slope from the left}=\text{slope from the right}\ \Longleftrightarrow\ \text{a derivative exists}\]</p>
+    <p>At a corner the two sides disagree, so there is no derivative. Software just picks a value in between. Rows versus columns is only a habit, but the order of matrix factors is a rule.</p></div>
+      <p class="i-one"><b>In one sentence:</b> rows versus columns is a habit, the order of matrix factors is a rule, a corner has no derivative, and the giant four-way table is used but never stored.</p>
+    </li>
+    <li class="idea reveal" id="u6-s13">
+      <a class="i-head" href="unit-06.html#s13"><span class="i-num">13</span><span class="i-t">What to carry forward</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>If you keep one habit from this unit, make it <strong>counting shapes before computing anything</strong>. Outputs give rows, inputs give columns. A gradient has the same shape as the thing you differentiate by. In a product, the inner sizes must match. Most matrix-calculus mistakes are shape mistakes, and counting catches them before any algebra.</p></div>
+      <p class="i-one"><b>In one sentence:</b> nudge, measure, divide, shrink: that one move, kept tidy with shapes, is all of differentiation for machine learning.</p>
+    </li>
+  </ol>
+</section>
+<section class="u-block" data-p="2" id="unit-7">
+  <div class="u-head"><span class="u-num">07</span><h3><a href="unit-07.html">Backpropagation &amp; Automatic Differentiation</a></h3><a class="u-open" href="unit-07.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u7-s1">
+      <a class="i-head" href="unit-07.html#s1"><span class="i-num">1</span><span class="i-t">The million-knob problem</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Training needs one slope per knob, at every step. So the real question is not "what is the slope?" but "how do we get a million slopes cheaply?"</p>
+    <p>Backpropagation is the answer: tiny steps, and blame sent backwards.</p></div>
+      <p class="i-one"><b>In one sentence:</b> training needs the loss's slope for every knob at every step, and finding them one knob at a time would cost one run of the network per knob.</p>
+    </li>
+    <li class="idea reveal" id="u7-s2">
+      <a class="i-head" href="unit-07.html#s2"><span class="i-num">2</span><span class="i-t">Baby steps — the computation graph</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Any function, however scary, is a chain of easy steps. Forward, each step computes a value. Backward, each step receives a blame \(\bar v=\partial f/\partial v\), starting from \(\bar f=1\).</p>
+    <p>The blame that reaches \(x\) at the far left <em>is</em> the answer \(df/dx\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> write the function as a chain of easy steps; values flow forward, and blame \(\bar v=\partial f/\partial v\) flows backward from \(\bar f=1\) to every step.</p>
+    </li>
+    <li class="idea reveal" id="u7-s3">
+      <a class="i-head" href="unit-07.html#s3"><span class="i-num">3</span><span class="i-t">The whole algorithm is two rules</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\frac{\partial f}{\partial x}=\sum_{\text{routes}}\ \prod_{\text{arrows on the route}}\big(\text{small slope}\big)\]</p>
+    <p>Multiply along each route. Add the routes. Backprop does exactly this, and shares the work so that no route is walked twice.</p></div>
+      <p class="i-one"><b>In one sentence:</b> backpropagation is two rules — multiply the small slopes along each path, add the paths — done so that no path is walked twice.</p>
+    </li>
+    <li class="idea reveal" id="u7-sproof">
+      <a class="i-head" href="unit-07.html#sproof"><span class="i-num">4</span><span class="i-t">Why you can trust the two rules — the chain rule, proved</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A derivative is a promise: "near here, the function is a straight line plus a leftover that fades fast". Chain two promises, and the slopes multiply. Let several routes run side by side, and their products add.</p>
+    <p>And one entry of a matrix product, \(\sum_k (J_G)_{ik}(J_F)_{kj}\), is both rules written at once.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a derivative is a "straight line plus fading leftover" promise; chaining promises multiplies slopes, side-by-side routes add, and row-times-column is both rules at once.</p>
+    </li>
+    <li class="idea reveal" id="u7-s4">
+      <a class="i-head" href="unit-07.html#s4"><span class="i-num">5</span><span class="i-t">The recipe, written once and for all</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Set \(\bar f=1\). Walk from right to left. At each value, add up (child's blame × child's small slope) over all its children.</p>
+    <p>One sweep, and every value in the graph — every input, every weight — holds its slope.</p></div>
+      <p class="i-one"><b>In one sentence:</b> set \(\bar f=1\), then let every value send each parent its own blame times a small slope — one right-to-left sweep prices every knob.</p>
+    </li>
+    <li class="idea reveal" id="u7-s5">
+      <a class="i-head" href="unit-07.html#s5"><span class="i-num">6</span><span class="i-t">One neuron, trained by your own hands</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(\delta=(a-y)(1-a^2)\): the miss, times how steep the squash is. Every knob that feeds \(z\) then gets \(\delta\) times one number: \(x\) for the weight, \(1\) for the bias.</p>
+    <p>Step each knob against its slope, repeat, and the loss really falls. That is training, complete.</p></div>
+      <p class="i-one"><b>In one sentence:</b> compute the blame \(\delta=\partial L/\partial z\) once, and every knob feeding \(z\) reads its slope off it — then step downhill and the loss really falls.</p>
+    </li>
+    <li class="idea reveal" id="u7-s6">
+      <a class="i-head" href="unit-07.html#s6"><span class="i-num">7</span><span class="i-t">A whole layer at once — backprop with matrices</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Through the squash, scale each neuron's blame by its own slope. Then weights get \(\boldsymbol\delta^{(Z)}\mathbf x^\top\), biases get \(\boldsymbol\delta^{(Z)}\), and the layer below gets \(A^\top\boldsymbol\delta^{(Z)}\).</p>
+    <p>Repeat, layer after layer. That is the inner loop of all of deep learning.</p></div>
+      <p class="i-one"><b>In one sentence:</b> scale the blame by each neuron's slope, then weights get \(\boldsymbol\delta^{(Z)}\mathbf x^{\top}\), biases get \(\boldsymbol\delta^{(Z)}\), and the layer below gets \(A^{\top}\boldsymbol\delta^{(Z)}\) — four lines, the inner loop of deep learning.</p>
+    </li>
+    <li class="idea reveal" id="u7-s7">
+      <a class="i-head" href="unit-07.html#s7"><span class="i-num">8</span><span class="i-t">The gradient cookbook — five rules you'll use forever</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Dot product → the other vector. \(\mathbf a^\top X\mathbf b\) → the outer product \(\mathbf a\mathbf b^\top\). \(\mathbf x^\top B\mathbf x\) → \(\mathbf x^\top(B+B^\top)\), because \(\mathbf x\) appears twice.</p>
+    <p>When in doubt, count where the variable appears, and add one term for each appearance.</p></div>
+      <p class="i-one"><b>In one sentence:</b> five recipes — dot product, outer product, the \(B+B^\top\) doubling and least squares — give almost every small slope a real model needs.</p>
+    </li>
+    <li class="idea reveal" id="u7-s8">
+      <a class="i-head" href="unit-07.html#s8"><span class="i-num">9</span><span class="i-t">Why it's so cheap — one sweep, everything reused</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Every layer's slope is the same shared start, times one new factor. Carry that start — the blame \(\boldsymbol\delta\) — from the loss backwards, and each factor is used once.</p>
+    <p>So one backward sweep costs about as much as one forward pass, however many knobs there are.</p></div>
+      <p class="i-one"><b>In one sentence:</b> all the layer slopes share one long start — carry it once, from the loss end, and the whole set costs a single sweep.</p>
+    </li>
+    <li class="idea reveal" id="u7-s9">
+      <a class="i-head" href="unit-07.html#s9"><span class="i-num">10</span><span class="i-t">Linearization — the slope as a stand-in for the function</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}(\mathbf x-\mathbf x_0)\) is the "flat Earth" version of \(f\) near \(\mathbf x_0\).</p>
+    <p>Its error grows like the <em>square</em> of the distance: twice as far, about four times the error. Every gradient-descent step leans on this promise.</p></div>
+      <p class="i-one"><b>In one sentence:</b> \(f(\mathbf x_0)+\nabla f(\mathbf x_0)^{\top}(\mathbf x-\mathbf x_0)\) is the best straight-line stand-in near \(\mathbf x_0\) — the promise every gradient-descent step relies on.</p>
+    </li>
+    <li class="idea reveal" id="u7-s10">
+      <a class="i-head" href="unit-07.html#s10"><span class="i-num">11</span><span class="i-t">Fine print worth knowing</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The nudge estimate's error is (curve error, shrinking like \(h^2\)) + (rounding noise, growing like \(1/h\)). So there is a best \(h\) — about \(10^{-6}\) here — and even there the answer is off by about \(10^{-10}\).</p>
+    <p>Autodiff has neither problem. Nudging survives only as a <strong>gradient checker</strong>: a quick test that a hand-written backward pass is right.</p></div>
+      <p class="i-one"><b>In one sentence:</b> autodiff is exact like the paper method and cheap like one run of the program, which is why nudging survives only as a checker.</p>
+    </li>
+    <li class="idea reveal" id="u7-s11">
+      <a class="i-head" href="unit-07.html#s11"><span class="i-num">12</span><span class="i-t">What to carry forward</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>Blame flows backwards through the same graph that computed the value.</strong> Multiply along paths, add at forks, and reuse every shared piece. Then a million slopes cost one sweep.</p></div>
+      <p class="i-one"><b>In one sentence:</b> <code>loss.backward()</code> is this unit run by a for-loop — one backward sweep through the graph hands every knob its slope.</p>
+    </li>
+  </ol>
+</section>
+<section class="u-block" data-p="2" id="unit-8">
+  <div class="u-head"><span class="u-num">08</span><h3><a href="unit-08.html">Taylor &amp; MacLaurin Series</a></h3><a class="u-open" href="unit-08.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u8-s1">
+      <a class="i-head" href="unit-08.html#s1"><span class="i-num">1</span><span class="i-t">Every smooth curve is secretly a polynomial — up close</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A Taylor polynomial is a copy built from a few facts at one spot: height, slope, bend, and so on. Each extra fact keeps the copy close for longer. What we still need is a <strong>promise</strong> about how close.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a Taylor polynomial copies a curve's height, slope and bend at one spot, and this unit proves why that copy works and how far it can be trusted.</p>
+    </li>
+    <li class="idea reveal" id="u8-s2">
+      <a class="i-head" href="unit-08.html#s2"><span class="i-num">2</span><span class="i-t">The flat spot — Rolle's theorem</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>If a smooth trail starts and ends at the same height, it has a level spot in between: \(f'(c)=0\). All it needs is no gaps and no sharp corners. This one small fact will build the whole unit.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a smooth trail with the same height at both ends must be level somewhere in between, and a sharp corner cancels the promise.</p>
+    </li>
+    <li class="idea reveal" id="u8-s3">
+      <a class="i-head" href="unit-08.html#s3"><span class="i-num">3</span><span class="i-t">Average equals instantaneous — the mean value theorem</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Somewhere, the slope equals the average slope: \(f'(c)=\dfrac{f(b)-f(a)}{b-a}\). Rearranged, \(f(b)=f(a)+f'(c)(b-a)\). That is the straight-line copy, made exact by one secret point.</p></div>
+      <p class="i-one"><b>In one sentence:</b> somewhere on the way your instant speed equals your average speed, and written as a formula this is already a straight-line copy with no error.</p>
+    </li>
+    <li class="idea reveal" id="u8-s4">
+      <a class="i-head" href="unit-08.html#s4"><span class="i-num">4</span><span class="i-t">The Rolle ladder — one flat spot per rung</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Each Rolle step turns two zeros into one new zero, one derivative lower. If \(F\) is zero at \(b\) and flat to order \(n-1\) at \(a\), the zeros pass all the way down: \(F^{(n)}(c)=0\) for some \(c\) in between.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a function that is very flat at \(a\) and zero at \(b\) passes one zero down per derivative, until its \(n\)-th derivative is zero somewhere in between.</p>
+    </li>
+    <li class="idea reveal" id="u8-s5">
+      <a class="i-head" href="unit-08.html#s5"><span class="i-num">5</span><span class="i-t">Taylor's theorem, built by hand</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Every smooth function is its copy plus one leftover term: \(f(x)=P_{n-1}(x)+\dfrac{f^{(n)}(c)}{n!}(x-a)^n\), exactly. The leftover looks like the next term, measured at a secret point. And the whole proof is Rolle, used again and again.</p></div>
+      <p class="i-one"><b>In one sentence:</b> make the gap flat at \(a\) and zero at \(b\), run the Rolle ladder, and the leftover turns out to be the next term measured at a secret point.</p>
+    </li>
+    <li class="idea reveal" id="u8-s6">
+      <a class="i-head" href="unit-08.html#s6"><span class="i-num">6</span><span class="i-t">How big is the error? — the remainder in your hands</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>You never need the secret point. If \(|f^{(n)}|\le M\) on the stretch, then \(|R_n|\le\dfrac{M}{n!}|x-a|^n\). A worst case turns the exact leftover into a guarantee you can compute.</p></div>
+      <p class="i-one"><b>In one sentence:</b> you never learn \(c\), but a worst-case size \(M\) for the next derivative turns the leftover into a firm promise, \(|R_n|\le M|x-a|^n/n!\).</p>
+    </li>
+    <li class="idea reveal" id="u8-s7">
+      <a class="i-head" href="unit-08.html#s7"><span class="i-num">7</span><span class="i-t">MacLaurin's series — and why the factorial always wins</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Each new term is the previous one times \(\dfrac{|x|}{n+1}\). Once \(n+1\) is bigger than \(|x|\), every step shrinks the term. So the series for \(e^x\), \(\sin x\) and \(\cos x\) can be trusted at <em>every</em> \(x\). For \(\ln(1+x)\) there is no factorial, and past \(x=1\) it fails.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a MacLaurin series is Taylor at \(0\), and the series for \(e^x\), \(\sin x\) and \(\cos x\) always settle down because \(n!\) eventually grows faster than any \(|x|^n\).</p>
+    </li>
+    <li class="idea reveal" id="u8-s8">
+      <a class="i-head" href="unit-08.html#s8"><span class="i-num">8</span><span class="i-t">Two variables — walk along a line and it is one variable again</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Walk in a straight line and a landscape becomes a one-variable curve \(F(t)\). Its bend is \(h^2f_{xx}+2hk\,f_{xy}+k^2f_{yy}\). Those three second slopes are the landscape's curvature, and they are where the Hessian is born.</p></div>
+      <p class="i-one"><b>In one sentence:</b> along a straight walk the landscape is a one-variable curve, and its bend \(h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\) is where the Hessian comes from.</p>
+    </li>
+    <li class="idea reveal" id="u8-s9">
+      <a class="i-head" href="unit-08.html#s9"><span class="i-num">9</span><span class="i-t">At a flat point, the second-order term decides</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>At a level spot, the height change after a small step is \(\tfrac12Q\). If \(Q\) is always positive, it's a valley; always negative, a peak; both, a pass. The three second slopes at the spot decide which.</p></div>
+      <p class="i-one"><b>In one sentence:</b> at a level spot the slope part is zero, so the bend \(Q\) alone decides whether you are in a valley, on a peak, or at a pass.</p>
+    </li>
+    <li class="idea reveal" id="u8-smat">
+      <a class="i-head" href="unit-08.html#smat"><span class="i-num">10</span><span class="i-t">Taylor in matrix form — and how to remember it</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\(f(\mathbf x_0+\mathbf h)\approx f(\mathbf x_0)+\nabla f^{\top}\mathbf h+\tfrac12\mathbf h^{\top}H\mathbf h\). It is the one-variable formula with each piece moved up a level: number, list, table. The step goes in once for the list and twice, like bread, for the table.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the Hessian packs the bends into a table, and the step sandwiches it, so many-variable Taylor reads exactly like the one-variable formula.</p>
+    </li>
+    <li class="idea reveal" id="u8-s10">
+      <a class="i-head" href="unit-08.html#s10"><span class="i-num">11</span><span class="i-t">The judge of extrema — the Hessian</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The Hessian is the judge. Work out \(D=f_{xx}f_{yy}-f_{xy}^2\): positive with \(f_{xx}>0\) is a bowl, positive with \(f_{xx}<0\) is an upside-down bowl, negative is a saddle. The eigenvalues say the same thing: they are the strongest and weakest bends, and \(D=\lambda_1\lambda_2\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> the Hessian's discriminant, its corner determinants and its eigenvalues are three ways to read one verdict — bowl, upside-down bowl, or saddle.</p>
+    </li>
+    <li class="idea reveal" id="u8-s11">
+      <a class="i-head" href="unit-08.html#s11"><span class="i-num">12</span><span class="i-t">The judge at work — six landscapes</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Find every level spot. Work out the Hessian at <em>each one</em>, because it changes from place to place. Read \(D\), then \(f_{xx}\). And when \(D=0\), the bends have run out of evidence, so look further.</p></div>
+      <p class="i-one"><b>In one sentence:</b> find every level spot, judge each one with its own Hessian, and when \(D=0\) admit that the bends cannot decide.</p>
+    </li>
+    <li class="idea reveal" id="u8-s12">
+      <a class="i-head" href="unit-08.html#s12"><span class="i-num">13</span><span class="i-t">Why a learning machine cares — curvature, conditioning, and the saddle problem</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Near its bottom, a loss is its own quadratic clone. The Hessian's eigenvalues say how narrow the valley is, and so how hard plain descent will be. Its inverse turns the clone into Newton's one jump, \(-H^{-1}\nabla f\), which is powerful but costly for millions of weights.</p></div>
+      <p class="i-one"><b>In one sentence:</b> near its bottom a loss is its own quadratic clone, so the Hessian decides how hard training is, and its inverse gives Newton's one-jump step.</p>
+    </li>
+    <li class="idea reveal" id="u8-s13">
+      <a class="i-head" href="unit-08.html#s13"><span class="i-num">14</span><span class="i-t">What to carry forward</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p><strong>Every smooth function is, up close, a polynomial, and Taylor's theorem tells you exactly how far "up close" reaches.</strong> The leftover \(f^{(n)}(c)(x-a)^n/n!\) came from a ladder of level spots. In two variables, the bend part is a table, the Hessian, whose signs say whether a level spot is the bottom of a bowl. When a training run says it has found a minimum, this unit is how you can check.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Taylor copies a function near a point with a guaranteed error, and the Hessian in that copy judges every valley a learning machine finds.</p>
+    </li>
+  </ol>
+</section>
+<h2 class="part-h" data-p="3" id="part-3"><span class="roman">III</span>Part III · Optimization</h2>
+<section class="u-block" data-p="3" id="unit-9">
+  <div class="u-head"><span class="u-num">09</span><h3><a href="unit-09.html">Gradient Descent</a></h3><a class="u-open" href="unit-09.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u9-s1">
+      <a class="i-head" href="unit-09.html#s1"><span class="i-num">1</span><span class="i-t">Downhill in the fog</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\text{new}=\text{old}-\gamma\,\nabla f(\text{old})\]</p>
+    <p>Read it: new position equals old position, minus the stride times the uphill arrow at the old position. Take the arrow, turn it around, shrink it to your stride, and step. This one line is the picture you just played with, written in symbols.</p></div>
+      <p class="i-one"><b>In one sentence:</b> learning is a walk in fog — feel the slope, step the other way, repeat — which works in any number of dimensions, but finds only the valley below where you started.</p>
+    </li>
+    <li class="idea reveal" id="u9-s2">
+      <a class="i-head" href="unit-09.html#s2"><span class="i-num">2</span><span class="i-t">Why there is a landscape at all</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Wrongness is the sum of squared misses, \(L=\sum_i\big(y_i-(ax_i+b)\big)^2\). Its slope, \(\nabla L=\big(-2\sum x_ir_i,\,-2\sum r_i\big)\), just says "move the line toward the points". If the misses are mostly positive, push the line up.</p></div>
+      <p class="i-one"><b>In one sentence:</b> say what "wrong" means, and a landscape appears by itself — one height for every setting of the knobs — with a slope that says which way the line should move.</p>
+    </li>
+    <li class="idea reveal" id="u9-s3">
+      <a class="i-head" href="unit-09.html#s3"><span class="i-num">3</span><span class="i-t">Where the walk ends — flat ground comes in three kinds</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The walk stops where the slope is zero, \(f'(x)=0\). The bend decides what kind of stop it is: \(f''&gt;0\) is a valley, \(f''&lt;0\) is a hilltop. And the valley you reach is the one below your start, not always the deepest.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the walk stops on level ground; the bend tells a valley from a hilltop or a saddle; and you land in the valley below where you started.</p>
+    </li>
+    <li class="idea reveal" id="u9-s4">
+      <a class="i-head" href="unit-09.html#s4"><span class="i-num">4</span><span class="i-t">The rule, and the trench that makes it zig-zag</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The rule is \(\mathbf x_{\text{new}}=\mathbf x-\gamma\nabla f(\mathbf x)\). On a bowl the slope is a spring, \(\nabla f=A\mathbf x+\mathbf b\), and the bottom is \(\mathbf x^*=-A^{-1}\mathbf b\). A trench has one stiff spring and one soft one, so a single stride bounces across it while crawling along it.</p></div>
+      <p class="i-one"><b>In one sentence:</b> on a bowl the slope is a spring, \(\nabla f=A\mathbf x+\mathbf b\); a trench has a stiff spring and a soft one, so one stride bounces across it while it crawls along it.</p>
+    </li>
+    <li class="idea reveal" id="u9-s5">
+      <a class="i-head" href="unit-09.html#s5"><span class="i-num">5</span><span class="i-t">How long a step — the bouncing ball</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Each step multiplies the distance to the bottom by \(1-\gamma\lambda\). Keep that between \(-1\) and \(1\), which means \(\gamma&lt;2/\lambda\). With many directions, the stiffest one (\(\lambda_{\max}\)) sets the limit for all, and the softest one sets how slowly you crawl.</p></div>
+      <p class="i-one"><b>In one sentence:</b> each step multiplies the distance to the bottom by \(1-\gamma\lambda\), so keep \(\gamma&lt;2/\lambda_{\max}\) — and the gap between the stiffest and softest directions is what makes the walk zig-zag.</p>
+    </li>
+    <li class="idea reveal" id="u9-s6">
+      <a class="i-head" href="unit-09.html#s6"><span class="i-num">6</span><span class="i-t">Let the ground choose the stride — line search</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Line search fixes the direction \(-\mathbf g\), then slides to the bottom of \(h(\gamma)=f(\mathbf x-\gamma\mathbf g)\). At the best stride, the new slope is at a right angle to the step. On a bowl, that stride is \(\gamma^*=\mathbf g^{\top}\mathbf g/\mathbf g^{\top}A\mathbf g\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> slide along the downhill line until the ground stops dropping — there the new slope is at a right angle to your step — and on a bowl the best stride is \(\mathbf g^{\top}\mathbf g/\mathbf g^{\top}A\mathbf g\).</p>
+    </li>
+    <li class="idea reveal" id="u9-s7">
+      <a class="i-head" href="unit-09.html#s7"><span class="i-num">7</span><span class="i-t">Finding the bottom of one line — higher or lower?</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Trap the bottom in a bracket and squeeze. Halving leaves width \((b-a)/2^k\) after \(k\) rounds; golden cuts shrink it by \(0.618\) per round and reuse a probe. Or skip the hunt: Armijo accepts any stride with \(h(\alpha)\le h(0)+c\,\alpha\,h'(0)\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> when there is no formula for the best stride, trap it in a bracket and squeeze — or, like real training, take Armijo's "good enough" stride.</p>
+    </li>
+    <li class="idea reveal" id="u9-s8">
+      <a class="i-head" href="unit-09.html#s8"><span class="i-num">8</span><span class="i-t">Bold early, careful late — schedules and the bold driver</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Start bold, finish careful. On a clock: \(\alpha_0e^{-kt}\), \(\alpha_0/(1+kt)\), or divide by a constant every few epochs. By feel: the bold driver multiplies the rate by \(1.05\) after a good step, and undoes and halves after a bad one.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the learning rate is a speed that should drop as you near the bottom — on a timer (exponential, inverse, step) or by feel (the bold driver).</p>
+    </li>
+    <li class="idea reveal" id="u9-s9">
+      <a class="i-head" href="unit-09.html#s9"><span class="i-num">9</span><span class="i-t">Is my compass even right? — the known weight</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>To audit a slope, nudge and divide. Forward, \(\dfrac{J(w+\Delta)-J(w)}{\Delta}\), is off by about \(\tfrac12J''\Delta\). Central, \(\dfrac{J(w+\Delta)-J(w-\Delta)}{2\Delta}\), is off by about \(\tfrac16J'''\Delta^2\). So use central, with a small but not tiny \(\Delta\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> check a coded slope by nudging a few knobs; the two-way nudge is far more accurate, until the nudge is so tiny that rounding takes over.</p>
+    </li>
+    <li class="idea reveal" id="u9-svar">
+      <a class="i-head" href="unit-09.html#svar"><span class="i-num">10</span><span class="i-t">Three ways to walk — batch, minibatch, stochastic</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The loss is a sum over examples, so its slope is too. A random handful gives \(\nabla J(S)=\sum_{i\in S}\nabla L_i\); scaled by \(N/|S|\), it is right on average, and its noise shrinks like \(1/\sqrt{|S|}\). Step on it: \(\mathbf w\leftarrow\mathbf w-\alpha\,\nabla J(S)\). That is minibatch gradient descent; \(|S|=1\) is stochastic, and \(|S|=N\) is batch.</p></div>
+      <p class="i-one"><b>In one sentence:</b> batch, minibatch and stochastic differ only in how much data they read per step; a random spoonful is right on average, so per data read the noisy walkers win — which is why deep learning uses minibatches.</p>
+    </li>
+    <li class="idea reveal" id="u9-s10">
+      <a class="i-head" href="unit-09.html#s10"><span class="i-num">11</span><span class="i-t">Noise, tamed — and noise as a friend</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>With a noisy slope and a fixed stride, the walker ends in a cloud around the bottom whose size grows with the stride: its variance is about \(\gamma\sigma^2/2\lambda\), where \(\sigma\) is the size of the noise. A shrinking stride with \(\sum\gamma_t=\infty\) and \(\sum\gamma_t^2&lt;\infty\) closes the cloud. The same shake can lift a walker out of a shallow dip.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a noisy slope is a shaking hand — a fixed stride leaves a jitter cloud, a shrinking stride closes it, and the same shake can hop a walker out of a shallow dip.</p>
+    </li>
+    <li class="idea reveal" id="u9-s11">
+      <a class="i-head" href="unit-09.html#s11"><span class="i-num">12</span><span class="i-t">What to carry forward</span><span class="i-go" aria-hidden="true">→</span></a>
+      
+      <p class="i-one"><b>In one sentence:</b> gradient descent is one reflex — step against the slope — and this whole unit is about how big, how exact and how cheap that step should be.</p>
+    </li>
+  </ol>
+</section>
+<section class="u-block" data-p="3" id="unit-10">
+  <div class="u-head"><span class="u-num">10</span><h3><a href="unit-10.html">Optimization I — Gradients that Work</a></h3><a class="u-open" href="unit-10.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u10-s1">
+      <a class="i-head" href="unit-10.html#s1"><span class="i-num">1</span><span class="i-t">The bill for being wrong — and why the squares are squares</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The bill is the total area of the patches: \(J=\sum_i\text{miss}_i^2\). Its slope is every row's push, added up: \(\nabla J=2\sum_i\text{miss}_i\,\mathbf X_i\).</p>
+    <p>A row that guessed too high pushes the knobs down along itself. A row that guessed too low pushes them up. A bigger miss pushes harder.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the bill is the total area of one square patch per data row, and its slope is each row's miss times that row, added up — the same recipe for one knob or a billion.</p>
+    </li>
+    <li class="idea reveal" id="u10-s2">
+      <a class="i-head" href="unit-10.html#s2"><span class="i-num">2</span><span class="i-t">The parachute drop — where you start</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Start small, centred and random: small so the first step stays on the map, random so no two knobs are clones.</p>
+    <p>And when the numbers explode anyway, look at the factor \(1-2\eta x^2\). It is the size of the data, not your start, that needs fixing.</p></div>
+      <p class="i-one"><b>In one sentence:</b> start small and random — and when the numbers explode anyway, blame the feature's size squared in the factor \(1-2\eta x^2\), not the place you started.</p>
+    </li>
+    <li class="idea reveal" id="u10-s3">
+      <a class="i-head" href="unit-10.html#s3"><span class="i-num">3</span><span class="i-t">Full marks by memorising — knobs versus facts</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>More knobs than facts means a zero training bill is <em>free</em>, so a zero training bill means <em>nothing</em>. Judge a model on rows it has never seen.</p>
+    <p>Later units add a small charge for big knobs (a <em>regulariser</em>). Then "fits the data with small knobs" beats "fits the data with any knobs", and the learner wins.</p></div>
+      <p class="i-one"><b>In one sentence:</b> with more knobs than facts a zero bill is free and so means nothing — the memoriser hits every training row and still cannot see the one feature that matters.</p>
+    </li>
+    <li class="idea reveal" id="u10-s4">
+      <a class="i-head" href="unit-10.html#s4"><span class="i-num">4</span><span class="i-t">The hair-trigger and the stiff knob</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>A knob's sensitivity is its feature's size, squared: \(\partial y/\partial w_j=x_j^2\). One stride moves knob \(j\) by \(\eta\,x_j^2\times|\text{miss}|\).</p>
+    <p>So features of different sizes make one knob overshoot while another crawls. No stride can serve both. Rescaling the features is the fix.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a knob's sensitivity is its feature's size squared, so features of different sizes turn one stride into a fire hose on one knob and a drip on the other — and only rescaling the features can fix it.</p>
+    </li>
+    <li class="idea reveal" id="u10-s5">
+      <a class="i-head" href="unit-10.html#s5"><span class="i-num">5</span><span class="i-t">Three ways to fix the units — centre, standardise, min–max</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Rescaling changes the <em>units</em>, not the meaning. After standardising, every column has average \(0\) and \(\sum_i z_i^2=n\), so every column is the same size and one stride can serve every knob.</p>
+    <p>What rescaling does <em>not</em> fix: two columns that rise and fall together. That leftover comes back in Section 10.</p></div>
+      <p class="i-one"><b>In one sentence:</b> centring slides, standardising squeezes, min–max boxes — all three put every column on the same scale, and all three treat new data with the training numbers.</p>
+    </li>
+    <li class="idea reveal" id="u10-s6">
+      <a class="i-head" href="unit-10.html#s6"><span class="i-num">6</span><span class="i-t">The wrong valley — the watershed and the combination lock</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Descent finds the valley downhill from where it starts, and the watershed decides which one. Restarts give \(k\) chances: all fail with probability \((1-p)^k\).</p>
+    <p>With \(d\) knobs of \(k\) dips each, the dips multiply to \(k^d\), and the chance of being right on every knob shrinks to \(p^d\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> the side of the watershed you start on decides the valley you reach, and with many knobs the valleys multiply like the settings of a combination lock — so restarts alone cannot save you.</p>
+    </li>
+    <li class="idea reveal" id="u10-s7">
+      <a class="i-head" href="unit-10.html#s7"><span class="i-num">7</span><span class="i-t">The salt flat — where the walk slows to nothing</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Step length is stride × tilt: \(\gamma\,|\nabla f|\). Small tilt means small steps, whether or not you are near a valley. A flat of width \(W\) and tilt \(g\) costs about \(W/(\gamma g)\) steps.</p>
+    <p>The cure comes next unit: <em>momentum</em>, which keeps rolling across the flat instead of deciding every footstep afresh.</p></div>
+      <p class="i-one"><b>In one sentence:</b> each step is stride times tilt, so a plateau — small tilt, but no valley — can swallow hundreds of thousands of steps.</p>
+    </li>
+    <li class="idea reveal" id="u10-s8">
+      <a class="i-head" href="unit-10.html#s8"><span class="i-num">8</span><span class="i-t">The canyon — why the fastest way down is the wrong way down</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Each direction shrinks by its own factor, \(1-\eta\lambda\). The steepest direction sets the speed limit, \(\eta<2/\lambda_{\max}\). At that limit the gentlest direction crawls, and \(\kappa=\lambda_{\max}/\lambda_{\min}\) measures how badly.</p>
+    <p>Steepest descent is the best direction <em>for this one step</em>, never the best direction for the whole trip.</p></div>
+      <p class="i-one"><b>In one sentence:</b> in a canyon each direction shrinks by its own factor \(1-\eta\lambda\), the steepest wall sets the speed limit, and \(\kappa\), steepest over gentlest, tells you how much of the walk is wasted bouncing.</p>
+    </li>
+    <li class="idea reveal" id="u10-s9">
+      <a class="i-head" href="unit-10.html#s9"><span class="i-num">9</span><span class="i-t">Why the compass crosses the contour lines at a right angle</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Along a contour the height does not change, so \(\nabla F\cdot\delta\mathbf x=0\): the gradient is at right angles to every contour.</p>
+    <p>It points at the bottom only when the contours are circles. On ovals, the angle between "steepest" and "towards the bottom" is the zig-zag.</p></div>
+      <p class="i-one"><b>In one sentence:</b> a step along a contour changes nothing, so the gradient crosses every contour at a right angle — which points at the bottom only when the contours are circles.</p>
+    </li>
+    <li class="idea reveal" id="u10-s10">
+      <a class="i-head" href="unit-10.html#s10"><span class="i-num">10</span><span class="i-t">Change the units, not the model — the canyon becomes a bowl</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>The bill's steepness in knob \(j\) is \(2\sum_ix_{ij}^2\): the column's size, squared. The full table of steepnesses is \(H=2X^{\top}X\). Standardising makes every diagonal entry \(2n\), so the walls level out: here \(\kappa\) falls from \(1487\) to \(10.2\).</p>
+    <p>The part that survives is the off-diagonal, from columns moving together. Removing it takes a rotation, not a rescaling.</p></div>
+      <p class="i-one"><b>In one sentence:</b> the bill feels each column squared, so dividing every column by its own spread levels every wall — the canyon becomes a bowl, the safe stride grows a hundredfold, and the model and the data's meaning stay untouched.</p>
+    </li>
+    <li class="idea reveal" id="u10-s11">
+      <a class="i-head" href="unit-10.html#s11"><span class="i-num">11</span><span class="i-t">The training clinic — read the loss curve like a doctor</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>Every failure has a signature on the loss curve: blow-up, the train–test scissors, a growing zig-zag, fast-then-crawl, flat from the start, a different answer every run.</p>
+    <p>Every fix either reshapes the landscape or teaches the walker.</p></div>
+      <p class="i-one"><b>In one sentence:</b> every failure in this unit leaves its own shape on the loss curve, and every fix either reshapes the landscape or gives the walker better instincts.</p>
+    </li>
+    <li class="idea reveal" id="u10-s12">
+      <a class="i-head" href="unit-10.html#s12"><span class="i-num">12</span><span class="i-t">What to carry forward</span><span class="i-go" aria-hidden="true">→</span></a>
+      
+      <p class="i-one"><b>In one sentence:</b> most training troubles are a badly shaped landscape, and the cheapest way to reshape it is to put every feature on the same scale.</p>
+    </li>
+  </ol>
+</section>
+<section class="u-block" data-p="3" id="unit-11">
+  <div class="u-head"><span class="u-num">11</span><h3><a href="unit-11.html">Optimization II — Five Ways Down One Valley</a></h3><a class="u-open" href="unit-11.html">Open the unit →</a></div>
+  <ol class="ideas">
+    <li class="idea reveal" id="u11-s1">
+      <a class="i-head" href="unit-11.html#s1"><span class="i-num">1</span><span class="i-t">Your feet feel the tilt, not the turn</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}w_1\leftarrow(1-\eta)\,w_1\\ w_2\leftarrow(1-10\eta)\,w_2\end{gathered}\]</p>
+    <p>Each step multiplies every direction by <strong>its own number</strong>, and all those numbers share one \(\eta\). Pick \(\eta\) for the steep direction and the gentle one crawls. Pick it for the gentle one and the steep one blows up. <strong>No single stride serves both.</strong></p></div>
+      <p class="i-one"><b>In one sentence:</b> The slope tells you which way is down but not how long it lasts, so one shared stride must suit every direction at once — and when directions differ tenfold, no stride can.</p>
+    </li>
+    <li class="idea reveal" id="u11-s2">
+      <a class="i-head" href="unit-11.html#s2"><span class="i-num">2</span><span class="i-t">Momentum — give the walker weight</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}\mathbf v\leftarrow\beta\,\mathbf v-\alpha\nabla J\\ \mathbf w\leftarrow\mathbf w+\mathbf v,\qquad \mathbf v_0=\mathbf 0\end{gathered}\]</p>
+    <p>Each move is a faded copy of the last move plus a fresh push. Pushes that agree pile up to \(1/(1-\beta)\) times one push — ten times at \(\beta=0.9\). Pushes that flip cancel. You pay for the speed with overshoot.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Momentum adds a faded copy of the last move, so pushes that agree pile up to \(1/(1-\beta)\) times a plain step and pushes that flip cancel — at the cost of overshoot, where the loss may rise for a while.</p>
+    </li>
+    <li class="idea reveal" id="u11-s3">
+      <a class="i-head" href="unit-11.html#s3"><span class="i-num">3</span><span class="i-t">AdaGrad — a stride for each knob, from a record that never clears</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}A\leftarrow A+\nabla J\odot\nabla J\\ \mathbf w\leftarrow\mathbf w-\frac{\alpha}{\sqrt A}\odot\nabla J\end{gathered}\]</p>
+    <p>(\(\odot\) means "multiply entry by entry".) Each knob divides its step by the root of its own total. On step one this leaves exactly \(\alpha\) for every knob, whatever its slope. But the total never shrinks, so the steps only ever get smaller.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Divide each knob's step by the root of everything it has ever felt, and the first step is exactly \(\alpha\) for every knob — but the record never clears, so the brake never lifts.</p>
+    </li>
+    <li class="idea reveal" id="u11-s4">
+      <a class="i-head" href="unit-11.html#s4"><span class="i-num">4</span><span class="i-t">RMSProp — judge by recent form</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}A\leftarrow \rho\,A+(1-\rho)\,\nabla J\odot\nabla J\\ \mathbf w\leftarrow\mathbf w-\frac{\alpha}{\sqrt A}\odot\nabla J\end{gathered}\]</p>
+    <p>Swap the running total for a fading average, and the stride settles at a healthy size instead of dying. On a steady slope it settles at exactly \(\alpha\). The price is a first step that is \(1/\sqrt{1-\rho}\) times too big.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Swap the permanent record for a fading one and the stride survives all the way down — at the price of a first step that is \(1/\sqrt{1-\rho}\) times too big, because an average that starts at zero is a wild guess after one reading.</p>
+    </li>
+    <li class="idea reveal" id="u11-s5">
+      <a class="i-head" href="unit-11.html#s5"><span class="i-num">5</span><span class="i-t">Adam — two notebooks and a warm-up</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{aligned}F&\leftarrow \rho_f F+(1-\rho_f)\nabla J\\ A&\leftarrow \rho A+(1-\rho)\nabla J\odot\nabla J\\ \mathbf w&\leftarrow\mathbf w-\alpha_t\,\frac{F}{\sqrt A}\\ \alpha_t&=\alpha\,\frac{\sqrt{1-\rho^{\,t}}}{1-\rho_f^{\,t}}\end{aligned}\]</p>
+    <p>Step = average direction ÷ root of average loudness, times a warm-up rate \(\alpha_t\). Pushes that disagree cancel, loudness divides out, and the very first step is exactly \(\alpha\).</p></div>
+      <p class="i-one"><b>In one sentence:</b> Adam keeps a signed average and a squared average for every knob, steps by their ratio so disagreement cancels and loudness divides out, and uses a warm-up rate \(\alpha_t\) that makes the first step exactly \(\alpha\) and then switches itself off.</p>
+    </li>
+    <li class="idea reveal" id="u11-s6">
+      <a class="i-head" href="unit-11.html#s6"><span class="i-num">6</span><span class="i-t">Five walkers, one valley — and the dial that decides the race</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}\text{safe stride: }\ \alpha<\frac{2}{\lambda_{\max}}\\[4pt] \text{steps needed}\ \sim\ \kappa=\frac{\lambda_{\max}}{\lambda_{\min}}\end{gathered}\]</p>
+    <p>The steepest direction sets the safe stride. The gentlest direction sets how many steps you need. Their ratio \(\kappa\) (read "kappa", the <em>condition number</em>) is the tax plain descent pays. The adaptive methods divide each slope by its own size, so <strong>they never see \(\kappa\) at all</strong>.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Plain descent's safe stride is set by the steepest direction and its speed by the gentlest, so it pays the condition number in steps — while every adaptive method divides each slope by its own size and never notices.</p>
+    </li>
+    <li class="idea reveal" id="u11-s7">
+      <a class="i-head" href="unit-11.html#s7"><span class="i-num">7</span><span class="i-t">Then someone builds a wall</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}\min_{\mathbf x}\ f(\mathbf x)\\ \text{subject to}\quad e(\mathbf x)=0,\quad g_i(\mathbf x)\le0\end{gathered}\]</p>
+    <p>Three roles, three pictures. \(f\) is <strong>the score</strong>: you want it small. \(e=0\) is <strong>the path</strong>: you must stay exactly on it. Each \(g_i\le0\) is <strong>a fence</strong>: you must stay behind it. So \(x\ge2\) becomes \(g=2-x\le0\), whose slope is \(\nabla g=-1\). Watch that minus sign — it is where most marks are lost.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Put a wall in a problem and the answer moves onto the wall, where the slope is not zero — so "stop where it is flat" must be replaced, starting by writing every problem as \(\min f\) with \(e=0\) and \(g_i\le0\).</p>
+    </li>
+    <li class="idea reveal" id="u11-s8">
+      <a class="i-head" href="unit-11.html#s8"><span class="i-num">8</span><span class="i-t">Pushing a box against a wall</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\nabla f(\mathbf x^\star)=-\mu\,\nabla g(\mathbf x^\star),\qquad \mu\ge0\]</p>
+    <p>At the answer, nothing is left to slide along the fence. So the score's arrow and the fence's arrow lie on one line. They are parallel, not equal, and \(\mu\) is the stretch between them. Soon \(\mu\) will turn out to be a price.</p></div>
+      <p class="i-one"><b>In one sentence:</b> You stop when nothing is left to slide along the fence, so \(\nabla f\) and \(\nabla g\) lie on one line with a stretch \(\mu\ge0\) between them — and that stretch is about to become a price.</p>
+    </li>
+    <li class="idea reveal" id="u11-s9">
+      <a class="i-head" href="unit-11.html#s9"><span class="i-num">9</span><span class="i-t">Turn the wall into a fine</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\max_{\mu\ge0}\ \mu\,g \;=\; \begin{cases}0,& g\le0\\ +\infty,& g>0\end{cases}\]</p>
+    <p>\[\begin{aligned}L(\mathbf x,\lambda,\boldsymbol\mu)&=f(\mathbf x)+\lambda\,e(\mathbf x)\\ &\quad+\sum_i\mu_i\,g_i(\mathbf x),\qquad \mu_i\ge0\end{aligned}\]</p>
+    <p>Obey the fence and the guard's best fine is \(\mu=0\): you pay nothing. Break it and the guard raises \(\mu\) without limit. So the <em>Lagrangian</em> \(L\) — score, plus a fine for leaving the path, plus a fine for each fence — is not a rough copy of the problem. It <strong>is</strong> the problem, with rules turned into prices.</p></div>
+      <p class="i-one"><b>In one sentence:</b> You cannot differentiate an infinite wall but you can differentiate a straight line, and letting the guard raise the line's slope rebuilds the wall exactly — so \(L=f+\lambda e+\sum\mu_i g_i\) with \(\mu_i\ge0\) is the fenced problem itself.</p>
+    </li>
+    <li class="idea reveal" id="u11-s10">
+      <a class="i-head" href="unit-11.html#s10"><span class="i-num">10</span><span class="i-t">Room left, and the rule that falls out of it</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}g_i(\mathbf x)+t_i^{\,2}=0\\ \Longrightarrow\quad \boxed{\ \mu_i\,g_i(\mathbf x^\star)=0\ }\end{gathered}\]</p>
+    <p>Write the room left as a square and differentiate. Out comes \(\mu_ig_i=0\): either you have room and the fine is zero, or you are touching and the fine may be positive. <strong>Never room and a fine at once.</strong></p></div>
+      <p class="i-one"><b>In one sentence:</b> Write the room left as a square, differentiate, and out comes \(\mu_ig_i=0\) — either there is room and the fine is zero, or you are touching and the fine may be positive.</p>
+    </li>
+    <li class="idea reveal" id="u11-s11">
+      <a class="i-head" href="unit-11.html#s11"><span class="i-num">11</span><span class="i-t">Five conditions, and checking every case</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}\text{each fence: }\ \mu_i=0\ \ \text{or}\ \ g_i=0\\ \Longrightarrow\quad 2^m\ \text{cases}\end{gathered}\]</p>
+    <p>KKT is "set every derivative to zero" on the Lagrangian, plus the sign rule. To use it by hand, guess for each fence whether it is touching, solve, and throw out any guess that gives a negative fine or breaks a rule.</p></div>
+      <p class="i-one"><b>In one sentence:</b> KKT is "set every derivative to zero" on the Lagrangian plus the sign rule, and room-or-fine turns it into \(2^m\) cases to check, most of which die on a negative fine.</p>
+    </li>
+    <li class="idea reveal" id="u11-s12">
+      <a class="i-head" href="unit-11.html#s12"><span class="i-num">12</span><span class="i-t">Which problems you can trust</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{aligned}f\big(\theta\mathbf x+(1-\theta)\mathbf y\big)&\le\theta f(\mathbf x)\\ &\quad+(1-\theta)f(\mathbf y)\\[3pt] &\text{is the same as}\\[3pt] f(\mathbf y)&\ge f(\mathbf x)\\ &\quad+\nabla f(\mathbf x)^{\!\top}(\mathbf y-\mathbf x)\end{aligned}\]</p>
+    <p>The curve stays under every string, or, the same thing, above every tangent. The tangent form means one slope reading is a promise about the whole function. On a convex problem, a point that passes the five conditions <strong>is</strong> the answer.</p></div>
+      <p class="i-one"><b>In one sentence:</b> A bowl never rises above its strings and never dips below its tangents — and on a bowl with bowl fences, a point that passes the five conditions is the answer; anywhere else it is only a candidate.</p>
+    </li>
+    <li class="idea reveal" id="u11-s13">
+      <a class="i-head" href="unit-11.html#s13"><span class="i-num">13</span><span class="i-t">Who moves first — and what a wall is worth</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{aligned}p^\star&=\min_{\mathbf x}\ \max_{\mu\ge0}\ L(\mathbf x,\mu)\\ &\ge\ \max_{\mu\ge0}\ \min_{\mathbf x}\ L(\mathbf x,\mu)=d^\star\end{aligned}\]</p>
+    <p>Left, you move first: the <strong>primal</strong>. Right, the guard moves first: the <strong>dual</strong>. Moving second is an advantage, so the dual is always a lower bound. And the dual is the lowest of many straight lines, so it is always a hill.</p></div>
+      <p class="i-one"><b>In one sentence:</b> Letting the guard move first gives the dual, which is the lowest of many straight lines — so it is always a hill and always a lower bound — and the fine it hands back is the price of the wall.</p>
+    </li>
+    <li class="idea reveal" id="u11-s14">
+      <a class="i-head" href="unit-11.html#s14"><span class="i-num">14</span><span class="i-t">Two points and a line — where all of this is going</span><span class="i-go" aria-hidden="true">→</span></a>
+      <div class="i-real"><p>\[\begin{gathered}q(\alpha)=2\alpha-2\alpha^2\\ \alpha^\star=\tfrac12,\qquad d^\star=\tfrac12=p^\star\end{gathered}\]</p>
+    <p>The boundary is built from the fines: in general \(w=\sum_i\alpha_iy_ix_i\), with \(\sum_i\alpha_iy_i=0\). Points far from the boundary get \(\alpha_i=0\) and could be deleted. Only the touching points — the <strong>support vectors</strong> — matter.</p></div>
+      <p class="i-one"><b>In one sentence:</b> The widest road is the smallest \(\tfrac12w^2\) that clears every point, its dual has one fine per training point, and room-or-fine makes almost all of them zero — so the machine rests on a few support vectors.</p>
+    </li>
+    <li class="idea reveal" id="u11-s15">
+      <a class="i-head" href="unit-11.html#s15"><span class="i-num">15</span><span class="i-t">What to carry forward</span><span class="i-go" aria-hidden="true">→</span></a>
+      
+      <p class="i-one"><b>In one sentence:</b> Optimisers divide each step by what that knob has felt, and fenced problems turn every wall into a price — and the price tells you which walls matter.</p>
+    </li>
+  </ol>
+</section>
+<h2 class="part-h" data-p="4" id="part-4"><span class="roman">IV</span>Part IV · Applications<span class="soon-tag">Upcoming</span></h2>
+<section class="u-block soon" data-p="4" id="unit-12"><div class="u-head"><span class="u-num">12</span><h3>Principal Component Analysis</h3><span class="u-open">Upcoming</span></div></section>
+<section class="u-block soon" data-p="4" id="unit-13"><div class="u-head"><span class="u-num">13</span><h3>Support Vector Machines</h3><span class="u-open">Upcoming</span></div></section>
+<h2 class="part-h" data-p="5" id="part-5"><span class="roman">V</span>Part V · Models that Read<span class="soon-tag">Upcoming</span></h2>
+<section class="u-block soon" data-p="5" id="unit-14"><div class="u-head"><span class="u-num">14</span><h3>Encoder–Decoder Maths &amp; RNNs</h3><span class="u-open">Upcoming</span></div></section>
+<section class="u-block soon" data-p="5" id="unit-15"><div class="u-head"><span class="u-num">15</span><h3>Transformers &amp; Attention</h3><span class="u-open">Upcoming</span></div></section>
+<section class="u-block soon" data-p="5" id="unit-16"><div class="u-head"><span class="u-num">16</span><h3>The Finale</h3><span class="u-open">Upcoming</span></div></section>
+
+  <footer>Handcrafted by Prof. Saurabh · every idea a story, every example worked in full · <a href="index.html">all units</a></footer>
+</main>
+<script>
+(function(){
+  const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  const btn=document.getElementById('theme-btn');
+  let mode=store.get('mfml-theme')==='light'?'light':'dark';
+  const apply=()=>{document.documentElement.setAttribute('data-theme',mode);btn.textContent='Theme: '+mode;};
+  btn.addEventListener('click',()=>{mode=mode==='dark'?'light':'dark';store.set('mfml-theme',mode);apply();}); apply();
+  /* reveal on scroll (no 3D on this page, so no cinema runtime) */
+  const els=[...document.querySelectorAll('.reveal')];
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window)) els.forEach(e=>e.classList.add('in'));
+  else { const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{rootMargin:'0px 0px -6% 0px'}); els.forEach(e=>io.observe(e)); }
+  /* hero art: seven threads weaving through five parts */
+  (function(){ const cv=document.getElementById('weave'); if(!cv||!cv.getContext) return; const g=cv.getContext('2d'); const D=Math.min(devicePixelRatio||1,2);
+    let W=0,H=0; const size=()=>{ const r=cv.getBoundingClientRect(); W=r.width; H=r.height; cv.width=W*D; cv.height=H*D; };
+    const cols=()=>{ const cs=getComputedStyle(document.documentElement); return ['--s1','--s3','--s2','--s7','--s6','--s4','--s5'].map(v=>cs.getPropertyValue(v).trim()); };
+    let C=cols(); new MutationObserver(()=>{C=cols();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+    const red=matchMedia('(prefers-reduced-motion: reduce)').matches; let vis=true;
+    new IntersectionObserver(es=>{vis=es[0].isIntersecting;}).observe(cv);
+    function frame(ts){ const t=red?4:ts/1000; if(!W) size(); g.setTransform(D,0,0,D,0,0); g.clearRect(0,0,W,H);
+      const light=document.documentElement.getAttribute('data-theme')==='light';
+      for(let k=0;k<7;k++){ g.beginPath(); for(let i=0;i<=80;i++){ const x=i/80*W; const u=i/80;
+          const y=H/2+Math.sin(u*Math.PI*2*(1+k*.13)+t*.35+k*.9)*H*.28*(1-.55*Math.abs(u-.5)*2)+Math.sin(u*9+k+t*.2)*6;
+          i?g.lineTo(x,y):g.moveTo(x,y); }
+        g.strokeStyle=C[k]; g.globalAlpha=light?.55:.75; g.lineWidth=1.6; if(!light){g.shadowColor=C[k]; g.shadowBlur=10;} g.stroke();
+        const u=((t*.06+k*.137)%1), x=u*W, y=H/2+Math.sin(u*Math.PI*2*(1+k*.13)+t*.35+k*.9)*H*.28*(1-.55*Math.abs(u-.5)*2)+Math.sin(u*9+k+t*.2)*6;
+        g.globalAlpha=1; g.fillStyle=C[k]; g.beginPath(); g.arc(x,y,2.6,0,7); g.fill(); g.shadowBlur=0; }
+      if(!red) requestAnimationFrame(frame2); }
+    function frame2(ts){ if(vis) frame(ts); else requestAnimationFrame(frame2); }
+    addEventListener('resize',size); requestAnimationFrame(frame);
+  })();
+  /* filters */
+  const fb=[...document.querySelectorAll('.tools button[data-f]')];
+  fb.forEach(b=>b.addEventListener('click',()=>{ const f=b.dataset.f; fb.forEach(x=>x.setAttribute('aria-pressed',x===b));
+    document.querySelectorAll('.u-block,h2.part-h,.jump a').forEach(el=>{ const p=el.dataset.p||(el.getAttribute('href')&&document.querySelector(el.getAttribute('href'))?.dataset.p);
+      el.classList.toggle('hidden-p', f!=='0' && p!==f); });
+    document.querySelectorAll('.reveal').forEach(e=>e.classList.add('in')); }));
+  const q=document.getElementById('quick');
+  const setQ=on=>{ document.body.classList.toggle('quick',on); q.setAttribute('aria-pressed',on); store.set('mfml-ideas-quick',on?'1':''); };
+  q.addEventListener('click',()=>setQ(q.getAttribute('aria-pressed')!=='true'));
+  if(store.get('mfml-ideas-quick')==='1') setQ(true);
+})();
+</script>
+</body>
+</html>

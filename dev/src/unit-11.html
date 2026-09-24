@@ -3015,7 +3015,7 @@ details.algebra>.derive{margin:.8rem 0 1rem;max-width:none}
   </div>
   <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
-    <p style="margin:.35rem 0 .6rem"><strong>Unit 12 · Principal Component Analysis I</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 12 · Principal Component Analysis</strong> <span style="color:var(--ink-muted)">— coming soon</span></p>
     <p style="margin:0 0 .6rem;font-family:var(--serif)">You have just maximised a quadratic form on the unit circle and watched the multiplier come out as an eigenvalue. That was not a coincidence — it is the whole of principal component analysis in miniature. Unit 12 asks what a cloud of data looks like from its own best angle, why the directions of greatest spread are the eigenvectors of a covariance matrix, and how much you can throw away before the picture stops being the picture.</p>
     <p style="margin:0;font-size:.85rem"><a href="index.html">← All units</a></p>
   </div>
@@ -5554,7 +5554,9 @@ function sceneChip(ctx,text,pos,o){ return CIN.prim.label(ctx,text,pos,Object.as
       var hide = function(){ pill.classList.remove('on'); setTimeout(function(){ pill.remove(); }, 320); };
       pill.querySelector('.rgo').addEventListener('click', function(){
         var far = Math.abs(target.getBoundingClientRect().top) > 3500;   /* a long jump across heavy 3-D stages lands instantly; short ones glide */
+        var R_ = document.documentElement; if (far) R_.style.scrollBehavior = 'auto';   /* MBM-R15-RESUME: an inline style beats the CSS smooth scroll */
         target.scrollIntoView({behavior: far ? 'auto' : 'smooth', block:'start'});
+        if (far) setTimeout(function(){ R_.style.scrollBehavior = ''; }, 60);
         hide();
       });
       pill.querySelector('.rx').addEventListener('click', hide);

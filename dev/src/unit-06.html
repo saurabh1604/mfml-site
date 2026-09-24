@@ -3518,7 +3518,9 @@ function tween(dur,step,done){
       var hide = function(){ pill.classList.remove('on'); setTimeout(function(){ pill.remove(); }, 320); };
       pill.querySelector('.rgo').addEventListener('click', function(){
         var far = Math.abs(target.getBoundingClientRect().top) > 3500;   /* a long jump across heavy 3-D stages lands instantly; short ones glide */
+        var R_ = document.documentElement; if (far) R_.style.scrollBehavior = 'auto';   /* MBM-R15-RESUME: an inline style beats the CSS smooth scroll */
         target.scrollIntoView({behavior: far ? 'auto' : 'smooth', block:'start'});
+        if (far) setTimeout(function(){ R_.style.scrollBehavior = ''; }, 60);
         hide();
       });
       pill.querySelector('.rx').addEventListener('click', hide);
