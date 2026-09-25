@@ -1,0 +1,192 @@
+<!-- ================= ACT III · LEARNING = THE LEAST SURPRISING WORLD ================= -->
+<!-- ================= 7 · LIKELIHOOD ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Likelihood: turning the question around</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Before a gully-cricket match, your friend always tosses his own lucky coin — and he always seems to win. You borrow it and toss it 10 times. It shows <strong>7 heads</strong>.</p>
+    <p>Is the coin fair? You cannot open it up and look. All you have is what you saw. So you ask a different question: <strong>which coin would most easily have produced 7 heads in 10?</strong></p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Say the coin shows heads with chance \(p\). The chance of one particular run with 7 heads and 3 tails is</p>
+    \[p^7(1-p)^3.\]
+    <p>This one formula can be read in two opposite ways.</p>
+    <ul>
+      <li><strong>Probability</strong> fixes the coin and asks about the data: "if \(p=0.5\), how likely are 7 heads?"</li>
+      <li><strong>Likelihood</strong> fixes the data and asks about the coin: "given 7 heads, how well does each \(p\) explain it?"</li>
+    </ul>
+    <p>Written as a function of the coin, it is the <em>likelihood</em> \(L(p)=p^7(1-p)^3\). Try a few coins:</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>coin \(p\)</th><th>0.3</th><th>0.5 (fair)</th><th>0.7</th><th>0.9</th></tr></thead>
+    <tbody><tr><td>\(L(p)=p^7(1-p)^3\)</td><td>0.0000750</td><td>0.000977</td><td><b>0.00222</b></td><td>0.000478</td></tr></tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>The fair coin explains your 7 heads less than half as well as a coin with \(p=0.7\). The best explanation of all is \(p=0.7=\tfrac7{10}\) — the share of heads you saw. Choosing the parameter that makes the data most likely is called <em>maximum likelihood</em>, and the winner is written \(\hat p\).</p>
+    <p><strong>Why we take logs.</strong> Look at the numbers: 0.00222 for just ten tosses. For a thousand tosses the likelihood is around \(10^{-265}\), smaller than a computer can store. The fix is to take the logarithm:</p>
+    \[\log L(p)=7\log p+3\log(1-p).\]
+    <p>Two good things happen. A product of many tiny numbers becomes a <strong>sum</strong> of ordinary numbers. And because \(\log\) only ever goes up, <strong>the peak stays in the same place</strong>. So we always maximise the log-likelihood instead.</p>
+    <p><strong>More data, more confidence.</strong> With 70 heads in 100 tosses the best coin is still 0.7, but the likelihood curve becomes a sharp spike. Coins like 0.6 or 0.8 now explain the data far worse. The width of the peak tells you how sure the data lets you be.</p>
+  </div>
+
+  <div class="widget reveal" id="w-coin">
+    <div class="widget-head"><span class="w-title">Which coin explains the tosses?</span><span class="w-sub">Left: the likelihood L(p). Right: its log. Both peak at the same p — the share of heads.</span></div>
+    <p class="try"><b>Try:</b> Drag the white marker across both panels and read how well each coin explains 7 heads in 10. Then press <em>70 of 100</em>: same peak, much sharper. Press <em>▶ toss 10 more</em> a few times with the mystery coin and watch the peak settle.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="co-svg" viewBox="0 0 640 330" class="svg-lab grabbable" role="img" aria-label="Two panels side by side. Left: the likelihood curve L(p) over coins p from 0 to 1, a hump with its peak marked in gold. Right: the log-likelihood curve, a smooth hill with its peak at the same p. A draggable white marker shows the values for one coin in both panels."></svg></div><p class="stage-tap">drag the marker</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="co-n">tosses n</label><input id="co-n" type="range" min="1" max="200" step="1" value="10"><output id="co-n-o">10</output></div>
+          <div class="ctl"><label for="co-h">heads h</label><input id="co-h" type="range" min="0" max="10" step="1" value="7"><output id="co-h-o">7</output></div>
+        </div>
+        <div class="presets" id="co-pre"><button class="play" id="co-toss">▶ toss 10 more</button><button class="preset" id="co-p7" aria-pressed="true">7 of 10</button><button class="preset" id="co-p70">70 of 100</button></div>
+        <table class="kv" id="co-kv"></table>
+        <div id="co-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}L(\theta)=P(\text{data}\mid\theta),\\ \hat\theta=\arg\max_\theta L(\theta)\\ =\arg\max_\theta\,\log L(\theta)\end{gathered}\]</p>
+    <p>Probability goes from the model to the data. <strong>Likelihood goes back from the data to the model.</strong> Learning by maximum likelihood means choosing the model under which what you saw is least surprising. For a coin, that is simply the share of heads.</p>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A coin shows 3 heads in 12 tosses. What is the maximum-likelihood coin, and does taking the log of the likelihood move it?</p>
+    <div class="opts">
+      <button data-why="0.5 is the fair coin, but the data prefer a coin that shows heads about as often as you saw: 3 out of 12.">\(\hat p=0.5\); the log moves it a little</button>
+      <button data-correct data-why="Right. p̂ = h/n = 3/12 = 0.25. The log turns the product into a sum and changes the heights, but log only goes up, so the peak is still at 0.25.">\(\hat p=0.25\); the log does not move the peak</button>
+      <button data-why="The log changes the heights of the curve but never the location of its peak, because log is always increasing.">\(\hat p=0.25\) for the likelihood, but a different \(\hat p\) for the log-likelihood</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> Likelihood reads \(P(\text{data}\mid\theta)\) as a function of the model, maximum likelihood picks the model that makes the data least surprising, and taking logs turns tiny products into sums without moving the peak.</p>
+</section>
+
+<!-- ================= 8 · GAUSSIAN MLE ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>Fitting a Gaussian by maximum likelihood</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You time how long the chai stall near your college takes to serve a glass, on eight mornings: 2, 4, 4, 4, 5, 5, 7 and 9 minutes.</p>
+    <p>You want one bell curve that describes this stall. Where should its middle be, and how wide should it be? Try a few bells and ask of each: <strong>how well does it explain these eight mornings?</strong></p>
+  </div>
+
+  <div class="prose reveal">
+    <p>A bell \(\mathcal N(\mu,\sigma^2)\) gives each data point a height. The likelihood of the bell is the product of the eight heights. Picture three bad bells:</p>
+    <ul>
+      <li><strong>Too narrow.</strong> The bell is a tall spike at 5. The points 2 and 9 sit far out on its tails, with heights almost zero. One near-zero factor ruins the whole product.</li>
+      <li><strong>Too wide.</strong> Every point is covered, but the bell is low everywhere, so every factor is small.</li>
+      <li><strong>Off-centre.</strong> Centred at 3, the points 7 and 9 are pushed onto a tail.</li>
+    </ul>
+    <p>The best bell sits in the middle and is exactly as wide as the data. Maximum likelihood gives a clean answer (the drawer shows why):</p>
+    \[\hat\mu=\frac1N\sum_i x_i,\qquad \hat\sigma^2=\frac1N\sum_i(x_i-\hat\mu)^2.\]
+    <p>For the chai stall: \(\hat\mu=\tfrac{2+4+4+4+5+5+7+9}{8}=\tfrac{40}{8}=5\) minutes. The squared distances from 5 are \(9,1,1,1,0,0,4,16\), which add to 32, so \(\hat\sigma^2=\tfrac{32}8=4\) and \(\hat\sigma=2\) minutes.</p>
+    <p>Maximum likelihood gives back the two most ordinary summaries there are: the average and the average squared spread. Nothing mysterious — but now we know <em>why</em> they are the right summaries for a bell.</p>
+    <p><strong>A small catch.</strong> Many calculators divide by \(N-1=7\) instead, giving \(\tfrac{32}{7}\approx4.571\). Why? The spread is measured around \(\hat\mu\), which was chosen to sit as close to these very points as possible. Measured from their own centre, the points look a little tighter than they really are. Dividing by \(N-1\) corrects that. It is the same "divide by \(N\) or \(N-1\)" note you met in <a href="unit-12.html#s3">Unit 12</a>. For large \(N\) the difference vanishes.</p>
+  </div>
+
+  <div class="widget reveal" id="w-mle">
+    <div class="widget-head"><span class="w-title">The likelihood landscape over every possible bell</span><span class="w-sub">Each spot on the floor is one bell (μ, σ); the height is its log-likelihood for the eight chai times. The panel shows that bell over the data.</span></div>
+    <p class="try"><b>Try:</b> Press <em>too narrow</em>, <em>too wide</em> and <em>off-centre</em> and watch the bell on the right fail in three different ways, low on the landscape each time. Then press <em>▶ climb</em>: a ball rolls uphill (gradient ascent, <a href="unit-09.html#s4">Unit 9</a>) and stops at the peak, \((5,\,2)\).</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><div id="ml-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A lit landscape rises over a floor whose two directions are the bell's middle mu, from 2 to 8, and its spread sigma, from 0.8 to 5. The landscape is one smooth hill with its gold-marked peak above mu = 5, sigma = 2. A glowing ball sits on the landscape at the current bell and, when climbing, rolls uphill leaving a trail."></div><p class="stage-tap">drag the ball · drag elsewhere to orbit</p></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="svgstage mini"><svg id="ml-svg" viewBox="0 0 360 230" class="svg-lab" role="img" aria-label="The eight chai times as blue dots on a number line, with the current bell curve drawn over them and a thin line from each dot up to the curve showing its height."></svg></div>
+        <div class="controls">
+          <div class="ctl"><label for="ml-mu">middle μ</label><input id="ml-mu" type="range" min="2" max="8" step="0.05" value="3"><output id="ml-mu-o">3</output></div>
+          <div class="ctl"><label for="ml-sig">spread σ</label><input id="ml-sig" type="range" min="0.8" max="5" step="0.05" value="4"><output id="ml-sig-o">4</output></div>
+        </div>
+        <div class="presets" id="ml-pre"><button class="play" id="ml-climb">▶ climb</button><button class="preset" id="ml-p-narrow">too narrow</button><button class="preset" id="ml-p-wide">too wide</button><button class="preset" id="ml-p-off">off-centre</button><button class="preset" id="ml-p-best">just right</button></div>
+        <table class="kv" id="ml-kv"></table>
+        <div id="ml-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\hat\mu=\bar x,\qquad\hat\sigma^2=\frac1N\sum_i(x_i-\bar x)^2\]</p>
+    <p>The bell that makes your data least surprising sits at the <strong>average</strong> and is as wide as the <strong>average squared spread</strong>. Fitting a model is climbing a likelihood landscape to its peak.</p>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Five measurements: 1, 3, 4, 6, 6. What are the maximum-likelihood \(\hat\mu\) and \(\hat\sigma^2\)?</p>
+    <div class="opts">
+      <button data-why="4 is right for μ̂, but 4.5 divides the squared spread 18 by N − 1 = 4. Maximum likelihood divides by N = 5.">\(\hat\mu=4\), \(\hat\sigma^2=4.5\)</button>
+      <button data-correct data-why="Right. μ̂ = 20/5 = 4. Squared distances 9, 1, 0, 4, 4 add to 18, and the MLE divides by N: 18/5 = 3.6.">\(\hat\mu=4\), \(\hat\sigma^2=3.6\)</button>
+      <button data-why="6 appears most often (the mode), but the bell's best middle is the average, 20/5 = 4.">\(\hat\mu=6\), \(\hat\sigma^2=3.6\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s8-->
+  <p class="onesent reveal"><b>In one sentence:</b> Maximum likelihood fits a bell by placing it at the average and making it as wide as the average squared spread — a climb to the top of the likelihood landscape, with a small downward bias that dividing by \(N-1\) corrects.</p>
+</section>
+
+<!-- ================= 9 · LEAST SQUARES FALLS OUT ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>Least squares falls out</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>An auto fare should be a fixed start plus a rate per kilometre. But real fares wobble: traffic, a detour, rounding to the nearest ten.</p>
+    <p>You note down four rides and want the best straight line through them. In <a href="unit-03.html#s10">Unit 3</a> you would have said "minimise the squared errors" and projected. But <strong>why squared?</strong> Why not the plain size of the errors, or their cubes?</p>
+    <p>Probability gives the answer — and it is a beautiful one.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Say what you believe about the wobble. The simplest belief: the true fare lies on the line, plus a random nudge from a bell,</p>
+    \[y_i=wx_i+b+\varepsilon_i,\qquad\varepsilon_i\sim\mathcal N(0,\sigma^2).\]
+    <p>Then each data point \(y_i\) is a draw from a bell centred on the line's prediction \(\hat y_i=wx_i+b\). The likelihood of a line is the product of the heights of the data points on their bells. Take \(-\log\) of it:</p>
+    \[\begin{aligned}-\log L(w,b)&=\frac{1}{2\sigma^2}\sum_i\big(y_i-\hat y_i\big)^2\\ &\quad+N\log\big(\sigma\sqrt{2\pi}\big).\end{aligned}\]
+    <p>The second part does not depend on the line at all. So <strong>making the data most likely is the same as making the sum of squared errors smallest</strong>. The projection of Unit 3 was maximum likelihood under bell-shaped noise all along.</p>
+    <p><strong>Worked example.</strong> Four rides: \(x=0,1,2,3\) and \(y=1,3,2,5\). The averages are \(\bar x=1.5\) and \(\bar y=2.75\). The slope is</p>
+    \[\begin{gathered}w=\frac{\sum(x_i-\bar x)(y_i-\bar y)}{\sum(x_i-\bar x)^2}=\frac{5.5}{5}=1.1,\\ b=\bar y-w\bar x=2.75-1.65=1.1.\end{gathered}\]
+    <p>The predictions are \(1.1,2.2,3.3,4.4\), the errors \(-0.1,\;0.8,\;-1.3,\;0.6\), and the sum of their squares is \(0.01+0.64+1.69+0.36=2.70\).</p>
+    <p><strong>A different belief, a different loss.</strong> Suppose instead the nudges follow a <em>Laplace</em> distribution, a pointy tent \(\tfrac1{2s}e^{-|\varepsilon|/s}\) with heavier tails than the bell. The same steps give</p>
+    \[-\log L=\frac1s\sum_i\big|y_i-\hat y_i\big|+\text{const}.\]
+    <p>Now the best line minimises the sum of <strong>absolute</strong> errors. Squares punish a big error enormously (an error of 10 costs 100); absolute values punish it only 10. So the Laplace fit shrugs off an outlier. Add a mistyped ride at \((1,\,8)\): the least-squares line tilts from slope 1.1 to about 0.654, while the Laplace line stays exactly where it was, \(w=\tfrac43\), \(b=1\).</p>
+  </div>
+
+  <div class="widget reveal" id="w-lsq">
+    <div class="widget-head"><span class="w-title">Every point stands on its own bell</span><span class="w-sub">At each ride a small bell rises out of the floor, centred on the line. The gold bead is the data point's height on it — its likelihood. Move the line and watch all the beads at once.</span></div>
+    <p class="try"><b>Try:</b> Drag the slope and start sliders: when a bell's centre moves away from its point, the bead sinks down the bell's side. Press <em>▶ best fit</em> — the log-likelihood and the squared error move in lockstep. Then add the outlier and flip between <em>Gaussian</em> and <em>Laplace</em> noise.</p>
+    <div class="tabs" id="ls-tabs"><button data-t="gauss" aria-selected="true">Gaussian noise → squared error</button><button data-t="laplace">Laplace noise → absolute error</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="ls-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On a glass floor, four blue data points and a white fitted line. At each point a small cyan bell curve stands upright, facing the viewer, centred on the line's prediction; a gold bead on each bell marks the data point's height. A red stick from each point to the line shows its error. A faint ghost line shows the other kind of fit."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="ls-w">slope w</label><input id="ls-w" type="range" min="-0.5" max="2.5" step="0.01" value="0.5"><output id="ls-w-o">0.5</output></div>
+          <div class="ctl"><label for="ls-b">start b</label><input id="ls-b" type="range" min="-1" max="4" step="0.01" value="2"><output id="ls-b-o">2</output></div>
+        </div>
+        <div class="presets" id="ls-pre"><button class="play" id="ls-fit">▶ best fit</button><button class="preset" id="ls-out">add the outlier (1, 8)</button></div>
+        <table class="kv" id="ls-kv"></table>
+        <div id="ls-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{bell noise}\;\Rightarrow\;\min\sum_i(y_i-\hat y_i)^2,\\ \text{Laplace noise}\;\Rightarrow\;\min\sum_i|y_i-\hat y_i|\end{gathered}\]</p>
+    <p>A loss function is a belief about noise in disguise. <strong>Squared error is maximum likelihood with bell-shaped noise</strong> — that is why least squares works so well, and why it is thrown off by outliers that a bell says should never happen.</p>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">For \(x=0,1,2,3\) and \(y=1,3,2,5\) with bell-shaped noise, what is the maximum-likelihood line?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Bell noise makes the likelihood peak where the squared error is smallest, which is the least-squares line: w = 5.5/5 = 1.1 and b = 2.75 − 1.1·1.5 = 1.1, with squared error 2.70.">\(y=1.1x+1.1\), the least-squares line</button>
+      <button data-why="The line through the first and last points, y = (4/3)x + 1, is the Laplace (absolute-error) fit. Bell noise leads to squared error, whose minimum is y = 1.1x + 1.1.">\(y=\tfrac43x+1\)</button>
+      <button data-why="Maximum likelihood does not fit a line through the average point with slope 1; it minimises the squared error, which gives slope 1.1 and start 1.1.">\(y=x+1.25\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Your sensor sometimes produces wild readings. Which noise model, and therefore which loss, protects the fit?</p>
+    <div class="opts">
+      <button data-why="A bell says wild readings almost never happen, so when one does, the fit bends a lot to reduce its huge squared error.">Bell noise → squared error</button>
+      <button data-correct data-why="Right. Laplace noise has heavier tails, so a wild reading is 'only' unlikely, not impossible. Its loss is the absolute error, which grows only in proportion to the miss, so one outlier cannot drag the line far.">Laplace noise → absolute error</button>
+      <button data-why="Cubing makes big errors even more expensive than squaring, so outliers would pull even harder. It also does not come from a sensible noise model (negative errors would be rewarded).">Cubed-error noise → cubed error</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s9-->
+  <p class="onesent reveal"><b>In one sentence:</b> If the noise is a bell, the most likely line is the least-squares line — Unit 3's projection was maximum likelihood all along — and a pointier, heavier-tailed noise turns the loss into absolute error, which shrugs off outliers.</p>
+</section>

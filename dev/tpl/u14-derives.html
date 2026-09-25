@@ -1,0 +1,188 @@
+<!--@D s2-->
+  <div class="derive">
+    <span class="tag">Prove it · the mean and variance of one die</span>
+    <p class="dgoal"><b>Claim.</b> A fair die has \(\mathbb E[X]=\tfrac72=3.5\) and \(\operatorname{Var}[X]=\tfrac{35}{12}\approx2.917\). Two independent dice have mean 7 and variance \(\tfrac{35}6\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Each face has weight \(\tfrac16\):
+      \[\begin{aligned}\mathbb E[X]&=\tfrac16(1+2+\dots+6)\\ &=\tfrac{21}{6}=3.5.\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The squared distances from 3.5 are \(6.25,\,2.25,\,0.25,\,0.25,\,2.25,\,6.25\), which add to \(17.5\). Average them:
+      \[\operatorname{Var}[X]=\tfrac{17.5}{6}=\tfrac{35}{12}\approx2.917.\]</div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">For a sum, means always add: \(3.5+3.5=7\). Variances add when the two parts are independent (the cross term \(2\,\mathbb E[(X_1-\mu_1)(X_2-\mu_2)]\) is zero):
+      \[\begin{aligned}&\operatorname{Var}[X_1+X_2]\\ &\quad=\tfrac{35}{12}+\tfrac{35}{12}=\tfrac{35}{6}\approx5.833.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Check against the table: \(\sum (x-7)^2p(x)=\tfrac{2(25\cdot1+16\cdot2+9\cdot3+4\cdot4+1\cdot5)}{36}=\tfrac{210}{36}=\tfrac{35}6\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the shortcut Var = E[X²] − (E X)²</span>
+    <p class="dgoal"><b>Claim.</b> \(\operatorname{Var}[X]=\mathbb E[X^2]-\mu^2\), where \(\mu=\mathbb E[X]\). It saves subtracting \(\mu\) from every value.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Open the square inside the average:
+      \[\begin{aligned}&\mathbb E[(X-\mu)^2]\\ &\quad=\mathbb E[X^2-2\mu X+\mu^2].\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">An average of a sum is the sum of the averages, and constants come out:
+      \[\begin{aligned}&\mathbb E[X^2]-2\mu\,\mathbb E[X]+\mu^2\\ &\quad=\mathbb E[X^2]-2\mu^2+\mu^2\\ &\quad=\mathbb E[X^2]-\mu^2.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">One die: \(\mathbb E[X^2]=\tfrac{1+4+9+16+25+36}{6}=\tfrac{91}6\), so \(\operatorname{Var}=\tfrac{91}6-\tfrac{49}4=\tfrac{182-147}{12}=\tfrac{35}{12}\) ✓.</span></div></div>
+  </div>
+<!--@D s3-->
+  <div class="derive">
+    <span class="tag">Prove it · Bayes' rule from one overlap counted two ways</span>
+    <p class="dgoal"><b>Claim.</b> \(P(H\mid E)=\dfrac{P(E\mid H)\,P(H)}{P(E)}\), with \(P(E)=P(E\mid H)P(H)+P(E\mid\text{not }H)P(\text{not }H)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">"Given \(E\)" means: keep only the cases where \(E\) happened, and ask what share of them also have \(H\):
+      \[P(H\mid E)=\frac{P(H\text{ and }E)}{P(E)}.\]
+      <span class="dwhy">In the clinic: of the 594 positives, the 99 who are also sick.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The same overlap can be counted from the other side — first pick the \(H\) cases, then the share of them with \(E\):
+      \[\begin{aligned}&P(H\text{ and }E)\\ &\quad=P(E\mid H)\,P(H).\end{aligned}\]
+      <span class="dwhy">100 sick people × 99% = 99.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Put step 2 into step 1. For the bottom, every \(E\) case either has \(H\) or does not:
+      \[\begin{aligned}P(H\mid E)&=\frac{P(E\mid H)\,P(H)}{P(E)},\\ P(E)&=P(E\mid H)\,P(H)\\ &\quad+P(E\mid\text{not }H)\\ &\qquad\times P(\text{not }H).\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Clinic: \(\dfrac{0.99\cdot0.01}{0.99\cdot0.01+0.05\cdot0.99}=\dfrac{0.0099}{0.0594}=\dfrac16\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · evidence multiplies the odds</span>
+    <p class="dgoal"><b>Claim.</b> In odds form, each independent test multiplies the odds of "sick" by the same factor \(\dfrac{P(+\mid\text{sick})}{P(+\mid\text{healthy})}=\dfrac{0.99}{0.05}=19.8\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write Bayes for "sick" and for "healthy" and divide; the bottom \(P(+)\) cancels:
+      \[\begin{aligned}&\frac{P(\text{sick}\mid+)}{P(\text{healthy}\mid+)}\\ &\quad=\frac{P(+\mid\text{sick})}{P(+\mid\text{healthy})}\\ &\qquad\times\frac{P(\text{sick})}{P(\text{healthy})}.\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Start at odds \(1:99\). One positive: \(19.8:99=1:5\), which is a chance of \(\tfrac16\). A second positive multiplies again: \(19.8:5=3.96:1\), a chance of \(\tfrac{3.96}{4.96}\approx0.798\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The prior sets the starting odds; each piece of evidence multiplies them. That is why one test cannot overcome a very small prior, and two can.</span></div></div>
+  </div>
+<!--@D s5-->
+  <div class="derive">
+    <span class="tag">Prove it · the contours are ellipses along the eigenvectors</span>
+    <p class="dgoal"><b>Claim.</b> For a symmetric positive-definite \(\Sigma=Q\Lambda Q^{\!\top}\), the set \(\mathbf x^{\!\top}\Sigma^{-1}\mathbf x=c^2\) is an ellipse whose axes point along the columns of \(Q\) (the eigenvectors), with half-lengths \(c\sqrt{\lambda_1}\) and \(c\sqrt{\lambda_2}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The spectral theorem (Unit 4) gives \(\Sigma^{-1}=Q\Lambda^{-1}Q^{\!\top}\). Turn to the eigenvector axes: \(\mathbf u=Q^{\!\top}\mathbf x\). Then
+      \[\begin{aligned}\mathbf x^{\!\top}\Sigma^{-1}\mathbf x&=\mathbf u^{\!\top}\Lambda^{-1}\mathbf u\\ &=\frac{u_1^2}{\lambda_1}+\frac{u_2^2}{\lambda_2}.\end{aligned}\]
+      <span class="dwhy">\(Q^{\!\top}\) is a rotation: it only turns the picture, it does not bend it.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Setting this to \(c^2\) gives
+      \[\frac{u_1^2}{(c\sqrt{\lambda_1})^2}+\frac{u_2^2}{(c\sqrt{\lambda_2})^2}=1,\]
+      the textbook ellipse with half-axes \(c\sqrt{\lambda_1}\) and \(c\sqrt{\lambda_2}\) along the \(u_1,u_2\) directions — the eigenvectors.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">For \(\Sigma=\begin{bmatrix}2&amp;1\\1&amp;2\end{bmatrix}\): half-axes \(c\sqrt3\) along \((1,1)/\sqrt2\) and \(c\) along \((1,-1)/\sqrt2\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the height of the peak</span>
+    <p class="dgoal"><b>Claim.</b> The 2-D Gaussian peaks at \(\dfrac1{2\pi\sqrt{\det\Sigma}}\). For \(\det\Sigma=3\) that is \(\approx0.0919\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">In the eigen-coordinates of the previous proof, the density splits into two independent 1-D bells with variances \(\lambda_1\) and \(\lambda_2\):
+      \[p=\frac{e^{-u_1^2/2\lambda_1}}{\sqrt{2\pi\lambda_1}}\cdot\frac{e^{-u_2^2/2\lambda_2}}{\sqrt{2\pi\lambda_2}}.\]
+      <span class="dwhy">A rotation does not change areas, so this still integrates to 1.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">At the middle both exponentials are 1, and \(\lambda_1\lambda_2=\det\Sigma\) (Unit 4: the determinant is the product of the eigenvalues):
+      \[\begin{aligned}p_{\max}&=\frac{1}{2\pi\sqrt{\lambda_1\lambda_2}}\\ &=\frac1{2\pi\sqrt{\det\Sigma}}\\ &=\frac1{2\pi\sqrt3}\approx0.0919.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A bigger determinant means a cloud spread over more area, so the same total volume 1 makes a lower mountain.</span></div></div>
+  </div>
+<!--@D s6-->
+  <div class="derive">
+    <span class="tag">Prove it · stretching by L makes covariance LLᵀ</span>
+    <p class="dgoal"><b>Claim.</b> If \(\mathbf z\) has mean \(\mathbf 0\) and covariance \(I\), then \(\mathbf x=\boldsymbol\mu+L\mathbf z\) has mean \(\boldsymbol\mu\) and covariance \(LL^{\!\top}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Mean: \(\mathbb E[\mathbf x]=\boldsymbol\mu+L\,\mathbb E[\mathbf z]=\boldsymbol\mu\).</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Covariance is the average of (deviation)(deviation)\(^{\!\top}\). The deviation is \(\mathbf x-\boldsymbol\mu=L\mathbf z\):
+      \[\begin{aligned}\operatorname{Cov}[\mathbf x]&=\mathbb E\big[L\mathbf z\,(L\mathbf z)^{\!\top}\big]\\ &=L\,\mathbb E[\mathbf z\mathbf z^{\!\top}]\,L^{\!\top}\\ &=L\,I\,L^{\!\top}=LL^{\!\top}.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(L\) is a fixed matrix, so it moves outside the average. And a sum of Gaussians is Gaussian, so \(\mathbf x\) is not just any cloud with this covariance — it is exactly \(\mathcal N(\boldsymbol\mu,LL^{\!\top})\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · Cholesky for a 2 × 2 covariance</span>
+    <p class="dgoal"><b>Claim.</b> \(\begin{bmatrix}a&amp;b\\b&amp;c\end{bmatrix}=LL^{\!\top}\) with \(L=\begin{bmatrix}\ell_{11}&amp;0\\\ell_{21}&amp;\ell_{22}\end{bmatrix}\), \(\ell_{11}=\sqrt a\), \(\ell_{21}=b/\ell_{11}\), \(\ell_{22}=\sqrt{c-\ell_{21}^2}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Multiply out:
+      \[LL^{\!\top}=\begin{bmatrix}\ell_{11}^2&amp;\ell_{11}\ell_{21}\\\ell_{11}\ell_{21}&amp;\ell_{21}^2+\ell_{22}^2\end{bmatrix}.\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Match entry by entry, top-left first: \(\ell_{11}^2=a\), then \(\ell_{11}\ell_{21}=b\), then \(\ell_{21}^2+\ell_{22}^2=c\). Each equation has one new unknown.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(\Sigma=\begin{bmatrix}4&amp;2\\2&amp;2\end{bmatrix}\): \(\ell_{11}=2\), \(\ell_{21}=1\), \(\ell_{22}=\sqrt{2-1}=1\). The square root inside \(\ell_{22}\) is real exactly when \(ac&gt;b^2\) — when \(\Sigma\) is positive definite.</span></div></div>
+  </div>
+<!--@D s7-->
+  <div class="derive">
+    <span class="tag">Prove it · the best coin is the share of heads</span>
+    <p class="dgoal"><b>Claim.</b> With \(h\) heads in \(n\) tosses, \(\log L(p)=h\log p+(n-h)\log(1-p)\) is largest at \(\hat p=h/n\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">At a peak the slope is zero. Differentiate:
+      \[\frac{d}{dp}\log L=\frac hp-\frac{n-h}{1-p}.\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Set it to zero and cross-multiply:
+      \[\begin{aligned}&h(1-p)=(n-h)p\\ &\Rightarrow\;h=np\;\Rightarrow\;\hat p=\frac hn.\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">It is a maximum, not a minimum: the second derivative \(-\tfrac h{p^2}-\tfrac{n-h}{(1-p)^2}\) is negative everywhere.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">At \(\hat p\) the second derivative is \(-\tfrac{n}{\hat p(1-\hat p)}\): it grows with \(n\). A more curved peak is a sharper peak — more tosses, more confidence.</span></div></div>
+  </div>
+<!--@D s8-->
+  <div class="derive">
+    <span class="tag">Prove it · the best middle is the average</span>
+    <p class="dgoal"><b>Claim.</b> For data \(x_1,\dots,x_N\) and a bell \(\mathcal N(\mu,\sigma^2)\), the log-likelihood is largest over \(\mu\) at \(\hat\mu=\bar x\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Take the log of the product of \(N\) bell heights:
+      \[\begin{aligned}\ell(\mu,\sigma)&=-N\log\sigma\\ &\quad-\frac{1}{2\sigma^2}\sum_i(x_i-\mu)^2\\ &\quad-\frac N2\log2\pi.\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Only the middle term has \(\mu\). Its slope is
+      \[\begin{aligned}&\frac{\partial\ell}{\partial\mu}=\frac1{\sigma^2}\sum_i(x_i-\mu)=0\\ &\Rightarrow\;\hat\mu=\frac1N\sum_ix_i.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Whatever \(\sigma\) is, the best middle is the average. The chai times give \(\hat\mu=5\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the best spread divides by N</span>
+    <p class="dgoal"><b>Claim.</b> With \(\mu=\hat\mu\), the log-likelihood is largest at \(\hat\sigma^2=\tfrac1N\sum_i(x_i-\hat\mu)^2\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write \(S=\sum_i(x_i-\hat\mu)^2\). Then \(\ell=-N\log\sigma-\dfrac{S}{2\sigma^2}+\text{const}\), and
+      \[\frac{\partial\ell}{\partial\sigma}=-\frac N\sigma+\frac{S}{\sigma^3}.\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Set to zero: \(N\sigma^2=S\), so \(\hat\sigma^2=S/N\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Chai times: \(S=32\), \(N=8\), \(\hat\sigma^2=4\). The two terms pull against each other: \(-N\log\sigma\) wants a narrow bell (tall peaks), \(-S/2\sigma^2\) wants a wide one (no point on a tail). The balance is at the data's own spread.</span></div></div>
+  </div>
+<!--@D s9-->
+  <div class="derive">
+    <span class="tag">Prove it · −log of the Gaussian likelihood is the squared error</span>
+    <p class="dgoal"><b>Claim.</b> If \(y_i=wx_i+b+\varepsilon_i\) with independent \(\varepsilon_i\sim\mathcal N(0,\sigma^2)\), then \(-\log L(w,b)=\dfrac1{2\sigma^2}\sum_i(y_i-\hat y_i)^2+N\log(\sigma\sqrt{2\pi})\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Each \(y_i\) is a bell draw centred on \(\hat y_i=wx_i+b\). Independence lets us multiply:
+      \[\begin{aligned}L&=\prod_i\frac1{\sigma\sqrt{2\pi}}\\ &\qquad\times\exp\!\Big(-\frac{(y_i-\hat y_i)^2}{2\sigma^2}\Big).\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The log of a product is a sum, and \(-\log e^{-a}=a\):
+      \[\begin{aligned}-\log L&=\sum_i\frac{(y_i-\hat y_i)^2}{2\sigma^2}\\ &\quad+N\log(\sigma\sqrt{2\pi}).\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The last term has no \(w\) or \(b\), and \(\tfrac1{2\sigma^2}\) is a positive constant, so the best line is the one with the smallest \(\sum(y_i-\hat y_i)^2\) — least squares.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · Laplace noise gives absolute error</span>
+    <p class="dgoal"><b>Claim.</b> With \(\varepsilon_i\) drawn from the Laplace density \(\tfrac1{2s}e^{-|\varepsilon|/s}\), \(-\log L=\tfrac1s\sum_i|y_i-\hat y_i|+N\log2s\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Same steps, a different curve:
+      \[\begin{aligned}&-\log\prod_i\frac{e^{-|y_i-\hat y_i|/s}}{2s}\\ &\quad=\frac1s\sum_i|y_i-\hat y_i|\\ &\qquad+N\log2s.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So the most likely line minimises the total absolute error. For a single constant (no slope) this picks the <strong>median</strong> instead of the mean — which is why it ignores a wild value.</span></div></div>
+  </div>
+<!--@D s10-->
+  <div class="derive">
+    <span class="tag">Prove it · adding a constant to every score changes nothing</span>
+    <p class="dgoal"><b>Claim.</b> \(\operatorname{softmax}(\mathbf z+c\mathbf 1)=\operatorname{softmax}(\mathbf z)\) for any number \(c\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(e^{z_k+c}=e^{c}e^{z_k}\), so the common factor \(e^c\) appears on top and in every term of the bottom:
+      \[\frac{e^ce^{z_k}}{\sum_je^ce^{z_j}}=\frac{e^{z_k}}{\sum_je^{z_j}}.\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">With \(c=-\max_jz_j\), every exponent is \(\le0\), so no \(e^{z}\) can overflow. That is the "subtract the max" line in every softmax routine.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · two-class softmax is the sigmoid</span>
+    <p class="dgoal"><b>Claim.</b> \(\dfrac{e^{z_1}}{e^{z_1}+e^{z_2}}=\sigma(z_1-z_2)\), where \(\sigma(t)=\dfrac1{1+e^{-t}}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Divide top and bottom by \(e^{z_1}\):
+      \[\begin{aligned}\frac{1}{1+e^{z_2-z_1}}&=\frac1{1+e^{-(z_1-z_2)}}\\ &=\sigma(z_1-z_2).\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Only the difference \(z_1-z_2\) survives, as the shift rule promised. An SVM score \(f(\mathbf x)\) can play that difference: \(\sigma(f)\) is 0.5 on the boundary and approaches 1 deep on the positive side.</span></div></div>
+  </div>
+<!--@D s12-->
+  <div class="derive">
+    <span class="tag">Prove it · cross-entropy = entropy + KL</span>
+    <p class="dgoal"><b>Claim.</b> \(H(p,q)=H(p)+\mathrm{KL}(p\,\|\,q)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Split the log with \(\log q_k=\log p_k-\log\dfrac{p_k}{q_k}\):
+      \[\begin{aligned}&-\sum_kp_k\log q_k\\ &\quad=-\sum_kp_k\log p_k\\ &\qquad+\sum_kp_k\log\frac{p_k}{q_k}.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Mumbai in July: \(1.737=1+0.737\) bits. When we train a model \(q\) on data from \(p\), \(H(p)\) is fixed, so minimising cross-entropy and minimising KL are the same job.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · KL is never negative (in outline)</span>
+    <p class="dgoal"><b>Claim.</b> \(\mathrm{KL}(p\,\|\,q)\ge0\), with equality only when \(q=p\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The log is a curve that bends downward, so the log of an average is at least the average of the logs (Jensen's inequality). Apply it with weights \(p_k\) to the numbers \(q_k/p_k\):
+      \[\begin{aligned}-\mathrm{KL}&=\sum_kp_k\log\frac{q_k}{p_k}\\ &\le\log\sum_kp_k\frac{q_k}{p_k}\\ &=\log\sum_kq_k=\log1=0.\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Equality in Jensen needs all the numbers \(q_k/p_k\) to be equal, and since both add to 1, that means \(q_k=p_k\) for every \(k\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So a wrong belief always costs extra surprise on average, and only the truth itself costs nothing extra.</span></div></div>
+  </div>
+<!--@D s13-->
+  <div class="derive">
+    <span class="tag">Prove it · the gradient of −log softmax is q − y</span>
+    <p class="dgoal"><b>Claim.</b> For \(\text{loss}=-\log q_c\) with \(\mathbf q=\operatorname{softmax}(\mathbf z)\) and true class \(c\), \(\dfrac{\partial\,\text{loss}}{\partial z_k}=q_k-y_k\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write the loss without the fraction:
+      \[\begin{aligned}-\log q_c&=-z_c\\ &\quad+\log\sum_je^{z_j}.\end{aligned}\]</div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Differentiate with respect to \(z_k\). The first term gives \(-1\) if \(k=c\) and 0 otherwise — that is \(-y_k\). The second gives
+      \[\frac{e^{z_k}}{\sum_je^{z_j}}=q_k.\]</div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Add them: \(\dfrac{\partial\,\text{loss}}{\partial z_k}=q_k-y_k\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Scores \((2,1,0)\), class 1: \((0.665-1,\;0.245,\;0.090)=(-0.335,\;0.245,\;0.090)\). The entries always add to 0: raising one score is paid for by the others. And for a linear model \(z_k=\mathbf w_k\cdot\mathbf x+b_k\), the chain rule gives \(\partial\,\text{loss}/\partial\mathbf w_k=(q_k-y_k)\,\mathbf x\).</span></div></div>
+  </div>

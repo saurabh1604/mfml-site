@@ -1,0 +1,232 @@
+<!-- ================= ACT III · THE BACKWARD PASS ================= -->
+<!-- ================= 7 · TWO RULES ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Two kinds of arrow, two rules</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>India has lost a close match by 10 runs. In the review, the coach does not blame everyone equally. The bowler who gave away the most runs gets the most blame. A player who was not on the field that day gets none at all.</p>
+    <p>The backward pass is that review. The mistake at the end, −10, is shared out along the wires — <strong>more to whoever contributed more, nothing to whoever was switched off</strong>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Look again at the chain of eight nodes. The arrows between them come in only <strong>two kinds</strong>:</p>
+    <ul>
+      <li>a <strong>linear arrow</strong>, \(\mathbf z=W\mathbf a+\mathbf b\) — three of them: \(\mathbf a^{(0)}\to\mathbf z^{(1)}\), \(\mathbf a^{(1)}\to\mathbf z^{(2)}\), \(\mathbf a^{(2)}\to z^{(3)}\);</li>
+      <li>a <strong>ReLU arrow</strong>, \(\mathbf a=\operatorname{ReLU}(\mathbf z)\) — three of them: \(\mathbf z^{(1)}\to\mathbf a^{(1)}\), \(\mathbf z^{(2)}\to\mathbf a^{(2)}\), \(z^{(3)}\to\hat y\).</li>
+    </ul>
+    <p>The whole network alternates: linear, ReLU, linear, ReLU, linear, ReLU — then the loss. So to walk backwards we need only <strong>two rules</strong>, one for each kind of arrow. We walk back carrying one thing: the blame on the node we stand on, \(\partial L/\partial(\text{node})\). Each arrow we cross turns one blame into the next. This is exactly Unit 7's "local slope × incoming blame" (<a href="unit-07.html#s3">Unit 7, §3</a>), now done with whole lists and matrices (<a href="unit-07.html#s6">Unit 7, §6</a>).</p>
+    <h3>Rule A · crossing a ReLU arrow backwards</h3>
+    <p>Each \(a_j\) depends only on its own \(z_j\). So the blame passes straight through, times the local slope — and ReLU's slope is 1 or 0:</p>
+    <p>\[\frac{\partial L}{\partial\mathbf z}=\frac{\partial L}{\partial\mathbf a}\odot\operatorname{ReLU}'(\mathbf z).\]</p>
+    <p>The sign \(\odot\) means "multiply entry by entry". Tiny example: blame \((-60,10,-20)\) arriving at \(\mathbf z=(7,4,-2)\). The slopes are \((1,1,0)\). So the blame that gets through is \((-60,10,0)\). <strong>Rule A is a switch</strong>: open where the neuron was awake, shut where it was asleep.</p>
+    <h3>Rule B · crossing a linear arrow backwards</h3>
+    <p>Three things fed into \(\mathbf z=W\mathbf a+\mathbf b\), so crossing it back gives three answers:</p>
+    <p>\[\frac{\partial L}{\partial W}=\frac{\partial L}{\partial\mathbf z}\,\mathbf a^{\mathsf T},\quad \frac{\partial L}{\partial\mathbf b}=\frac{\partial L}{\partial\mathbf z},\quad \frac{\partial L}{\partial\mathbf a}=W^{\mathsf T}\frac{\partial L}{\partial\mathbf z}.\]</p>
+    <ul>
+      <li><strong>The weights:</strong> each weight's blame = the blame at its output × what flowed in through it. As a grid that is an outer product: a column times a row.</li>
+      <li><strong>The shifts:</strong> a shift adds straight into its \(z\), so it gets exactly the blame of that \(z\).</li>
+      <li><strong>The layer below:</strong> each input fed every neuron, so its blame adds up the blame of all of them, weighted by the wires. Forward you multiply by \(W\). Backward you multiply by \(W^{\mathsf T}\). <strong>Same wires, opposite direction.</strong></li>
+    </ul>
+    <p>Tiny example (layer 3 of the salary network): blame \(-10\) at \(z^{(3)}\), stored \(\mathbf a^{(2)}=(6,7)\), weights \(W^{(3)}=(4,2)\). Then \(\partial L/\partial W^{(3)}=(-10)(6,7)=(-60,-70)\), \(\partial L/\partial b^{(3)}=-10\), and \(\partial L/\partial\mathbf a^{(2)}=(4,2)^{\mathsf T}(-10)=(-40,-20)\).</p>
+    <p><strong>Where does each transpose go?</strong> Use one rule that never fails: <em>the blame of anything has the same shape as the thing</em>. \(\partial L/\partial W\) must be shaped like \(W\), so it can only be (column)(row).</p>
+  </div>
+
+  <div class="widget reveal" id="w-rules">
+    <div class="widget-head"><span class="w-title">The two rules, by hand</span><span class="w-sub">Left: Rule A — the switch. Right: Rule B — the outer product for the weights, and \(W^{\mathsf T}\) for the layer below, on the salary network's layer 2.</span></div>
+    <p class="try"><b>Try:</b> On the left, click a \(z\) to flip its sign and watch its switch open or shut. On the right, press <em>▶ build ∂L/∂W</em> and watch the grid fill cell by cell, then <em>▶ build Wᵀ·blame</em> and watch the blame travel back along the same wires.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:1 1 300px">
+        <h4 class="rl-h">Rule A · the ReLU switch</h4>
+        <div class="svgstage"><svg id="ra-svg" viewBox="0 0 320 250" class="svg-lab" role="img" aria-label="Three rows, one per neuron. On the left the incoming blame, in the middle the stored z with a switch drawn as a gate that is closed when z is positive and open-circuit when z is negative, on the right the blame that gets through."></svg></div>
+        <div id="ra-read" class="readout" style="margin-top:.5rem"></div>
+        <div class="presets" style="margin-top:.5rem"><button class="preset" id="ra-reset">z = (7, 4, −2)</button></div>
+      </div>
+      <div class="wcol" style="flex:1.4 1 360px">
+        <h4 class="rl-h">Rule B · the linear arrow</h4>
+        <div class="svgstage"><svg id="rb-svg" viewBox="0 0 440 250" class="svg-lab" role="img" aria-label="The three neurons of hidden layer 1 on the left and the two of hidden layer 2 on the right, joined by six wires. As the outer product builds, each wire lights up with its blame. For the transpose, red blame travels back from the right-hand neurons along the same wires and collects at each left-hand neuron."></svg></div>
+        <div class="rb-mats" id="rb-mats"></div>
+        <div class="presets" style="margin-top:.5rem"><button class="play" id="rb-outer">▶ build ∂L/∂W</button><button class="play" id="rb-back">▶ build Wᵀ·blame</button><button class="preset" id="rb-layer" aria-pressed="false">use layer 3 instead</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{Rule A:}\\ \frac{\partial L}{\partial\mathbf z}=\frac{\partial L}{\partial\mathbf a}\odot\operatorname{ReLU}'(\mathbf z)\\ \text{Rule B:}\\ \frac{\partial L}{\partial W}=\frac{\partial L}{\partial\mathbf z}\mathbf a^{\mathsf T},\quad \frac{\partial L}{\partial\mathbf b}=\frac{\partial L}{\partial\mathbf z},\\ \frac{\partial L}{\partial\mathbf a}=W^{\mathsf T}\frac{\partial L}{\partial\mathbf z}\end{gathered}\]</p>
+    <p>Crossing a ReLU arrow: <strong>pass the blame where the neuron was awake, block it where it slept.</strong> Crossing a linear arrow: a weight's blame is <strong>its output's blame × its input</strong>, and the layer below gets the blame sent back through \(W^{\mathsf T}\) — the same wires, walked the other way. Two rules, any depth.</p>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Blame \(\partial L/\partial\mathbf a=(5,-3,2)\) arrives at a ReLU layer whose stored \(\mathbf z=(-1,\,2,\,0.5)\). What is \(\partial L/\partial\mathbf z\)?</p>
+    <div class="opts">
+      <button data-why="Rule A multiplies by the slope, not by z. The slopes are (0, 1, 1) because the first z is negative. So the answer is (0, −3, 2).">\((-5,-6,1)\)</button>
+      <button data-correct data-why="Right. ReLU′(z) = (0, 1, 1): the first neuron was asleep, so its blame is blocked. (5, −3, 2) ⊙ (0, 1, 1) = (0, −3, 2).">\((0,-3,2)\)</button>
+      <button data-why="The switch looks at the sign of z, not of the blame. z = (−1, 2, 0.5): only the first neuron was asleep, so only the first entry is blocked.">\((5,0,2)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A layer has \(W=\begin{pmatrix}1&2\\ 3&0\end{pmatrix}\), stored input \(\mathbf a=(2,1)\), and the blame arriving at its output is \(\partial L/\partial\mathbf z=(1,-1)\). What is \(\partial L/\partial\mathbf a\)?</p>
+    <div class="opts">
+      <button data-why="That is W times the blame: (1 − 2, 3 − 0). Backward we multiply by the transpose: Wᵀ = [[1, 3], [2, 0]], so Wᵀ(1, −1) = (1 − 3, 2 − 0) = (−2, 2).">\((-1,3)\)</button>
+      <button data-why="That is the outer product of the blame with a — that is ∂L/∂W's first row, not ∂L/∂a. For the layer below use Wᵀ·blame = (−2, 2).">\((2,1)\)</button>
+      <button data-correct data-why="Right. Wᵀ = [[1, 3], [2, 0]]. Row 1: 1(1) + 3(−1) = −2. Row 2: 2(1) + 0(−1) = 2. Each input collects the blame of every neuron it fed, weighted by the wire.">\((-2,2)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> Walking back through a network needs only two rules — a ReLU arrow is a switch that passes or blocks the blame, and a linear arrow gives the weights (blame)(input)ᵀ, the shifts the blame itself, and the layer below Wᵀ·blame.</p>
+</section>
+
+<!-- ================= 8 · BACKWARD BY HAND ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The backward pass, by hand</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>The dabbawala relay again — but now a tiffin reached the wrong office. The complaint travels back along the same route: office to last runner, last runner to the train, the train to the first runner. At each hand-over, the register says who touched it and how much.</p>
+    <p>That is the backward pass: the complaint walks the chain in reverse, and the register (the cache) tells each step what it needs.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Walk the salary network from right to left, one arrow at a time.</p>
+    <p><strong>B1 · start at the loss.</strong> \(\partial L/\partial\hat y=\hat y-y=40-50=-10\).</p>
+    <p><strong>B2 · cross \(z^{(3)}\to\hat y\) (Rule A).</strong> We stored \(z^{(3)}=40\), which is positive, so the switch is on: \(\partial L/\partial z^{(3)}=-10\times1=-10\).</p>
+    <p><strong>B3 · cross \(\mathbf a^{(2)}\to z^{(3)}\) (Rule B).</strong> Stored \(\mathbf a^{(2)}=(6,7)\), and \(W^{(3)}=(4,2)\):</p>
+    <p>\[\begin{aligned}\frac{\partial L}{\partial W^{(3)}}&=(-10)\begin{pmatrix}6&7\end{pmatrix}=\begin{pmatrix}-60&-70\end{pmatrix},\\ \frac{\partial L}{\partial b^{(3)}}&=-10,\\ \frac{\partial L}{\partial\mathbf a^{(2)}}&=\begin{pmatrix}4\\ 2\end{pmatrix}(-10)=\begin{pmatrix}-40\\ -20\end{pmatrix}.\end{aligned}\]</p>
+    <p><strong>B4 · cross \(\mathbf z^{(2)}\to\mathbf a^{(2)}\) (Rule A).</strong> Stored \(\mathbf z^{(2)}=(6,7)\): both awake, so \(\partial L/\partial\mathbf z^{(2)}=(-40,-20)\).</p>
+    <p><strong>B5 · cross \(\mathbf a^{(1)}\to\mathbf z^{(2)}\) (Rule B).</strong> Stored \(\mathbf a^{(1)}=(7,4,0)\):</p>
+    <p>\[\begin{aligned}\frac{\partial L}{\partial W^{(2)}}&=\begin{pmatrix}-40\\ -20\end{pmatrix}\begin{pmatrix}7&4&0\end{pmatrix}\\ &=\begin{pmatrix}-280&-160&0\\ -140&-80&0\end{pmatrix},\\ \frac{\partial L}{\partial\mathbf b^{(2)}}&=\begin{pmatrix}-40\\ -20\end{pmatrix}.\end{aligned}\]</p>
+    <p>And for the layer below, \(W^{(2)\mathsf T}\) times the blame, row by row:</p>
+    <p>\[\begin{aligned}\text{row 1: }&(1)(-40)+(1)(-20)=-60\\ \text{row 2: }&(-0.5)(-40)+(0.5)(-20)=20-10=10\\ \text{row 3: }&(1)(-40)+(-1)(-20)=-40+20=-20\end{aligned}\]</p>
+    <p><strong>B6 · cross \(\mathbf z^{(1)}\to\mathbf a^{(1)}\) (Rule A — the switch closes).</strong> Stored \(\mathbf z^{(1)}=(7,4,-2)\). The third is negative:</p>
+    <p>\[\frac{\partial L}{\partial\mathbf z^{(1)}}=\begin{pmatrix}-60\\ 10\\ -20\end{pmatrix}\odot\begin{pmatrix}1\\ 1\\ 0\end{pmatrix}=\begin{pmatrix}-60\\ 10\\ 0\end{pmatrix}.\]</p>
+    <p><strong>B7 · cross \(\mathbf a^{(0)}\to\mathbf z^{(1)}\) (Rule B, the last step).</strong> Stored \(\mathbf a^{(0)}=(30,10)\):</p>
+    <p>\[\begin{aligned}\frac{\partial L}{\partial W^{(1)}}&=\begin{pmatrix}-60\\ 10\\ 0\end{pmatrix}\begin{pmatrix}30&10\end{pmatrix}=\begin{pmatrix}-1800&-600\\ 300&100\\ 0&0\end{pmatrix},\\ \frac{\partial L}{\partial\mathbf b^{(1)}}&=\begin{pmatrix}-60\\ 10\\ 0\end{pmatrix}.\end{aligned}\]</p>
+    <p>That is all 20 gradients. Three moments are worth saying out loud:</p>
+    <ul>
+      <li><strong>The bigger weight gets more blame.</strong> In B3, the wire with weight 4 sends back −40 and the wire with weight 2 sends back −20. Twice the weight, twice the blame. That is all \(W^{\mathsf T}\) is doing.</li>
+      <li><strong>A weight that carried nothing gets no blame.</strong> The third column of \(\partial L/\partial W^{(2)}\) is all zero, because it multiplied \(a^{(1)}_3=0\).</li>
+      <li><strong>A neuron that slept on the way forward learns nothing on the way back.</strong> The −20 was blocked in B6, so the whole third row of \(\partial L/\partial W^{(1)}\) is zero. Its weights will not move this step.</li>
+    </ul>
+  </div>
+
+  <div class="widget reveal" id="w-stepper">
+    <div class="widget-head"><span class="w-title">The step machine: one forward pass, one backward pass, one update</span><span class="w-sub">Seventeen steps: F1–F7 forward, S the seed, B1–B7 backward, the update, and the re-run. Blue is what each node computed going right. Red is \(\partial L/\partial(\text{node})\) coming back left.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ play</em> and watch the blue wave go right, then the red wave come back. Pause at B6 and look at the third neuron: the red −20 stops there. Click any box of the chain to see its value, its local slope and its blame.</p>
+    <div class="st-scrub" id="st-scrub" role="tablist" aria-label="the seventeen steps"></div>
+    <div class="st-grid">
+      <div class="st-left">
+        <div class="svgstage"><svg id="st-net" viewBox="0 0 520 330" class="svg-lab" role="img" aria-label="The salary network with live numbers. Above each neuron its z in blue, inside it its value after the bend, below it the blame dL/dz in red. The wires light up blue when values flow forward and red when blame flows back."></svg></div>
+      </div>
+      <div class="st-right"><div class="st-card" id="st-card" aria-live="polite"></div><div id="st-info" class="readout st-info">Click a box of the chain.</div></div>
+    </div>
+    <div class="svgstage st-chainbox" style="margin-top:.7rem"><svg id="st-chain" viewBox="0 0 760 150" class="svg-lab" role="img" aria-label="The chain of eight nodes from a zero to L, with a blue row of values under it and a red row of blames under that. The rows fill in as the steps go."></svg></div>
+    <div class="st-cache" id="st-cache" aria-label="the cache"></div>
+    <div class="presets st-nav"><button class="preset" id="st-prev">◀ back</button><button class="play" id="st-play">▶ play</button><button class="preset" id="st-next">next ▶</button><button class="preset" id="st-reset">start again</button><span class="st-count" id="st-count">step 1 / 17</span></div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\frac{\partial L}{\partial W^{(l)}}=\frac{\partial L}{\partial\mathbf z^{(l)}}\,\mathbf a^{(l-1)\mathsf T}\\ \frac{\partial L}{\partial\mathbf a^{(l-1)}}=W^{(l)\mathsf T}\frac{\partial L}{\partial\mathbf z^{(l)}}\end{gathered}\]</p>
+    <p>One backward sweep gives every gradient. It starts from prediction minus truth, crosses each arrow with Rule A or Rule B, and reads the stored z's and a's in reverse order. The red numbers are just the blue ones' story told backwards — except where a sleeping ReLU <strong>blocks</strong> the blame.</p>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the salary network, why is the whole third row of \(\partial L/\partial W^{(1)}\) equal to zero?</p>
+    <div class="opts">
+      <button data-why="The inputs 30 and 10 are not zero, so the input cannot be the reason. The reason sits at the third neuron itself.">Because the inputs age and experience are zero for that row</button>
+      <button data-correct data-why="Right. z⁽¹⁾₃ = −2 &lt; 0, so ReLU switched that neuron off. Rule A multiplies its blame by ReLU′ = 0, so ∂L/∂z⁽¹⁾₃ = 0, and Rule B gives its whole row 0 × (30, 10) = (0, 0).">Because the third neuron was asleep (z = −2), so Rule A blocked its blame, and its row is 0 × (30, 10)</button>
+      <button data-why="Its weights (−0.1, 0.2) are not zero. Being small is not the reason either — the neuron's blame was blocked by its ReLU.">Because its weights are already perfect</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Suppose the guess had been too <em>high</em>: the blame arriving at \(z^{(3)}\) is \(+4\) instead of \(-10\). With \(W^{(3)}=(4,\,2)\) as before, what is \(\partial L/\partial\mathbf a^{(2)}\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Each wire sends back its weight × the blame: Wᵀ·4 = (4·4, 2·4) = (16, 8). Positive blame means 'you pushed the guess too high — go down'. The bigger weight still gets twice the blame.">\((16,\,8)\)</button>
+      <button data-why="Those are the numbers for a blame of −10. With +4 at z⁽³⁾ the answer is Wᵀ·4 = (16, 8).">\((-40,\,-20)\)</button>
+      <button data-why="Backward multiplies the blame by the weights, not by the stored activations (6, 7): Wᵀ·4 = (16, 8). The activations are what ∂L/∂W⁽³⁾ uses.">\((24,\,28)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s8-->
+  <p class="onesent reveal"><b>In one sentence:</b> Starting from \(\hat y-y=-10\) and crossing the seven arrows backwards with Rule A or Rule B gives all 20 gradients — big where a weight carried a lot, zero where a neuron slept.</p>
+</section>
+
+<!-- ================= 9 · UPDATE ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>Update, check, and why the step had to be tiny</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You are tuning an old radio with two knobs. One knob is very sensitive: a tiny turn jumps across three stations. The other barely changes anything. If you turn both by the same amount, you will overshoot with the first and hardly move the second.</p>
+    <p>Our salary network has exactly this problem. And the cause is simple: the age, 30, is a big number.</p>
+  </div>
+  <div class="prose reveal">
+    <p>The gradient points <strong>uphill</strong> on the loss, so we step the other way (<a href="unit-09.html#s4">Unit 9</a>). For every weight and every shift:</p>
+    <p>\[\begin{gathered}W^{(l)}\leftarrow W^{(l)}-\eta\,\frac{\partial L}{\partial W^{(l)}},\\ \mathbf b^{(l)}\leftarrow\mathbf b^{(l)}-\eta\,\frac{\partial L}{\partial\mathbf b^{(l)}}.\end{gathered}\]</p>
+    <p>Take \(\eta=10^{-5}\). For example \(W^{(1)}_{11}\) becomes \(0.1-10^{-5}(-1800)=0.1+0.018=0.118\). All the new numbers:</p>
+    <p>\[\begin{aligned}W^{(1)}&=\begin{pmatrix}0.118&0.306\\ 0.197&-0.101\\ -0.1&0.2\end{pmatrix},\ \mathbf b^{(1)}=\begin{pmatrix}1.0006\\ -1.0001\\ -1\end{pmatrix},\\ W^{(2)}&=\begin{pmatrix}1.0028&-0.4984&1\\ 1.0014&0.5008&-1\end{pmatrix},\ \mathbf b^{(2)}=\begin{pmatrix}1.0004\\ -1.9998\end{pmatrix},\\ W^{(3)}&=\begin{pmatrix}4.0006&2.0007\end{pmatrix},\ b^{(3)}=2.0001.\end{aligned}\]</p>
+    <p>The third row of \(W^{(1)}\) and the third column of \(W^{(2)}\) did not move: their gradients were zero. Now run the chain forward again: \(\mathbf z^{(1)}=(7.6006,\ 3.8999,\ -2)\), \(\mathbf a^{(2)}=(6.6786,\ 7.5645)\), and</p>
+    <p>\[\hat y=43.8527,\qquad L=\tfrac12(43.8527-50)^2=18.89.\]</p>
+    <p>One forward pass and one backward pass moved the guess from 40 to 43.85, and the loss from <strong>50 to 18.89</strong>. Repeat the pair a few hundred times and the error goes to zero.</p>
+    <p><strong>Why was \(\eta\) so tiny?</strong> Look at the gradients: \(\partial L/\partial W^{(1)}_{11}=-1800\), but \(\partial L/\partial b^{(3)}=-10\). That is 180 times bigger. Rule B explains it: a first-layer weight's blame is multiplied by its input, and the input is age = 30. So the first layer has huge gradients, and a step size that suits them is far too timid for the rest. Try \(\eta=10^{-4}\): the first step overshoots to \(\hat y\approx79.3\) and the loss <strong>jumps up</strong> to about 429.</p>
+    <p>The real fix is not a smaller \(\eta\). It is to <strong>scale the inputs</strong> before training — for example age/100 and experience/10 — so that no input is huge (<a href="unit-10.html#s5">Unit 10</a>). Then one \(\eta\) suits every weight.</p>
+    <p><strong>How do we know the 20 gradients are right?</strong> Check them the slow, honest way. Nudge one weight up by a tiny \(h\), run the forward pass, nudge it down by \(h\), run it again, and compare:</p>
+    <p>\[\frac{L(\theta+h)-L(\theta-h)}{2h}\ \approx\ \frac{\partial L}{\partial\theta}.\]</p>
+    <p>For \(W^{(1)}_{11}\) with \(h=0.001\): \(L(0.101)=48.2162\), \(L(0.099)=51.8162\), so the slope is \((48.2162-51.8162)/0.002=-1800\). Backprop said −1800. Do this for all 20 numbers and they agree to many decimal places. This is called a <strong>gradient check</strong>, and every serious implementation runs one.</p>
+  </div>
+
+  <div class="widget reveal" id="w-train1">
+    <div class="widget-head"><span class="w-title">Train the salary network, and check its gradients</span><span class="w-sub">One person, one target (50 lakhs), plain gradient descent. The loss is drawn on a log scale, so every factor of 10 is one step on the axis.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ run</em> at \(\eta=10^{-5}\) and watch \(\hat y\) climb to 50. Reset, set \(\eta=10^{-4}\): the first step overshoots. Push to \(2\times10^{-3}\): the network dies — \(\hat y\) is stuck at 0. Now turn on <em>scale the inputs</em> and try \(\eta=5\times10^{-4}\).</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="tr-svg" viewBox="0 0 640 300" class="svg-lab" role="img" aria-label="Two plots. Left: the loss against the step number on a log scale. Right: the prediction against the step number with a line at the target 50."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls"><div class="ctl"><label for="tr-eta">step size \(\eta\)</label><input id="tr-eta" type="range" min="-6" max="-2" step="0.1" value="-5"><output id="tr-eta-o">10⁻⁵</output></div></div>
+        <div class="presets"><button class="preset" id="tr-scale" aria-pressed="false">scale the inputs</button></div>
+        <div class="presets" style="margin-top:.4rem"><button class="preset" id="tr-step">one step</button><button class="play" id="tr-run">▶ run</button><button class="preset" id="tr-reset">reset</button></div>
+        <div id="tr-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+    <div class="presets" style="margin-top:.8rem"><button class="preset" id="tr-check">check all 20 gradients</button><span class="tr-note">backprop against \((L(\theta+h)-L(\theta-h))/2h\), \(h=10^{-5}\), at the current weights</span></div>
+    <div class="scroll-x"><table class="kv tr-gc" id="tr-gc"></table></div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Why does one input's size matter so much? Here is the loss seen through a tiny window: freeze 18 of the 20 numbers and move only two — the very first weight \(W^{(1)}_{11}\) and the very last shift \(b^{(3)}\), each by the same amount. The loss becomes a landscape over a floor, and gradient descent is a ball rolling on it.</p>
+  </div>
+  <div class="widget reveal" id="w-canyon">
+    <div class="widget-head"><span class="w-title">The canyon: two knobs, one of them 180 times more sensitive</span><span class="w-sub">Height = the loss when only \(W^{(1)}_{11}\) and \(b^{(3)}\) move (both axes span the same ±0.5). The glowing path is gradient descent on those two numbers.</span></div>
+    <p class="try"><b>Try:</b> With the raw inputs, press \(\eta=6\times10^{-5}\): the ball bounces from wall to wall of a narrow canyon. Turn on <em>scale the inputs</em>: the same network, the same starting guess — and the canyon opens into a gentle valley, where even \(\eta=0.2\) rolls smoothly to the floor.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="cy-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D landscape. With raw inputs it is a narrow, very steep canyon: the loss rises sharply as the first weight moves and barely changes as the last shift moves. A glowing ball rolls from the start and, with a large step, bounces from one canyon wall to the other. With scaled inputs the canyon walls fall down into a wide, shallow valley and the ball rolls smoothly to the valley floor."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets" id="cy-eta"><button class="preset" data-eta="1e-5" aria-pressed="true">η = 1e−5</button><button class="preset" data-eta="6e-5" aria-pressed="false">η = 6e−5</button><button class="preset" data-eta="1e-3" aria-pressed="false">η = 1e−3</button><button class="preset" data-eta="0.2" aria-pressed="false">η = 0.2</button></div>
+        <div class="presets" style="margin-top:.4rem"><button class="preset" id="cy-scale" aria-pressed="false">scale the inputs</button><button class="play" id="cy-play">▶ roll</button></div>
+        <div id="cy-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\theta\leftarrow\theta-\eta\,\frac{\partial L}{\partial\theta}\\ \frac{\partial L}{\partial W^{(1)}_{jk}}=\frac{\partial L}{\partial z^{(1)}_j}\,x_k\end{gathered}\]</p>
+    <p>One forward pass, one backward pass, one small step: the loss fell from 50 to 18.89. The step had to be tiny because a first-layer gradient is <strong>multiplied by the raw input</strong>, and age = 30 is big. Scale the inputs and a much bigger step becomes safe. And check your gradients against finite differences — they must agree.</p>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A weight has \(w=0.5\) and gradient \(\partial L/\partial w=-200\). With \(\eta=10^{-3}\), what is the new weight?</p>
+    <div class="opts">
+      <button data-why="The gradient is negative, so the step goes UP: w − η·(−200) = 0.5 + 0.2 = 0.7.">0.3</button>
+      <button data-correct data-why="Right. 0.5 − 0.001 × (−200) = 0.5 + 0.2 = 0.7. A negative gradient means the loss falls as w grows, so w grows.">0.7</button>
+      <button data-why="Multiply the gradient by η first: 0.001 × 200 = 0.2, not 0.02. So w becomes 0.5 + 0.2 = 0.7.">0.52</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A gradient check nudges \(\theta\) by \(h=0.01\) and finds \(L(\theta+h)=3.02\), \(L(\theta-h)=2.98\). Backprop says \(\partial L/\partial\theta=20\). What do you conclude?</p>
+    <div class="opts">
+      <button data-why="(3.02 − 2.98)/0.02 = 2, which is ten times smaller than 20. They do not agree — something is wrong.">They agree, the backward pass is right</button>
+      <button data-correct data-why="Right. The finite difference is (3.02 − 2.98)/(2 × 0.01) = 0.04/0.02 = 2. Backprop's 20 is ten times too big, so the backward pass has a bug (a factor slipped in somewhere).">They disagree (2 against 20): the backward pass has a bug</button>
+      <button data-why="A central difference with h = 0.01 is accurate to about h², far better than a factor of ten. The mismatch 2 vs 20 points to a real bug, not to the check.">The check is too rough to tell</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s9-->
+  <p class="onesent reveal"><b>In one sentence:</b> Step every number against its gradient — loss 50 → 18.89 — but a first-layer gradient carries the raw input inside it, so scale the inputs, and check the gradients against \((L(\theta+h)-L(\theta-h))/2h\).</p>
+</section>

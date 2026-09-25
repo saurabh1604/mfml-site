@@ -1,0 +1,140 @@
+<!-- ================= ACT IV · BUILD YOUR OWN ================= -->
+<!-- ================= 10 · FADES, EXPLODES, DIES ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>When the blame fades, explodes, or dies</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A message is whispered down a line of twenty children. If each child passes on only a quarter of what they heard, the last child hears almost nothing. If each child shouts it twice as loud, the last one is deafened. And if one child has fallen asleep, the message stops right there.</p>
+    <p>The backward pass is that line of children. Every layer multiplies the blame by its slope and its weights.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Walking back through one layer multiplies the blame by two things: the <strong>slope of the bend</strong> (Rule A) and the <strong>weights</strong> (Rule B). Through many layers these multiply up. Three things can go wrong.</p>
+    <p><strong>Fading (vanishing) blame.</strong> Sigmoid's slope is at most 0.25. So through 5 sigmoid layers the blame shrinks by at least \(0.25^5\approx0.001\), and through 10 layers by \(0.25^{10}\approx10^{-6}\) — unless the weights are big enough to make up for it. The first layers then hear almost nothing and barely learn. tanh is better (its slope reaches 1 at \(z=0\)). ReLU's slope is exactly 1 on every awake neuron, so nothing fades there.</p>
+    <p><strong>Exploding blame.</strong> If the weights are big, each layer multiplies the blame <em>up</em>. Twenty layers that each double it give about a million. Steps become wild. (Unit 17 will meet this again, as an eigenvalue story, when the same matrix is used over and over in time.)</p>
+    <p><strong>Dead neurons.</strong> A ReLU neuron whose \(z\) is negative for <em>every</em> input never passes any blame back — Rule A blocks it every time — so its incoming weights never change again. One sleeping neuron is normal; our salary network has one. Too many at once is the "dying ReLU" problem, and a big negative bias or one huge step (as in §9) can cause it.</p>
+    <p><strong>The usual fixes</strong>, named here and used in the playground: ReLU-family bends; careful starting weights, about \(\sqrt{2/\text{fan-in}}\) in size for ReLU (fan-in = the number of wires coming into a neuron); scaled inputs (<a href="unit-10.html#s5">Unit 10</a>); and adaptive steps like Adam (<a href="unit-11.html#s5">Unit 11</a>).</p>
+  </div>
+
+  <div class="widget reveal" id="w-depth">
+    <div class="widget-head"><span class="w-title">The blame tower</span><span class="w-sub">A deep, narrow network (4 neurons per layer) drawn as a tower of layers. A red pulse of blame travels down from the loss at the top. Each layer's bar shows how much blame gets through that layer, \(\|\partial L/\partial\mathbf z^{(l)}\|\), on a log scale — every ring on the bar is a factor of 10.</span></div>
+    <p class="try"><b>Try:</b> Pick sigmoid and 12 layers: the bars near the bottom fade to almost nothing. Switch to ReLU. Set the weight scale to 2×: the bars grow as the blame goes down — exploding. Last, drag the <em>bias</em> slider to the left and watch neurons fall asleep and whole layers go dark.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="dp-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D tower. Layers are stacked as glass discs from the input at the bottom to the loss at the top, each with four glowing neurons; sleeping neurons are grey. Beside the tower, one glowing bar per layer shows how big that layer's gradient is on a log scale. A red pulse runs down the tower from the top."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="tabs" id="dp-act" role="tablist"><button role="tab" aria-selected="true" data-t="sigmoid">sigmoid</button><button role="tab" aria-selected="false" data-t="tanh">tanh</button><button role="tab" aria-selected="false" data-t="relu">ReLU</button></div>
+        <div class="controls">
+          <div class="ctl"><label for="dp-n">layers</label><input id="dp-n" type="range" min="2" max="20" step="1" value="12"><output id="dp-n-o">12</output></div>
+          <div class="ctl"><label for="dp-bias">bias</label><input id="dp-bias" type="range" min="-3" max="1" step="0.1" value="0"><output id="dp-bias-o">0</output></div>
+        </div>
+        <div class="presets" id="dp-scale"><span class="lbl" style="font-family:var(--ui);font-size:.76rem;color:var(--ink-muted)">weights × the careful start √(2/fan-in):</span><button class="preset" data-s="0.5" aria-pressed="false">0.5</button><button class="preset" data-s="1" aria-pressed="true">1</button><button class="preset" data-s="2" aria-pressed="false">2</button><button class="preset" id="dp-seed">new random weights</button></div>
+        <div class="presets" style="margin-top:.4rem"><button class="play" id="dp-play">▶ send the blame down</button></div>
+        <div id="dp-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\Big|\frac{\partial L}{\partial\mathbf a^{(0)}}\Big|\ \text{is roughly}\\ \Big|\frac{\partial L}{\partial\hat y}\Big|\times\prod_{\text{layers}}(\text{slope}\times\text{weight size})\end{gathered}\]</p>
+    <p>The blame reaching the first layer is a <strong>product</strong> of one factor per layer. Factors below 1 make it fade (sigmoid: at most 0.25 each). Factors above 1 make it explode. A factor of exactly 0 — a neuron asleep for every input — kills it. Good bends, good starting weights and scaled inputs keep the factors near 1.</p>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A chain of 8 sigmoid layers has all weights equal to 1. At best, how much of the blame at the top reaches the bottom?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Each layer multiplies by at most 0.25 × 1, so after 8 layers at most 0.25⁸ = 1/65536 ≈ 0.000015 of the blame is left.">At most \(0.25^8\approx0.000015\) of it</button>
+      <button data-why="Weights of 1 do not shrink the blame, but the sigmoid slope does: at most 0.25 per layer. So after 8 layers at most 0.25⁸ ≈ 0.000015.">All of it, because the weights are 1</button>
+      <button data-why="The factors multiply, they do not add: 8 × 0.25 = 2 would be the sum. The product is 0.25⁸ ≈ 0.000015.">About twice as much, 8 × 0.25 = 2</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c18">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Across a whole batch of 100 inputs, one ReLU neuron always has a negative \(z\). What are the gradients of its incoming weights for this batch?</p>
+    <div class="opts">
+      <button data-why="A sleeping neuron blocks the blame, so its incoming weights get zero gradient — not something small but exactly zero.">Small but not zero</button>
+      <button data-correct data-why="Right. Rule A multiplies its blame by ReLU′(z) = 0 for every input, so ∂L/∂z = 0 each time, and Rule B makes every incoming weight's gradient 0 × input = 0. The neuron is dead: gradient descent will never wake it on its own.">Exactly zero — the neuron is dead and will not change</button>
+      <button data-why="Rule B gives weight gradients = (blame at z) × input. The blame at z is 0 here, so the product is 0, whatever the input.">As large as its inputs</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s10-->
+  <p class="onesent reveal"><b>In one sentence:</b> The blame reaching an early layer is a product of one factor per layer, so it fades with sigmoid (≤ 0.25 each), explodes with big weights, and dies at neurons that are always asleep — good bends, starting weights and scaled inputs keep it alive.</p>
+</section>
+
+<!-- ================= 11 · THE PLAYGROUND ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>The playground: build a network</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You have read the recipe, watched the chef, and tasted the dish. Now the kitchen is yours. Pick the ingredients, cook, taste, change one thing, and cook again.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Everything in this unit now runs in one place. You choose how many layers, how many neurons in each, and which bend each layer uses. You choose the head: a number (squared error) or a class (softmax and cross-entropy). Then you watch the network three ways at once — as a <strong>graph</strong> of neurons and wires, as <strong>matrices</strong>, and as the <strong>space</strong> it carves up — and you step through the forward and backward pass one node at a time, blue going right and red coming back, with the rule (A or B) and the numbers of each step written out.</p>
+    <p>Five experiments are built in as buttons. Try them in order:</p>
+    <ol class="roadmap">
+      <li><strong>Salary 2-3-2-1.</strong> The worked example of this unit. Step it node by node and check every number against §5 and §8: \(\mathbf z^{(1)}=(7,4,-2)\), \(\hat y=40\), \(L=50\), \(\partial L/\partial\mathbf z^{(1)}=(-60,10,0)\). One step at \(\eta=10^{-5}\) must give \(L=18.89\).</li>
+      <li><strong>No bend = one matrix.</strong> The same data with no activation: the boundary stays a straight line however many layers you add (§3). Switch to ReLU and watch it bend around the data.</li>
+      <li><strong>Dead ReLU.</strong> Start with a big negative bias. Most neurons sleep, the graph greys them out, and their gradients are exactly 0 (§10).</li>
+      <li><strong>Vanishing sigmoid.</strong> Six sigmoid layers. The gradient bars fade towards the input. Swap to ReLU and they come back (§10).</li>
+      <li><strong>Fold by fold.</strong> Fit a sine with one hidden layer. Add neurons one at a time and watch a new hinge appear with each (§4).</li>
+    </ol>
+  </div>
+<!--@PLAY-->
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{forward: store every }\mathbf z,\mathbf a\\ \downarrow\\ \text{backward: Rule A, Rule B}\\ \downarrow\\ \theta\leftarrow\theta-\eta\,\partial L/\partial\theta\end{gathered}\]</p>
+    <p>A network of any shape runs on the same three moves you did by hand. The playground is not a new idea — it is the salary network's forward pass, backward pass and update, done for whatever network you build, as many times as you like.</p>
+  </div>
+  <div class="check reveal" data-check="c19">
+    <span class="tag">Try it, then answer</span>
+    <p class="q">In the playground, load <em>No bend = one matrix</em>, keep the activation at "none", and add two more hidden layers. What shape is the boundary between the classes?</p>
+    <div class="opts">
+      <button data-why="Without bends the whole network collapses to one matrix and one shift (§3), so the boundary is where one straight score is zero: a straight line, however many layers you add.">A curve that gets more wiggly with every layer</button>
+      <button data-correct data-why="Right. With no activation every layer is straight, so the whole stack is one straight map, and its boundary is one straight line. Adding layers adds nothing. Switch to ReLU and the boundary can bend.">Still one straight line</button>
+      <button data-why="A straight map can still split the plane — along one straight line. What it cannot do is bend that line.">There is no boundary at all</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c20">
+    <span class="tag">Try it, then answer</span>
+    <p class="q">Load <em>Salary 2-3-2-1</em> and inspect the wire from input "age" to the third neuron of hidden layer 1. What gradient does backprop show for it, and what does the finite-difference check show?</p>
+    <div class="opts">
+      <button data-why="That is the gradient of the wire from age to the FIRST hidden neuron. The third neuron is asleep (z = −2), so its wires get 0.">−1800 and −1800</button>
+      <button data-correct data-why="Right. The third neuron has z⁽¹⁾₃ = −2, so it is asleep: Rule A blocks its blame and every incoming weight gets exactly 0. A tiny nudge of that weight keeps z negative, so the loss does not change either — the finite difference is 0 too.">0 and 0 — the neuron is asleep</button>
+      <button data-why="The finite difference nudges the weight by a tiny h. The neuron stays asleep (z stays near −2), so the loss does not change and the check gives 0, agreeing with backprop.">0 from backprop, but something else from the finite difference</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> The playground runs the same forward pass, two backward rules and update on any network you build, so you can test every claim of this unit — straight collapse, folds, dead and fading blame — with your own hands.</p>
+</section>
+
+<!-- ================= 12 · CARRY FORWARD ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>The whole unit fits on one card. Here it is, piece by piece.</p>
+  </div>
+  <div class="cards reveal-stagger">
+    <div class="cd"><h4>A layer</h4>Multiply by a matrix, add a shift, bend: \(\mathbf a=\operatorname{ReLU}(W\mathbf a_{\text{prev}}+\mathbf b)\). \(W\) is (neurons here) × (neurons before).</div>
+    <div class="cd"><h4>No bend ⇒ collapse</h4>Two straight layers are one: \(W_2W_1\), \(W_2\mathbf b_1+\mathbf b_2\). Depth needs bends.</div>
+    <div class="cd"><h4>Folds ⇒ any shape</h4>One ReLU is one crease; three make a hat; enough hats trace any curve. Depth folds the folds: \(2^k\) pieces.</div>
+    <div class="cd"><h4>Forward</h4>Row times column, shift, bend, layer by layer — and <strong>store every z and a</strong>.</div>
+    <div class="cd"><h4>The seed</h4>At the output, the blame is prediction minus truth: \(\hat y-y\), or \(\mathbf q-\mathbf y\) with softmax.</div>
+    <div class="cd"><h4>Rule A</h4>Across a ReLU: \(\partial L/\partial\mathbf z=\partial L/\partial\mathbf a\odot\operatorname{ReLU}'(\mathbf z)\). A switch.</div>
+    <div class="cd"><h4>Rule B</h4>Across \(W\mathbf a+\mathbf b\): \(\partial L/\partial W=\partial L/\partial\mathbf z\,\mathbf a^{\mathsf T}\), \(\partial L/\partial\mathbf b=\partial L/\partial\mathbf z\), \(\partial L/\partial\mathbf a=W^{\mathsf T}\partial L/\partial\mathbf z\).</div>
+    <div class="cd"><h4>Update and check</h4>\(\theta\leftarrow\theta-\eta\,\partial L/\partial\theta\). Scale the inputs. Check gradients with \((L(\theta+h)-L(\theta-h))/2h\).</div>
+    <div class="cd"><h4>Watch the blame</h4>It is a product over layers: it fades (sigmoid), explodes (big weights) or dies (sleeping ReLUs).</div>
+  </div>
+  <div class="prose reveal">
+    <p><strong>Where this goes next.</strong></p>
+    <ul>
+      <li><strong>Unit 16 · Words as Vectors.</strong> The network's first real job: reading. Each word becomes a list of numbers, and a softmax over the whole vocabulary — thousands of classes — predicts the next word. The blame at that softmax is \(\mathbf q-\mathbf y\) again.</li>
+      <li><strong>Unit 17 · Machines with Memory.</strong> The same layer is used again and again, once per word, so the backward pass runs back <em>through time</em> — and the fading and exploding of §10 become an eigenvalue story.</li>
+      <li><strong>Unit 18 · Attention and Transformers.</strong> Fixed wires are replaced by wires the network chooses for itself, using dot products (<a href="unit-03.html#s2d">Unit 3</a>) and softmax.</li>
+    </ul>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\frac{\partial L}{\partial\hat y}=\hat y-y,\ \text{then, layer by layer:}\\ \text{local slope}\times\text{incoming blame}\end{gathered}\]</p>
+    <p>At the output, the whole gradient is prediction minus truth. Everything before it is Unit 7's "local slope times incoming blame", done with matrices — Rule A at every bend, Rule B at every matrix. That is backpropagation, whole.</p>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> A network is multiply–shift–bend repeated; training is a forward pass that stores everything, a backward pass that starts from prediction minus truth and uses two rules, and a small step downhill.</p>
+</section>
+
+<!--@PRACTICE-->

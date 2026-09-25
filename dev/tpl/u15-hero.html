@@ -1,0 +1,20 @@
+<section class="hero-stage">
+  <div id="hero-3d" role="img" aria-label="A small neural network floats in space as glowing glass beads: two inputs, three beads, two beads and one output, joined by green and orange wires whose thickness shows each weight. Blue light carries age 30 and experience 10 from left to right; each bead fills with its number — 7, 4 and −2, and the −2 bead goes dark because its ReLU switches it off; then 6 and 7; then the prediction 40, shown as a blue bead in a glass column beside a ring at the true salary 50. Then a red pulse of blame, −10, leaves the loss and runs backwards along the same wires, splitting into −40 and −20, then −60, 10 and −20 — and the −20 stops dead at the sleeping bead. The wires flash as the weights change a little, a second blue wave gives 43.85, and the loss counter drops from 50 to 18.89. Then the story repeats."></div>
+  <div class="hero-scrim"></div>
+  <div class="wrap">
+  <header class="hero">
+    <div class="kicker reveal">Unit 15 of 20 · by Prof. Saurabh</div>
+    <h1 class="reveal">The Network, Whole</h1>
+    <p class="lede reveal">For fourteen units we collected parts: matrices that move space, the chain rule, blame flowing backwards, a step downhill, softmax. Now we bolt them together into a <strong>real neural network</strong> — and we keep <strong>every number visible</strong>. A layer is just three things: <strong>multiply by a matrix, add a shift, then bend</strong>. Values go forward through the layers. Then the blame for the mistake comes back along the same wires. At the output, the whole blame is simply <strong>prediction minus truth</strong>. Everything before it is Unit 7's "local slope times incoming blame", done with matrices. At the end you build your own network and watch it learn.</p>
+    <div class="meta reveal-stagger">
+      <span class="chip">≈ 120 min read + play</span>
+      <span class="chip">@@WIDGETS@@ interactive widgets · @@W3D@@ in 3D · a playground to build your own network</span>
+      <span class="chip">@@CHECKS@@ inline checks</span>
+      <span class="chip">🧾 @@DERIVES@@ proofs, folded away — open "if you want the algebra" when you are ready</span>
+      <span class="chip">✍ @@PROBS@@ solved practice problems</span>
+    </div>
+    <p class="hero-prev reveal"><a href="unit-14.html">← Unit 14 · Thinking in Probabilities</a></p>
+  </header>
+  </div>
+  <div class="hero-hint">values go right · blame comes back · drag to orbit</div>
+</section>

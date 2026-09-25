@@ -1,0 +1,237 @@
+<!-- ================= 13 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Practice arena — fourteen problems, solved in full</h2></div>
+  <div class="prose reveal">
+    <p>Fourteen problems, easy to hard: shapes and parameter counts, a forward pass by hand, collapsing two straight layers, building a shape out of ReLUs, a softmax head, both backward rules on their own, then a complete backward pass through a new network, one update, a gradient check, fading blame, dead neurons, wide against deep, and a training run to diagnose. Every number here was checked by machine.</p>
+    <p>Three habits do most of the work. <strong>Write the shapes first</strong>: every gradient has the shape of the thing it belongs to. <strong>Keep a cache</strong>: write every \(\mathbf z\) and \(\mathbf a\) of the forward pass in a table before you start going back. And <strong>check each ReLU's switch</strong> before you use Rule A — a negative \(z\) means a zero.</p>
+  </div>
+
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span><span class="chip">shapes</span></div>
+    <p class="pq">A network has shape <b>3 → 4 → 4 → 2</b>. <b>(a)</b> Give the shape of every weight matrix and bias vector. <b>(b)</b> How many numbers does the network learn in total?</p>
+    <p class="ptest"><b>What this tests.</b> The shape rule: \(W^{(l)}\) is (neurons in layer \(l\)) × (neurons in layer \(l-1\)). <b>Plan.</b> Walk the arrows one at a time; count weights and biases separately, then add.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — layer 1 (3 → 4).</b> Rows = 4 neurons here, columns = 3 before: \(W^{(1)}\) is \(4\times3\) (12 numbers), \(\mathbf b^{(1)}\) is \(4\times1\) (4).</div>
+      <div class="pstep"><b>Step 2 — layer 2 (4 → 4).</b> \(W^{(2)}\) is \(4\times4\) (16), \(\mathbf b^{(2)}\) is \(4\times1\) (4).</div>
+      <div class="pstep"><b>Step 3 — layer 3 (4 → 2).</b> \(W^{(3)}\) is \(2\times4\) (8), \(\mathbf b^{(3)}\) is \(2\times1\) (2).</div>
+      <div class="pstep"><b>Step 4 — add up (b).</b> \(12+4+16+4+8+2=46\).</div>
+      <p class="pans">answers at a glance: (a) \(W^{(1)}:4\times3\), \(\mathbf b^{(1)}:4\times1\), \(W^{(2)}:4\times4\), \(\mathbf b^{(2)}:4\times1\), \(W^{(3)}:2\times4\), \(\mathbf b^{(3)}:2\times1\). (b) 46 numbers.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Rows belong to where the wires <strong>go</strong>, columns to where they <strong>come from</strong>. Each layer adds (out × in) weights plus (out) biases.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span><span class="chip">forward pass</span></div>
+    <p class="pq">A 2 → 2 → 1 network has a ReLU hidden layer and a plain (no bend) output:
+    \[W^{(1)}=\begin{pmatrix}1&-1\\ 2&1\end{pmatrix},\ \mathbf b^{(1)}=\begin{pmatrix}0\\ -3\end{pmatrix},\qquad W^{(2)}=\begin{pmatrix}3&-2\end{pmatrix},\ b^{(2)}=4.\]
+    Find \(\mathbf z^{(1)}\), \(\mathbf a^{(1)}\) and \(\hat y\) for <b>(a)</b> \(\mathbf x=(2,1)\) and <b>(b)</b> \(\mathbf x=(1,3)\).</p>
+    <p class="ptest"><b>What this tests.</b> Row-times-column, the shift, and the ReLU switch. <b>Plan.</b> One row per hidden neuron; check each sign before bending.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a), the mix.</b>
+      \[\begin{aligned}\text{row 1: }&(1)(2)+(-1)(1)+0=1\\ \text{row 2: }&(2)(2)+(1)(1)-3=2\end{aligned}\]
+      So \(\mathbf z^{(1)}=(1,2)\).</div>
+      <div class="pstep"><b>Step 2 — (a), bend and output.</b> Both positive, so \(\mathbf a^{(1)}=(1,2)\). Then \(\hat y=(3)(1)+(-2)(2)+4=3-4+4=3\).</div>
+      <div class="pstep"><b>Step 3 — (b), the mix.</b> Row 1: \(1-3+0=-2\). Row 2: \(2+3-3=2\). So \(\mathbf z^{(1)}=(-2,2)\).</div>
+      <div class="pstep"><b>Step 4 — (b), bend and output.</b> The first neuron is asleep: \(\mathbf a^{(1)}=(0,2)\). Then \(\hat y=(3)(0)+(-2)(2)+4=0\).</div>
+      <p class="pans">answers at a glance: (a) \(\mathbf z^{(1)}=(1,2)\), \(\mathbf a^{(1)}=(1,2)\), \(\hat y=3\). (b) \(\mathbf z^{(1)}=(-2,2)\), \(\mathbf a^{(1)}=(0,2)\), \(\hat y=0\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Which neurons are awake depends on the input. The same network uses different "active wires" for different people.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span><span class="chip">collapse</span></div>
+    <p class="pq">Two layers with no activation: \(W_1=\begin{pmatrix}2&0\\ 1&1\end{pmatrix}\), \(\mathbf b_1=\begin{pmatrix}1\\ -1\end{pmatrix}\), \(W_2=\begin{pmatrix}1&1\\ 0&3\end{pmatrix}\), \(\mathbf b_2=\begin{pmatrix}0\\ 2\end{pmatrix}\). <b>(a)</b> Write the single layer \(M\mathbf x+\mathbf c\) that does the same job. <b>(b)</b> Check both versions at \(\mathbf x=(1,2)\).</p>
+    <p class="ptest"><b>What this tests.</b> \(W_2(W_1\mathbf x+\mathbf b_1)+\mathbf b_2=(W_2W_1)\mathbf x+(W_2\mathbf b_1+\mathbf b_2)\). <b>Plan.</b> One matrix product, one matrix–vector product, one check.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the matrix.</b> \(M=W_2W_1=\begin{pmatrix}2+1&0+1\\ 0+3&0+3\end{pmatrix}=\begin{pmatrix}3&1\\ 3&3\end{pmatrix}\).</div>
+      <div class="pstep"><b>Step 2 — the shift.</b> \(\mathbf c=W_2\mathbf b_1+\mathbf b_2=(1-1,\ 0-3)+(0,2)=(0,-1)\).</div>
+      <div class="pstep"><b>Step 3 — two layers at (1, 2).</b> Layer 1: \((2+0+1,\ 1+2-1)=(3,2)\). Layer 2: \((3+2+0,\ 0+6+2)=(5,8)\).</div>
+      <div class="pstep"><b>Step 4 — one layer at (1, 2).</b> \((3+2+0,\ 3+6-1)=(5,8)\). The same.</div>
+      <p class="pans">answers at a glance: (a) \(M=\begin{pmatrix}3&1\\ 3&3\end{pmatrix}\), \(\mathbf c=(0,-1)\). (b) both give \((5,8)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Without a bend, depth adds nothing: every stack of straight layers is one matrix and one shift.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">medium</span><span class="chip">building shapes</span></div>
+    <p class="pq">Build this function from ReLUs of the form \(c\cdot\operatorname{ReLU}(x-k)\): it is 0 for \(x\le1\), rises in a straight line to 3 at \(x=2\), falls in a straight line to 0 at \(x=5\), and stays 0 after that. Give the creases and their weights, and check the value at \(x=3\).</p>
+    <p class="ptest"><b>What this tests.</b> The hat idea: each crease's weight is the <em>change of slope</em> there. <b>Plan.</b> Find the slope of each straight piece, then the jumps in slope.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — slopes of the pieces.</b> Before 1: slope 0. From 1 to 2: rise 3 over 1, slope 3. From 2 to 5: fall 3 over 3, slope −1. After 5: slope 0.</div>
+      <div class="pstep"><b>Step 2 — changes of slope.</b> At \(x=1\): \(0\to3\), change \(+3\). At \(x=2\): \(3\to-1\), change \(-4\). At \(x=5\): \(-1\to0\), change \(+1\).</div>
+      <div class="pstep"><b>Step 3 — the function.</b>
+      \[f(x)=3\operatorname{ReLU}(x-1)-4\operatorname{ReLU}(x-2)+\operatorname{ReLU}(x-5).\]</div>
+      <div class="pstep"><b>Step 4 — checks.</b> \(f(2)=3\). \(f(3)=3(2)-4(1)+0=2\) (on the falling piece: \(3-1=2\) ✓). \(f(6)=15-16+1=0\).</div>
+      <p class="pans">answers at a glance: creases at 1, 2, 5 with weights \(+3,-4,+1\); \(f(3)=2\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A ReLU's weight is how much the slope <strong>turns</strong> at its crease. Read slopes off the picture, take differences, done.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff easy">easy</span><span class="chip">classification head</span></div>
+    <p class="pq">A three-class head outputs scores \(\mathbf z=(1,3,0)\). The true class is 2. Find <b>(a)</b> the softmax \(\mathbf q\), <b>(b)</b> the cross-entropy loss, <b>(c)</b> \(\partial L/\partial\mathbf z\).</p>
+    <p class="ptest"><b>What this tests.</b> Softmax, \(-\ln q_{\text{true}}\), and prediction minus truth. <b>Plan.</b> Exponentiate, add, divide; then subtract the one-hot label.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — exponentials.</b> \(e^1\approx2.718\), \(e^3\approx20.086\), \(e^0=1\). Total \(\approx23.804\).</div>
+      <div class="pstep"><b>Step 2 — softmax (a).</b> \(\mathbf q\approx(2.718,\,20.086,\,1)/23.804=(0.114,\,0.844,\,0.042)\).</div>
+      <div class="pstep"><b>Step 3 — loss (b).</b> \(L=-\ln0.844\approx0.170\).</div>
+      <div class="pstep"><b>Step 4 — blame (c).</b> \(\mathbf y=(0,1,0)\), so \(\mathbf q-\mathbf y\approx(0.114,\,-0.156,\,0.042)\). The entries add to 0.</div>
+      <p class="pans">answers at a glance: (a) \(\mathbf q\approx(0.114,0.844,0.042)\). (b) \(L\approx0.170\). (c) \((0.114,-0.156,0.042)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>At a softmax head the blame is \(\mathbf q-\mathbf y\): the true class is told "go up" by how much probability it is missing; the others "go down" by how much they took.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff easy">easy</span><span class="chip">Rule A</span></div>
+    <p class="pq">Blame \(\partial L/\partial\mathbf a=(4,-2,6,-1)\) arrives at a ReLU layer whose stored pre-activations are \(\mathbf z=(3,-1,0.5,-4)\). Find \(\partial L/\partial\mathbf z\) and say which neurons pass no blame.</p>
+    <p class="ptest"><b>What this tests.</b> Rule A as a switch. <b>Plan.</b> Slopes from the signs of \(\mathbf z\), then multiply entry by entry.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the switches.</b> \(\operatorname{ReLU}'(\mathbf z)=(1,0,1,0)\): neurons 2 and 4 were asleep.</div>
+      <div class="pstep"><b>Step 2 — multiply.</b> \((4,-2,6,-1)\odot(1,0,1,0)=(4,0,6,0)\).</div>
+      <p class="pans">answers at a glance: \(\partial L/\partial\mathbf z=(4,0,6,0)\); neurons 2 and 4 pass nothing.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Rule A looks at the sign of the stored \(z\), never at the sign of the blame.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span><span class="chip">Rule B</span></div>
+    <p class="pq">A linear layer has \(W=\begin{pmatrix}2&-1&0\\ 1&3&-2\end{pmatrix}\), stored input \(\mathbf a=(1,2,3)\), and incoming blame \(\partial L/\partial\mathbf z=(0.5,-1)\). Find \(\partial L/\partial W\), \(\partial L/\partial\mathbf b\) and \(\partial L/\partial\mathbf a\).</p>
+    <p class="ptest"><b>What this tests.</b> All three results of Rule B, and where the transpose goes. <b>Plan.</b> Shapes first: \(\partial L/\partial W\) is \(2\times3\), \(\partial L/\partial\mathbf a\) is \(3\times1\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the weights (outer product).</b>
+      \[\frac{\partial L}{\partial W}=\begin{pmatrix}0.5\\ -1\end{pmatrix}\begin{pmatrix}1&2&3\end{pmatrix}=\begin{pmatrix}0.5&1&1.5\\ -1&-2&-3\end{pmatrix}.\]</div>
+      <div class="pstep"><b>Step 2 — the shifts.</b> \(\partial L/\partial\mathbf b=(0.5,-1)\).</div>
+      <div class="pstep"><b>Step 3 — the layer below (\(W^{\mathsf T}\)).</b>
+      \[\begin{aligned}\text{row 1: }&(2)(0.5)+(1)(-1)=0\\ \text{row 2: }&(-1)(0.5)+(3)(-1)=-3.5\\ \text{row 3: }&(0)(0.5)+(-2)(-1)=2\end{aligned}\]</div>
+      <p class="pans">answers at a glance: \(\partial L/\partial W=\begin{pmatrix}0.5&1&1.5\\ -1&-2&-3\end{pmatrix}\), \(\partial L/\partial\mathbf b=(0.5,-1)\), \(\partial L/\partial\mathbf a=(0,-3.5,2)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Weights: (blame column)(input row). Layer below: \(W^{\mathsf T}\)·blame — each input collects the blame of every neuron it fed.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff hard">hard</span><span class="chip">full backward pass</span></div>
+    <p class="pq">Take Problem 2's network at \(\mathbf x=(2,1)\), with target \(y=5\) and loss \(L=\tfrac12(\hat y-y)^2\). Find the loss and all six gradients: \(\partial L/\partial W^{(2)}\), \(\partial L/\partial b^{(2)}\), \(\partial L/\partial\mathbf a^{(1)}\), \(\partial L/\partial\mathbf z^{(1)}\), \(\partial L/\partial W^{(1)}\), \(\partial L/\partial\mathbf b^{(1)}\).</p>
+    <p class="ptest"><b>What this tests.</b> The whole backward sweep on a fresh network. <b>Plan.</b> Cache first; the output has no bend, so the seed goes straight into Rule B.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the cache.</b> From Problem 2: \(\mathbf a^{(0)}=(2,1)\), \(\mathbf z^{(1)}=(1,2)\), \(\mathbf a^{(1)}=(1,2)\), \(\hat y=3\). Loss \(L=\tfrac12(3-5)^2=2\).</div>
+      <div class="pstep"><b>Step 2 — the seed.</b> \(\partial L/\partial\hat y=3-5=-2\). No bend at the output, so this is also \(\partial L/\partial z^{(2)}\).</div>
+      <div class="pstep"><b>Step 3 — Rule B at layer 2.</b> \(\partial L/\partial W^{(2)}=(-2)(1,2)=(-2,-4)\), \(\partial L/\partial b^{(2)}=-2\), \(\partial L/\partial\mathbf a^{(1)}=(3,-2)^{\mathsf T}(-2)=(-6,4)\).</div>
+      <div class="pstep"><b>Step 4 — Rule A at layer 1.</b> \(\mathbf z^{(1)}=(1,2)\): both awake, so \(\partial L/\partial\mathbf z^{(1)}=(-6,4)\).</div>
+      <div class="pstep"><b>Step 5 — Rule B at layer 1.</b>
+      \[\frac{\partial L}{\partial W^{(1)}}=\begin{pmatrix}-6\\ 4\end{pmatrix}\begin{pmatrix}2&1\end{pmatrix}=\begin{pmatrix}-12&-6\\ 8&4\end{pmatrix},\qquad\frac{\partial L}{\partial\mathbf b^{(1)}}=\begin{pmatrix}-6\\ 4\end{pmatrix}.\]</div>
+      <p class="pans">answers at a glance: \(L=2\); \(\partial L/\partial W^{(2)}=(-2,-4)\), \(\partial L/\partial b^{(2)}=-2\), \(\partial L/\partial\mathbf a^{(1)}=(-6,4)\), \(\partial L/\partial\mathbf z^{(1)}=(-6,4)\), \(\partial L/\partial W^{(1)}=\begin{pmatrix}-12&-6\\ 8&4\end{pmatrix}\), \(\partial L/\partial\mathbf b^{(1)}=(-6,4)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Seed, then alternate: Rule B, Rule A, Rule B… Every step reads one thing from the cache.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span><span class="chip">one update</span></div>
+    <p class="pq">Continue Problem 8. Take one gradient-descent step with \(\eta=0.01\). Write the new weights and shifts, run the forward pass again at \(\mathbf x=(2,1)\), and give the new \(\hat y\) and loss.</p>
+    <p class="ptest"><b>What this tests.</b> \(\theta\leftarrow\theta-\eta\,\partial L/\partial\theta\) for every number, then a fresh forward pass. <b>Plan.</b> Each change is \(-0.01\times\)gradient.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the new numbers.</b>
+      \[\begin{aligned}W^{(1)}&=\begin{pmatrix}1.12&-0.94\\ 1.92&0.96\end{pmatrix},\ \mathbf b^{(1)}=\begin{pmatrix}0.06\\ -3.04\end{pmatrix},\\ W^{(2)}&=\begin{pmatrix}3.02&-1.96\end{pmatrix},\ b^{(2)}=4.02.\end{aligned}\]
+      For example \(1-0.01(-12)=1.12\), and \(-3-0.01(4)=-3.04\).</div>
+      <div class="pstep"><b>Step 2 — forward again.</b> Row 1: \(2.24-0.94+0.06=1.36\). Row 2: \(3.84+0.96-3.04=1.76\). Both awake.</div>
+      <div class="pstep"><b>Step 3 — output and loss.</b> \(\hat y=(3.02)(1.36)+(-1.96)(1.76)+4.02=4.1072-3.4496+4.02=4.6776\). \(L=\tfrac12(4.6776-5)^2\approx0.052\).</div>
+      <p class="pans">answers at a glance: \(\hat y=4.6776\), loss \(2\to0.052\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>One forward pass, one backward pass, one small step — and the loss here fell by a factor of almost 40.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff medium">medium</span><span class="chip">gradient check</span></div>
+    <p class="pq">In Problem 8's setting, check \(\partial L/\partial W^{(2)}_1\) (the weight 3) by finite differences with \(h=0.1\). <b>(a)</b> Compute \(L(3.1)\) and \(L(2.9)\) and the central difference. <b>(b)</b> Compute the one-sided difference \((L(3.1)-L(3))/0.1\). Compare both with backprop.</p>
+    <p class="ptest"><b>What this tests.</b> Doing a gradient check by hand, and why the central version is better. <b>Plan.</b> Only \(\hat y\) changes: \(\hat y=w\cdot1-2\cdot2+4=w\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the loss as a function of this weight.</b> With \(\mathbf a^{(1)}=(1,2)\) fixed, \(\hat y=w-4+4=w\), so \(L(w)=\tfrac12(w-5)^2\).</div>
+      <div class="pstep"><b>Step 2 — central (a).</b> \(L(3.1)=\tfrac12(1.9)^2=1.805\), \(L(2.9)=\tfrac12(2.1)^2=2.205\). Central difference \((1.805-2.205)/0.2=-2\). Backprop said \(-2\): exact agreement.</div>
+      <div class="pstep"><b>Step 3 — one-sided (b).</b> \(L(3)=2\). \((1.805-2)/0.1=-1.95\): off by 0.05, which is \(h/2\) times the curvature 1.</div>
+      <p class="pans">answers at a glance: (a) \(1.805,\ 2.205,\ -2\) (matches backprop). (b) \(-1.95\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Use the central difference \((L(\theta+h)-L(\theta-h))/2h\): its error shrinks like \(h^2\), the one-sided one only like \(h\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff easy">easy</span><span class="chip">fading blame</span></div>
+    <p class="pq">A chain of 6 one-neuron sigmoid layers. <b>(a)</b> If every \(|w|\le2\), what is the most the blame can keep, as a fraction, from top to bottom? <b>(b)</b> And if every \(|w|\le1\)? <b>(c)</b> What is the factor through 6 <em>awake</em> ReLU layers with every \(w=1\)?</p>
+    <p class="ptest"><b>What this tests.</b> The blame is a product of (slope × weight) per layer. <b>Plan.</b> Sigmoid's slope ≤ 0.25; ReLU's slope = 1 when awake.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> Each layer: at most \(0.25\times2=0.5\). Six layers: \(0.5^6=1/64\approx0.0156\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> Each layer at most \(0.25\): \(0.25^6=1/4096\approx0.000244\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> Each layer exactly \(1\times1=1\), so the factor is 1: nothing fades.</div>
+      <p class="pans">answers at a glance: (a) \(1/64\approx0.0156\). (b) \(1/4096\approx0.000244\). (c) 1.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Blame through \(k\) layers is a product of \(k\) factors. Keep each factor near 1.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff medium">medium</span><span class="chip">dead neurons</span></div>
+    <p class="pq">A ReLU layer of 3 neurons sees a batch of 4 inputs \(\mathbf x_1=(1,0)\), \(\mathbf x_2=(2,1)\), \(\mathbf x_3=(0,1)\), \(\mathbf x_4=(1,1)\). Its pre-activations (rows = neurons, columns = inputs) and the incoming blames \(\partial L/\partial a\) are
+    \[Z=\begin{pmatrix}2&-1&0.5&3\\ -3&-0.2&-1&-4\\ -1&-2&1&-0.5\end{pmatrix},\quad G=\begin{pmatrix}1&1&1&1\\ 0.5&-0.5&2&1\\ 0.4&-0.2&0.6&1\end{pmatrix}.\]
+    <b>(a)</b> Which neuron is dead on this batch? <b>(b)</b> Find each neuron's bias gradient, summed over the batch. <b>(c)</b> Find each neuron's weight gradients, summed over the batch.</p>
+    <p class="ptest"><b>What this tests.</b> Rule A per input, then Rule B summed over a batch. <b>Plan.</b> Mask \(G\) by the signs of \(Z\); sum rows for the biases; for the weights add (masked blame) × input.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the switches.</b> Neuron 1 is awake on inputs 1, 3, 4. Neuron 2 is asleep on <strong>every</strong> input — dead. Neuron 3 is awake only on input 3.</div>
+      <div class="pstep"><b>Step 2 — masked blame.</b> Neuron 1: \((1,0,1,1)\). Neuron 2: \((0,0,0,0)\). Neuron 3: \((0,0,0.6,0)\).</div>
+      <div class="pstep"><b>Step 3 — biases (b).</b> Sum each row: \(3,\ 0,\ 0.6\).</div>
+      <div class="pstep"><b>Step 4 — weights (c).</b> Neuron 1: \(1\cdot(1,0)+1\cdot(0,1)+1\cdot(1,1)=(2,2)\). Neuron 2: \((0,0)\). Neuron 3: \(0.6\cdot(0,1)=(0,0.6)\).</div>
+      <p class="pans">answers at a glance: (a) neuron 2. (b) \((3,\ 0,\ 0.6)\). (c) \((2,2)\), \((0,0)\), \((0,0.6)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A neuron asleep on the whole batch gets exactly zero gradient, so plain gradient descent can never wake it. That is a dead ReLU.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 13 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 13</span><span class="pdiff medium">medium</span><span class="chip">wide or deep</span></div>
+    <p class="pq">Two ReLU networks with one input and one output. <b>A</b>: one hidden layer of 16 neurons (1 → 16 → 1). <b>B</b>: five hidden layers of 2 neurons (1 → 2 → 2 → 2 → 2 → 2 → 1). <b>(a)</b> Count each network's numbers. <b>(b)</b> At most how many straight pieces can A make? <b>(c)</b> Using the tent fold, how many can B make?</p>
+    <p class="ptest"><b>What this tests.</b> Parameter counting, and "width adds creases, depth folds the folds". <b>Plan.</b> Count per layer; A has one crease per neuron; B doubles per layer.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — count A.</b> \(16\) weights + \(16\) biases in, \(16\) weights + \(1\) bias out: \(49\).</div>
+      <div class="pstep"><b>Step 2 — count B.</b> First layer \(2+2=4\). Four \(2\to2\) layers, \(4+2=6\) each: \(24\). Output \(2+1=3\). Total \(31\).</div>
+      <div class="pstep"><b>Step 3 — pieces of A.</b> 16 creases cut the line into at most \(17\) straight pieces.</div>
+      <div class="pstep"><b>Step 4 — pieces of B.</b> Each layer of 2 ReLUs makes one tent, \(t(x)=2\operatorname{ReLU}(x)-4\operatorname{ReLU}(x-\tfrac12)\), and each tent doubles the pieces: \(2^5=32\).</div>
+      <p class="pans">answers at a glance: (a) A: 49, B: 31. (b) 17. (c) 32.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Width adds pieces one crease at a time. Depth multiplies them. That is one reason deep networks are worth their trouble.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 14 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 14</span><span class="pdiff hard">hard</span><span class="chip">diagnose the run</span></div>
+    <p class="pq">The salary network of this unit was trained three times from the same start with three step sizes. The recorded losses:
+    <table class="plain"><thead><tr><th>\(\eta\)</th><th>step 0</th><th>step 1</th><th>step 2</th><th>step 3</th><th>step 10</th></tr></thead><tbody>
+      <tr><td>\(10^{-5}\)</td><td>50</td><td>18.89</td><td>7.07</td><td>2.62</td><td>0.0024</td></tr>
+      <tr><td>\(10^{-4}\)</td><td>50</td><td>428.81</td><td>1078.76</td><td>841.74</td><td>0.0157</td></tr>
+      <tr><td>\(2\times10^{-3}\)</td><td>50</td><td>624412</td><td>1250</td><td>1250</td><td>1250</td></tr></tbody></table>
+    <b>(a)</b> Which run would you trust, and why? <b>(b)</b> What is \(\hat y\) in the third run from step 2 on? <b>(c)</b> Why can the third run never recover? <b>(d)</b> What is the real fix?</p>
+    <p class="ptest"><b>What this tests.</b> Reading a loss curve like a doctor (<a href="unit-10.html#s11">Unit 10</a>), and connecting it to dead ReLUs. <b>Plan.</b> Look for monotone falls, jumps, and a loss that freezes at a suspicious value.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(\eta=10^{-5}\): the loss falls every step, by a factor of about 2.7 each time. The \(10^{-4}\) run jumps <em>up</em> to 429 and then 1079 — it overshoots and bounces; it happens to settle by step 10, but you would not bet on it. Trust \(10^{-5}\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> A loss of exactly 1250 means \(\tfrac12(\hat y-50)^2=1250\), so \(\hat y=0\) or \(\hat y=100\). If it were 100, the blame \(\hat y-y=+50\) would move the weights and the loss would change. It is frozen, so nothing is moving: \(\hat y=0\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> The giant first step (loss 624 412, \(\hat y\approx1168\)) pushed the first-layer weights so far that every hidden-1 neuron now has a negative \(z\): all asleep. Rule A blocks all blame, every gradient before them is 0, and \(\hat y\) stays 0. The network is dead.</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Scale the inputs (age/100, experience/10). Then the first-layer gradients are no longer 30 times inflated, and a much larger \(\eta\) (like \(5\times10^{-4}\)) trains smoothly.</div>
+      <p class="pans">answers at a glance: (a) \(\eta=10^{-5}\) (steady fall). (b) \(\hat y=0\). (c) every first-layer neuron is asleep, so all gradients are 0. (d) scale the inputs.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A loss frozen at a round number is a clue. \(\tfrac12y^2\) means the network is outputting 0 — often because its ReLUs have died.</p></div>
+    </details>
+  </div>
+
+  <div class="next-card reveal">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong>Unit 16 · Words as Vectors</strong> <span style="color:var(--ink-muted)">— upcoming</span></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">The network gets its first real job: reading. Each word becomes a list of numbers — a vector — and a softmax over the whole vocabulary predicts the next word. The blame at that softmax is prediction minus truth again. And meaning turns out to be a direction: the arrow from "man" to "woman" points the same way as the arrow from "king" to "queen".</p>
+    <p style="margin:0;font-size:.85rem"><a href="unit-14.html">← Unit 14 · Thinking in Probabilities</a> · <a href="index.html">All units</a></p>
+  </div>
+</section>

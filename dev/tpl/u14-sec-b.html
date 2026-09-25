@@ -1,0 +1,224 @@
+<!-- ================= ACT II · THE GAUSSIAN ================= -->
+<!-- ================= 4 · THE BELL CURVE ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>The bell curve, and why it keeps showing up</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Line up all the students of a big school by height. Most are somewhere in the middle. A few are very tall, a few are very short, and nobody is three metres tall.</p>
+    <p>Draw how many students have each height and you get a hill with gentle slopes on both sides: a <strong>bell</strong>.</p>
+    <p>Marks in a board result, errors when you weigh rice on a shop scale, the time a train is late — the same bell shows up again and again. Why?</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Think about what makes your height. Hundreds of small things: many genes, food at age five, sleep, a growth spurt in class 8. Each one nudges you a little up or a little down, and mostly independently of the others.</p>
+    <p>That is the Galton board again. Each peg is one small nudge left or right, and the pile at the bottom is a bell. The same thing happens whenever <strong>many small, independent nudges add up</strong>. It does not matter what each nudge looks like. Their sum comes out bell-shaped. This fact has a grand name, the <em>central limit theorem</em>, and it is why the bell is everywhere.</p>
+    <p>The bell has a formula. It looks scary, so let us read it aloud, one step at a time:</p>
+    \[p(x)=\frac{1}{\sigma\sqrt{2\pi}}\;\exp\!\Big(-\tfrac12\Big(\frac{x-\mu}{\sigma}\Big)^{2}\Big)\]
+  </div>
+  <div class="formula-read reveal"><b>Reading the bell, left to right inside the bracket:</b>
+    <ol>
+      <li>\(x-\mu\): how far \(x\) is from the middle \(\mu\).</li>
+      <li>\(\dfrac{x-\mu}{\sigma}\): that distance, <strong>measured in \(\sigma\)'s</strong>. This number is called the <em>z-score</em>.</li>
+      <li>Square it: left or right does not matter, only how far.</li>
+      <li>\(\exp(-\tfrac12\,\cdot)\): at the middle this is 1; far away it dies off very fast.</li>
+      <li>\(\dfrac1{\sigma\sqrt{2\pi}}\): a fixed number that makes the total area exactly 1.</li>
+    </ol>
+  </div>
+  <div class="prose reveal">
+    <p>Two numbers set the whole bell: the middle \(\mu\) and the spread \(\sigma\). We write it \(\mathcal N(\mu,\sigma^2)\).</p>
+    <p>Because the formula only cares about the z-score, every bell is the same bell, stretched and shifted. So one rule works for all of them, the <strong>68–95–99.7 rule</strong>: about 68% of the area lies within \(1\sigma\) of the middle, about 95% within \(2\sigma\), and about 99.7% within \(3\sigma\).</p>
+    <p>Example. In a class, heights have \(\mu=160\) cm and \(\sigma=8\) cm. A student 172 cm tall has \(z=\tfrac{172-160}{8}=1.5\): one and a half spreads above the middle. About 95% of the class is between \(160-16=144\) cm and \(160+16=176\) cm.</p>
+  </div>
+
+  <div class="widget reveal" id="w-bell">
+    <div class="widget-head"><span class="w-title">The bell, measured in σ's</span><span class="w-sub">Shade ±1σ, ±2σ or ±3σ and read the area. Drag the probe to read its z-score and the height of the curve there.</span></div>
+    <p class="try"><b>Try:</b> Press <em>±2σ</em>: 95.4% of the area, whatever \(\mu\) and \(\sigma\) are. Change \(\sigma\) and check — the shaded share never moves. Then drag the probe to 172 cm and read its z-score.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="bl-svg" viewBox="0 0 600 380" class="svg-lab grabbable" role="img" aria-label="A bell curve of class heights. A band of ±1, ±2 or ±3 standard deviations around the gold mean line is shaded in cyan with its area printed. A draggable white probe marks a height and shows its z-score."></svg></div><p class="stage-tap">drag the probe</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="bl-mu">middle μ (cm)</label><input id="bl-mu" type="range" min="140" max="180" step="1" value="160"><output id="bl-mu-o">160</output></div>
+          <div class="ctl"><label for="bl-sig">spread σ (cm)</label><input id="bl-sig" type="range" min="3" max="15" step="0.5" value="8"><output id="bl-sig-o">8</output></div>
+        </div>
+        <div class="presets" id="bl-k"><button class="preset" id="bl-k1">±1σ</button><button class="preset" id="bl-k2" aria-pressed="true">±2σ</button><button class="preset" id="bl-k3">±3σ</button></div>
+        <table class="kv" id="bl-kv"></table>
+        <div id="bl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Now watch the central limit theorem happen. Take a <strong>lopsided</strong> die: it lands on 1 very often (40%), on 6 often (30%), and rarely on the middle faces. Its pmf looks nothing like a bell — it is a U. Roll it \(n\) times and take the <em>average</em>. The widget below draws the exact distribution of that average.</p>
+  </div>
+
+  <div class="widget reveal" id="w-clt">
+    <div class="widget-head"><span class="w-title">A lopsided die becomes a bell</span><span class="w-sub">The exact distribution of the average of n rolls, with the matching bell drawn over it. At n = 1 it is a U. By n ≈ 10 it is a bell.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ add rolls</em> and watch the U fill in, turn lumpy, then smooth into the bell. Notice the bell also gets <strong>narrower</strong> as \(n\) grows: averages wobble less than single rolls.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="ct-svg" viewBox="0 0 600 380" class="svg-lab" role="img" aria-label="Bars showing the exact probability of each possible average of n rolls of a lopsided die, with a smooth bell curve drawn over them. A small inset shows the lopsided die's own U-shaped chances."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="ct-n">number of rolls n</label><input id="ct-n" type="range" min="1" max="30" step="1" value="1"><output id="ct-n-o">1</output></div>
+        </div>
+        <div class="presets"><button class="play" id="ct-play">▶ add rolls</button><button class="preset" id="ct-p1">n = 1</button><button class="preset" id="ct-p10">n = 10</button><button class="preset" id="ct-p30">n = 30</button></div>
+        <table class="kv" id="ct-kv"></table>
+        <div id="ct-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathcal N(\mu,\sigma^2):\ \ p(x)=\frac{1}{\sigma\sqrt{2\pi}}\,e^{-z^2/2},\\ z=\frac{x-\mu}{\sigma}\end{gathered}\]</p>
+    <p>The bell only asks one question: <strong>how many \(\sigma\)'s from the middle are you?</strong> That is why 68–95–99.7 holds for every bell. And it appears whenever many small independent nudges add up — the average of \(n\) rolls has spread \(\sigma/\sqrt n\) and a bell's shape.</p>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Board marks in a subject follow a bell with \(\mu=60\) and \(\sigma=10\). About what share of students scored between 40 and 80?</p>
+    <div class="opts">
+      <button data-why="68% is the share within 1σ, which here is 50 to 70. 40 to 80 is twice as wide: 2σ on each side.">About 68%</button>
+      <button data-correct data-why="Right. 40 and 80 are 20 marks = 2σ from the middle, so z runs from −2 to +2, and about 95% (95.4%) of a bell lies there.">About 95%</button>
+      <button data-why="99.7% is the share within 3σ, which would be 30 to 90. 40 to 80 is only 2σ on each side.">About 99.7%</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A die is badly lopsided — its own pmf is U-shaped. What does the distribution of the <em>average</em> of 30 rolls look like?</p>
+    <div class="opts">
+      <button data-why="The lopsidedness of one roll does not survive averaging. Many independent rolls added together give a bell, whatever each roll looks like.">Still U-shaped, just like one roll</button>
+      <button data-correct data-why="Right. The central limit theorem: an average of many independent rolls is bell-shaped around the die's mean, 3.25, with spread σ/√30 = 2.19/5.48 ≈ 0.40.">A narrow bell around the die's mean, 3.25</button>
+      <button data-why="Averages are not flat. They cluster around the die's mean, and the more rolls, the tighter the cluster.">Flat: every average between 1 and 6 equally likely</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> The bell \(\mathcal N(\mu,\sigma^2)\) measures everything in \(\sigma\)'s from the middle, so 68–95–99.7 holds for every bell, and it shows up whenever many small independent nudges add up.</p>
+</section>
+
+<!-- ================= 5 · MANY DIMENSIONS ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>The Gaussian in many dimensions</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Now measure two things for every student: height and weight. Plot each student as a dot.</p>
+    <p>The dots do not make a round blob. Tall students tend to be heavier, so the cloud is a <strong>tilted oval</strong>. A 180 cm student who weighs 75 kg is ordinary. A 150 cm student who weighs 75 kg is unusual — even though both are the same "distance" from the average in plain centimetres and kilograms.</p>
+    <p>We need a bell that knows the two measurements move together.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>In two dimensions the middle becomes a <strong>mean vector</strong> \(\boldsymbol\mu\), and the spread becomes the <strong>covariance matrix</strong> \(\Sigma\) — the same matrix you built in <a href="unit-12.html#s3">Unit 12</a>. Its diagonal holds each measurement's own variance. Its off-diagonal says how much they move together.</p>
+    <p>The formula is the 1-D bell with one change. Instead of "distance divided by \(\sigma\), squared", we use "distance measured with \(\Sigma^{-1}\)":</p>
+    \[\begin{aligned}p(\mathbf x)&=\frac{1}{2\pi\sqrt{\det\Sigma}}\\ &\quad\times\exp\!\Big(-\tfrac12\,(\mathbf x-\boldsymbol\mu)^{\!\top}\Sigma^{-1}(\mathbf x-\boldsymbol\mu)\Big).\end{aligned}\]
+    <p>The number \(d^2=(\mathbf x-\boldsymbol\mu)^{\!\top}\Sigma^{-1}(\mathbf x-\boldsymbol\mu)\) is a squared distance measured in <strong>the data's own ruler</strong>. It is called the <em>Mahalanobis distance</em> (after P. C. Mahalanobis, who founded the Indian Statistical Institute). Along the long axis of the cloud the ruler is long, so points count as close. Across the short axis the ruler is short, so the same step counts as far.</p>
+    <p><strong>The picture.</strong> Where is the density equal to some fixed value? Where \(d^2\) is fixed. And \(\mathbf x^{\!\top}\Sigma^{-1}\mathbf x=\text{constant}\) is an <strong>ellipse</strong> — the covariance ellipse of <a href="unit-12.html#s3">Unit 12</a>. It was a contour of a probability mountain all along. Its axes point along the <strong>eigenvectors</strong> of \(\Sigma\) (<a href="unit-04.html#s7">Unit 4</a>), and their lengths grow like \(\sqrt\lambda\).</p>
+    <p><strong>Worked example.</strong> Take \(\boldsymbol\mu=\mathbf 0\) and</p>
+    \[\Sigma=\begin{bmatrix}2&1\\1&2\end{bmatrix}.\]
+    <p>Its eigenvalues are 3 and 1, with eigenvectors \((1,1)/\sqrt2\) and \((1,-1)/\sqrt2\). So the ellipse is tilted at 45°, and the long axis is \(\sqrt3\approx1.73\) times the short one. \(\det\Sigma=4-1=3\), so the peak of the mountain is \(\dfrac{1}{2\pi\sqrt3}\approx0.0919\).</p>
+    <p>Now two points, both at ordinary distance \(\sqrt2\approx1.414\) from the middle: \((1,1)\) and \((1,-1)\). Using \(\Sigma^{-1}=\tfrac13\begin{bmatrix}2&-1\\-1&2\end{bmatrix}\): the point \((1,1)\) has \(d^2=\tfrac23\), so \(d\approx0.816\). The point \((1,-1)\) has \(d^2=2\), so \(d\approx1.414\). The first lies along the long axis — ordinary. The second cuts across the short axis — unusual.</p>
+    <p><strong>Two special cases.</strong> If the off-diagonal is zero (correlation \(\rho=0\)), the ellipse's axes line up with the coordinate axes, and if also the two spreads are equal, it is a circle. Then the mountain is simply one bell in \(x_1\) times one bell in \(x_2\): the two measurements are <em>independent</em>. And whatever \(\Sigma\) is, every straight vertical slice through the mountain is itself a 1-D bell.</p>
+  </div>
+
+  <div class="widget reveal" id="w-gauss2d">
+    <div class="widget-head"><span class="w-title">The probability mountain and its ellipse</span><span class="w-sub">Height = density. The floor shows its contour ellipses and the two eigen-axes. Drag the white probe: the plain distance and the Mahalanobis distance disagree.</span></div>
+    <p class="try"><b>Try:</b> Press <em>Σ = [[2,1],[1,2]]</em>, then drag the probe to (1, 1) and to (1, −1): the same plain distance, very different Mahalanobis distances. Turn \(\rho\) to 0 and the ellipse snaps to the axes. Switch on <em>slice</em> — every slice is a bell. Drag the gold mean to move the whole mountain.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="g2-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A glowing cyan mountain of probability rises over a glass floor. On the floor its contour ellipses glow, tilted, with the two eigen-axes drawn as green arrows and a gold marker at the mean. A white probe bead sits on the floor with a thin line up to the mountain's surface. With the slice switch on, a vertical glass pane cuts the mountain and the cut edge glows as a one-dimensional bell."></div><p class="stage-tap">drag the probe or the gold mean · drag elsewhere to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="g2-s1">spread σ₁</label><input id="g2-s1" type="range" min="0.5" max="2" step="0.01" value="1.41"><output id="g2-s1-o">1.41</output></div>
+          <div class="ctl"><label for="g2-s2">spread σ₂</label><input id="g2-s2" type="range" min="0.5" max="2" step="0.01" value="1.41"><output id="g2-s2-o">1.41</output></div>
+          <div class="ctl"><label for="g2-rho">correlation ρ</label><input id="g2-rho" type="range" min="-0.9" max="0.9" step="0.01" value="0.5"><output id="g2-rho-o">0.5</output></div>
+        </div>
+        <div class="presets" id="g2-pre"><button class="preset" id="g2-p-worked" aria-pressed="true">Σ = [[2,1],[1,2]]</button><button class="preset" id="g2-p-round">round (ρ = 0)</button><button class="preset" id="g2-p-long">stretched (ρ = 0.9)</button><button class="preset" id="g2-slice">slice: off</button></div>
+        <table class="kv" id="g2-kv"></table>
+        <div id="g2-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}p(\mathbf x)\propto\exp\!\big(-\tfrac12\,d^2\big),\\ d^2=(\mathbf x-\boldsymbol\mu)^{\!\top}\Sigma^{-1}(\mathbf x-\boldsymbol\mu)\end{gathered}\]</p>
+    <p>The many-dimensional bell is the 1-D bell with the distance measured in the data's own ruler. Its contours are ellipses — <strong>Unit 12's covariance ellipse was a Gaussian's contour</strong> — with axes along the eigenvectors of \(\Sigma\) and lengths \(\propto\sqrt\lambda\).</p>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With \(\boldsymbol\mu=\mathbf 0\) and \(\Sigma=\begin{bmatrix}2&amp;1\\1&amp;2\end{bmatrix}\), which point is more unusual: \((1,1)\) or \((1,-1)\)?</p>
+    <div class="opts">
+      <button data-why="Both have plain distance √2, but plain distance ignores the shape of the cloud. Mahalanobis distance: (1,1) → 0.816, (1,−1) → 1.414.">Neither — both are √2 ≈ 1.414 from the mean</button>
+      <button data-why="(1,1) lies along the long axis (1,1)/√2, where the cloud stretches most. Its Mahalanobis distance is only √(2/3) ≈ 0.816.">\((1,1)\), because it is in the direction where both measurements are big</button>
+      <button data-correct data-why="Right. (1,−1) points along the short axis (eigenvalue 1), across the grain of the cloud: d² = 2, d ≈ 1.414. (1,1) points along the long axis (eigenvalue 3): d² = 2/3, d ≈ 0.816.">\((1,-1)\): its Mahalanobis distance is about 1.414, against 0.816 for \((1,1)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The correlation is \(\rho=0\) but \(\sigma_1=2\) and \(\sigma_2=1\). What do the contours look like?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. ρ = 0 makes Σ diagonal, so its eigenvectors are the coordinate axes: the ellipse is not tilted. It is twice as long along x₁ as along x₂, because σ₁ = 2σ₂.">Ellipses lined up with the axes, twice as long along \(x_1\)</button>
+      <button data-why="A circle needs equal spreads too. Here σ₁ = 2 and σ₂ = 1, so the contours are stretched along x₁.">Circles</button>
+      <button data-why="A tilt needs the two measurements to move together, and ρ = 0 says they don't. The eigenvectors of a diagonal Σ are the axes themselves.">Ellipses tilted at 45°</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s5-->
+  <p class="onesent reveal"><b>In one sentence:</b> A many-dimensional Gaussian is a bell whose distance is measured with \(\Sigma^{-1}\), so its contours are ellipses along the eigenvectors of \(\Sigma\) — the covariance ellipse of Unit 12 is a contour of this mountain.</p>
+</section>
+
+<!-- ================= 6 · SAMPLING ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Making Gaussian data: stretch a round cloud</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You are making a roti. The dough starts as a round ball. Roll it one way and it stretches into an oval. Push it at an angle and the oval tilts.</p>
+    <p>Every grain of flour moves with the dough. Nothing is added or taken away — the round shape is simply <strong>stretched and sheared</strong>.</p>
+    <p>A computer makes tilted Gaussian clouds exactly like this.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Computers are good at one kind of randomness: the <strong>round</strong> cloud, \(\mathcal N(\mathbf 0,I)\). Each coordinate is an independent standard bell, and the cloud looks the same in every direction.</p>
+    <p>To get a cloud with mean \(\boldsymbol\mu\) and covariance \(\Sigma\), take a round point \(\mathbf z\) and push it through a matrix:</p>
+    \[\mathbf x=\boldsymbol\mu+L\mathbf z,\qquad\text{where } LL^{\!\top}=\Sigma.\]
+    <p>Why does this work? Stretching a cloud by \(L\) turns its covariance \(I\) into \(L\,I\,L^{\!\top}=LL^{\!\top}\). So we need a "square root" of \(\Sigma\). The <em>Cholesky factor</em> from <a href="unit-04.html#s10">Unit 4</a> is exactly that: a lower-triangular \(L\) with \(LL^{\!\top}=\Sigma\).</p>
+    <p><strong>Worked example.</strong> For</p>
+    \[\Sigma=\begin{bmatrix}4&2\\2&2\end{bmatrix},\quad L=\begin{bmatrix}2&0\\1&1\end{bmatrix}.\]
+    <p>Check: \(LL^{\!\top}=\begin{bmatrix}2\cdot2&2\cdot1\\1\cdot2&1+1\end{bmatrix}=\begin{bmatrix}4&2\\2&2\end{bmatrix}\) ✓. Read \(L\) as a recipe: \(x_1=2z_1\) (stretch the first coordinate by 2), and \(x_2=z_1+z_2\) (let the second one lean on the first). The lean is what tilts the cloud.</p>
+    <p>Hold on to this trick. In Unit 20 a picture-making network will need to sample from a Gaussian and still learn through the sampling. It will write \(\mathbf x=\boldsymbol\mu+L\mathbf z\) and call it the <em>reparameterisation trick</em>.</p>
+  </div>
+
+  <div class="widget reveal" id="w-stretch">
+    <div class="widget-head"><span class="w-title">Stretch a round cloud into any ellipse</span><span class="w-sub">400 round points z. Each one is pushed to x = Lz. The dashed ellipse is where Σ = LLᵀ says the cloud should be; the readout compares the cloud's own covariance with Σ.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ stretch</em> to watch the round cloud become the tilted one. Then set \(\ell_{21}=0\): the lean is gone and the ellipse stands straight. Switch to <em>set Σ</em> and type in a covariance — \(L\) is computed for you.</p>
+    <div class="tabs" id="st-tabs"><button data-t="L" aria-selected="true">set L</button><button data-t="S">set Σ (L computed)</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="st-svg" viewBox="0 0 560 460" class="svg-lab" role="img" aria-label="Four hundred blue points. At the start they form a round cloud; as the stretch plays they shear and stretch into a tilted oval. A dashed ellipse shows the two-sigma contour of the target covariance, with its green eigen-axes, and faint arrows show L's two columns."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls" data-tab="L">
+          <div class="ctl"><label for="st-l11">ℓ₁₁</label><input id="st-l11" type="range" min="0.3" max="2.5" step="0.05" value="2"><output id="st-l11-o">2</output></div>
+          <div class="ctl"><label for="st-l21">ℓ₂₁ (the lean)</label><input id="st-l21" type="range" min="-2" max="2" step="0.05" value="1"><output id="st-l21-o">1</output></div>
+          <div class="ctl"><label for="st-l22">ℓ₂₂</label><input id="st-l22" type="range" min="0.3" max="2.5" step="0.05" value="1"><output id="st-l22-o">1</output></div>
+        </div>
+        <div class="controls" data-tab="S" style="display:none">
+          <div class="ctl"><label for="st-s11">Σ₁₁</label><input id="st-s11" type="range" min="0.25" max="6" step="0.05" value="4"><output id="st-s11-o">4</output></div>
+          <div class="ctl"><label for="st-s12">Σ₁₂</label><input id="st-s12" type="range" min="-3" max="3" step="0.05" value="2"><output id="st-s12-o">2</output></div>
+          <div class="ctl"><label for="st-s22">Σ₂₂</label><input id="st-s22" type="range" min="0.25" max="6" step="0.05" value="2"><output id="st-s22-o">2</output></div>
+        </div>
+        <div class="presets" id="st-pre"><button class="play" id="st-play">▶ stretch</button><button class="preset" id="st-p-worked" aria-pressed="true">Σ = [[4,2],[2,2]]</button><button class="preset" id="st-p-round">round (L = I)</button></div>
+        <table class="kv" id="st-kv"></table>
+        <div id="st-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf z\sim\mathcal N(\mathbf 0,I)\\ \Longrightarrow\ \boldsymbol\mu+L\mathbf z\sim\mathcal N(\boldsymbol\mu,\,LL^{\!\top})\end{gathered}\]</p>
+    <p>Every Gaussian is a <strong>round cloud, stretched</strong>. To sample from \(\mathcal N(\boldsymbol\mu,\Sigma)\), find a square root \(L\) of \(\Sigma\) (Cholesky), stretch round samples by it, and shift them by \(\boldsymbol\mu\).</p>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You want samples with covariance \(\Sigma=\begin{bmatrix}9&amp;3\\3&amp;2\end{bmatrix}\). Which \(L\) should stretch the round cloud?</p>
+    <div class="opts">
+      <button data-why="Squaring the entries is not a matrix square root: [[3,0],[√3,√2]] times its transpose gives [[9, 3√3],[3√3, 5]], not Σ.">\(L=\begin{bmatrix}3&amp;0\\\sqrt3&amp;\sqrt2\end{bmatrix}\)</button>
+      <button data-correct data-why="Right. ℓ₁₁ = √9 = 3, ℓ₂₁ = 3/3 = 1, ℓ₂₂ = √(2 − 1²) = 1. Check: LLᵀ = [[9, 3],[3, 1 + 1]] = Σ.">\(L=\begin{bmatrix}3&amp;0\\1&amp;1\end{bmatrix}\)</button>
+      <button data-why="This is Σ itself. Stretching by Σ gives covariance ΣΣᵀ = Σ², which is too big.">\(L=\begin{bmatrix}9&amp;3\\3&amp;2\end{bmatrix}\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s6-->
+  <p class="onesent reveal"><b>In one sentence:</b> To draw from \(\mathcal N(\boldsymbol\mu,\Sigma)\), stretch a round cloud by a square root \(L\) of \(\Sigma\) and shift it — \(\mathbf x=\boldsymbol\mu+L\mathbf z\) has covariance \(LL^{\!\top}=\Sigma\).</p>
+</section>

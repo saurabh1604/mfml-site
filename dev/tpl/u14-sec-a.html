@@ -1,0 +1,234 @@
+<!-- ================= ACT I · UNCERTAINTY HAS A SHAPE ================= -->
+<!-- ================= 1 · WHY PROBABILITIES ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>Why a machine needs probabilities</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>It is the monsoon. Two weather forecasters work in your town.</p>
+    <p>The first one says "rain" every single morning. The second one says things like "70% chance of rain" or "20% chance of rain".</p>
+    <p>You check the second one's record. On the days she said 70%, it rained on about 7 days out of 10. Now her numbers mean something. A farmer can decide whether to sow today. You can decide whether to carry an umbrella. The first forecaster is never quite wrong, but he is <strong>never useful</strong>.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Every unit so far gave crisp answers. Solve \(A\mathbf x=\mathbf b\): here is \(\mathbf x\). Project onto a line: here is the shadow. Unit 13's support vector machine says "\(+1\)" or "\(-1\)".</p>
+    <p>But look at how the SVM says it. A point deep inside the blue group gets "\(+1\)". A point that only just grazes the street also gets "\(+1\)". Same answer, same confident voice. The machine cannot say "<strong>probably</strong> blue, but I am not sure".</p>
+    <p>The world is full of such "probably". Will it rain? Is this patient sick? Is this photo a cat? The honest answer is a number between 0 and 1. So we need a language for uncertainty. That language is probability, and this whole unit teaches it.</p>
+    <p>Start with one word. A <em>random variable</em> is a rule that turns an uncertain outcome into a number. Toss a coin and write 1 for heads, 0 for tails. Roll two dice and write their sum. Measure tomorrow's rainfall in millimetres. Each time, you cannot know the number in advance. But you can say how likely each number is.</p>
+    <p>Here is a machine that makes a random variable. It is called a <em>Galton board</em>. A bead drops in at the top and meets a peg. It bounces left or right, like a coin toss. Then it meets another peg, and another — twelve rows of them. At the bottom it falls into a slot. The slot number is simply how many times it bounced right.</p>
+    <p>Where will one bead land? Nobody can say. But drop two thousand, and something surprising happens.</p>
+  </div>
+
+  <div class="widget reveal" id="w-galton">
+    <div class="widget-head"><span class="w-title">The Galton board: one bead is a surprise, a crowd is a shape</span><span class="w-sub">Every bead bounces left or right at every peg. You cannot predict one bead. You can predict the pile.</span></div>
+    <p class="try"><b>Try:</b> Drop <em>1</em> bead a few times — each lands somewhere new. Then drop <em>2000</em> and watch a bell rise out of the chaos, hugging the dashed outline. Now push the <em>peg bias</em> to the right: the whole bell slides, but it keeps its shape.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><canvas id="gl-cv" width="1120" height="860" role="img" aria-label="A Galton board: a triangle of glowing pegs at the top, a row of slots at the bottom. Beads fall from the top, bounce off the pegs and pile up in the slots. A dashed outline shows the shape the pile should take, and a gold marker shows its centre."></canvas></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets" id="gl-drops"><button class="play" id="gl-2000">▶ drop 2000</button><button class="preset" id="gl-1">drop 1</button><button class="preset" id="gl-100">drop 100</button><button class="preset" id="gl-reset">empty the board</button></div>
+        <div class="controls">
+          <div class="ctl"><label for="gl-rows">rows of pegs</label><input id="gl-rows" type="range" min="4" max="16" step="1" value="12"><output id="gl-rows-o">12</output></div>
+          <div class="ctl"><label for="gl-bias">peg bias</label><input id="gl-bias" type="range" min="0.1" max="0.9" step="0.05" value="0.5"><output id="gl-bias-o">0.5</output></div>
+        </div>
+        <table class="kv" id="gl-kv"></table>
+        <div id="gl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Why a bell? Count the routes. To reach slot 0 a bead must bounce left twelve times in a row: there is only <strong>one</strong> such route. To reach the middle slot, 6, it needs six lefts and six rights in any order, and there are <strong>924</strong> different orders. Out of all \(2^{12}=4096\) routes, 924 end in the middle. So about 23% of the beads land there, and almost none at the edges.</p>
+    <p>No bead knows about bells. Each one just flips a coin at each peg. The shape comes from counting. That is the first big idea of this unit: <strong>a single outcome is unpredictable, but the pattern of many outcomes is not</strong>. The pattern is called a <em>distribution</em>, and it is the thing we can know.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[P(X=k)=\frac{\text{beads in slot }k}{\text{all the beads}}\]</p>
+    <p>A random variable \(X\) turns an uncertain outcome into a number. You cannot know the next value of \(X\). You <strong>can</strong> know its distribution: how the chances are spread over the possible values. The shape of the pile <strong>is</strong> the knowledge.</p>
+  </div>
+  <div class="check reveal" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A forecaster said "70% chance of rain" on 100 different days. When is she doing her job well?</p>
+    <div class="opts">
+      <button data-why="If it rained on all 100 days, her 70% was too timid: she should have said something close to 100%. A 70% forecast is judged by how often it comes true across many days.">When it rained on all 100 of those days</button>
+      <button data-correct data-why="Right. A probability is a promise about many cases, not one. If it rained on about 70 of the 100 days she said 70%, her numbers can be trusted — the farmer and you can act on them.">When it rained on about 70 of those 100 days</button>
+      <button data-why="One day cannot judge a 70% forecast: rain and no rain are both possible. Only many days can tell whether her 70% really means 7 in 10.">When it rained on the very next day</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="prose reveal">
+    <p><strong>The road ahead.</strong> The unit has four acts.</p>
+    <ol class="roadmap">
+      <li><strong>Uncertainty has a shape</strong> (§1–§3): distributions, their balance point and spread, and Bayes' rule for turning evidence around.</li>
+      <li><strong>The Gaussian</strong> (§4–§6): the bell curve, why it keeps appearing, what it looks like in many dimensions (Unit 12's ellipse!), and how a computer draws samples from it.</li>
+      <li><strong>Learning = the least surprising world</strong> (§7–§9): likelihood, fitting by maximum likelihood, and the discovery that least squares was maximum likelihood all along.</li>
+      <li><strong>Scores into probabilities</strong> (§10–§13): softmax, surprise and entropy, cross-entropy and KL, and a classifier that trains itself with the cleanest gradient in machine learning.</li>
+    </ol>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> A random variable turns an uncertain outcome into a number, and although one outcome cannot be predicted, the distribution of many outcomes can — the shape of the pile is the knowledge.</p>
+</section>
+
+<!-- ================= 2 · DISTRIBUTIONS ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>Distributions: where the probability lives</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You are playing Ludo with two dice. You need a total of 7 to capture a piece. Your cousin needs a 12.</p>
+    <p>Who should be more hopeful? A 12 needs double six: one way. A 7 can come as 1+6, 2+5, 3+4, 4+3, 5+2 or 6+1: six ways. You are six times as likely to get your number.</p>
+    <p>Listing every total with its chance is exactly what a distribution is.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Two dice give 36 equally likely pairs. Count how many pairs make each total:</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>total</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr></thead>
+    <tbody><tr><td>ways</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td></tr>
+    <tr><td>chance</td><td>1/36</td><td>2/36</td><td>3/36</td><td>4/36</td><td>5/36</td><td>6/36</td><td>5/36</td><td>4/36</td><td>3/36</td><td>2/36</td><td>1/36</td></tr></tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>This list is the <em>probability mass function</em>, or pmf, written \(p(x)=P(X=x)\). "Mass" is a good word: think of each total carrying a small weight of probability. All the weights add up to 1, because some total always happens.</p>
+    <p><strong>The balance point.</strong> Put the weights on a see-saw plank, each at its own total. Where must the pivot go for the plank to balance? At 7. That balance point is the <em>expected value</em>, or mean:</p>
+    \[\begin{aligned}\mathbb E[X]&=\sum_x x\,p(x)\\ &=2\cdot\tfrac1{36}+3\cdot\tfrac2{36}+\dots+12\cdot\tfrac1{36}\\ &=7.\end{aligned}\]
+    <p>For one die, every face has weight \(\tfrac16\), and the balance point is \(\tfrac{1+2+3+4+5+6}{6}=3.5\). No die ever shows 3.5. The expected value is not a value you expect to see. It is where the weights balance — the long-run average.</p>
+    <p><strong>The spread.</strong> The mean says where the pile sits. We also want how wide it is. Take each value's distance from the mean, square it, and average with the same weights. That is the <em>variance</em>:</p>
+    \[\operatorname{Var}[X]=\mathbb E\big[(X-\mu)^2\big]=\sum_x (x-\mu)^2\,p(x).\]
+    <p>One die: \(\operatorname{Var}=\tfrac{35}{12}\approx2.917\). Two dice: \(\tfrac{35}{6}\approx5.833\) — exactly double, because the two dice wobble independently and independent spreads add. The square root, \(\sigma=\sqrt{\operatorname{Var}}\), is the <em>standard deviation</em>. It is back in the same units as the totals: about 2.42 for two dice.</p>
+  </div>
+
+  <div class="widget reveal" id="w-dice">
+    <div class="widget-head"><span class="w-title">Dice on a see-saw</span><span class="w-sub">Each total sits on the plank with its weight of probability. Drag the gold pivot until the plank is level: that is the mean.</span></div>
+    <p class="try"><b>Try:</b> Drag the pivot left and right and watch the plank tip. Find where it levels. Then switch to <em>3 dice</em>: the pile gets rounder and wider. Press <em>▶ roll</em> to throw real dice and watch the rough outline of the rolls creep onto the exact bars.</p>
+    <div class="tabs" id="dc-tabs"><button data-t="1">1 die</button><button data-t="2" aria-selected="true">2 dice</button><button data-t="3">3 dice</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="dc-svg" viewBox="0 0 600 400" class="svg-lab grabbable" role="img" aria-label="Bars of probability for each dice total standing on a see-saw plank. A gold triangle pivot sits under the plank; when it is at the mean the plank is level, otherwise it tips. A green bar under the plank shows one standard deviation on each side of the mean. Rolled results are drawn as an outline over the bars."></svg></div><p class="stage-tap">drag the gold pivot</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="play" id="dc-roll">▶ roll 600 times</button><button class="preset" id="dc-level">put the pivot at the mean</button><button class="preset" id="dc-clear">clear the rolls</button></div>
+        <table class="kv" id="dc-kv"></table>
+        <div id="dc-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>When the values are not countable.</strong> Now think of a school bus. It is usually about 5 minutes late. What is the chance it is late by <em>exactly</em> 5 minutes — not 5.01, not 4.999, but exactly 5.000000…? There are endlessly many possible times, so the chance of any single one is <strong>zero</strong>.</p>
+    <p>So for a quantity that can take any value — a time, a height, a rainfall — we stop asking about single values. We ask about windows: "late by between 4 and 6 minutes". The answer is an <strong>area</strong> under a curve called the <em>probability density</em>, \(p(x)\). The whole area under the curve is 1.</p>
+    <p>Here is the part that surprises everyone. The height of a density is <strong>not</strong> a probability. It is probability <em>per minute</em>. If a bus is always within a few seconds of 5 minutes late, all the area is squeezed into a tiny window, and the curve must shoot up to keep the area 1. A bell with a spread of 0.1 minutes peaks at about \(3.989\) — far above 1, and perfectly legal.</p>
+  </div>
+
+  <div class="widget reveal" id="w-density">
+    <div class="widget-head"><span class="w-title">Area, not height</span><span class="w-sub">The chance of a window is the shaded area. The height at a point is only a rate. Squeeze the curve and the peak climbs above 1 while the total area stays 1.</span></div>
+    <p class="try"><b>Try:</b> Drag the two window handles to shade "between 4 and 6 minutes". Then slide the spread down to 0.1 and watch the peak shoot past 1 — the readout of total area never moves. Finally press <em>exactly 5</em>: a window of zero width holds zero probability.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="dn-svg" viewBox="0 0 600 380" class="svg-lab grabbable" role="img" aria-label="A bell-shaped density curve for how many minutes late a bus is, centred at 5 minutes. A window between two draggable handles is shaded in cyan, with its area printed. A dashed line marks the height 1."></svg></div><p class="stage-tap">drag the window handles</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="dn-sig">spread σ (minutes)</label><input id="dn-sig" type="range" min="0.1" max="2" step="0.05" value="1"><output id="dn-sig-o">1</output></div>
+        </div>
+        <div class="presets" id="dn-pre"><button class="preset" id="dn-p-46" aria-pressed="true">between 4 and 6</button><button class="preset" id="dn-p-narrow">a very punctual bus (σ = 0.1)</button><button class="preset" id="dn-p-exact">exactly 5</button></div>
+        <table class="kv" id="dn-kv"></table>
+        <div id="dn-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Watch out — the trap</span>
+    <p>"The density at 5 is 3.99, so the chance of 5 is 3.99." No: a chance can never be more than 1. A density height only turns into a chance after you <strong>multiply by a width</strong>. A height of 3.99 over a window 0.01 minutes wide gives a chance of about 0.04.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}&\text{discrete: }P(X=x)=p(x),\\ &\qquad\textstyle\sum_x p(x)=1;\\ &\text{continuous: }P(a\le X\le b)\\ &\qquad=\int_a^b p(x)\,dx,\ \ \textstyle\int p=1.\end{aligned}\]</p>
+    <p>Probability lives in a <strong>mass</strong> for countable outcomes and in an <strong>area</strong> for smooth ones. The mean is the <strong>balance point</strong> of that mass. The variance is the average <strong>squared distance</strong> from it.</p>
+  </div>
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A game pays you the total of two dice in rupees. Over many games, what do you earn per game on average, and what is the spread (variance) of one game's payout?</p>
+    <div class="opts">
+      <button data-why="7 is right for the average, but the variance of two dice is 35/6 ≈ 5.83, not 35/12. 35/12 is the variance of ONE die; two independent dice double it.">₹7 on average, variance 35/12 ≈ 2.92</button>
+      <button data-correct data-why="Right. The balance point of the two-dice pmf is 7, and the spreads of two independent dice add: 35/12 + 35/12 = 35/6 ≈ 5.83.">₹7 on average, variance 35/6 ≈ 5.83</button>
+      <button data-why="12 is the largest total, not the average. The weights balance at 7.">₹12 on average, variance 35/6 ≈ 5.83</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A density curve reaches a height of 3.99 at \(x=5\). Is something wrong?</p>
+    <div class="opts">
+      <button data-why="A probability can never exceed 1, but a density height is not a probability. It is probability per unit, so a very narrow curve must be very tall.">Yes — probabilities can never be bigger than 1</button>
+      <button data-correct data-why="Right. Only the total area must be 1. A very narrow bell (spread 0.1) has to be tall to hold area 1: its peak is 1/(0.1·√(2π)) ≈ 3.99.">No — a density is a rate; only its total area has to be 1, so a narrow curve can be taller than 1</button>
+      <button data-why="The height is not the chance of x = 5; the chance of any exact value of a continuous quantity is 0. Heights must be multiplied by a width to become chances.">No — it means x = 5 happens 3.99 times more often than usual</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s2-->
+  <p class="onesent reveal"><b>In one sentence:</b> A distribution says where the probability lives — as masses that add to 1 or as an area of 1 under a density — and its mean is the balance point while its variance is the average squared distance from it.</p>
+</section>
+
+<!-- ================= 3 · BAYES ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Bayes: turning evidence around</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>It is dengue season. You feel a little tired, and the clinic runs a quick blood test. It comes back <strong>positive</strong>.</p>
+    <p>The doctor says the test catches 99% of people who have dengue, and only 5% of healthy people get a false alarm. Your heart sinks: surely you are 95% likely to be sick?</p>
+    <p>Not even close. Once you count properly, the chance is about <strong>17%</strong>. This section shows why, and it is one of the most useful ideas in this course.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Say 1% of the people who come in actually have dengue. Picture <strong>10 000 people</strong> walking into the clinic.</p>
+    <ul>
+      <li><strong>100</strong> of them are sick. The test catches 99% of them: <strong>99</strong> test positive.</li>
+      <li><strong>9 900</strong> are healthy. 5% get a false alarm: <strong>495</strong> test positive.</li>
+    </ul>
+    <p>Now you are one of the positives. There are \(99+495=594\) positives, and only 99 of them are sick. Your chance of being sick is</p>
+    \[\frac{99}{594}=\frac16\approx0.167.\]
+    <p>What went wrong with "95%"? The healthy crowd is 99 times bigger than the sick crowd. Even a small false-alarm rate on a huge crowd makes more alarms (495) than the real cases (99). The test is good. It is the <strong>starting chance</strong> that is small.</p>
+    <p>Now the same thing in symbols. Read the bar "\(\mid\)" as "given". \(P(+\mid\text{sick})\) is "the chance of a positive, given that you are sick" — that is the 99%. We want the reverse, \(P(\text{sick}\mid+)\). <em>Bayes' rule</em> turns the question around:</p>
+    \[\begin{aligned}P(\text{sick}\mid +)&=\frac{P(+\mid\text{sick})\,P(\text{sick})}{P(+)}\\ &=\frac{0.99\times0.01}{0.0099+0.0495}=\frac16.\end{aligned}\]
+    <p>Each piece has a name. \(P(\text{sick})=0.01\) is the <em>prior</em>: <strong>where you stood before the evidence</strong>. \(P(+\mid\text{sick})\) is the <em>likelihood</em>: how well "sick" explains the evidence. The answer \(P(\text{sick}\mid+)\) is the <em>posterior</em>: where you stand after. The bottom line \(P(+)\) just makes the answers add up to 1.</p>
+    <p><strong>A second test.</strong> Suppose you take another, independent test and it is positive again. Today's posterior becomes tomorrow's prior. Start from \(\tfrac16\):</p>
+    \[\frac{0.99\times\tfrac16}{0.99\times\tfrac16+0.05\times\tfrac56}\approx0.798.\]
+    <p>Two positives take you from 1% to about 80%. Evidence adds up — but it always starts from where you stood.</p>
+  </div>
+
+  <div class="widget reveal" id="w-bayes">
+    <div class="widget-head"><span class="w-title">Ten thousand people walk into a clinic</span><span class="w-sub">Every square is a person. Orange = sick, bright = tested positive. The zoom on the right shows only the positives: your chance is their orange share.</span></div>
+    <p class="try"><b>Try:</b> Look at the zoom: most of the positives are grey (healthy). Now slide the <em>false-alarm rate</em> down to 1% and watch the posterior jump. Then reset and press <em>test again</em>: the positives become the new crowd, and the answer climbs to about 0.8.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><canvas id="by-cv" width="1000" height="760" role="img" aria-label="A grid of ten thousand small squares, one per person. The sick people are orange and gathered in the first columns; the healthy are grey. People who tested positive are drawn bright with a cyan outline. A bar underneath splits the positive group into its sick and healthy parts."></canvas></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="by-prev">how common (prior)</label><input id="by-prev" type="range" min="0.1" max="20" step="0.1" value="1"><output id="by-prev-o">1%</output></div>
+          <div class="ctl"><label for="by-sens">catches the sick</label><input id="by-sens" type="range" min="50" max="100" step="0.5" value="99"><output id="by-sens-o">99%</output></div>
+          <div class="ctl"><label for="by-fpr">false-alarm rate</label><input id="by-fpr" type="range" min="0" max="20" step="0.5" value="5"><output id="by-fpr-o">5%</output></div>
+        </div>
+        <div class="presets"><button class="play" id="by-again">▶ test again</button><button class="preset" id="by-reset">the clinic (1%, 99%, 5%)</button></div>
+        <table class="kv" id="by-kv"></table>
+        <div id="by-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Watch out — the flip that fools doctors</span>
+    <p>\(P(+\mid\text{sick})\) and \(P(\text{sick}\mid+)\) sound alike but are different numbers: 0.99 and 0.167 here. "Most sick people test positive" does not mean "most people who test positive are sick". To go from one to the other you <strong>must</strong> bring in the prior.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}\underbrace{P(H\mid E)}_{\text{posterior}}&=\frac{\overbrace{P(E\mid H)}^{\text{likelihood}}\;\overbrace{P(H)}^{\text{prior}}}{P(E)}\\ &\propto\text{likelihood}\times\text{prior}\end{aligned}\]</p>
+    <p>Bayes' rule turns "how likely is the evidence, if the idea is true?" into "how likely is the idea, now that I have seen the evidence?". The prior is where you stood before. The posterior is where you stand after, and it becomes the prior for the next piece of evidence.</p>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Same clinic: 1% are sick, the test catches 99% of them, and gives a false alarm to 5% of the healthy. Out of 10 000 people, how many test positive, and what share of those are sick?</p>
+    <div class="opts">
+      <button data-why="99 is only the sick positives. The 495 healthy people with a false alarm test positive too, so the positive group has 594 people.">99 positives, and all of them are sick</button>
+      <button data-correct data-why="Right. 99 sick people plus 495 false alarms make 594 positives, and 99/594 = 1/6 ≈ 16.7% of them are sick.">594 positives, and 1 in 6 of them (about 16.7%) is sick</button>
+      <button data-why="99% is how often a sick person tests positive. The share of positives who are sick is a different number: 99 out of 594.">594 positives, and 99% of them are sick</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">After one positive test your chance is \(\tfrac16\). A second, independent test is also positive. What do you use as the prior for the second update?</p>
+    <div class="opts">
+      <button data-why="1% was where you stood before ANY evidence. After the first positive you stand at 1/6, and that is the starting point for the next update.">The original 1%</button>
+      <button data-correct data-why="Right. The posterior after the first test becomes the prior for the second: 0.99·(1/6) / (0.99·(1/6) + 0.05·(5/6)) ≈ 0.798.">The first posterior, 1/6 — and the answer becomes about 0.80</button>
+      <button data-why="99% is the test's catch rate, a likelihood, not a prior. The prior is your belief about being sick, which after one positive is 1/6.">99%, the test's catch rate</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s3-->
+  <p class="onesent reveal"><b>In one sentence:</b> Bayes' rule turns the evidence around — posterior ∝ likelihood × prior — and because the prior is where you stood before the evidence, a rare disease stays fairly unlikely even after a good test says yes.</p>
+</section>

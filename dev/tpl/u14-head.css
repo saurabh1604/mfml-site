@@ -1,0 +1,81 @@
+/* ================= UNIT 14 · Thinking in Probabilities ================= */
+.hero-prev{margin:1.1rem 0 0;font-family:var(--ui);font-size:.84rem}
+.hero-prev a{pointer-events:auto;color:var(--ink-2);border-bottom:1px solid color-mix(in srgb,var(--s6) 50%,transparent)}
+.hero-prev a:hover{color:var(--ink);text-decoration:none}
+.hero .kicker{color:var(--s6);text-shadow:0 0 18px color-mix(in srgb,var(--s6) 55%,transparent)}
+.sec-num{color:color-mix(in srgb,var(--s6) 60%,transparent)}
+.derive .tag{color:var(--s6)}
+.derive .dn{background:color-mix(in srgb,var(--s6) 20%,transparent);border-color:color-mix(in srgb,var(--s6) 55%,transparent)}
+.pstep{border-left-color:color-mix(in srgb,var(--s6) 45%,transparent)}
+figure.fig::before{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--s6) 60%,transparent) 50%,transparent)}
+/* the unit's colour words */
+.k-mass{color:var(--s6);font-weight:650}
+.k-data{color:var(--s1);font-weight:650}
+.k-p{color:var(--s1);font-weight:650}
+.k-q{color:var(--s2);font-weight:650}
+.k-loss{color:var(--critical);font-weight:650}
+.k-mean{color:var(--s4);font-weight:650}
+.k-axis{color:var(--s3);font-weight:650}
+.k-c3{color:var(--s7);font-weight:650}
+ol.roadmap{padding-left:1.4rem}
+ol.roadmap li{margin:.35rem 0}
+/* 2-D stages: an SVG (or canvas) on the same glass as the 3-D ones */
+.svgstage{position:relative;border-radius:var(--r-md);overflow:hidden;background:radial-gradient(80% 80% at 50% 40%,color-mix(in srgb,var(--s6) 7%,transparent),transparent 72%);border:1px solid var(--line)}
+.svgstage svg{display:block;width:100%;height:auto;touch-action:none}
+.svgstage canvas{display:block;width:100%;height:auto;touch-action:none}
+.svgstage.mini{margin:.7rem 0 .2rem}
+.svgstage .hud{max-width:calc(100% - 1.4rem)}
+.svgstage .hud b{font-family:var(--mono);color:var(--s4);font-weight:700}
+.svgstage svg text{font-family:var(--ui)}
+.grabbable{cursor:grab}
+/* key–value readouts */
+table.kv{width:100%;border-collapse:collapse;font-family:var(--ui);font-size:.82rem;margin:.7rem 0 0}
+table.kv th{font-weight:600;color:var(--ink-muted);text-align:left;padding:.28rem .5rem .28rem 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.kv td{font-family:var(--mono);font-size:.8rem;color:var(--ink);text-align:right;padding:.28rem 0;border-bottom:1px solid var(--line);white-space:nowrap}
+table.kv td b{color:var(--s4)}
+table.kv td .mx{display:inline-grid;grid-template-columns:auto auto;gap:0 .7rem;padding:0 .35rem;border-left:1.5px solid var(--ink-2);border-right:1.5px solid var(--ink-2);border-radius:3px;text-align:right}
+/* probability bars (softmax, entropy, KL, the classifier's probe) */
+.pbars{display:flex;flex-direction:column;gap:.32rem;margin:.6rem 0 0;font-family:var(--ui);font-size:.8rem}
+.pbars .pb{display:grid;grid-template-columns:4.4rem 1fr 3.6rem;align-items:center;gap:.5rem}
+.pbars .pb .nm{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbars .pb .bar{height:.62rem;border-radius:999px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden}
+.pbars .pb .bar i{display:block;height:100%;border-radius:999px;transition:width .22s var(--ease)}
+.pbars .pb .v{font-family:var(--mono);text-align:right;color:var(--ink)}
+/* stacked information bars (s12) */
+.stackbars{display:flex;flex-direction:column;gap:.45rem;margin:.7rem 0 0;font-family:var(--ui);font-size:.8rem}
+.stackbars .sb{display:grid;grid-template-columns:6.4rem 1fr 4.2rem;align-items:center;gap:.5rem}
+.stackbars .sb .nm{color:var(--ink-2)}
+.stackbars .sb .track{position:relative;height:.9rem;border-radius:5px;background:color-mix(in srgb,var(--ink) 6%,transparent);overflow:hidden;display:flex}
+.stackbars .sb .track i{display:block;height:100%;transition:width .22s var(--ease)}
+.stackbars .sb .v{font-family:var(--mono);text-align:right}
+/* the carry-forward summary */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.8rem;max-width:62rem;margin:1.2rem auto}
+.cards .cd{border:1px solid var(--line);border-radius:var(--r-md);background:color-mix(in srgb,var(--surface) 70%,transparent);padding:.8rem 1rem;font-family:var(--ui);font-size:.86rem;min-width:0}
+.cards .cd h4{margin:0 0 .35rem;font-family:var(--ui);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--s6)}
+.cards .cd .katex-display{margin:.3rem 0}
+/* legends */
+.legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-family:var(--ui);font-size:.76rem;color:var(--ink-2);margin:.45rem 0 0}
+.legend i{display:inline-block;width:.7rem;height:.7rem;margin-right:.3rem;vertical-align:-.05rem;border-radius:3px}
+.legend i.lm{background:var(--s6)}
+.legend i.ld{border-radius:50%;background:var(--s1)}
+.legend i.lp{background:var(--s1)}
+.legend i.lq{background:var(--s2)}
+.legend i.ll{background:var(--critical)}
+.legend i.lg{height:2px;background:var(--s4);vertical-align:.2rem}
+.legend i.la{height:2px;background:var(--s3);vertical-align:.2rem}
+.legend i.lw{height:2px;background:var(--ink);vertical-align:.2rem}
+.widget .toolbar{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin:.5rem 0}
+.widget .toolbar .lbl{font-family:var(--ui);font-size:.76rem;color:var(--ink-muted);margin-right:.2rem}
+.warnmsg{font-family:var(--ui);font-size:.82rem;color:var(--critical)}
+/* two SVG panels side by side that stack on phones */
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media (max-width:640px){.twin{grid-template-columns:1fr}}
+/* the hero's final beat caption */
+.bigsum{font-family:var(--mono);font-size:1.05rem;color:var(--ink);letter-spacing:.02em}
+/* a second 3-D stage inside a widget */
+.substage3d{margin-top:1rem}
+.formula-read{font-family:var(--ui);font-size:.9rem;color:var(--ink-2);background:color-mix(in srgb,var(--surface) 70%,transparent);border:1px solid var(--line);border-radius:var(--r-md);padding:.7rem 1rem;max-width:var(--prose);margin:1rem auto}
+.formula-read ol{margin:.3rem 0 0;padding-left:1.3rem}
+.formula-read li{margin:.25rem 0}
+@media (max-width:760px){.pbars .pb{grid-template-columns:3.8rem 1fr 3.3rem}.stackbars .sb{grid-template-columns:5.2rem 1fr 3.8rem}}
+@media (max-width:640px){.svgstage svg text{font-size:15px!important}.svgstage.mini svg text{font-size:13px!important}.svgstage svg.small-text text{font-size:12.5px!important}}

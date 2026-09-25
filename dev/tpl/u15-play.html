@@ -1,0 +1,99 @@
+  <div class="widget reveal" id="w-play">
+    <div class="widget-head"><span class="w-title">The network playground</span><span class="w-sub">Build a network, feed it data, and watch values flow right in blue and blame flow back in red — every number visible.</span></div>
+    <p class="try"><b>Try:</b> Start with experiment 1. Press <em>↺ start over</em>, then <em>▶ one node</em> again and again: the salary network is computed one neuron at a time, then the blame comes back. At the end, press <em>▶</em> twice more to take one small step downhill and see the loss fall from 50 to 18.89. Then open experiments 2–5, press <em>▶ train</em>, and click any neuron or wire to look inside it.</p>
+
+    <div class="pl-exps" role="group" aria-label="Guided experiments">
+      <span class="pl-lbl">Experiments</span>
+      <button class="pl-exp" data-preset="salary" aria-pressed="true"><i>1</i>Salary 2-3-2-1</button>
+      <button class="pl-exp" data-preset="collapse" aria-pressed="false"><i>2</i>No bend = one matrix</button>
+      <button class="pl-exp" data-preset="dead" aria-pressed="false"><i>3</i>Dead ReLU</button>
+      <button class="pl-exp" data-preset="vanish" aria-pressed="false"><i>4</i>Vanishing sigmoid</button>
+      <button class="pl-exp" data-preset="folds" aria-pressed="false"><i>5</i>Fold by fold</button>
+      <button class="pl-exp pl-free" data-preset="free" aria-pressed="false">free play</button>
+    </div>
+    <div class="pl-note" id="pl-note" aria-live="polite"></div>
+
+    <div class="pl-build" id="pl-build" aria-label="Build the network">
+      <div class="pl-data">
+        <label class="pl-lbl" for="pl-ds">Data</label>
+        <select id="pl-ds" class="pl-sel">
+          <optgroup label="Salary (regression)"><option value="salary1">salary · one person</option><option value="salaryset">salary · 30 people</option></optgroup>
+          <optgroup label="A curve (1 input)"><option value="sine">sine wave</option><option value="step">a step</option><option value="abs">|x|, a V</option></optgroup>
+          <optgroup label="Classes on a plane (2 inputs)"><option value="moons">two moons</option><option value="xor">XOR · four clusters</option><option value="circles">circles</option><option value="spirals">three spirals (3 classes)</option></optgroup>
+        </select>
+        <span class="pl-seg" id="pl-noise" role="group" aria-label="Noise"><span class="pl-mini">noise</span><button data-v="0" aria-pressed="false">none</button><button data-v="1" aria-pressed="true">low</button><button data-v="2" aria-pressed="false">high</button></span>
+        <label class="pl-chk" id="pl-sq-w"><input type="checkbox" id="pl-sq"> add x₁², x₂² as inputs</label>
+        <label class="pl-chk" id="pl-sc-w"><input type="checkbox" id="pl-sc"> scale inputs (age/100, exp/10)</label>
+      </div>
+      <div class="pl-layers" id="pl-layers"></div>
+    </div>
+
+    <div class="pl-main">
+      <div class="pl-left">
+        <div class="pl-tabs" role="tablist" aria-label="Network view">
+          <button role="tab" id="pl-t-graph" aria-selected="true" data-view="graph">Graph</button>
+          <button role="tab" id="pl-t-matrix" aria-selected="false" data-view="matrix">Matrices</button>
+          <span class="pl-spacer"></span>
+          <label class="pl-chk sm"><input type="checkbox" id="pl-pics"> neuron pictures</label>
+          <label class="pl-chk sm"><input type="checkbox" id="pl-wlab"> numbers on wires</label>
+        </div>
+        <div class="pl-stage" id="pl-gwrap" tabindex="0" aria-label="Network graph. Click a neuron or a wire to inspect it; left and right arrow keys step through the passes.">
+          <canvas id="pl-graph" role="img" aria-label="The network drawn as columns of neurons joined by wires. Wire colour shows the sign of the weight (green positive, orange negative) and thickness its size. Blue numbers are values computed going forward; red numbers are gradients coming back."></canvas>
+          <div class="pl-legend"><span><i class="lv"></i>value going forward</span><span><i class="lg"></i>blame coming back</span><span><i class="lp"></i>w &gt; 0</span><span><i class="ln"></i>w &lt; 0</span><span><i class="la"></i>awake</span><span><i class="ls"></i>asleep</span></div>
+        </div>
+        <div class="pl-matrix" id="pl-mwrap" hidden></div>
+
+        <div class="pl-stepbar">
+          <div class="pl-btns" role="group" aria-label="Step through one pass">
+            <button id="pl-s-reset" title="Start the passes over from the inputs">↺ start over</button>
+            <button id="pl-s-back" title="One step back">◀</button>
+            <button id="pl-s-node" class="pri" title="Compute one node">▶ one node</button>
+            <button id="pl-s-layer" title="Finish this layer">▶▶ one layer</button>
+            <button id="pl-s-pass" title="Finish this pass">⏭ whole pass</button>
+          </div>
+          <div class="pl-ex" id="pl-ex"></div>
+        </div>
+        <div class="pl-rail" id="pl-rail" aria-hidden="true"></div>
+        <div class="pl-hud" id="pl-hud" aria-live="polite"></div>
+      </div>
+
+      <div class="pl-right">
+        <div class="pl-sphead"><span class="pl-h">Space</span><span class="pl-cap" id="pl-scap"></span></div>
+        <div class="pl-space" id="pl-swrap"><canvas id="pl-space" role="img" aria-label="The data and what the network does with it: for points on a plane, the plane is coloured by the predicted class with the boundary drawn; for a curve, the fitted curve is drawn through the data. The slider shows how each layer has bent the input grid."></canvas></div>
+        <div class="pl-sl"><label for="pl-lay">look through</label><input id="pl-lay" type="range" min="0" max="3" step="1" value="3"><output id="pl-lay-o">output</output></div>
+        <div class="pl-insp" id="pl-insp"></div>
+      </div>
+    </div>
+
+    <div class="pl-train">
+      <div class="pl-tc">
+        <div class="pl-h">Train</div>
+        <div class="pl-btns" role="group" aria-label="Training">
+          <button id="pl-run" class="pri">▶ train</button>
+          <button id="pl-one" title="One update step">+1 step</button>
+          <button id="pl-reinit" title="Fresh random weights from the seed">↺ new weights</button>
+          <button id="pl-seed" title="Change the random seed">seed <b id="pl-seed-v">1</b> ⟳</button>
+        </div>
+        <div class="pl-ctls">
+          <div class="pl-ctl"><label for="pl-eta">step size η</label><input id="pl-eta" type="range" min="-6" max="0" step="0.05" value="-5"><output id="pl-eta-o">1e−5</output></div>
+          <div class="pl-ctl"><label>optimizer</label><span class="pl-seg" id="pl-opt" role="group" aria-label="Optimizer"><button data-v="gd" aria-pressed="true">GD</button><button data-v="mom" aria-pressed="false">momentum</button><button data-v="adam" aria-pressed="false">Adam</button></span></div>
+          <div class="pl-ctl"><label>batch</label><span class="pl-seg" id="pl-batch" role="group" aria-label="Batch size"><button data-v="full" aria-pressed="true">full</button><button data-v="mini" aria-pressed="false">mini · 16</button><button data-v="one" aria-pressed="false">1</button></span></div>
+          <div class="pl-ctl"><label for="pl-init">weight scale</label><input id="pl-init" type="range" min="0.1" max="3" step="0.05" value="1"><output id="pl-init-o">1×</output></div>
+          <div class="pl-ctl"><label for="pl-bias">bias start</label><input id="pl-bias" type="range" min="-3" max="1" step="0.1" value="0"><output id="pl-bias-o">0</output></div>
+        </div>
+        <p class="pl-fine">New weights are drawn with spread (weight scale)/√(inputs to the neuron); every bias starts at the bias value. Same seed, same weights.</p>
+      </div>
+      <div class="pl-tl">
+        <div class="pl-stats" id="pl-stats"></div>
+        <div class="pl-lwrap"><canvas id="pl-loss" role="img" aria-label="Training loss against steps on a logarithmic scale."></canvas></div>
+        <div class="pl-h sm">Blame reaching each layer <span>typical size of ∂L/∂z, log scale</span></div>
+        <div class="pl-bars" id="pl-bars"></div>
+      </div>
+      <div class="pl-gc">
+        <div class="pl-h">Gradient check</div>
+        <p class="pl-fine">Nudge every weight up and down by a hair, measure the loss both times, and compare the slope with what backprop said.</p>
+        <button id="pl-gcb" class="pri wide">✓ check every gradient</button>
+        <div id="pl-gcr" class="pl-gcr" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>

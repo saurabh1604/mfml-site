@@ -1,0 +1,135 @@
+<!-- ================= ACT II · THE FORWARD PASS ================= -->
+<!-- ================= 5 · FORWARD BY HAND ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>The forward pass, by hand</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A dabbawala relay in Mumbai. The tiffin is picked up at home, handed to a runner, put on a train, passed to another runner, and delivered at the office. At every hand-over, someone writes a note in the register: "received at 10:05, passed on at 10:12".</p>
+    <p>The forward pass is that relay. Numbers are handed from layer to layer. And, just like the register, we <strong>write down every hand-over</strong>. We will need those notes on the way back.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Here are the starting numbers of the salary network. Everything is in lakhs.</p>
+    <p>\[\begin{aligned}W^{(1)}&=\begin{pmatrix}0.1&0.3\\ 0.2&-0.1\\ -0.1&0.2\end{pmatrix},\ \mathbf b^{(1)}=\begin{pmatrix}1\\ -1\\ -1\end{pmatrix},\\ W^{(2)}&=\begin{pmatrix}1&-0.5&1\\ 1&0.5&-1\end{pmatrix},\ \mathbf b^{(2)}=\begin{pmatrix}1\\ -2\end{pmatrix},\\ W^{(3)}&=\begin{pmatrix}4&2\end{pmatrix},\ b^{(3)}=2.\end{aligned}\]</p>
+    <p>The input is \(\mathbf a^{(0)}=(30,10)\): age 30, experience 10. The true salary is \(y=50\). Now walk the chain from left to right. Each row of a matrix times the input column is a dot product (<a href="unit-03.html#s2d">Unit 3</a>): multiply matching entries and add.</p>
+    <p><strong>F1 · into hidden layer 1</strong> (\(\mathbf z^{(1)}=W^{(1)}\mathbf a^{(0)}+\mathbf b^{(1)}\)). One row per neuron:</p>
+    <p>\[\begin{aligned}\text{row 1: }&(0.1)(30)+(0.3)(10)+1=3+3+1=7\\ \text{row 2: }&(0.2)(30)+(-0.1)(10)-1=6-1-1=4\\ \text{row 3: }&(-0.1)(30)+(0.2)(10)-1=-3+2-1=-2\end{aligned}\]</p>
+    <p>So \(\mathbf z^{(1)}=(7,4,-2)\). Its shape is \(3\times1\) ✓ — one number per neuron.</p>
+    <p><strong>F2 · the bend.</strong> \(\mathbf a^{(1)}=\operatorname{ReLU}(7,4,-2)=(7,4,0)\). The third neuron got a negative number, so ReLU switched it off. It is <strong>asleep</strong> for this person. Keep an eye on it.</p>
+    <p><strong>F3 · into hidden layer 2.</strong></p>
+    <p>\[\begin{aligned}\text{row 1: }&(1)(7)+(-0.5)(4)+(1)(0)+1=7-2+0+1=6\\ \text{row 2: }&(1)(7)+(0.5)(4)+(-1)(0)-2=7+2-0-2=7\end{aligned}\]</p>
+    <p><strong>F4 · the bend.</strong> Both are positive, so \(\mathbf a^{(2)}=(6,7)\). ReLU changes nothing here.</p>
+    <p><strong>F5 · into the output.</strong> \(z^{(3)}=(4)(6)+(2)(7)+2=24+14+2=40\).</p>
+    <p><strong>F6 · the last bend.</strong> \(\hat y=\operatorname{ReLU}(40)=40\). The network predicts <strong>40 lakhs</strong>.</p>
+    <p><strong>F7 · the score.</strong> \(L=\tfrac12(\hat y-y)^2=\tfrac12(40-50)^2=\tfrac12(100)=50\). The error is \(\hat y-y=-10\): the guess is 10 lakhs too low.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Keep all of these</span>
+    <p>The backward pass will ask for \(\mathbf a^{(0)},\mathbf a^{(1)},\mathbf a^{(2)}\) and for \(\mathbf z^{(1)},\mathbf z^{(2)},\mathbf z^{(3)}\). Write them down now — this list is called the <strong>cache</strong> — and nothing has to be computed twice.</p>
+    <table class="plain cache-t"><thead><tr><th>\(\mathbf a^{(0)}\)</th><th>\(\mathbf z^{(1)}\)</th><th>\(\mathbf a^{(1)}\)</th><th>\(\mathbf z^{(2)}\)</th><th>\(\mathbf a^{(2)}\)</th><th>\(z^{(3)}\)</th><th>\(\hat y\)</th><th>\(L\)</th></tr></thead>
+      <tbody><tr><td>(30, 10)</td><td>(7, 4, −2)</td><td>(7, 4, 0)</td><td>(6, 7)</td><td>(6, 7)</td><td>40</td><td>40</td><td>50</td></tr></tbody></table>
+  </div>
+
+  <div class="widget reveal" id="w-forward">
+    <div class="widget-head"><span class="w-title">The forward pass, one row at a time</span><span class="w-sub">Each step lights up one row of the matrix and the input column it meets. Change the person's age or experience and every number recomputes.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ play the pass</em> and follow the gold row across the input. Then slide the experience up to 25: the third neuron wakes up (its light turns gold). Last, set age 18 and experience 30: now the second neuron falls asleep.</p>
+    <div class="fw-top">
+      <div class="controls fw-ctl">
+        <div class="ctl"><label for="fw-age">age</label><input id="fw-age" type="range" min="18" max="60" step="1" value="30"><output id="fw-age-o">30</output></div>
+        <div class="ctl"><label for="fw-exp">experience</label><input id="fw-exp" type="range" min="0" max="35" step="1" value="10"><output id="fw-exp-o">10</output></div>
+      </div>
+      <div class="fw-neurons" id="fw-neurons" aria-label="which hidden neurons are awake"></div>
+    </div>
+    <div class="fw-steps" id="fw-steps" role="tablist"></div>
+    <div class="fw-stage" id="fw-stage" aria-live="polite"></div>
+    <div class="presets" style="margin-top:.6rem"><button class="preset" id="fw-prev">◀ back</button><button class="play" id="fw-play">▶ play the pass</button><button class="preset" id="fw-next">next ▶</button><button class="preset" id="fw-reset">age 30 · exp 10</button></div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf a^{(0)}\to\mathbf z^{(1)}\to\mathbf a^{(1)}\to\mathbf z^{(2)}\\ \to\mathbf a^{(2)}\to z^{(3)}\to\hat y\to L\end{gathered}\]</p>
+    <p>The forward pass is just <strong>row times column, add the shift, bend</strong> — layer after layer, left to right. Each row is one neuron's dot product. A neuron that gets a negative total is switched off by ReLU. And every value along the way goes into the cache, because the backward pass will read it.</p>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Keep age 30, but make the experience 20 instead of 10. What is \(\mathbf z^{(1)}\) now, and which hidden-1 neuron is asleep?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Row 1: 3 + 6 + 1 = 10. Row 2: 6 − 2 − 1 = 3. Row 3: −3 + 4 − 1 = 0. The third neuron lands exactly on 0, so ReLU gives 0 and it is still switched off (not awake).">\((10,3,0)\) — the third neuron still gives 0</button>
+      <button data-why="Row 1 is (0.1)(30) + (0.3)(20) + 1 = 3 + 6 + 1 = 10, not 7. Every row changes when the experience changes, because every row has a weight for it.">\((7,4,-2)\) — nothing changes</button>
+      <button data-why="Check row 2: (0.2)(30) + (−0.1)(20) − 1 = 6 − 2 − 1 = 3, which is positive. Row 3 is −3 + 4 − 1 = 0. So neuron 2 is awake and neuron 3 is at exactly 0.">\((10,3,0)\) — the second neuron is asleep</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why do we keep \(\mathbf z^{(1)},\mathbf a^{(1)},\dots\) after the forward pass is done?</p>
+    <div class="opts">
+      <button data-why="The prediction only needs the last value. We keep the middle ones for a different reason: the backward pass needs them.">To print them in the final answer</button>
+      <button data-correct data-why="Right. Rule A needs each z (is the neuron awake?) and Rule B needs each a (what flowed in through each wire?). Keeping them means the backward pass never recomputes anything.">Because the backward pass needs them: the z's to know which neurons were awake, the a's to know what flowed through each wire</button>
+      <button data-why="The next forward pass starts again from the input and recomputes everything with the new weights. The cache is for the backward pass that comes right after this forward pass.">Because the next forward pass starts from them</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> The forward pass walks the chain left to right — row times column, add the shift, bend — and keeps every z and a in a cache for the way back.</p>
+</section>
+
+<!-- ================= 6 · HEADS ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>What comes out, and how we score it</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Two kinds of guessing game. In the first, you guess a number — "this flat rents for 25 thousand" — and you are told how far off you were. In the second, you pick from a list — "this photo is a cat, a dog or a cow" — and you are told how sure you were of the right one.</p>
+    <p>A network ends with a <strong>head</strong> made for its game. The two heads look different. But the blame they send back has the same simple shape.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>Regression head (a number).</strong> The output is the number \(\hat y\). We score it with \(L=\tfrac12(\hat y-y)^2\). Why a square? <a href="unit-14.html#s9">Unit 14</a> showed it: if the truth is the guess plus bell-shaped noise, then the squared error is exactly "how unlikely the data is". And why the \(\tfrac12\)? Differentiate:</p>
+    <p>\[\frac{\partial L}{\partial\hat y}=\tfrac12\cdot2(\hat y-y)=\hat y-y.\]</p>
+    <p>The \(\tfrac12\) is there only to cancel the 2. For our salary: \(40-50=-10\).</p>
+    <p><strong>Classification head (a choice).</strong> The last layer gives one score per class, \(\mathbf z\). Softmax turns scores into probabilities (<a href="unit-14.html#s10">Unit 14</a>): \(q_i=e^{z_i}/\sum_je^{z_j}\). The loss is the cross-entropy: minus the log of the probability you gave the right class (<a href="unit-14.html#s13">Unit 14</a>). Take scores \(\mathbf z=(2,1,0)\) with class 1 correct:</p>
+    <p>\[\mathbf q=(0.665,\,0.245,\,0.090),\qquad L=-\ln0.665\approx0.408.\]</p>
+    <p>And the blame at the scores? Write the truth as a one-hot list \(\mathbf y=(1,0,0)\). Then</p>
+    <p>\[\frac{\partial L}{\partial\mathbf z}=\mathbf q-\mathbf y=(-0.335,\,0.245,\,0.090).\]</p>
+    <p>Look at the two results side by side: \(\hat y-y\) and \(\mathbf q-\mathbf y\). Both say <strong>prediction minus truth</strong>. The right class's score gets pushed up (negative blame means "increase me"). The wrong classes get pushed down, each in proportion to how much probability it wrongly took.</p>
+    <p>From here the blame enters the network the same way in both cases. If the layer below fed \(\mathbf a=(1,2)\) into these three scores, the weight blame is the outer product (Rule B, coming in §7):</p>
+    <p>\[\frac{\partial L}{\partial W}=(\mathbf q-\mathbf y)\,\mathbf a^{\mathsf T}=\begin{pmatrix}-0.335&-0.670\\ 0.245&0.489\\ 0.090&0.180\end{pmatrix}.\]</p>
+  </div>
+
+  <div class="widget reveal" id="w-heads">
+    <div class="widget-head"><span class="w-title">Two heads, one kind of blame</span><span class="w-sub">Left: a regression head — drag the prediction. Right: a three-class head — drag the three scores. The red arrows are the blame each head sends back into the network.</span></div>
+    <p class="try"><b>Try:</b> Drag \(\hat y\) above 50: the arrow flips and points down. On the right, raise the score of class 1 until \(q_1\) is near 1: all three arrows shrink to nothing. Then press <em>same story</em> to line the two arrows up.</p>
+    <div class="wrow">
+      <div class="wcol"><div class="svgstage"><svg id="hd-reg" viewBox="0 0 340 300" class="svg-lab" role="img" aria-label="Regression head: a vertical number line from 0 to 80 with a ring at the truth 50 and a blue dot at the prediction. A red arrow from the prediction shows the blame, prediction minus truth. The loss half of the squared gap is printed."></svg></div>
+        <div class="controls"><div class="ctl"><label for="hd-y">prediction \(\hat y\)</label><input id="hd-y" type="range" min="0" max="80" step="0.5" value="40"><output id="hd-y-o">40</output></div></div></div>
+      <div class="wcol"><div class="svgstage"><svg id="hd-cls" viewBox="0 0 340 300" class="svg-lab" role="img" aria-label="Classification head: three bars for the softmax probabilities of three classes, the first one marked as the true class. Under each bar a red arrow shows the blame q minus y: the true class gets an arrow pointing up (increase me), the others down."></svg></div>
+        <div class="controls">
+          <div class="ctl"><label for="hd-z1">score \(z_1\)</label><input id="hd-z1" type="range" min="-4" max="6" step="0.1" value="2"><output id="hd-z1-o">2</output></div>
+          <div class="ctl"><label for="hd-z2">score \(z_2\)</label><input id="hd-z2" type="range" min="-4" max="6" step="0.1" value="1"><output id="hd-z2-o">1</output></div>
+          <div class="ctl"><label for="hd-z3">score \(z_3\)</label><input id="hd-z3" type="range" min="-4" max="6" step="0.1" value="0"><output id="hd-z3-o">0</output></div>
+        </div></div>
+    </div>
+    <div class="presets"><button class="preset" id="hd-same" aria-pressed="false">same story</button><button class="preset" id="hd-reset">reset</button></div>
+    <div id="hd-read" class="readout" style="margin-top:.6rem;line-height:1.7"></div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\frac{\partial L}{\partial\hat y}=\hat y-y\quad\text{and}\quad\frac{\partial L}{\partial\mathbf z}=\mathbf q-\mathbf y\]</p>
+    <p>At the output, the whole blame is simply <strong>prediction minus truth</strong> — for a number with squared error, and for a choice with softmax and cross-entropy. The head changes; the shape of the answer does not. Everything before the head is the same backward walk.</p>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A three-class head gives \(\mathbf q=(0.2,\,0.7,\,0.1)\) and the true class is 3. What is \(\partial L/\partial\mathbf z\)?</p>
+    <div class="opts">
+      <button data-why="That is q itself. The truth y = (0, 0, 1) must be subtracted: q − y = (0.2, 0.7, 0.1 − 1).">\((0.2,\,0.7,\,0.1)\)</button>
+      <button data-correct data-why="Right. y = (0, 0, 1), so q − y = (0.2, 0.7, −0.9). The true class gets a big negative blame (raise my score); class 2, which wrongly took 0.7, gets the biggest push down. The three add to 0.">\((0.2,\,0.7,\,-0.9)\)</button>
+      <button data-why="The truth is class 3, not class 2. y = (0, 0, 1), so only the third entry has 1 subtracted: (0.2, 0.7, −0.9).">\((0.2,\,-0.3,\,0.1)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">We dropped the \(\tfrac12\) and used \(L=(\hat y-y)^2\) instead. What changes in training?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Every gradient doubles (2(ŷ − y) instead of ŷ − y), so the direction of every step is the same. Halving η gives exactly the old training run.">Every gradient doubles; halving \(\eta\) would give exactly the same training</button>
+      <button data-why="The minimum is still at ŷ = y, and the gradient still points the same way — it is just twice as long. Nothing about the direction changes.">The network now learns a different answer</button>
+      <button data-why="The ½ is only a convenience. Without it the derivative is 2(ŷ − y): still defined everywhere, just twice as big.">The gradient can no longer be computed</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s6-->
+  <p class="onesent reveal"><b>In one sentence:</b> Whether the head predicts a number (squared error) or a class (softmax + cross-entropy), the blame it sends back is prediction minus truth — \(\hat y-y\) or \(\mathbf q-\mathbf y\).</p>
+</section>

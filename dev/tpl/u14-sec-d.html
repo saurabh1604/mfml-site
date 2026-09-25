@@ -1,0 +1,325 @@
+<!-- ================= ACT IV · SCORES INTO PROBABILITIES, AND SURPRISE ================= -->
+<!-- ================= 10 · SOFTMAX ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Softmax: turning scores into probabilities</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Three children helped at a family wedding and earned points: Asha 2, Bittu 1, Chintu 0. You have one box of laddoos to share.</p>
+    <p>You want three things. Everyone gets <strong>some</strong>, even Chintu. More points means <strong>more laddoos</strong>. And the <strong>whole box</strong> is given out, nothing left over.</p>
+    <p>Softmax is a recipe that does exactly this, and it is how almost every modern classifier turns its raw scores into probabilities.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>A classifier looks at a photo and produces one raw score per class: cat 2, dog 1, rabbit 0. The scores can be any numbers, even negative. We want probabilities: positive, in the same order, adding to 1. Two steps:</p>
+    <ol>
+      <li><strong>Exponentiate.</strong> \(e^{z}\) is always positive and keeps the order. Each extra point of score multiplies the share by \(e\approx2.718\). So \(e^2=7.389\), \(e^1=2.718\), \(e^0=1\).</li>
+      <li><strong>Divide by the total.</strong> The total is \(7.389+2.718+1=11.107\). Dividing gives \(0.665\), \(0.245\), \(0.090\). They add to 1.</li>
+    </ol>
+    \[\operatorname{softmax}(\mathbf z)_k=\frac{e^{z_k}}{\sum_j e^{z_j}}.\]
+    <p><strong>Only differences matter.</strong> Add 10 to every score. Every \(e^{z}\) gets multiplied by the same \(e^{10}\), which cancels when you divide. Nothing changes. Real code uses this: it subtracts the largest score first, so it never has to compute something like \(e^{1000}\), which no computer can hold.</p>
+    <p><strong>The temperature dial.</strong> Divide the scores by a number \(T\) before the softmax. A small \(T\) stretches the differences; a big \(T\) squashes them.</p>
+  </div>
+  <div class="svgwrap reveal"><table class="plain">
+    <thead><tr><th>temperature</th><th>scores used</th><th>cat</th><th>dog</th><th>rabbit</th><th>character</th></tr></thead>
+    <tbody>
+      <tr><td>\(T\to0\)</td><td>huge gaps</td><td>1</td><td>0</td><td>0</td><td>winner takes all (argmax)</td></tr>
+      <tr><td>\(T=0.5\)</td><td>4, 2, 0</td><td>0.867</td><td>0.117</td><td>0.016</td><td>confident</td></tr>
+      <tr><td>\(T=1\)</td><td>2, 1, 0</td><td>0.665</td><td>0.245</td><td>0.090</td><td>the plain softmax</td></tr>
+      <tr><td>\(T=2\)</td><td>1, 0.5, 0</td><td>0.506</td><td>0.307</td><td>0.186</td><td>relaxed</td></tr>
+      <tr><td>\(T\to\infty\)</td><td>all near 0</td><td>⅓</td><td>⅓</td><td>⅓</td><td>no opinion (uniform)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose reveal">
+    <p>This is exactly the "temperature" setting on a chatbot. A language model picks each next word from a softmax, and turning \(T\) down makes it predictable, turning it up makes it adventurous. You will meet this dial again in Unit 19.</p>
+    <p><strong>Two classes: the sigmoid.</strong> With only two scores \(z_1,z_2\), divide top and bottom by \(e^{z_1}\):</p>
+    \[\begin{aligned}\frac{e^{z_1}}{e^{z_1}+e^{z_2}}&=\frac{1}{1+e^{-(z_1-z_2)}}\\ &=\sigma(z_1-z_2).\end{aligned}\]
+    <p>That S-shaped curve \(\sigma\) is the <em>sigmoid</em> (or logistic function). It finally gives Unit 13's raw score a meaning. The SVM said \(f(\mathbf x)=1.5\), "positive side". Pass it through the sigmoid: \(\sigma(1.5)\approx0.818\), "about 82% sure". A point on the boundary, \(f=0\), gets exactly 50%.</p>
+  </div>
+
+  <div class="widget reveal" id="w-softmax">
+    <div class="widget-head"><span class="w-title">The softmax machine</span><span class="w-sub">Drag the three score bars on the left. The probability bars on the right always add to 1.</span></div>
+    <p class="try"><b>Try:</b> Drag the dog's score up past the cat's and watch the shares swap. Slide the temperature to 0.1 (winner takes all) and to 10 (almost ⅓ each). Then tick <em>subtract the max</em>: the scores shift, the probabilities do not move at all.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="sm-svg" viewBox="0 0 600 360" class="svg-lab grabbable" role="img" aria-label="Left: three draggable score bars for cat, dog and rabbit on a number line from −3 to 4. Middle: a glowing glass pane labelled softmax. Right: three probability bars that always add to 1, with their values printed."></svg></div><p class="stage-tap">drag a score bar up or down</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="sm-T">temperature T</label><input id="sm-T" type="range" min="-1" max="1" step="0.01" value="0"><output id="sm-T-o">1</output></div>
+        </div>
+        <div class="presets" id="sm-pre"><button class="preset" id="sm-p-base" aria-pressed="true">scores 2, 1, 0</button><button class="preset" id="sm-p-tie">a tie</button><button class="preset" id="sm-shift" aria-pressed="false">subtract the max: off</button></div>
+        <div class="pbars" id="sm-bars"></div>
+        <table class="kv" id="sm-kv"></table>
+        <div id="sm-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Where do the answers live?</strong> Three probabilities that add to 1 are a point in 3-D space, and all such points lie on one flat triangle with corners \((1,0,0)\), \((0,1,0)\) and \((0,0,1)\). It is called the <em>probability simplex</em>. A corner is total certainty; the centre is "no idea". Every softmax output is a point on this triangle, and the temperature moves it.</p>
+  </div>
+
+  <div class="widget reveal" id="w-simplex">
+    <div class="widget-head"><span class="w-title">The probability triangle</span><span class="w-sub">Every softmax answer is a point on this glass triangle. Sweeping the temperature draws a path from the winner's corner to the centre.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ sweep T</em>: the glowing point starts near the cat corner (T small) and slides to the centre (T large), drawing its path. Change the scores in the softmax machine above — the path here redraws.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="sx-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. Three axes for the probabilities of cat, dog and rabbit meet at a corner. A glass triangle joins the three points where one probability is 1. A glowing point sits on the triangle at the current softmax output, with thin lines dropping to each axis. A bright path on the triangle runs from near the cat corner at low temperature to the centre at high temperature."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="controls">
+          <div class="ctl"><label for="sx-T">temperature T</label><input id="sx-T" type="range" min="-1.3" max="1.3" step="0.01" value="0"><output id="sx-T-o">1</output></div>
+        </div>
+        <div class="presets"><button class="play" id="sx-play">▶ sweep T</button></div>
+        <table class="kv" id="sx-kv"></table>
+        <div id="sx-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}q_k=\frac{e^{z_k/T}}{\sum_j e^{z_j/T}},\\ \text{two classes: } q_1=\sigma(z_1-z_2)\end{gathered}\]</p>
+    <p>Exponentiate, then share out. Softmax turns any scores into a point on the probability triangle; only the <strong>differences</strong> between scores matter; and the temperature slides the answer between "winner takes all" and "no opinion".</p>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The scores \((2,1,0)\) give probabilities \((0.665,0.245,0.090)\). What do the scores \((12,11,10)\) give?</p>
+    <div class="opts">
+      <button data-why="The scores are bigger, but softmax only sees the differences, and these are the same: 1 and 1. Adding 10 multiplies every exp by e¹⁰, which cancels.">Almost all on the first class, since 12 is so big</button>
+      <button data-correct data-why="Right. Adding the same number to every score multiplies every e^z by the same factor, which cancels in the division. The probabilities are unchanged: (0.665, 0.245, 0.090).">Exactly the same, \((0.665,0.245,0.090)\)</button>
+      <button data-why="Softmax does not divide the scores by their sum; it exponentiates first. Only the differences between scores matter, and they have not changed.">\((12/33,\;11/33,\;10/33)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You lower the temperature from 1 to 0.5 for the scores \((2,1,0)\). What happens to the top probability?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Dividing by T = 0.5 doubles the gaps to (4, 2, 0), and softmax gives (0.867, 0.117, 0.016). Low temperature sharpens; T → 0 is winner-takes-all.">It rises from 0.665 to about 0.867 — the answer gets more confident</button>
+      <button data-why="Lower temperature makes the gaps between scores bigger, which sharpens the answer. The top share goes up, not down.">It falls toward ⅓ — the answer gets less confident</button>
+      <button data-why="The temperature divides the scores before the exp, so it changes the gaps and the probabilities. Only adding a constant to every score leaves them unchanged.">It stays at 0.665 — temperature does not change the probabilities</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s10-->
+  <p class="onesent reveal"><b>In one sentence:</b> Softmax exponentiates the scores and shares them out so they become probabilities — only score differences matter, temperature slides from winner-takes-all to uniform, and with two classes it is the sigmoid of the score difference.</p>
+</section>
+
+<!-- ================= 11 · SURPRISE AND ENTROPY ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Surprise and entropy</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Three things happen tomorrow. The sun rises. The toss before the match comes up heads. Your neighbour wins the state lottery.</p>
+    <p>The sunrise surprises nobody. The toss surprises you a little — it could easily have gone the other way. The lottery win is shocking.</p>
+    <p>The rarer the event, the bigger the surprise. Can we put a number on surprise?</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Yes. The <em>surprise</em> of an outcome with probability \(p\) is</p>
+    \[\text{surprise}=-\log_2 p.\]
+    <p>Certain events (\(p=1\)) carry zero surprise. A fair toss (\(p=\tfrac12\)) carries 1. An event with \(p=\tfrac14\) carries 2, and a one-in-1024 event carries 10. Why a log? Because when two independent things happen, their chances <strong>multiply</strong>, and we want their surprises to <strong>add</strong>. The log turns multiplying into adding.</p>
+    <p>With \(\log_2\) the unit is the <em>bit</em>: the number of fair yes/no questions the news is worth. With the natural log \(\ln\) the unit is the <em>nat</em>. They differ only by a fixed factor: 1 nat \(\approx1.443\) bits. Machine-learning code usually uses nats.</p>
+    <p>Now average the surprise over all outcomes, weighting each by how often it happens. That average is the <em>entropy</em>:</p>
+    \[H(p)=-\sum_k p_k\log_2 p_k.\]
+    <ul>
+      <li>A fair coin: \(\tfrac12\cdot1+\tfrac12\cdot1=1\) bit.</li>
+      <li>A coin that shows heads 90% of the time: \(0.9\cdot0.152+0.1\cdot3.32\approx0.469\) bits. Usually no surprise, occasionally a big one; on average, less than half a bit.</li>
+      <li>Four equally likely outcomes: 2 bits (two yes/no questions pin it down).</li>
+      <li>Something certain: 0 bits.</li>
+    </ul>
+    <p>Entropy measures how <strong>uncertain</strong> a distribution is. It is largest when every outcome is equally likely, and zero when one outcome is certain.</p>
+  </div>
+
+  <div class="widget reveal" id="w-entropy">
+    <div class="widget-head"><span class="w-title">Entropy: the average surprise</span><span class="w-sub">Top: a coin's entropy as its bias changes. Below: three outcomes — the entropy is a dome over the probability triangle, highest at the centre.</span></div>
+    <p class="try"><b>Try:</b> Drag the coin marker to 0.9: the curve reads 0.469 bits. Then drag the glowing point on the dome toward a corner and watch the height drain to zero; at the centre it is \(\log_2 3\approx1.585\) bits, the most uncertain three outcomes can be.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px">
+        <div class="svgstage"><svg id="en-svg" viewBox="0 0 600 250" class="svg-lab grabbable" role="img" aria-label="The binary entropy curve: an arch over coins p from 0 to 1, zero at both ends and 1 bit at p = 0.5. A draggable marker shows the entropy of one coin, with its two surprises drawn as red bars."></svg></div>
+        <div class="substage3d"><div id="en-3d" class="stage3d short" role="img" aria-label="Orbitable 3D scene. A glass triangle of three-outcome probabilities lies on the floor, and over it rises a cyan dome whose height is the entropy, highest over the centre and zero at the corners. A glowing point sits on the dome, with a thin line down to its place on the triangle."></div></div>
+        <p class="stage-tap">drag the coin marker or the point on the dome</p>
+      </div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets" id="en-pre"><button class="preset" id="en-p-fair">fair coin</button><button class="preset" id="en-p-9010" aria-pressed="true">90/10 coin</button><button class="preset" id="en-p-uni3">three equal</button><button class="preset" id="en-p-sure">certain</button></div>
+        <div class="pbars" id="en-bars"></div>
+        <table class="kv" id="en-kv"></table>
+        <div id="en-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{surprise}(x)=-\log p(x),\\ H(p)=\mathbb E\big[-\log p(X)\big]\\ =-\sum_k p_k\log p_k\end{gathered}\]</p>
+    <p>Surprise is minus the log of the chance. <strong>Entropy is the average surprise</strong> — the true uncertainty of a distribution: zero when you are certain, largest when every outcome is equally likely.</p>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Which has more entropy: a fair coin, or a coin that shows heads 90% of the time?</p>
+    <div class="opts">
+      <button data-why="Its tails do carry a big surprise (3.32 bits), but they happen only 10% of the time. Averaged, the 90/10 coin has only 0.469 bits.">The 90/10 coin, because a tail from it is very surprising</button>
+      <button data-correct data-why="Right. The fair coin is as unpredictable as a coin can be: 1 bit. The 90/10 coin is usually predictable: 0.9·0.152 + 0.1·3.32 ≈ 0.469 bits.">The fair coin: 1 bit against about 0.469 bits</button>
+      <button data-why="Both coins have two outcomes, but entropy depends on the chances too. Equal chances give the most uncertainty.">They are equal — both have two outcomes</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> The surprise of an outcome is \(-\log p\), and entropy — the average surprise — measures how uncertain a distribution is, from 0 for a sure thing up to its maximum when all outcomes are equally likely.</p>
+</section>
+
+<!-- ================= 12 · CROSS-ENTROPY AND KL ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>Cross-entropy and KL: paying for the wrong belief</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You move to Mumbai in July, believing "90% of days are dry". You leave your umbrella at home most mornings.</p>
+    <p>In truth, July is about half rain, half dry. Every rainy day shocks you — you had given it only a 10% chance. You are not unlucky. You are <strong>paying for a wrong belief</strong>, and you pay in surprise.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Call the truth \(p\) and your belief \(q\). Each day the weather comes from \(p\), but your surprise is measured with \(q\): \(-\log q(\text{what happened})\). Average it over the true weather and you get the <em>cross-entropy</em>:</p>
+    \[H(p,q)=-\sum_k p_k\log q_k.\]
+    <p>Mumbai in July, in bits: truth \(p=(0.5,0.5)\) for (rain, dry), belief \(q=(0.1,0.9)\). Your average surprise is \(0.5\cdot3.32+0.5\cdot0.152\approx1.737\) bits. Someone who knew the truth would average only \(H(p)=1\) bit. The extra 0.737 bits a day is the price of your wrong belief. It has a name, the <em>KL divergence</em> (after Kullback and Leibler):</p>
+    \[\begin{gathered}H(p,q)=H(p)+\mathrm{KL}(p\,\|\,q),\\ \mathrm{KL}(p\,\|\,q)=\sum_k p_k\log\frac{p_k}{q_k}.\end{gathered}\]
+    <p>Three facts about KL:</p>
+    <ul>
+      <li><strong>Never negative.</strong> A wrong belief can never make you less surprised on average than the truth.</li>
+      <li><strong>Zero only when \(q=p\).</strong> It is a way of measuring how far a belief is from the truth.</li>
+      <li><strong>Not symmetric.</strong> Swap the roles: \(\mathrm{KL}(q\,\|\,p)\approx0.531\) bits, not 0.737. "Believing 90/10 when the truth is 50/50" costs more than "believing 50/50 when the truth is 90/10". So KL is not a true distance — the direction matters.</li>
+    </ul>
+    <p><strong>Why the direction matters when you fit.</strong> Suppose the truth \(p\) has two humps, and you must describe it with one bell \(q\). If you minimise \(\mathrm{KL}(p\,\|\,q)\), every place where \(p\) has mass but \(q\) has almost none is punished hard, so \(q\) <strong>spreads out to cover both humps</strong>. If you minimise \(\mathrm{KL}(q\,\|\,p)\), every place where \(q\) puts mass but \(p\) has none is punished, so \(q\) <strong>locks onto one hump</strong> and ignores the other. Two humps at \(\pm2\) with spread 0.6: the first fit is a wide bell at 0 with spread about 2.09; the second is a narrow bell at about \(\pm2\) with spread about 0.6.</p>
+  </div>
+
+  <div class="widget reveal" id="w-kl">
+    <div class="widget-head"><span class="w-title">Paying for the wrong belief</span><span class="w-sub">Truth p in blue, belief q in orange. The stacked bar shows H(p,q) = H(p) + KL(p‖q). The second tab fits one bell to a two-humped truth, both ways.</span></div>
+    <p class="try"><b>Try:</b> On <em>bars</em>, press <em>Mumbai in July</em>, then drag the orange bars toward the blue ones and watch the red KL slice shrink to nothing. On <em>fit one bell</em>, press both fit buttons and compare: one bell stretches over both humps, the other picks a side.</p>
+    <div class="tabs" id="kl-tabs"><button data-t="bars" aria-selected="true">bars</button><button data-t="fit">fit one bell to two humps</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px">
+        <div class="svgstage" data-tab="bars"><svg id="kl-svg" viewBox="0 0 600 340" class="svg-lab grabbable" role="img" aria-label="Pairs of bars, one pair per outcome: blue for the truth p, orange for the belief q. Each bar can be dragged up or down; the others rescale so each distribution still adds to 1."></svg></div>
+        <div class="svgstage" data-tab="fit" style="display:none"><svg id="kl-fsvg" viewBox="0 0 600 340" class="svg-lab" role="img" aria-label="A blue two-humped truth curve with humps at minus 2 and plus 2, and an orange single bell that is being fitted to it. The areas where one curve has mass and the other has little are tinted red."></svg></div>
+        <p class="stage-tap" data-tab="bars">drag a bar up or down</p>
+      </div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div data-tab="bars">
+          <div class="controls"><div class="ctl"><label for="kl-k">outcomes</label><input id="kl-k" type="range" min="2" max="5" step="1" value="2"><output id="kl-k-o">2</output></div></div>
+          <div class="presets" id="kl-pre"><button class="preset" id="kl-p-mumbai" aria-pressed="true">Mumbai in July</button><button class="preset" id="kl-p-match">belief = truth</button><button class="preset" id="kl-swap">swap p and q</button></div>
+          <div class="stackbars" id="kl-stack"></div>
+        </div>
+        <div data-tab="fit" style="display:none">
+          <div class="controls">
+            <div class="ctl"><label for="kl-mu">bell's middle</label><input id="kl-mu" type="range" min="-3" max="3" step="0.01" value="0.8"><output id="kl-mu-o">0.8</output></div>
+            <div class="ctl"><label for="kl-sig">bell's spread</label><input id="kl-sig" type="range" min="0.3" max="3" step="0.01" value="1"><output id="kl-sig-o">1</output></div>
+          </div>
+          <div class="presets"><button class="play" id="kl-fwd">▶ fit by KL(p‖q)</button><button class="play" id="kl-rev">▶ fit by KL(q‖p)</button></div>
+        </div>
+        <table class="kv" id="kl-kv"></table>
+        <div id="kl-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}H(p,q)&=\underbrace{H(p)}_{\text{the world's own uncertainty}}\\ &\quad+\underbrace{\mathrm{KL}(p\,\|\,q)}_{\text{price of your wrong belief}\;\ge\;0}\end{aligned}\]</p>
+    <p>Cross-entropy is your average surprise when the truth is \(p\) and you believe \(q\). It splits into the surprise nobody can avoid, \(H(p)\), plus the extra you pay for being wrong, \(\mathrm{KL}\). KL is never negative, zero only for a perfect belief, and <strong>not symmetric</strong>.</p>
+  </div>
+  <div class="check reveal" data-check="c18">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The truth is \(p=(0.5,0.5)\) and your belief is \(q=(0.9,0.1)\). You compute \(\mathrm{KL}(p\,\|\,q)\approx0.737\) bits. What is \(\mathrm{KL}(q\,\|\,p)\)?</p>
+    <div class="opts">
+      <button data-why="KL is not symmetric. Swapping the roles changes which distribution weights the average and which one is inside the log.">Also 0.737 bits — KL is a distance, so it is the same both ways</button>
+      <button data-correct data-why="Right. KL(q‖p) = 0.9·log₂(0.9/0.5) + 0.1·log₂(0.1/0.5) ≈ 0.763 − 0.232 = 0.531 bits. Different from 0.737: the direction matters.">About 0.531 bits — the two directions differ</button>
+      <button data-why="KL is never negative: an average of log(p/q) weighted by p is always ≥ 0 (Jensen's inequality). Swapping the roles changes its size, not its sign.">About −0.737 bits</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s12-->
+  <p class="onesent reveal"><b>In one sentence:</b> Cross-entropy is the average surprise of believing \(q\) when the truth is \(p\), it equals the truth's own entropy plus \(\mathrm{KL}(p\,\|\,q)\ge0\), and because KL is lopsided, fitting in one direction covers every hump while the other direction locks onto one.</p>
+</section>
+
+<!-- ================= 13 · CROSS-ENTROPY IS THE CLASSIFIER'S LIKELIHOOD ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Cross-entropy is the classifier's likelihood</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A student guesses answers with confidence levels. On one question she writes "70% sure it's (a)", and the answer is (a). Good — little surprise.</p>
+    <p>On another she writes "1% sure it's (c)" — and the answer is (c). She should be very surprised, and a good teacher would mark that down hard: she was <strong>confidently wrong</strong>.</p>
+    <p>Training a classifier is teaching it to be less surprised by the right answers.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>A classifier outputs a belief \(\mathbf q=\operatorname{softmax}(\mathbf z)\). The truth for one example is a certainty: "it is class 1", written as a <em>one-hot</em> vector \(\mathbf y=(1,0,0)\). The cross-entropy between them has only one term left, because the other \(y_k\) are zero:</p>
+    \[H(\mathbf y,\mathbf q)=-\sum_k y_k\log q_k=-\log q_{\text{correct}}.\]
+    <p>That is just the surprise of the right answer. And it is also the negative log-likelihood from §7: "how likely did the model say the true label was?". So minimising cross-entropy <strong>is</strong> maximum likelihood for a classifier. Every idea of Act III carries over.</p>
+    <p><strong>Worked example.</strong> Scores \((2,1,0)\), the true class is the first. Then \(\mathbf q=(0.665,0.245,0.090)\) and</p>
+    \[\text{loss}=-\ln0.665\approx0.408\text{ nats}.\]
+    <p><strong>The cleanest gradient in machine learning.</strong> How should each score change to lower the loss? The answer (the drawer derives it) is astonishingly simple:</p>
+    \[\begin{aligned}\frac{\partial\,\text{loss}}{\partial\mathbf z}&=\mathbf q-\mathbf y\\ &=(0.665-1,\;0.245-0,\;0.090-0)\\ &=(-0.335,\;0.245,\;0.090).\end{aligned}\]
+    <p><strong>Prediction minus truth.</strong> The correct class gets a negative gradient, so a step downhill raises its score. Each wrong class gets a positive gradient equal to the probability it stole, so it is pushed down by exactly that much. When the prediction is perfect, \(\mathbf q=\mathbf y\) and the gradient is zero.</p>
+    <p><strong>A whole classifier.</strong> For a 2-D point \(\mathbf x\), let each class have its own score line, \(z_k=\mathbf w_k\cdot\mathbf x+b_k\). Softmax turns the three scores into probabilities. The loss over the data is the average cross-entropy, and the gradient for \(\mathbf w_k\) is \((q_k-y_k)\,\mathbf x\). Walk downhill with gradient descent (<a href="unit-09.html#s4">Unit 9</a>). This is <em>softmax regression</em>, and the step "\(\mathbf q-\mathbf y\)" is the first move of every backward pass in <strong>Unit 15</strong>.</p>
+  </div>
+
+  <div class="widget reveal" id="w-train">
+    <div class="widget-head"><span class="w-title">Train a softmax classifier</span><span class="w-sub">Three classes of points. The colour at each spot is the classifier's belief — soft where it is unsure. The loss curve falls as it learns.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ train</em> and watch the fog of the untrained model sharpen into three regions, with soft edges where the classes meet. Drag the white probe into a border zone: its three probabilities share out. Then turn the <em>prediction temperature</em> down to 0.3 — the same model, far more sure of itself.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="tr-svg" viewBox="0 0 560 440" class="svg-lab grabbable" role="img" aria-label="Three clouds of points — blue, orange and violet — on a plane. The background is tinted by the classifier's probabilities: pure colour where one class is certain, a blend where it is unsure. A white probe point can be dragged anywhere."></svg></div><p class="stage-tap">drag the white probe</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="presets" id="tr-pre"><button class="play" id="tr-run">▶ train</button><button class="preset" id="tr-step">one step</button><button class="preset" id="tr-reset">start again</button></div>
+        <div class="controls">
+          <div class="ctl"><label for="tr-lr">step size η</label><input id="tr-lr" type="range" min="0.05" max="2" step="0.05" value="0.5"><output id="tr-lr-o">0.5</output></div>
+          <div class="ctl"><label for="tr-T">prediction temperature</label><input id="tr-T" type="range" min="0.2" max="3" step="0.05" value="1"><output id="tr-T-o">1</output></div>
+        </div>
+        <div class="svgstage mini"><svg id="tr-loss" viewBox="0 0 320 150" class="svg-lab" role="img" aria-label="The average cross-entropy loss plotted against training steps, falling from about 1.1 toward zero."></svg></div>
+        <div class="pbars" id="tr-bars"></div>
+        <table class="kv" id="tr-kv"></table>
+        <div id="tr-verdict" class="verdict info" style="margin-top:.6rem">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{loss}=-\log q_{\text{correct}},\\ \frac{\partial\,\text{loss}}{\partial\mathbf z}=\mathbf q-\mathbf y\end{gathered}\]</p>
+    <p>With a one-hot truth, cross-entropy is the surprise of the right answer — the negative log-likelihood. Its gradient with respect to the scores is <strong>prediction minus truth</strong>, the simplest signal a learner could ask for.</p>
+  </div>
+  <div class="check reveal" data-check="c19">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A model gives the true class probability 0.9 on one example and 0.1 on another. What are the two cross-entropy losses (in nats)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The loss is −ln q_correct: −ln 0.9 ≈ 0.105 and −ln 0.1 ≈ 2.303. Being confidently wrong costs about 22 times more.">About 0.105 and about 2.303</button>
+      <button data-why="The loss is not 1 − q. Cross-entropy uses the log, which punishes a small probability on the right answer much harder than a straight line would.">0.1 and 0.9</button>
+      <button data-why="Those are the log-probabilities themselves (negative). The loss is minus the log: positive, and big when the true class got a small probability.">−0.105 and −2.303</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c20">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Scores \((2,1,0)\) give \(\mathbf q=(0.665,0.245,0.090)\), and the true class is the <strong>second</strong>. What is the gradient of the loss with respect to the scores?</p>
+    <div class="opts">
+      <button data-why="That would be the gradient if the true class were the first. Here y = (0, 1, 0), so the second entry gets the −1.">\((-0.335,\;0.245,\;0.090)\)</button>
+      <button data-correct data-why="Right. q − y = (0.665 − 0, 0.245 − 1, 0.090 − 0) = (0.665, −0.755, 0.090). A downhill step raises the dog score and lowers the cat score the most, because cat stole the most probability.">\((0.665,\;-0.755,\;0.090)\)</button>
+      <button data-why="The gradient is q − y, not y − q. With y − q a step 'downhill' would move the wrong way and make the model worse.">\((-0.665,\;0.755,\;-0.090)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <!--@ALG s13-->
+  <p class="onesent reveal"><b>In one sentence:</b> For a classifier, cross-entropy with the one-hot truth is \(-\log q_{\text{correct}}\), the negative log-likelihood, and its gradient with respect to the scores is simply prediction minus truth, \(\mathbf q-\mathbf y\).</p>
+</section>
+
+<!-- ================= 14 · CARRY FORWARD ================= -->
+<section class="unit" id="s14">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>Thirteen sections, one shift in thinking: from crisp answers to honest maybes. Here is the kit you now carry.</p>
+  </div>
+  <div class="cards reveal-stagger">
+    <div class="cd"><h4>Distributions</h4>\[\mathbb E[X]=\sum x\,p(x),\quad\operatorname{Var}=\mathbb E[(X-\mu)^2]\]<p>Mass for counts, area for smooth quantities. The mean balances, the variance spreads.</p></div>
+    <div class="cd"><h4>Bayes</h4>\[P(H\mid E)\propto P(E\mid H)\,P(H)\]<p>Posterior ∝ likelihood × prior. The prior is where you stood before the evidence.</p></div>
+    <div class="cd"><h4>The Gaussian and its ellipse</h4>\[p(\mathbf x)\propto e^{-\frac12(\mathbf x-\boldsymbol\mu)^{\!\top}\Sigma^{-1}(\mathbf x-\boldsymbol\mu)}\]<p>Contours are Unit 12's ellipse, axes are Unit 4's eigenvectors, samples are \(\boldsymbol\mu+L\mathbf z\).</p></div>
+    <div class="cd"><h4>Likelihood and MLE</h4>\[\hat\theta=\arg\max\log P(\text{data}\mid\theta)\]<p>A coin: the share of heads. A bell: the average and the average squared spread.</p></div>
+    <div class="cd"><h4>Least squares = Gaussian MLE</h4>\[-\log L=\tfrac1{2\sigma^2}\textstyle\sum(y_i-\hat y_i)^2+\text{const}\]<p>A loss is a noise belief in disguise. Laplace noise gives absolute error.</p></div>
+    <div class="cd"><h4>Softmax and temperature</h4>\[q_k=\frac{e^{z_k/T}}{\sum_je^{z_j/T}}\]<p>Only differences matter. Two classes: \(\sigma(z_1-z_2)\).</p></div>
+    <div class="cd"><h4>Entropy, cross-entropy, KL</h4>\[H(p,q)=H(p)+\mathrm{KL}(p\,\|\,q)\]<p>Average surprise; the price of a wrong belief; never negative, not symmetric.</p></div>
+    <div class="cd"><h4>The training signal</h4>\[\frac{\partial(-\log q_y)}{\partial\mathbf z}=\mathbf q-\mathbf y\]<p>Prediction minus truth — the first step of every backward pass.</p></div>
+  </div>
+  <div class="callout aha reveal"><span class="tag">The thread to Units 15–20</span>
+    <p><strong>Unit 15</strong> wires softmax and cross-entropy onto the end of a whole network, and "\(\mathbf q-\mathbf y\)" is where its backward pass starts. <strong>Unit 16</strong> predicts the next word with a softmax over the whole vocabulary. <strong>Unit 19</strong> samples from that softmax with a temperature dial. <strong>Unit 20</strong> builds pictures from Gaussian noise, using the stretch \(\boldsymbol\mu+L\mathbf z\) (the reparameterisation trick) and a KL penalty to keep its beliefs honest.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The one thing to remember</span>
+    <p><strong>Learning is choosing the world that makes your data least surprising.</strong> Squared error, cross-entropy and maximum likelihood are three names for that one idea.</p>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> Uncertainty has a shape, the Gaussian's shape is the covariance ellipse, fitting a model means maximising the likelihood of the data, and softmax plus cross-entropy turn that idea into a classifier whose gradient is prediction minus truth.</p>
+</section>
+
+<!--@PRACTICE-->
