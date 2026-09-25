@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Backprop Step Machine</title>
+<meta name="description" content="A 17-step walkthrough of one forward and one backward pass through a 2-3-2-1 ReLU network, with the live network and the matrix maths side by side.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@1,400;1,500&display=swap">
+<style>
+  :root{ color-scheme: light dark; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body{ margin:0; font:14px system-ui, -apple-system, "Segoe UI", sans-serif; background:#fafaf8; }
+  img{ max-width:100%; }
+  [hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+<style>
+:root{
+  --ground:#EEF1F6; --panel:#FFFFFF; --panel2:#F6F8FB;
+  --ink:#0E1726; --ink2:#33415C; --muted:#63738E;
+  --line:#D6DDE8; --line2:#E7ECF3;
+  --fwd:#1F6FB2; --fwd-bg:#E4EFF9; --fwd-ln:#A9CCE8;
+  --bwd:#BE3A38; --bwd-bg:#FBE8E7; --bwd-ln:#EDB9B6;
+  --par:#8A6212; --par-bg:#FAF0DC;
+  --ok:#17764A; --ok-bg:#E2F2EA; --ok-ln:#A8D5BE;
+  --hot:#FFEEA8;
+  --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+  --s:1;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C111C; --panel:#141C2A; --panel2:#101826;
+    --ink:#E7EDF7; --ink2:#BCC8DC; --muted:#8B9BB8;
+    --line:#26324A; --line2:#1D2739;
+    --fwd:#63AEEA; --fwd-bg:#152941; --fwd-ln:#2E5C8A;
+    --bwd:#F08A85; --bwd-bg:#3A1C1C; --bwd-ln:#7E3B38;
+    --par:#DDAE4A; --par-bg:#33290F;
+    --ok:#5CC894; --ok-bg:#12301F; --ok-ln:#2F6B4C;
+    --hot:#5A4A12;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C111C; --panel:#141C2A; --panel2:#101826;
+  --ink:#E7EDF7; --ink2:#BCC8DC; --muted:#8B9BB8;
+  --line:#26324A; --line2:#1D2739;
+  --fwd:#63AEEA; --fwd-bg:#152941; --fwd-ln:#2E5C8A;
+  --bwd:#F08A85; --bwd-bg:#3A1C1C; --bwd-ln:#7E3B38;
+  --par:#DDAE4A; --par-bg:#33290F;
+  --ok:#5CC894; --ok-bg:#12301F; --ok-ln:#2F6B4C;
+  --hot:#5A4A12;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:calc(15px * var(--s)); line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column;
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--fwd);outline-offset:2px;border-radius:3px}
+
+/* ---------- header ---------- */
+header{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+  background:var(--panel); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:9px 16px;
+}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand h1{
+  margin:0; font-size:calc(16px * var(--s)); font-weight:600; letter-spacing:-.01em;
+  white-space:nowrap;
+}
+.brand .arch{
+  font-family:var(--mono); font-size:calc(11.5px * var(--s)); color:var(--muted);
+  white-space:nowrap;
+}
+.hspace{flex:1 1 auto}
+.hctl{display:flex;align-items:center;gap:6px}
+.tbtn{
+  background:var(--panel2); border:1px solid var(--line); border-radius:5px;
+  padding:4px 9px; font-size:calc(12px * var(--s)); font-weight:500; color:var(--ink2);
+  cursor:pointer; line-height:1.4;
+}
+.tbtn:hover{border-color:var(--fwd);color:var(--fwd)}
+.counter{
+  font-family:var(--mono); font-size:calc(12px * var(--s)); color:var(--muted);
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+
+/* ---------- timeline scrubber ---------- */
+.scrub{
+  display:flex; gap:3px; padding:8px 16px; background:var(--panel2);
+  border-bottom:1px solid var(--line); overflow-x:auto; scrollbar-width:thin;
+  position:sticky; top:calc(env(safe-area-inset-top,0px) + 45px); z-index:29;
+}
+.tick{
+  flex:0 0 auto; border:none; cursor:pointer; padding:0;
+  width:calc(30px * var(--s)); height:calc(22px * var(--s)); border-radius:4px;
+  background:var(--line2); color:var(--muted);
+  font-family:var(--mono); font-size:calc(10.5px * var(--s)); font-weight:500;
+  display:grid; place-items:center; border:1px solid transparent;
+  transition:background .12s, color .12s;
+}
+.tick[data-ph="fwd"]{background:var(--fwd-bg);color:var(--fwd)}
+.tick[data-ph="bwd"]{background:var(--bwd-bg);color:var(--bwd)}
+.tick[data-ph="rules"],.tick[data-ph="update"],.tick[data-ph="setup"]{background:var(--par-bg);color:var(--par)}
+.tick.on{outline:2px solid currentColor; outline-offset:1px; font-weight:600}
+.tick.done{opacity:.55}
+.tick.on.done{opacity:1}
+
+/* ---------- main split ---------- */
+main{
+  flex:1 1 auto; min-height:0;
+  display:grid; grid-template-columns:minmax(360px,42%) 1fr; gap:0;
+}
+.left{
+  border-right:1px solid var(--line); background:var(--panel);
+  overflow-y:auto; padding:16px 16px 28px;
+}
+.right{overflow-y:auto; padding:18px 20px 40px; background:var(--ground)}
+@media (max-width:900px){
+  main{grid-template-columns:1fr; overflow-y:auto}
+  .left{border-right:none;border-bottom:1px solid var(--line);overflow:visible}
+  .right{overflow:visible}
+}
+
+/* ---------- panel headings ---------- */
+.eyebrow{
+  font-size:calc(10.5px * var(--s)); font-weight:600; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 8px;
+}
+
+/* ---------- network svg ---------- */
+.netwrap{margin:0 0 18px}
+svg.net{width:100%;height:auto;display:block;overflow:visible}
+.nd{fill:var(--panel);stroke:var(--ink2);stroke-width:1.6}
+.nd.inp{fill:var(--fwd-bg);stroke:var(--fwd)}
+.nd.out{fill:var(--ok-bg);stroke:var(--ok)}
+.nd.off{fill:var(--line2);stroke:var(--muted);stroke-dasharray:3 3}
+.nd.live{stroke:var(--fwd);stroke-width:2.6}
+.nd.gliv{stroke:var(--bwd);stroke-width:2.6}
+.ed{stroke:var(--line);stroke-width:1.1;fill:none}
+.ed.on{stroke:var(--fwd);stroke-width:1.8;opacity:.85}
+.ed.back{stroke:var(--bwd);stroke-width:1.8;opacity:.85}
+text.nv{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--ink);text-anchor:middle}
+text.nz{font-family:var(--mono);font-size:10px;fill:var(--fwd);text-anchor:middle}
+text.ng{font-family:var(--mono);font-size:10px;fill:var(--bwd);text-anchor:middle;font-weight:600}
+text.nl{font-family:var(--sans);font-size:9.5px;font-weight:600;fill:var(--muted);text-anchor:middle;letter-spacing:.06em}
+text.pw{font-family:var(--mono);font-size:9.5px;fill:var(--par);text-anchor:middle}
+
+/* ---------- chain strip (full width) ---------- */
+.chainwrap{
+  background:var(--panel2); border-bottom:1px solid var(--line);
+  padding:9px 16px 10px; overflow-x:auto; scrollbar-width:thin;
+}
+.chainlab{
+  font-size:calc(10px * var(--s)); font-weight:600; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 6px;
+}
+.chain{display:grid; justify-content:start; align-items:center; row-gap:2px; min-width:max-content}
+.c-op{
+  grid-row:1; font-family:var(--mono); font-size:calc(9.5px * var(--s)); color:var(--muted);
+  text-align:center; line-height:1.2; white-space:nowrap; padding-bottom:2px;
+}
+.c-pill{
+  grid-row:2; justify-self:center;
+  font-family:var(--mono); font-size:calc(12.5px * var(--s)); font-weight:600;
+  padding:4px 9px; border-radius:5px; border:1.5px solid var(--line);
+  background:var(--panel); color:var(--ink2); white-space:nowrap;
+}
+.c-pill.head{border-color:var(--fwd);background:var(--fwd-bg);color:var(--fwd)}
+.c-pill.tail{border-color:var(--bwd);background:var(--bwd-bg);color:var(--bwd)}
+.c-line{grid-row:2; position:relative; height:2px; background:var(--line); margin:0 4px; border-radius:2px}
+.c-line::after{content:"";position:absolute;right:-1px;top:-3px;
+  border-left:6px solid var(--line);border-top:4px solid transparent;border-bottom:4px solid transparent}
+.c-line.act{background:var(--fwd)} .c-line.act::after{border-left-color:var(--fwd)}
+.c-line.actb{background:var(--bwd)}
+.c-line.actb::after{border-left:none;border-right:6px solid var(--bwd);right:auto;left:-1px}
+.c-op.act{color:var(--fwd);font-weight:600} .c-op.actb{color:var(--bwd);font-weight:600}
+.c-val{grid-row:3; justify-self:center; font-family:var(--mono);
+  font-size:calc(10.5px * var(--s)); color:var(--fwd); white-space:nowrap; min-height:1.25em}
+.c-grad{grid-row:4; justify-self:center; font-family:var(--mono); font-weight:600;
+  font-size:calc(10.5px * var(--s)); color:var(--bwd); white-space:nowrap; min-height:1.25em}
+.clegend{display:flex;gap:16px;flex-wrap:wrap;margin:7px 0 0;font-size:calc(10.5px * var(--s));color:var(--muted)}
+.clegend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.netlegend{display:flex;gap:14px;flex-wrap:wrap;margin:2px 0 16px;font-size:calc(10.5px * var(--s));color:var(--muted)}
+
+/* ---------- right: the step ---------- */
+.stephead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 4px}
+.badge{
+  font-family:var(--mono);font-size:calc(11px * var(--s));font-weight:600;letter-spacing:.04em;
+  padding:3px 9px;border-radius:4px;background:var(--par-bg);color:var(--par);
+}
+.badge.fwd{background:var(--fwd-bg);color:var(--fwd)}
+.badge.bwd{background:var(--bwd-bg);color:var(--bwd)}
+h2.stitle{margin:0;font-size:calc(20px * var(--s));font-weight:600;letter-spacing:-.015em;text-wrap:balance}
+p.ssub{margin:2px 0 18px;color:var(--muted);font-size:calc(13.5px * var(--s))}
+.block{margin:0 0 16px}
+.eq{
+  display:flex;align-items:center;flex-wrap:wrap;gap:0 10px;
+  font-size:calc(15px * var(--s)); overflow-x:auto; padding:2px 0;
+}
+.eq.center{justify-content:flex-start}
+.op{font-family:var(--mono);color:var(--ink2);font-size:calc(15px * var(--s))}
+
+/* variables */
+.vr{font-family:var(--serif);font-style:italic;font-size:calc(16px * var(--s));font-weight:500}
+.vr sup{font-size:.62em;font-style:normal;font-family:var(--sans);font-weight:600}
+.vr sub{font-size:.62em;font-style:normal;font-family:var(--sans)}
+.tt{font-family:var(--mono);font-size:calc(13.5px * var(--s))}
+.tp{font-family:var(--sans);font-weight:600;font-size:calc(10px * var(--s));vertical-align:super;margin-left:1px}
+
+/* fraction */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.15;margin:0 2px}
+.frac .fn{font-family:var(--serif);font-style:italic;font-size:calc(13px * var(--s));padding:0 4px}
+.frac .fd{font-family:var(--serif);font-style:italic;font-size:calc(13px * var(--s));padding:0 4px;border-top:1.3px solid currentColor}
+.frac sup{font-size:.62em;font-style:normal;font-family:var(--sans);font-weight:600}
+
+/* matrices */
+.mat{display:inline-flex;align-items:stretch;gap:0;vertical-align:middle}
+.br{width:6px;border:1.6px solid var(--ink2);flex:0 0 auto}
+.br.l{border-right:none;border-radius:3px 0 0 3px}
+.br.r{border-left:none;border-radius:0 3px 3px 0}
+.mg{display:grid;grid-template-columns:repeat(var(--c),auto);gap:1px 15px;padding:5px 7px;
+    font-family:var(--mono);font-size:calc(13.5px * var(--s));font-variant-numeric:tabular-nums}
+.mc{text-align:right;padding:1px 3px;border-radius:3px;white-space:nowrap}
+.mat.par .br{border-color:var(--par)} .mat.par .mc{color:var(--par)}
+.mat.fwd .br{border-color:var(--fwd)} .mat.fwd .mc{color:var(--fwd)}
+.mat.bwd .br{border-color:var(--bwd)} .mat.bwd .mc{color:var(--bwd)}
+.mc.hot{background:var(--hot)}
+.shape{font-family:var(--mono);font-size:calc(10.5px * var(--s));color:var(--muted);align-self:flex-end;padding-bottom:6px}
+
+/* row-by-row working */
+.rows{border-left:2px solid var(--line);padding:2px 0 2px 14px;margin:12px 0 4px;display:flex;flex-direction:column;gap:5px}
+.rowline{
+  font-family:var(--mono);font-size:calc(13px * var(--s));color:var(--ink2);
+  cursor:default;border-radius:4px;padding:2px 5px;margin-left:-5px;
+  font-variant-numeric:tabular-nums;
+}
+.rowline:hover{background:var(--hot);color:var(--ink)}
+.rowline b{color:var(--muted);font-weight:500;display:inline-block;min-width:4.2em}
+.hintrow{font-size:calc(11.5px * var(--s));color:var(--muted);margin:6px 0 0;font-family:var(--sans)}
+
+/* result + note + rule boxes */
+.res{
+  background:var(--ok-bg);border:1px solid var(--ok-ln);border-left:4px solid var(--ok);
+  border-radius:0 6px 6px 0;padding:12px 14px;margin:14px 0;
+}
+.res .eq{margin:0}
+.res p{margin:8px 0 0;font-size:calc(13.5px * var(--s));color:var(--ink2)}
+.note{
+  border-left:3px solid var(--line);padding:0 0 0 13px;margin:14px 0;
+  font-family:var(--serif);font-style:italic;font-size:calc(14.5px * var(--s));
+  color:var(--ink2);line-height:1.55;max-width:62ch;
+}
+.rule{
+  background:var(--panel);border:1px solid var(--line);border-radius:7px;
+  padding:13px 15px;margin:14px 0;
+}
+.rule h3{
+  margin:0 0 9px;font-size:calc(12px * var(--s));font-weight:600;
+  letter-spacing:.07em;text-transform:uppercase;
+}
+.rule.a h3{color:var(--par)} .rule.b h3{color:var(--fwd)} .rule.s h3{color:var(--bwd)}
+.rule p{margin:9px 0 0;font-size:calc(13.5px * var(--s));color:var(--ink2);max-width:62ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+
+/* param table */
+.ptab{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-end;margin:10px 0 0}
+.pitem{display:flex;align-items:center;gap:8px}
+
+/* footer nav */
+footer{
+  position:sticky;bottom:0;z-index:30;background:var(--panel);
+  border-top:1px solid var(--line);
+  padding:9px 16px calc(9px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;gap:10px;
+}
+.nav{
+  background:var(--panel2);border:1px solid var(--line);border-radius:6px;
+  padding:7px 15px;font-size:calc(13.5px * var(--s));font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:7px;
+}
+.nav:hover:not(:disabled){background:var(--fwd);border-color:var(--fwd);color:#fff}
+.nav:disabled{opacity:.35;cursor:not-allowed}
+.nav.prim{background:var(--fwd);border-color:var(--fwd);color:#fff}
+.nav.prim:hover:not(:disabled){filter:brightness(1.1)}
+.now{
+  flex:1 1 auto;min-width:0;text-align:center;font-size:calc(12.5px * var(--s));
+  color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.kbd{
+  font-family:var(--mono);font-size:calc(10.5px * var(--s));border:1px solid var(--line);
+  border-bottom-width:2px;border-radius:3px;padding:0 4px;color:var(--muted);
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header>
+  <div class="brand">
+    <h1>Backprop Step Machine</h1>
+    <span class="arch">2 &rarr; 3 &rarr; 2 &rarr; 1 &middot; ReLU &middot; z<sup>(l)</sup>= W<sup>(l)</sup>a<sup>(l&minus;1)</sup>+ b<sup>(l)</sup></span>
+  </div>
+  <span class="hspace"></span>
+  <span class="counter" id="ctr">Step 1 / 17</span>
+  <div class="hctl">
+    <button class="tbtn" id="zout" title="Smaller text">A&minus;</button>
+    <button class="tbtn" id="zin" title="Larger text">A+</button>
+    <button class="tbtn" id="thm" title="Switch theme">Theme</button>
+  </div>
+</header>
+
+<div class="scrub" id="scrub"></div>
+
+<div class="chainwrap">
+  <p class="chainlab">The computational graph</p>
+  <div class="chain" id="chain"></div>
+  <div class="clegend">
+    <span><i style="background:var(--fwd)"></i>value computed going forward</span>
+    <span><i style="background:var(--bwd)"></i>&#8706;L/&#8706;(node) coming back</span>
+  </div>
+</div>
+
+<main>
+  <section class="left">
+    <p class="eyebrow">The network</p>
+    <div class="netwrap"><svg class="net" id="netsvg" viewBox="-22 -36 508 366" role="img" aria-label="Network diagram with live values"></svg></div>
+    <div class="netlegend">
+      <span style="color:var(--ink)"><b>inside</b> = activation</span>
+      <span style="color:var(--fwd)"><b>above</b> = z</span>
+      <span style="color:var(--bwd)"><b>below</b> = &#8706;L/&#8706;z</span>
+    </div>
+  </section>
+
+  <section class="right" id="right">
+    <div id="stage"></div>
+  </section>
+</main>
+
+<footer>
+  <button class="nav" id="prev">&larr; Back</button>
+  <span class="now" id="now"></span>
+  <span class="kbd">&larr;</span><span class="kbd">&rarr;</span>
+  <button class="nav prim" id="next">Next &rarr;</button>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- helpers ---------------- */
+var n = function(x){ return (x<0? "−" : "") + Math.abs(x); };
+function V(name, sup, sub){
+  return '<span class="vr">'+name+(sup!==undefined?'<sup>('+sup+')</sup>':'')+(sub?'<sub>'+sub+'</sub>':'')+'</span>';
+}
+function Frac(num, den){
+  return '<span class="frac"><span class="fn">'+num+'</span><span class="fd">'+den+'</span></span>';
+}
+function dL(what){ return Frac('∂L','∂'+what); }
+function M(rows, opts){
+  opts = opts || {};
+  var cols = rows[0].length, cells='';
+  for(var i=0;i<rows.length;i++){
+    for(var j=0;j<cols;j++){
+      cells += '<span class="mc" data-r="'+i+'">'+rows[i][j]+'</span>';
+    }
+  }
+  var role = opts.role ? ' data-role="'+opts.role+'"' : '';
+  var tone = opts.tone ? ' '+opts.tone : '';
+  var sh = opts.shape ? '<span class="shape">'+opts.shape+'</span>' : '';
+  return '<span class="mat'+tone+'"'+role+'><i class="br l"></i><span class="mg" style="--c:'+cols+'">'+cells+'</span><i class="br r"></i></span>'+sh;
+}
+function eq(parts){ return '<div class="eq">'+parts.join('')+'</div>'; }
+function op(s){ return '<span class="op">'+s+'</span>'; }
+function rows(list, hint){
+  var h = list.map(function(r,i){
+    return '<div class="rowline" data-r="'+(r.r!==undefined?r.r:i)+'"><b>row '+((r.r!==undefined?r.r:i)+1)+'</b>'+r.t+'</div>';
+  }).join('');
+  return '<div class="rows">'+h+'</div>'+(hint?'<p class="hintrow">'+hint+'</p>':'');
+}
+function res(inner, p){ return '<div class="res">'+inner+(p?'<p>'+p+'</p>':'')+'</div>'; }
+function note(t){ return '<p class="note">'+t+'</p>'; }
+
+/* ---------------- the numbers ---------------- */
+var W1 = [["0.1","0.3"],["0.2","−0.1"],["−0.1","0.2"]];
+var b1 = [["1"],["−1"],["−1"]];
+var W2 = [["1","−0.5","1"],["1","0.5","−1"]];
+var b2 = [["1"],["−2"]];
+var W3 = [["4","2"]];
+var b3 = [["2"]];
+var X  = [["30"],["10"]];
+
+/* ---------------- steps ---------------- */
+var S = [];
+
+S.push({ph:"setup", tag:"SET", badge:"SETUP", title:"The network and the numbers",
+  sub:"Two inputs, three hidden, two hidden, one output. Everything in lakhs.",
+  body:
+  '<div class="block">'+
+    eq([V('a',0),op('='),M(X,{role:'vec',tone:'fwd'}),op('&nbsp;&nbsp;'),
+        '<span class="tt">age = 30, experience = 10</span>'])+
+    eq(['<span class="tt">target&nbsp;</span>',V('y'),op('='),'<span class="tt">50 lakhs</span>',op('&nbsp;&nbsp;&nbsp;loss&nbsp;&nbsp;'),
+        V('L'),op('='),'<span class="tt">&frac12;(</span>',V('&#374;'),op('−'),V('y'),'<span class="tt">)&sup2;</span>'])+
+  '</div>'+
+  '<div class="rule"><h3 style="color:var(--par)">The parameters we start with</h3>'+
+    '<div class="ptab">'+
+      '<span class="pitem">'+V('W',1)+op('=')+M(W1,{tone:'par'})+'</span>'+
+      '<span class="pitem">'+V('b',1)+op('=')+M(b1,{tone:'par'})+'</span>'+
+      '<span class="pitem">'+V('W',2)+op('=')+M(W2,{tone:'par'})+'</span>'+
+      '<span class="pitem">'+V('b',2)+op('=')+M(b2,{tone:'par'})+'</span>'+
+      '<span class="pitem">'+V('W',3)+op('=')+M(W3,{tone:'par'})+'</span>'+
+      '<span class="pitem">'+V('b',3)+op('=')+M(b3,{tone:'par'})+'</span>'+
+    '</div>'+
+    '<p><b>Shape rule:</b> '+V('W','l')+' is (nodes in layer <i>l</i>) &times; (nodes in layer <i>l</i>&minus;1). Rows are where you are going, columns are where you came from.</p>'+
+  '</div>'+
+  '<div class="rule"><h3 style="color:var(--fwd)">The activation</h3>'+
+    eq(['<span class="tt">ReLU(z) = max(0, z)</span>',op('&nbsp;&nbsp;&nbsp;&nbsp;'),
+        '<span class="tt">ReLU&prime;(z) = 1 if z &gt; 0,&nbsp; 0 if z &lt; 0</span>'])+
+    '<p>Applied entry by entry. ReLU&prime; is just a <b>switch</b>: on where the neuron was awake, off where it was asleep.</p>'+
+  '</div>'+
+  note('The whole exercise: push (30, 10) through the chain, see how wrong the answer is, then send that error back along the same chain to find how every weight should change.')
+});
+
+S.push({ph:"fwd", tag:"F1", badge:"FORWARD · F1", title:"a⁽⁰⁾ → z⁽¹⁾", sub:"Linear arrow. Multiply by W, add b.", edge:0,
+  body:
+  eq([V('z',1),op('='),V('W',1),V('a',0),op('+'),V('b',1),op('='),
+      M(W1,{role:'W',tone:'par'}),M(X,{role:'vec',tone:'fwd'}),op('+'),M(b1,{role:'b',tone:'par'})])+
+  rows([
+   {t:'(0.1)(30) + (0.3)(10) + 1 &nbsp;=&nbsp; 3 + 3 + 1 &nbsp;=&nbsp; <b style="color:var(--ok)">7</b>'},
+   {t:'(0.2)(30) + (−0.1)(10) − 1 &nbsp;=&nbsp; 6 − 1 − 1 &nbsp;=&nbsp; <b style="color:var(--ok)">4</b>'},
+   {t:'(−0.1)(30) + (0.2)(10) − 1 &nbsp;=&nbsp; −3 + 2 − 1 &nbsp;=&nbsp; <b style="color:var(--ok)">−2</b>'}
+  ], 'Hover a row to light up the matrix entries it uses.')+
+  res(eq([V('z',1),op('='),M([["7"],["4"],["−2"]],{tone:'fwd',shape:'3×1 ✓'})]))
+});
+
+S.push({ph:"fwd", tag:"F2", badge:"FORWARD · F2", title:"z⁽¹⁾ → a⁽¹⁾", sub:"ReLU arrow. Entry by entry, keep it or zero it.", edge:1,
+  body:
+  eq([V('a',1),op('='),'<span class="tt">ReLU</span>',M([["7"],["4"],["−2"]],{tone:'fwd'}),op('='),
+      M([["max(0, 7)"],["max(0, 4)"],["max(0, −2)"]])])+
+  res(eq([V('a',1),op('='),M([["7"],["4"],["0"]],{tone:'fwd'})]),
+      'The third neuron got a negative sum, so ReLU switched it off. Watch what happens to it on the way back.')
+});
+
+S.push({ph:"fwd", tag:"F3", badge:"FORWARD · F3", title:"a⁽¹⁾ → z⁽²⁾", sub:"Linear arrow again — same rule, new matrix.", edge:2,
+  body:
+  eq([V('z',2),op('='),M(W2,{role:'W',tone:'par'}),M([["7"],["4"],["0"]],{role:'vec',tone:'fwd'}),op('+'),M(b2,{role:'b',tone:'par'})])+
+  rows([
+   {t:'(1)(7) + (−0.5)(4) + (1)(0) + 1 &nbsp;=&nbsp; 7 − 2 + 0 + 1 &nbsp;=&nbsp; <b style="color:var(--ok)">6</b>'},
+   {t:'(1)(7) + (0.5)(4) + (−1)(0) − 2 &nbsp;=&nbsp; 7 + 2 − 0 − 2 &nbsp;=&nbsp; <b style="color:var(--ok)">7</b>'}
+  ])+
+  res(eq([V('z',2),op('='),M([["6"],["7"]],{tone:'fwd',shape:'2×1 ✓'})]))
+});
+
+S.push({ph:"fwd", tag:"F4", badge:"FORWARD · F4", title:"z⁽²⁾ → a⁽²⁾", sub:"ReLU arrow. Both positive this time.", edge:3,
+  body:
+  eq([V('a',2),op('='),'<span class="tt">ReLU</span>',M([["6"],["7"]],{tone:'fwd'}),op('='),M([["6"],["7"]],{tone:'fwd'})])+
+  res(eq([V('a',2),op('='),M([["6"],["7"]],{tone:'fwd'})]), 'Both entries were already positive, so ReLU changes nothing here.')
+});
+
+S.push({ph:"fwd", tag:"F5", badge:"FORWARD · F5", title:"a⁽²⁾ → z⁽³⁾", sub:"Linear arrow into the single output node.", edge:4,
+  body:
+  eq([V('z',3),op('='),M(W3,{role:'W',tone:'par'}),M([["6"],["7"]],{role:'vec',tone:'fwd'}),op('+'),M(b3,{role:'b',tone:'par'})])+
+  rows([{t:'(4)(6) + (2)(7) + 2 &nbsp;=&nbsp; 24 + 14 + 2 &nbsp;=&nbsp; <b style="color:var(--ok)">40</b>'}])+
+  res(eq([V('z',3),op('='),M([["40"]],{tone:'fwd'})]))
+});
+
+S.push({ph:"fwd", tag:"F6", badge:"FORWARD · F6", title:"z⁽³⁾ → ŷ", sub:"ReLU arrow. The prediction.", edge:5,
+  body:
+  eq([V('&#374;'),op('='),'<span class="tt">ReLU(40)</span>',op('='),M([["40"]],{tone:'fwd'})])+
+  res('<div class="eq"><span style="font-size:calc(17px * var(--s));font-weight:600">The network predicts a salary of 40 lakhs.</span></div>',
+      'For regression the output is usually left linear. Here z<sup>(3)</sup> = 40 &gt; 0, so ReLU behaves exactly like the identity — the numbers are the same either way.')
+});
+
+S.push({ph:"fwd", tag:"F7", badge:"FORWARD · F7", title:"ŷ → L", sub:"The loss. How wrong are we?", edge:6,
+  body:
+  eq([V('L'),op('='),'<span class="tt">&frac12;(</span>',V('&#374;'),op('−'),V('y'),'<span class="tt">)&sup2;</span>',op('='),
+      '<span class="tt">&frac12;(40 − 50)&sup2;</span>',op('='),'<span class="tt">&frac12;(−10)&sup2;</span>',op('='),'<span class="tt">&frac12;(100)</span>'])+
+  res(eq([V('L'),op('='),'<span class="tt" style="font-size:calc(17px * var(--s));font-weight:600">50</span>',
+          op('&nbsp;&nbsp;&nbsp;&nbsp;error&nbsp;&nbsp;'),V('&#374;'),op('−'),V('y'),op('='),
+          '<span class="tt" style="font-size:calc(17px * var(--s));font-weight:600;color:var(--bwd)">−10</span>']),
+      'The minus sign says the prediction is <b>too low</b> by 10 lakhs. That single number is the seed of the whole backward pass.')
+});
+
+S.push({ph:"rules", tag:"R", badge:"THE TWO RULES", title:"Only two kinds of arrow, so only two rules",
+  sub:"Derive them once here, then just apply them six times.",
+  body:
+  '<div class="rule s"><h3>Where we start</h3>'+
+    eq([dL('ŷ'),op('='),'<span class="tt">d/dŷ [ &frac12;(ŷ − y)&sup2; ]</span>',op('='),V('&#374;'),op('−'),V('y')])+
+    '<p>The &frac12; is there only to cancel this 2. Drop it and every gradient simply doubles.</p></div>'+
+  '<div class="rule a"><h3>Rule A &mdash; crossing a ReLU arrow backwards</h3>'+
+    '<p>The arrow was '+V('a')+' = ReLU('+V('z')+'), entry by entry. So '+V('a',null,'j')+' depends on '+V('z',null,'j')+' and nothing else &mdash; one term, no sum:</p>'+
+    eq([dL('z<sub>j</sub>'),op('='),dL('a<sub>j</sub>'),op('·'),'<span class="tt">ReLU&prime;(z<sub>j</sub>)</span>'])+
+    '<p>Doing that for every <i>j</i> at once is an entry-by-entry multiply:</p>'+
+    eq([dL('z'),op('='),dL('a'),op('⊙'),'<span class="tt">ReLU&prime;(</span>',V('z'),'<span class="tt">)</span>'])+
+    '<p>ReLU&prime; is a switch. This rule <b>lets the gradient through where the neuron was awake, and blocks it where it was asleep.</b></p></div>'+
+  '<div class="rule b"><h3>Rule B &mdash; crossing a linear arrow backwards</h3>'+
+    '<p>The arrow was '+V('z')+' = '+V('W')+V('a')+' + '+V('b')+', that is '+V('z',null,'j')+' = &Sigma;<sub>k</sub> '+V('W',null,'jk')+V('a',null,'k')+' + '+V('b',null,'j')+'. Three things feed in, so it gives three results.</p>'+
+    '<div class="grid2">'+
+      '<div><p style="margin-top:0"><b>(i)</b> '+V('W',null,'jk')+' sits in one place only, inside '+V('z',null,'j')+'. One term:</p>'+
+        eq([dL('W<sub>jk</sub>'),op('='),dL('z<sub>j</sub>'),op('·'),V('a',null,'k')])+'</div>'+
+      '<div><p style="margin-top:0"><b>(ii)</b> '+V('b',null,'j')+' also sits only in '+V('z',null,'j')+', with coefficient 1:</p>'+
+        eq([dL('b<sub>j</sub>'),op('='),dL('z<sub>j</sub>')])+'</div>'+
+      '<div><p style="margin-top:0"><b>(iii)</b> '+V('a',null,'k')+' sits in <b>every</b> '+V('z',null,'j')+', so we sum:</p>'+
+        eq([dL('a<sub>k</sub>'),op('='),'<span class="tt">&Sigma;<sub>j</sub></span>',dL('z<sub>j</sub>'),V('W',null,'jk')])+'</div>'+
+    '</div>'+
+    '<p>That sum runs down a <i>column</i> of W, which is a <i>row</i> of W&#7488;. Stacking all three:</p>'+
+    '<div class="res" style="margin-bottom:0">'+
+      eq([dL('W'),op('='),dL('z'),V('a'),'<sup class="tt">ᵀ</sup>',op('&nbsp;&nbsp;&nbsp;&nbsp;'),
+          dL('b'),op('='),dL('z'),op('&nbsp;&nbsp;&nbsp;&nbsp;'),
+          dL('a'),op('='),V('W'),'<sup class="tt">ᵀ</sup>',dL('z')])+
+      '<p><b>Forward you multiply by W. Backward you multiply by W&#7488;.</b> Same wires, opposite direction.</p>'+
+    '</div></div>'+
+  note('Shape check that never fails: the gradient of anything has the same shape as that thing. ∂L/∂W⁽²⁾ must be 2×3, so it can only be (2×1)(1×3) — the transpose has just one place to go.')
+});
+
+S.push({ph:"bwd", tag:"B1", badge:"BACKWARD · B1", title:"Start at the loss", sub:"The seed of everything that follows.", edge:6, back:true,
+  body:
+  eq([dL('ŷ'),op('='),V('&#374;'),op('−'),V('y'),op('='),'<span class="tt">40 − 50</span>'])+
+  res(eq([dL('ŷ'),op('='),M([["−10"]],{tone:'bwd'})]))
+});
+
+S.push({ph:"bwd", tag:"B2", badge:"BACKWARD · B2", title:"Cross z⁽³⁾ → ŷ backwards", sub:"Rule A — the ReLU switch.", edge:5, back:true,
+  body:
+  '<p style="color:var(--ink2);font-size:calc(13.5px * var(--s));margin-top:0">Stored from the forward pass: '+V('z',3)+' = 40, which is positive, so the switch is <b>on</b> and ReLU&prime; = 1.</p>'+
+  eq([dL('z<sup>(3)</sup>'),op('='),M([["−10"]],{tone:'bwd'}),op('⊙'),M([["1"]]),])+
+  res(eq([dL('z<sup>(3)</sup>'),op('='),M([["−10"]],{tone:'bwd'})]))
+});
+
+S.push({ph:"bwd", tag:"B3", badge:"BACKWARD · B3", title:"Cross a⁽²⁾ → z⁽³⁾ backwards", sub:"Rule B — three results at once.", edge:4, back:true, pars:['W3','b3'],
+  body:
+  '<p style="color:var(--ink2);font-size:calc(13.5px * var(--s));margin-top:0">Stored: '+V('a',2)+' = (6, 7), and '+V('W',3)+' = (4, 2).</p>'+
+  eq([dL('W<sup>(3)</sup>'),op('='),dL('z<sup>(3)</sup>'),V('a',2),'<sup class="tt">ᵀ</sup>',op('='),
+      M([["−10"]],{tone:'bwd'}),M([["6","7"]],{tone:'fwd'}),op('='),M([["(−10)(6)","(−10)(7)"]])])+
+  eq([dL('a<sup>(2)</sup>'),op('='),V('W',3),'<sup class="tt">ᵀ</sup>',dL('z<sup>(3)</sup>'),op('='),
+      M([["4"],["2"]],{tone:'par'}),M([["−10"]],{tone:'bwd'}),op('='),M([["(4)(−10)"],["(2)(−10)"]])])+
+  res(eq([dL('W<sup>(3)</sup>'),op('='),M([["−60","−70"]],{tone:'bwd',shape:'1×2'}),op('&nbsp;&nbsp;'),
+          dL('b<sup>(3)</sup>'),op('='),M([["−10"]],{tone:'bwd'}),op('&nbsp;&nbsp;'),
+          dL('a<sup>(2)</sup>'),op('='),M([["−40"],["−20"]],{tone:'bwd',shape:'2×1'})]),
+      'The neuron with the bigger weight (4 against 2) gets twice the blame. That is all W&#7488; is doing.')
+});
+
+S.push({ph:"bwd", tag:"B4", badge:"BACKWARD · B4", title:"Cross z⁽²⁾ → a⁽²⁾ backwards", sub:"Rule A. Both switches on.", edge:3, back:true,
+  body:
+  '<p style="color:var(--ink2);font-size:calc(13.5px * var(--s));margin-top:0">Stored: '+V('z',2)+' = (6, 7), both positive, so ReLU&prime; = (1, 1).</p>'+
+  eq([dL('z<sup>(2)</sup>'),op('='),M([["−40"],["−20"]],{tone:'bwd'}),op('⊙'),M([["1"],["1"]])])+
+  res(eq([dL('z<sup>(2)</sup>'),op('='),M([["−40"],["−20"]],{tone:'bwd'})]),
+      'Nothing was blocked here, so the gradient passes through unchanged.')
+});
+
+S.push({ph:"bwd", tag:"B5", badge:"BACKWARD · B5", title:"Cross a⁽¹⁾ → z⁽²⁾ backwards", sub:"Rule B. An outer product and a transpose.", edge:2, back:true, pars:['W2','b2'],
+  body:
+  eq([dL('W<sup>(2)</sup>'),op('='),M([["−40"],["−20"]],{tone:'bwd'}),M([["7","4","0"]],{tone:'fwd'}),op('='),
+      M([["(−40)(7)","(−40)(4)","(−40)(0)"],["(−20)(7)","(−20)(4)","(−20)(0)"]])])+
+  eq([dL('a<sup>(1)</sup>'),op('='),V('W',2),'<sup class="tt">ᵀ</sup>',dL('z<sup>(2)</sup>'),op('='),
+      M([["1","1"],["−0.5","0.5"],["1","−1"]],{role:'W',tone:'par'}),M([["−40"],["−20"]],{role:'vec',tone:'bwd'})])+
+  rows([
+   {t:'(1)(−40) + (1)(−20) &nbsp;=&nbsp; −40 − 20 &nbsp;=&nbsp; <b style="color:var(--bwd)">−60</b>'},
+   {t:'(−0.5)(−40) + (0.5)(−20) &nbsp;=&nbsp; 20 − 10 &nbsp;=&nbsp; <b style="color:var(--bwd)">10</b>'},
+   {t:'(1)(−40) + (−1)(−20) &nbsp;=&nbsp; −40 + 20 &nbsp;=&nbsp; <b style="color:var(--bwd)">−20</b>'}
+  ])+
+  res(eq([dL('W<sup>(2)</sup>'),op('='),M([["−280","−160","0"],["−140","−80","0"]],{tone:'bwd',shape:'2×3'}),op('&nbsp;&nbsp;'),
+          dL('b<sup>(2)</sup>'),op('='),M([["−40"],["−20"]],{tone:'bwd'}),op('&nbsp;&nbsp;'),
+          dL('a<sup>(1)</sup>'),op('='),M([["−60"],["10"],["−20"]],{tone:'bwd'})]),
+      'The third column is all zeros, because it multiplied a<sup>(1)</sup><sub>3</sub> = 0. A weight that carried nothing gets no blame.')
+});
+
+S.push({ph:"bwd", tag:"B6", badge:"BACKWARD · B6", title:"Cross z⁽¹⁾ → a⁽¹⁾ backwards", sub:"Rule A — and this time the switch closes.", edge:1, back:true,
+  body:
+  '<p style="color:var(--ink2);font-size:calc(13.5px * var(--s));margin-top:0">Stored: '+V('z',1)+' = (7, 4, −2). The third is negative, so that switch is <b>off</b>.</p>'+
+  eq(['<span class="tt">ReLU&prime;</span>',M([["7"],["4"],["−2"]],{tone:'fwd'}),op('='),M([["1"],["1"],["0"]])])+
+  eq([dL('z<sup>(1)</sup>'),op('='),M([["−60"],["10"],["−20"]],{tone:'bwd'}),op('⊙'),M([["1"],["1"],["0"]])])+
+  res(eq([dL('z<sup>(1)</sup>'),op('='),M([["−60"],["10"],["0"]],{tone:'bwd'})]),
+      'The −20 was <b>blocked</b>. A neuron that slept on the way forward learns nothing on the way back. Note also that neuron 1 gets −60 while neuron 2 gets +10 — they are asked to move in opposite directions.')
+});
+
+S.push({ph:"bwd", tag:"B7", badge:"BACKWARD · B7", title:"Cross a⁽⁰⁾ → z⁽¹⁾ backwards", sub:"Rule B, last step. We are back at the input.", edge:0, back:true, pars:['W1','b1'],
+  body:
+  eq([dL('W<sup>(1)</sup>'),op('='),dL('z<sup>(1)</sup>'),V('a',0),'<sup class="tt">ᵀ</sup>',op('='),
+      M([["−60"],["10"],["0"]],{tone:'bwd'}),M([["30","10"]],{tone:'fwd'})])+
+  eq([op('='),M([["(−60)(30)","(−60)(10)"],["(10)(30)","(10)(10)"],["(0)(30)","(0)(10)"]])])+
+  res(eq([dL('W<sup>(1)</sup>'),op('='),M([["−1800","−600"],["300","100"],["0","0"]],{tone:'bwd',shape:'3×2'}),op('&nbsp;&nbsp;&nbsp;'),
+          dL('b<sup>(1)</sup>'),op('='),M([["−60"],["10"],["0"]],{tone:'bwd'})]),
+      'The whole third row is zero — the sleeping neuron’s weights will not move at all this step.')
+});
+
+S.push({ph:"update", tag:"UPD", badge:"UPDATE & CHECK", title:"Step the weights, then run it again",
+  sub:"Did one pass of backprop actually help?",
+  body:
+  '<div class="rule b"><h3>The update rule</h3>'+
+    eq([V('W','l'),op('←'),V('W','l'),op('−'),'<span class="vr">&eta;</span>',dL('W<sup>(l)</sup>'),op('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'),
+        V('b','l'),op('←'),V('b','l'),op('−'),'<span class="vr">&eta;</span>',dL('b<sup>(l)</sup>')])+
+    '<p>The gradient points <i>uphill</i> on the loss, so we step the other way. Take &eta; = 10<sup>&minus;5</sup>. For example 0.1 &minus; 10<sup>&minus;5</sup>(&minus;1800) = 0.1 + 0.018 = 0.118.</p></div>'+
+  '<div class="ptab">'+
+    '<span class="pitem">'+V('W',1)+op('=')+M([["0.118","0.306"],["0.197","−0.101"],["−0.1","0.2"]],{tone:'par'})+'</span>'+
+    '<span class="pitem">'+V('b',1)+op('=')+M([["1.0006"],["−1.0001"],["−1"]],{tone:'par'})+'</span>'+
+    '<span class="pitem">'+V('W',2)+op('=')+M([["1.0028","−0.4984","1"],["1.0014","0.5008","−1"]],{tone:'par'})+'</span>'+
+    '<span class="pitem">'+V('b',2)+op('=')+M([["1.0004"],["−1.9998"]],{tone:'par'})+'</span>'+
+    '<span class="pitem">'+V('W',3)+op('=')+M([["4.0006","2.0007"]],{tone:'par'})+'</span>'+
+    '<span class="pitem">'+V('b',3)+op('=')+M([["2.0001"]],{tone:'par'})+'</span>'+
+  '</div>'+
+  '<p class="hintrow">Row 3 of W<sup>(1)</sup> and column 3 of W<sup>(2)</sup> are unchanged — exactly the zero-gradient entries the sleeping neuron produced.</p>'+
+  '<p class="eyebrow" style="margin-top:22px">Run the chain forward again</p>'+
+  rows([
+   {t:'(0.118)(30) + (0.306)(10) + 1.0006 &nbsp;=&nbsp; 3.54 + 3.06 + 1.0006 &nbsp;=&nbsp; 7.6006'},
+   {t:'(0.197)(30) + (−0.101)(10) − 1.0001 &nbsp;=&nbsp; 5.91 − 1.01 − 1.0001 &nbsp;=&nbsp; 3.8999'},
+   {t:'(−0.1)(30) + (0.2)(10) − 1 &nbsp;=&nbsp; −3 + 2 − 1 &nbsp;=&nbsp; −2 &nbsp;&nbsp;(still asleep)'}
+  ])+
+  eq([V('a',1),op('='),M([["7.6006"],["3.8999"],["0"]],{tone:'fwd'}),op('&nbsp;&nbsp;'),
+      V('z',2),op('='),V('a',2),op('='),M([["6.6786"],["7.5645"]],{tone:'fwd'}),op('&nbsp;&nbsp;'),
+      V('&#374;'),op('='),'<span class="tt">(4.0006)(6.6786) + (2.0007)(7.5645) + 2.0001</span>'])+
+  res('<div class="eq"><span style="font-size:calc(19px * var(--s));font-weight:600">Loss&nbsp; 50 &nbsp;&rarr;&nbsp; 18.89</span>'+
+      '<span style="font-size:calc(15px * var(--s));color:var(--ink2);margin-left:14px">&nbsp;&nbsp;error &minus;10 &rarr; &minus;6.15,&nbsp; prediction 40 &rarr; 43.85</span></div>',
+      'One forward pass plus one backward pass moved the prediction from 40 towards 50. Repeat the pair a few hundred times and the error goes to zero.')+
+  '<div class="rule a"><h3>Why &eta; had to be so tiny</h3>'+
+    '<p>∂L/∂W<sup>(1)</sup><sub>11</sub> = −1800 while ∂L/∂b<sup>(3)</sup> = −10, because ∂L/∂W<sup>(1)</sup> multiplies by the raw input and age = 30 is large. With &eta; = 10<sup>−4</sup> the prediction overshoots to 79.3 and the loss <i>rises</i> to 429. The real fix is not a smaller &eta; but scaling the inputs before training.</p></div>'+
+  '<div class="rule b"><h3>The whole algorithm</h3>'+
+    '<p><b>Forward:</b> a<sup>(0)</sup> → z<sup>(1)</sup> → a<sup>(1)</sup> → z<sup>(2)</sup> → a<sup>(2)</sup> → z<sup>(3)</sup> → ŷ → L, storing every node.<br>'+
+    '<b>Backward:</b> start with ∂L/∂ŷ = ŷ − y, then walk back: <b>ReLU arrow</b> ⇒ ∂L/∂z = ∂L/∂a ⊙ ReLU&prime;(z);&nbsp; <b>linear arrow</b> ⇒ ∂L/∂W = (∂L/∂z)aᵀ, ∂L/∂b = ∂L/∂z, ∂L/∂a = Wᵀ(∂L/∂z).<br>'+
+    '<b>Update:</b> &theta; ← &theta; − &eta; ∂L/∂&theta;. &nbsp;<b>Repeat.</b></p></div>'
+});
+
+/* ---------------- node knowledge per step ---------------- */
+var CHAIN = [
+  {id:"a0", lab:"a<sup>(0)</sup>", val:"(30, 10)",      grad:"(−4, −19)"},
+  {id:"z1", lab:"z<sup>(1)</sup>", val:"(7, 4, −2)", grad:"(−60, 10, 0)"},
+  {id:"a1", lab:"a<sup>(1)</sup>", val:"(7, 4, 0)",     grad:"(−60, 10, −20)"},
+  {id:"z2", lab:"z<sup>(2)</sup>", val:"(6, 7)",        grad:"(−40, −20)"},
+  {id:"a2", lab:"a<sup>(2)</sup>", val:"(6, 7)",        grad:"(−40, −20)"},
+  {id:"z3", lab:"z<sup>(3)</sup>", val:"40",            grad:"−10"},
+  {id:"yh", lab:"ŷ",          val:"40",            grad:"−10"},
+  {id:"L",  lab:"L",               val:"50",            grad:"1"}
+];
+var OPS = [
+  "×W<sup>(1)</sup><br>+b<sup>(1)</sup>", "ReLU",
+  "×W<sup>(2)</sup><br>+b<sup>(2)</sup>", "ReLU",
+  "×W<sup>(3)</sup><br>+b<sup>(3)</sup>", "ReLU",
+  "½(ŷ−y)²"
+];
+/* how many chain nodes are known forward / backward at each step */
+var FWDN = [1,2,3,4,5,6,7,8, 8, 8,8,8,8,8,8,8, 8];
+/* backward known counts from the right: 0 = none, 1 = L, 2 = +yh ... */
+var BWDN = [0,0,0,0,0,0,0,0, 1, 2,3,4,5,6,7,8, 8];
+
+/* ---------------- network svg ---------------- */
+var NODES = {
+  x1:{x:40,y:112,lay:0,i:0}, x2:{x:40,y:214,lay:0,i:1},
+  h11:{x:172,y:52,lay:1,i:0}, h12:{x:172,y:163,lay:1,i:1}, h13:{x:172,y:274,lay:1,i:2},
+  h21:{x:312,y:112,lay:2,i:0}, h22:{x:312,y:214,lay:2,i:1},
+  o1:{x:446,y:163,lay:3,i:0}
+};
+var EDGES = [];
+["x1","x2"].forEach(function(a){["h11","h12","h13"].forEach(function(b){EDGES.push([a,b,0]);});});
+["h11","h12","h13"].forEach(function(a){["h21","h22"].forEach(function(b){EDGES.push([a,b,1]);});});
+["h21","h22"].forEach(function(a){EDGES.push([a,"o1",2]);});
+
+var LAYVALS = {
+  0:{z:["30","10"],       a:["30","10"],   g:[null,null]},
+  1:{z:["7","4","−2"], a:["7","4","0"], g:["−60","10","0"]},
+  2:{z:["6","7"],         a:["6","7"],     g:["−40","−20"]},
+  3:{z:["40"],            a:["40"],        g:["−10"]}
+};
+/* which layers have z / a / grad known at step k */
+var LZ = [[0],[0,1],[0,1],[0,1,2],[0,1,2],[0,1,2,3],[0,1,2,3],[0,1,2,3]];
+var LA = [[0],[0],[0,1],[0,1],[0,1,2],[0,1,2],[0,1,2,3],[0,1,2,3]];
+
+function known(k){
+  var zl, al, gl = [];
+  if(k<=7){ zl = LZ[k]; al = LA[k]; }
+  else { zl = [0,1,2,3]; al = [0,1,2,3]; }
+  if(k>=9)  gl.push(3);          /* output */
+  if(k>=11) gl.push(2);
+  if(k>=13) gl.push(1);
+  var par = [];
+  if(k>=11) par.push(3);
+  if(k>=13) par.push(2);
+  if(k>=15) par.push(1);
+  return {z:zl, a:al, g:gl, par:par};
+}
+
+function drawNet(k){
+  var st = known(k), s = S[k];
+  var act = -1, back = false;
+  if(s.edge !== undefined && s.edge !== null){
+    if(s.edge===0) act=0; else if(s.edge===2) act=1; else if(s.edge===4) act=2;
+    back = !!s.back;
+  }
+  var out = '';
+  EDGES.forEach(function(e){
+    var A=NODES[e[0]], B=NODES[e[1]];
+    var cls = 'ed' + (e[2]===act ? (back?' back':' on') : '');
+    out += '<line class="'+cls+'" x1="'+A.x+'" y1="'+A.y+'" x2="'+B.x+'" y2="'+B.y+'"></line>';
+  });
+  var caps = [["INPUT",40],["HIDDEN 1",172],["HIDDEN 2",312],["OUTPUT",446]];
+  caps.forEach(function(c){ out += '<text class="nl" x="'+c[1]+'" y="-18">'+c[0]+'</text>'; });
+  var pc = [[106,"W\u207d\u00b9\u207e, b\u207d\u00b9\u207e",1],[242,"W\u207d\u00b2\u207e, b\u207d\u00b2\u207e",2],[379,"W\u207d\u00b3\u207e, b\u207d\u00b3\u207e",3]];
+  pc.forEach(function(p){
+    var got = st.par.indexOf(p[2])>=0;
+    out += '<text class="pw" x="'+p[0]+'" y="322" style="'+(got?'fill:var(--bwd);font-weight:600':'')+'">'+p[1]+(got?' \u2713':'')+'</text>';
+  });
+  function plate(x,y,txt,cls){
+    var w = txt.length*5.6 + 10, h = 13;
+    return '<rect x="'+(x-w/2)+'" y="'+(y-10)+'" width="'+w+'" height="'+h+'" rx="3" fill="var(--panel)" opacity="0.94"></rect>'+
+           '<text class="'+cls+'" x="'+x+'" y="'+y+'">'+txt+'</text>';
+  }
+  Object.keys(NODES).forEach(function(id){
+    var N=NODES[id], L=LAYVALS[N.lay];
+    var hasZ = st.z.indexOf(N.lay)>=0, hasA = st.a.indexOf(N.lay)>=0, hasG = st.g.indexOf(N.lay)>=0;
+    var asleep = hasA && L.a[N.i]==="0" && L.z[N.i].indexOf("\u2212")===0;
+    var cls = 'nd' + (N.lay===0?' inp':'') + (N.lay===3?' out':'') + (asleep?' off':'');
+    if(!back && act>=0 && (N.lay===act+1)) cls += ' live';
+    var gLayer = (s.edge===4?3:(s.edge===2?2:(s.edge===0?1:-1)));
+    if(back && hasG && N.lay===gLayer) cls += ' gliv';
+    out += '<circle class="'+cls+'" cx="'+N.x+'" cy="'+N.y+'" r="20"></circle>';
+    var inner = hasA ? L.a[N.i] : (hasZ ? L.z[N.i] : "");
+    out += '<text class="nv" x="'+N.x+'" y="'+(N.y+4)+'">'+inner+'</text>';
+    if(N.lay>0 && hasA) out += plate(N.x, N.y-26, 'z = '+L.z[N.i], 'nz');
+    if(hasG && L.g[N.i]!==null) out += plate(N.x, N.y+38, '\u2202L/\u2202z = '+L.g[N.i], 'ng');
+  });
+  document.getElementById('netsvg').innerHTML = out;
+}
+
+function drawChain(k){
+  var s = S[k], fn = FWDN[k], bn = BWDN[k], html = '';
+  for(var i=0;i<CHAIN.length;i++){
+    var c = CHAIN[i], col = 2*i + 1;
+    var vShow = (i < fn) ? c.val : '';
+    var gShow = (bn>0 && (8 - i) <= bn) ? c.grad : '';
+    var pc = 'c-pill';
+    if(!s.back && s.edge===i) pc += ' head';
+    if(s.back && (s.edge===i || s.edge+1===i)) pc += ' tail';
+    html += '<span class="'+pc+'" style="grid-column:'+col+'">'+c.lab+'</span>'+
+            '<span class="c-val" style="grid-column:'+col+'">'+vShow+'</span>'+
+            '<span class="c-grad" style="grid-column:'+col+'">'+gShow+'</span>';
+    if(i<CHAIN.length-1){
+      var acol = col+1, on = (s.edge===i), k2 = on ? (s.back?' actb':' act') : '';
+      html += '<span class="c-op'+k2+'" style="grid-column:'+acol+'">'+OPS[i]+'</span>'+
+              '<span class="c-line'+k2+'" style="grid-column:'+acol+'"></span>';
+    }
+  }
+  var el = document.getElementById('chain');
+  el.style.gridTemplateColumns = 'repeat(8, minmax(88px,auto)) ';
+  var tpl = '';
+  for(var j=0;j<8;j++){ tpl += 'minmax(86px,auto) '; if(j<7) tpl += 'minmax(66px,1fr) '; }
+  el.style.gridTemplateColumns = tpl;
+  el.innerHTML = html;
+}
+
+/* ---------------- render ---------------- */
+var cur = 0;
+var stage = document.getElementById('stage');
+
+function render(k){
+  cur = Math.max(0, Math.min(S.length-1, k));
+  var s = S[cur];
+  var bcls = s.ph==='fwd' ? ' fwd' : (s.ph==='bwd' ? ' bwd' : '');
+  stage.innerHTML =
+    '<div class="stephead"><span class="badge'+bcls+'">'+s.badge+'</span>'+
+    '<h2 class="stitle">'+s.title+'</h2></div>'+
+    (s.sub?'<p class="ssub">'+s.sub+'</p>':'')+
+    s.body;
+  drawNet(cur); drawChain(cur);
+  document.getElementById('ctr').textContent = 'Step '+(cur+1)+' / '+S.length;
+  document.getElementById('now').innerHTML = s.badge+' &nbsp;&middot;&nbsp; '+s.title;
+  document.getElementById('prev').disabled = cur===0;
+  document.getElementById('next').disabled = cur===S.length-1;
+  Array.prototype.forEach.call(document.querySelectorAll('.tick'), function(t,i){
+    t.classList.toggle('on', i===cur);
+    t.classList.toggle('done', i<cur);
+  });
+  var on = document.querySelector('.tick.on');
+  if(on && on.scrollIntoView) on.scrollIntoView({block:'nearest', inline:'center'});
+  document.getElementById('right').scrollTop = 0;
+  wireRows();
+}
+
+/* row hover highlighting */
+function wireRows(){
+  var lines = stage.querySelectorAll('.rowline');
+  Array.prototype.forEach.call(lines, function(ln){
+    function set(on){
+      var r = ln.getAttribute('data-r');
+      var Wm = stage.querySelector('.mat[data-role="W"]');
+      var bm = stage.querySelector('.mat[data-role="b"]');
+      var vm = stage.querySelector('.mat[data-role="vec"]');
+      [[Wm,r],[bm,r]].forEach(function(p){
+        if(!p[0]) return;
+        Array.prototype.forEach.call(p[0].querySelectorAll('.mc[data-r="'+p[1]+'"]'), function(c){ c.classList.toggle('hot', on); });
+      });
+      if(vm) Array.prototype.forEach.call(vm.querySelectorAll('.mc'), function(c){ c.classList.toggle('hot', on); });
+    }
+    ln.addEventListener('mouseenter', function(){ set(true); });
+    ln.addEventListener('mouseleave', function(){ set(false); });
+    ln.addEventListener('focus', function(){ set(true); });
+    ln.addEventListener('blur', function(){ set(false); });
+    ln.tabIndex = 0;
+  });
+}
+
+/* scrubber */
+(function(){
+  var h = '';
+  for(var i=0;i<S.length;i++){
+    h += '<button class="tick" data-ph="'+S[i].ph+'" data-i="'+i+'" title="'+S[i].title.replace(/"/g,'')+'">'+S[i].tag+'</button>';
+  }
+  var sc = document.getElementById('scrub');
+  sc.innerHTML = h;
+  sc.addEventListener('click', function(e){
+    var b = e.target.closest('.tick'); if(b) render(+b.getAttribute('data-i'));
+  });
+})();
+
+document.getElementById('prev').addEventListener('click', function(){ render(cur-1); });
+document.getElementById('next').addEventListener('click', function(){ render(cur+1); });
+document.addEventListener('keydown', function(e){
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); render(cur+1); }
+  if(e.key==='ArrowLeft' ||e.key==='PageUp'){ e.preventDefault(); render(cur-1); }
+  if(e.key===' '){ e.preventDefault(); render(cur+1); }
+  if(e.key==='Home'){ render(0); }
+  if(e.key==='End'){ render(S.length-1); }
+});
+
+/* text size + theme */
+var scale = 1;
+function setScale(v){ scale = Math.max(0.85, Math.min(1.5, v)); document.documentElement.style.setProperty('--s', scale); }
+document.getElementById('zin').addEventListener('click', function(){ setScale(scale+0.1); });
+document.getElementById('zout').addEventListener('click', function(){ setScale(scale-0.1); });
+document.getElementById('thm').addEventListener('click', function(){
+  var r = document.documentElement, c = r.getAttribute('data-theme');
+  var dark = c ? c==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  r.setAttribute('data-theme', dark ? 'light' : 'dark');
+});
+
+render(0);
+})();
+</script>
+
+</body>
+</html>

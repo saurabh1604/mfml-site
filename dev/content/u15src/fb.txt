@@ -1,0 +1,675 @@
+Forward and Backward Pass — the computational graph                                                                                                                                1
+
+
+
+
+    Forward Pass and Backward Pass
+    One chain, eight nodes, two rules
+    Network: 2 → 3 → 2 → 1                    · ReLU               · z ( l ) = W ( l ) a ( l −1) + b ( l )
+
+
+   THE PROBLEM
+
+
+   Predict a person’s salary from two facts about them.
+
+
+                                 Input 1: age = 30                                                   Input 2: experience = 10
+                                 Target: true salary y = 50 lakhs                                    Loss: L = 12 (ŷ − y)2
+
+
+                                      Input                          Hidden 1                        Hidden 2                              Output
+                                  a(0) , 2 nodes                   a(1) , 3 nodes                   a(2) , 2 nodes                        ŷ, 1 node
+
+
+                                                                          1
+
+                          age = 30     x1                                                                 1
+
+                                                                          2                                                                     ŷ     salary
+
+                          exp = 10     x2                                                                 2
+
+                                                                          3
+
+
+                                                   W (1) : 3 × 2                    W (2) : 2 × 3                        W (3) : 1 × 2
+                                                   b (1) : 3 × 1                    b (2) : 2 × 1                        b (3) : 1 × 1
+
+
+
+   THE NUMBERS WE START WITH
+
+                                                                               
+                              0.1       0.3                                   1                            "                              #                           "        #
+              (1)
+                                                             (1)
+                                                                                               (2)            1 −0.5               1                     (2)             1
+          W         =
+                      0.2 −0.1
+                                                          b         =
+                                                                       −1
+                                                                                            W         =                                               b         =
+                                                                                                                1         0.5       −1                                    −2
+                       −0.1 0.2                                         −1
+                                                                                                                  "        #
+                                                   h        i                  h i                                    30
+                                      W (3) = 4 2                       b (3) = 2                   a (0) =                          y = 50
+                                                                                                                      10
+                                                                                                                           (
+                                                                                                                               1    z>0
+                                       ReLU(z) = max(0, z)                                     ReLU′ (z) =
+                                                                                                                               0    z<0
+
+   Shape rule: W (l ) is (nodes in layer l) × (nodes in layer l − 1).
+
+
+
+   1. The Computational Graph eight nodes in one line
+
+
+
+               ×W ( 1 )                ReLU                  ×W ( 2 )                 ReLU                    ×W ( 3 )                   ReLU                    1 (ŷ − y)2
+               + b (1)                                       + b (2)                                          + b (3)                                            2
+
+      a (0)                   z (1)                a (1)                  z (2)                  a (2)                      z (3)                    ŷ                        L
+Forward and Backward Pass — the computational graph                                                                        2
+
+
+
+   LOOK AT THE ARROWS — THERE ARE ONLY TWO KINDS
+
+
+
+                    Arrow             What it does                         Where it appears
+
+                    Linear arrow      z(l ) = W (l ) a(l −1) 
+                                                              + b(l )      a (0) → z (1) , a (1) → z (2) , a (2) → z (3)
+                    ReLU arrow        a(l ) = ReLU z(l )                   z(1) → a(1) , z(2) → a(2) , z(3) → ŷ
+
+
+   That is the whole network. It alternates: linear, ReLU, linear, ReLU, linear, ReLU — then the loss.
+   So we only ever need two backward rules. Learn one rule for the linear arrow and one rule for
+   the ReLU arrow, and you can walk back through a network of any depth.
+
+
+
+   2. Forward Pass walk the chain left to right
+
+
+ STEP F1    a(0) → z(1) (linear arrow)
+
+
+
+                                                                                                          
+                                                                     0.1       0.3       "   #           1
+                                                                             30
+                             z (1) = W (1) a (0) + b (1) = 
+                                                                                   
+                                                            0.2             10 + −1
+                                                                        −0.1       
+                                                                   −0.1 0.2         −1
+
+                           row 1: (0.1)(30) + (0.3)(10) + 1 = 3 + 3 + 1 = 7
+                           row 2: (0.2)(30) + (−0.1)(10) − 1 = 6 − 1 − 1 = 4
+                           row 3: (−0.1)(30) + (0.2)(10) − 1 = −3 + 2 − 1 = −2
+                                                                     
+                                                                 7
+                                                   z (1) = 
+                                                            
+                                                            4  3×1✓
+                                                               
+                                                                 −2
+
+
+ STEP F2    z(1) → a(1) (ReLU arrow)
+
+
+
+                                                                                            
+                                                             7                   max(0, 7)
+                                     a(1) = ReLU
+                                                                 
+                                                 4  =  max(0, 4) 
+                                                                  
+                                                            −2                   max(0, −2)
+
+                                                                 
+                                                                  7
+                                                            (1)
+                                                                 
+                                                           a = 4
+                                                                
+                                                                    
+                                                                  0
+   The third one came out negative, so ReLU switched it off. Keep an eye on it.
+Forward and Backward Pass — the computational graph                                           3
+
+
+
+ STEP F3    a(1) → z(2) (linear arrow)
+
+
+
+                                                       
+                                                "    # 7    " #
+                                         (2) 1 −0.5 1 
+                                                      4 + 1
+                                                          
+                                        z =
+                                             1 0.5 −1      −2
+                                                        0
+
+                        row 1: (1)(7) + (−0.5)(4) + (1)(0) + 1 = 7 − 2 + 0 + 1 = 6
+                        row 2: (1)(7) + (0.5)(4) + (−1)(0) − 2 = 7 + 2 − 0 − 2 = 7
+
+                                                              " #
+                                                               6
+                                                    z (2) =         2×1✓
+                                                               7
+
+
+ STEP F4    z(2) → a(2) (ReLU arrow)
+
+
+
+                                                                   " #!       " #
+                                                                    6          6
+                                             a(2) = ReLU                  =
+                                                                    7          7
+   Both positive, so ReLU changes nothing.
+
+
+ STEP F5    a(2) → z(3) (linear arrow)
+
+
+
+                                          " #
+                                  h      i 6
+                          z (3) = 4 2           + 2 = (4)(6) + (2)(7) + 2 = 24 + 14 + 2
+                                            7
+
+                                                              h i
+                                                        z(3) = 40
+
+
+
+ STEP F6    z(3) → ŷ (ReLU arrow)
+
+
+
+                                          h i
+                           ŷ = ReLU(40) = 40                 the network predicts 40 lakhs
+
+
+ STEP F7    ŷ → L (loss)
+
+
+
+
+                               L = 12 (ŷ − y)2 = 12 (40 − 50)2 = 12 (−10)2 = 21 (100)
+Forward and Backward Pass — the computational graph                                                             4
+
+
+
+
+                                    L = 50        and the error is        ŷ − y = −10
+
+
+
+                        a (0)           z (1)         a (1)      z (2)     a (2)    z (3)    ŷ    L
+
+                        [30, 10]T   [7, 4, −2]T    [7, 4, 0]T   [6, 7]T   [6, 7]T   [40]    [40]   50
+
+
+   KEEP ALL OF THESE
+
+
+   The backward pass will ask for a(0) , a(1) , a(2) and for z(1) , z(2) , z(3) . Write them down now and you
+   will not have to compute anything twice.
+Forward and Backward Pass — the computational graph                                                         5
+
+
+
+
+   3. Backward Pass — The Two Rules one for each kind of arrow
+
+   THE IDEA
+
+
+   We want ∂L/∂W and ∂L/∂b for all three layers. Instead of writing L as one giant expression, we
+   walk the chain backwards, carrying one thing with us: the gradient of L with respect to the node
+   we are standing on.
+
+                              ∂L     ∂L         ∂L         ∂L         ∂L         ∂L
+                                  →    (   )
+                                             →    (   )
+                                                        →    (   )
+                                                                   →    (   )
+                                                                              →
+                              ∂ŷ   ∂z   3     ∂a   2     ∂z   2     ∂a   1     ∂z(1)
+
+   Every arrow we cross backwards converts one of these into the next. There are only two kinds of
+   arrow, so there are only two rules.
+
+
+ STEP S    Where we start
+
+
+
+The last arrow is the loss, L = 12 (ŷ − y)2 . Differentiate it:
+
+                                          ∂L     d 1
+                                                      (ŷ − y)2 = ŷ − y
+                                                               
+                                              =     2
+                                          ∂ŷ   dŷ
+
+
+                                 ∂L
+                                     = ŷ − y         The 12 is there only to cancel this 2.
+                                 ∂ŷ
+
+
+ STEP A    Rule A — crossing a ReLU arrow backwards
+
+
+
+The arrow was a = ReLU(z), done element by element. So a j depends on z j and on nothing else — one
+term in the chain rule, no sum:
+
+                                        ∂L     ∂L ∂a j     ∂L
+                                             =     ·     =      · ReLU′ (z j )
+                                        ∂z j   ∂a j ∂z j   ∂a j
+
+Doing that for every j at once is just an element-by-element multiplication:
+
+
+                          ∂L   ∂L
+                             =    ⊙ ReLU′ (z)                (⊙ means multiply entry by entry)
+                          ∂z   ∂a
+   ReLU′ (z) is a switch: 1 where z was positive, 0 where it was negative. So this rule lets the gradient
+   through where the neuron was awake, and blocks it where it was asleep.
+
+
+ STEP B    Rule B — crossing a linear arrow backwards
+
+
+
+The arrow was z = Wa + b. Written out one row at a time:
+
+                                                 z j = ∑ Wjk ak + b j
+                                                         k
+Forward and Backward Pass — the computational graph                                                     6
+
+
+
+This arrow gives us three things, because three quantities feed into it.
+
+(i) The gradient of W. The number Wjk sits in one place only — inside z j . One term, no sum:
+
+                                             ∂L    ∂L ∂z j     ∂L
+                                                 =     ·     =     ·a
+                                            ∂Wjk   ∂z j ∂Wjk   ∂z j k
+
+Entry ( j, k ) is (entry j of a column) × (entry k of a row) — that is an outer product.
+
+(ii) The gradient of b. b j also sits only inside z j , with coefficient 1:
+
+                                                      ∂L     ∂L
+                                                           =      ·1
+                                                      ∂b j   ∂z j
+
+
+(iii) The gradient of the layer below. Here ak sits inside every z j , so the chain rule sums:
+
+                                          ∂L     ∂L ∂z j        ∂L
+                                              =∑      ·      =∑      Wjk
+                                          ∂ak  j
+                                                 ∂z j   ∂a k  j
+                                                                ∂z j
+
+
+That sum runs down a column of W, which is a row of W T .
+
+
+                                ∂L   ∂L T               ∂L   ∂L           ∂L      ∂L
+                                   =    a                  =                 = WT
+                                ∂W   ∂z                 ∂b   ∂z           ∂a      ∂z
+   Forward you multiply by W. Backward you multiply by W T . Same wires, opposite direction.
+
+   ALL FOUR FORMULAS, TOGETHER
+
+
+                      ∂L                  ∂L    ∂L                       ∂L               T ∂L
+                          = ŷ − y           =      ⊙ ReLU′ (z)                 =   W (l )
+                      ∂ŷ                 ∂z     ∂a                    ∂a(l −1)              ∂z(l )
+                                   ∂L         ∂L  (l −1) T             ∂L        ∂L
+                                          =         a                            = (l )
+                                  ∂W (l )    ∂z(l )                     ∂b ( l )  ∂z
+   Shape check that never fails: the gradient of anything has the same shape as that thing. ∂L/∂W (2)
+   must be 2 × 3, so it can only be (2 × 1)(1 × 3) — the transpose has just one place to go.
+Forward and Backward Pass — the computational graph                                                  7
+
+
+
+
+   4. Backward Pass — The Numbers walk the same chain right to left
+
+
+ STEP B1    Start at the loss
+
+
+
+
+                                            ∂L                      h    i
+                                                = ŷ − y = 40 − 50 = −10
+                                            ∂ŷ
+
+
+ STEP B2    Cross z(3) → ŷ backwards (Rule A)
+
+
+
+We stored z(3) = 40, which is positive, so the switch is on: ReLU′ (z(3) ) = 1.
+
+                                                  ∂L     h      i h i
+                                                       =   − 10  ⊙ 1
+                                                 ∂z(3)
+
+                                                       ∂L     h      i
+                                                            =   − 10
+                                                      ∂z(3)
+
+
+ STEP B3    Cross a(2) → z(3) backwards (Rule B — three results)
+
+
+                       " #
+                        6                 h   i
+We stored a(2) =             , and W (3) = 4 2 .
+                        7
+
+                         ∂L        ∂L  (2) T h          ih     i h                            i
+                               =         a       =  −  10    6 7  =   (− 10 )( 6 ) (− 10 )( 7 )
+                        ∂W (3)    ∂z(3)
+                                                           " #           "           #
+                                ∂L      
+                                           (3)
+                                               T ∂L         4 h    i      (4)(−10)
+                                     = W                =        −10 =
+                               ∂a(2)              ∂z(3)      2             (2)(−10)
+
+                                                                                    "     #
+                             ∂L      h           i        ∂L     h      i    ∂L       −40
+                                   =   − 60 − 70               =   − 10           =
+                            ∂W (3)                 1×2   ∂b(3)              ∂a(2)     −20     2×1
+
+   The neuron with the bigger weight (4 against 2) gets twice the blame. That is all W T is doing.
+
+
+ STEP B4    Cross z(2) → a(2) backwards (Rule A)
+
+
+                 " #
+                  6
+Stored: z(2) =         , both positive, so both switches are on.
+                   7
+                                                            "     # " #
+                                                  ∂L          −40    1
+                                                    ( 2 )
+                                                          =        ⊙
+                                                 ∂z           −20    1
+Forward and Backward Pass — the computational graph                                                    8
+
+
+
+                                                              "     #
+                                                       ∂L       −40
+                                                            =
+                                                      ∂z(2)     −20
+
+
+ STEP B5    Cross a(1) → z(2) backwards (Rule B)
+
+
+                
+                 7           "           #
+                               1 − 0.5 1
+Stored: a(1) =          (2)
+                  
+               4, and W = 1 0.5 −1 .
+                   
+                 0
+                            "     #                             "                                  #
+                    ∂L        −40          h          i  (−40)(7) (−40)(4) (−40)(0)
+                          =                7 4 0      =
+                   ∂W (2)     −20                1×3     (−20)(7) (−20)(4) (−20)(0)
+                                      2×1
+                                                                 
+                                                           1    1    "      #
+                                 ∂L          T ∂L                    − 40
+                                      = W (2)
+                                                                 
+                                                      =−0.5 0.5 
+                                                                  
+                                ∂a(1)           ∂z(2)                  −20
+                                                           1   −1
+                                                                              3×2
+
+                               row 1: (1)(−40) + (1)(−20) = −40 − 20 = −60
+                               row 2: (−0.5)(−40) + (0.5)(−20) = 20 − 10 = 10
+                               row 3: (1)(−40) + (−1)(−20) = −40 + 20 = −20
+                                                                                                  
+                                "                     #                   "      #             −60
+                       ∂L        −280 −160 0                     ∂L        −40        ∂L          
+                         (   )
+                               =                                   (   )
+                                                                         =                 =  10 
+                      ∂W   2
+                                 −140 −80 0                     ∂b   2
+                                                                           −20       ∂a(1)        
+                                                          2×3                                  −20
+                                                                    (1)
+   The third column is all zeros, because it multiplied a3 = 0. A weight that carried nothing gets
+   no blame.
+
+
+ STEP B6    Cross z(1) → a(1) backwards (Rule A — the switch closes)
+
+
+                         
+                     7
+Stored: z(1) = 
+                
+                4 . The third is negative, so that switch is off.
+                   
+                     −2
+                                                                             
+                                             1                         −60      1
+                                    ′
+                                      
+                                        (1)                      ∂L            
+                                ReLU z       =
+                                              1
+                                                                     =  10  ⊙ 1
+                                                                               
+                                                                ∂z(1)                
+                                                0                         −20      0
+
+                                                                     
+                                                                  −60
+                                                       ∂L            
+                                                         ( 1 )
+                                                               = 10 
+                                                      ∂z             
+                                                                   0
+   The −20 was blocked. A neuron that slept on the way forward learns nothing on the way back.
+Forward and Backward Pass — the computational graph                                                9
+
+
+
+ STEP B7    Cross a(0) → z(1) backwards (Rule B — last step)
+
+
+
+                                                                                            
+                                   −60                             (− 60 )( 30 ) (− 60 )( 10 )
+                         ∂L                     h       i                                   
+                               =  10              30 10       =  (10)(30)      (10)(10) 
+                        ∂W (1)                            1×2                               
+                                    0                                (0)(30)       (0)(10)
+                                            3×1
+
+                                                                                      
+                                            −1800 −600                               −60
+                                 ∂L                                     ∂L            
+                                   ( 1 )
+                                         =  300  100                      ( 1 )
+                                                                                  = 10 
+                                ∂W                                     ∂b             
+                                              0    0                                  0
+                                                               3×2
+
+   The whole third row is zero — the sleeping neuron’s weights do not move at all this step.
+Forward and Backward Pass — the computational graph                                                                                                                            10
+
+
+
+
+   5. The Whole Thing in One Picture values going right, gradients coming left
+
+
+
+                                                                             FORWARD — compute each node
+
+
+                           ×W ( 1 )                  ReLU                ×W ( 2 )                  ReLU                ×W ( 3 )               ReLU          1 (ŷ − y)2
+                           + b (1)                                       + b (2)                                       + b (3)                              2
+
+                 a (0)                   z (1)               a (1)                     z (2)                  a (2)               z (3)               ŷ                  L
+     value
+                (30, 10)               (7, 4, −2)           (7, 4, 0)                 (6, 7)                  (6, 7)               40                 40                  50
+
+  ∂L/∂node                            (−60, 10, 0)      (−60, 10, −20)              (−40, −20)            (−40, −20)              −10                 −10                 1
+
+                                                              BACKWARD — cross each arrow with Rule A or Rule B
+
+
+
+   READING IT
+
+
+   Blue is what the node computed going right. Red is ∂L/∂(that node) coming left.
+   Notice the one place the red numbers change shape: at z(1) the −20 became 0. That is the sleeping
+   ReLU blocking its gradient. Everywhere else the red numbers are just the blue ones’ story told
+   backwards.
+
+
+
+   6. Update and Check do the weights get better?
+
+
+
+
+                            Layer                ∂L/∂z(l )              ∂L/∂W (l ) = ∂L/∂z(l ) ( a(l −1) )T                               ∂L/∂b(l )
+                                                 "      #               "                      #                                          "      #
+                            l=3                   −10                    −60           −70                                                 −10
+                                                                                                                                          
+                                                 −40                  −280            −160 0                                          −40
+                            l=2
+                                                                                                                                           
+                                                                                                                                           
+                                                                                                                                           
+                                                   −20                    −140           −80 0                                              −20
+                                                                                                                                           
+                                                 −60                  −1800             −600                                          −60
+                                                                                                                                          
+                                                                                                                                          
+                            l=1
+                                                                                                                                          
+                                                  10                   300              100                                            10 
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                   0                       0                0                                               0
+
+
+   THE UPDATE RULE
+
+
+                                                                          ∂L                                                        ∂L
+                                          W (l ) ← W (l ) − η                                             b(l ) ← b(l ) − η
+                                                                         ∂W (l )                                                   ∂b(l )
+   The gradient points uphill on the loss, so we step the other way. Take η = 10−5 .
+
+
+ STEP U      New weights
+Forward and Backward Pass — the computational graph                                                                                         11
+
+
+
+For example 0.1 − 10−5 (−1800) = 0.1 + 0.018 = 0.118.
+                                        
+         0.118 0.306                1.0006              "                   #                                                  "             #
+  (1)
+                          ( 1 )
+                                                ( 2 )   1.0028 − 0.4984 1                                          (2)           1.0004
+W =   0.197 −0.101 b = −1.0001 W = 1.0014 0.5008 −1
+                                                                                                              b         =
+                                                                                                                                   −1.9998
+         −0.1     0.2                 −1
+                                                   h                  i                  h        i
+                                           (3)                                   (3)
+                                       W         = 4.0006 2.0007             b         = 2.0001
+
+
+ STEP V    Run the chain forward again
+
+
+
+
+                 z(1) : (0.118)(30) + (0.306)(10) + 1.0006 = 3.54 + 3.06 + 1.0006 = 7.6006
+                           (0.197)(30) + (−0.101)(10) − 1.0001 = 5.91 − 1.01 − 1.0001 = 3.8999
+                           (−0.1)(30) + (0.2)(10) − 1 = −3 + 2 − 1 = −2
+                      
+              7.6006                               "            #
+                                                       6.6786
+  a (1) =                      z (2) = a (2) =
+                  
+            3.8999                                                 ŷ = (4.0006)(6.6786) + (2.0007)(7.5645) + 2.0001
+                                                     7.5645
+               0
+
+
+                             ŷ = 43.8527          L = 12 (43.8527 − 50)2 = 12 (−6.1473)2 = 18.89
+                                     Loss: 50 −→ 18.89               Error: − 10 −→ −6.15
+   Repeat the two passes a few hundred times and the error goes to zero.
+
+   THREE THINGS TO REMEMBER
+
+
+    1. Let the shapes place the transpose. Every gradient has the shape of the thing it belongs to.
+       ∂L/∂W (2) must be 2 × 3, so it is (2 × 1)(1 × 3) — there is no other option.
+
+    2. A zero gradient is not a mistake. A sleeping ReLU really does have zero gradient, and its
+       weights really do stay put. Too many sleeping at once is the “dying ReLU” problem.
+                                                           (1)
+    3. Why η had to be so tiny. ∂L/∂W11 = −1800 while ∂L/∂b(3) = −10, because ∂L/∂W (1)
+       multiplies by the raw input and age = 30 is large. With η = 10−4 the prediction overshoots
+       to 79.3 and the loss rises to 429. The real fix is not a smaller η but scaling the inputs before
+       training.
+
+   THE WHOLE ALGORITHM
+
+
+   Forward: a(0) → z(1) → a(1) → z(2) → a(2) → z(3) → ŷ → L, storing every node.
+   Backward: start with ∂L/∂ŷ = ŷ − y, then walk back across the arrows: ReLU arrow ⇒ ∂L/∂z =
+   ∂L/∂a ⊙ ReLU′ (z); linear arrow ⇒ ∂L/∂W = ∂L/∂z aT , ∂L/∂b = ∂L/∂z, ∂L/∂a = W T ∂L/∂z.
+   Update: θ ← θ − η ∂L/∂θ.                  Repeat.
+
+
+
+                           Every number here was computed by hand and checked against a finite-difference test
+                                          of all 17 gradients (largest disagreement 5 × 10−8 ).
+
