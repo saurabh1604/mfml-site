@@ -52,7 +52,7 @@ if (/u11/.test(shared.replace(/U11/g, ''))) throw new Error('shared runtime stil
 const ux = u11.slice(u11.lastIndexOf('/* ================= MBM-UX-V2'), u11.lastIndexOf('</script>\n</body>'));
 const ux13 = ux.replace('var U = 11;', 'var U = 13;')
   .replace('{"n":11,"t":"Optimization II"}]', '{"n":11,"t":"Optimization II"},{"n":12,"t":"Principal Component Analysis"},{"n":13,"t":"Support Vector Machines"}]');
-if (!ux13.includes('var U = 13;') || !ux13.includes('"n":13')) throw new Error('ux block not patched');
+if (!ux13.includes('var U = 13;') || !ux13.includes('"n":13') || (ux13.match(/"n":13,/g) || []).length !== 1) throw new Error('ux block not patched');
 const JS = ['tpl/u13-svm.js', 'tpl/u13-kit.js', 'tpl/u13-shared.js', 'tpl/u13-hero.js', 'tpl/u13-w1.js', 'tpl/u13-w2.js', 'tpl/u13-w3.js', 'tpl/u13-w4.js'].filter(f => fs.existsSync(f));
 const script = '<!--@cinema-js-->\n<script>\n(function(){\n"use strict";\n' + shared.trimEnd() + '\n\n' + JS.map(f => R(f).trimEnd()).join('\n\n') + '\n\n})();\n' + ux13 + '</script>\n</body>\n</html>\n';
 

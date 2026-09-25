@@ -52,7 +52,7 @@ if (/Unit 11/.test(top)) throw new Error('topbar still says Unit 11');
 const ux = u11.slice(u11.lastIndexOf('/* ================= MBM-UX-V2'), u11.lastIndexOf('</script>\n</body>'));
 const ux12 = ux.replace('var U = 11;', 'var U = 12;')
   .replace('{"n":11,"t":"Optimization II"}]', '{"n":11,"t":"Optimization II"},{"n":12,"t":"Principal Component Analysis"}]');
-if (!ux12.includes('var U = 12;') || !ux12.includes('"n":12')) throw new Error('ux block not patched');
+if (!ux12.includes('var U = 12;') || !ux12.includes('"n":12') || (ux12.match(/"n":12,/g) || []).length !== 1) throw new Error('ux block not patched');
 const js = ['u12-shared.js', 'u12-w-a.js', 'u12-w-b.js', 'u12-w-c.js', 'u12-w-d.js'].filter(f => fs.existsSync('tpl/' + f)).map(f => R('tpl/' + f).trimEnd()).join('\n\n');
 const script = '<!--@cinema-js-->\n<script>\n(function(){\n"use strict";\n' + js + '\n\n})();\n' + ux12 + '</script>\n</body>\n</html>\n';
 

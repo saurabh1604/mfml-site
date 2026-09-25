@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- Dev-only test page for the Unit 15 playground (#w-play). NOT published.
+     Serve the repo root over http (e.g. `python3 -m http.server 8765` in /home/claude/mfml-site) and open /dev/play-harness.html.
+     It borrows every <style> block of the live unit-13.html so the widget sits on the real site skin. -->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Playground harness</title>
+<style>.hbar{position:sticky;top:0;z-index:9;display:flex;gap:.5rem;padding:.5rem 1rem;background:var(--page,#000);font:13px system-ui}</style>
+</head>
+<body>
+<div class="hbar"><button onclick="document.documentElement.setAttribute('data-theme','dark')">dark</button><button onclick="document.documentElement.setAttribute('data-theme','light')">light</button></div>
+<main id="main-content"><section class="unit" id="s11"><div class="sec-head"><span class="sec-num">11</span><h2>The playground</h2></div><div id="slot"></div></section></main>
+<script>
+(async function(){
+  const q=new URLSearchParams(location.search); if(q.get('theme')) document.documentElement.setAttribute('data-theme',q.get('theme'));
+  const page=await (await fetch('../unit-13.html')).text();
+  const doc=new DOMParser().parseFromString(page,'text/html');
+  doc.querySelectorAll('head style').forEach(s=>document.head.appendChild(document.importNode(s,true)));
+  const css=document.createElement('style'); css.id='u15-play-css'; css.textContent=await (await fetch('tpl/u15-play.css?'+Date.now())).text(); document.head.appendChild(css);
+  document.getElementById('slot').outerHTML=await (await fetch('tpl/u15-play.html?'+Date.now())).text();
+  document.querySelectorAll('.reveal').forEach(n=>n.classList.add('in'));
+  const js=await (await fetch('tpl/u15-play.js?'+Date.now())).text();
+  const s=document.createElement('script'); s.textContent=js; document.body.appendChild(s);
+  window.HARNESS_READY=true;
+})();
+</script>
+</body>
+</html>

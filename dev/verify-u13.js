@@ -217,7 +217,8 @@ const okay = m => console.log('  ok   ' + m);
   if (dr) okay('all 12 drawers open and show their derivations'); else fail('drawers');
   const pr = await page.evaluate(() => { const ss = [...document.querySelectorAll('#spractice details.sol')]; const closed = ss.every(d => !d.open); ss.forEach(d => d.open = true); return [ss.length, closed, document.querySelectorAll('#spractice .pans').length, document.querySelectorAll('#spractice .pstep').length, !!document.querySelector('#spractice .next-card'), document.querySelector('#spractice .sec-num').textContent]; });
   if (pr[0] === 16 && pr[1] && pr[2] === 16 && pr[3] > 60 && pr[4] && pr[5] === '17') okay('practice: 16 solutions (closed at load), 16 answer lines, ' + pr[3] + ' steps, next-card inside, § 17'); else fail('practice ' + JSON.stringify(pr));
-  const nc = norm(await text('#spractice .next-card')); if (/Unit 14 · Encoder-Decoder Maths & RNNs/.test(nc) && /upcoming/.test(nc)) okay('next-card: Unit 14 · Encoder–Decoder Maths & RNNs — upcoming'); else fail('next-card: ' + nc);
+  const nc = norm(await text('#spractice .next-card')); const ncLive = await page.evaluate(() => !!document.querySelector('#spractice .next-card a[href="unit-14.html"]'));
+  if (/Unit 14 · Thinking in Probabilities/.test(nc) && !/upcoming/.test(nc) && ncLive) okay('next-card: live link to Unit 14 · Thinking in Probabilities'); else fail('next-card: ' + nc);
   const wide2 = await page.evaluate(() => [...document.querySelectorAll('.katex-display')].filter(k => k.scrollWidth > k.clientWidth + 2).length);
   if (!wide2) okay('with every drawer and solution open, no display equation overflows at 1300px'); else fail(wide2 + ' display equations overflow (drawers open)');
 
