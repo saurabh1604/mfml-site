@@ -1,0 +1,171 @@
+<!--@D s1-->
+  <div class="derive">
+    <span class="tag">Prove it · every pair of one-hot words is √2 apart</span>
+    <p class="dgoal"><b>Claim.</b> For one-hot vectors \(\mathbf e_i\) and \(\mathbf e_j\) with \(i\ne j\): \(\mathbf e_i\cdot\mathbf e_j=0\) and \(\lVert\mathbf e_i-\mathbf e_j\rVert=\sqrt2\), whatever the vocabulary size \(V\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The dot product adds \(V\) products, one per slot. In every slot at least one of the two lists has a 0, because their single 1s sit in different slots. So every product is 0 and the sum is 0.
+      <span class="dwhy">Right angles: the cosine is 0 too.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The difference \(\mathbf e_i-\mathbf e_j\) has \(+1\) in slot \(i\), \(-1\) in slot \(j\) and 0 elsewhere. So
+      \[\begin{aligned}&\lVert\mathbf e_i-\mathbf e_j\rVert^2\\ &=1^2+(-1)^2=2.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Or use \(\lVert\mathbf a-\mathbf b\rVert^2=\lVert\mathbf a\rVert^2+\lVert\mathbf b\rVert^2-2\,\mathbf a\cdot\mathbf b=1+1-0\).</span></div></div>
+  </div>
+<!--@D s2-->
+  <div class="derive">
+    <span class="tag">Prove it · count ÷ total is the best guess</span>
+    <p class="dgoal"><b>Claim.</b> After a word \(w\), the next words were seen with counts \(c_1,\dots,c_V\) (total \(n\)). The probabilities \(p_1,\dots,p_V\) that make the seen text most likely are \(p_j=c_j/n\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The text's probability contains \(p_j\) once for every time word \(j\) followed \(w\). Take the log (<a href="unit-14.html#s7">Unit 14's likelihood</a>):
+      \[\begin{aligned}\ell=\ &c_1\ln p_1+\dots\\ &+c_V\ln p_V.\end{aligned}\]
+      <span class="dwhy">Maximise \(\ell\) with the rule \(p_1+\dots+p_V=1\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Add a Lagrange multiplier \(\lambda\) for the rule and set each slope to zero:
+      \[\frac{c_j}{p_j}-\lambda=0\ \Rightarrow\ p_j=\frac{c_j}{\lambda}.\]
+      <span class="dwhy">The same trick as fitting a Gaussian in Unit 14.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">The rule \(\sum p_j=1\) gives \(\lambda=\sum c_j=n\). So \(p_j=c_j/n\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">With our corpus: after "drink" the counts are chai 2, coffee 1, so \(p=(2/3,\,1/3)\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · add-one still adds up to one</span>
+    <p class="dgoal"><b>Claim.</b> With add-one smoothing, \(p_j=\dfrac{c_j+1}{n+V}\), and these \(V\) numbers add up to 1.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Add the tops:
+      \[\begin{aligned}&\sum_{j=1}^{V}(c_j+1)\\ &=\Big(\sum_j c_j\Big)+V\\ &=n+V.\end{aligned}\]
+      <span class="dwhy">One extra count for each of the \(V\) possible next words.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">So \(\sum_j p_j=\dfrac{n+V}{n+V}=1\), and no \(p_j\) is zero because every top is at least 1.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">After "drink" (\(n=3\), \(V=7\)): \(\tfrac{3}{10}+\tfrac{2}{10}+5\cdot\tfrac{1}{10}=1\).</span></div></div>
+  </div>
+<!--@D s3-->
+  <div class="derive">
+    <span class="tag">Prove it · perplexity is one over the average probability, the geometric way</span>
+    <p class="dgoal"><b>Claim.</b> \(2^{\frac1N\sum_t\log_2(1/p_t)}=\big(p_1p_2\cdots p_N\big)^{-1/N}\), and the answer is the same if you use natural logs and \(e\) instead of \(\log_2\) and 2.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">A sum of logs is the log of a product:
+      \[\begin{aligned}&\frac1N\sum_t\log_2\frac1{p_t}\\ &=\log_2\Big(\prod_t p_t\Big)^{-1/N}.\end{aligned}\]
+      <span class="dwhy">\(\log(xy)=\log x+\log y\) and \(k\log x=\log x^k\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Raising 2 to \(\log_2(\text{something})\) gives back the something. The same holds with \(e\) and \(\ln\), so the base does not matter.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Check: \((0.5\cdot0.25\cdot0.5\cdot0.125)^{-1/4}=(1/128)^{-1/4}=128^{1/4}\approx3.364\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · guessing evenly gives perplexity V</span>
+    <p class="dgoal"><b>Claim.</b> A model that gives every one of \(V\) words probability \(1/V\) has perplexity exactly \(V\) on any text.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Every word, whatever it is, gets \(p_t=1/V\). So the product of \(N\) of them is \(V^{-N}\).
+      <span class="dwhy">The model does not look at the text at all.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">\(\big(V^{-N}\big)^{-1/N}=V\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A fair die with \(V\) faces. Any model worth training should beat this.</span></div></div>
+  </div>
+<!--@D s4-->
+  <div class="derive">
+    <span class="tag">Prove it · the cosine ignores how often a word is used</span>
+    <p class="dgoal"><b>Claim.</b> For any numbers \(s,t>0\): \(\cos(s\mathbf a,\,t\mathbf b)=\cos(\mathbf a,\mathbf b)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Scaling pulls out of the dot product and out of the lengths:
+      \[\begin{aligned}(s\mathbf a)\cdot(t\mathbf b)&=st\,(\mathbf a\cdot\mathbf b),\\ \lVert s\mathbf a\rVert\,\lVert t\mathbf b\rVert&=st\,\lVert\mathbf a\rVert\,\lVert\mathbf b\rVert.\end{aligned}\]
+      <span class="dwhy">Lengths of positive multiples scale by the same factor.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The factor \(st\) cancels in the ratio.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So chai's row \((10,8,0,2)\) and \((5,4,0,1)\) have the same cosine with coffee: \(80/(\sqrt{168}\sqrt{41})=40/(\sqrt{42}\sqrt{41})\approx0.964\).</span></div></div>
+  </div>
+<!--@D s5-->
+  <div class="derive">
+    <span class="tag">Prove it · the energy of a table is the sum of σ²</span>
+    <p class="dgoal"><b>Claim.</b> For any matrix \(C=U\Sigma V^{\mathsf T}\), the sum of the squares of all entries equals \(\sigma_1^2+\sigma_2^2+\cdots\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The sum of squares of all entries is \(\operatorname{tr}(C^{\mathsf T}C)\): the diagonal of \(C^{\mathsf T}C\) holds the squared lengths of the columns.
+      <span class="dwhy">\(\operatorname{tr}\) means "add the diagonal".</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Substitute the SVD and use \(U^{\mathsf T}U=I\):
+      \[C^{\mathsf T}C=V\Sigma^{\mathsf T}\Sigma V^{\mathsf T}.\]
+      A trace does not change when you turn the space (\(\operatorname{tr}(VMV^{\mathsf T})=\operatorname{tr}(M)\) for orthogonal \(V\)), so the trace is \(\operatorname{tr}(\Sigma^{\mathsf T}\Sigma)=\sum\sigma_i^2\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Our table: \(166\) entry-by-entry, and \(9.528^2+8.528^2+1.143^2+1.087^2\approx166\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · what is lost when you keep k directions</span>
+    <p class="dgoal"><b>Claim.</b> Keeping the top \(k\) terms, \(C_k=\sum_{i\le k}\sigma_i\mathbf u_i\mathbf v_i^{\mathsf T}\), leaves an error of size \(\lVert C-C_k\rVert_F=\sqrt{\sigma_{k+1}^2+\sigma_{k+2}^2+\cdots}\), and no other rank-\(k\) matrix does better.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The SVD is a sum of layers: \(C=\sum_i\sigma_i\mathbf u_i\mathbf v_i^{\mathsf T}\). So the leftover is \(C-C_k=\sum_{i>k}\sigma_i\mathbf u_i\mathbf v_i^{\mathsf T}\), which is itself an SVD with singular values \(\sigma_{k+1},\sigma_{k+2},\dots\)
+      <span class="dwhy">The layers are the ones of <a href="unit-05.html#s10">Unit 5's layer cake</a>.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">By the energy proof above, its squared size is \(\sum_{i>k}\sigma_i^2\).
+      <span class="dwhy">That no rank-\(k\) matrix does better is the Eckart–Young theorem; its proof is in <a href="unit-12.html#s9">Unit 12</a>.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">For our table, \(k=2\): \(\sqrt{1.143^2+1.087^2}\approx1.578\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The energy kept is \(1-\text{error}^2/\text{total}=1-2.49/166\approx98.5\%\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · PPMI, worked on one box</span>
+    <p class="dgoal"><b>Claim.</b> \(\operatorname{PMI}(w,c)=\log_2\dfrac{P(w,c)}{P(w)\,P(c)}\) measures "together more often than chance", and PPMI keeps only positive values: \(\max(0,\operatorname{PMI})\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">If \(w\) and \(c\) had nothing to do with each other, the chance of seeing them together would be \(P(w)P(c)\) (independence, <a href="unit-14.html#s2">Unit 14</a>). The ratio says how many times more often they really appear together.
+      <span class="dwhy">Ratio 1 → log 0 → "nothing special".</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">In our 4 × 4 table the total count is 166. Chai's row adds to 42, the "drink" column to 9, and the box holds 5:
+      \[\begin{aligned}&\frac{P(w,c)}{P(w)P(c)}\\ &=\frac{5/166}{(42/166)(9/166)}\\ &=\frac{5\cdot166}{42\cdot9}\approx2.196.\end{aligned}\]
+      <span class="dwhy">Chai and "drink" meet about 2.2 times more often than chance.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">So \(\operatorname{PMI}\approx\log_2 2.196\approx1.135\) bits, and PPMI is the same. A box with count 0 would give \(\log 0=-\infty\), which PPMI turns into 0.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A column like "the", which appears with everyone about as often as chance predicts, gets PMI near 0 everywhere — and stops dominating.</span></div></div>
+  </div>
+<!--@D s6-->
+  <div class="derive">
+    <span class="tag">Prove it · the slope of −ln σ</span>
+    <p class="dgoal"><b>Claim.</b> \(\dfrac{d}{dz}\big(-\ln\sigma(z)\big)=-(1-\sigma(z))\) and \(\dfrac{d}{dz}\big(-\ln\sigma(-z)\big)=\sigma(z)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The sigmoid's slope is \(\sigma'(z)=\sigma(z)(1-\sigma(z))\) (proved in <a href="unit-15.html#s2">Unit 15</a>). By the chain rule,
+      \[\begin{aligned}&\frac{d}{dz}\big(-\ln\sigma(z)\big)\\ &=-\frac{\sigma(z)(1-\sigma(z))}{\sigma(z)}\\ &=-(1-\sigma(z)).\end{aligned}\]
+      <span class="dwhy">The "how wrong" of a real pair: 1 minus the confidence.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">For the negative term, \(\sigma(-z)=1-\sigma(z)\), so by the chain rule (the inner slope is \(-1\)):
+      \[\begin{aligned}&\frac{d}{dz}\big(-\ln\sigma(-z)\big)\\ &=1-\sigma(-z)=\sigma(z).\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The "how wrong" of a negative pair: how much the model still believed it was real.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the pull and push rules</span>
+    <p class="dgoal"><b>Claim.</b> For \(L=-\ln\sigma(\mathbf u_+\cdot\mathbf v)-\ln\sigma(-\mathbf u_-\cdot\mathbf v)\), with \(g_+=1-\sigma(\mathbf u_+\cdot\mathbf v)\) and \(g_-=\sigma(\mathbf u_-\cdot\mathbf v)\), a step of size \(\eta\) downhill is
+      \[\begin{aligned}\mathbf u_+&\leftarrow\mathbf u_++\eta\,g_+\,\mathbf v,\\ \mathbf u_-&\leftarrow\mathbf u_--\eta\,g_-\,\mathbf v,\\ \mathbf v&\leftarrow\mathbf v+\eta\,(g_+\mathbf u_+-g_-\mathbf u_-).\end{aligned}\]</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The score \(z=\mathbf u\cdot\mathbf v\) has slope \(\mathbf v\) with respect to \(\mathbf u\), and \(\mathbf u\) with respect to \(\mathbf v\) (<a href="unit-06.html">Unit 6</a>). Chain it with the previous proof:
+      \[\begin{aligned}\frac{\partial L}{\partial\mathbf u_+}&=-g_+\mathbf v,\\ \frac{\partial L}{\partial\mathbf u_-}&=g_-\mathbf v,\\ \frac{\partial L}{\partial\mathbf v}&=-g_+\mathbf u_++g_-\mathbf u_-.\end{aligned}\]
+      <span class="dwhy">Local slope times incoming blame — Unit 7's rule.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">A step downhill subtracts \(\eta\) times each gradient, which flips the signs into the rules above.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Worked: \(g_+=g_-=1-\sigma(0.5)\approx0.378\), so \(\mathbf v\leftarrow(1,0)+0.378\,\big((0.5,0.5)-(-0.5,1)\big)=(1.378,-0.189)\).</span></div></div>
+  </div>
+<!--@D s7-->
+  <div class="derive">
+    <span class="tag">Prove it · a full softmax touches every word</span>
+    <p class="dgoal"><b>Claim.</b> For \(L=-\ln\operatorname{softmax}(\mathbf s)_o\) with scores \(s_w=\mathbf u_w\cdot\mathbf v\), the gradient is \(\partial L/\partial\mathbf u_w=(q_w-y_w)\,\mathbf v\) for <em>every</em> word \(w\), where \(\mathbf q\) is the softmax and \(\mathbf y\) the one-hot truth.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">From <a href="unit-14.html#s13">Unit 14</a>: the blame on the scores of a softmax with cross-entropy is prediction minus truth, \(\partial L/\partial s_w=q_w-y_w\).
+      <span class="dwhy">The same "prediction minus truth" as Unit 15's output layer.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Each score depends on its own \(\mathbf u_w\) with slope \(\mathbf v\), so \(\partial L/\partial\mathbf u_w=(q_w-y_w)\mathbf v\). Since \(q_w>0\) for every word, every one of the \(V\) neighbour lists gets a non-zero update.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Negative sampling touches only \(k+1\) lists, so its cost is independent of \(V\).</span></div></div>
+  </div>
+<!--@D s8-->
+  <div class="derive">
+    <span class="tag">Prove it · one-hot times a matrix picks a row</span>
+    <p class="dgoal"><b>Claim.</b> If \(\mathbf e_i\) is the one-hot row vector with a 1 in slot \(i\), then \(\mathbf e_iE\) is row \(i\) of \(E\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Entry \(j\) of the product is \(\sum_k(\mathbf e_i)_kE_{kj}\).
+      <span class="dwhy">Row times column, as in Unit 1.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Only \(k=i\) has \((\mathbf e_i)_k=1\); every other term is 0. So entry \(j\) is \(E_{ij}\): the product is row \(i\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A lookup table and a first layer fed with one-hot inputs are the same thing.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · backprop only changes the rows you used</span>
+    <p class="dgoal"><b>Claim.</b> If \(\mathbf x=\mathbf e_iE\) and the blame arriving at \(\mathbf x\) is \(\mathbf g=\partial L/\partial\mathbf x\), then \(\partial L/\partial E=\mathbf e_i^{\mathsf T}\mathbf g\): the gradient is zero except in row \(i\), which gets \(\mathbf g\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">This is Rule B of <a href="unit-15.html#s7">Unit 15</a>: the gradient of a weight matrix is the incoming blame times the input — here an outer product of the one-hot input with the blame.
+      <span class="dwhy">Written for a row-vector input, the outer product is \(\mathbf e_i^{\mathsf T}\mathbf g\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">\(\mathbf e_i^{\mathsf T}\mathbf g\) has row \(k\) equal to \((\mathbf e_i)_k\,\mathbf g\): that is \(\mathbf g\) for \(k=i\) and zero otherwise.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So a training step only moves the rows of the words in the example — cheap, even with a 50 000-row table.</span></div></div>
+  </div>
+<!--@D s9-->
+  <div class="derive">
+    <span class="tag">Prove it · a shadow keeps parallelograms</span>
+    <p class="dgoal"><b>Claim.</b> If \(\mathbf d=\mathbf a-\mathbf b+\mathbf c\) (so \(\mathbf b,\mathbf a,\mathbf d,\mathbf c\) make a parallelogram) and \(f(\mathbf x)=P\mathbf x+\mathbf t\) is any projection plus shift, then \(f(\mathbf d)=f(\mathbf a)-f(\mathbf b)+f(\mathbf c)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Expand, using that a matrix spreads over sums:
+      \[\begin{aligned}&f(\mathbf a)-f(\mathbf b)+f(\mathbf c)\\ &=P\mathbf a-P\mathbf b+P\mathbf c\\ &\quad+(\mathbf t-\mathbf t+\mathbf t)\\ &=P(\mathbf a-\mathbf b+\mathbf c)+\mathbf t\\ &=f(\mathbf d).\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">That is why the explorer can draw 13-number vectors in 3-D without breaking the parallelograms. Lengths and angles <em>do</em> change in a shadow, so cosines are always computed on all 13 numbers.</span></div></div>
+  </div>
+<!--@D s11-->
+  <div class="derive">
+    <span class="tag">Prove it · for unit vectors, distance is a cosine in disguise</span>
+    <p class="dgoal"><b>Claim.</b> If \(\lVert\hat{\mathbf a}\rVert=\lVert\hat{\mathbf b}\rVert=1\), then \(\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2=2-2\cos\theta\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Expand the square with the dot product:
+      \[\begin{aligned}&\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2\\ &=\hat{\mathbf a}\cdot\hat{\mathbf a}-2\,\hat{\mathbf a}\cdot\hat{\mathbf b}+\hat{\mathbf b}\cdot\hat{\mathbf b}\\ &=1-2\cos\theta+1.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">The distance grows exactly as the cosine shrinks, so the nearest word by distance is the nearest by cosine. At \(\cos\theta=0.5\): distance 1.</span></div></div>
+  </div>

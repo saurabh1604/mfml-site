@@ -1,0 +1,146 @@
+<!--@D s2-->
+  <div class="derive">
+    <span class="tag">Prove it · the answer is always a blend, never outside the values</span>
+    <p class="dgoal"><b>Claim.</b> The shares \(w_i=e^{s_i}/\sum_je^{s_j}\) are all positive and add up to 1. So the answer \(\sum_iw_i\mathbf v_i\) always lies "among" the values (inside their convex hull) — never beyond the biggest or below the smallest in any entry.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Each \(e^{s_i}\) is positive, whatever the score \(s_i\). Dividing positives by their positive total gives positives. And
+      \[\sum_iw_i=\frac{\sum_ie^{s_i}}{\sum_je^{s_j}}=1.\]
+      <span class="dwhy">This is the softmax of <a href="unit-14.html#s10">Unit 14</a>: scores in, probabilities out.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Look at one entry, say the first. Let \(m\) and \(M\) be the smallest and biggest first entries among the values. Then
+      \[\begin{aligned}m&=\sum_iw_im\\ &\le\sum_iw_iv_{i,1}\\ &\le\sum_iw_iM=M.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">In the tea-stall example the cup's price is always between ₹10 and ₹20: ₹11.19.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · very picky attention becomes a strict lookup</span>
+    <p class="dgoal"><b>Claim.</b> Multiply every score by a pickiness \(\beta\). If one key has the strictly biggest score \(s_1\), then as \(\beta\to\infty\) its share goes to 1 and every other share goes to 0. At \(\beta=0\) all shares are equal.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Divide top and bottom by \(e^{\beta s_1}\):
+      \[\begin{aligned}w_1&=\frac{e^{\beta s_1}}{\sum_je^{\beta s_j}}\\ &=\frac{1}{1+\sum_{j\ne1}e^{-\beta(s_1-s_j)}}.\end{aligned}\]
+      <span class="dwhy">Each gap \(s_1-s_j\) is positive, because \(s_1\) is the biggest.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">As \(\beta\to\infty\), each \(e^{-\beta(s_1-s_j)}\to0\), so \(w_1\to1\) and the others \(\to0\). At \(\beta=0\), every \(e^{0}=1\), so every share is \(1/n\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">With scores 2 and 0: \(\beta=1\) gives 0.881, \(\beta=10\) gives \(1/(1+e^{-20})\approx0.999999998\). The attention lab's temperature is \(1/\beta\).</span></div></div>
+  </div>
+<!--@D s3-->
+  <div class="derive">
+    <span class="tag">Prove it · the matrix line is every word's lookup at once</span>
+    <p class="dgoal"><b>Claim.</b> Row \(i\) of \(\operatorname{softmax}(QK^{\mathsf T}/\sqrt d)\,V\) is exactly the single lookup of §2 for the query \(\mathbf q_i\): \(\sum_jA_{ij}\mathbf v_j\) with \(A_{ij}=e^{\mathbf q_i\cdot\mathbf k_j/\sqrt d}/\sum_le^{\mathbf q_i\cdot\mathbf k_l/\sqrt d}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The entry \((i,j)\) of \(QK^{\mathsf T}\) is row \(i\) of \(Q\) times column \(j\) of \(K^{\mathsf T}\), which is row \(j\) of \(K\):
+      \[(QK^{\mathsf T})_{ij}=\mathbf q_i\cdot\mathbf k_j.\]
+      <span class="dwhy">Row times column is a dot product (<a href="unit-01.html#s6">Unit 1</a>).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Softmax is applied to each row on its own, which gives the shares \(A_{ij}\). Then row \(i\) of \(AV\) is
+      \[\begin{aligned}&\sum_jA_{ij}\,(\text{row }j\text{ of }V)\\ &=\sum_jA_{ij}\mathbf v_j.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A matrix times \(V\) makes each output row a mix of the rows of \(V\) — the "row picture" of matrix multiplication.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · attention is Unit 13's kernel vote</span>
+    <p class="dgoal"><b>Claim.</b> Write \(\kappa(\mathbf q,\mathbf k)=e^{\mathbf q\cdot\mathbf k/\sqrt d}\). Then attention is a normalised vote: \(\operatorname{out}(\mathbf q)=\sum_j\kappa(\mathbf q,\mathbf k_j)\,\mathbf v_j\big/\sum_j\kappa(\mathbf q,\mathbf k_j)\), and \(\kappa\) is a genuine kernel — a dot product of two feature vectors in a bigger space.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The first part is just softmax written out: the shares are \(\kappa(\mathbf q,\mathbf k_j)/\sum_l\kappa(\mathbf q,\mathbf k_l)\). Each "voter" \(j\) hands over its value, weighted by its similarity to the query.
+      <span class="dwhy">Unit 13's classifier summed \(\alpha_jy_j\,K(\mathbf x_j,\mathbf x)\): a vote weighted by a kernel similarity (<a href="unit-13.html#s12">Unit 13</a>).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Why is \(\kappa\) a kernel? Put \(u=\mathbf q\cdot\mathbf k/\sqrt d\). The series \(e^{u}=\sum_{r\ge0}u^r/r!\) is a sum of powers of a dot product with positive weights. Each power \((\mathbf q\cdot\mathbf k)^r\) is a polynomial kernel (<a href="unit-13.html#s14">Unit 13</a>), and a positive sum of kernels is a kernel.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So attention measures similarity in a huge hidden feature space without ever visiting it — the kernel trick, again. The difference from an SVM: the similarity itself is learned, through \(W_Q\) and \(W_K\).</span></div></div>
+  </div>
+<!--@D s4-->
+  <div class="derive">
+    <span class="tag">Prove it · the spread of a dot product is √d</span>
+    <p class="dgoal"><b>Claim.</b> If the \(2d\) entries of \(\mathbf q\) and \(\mathbf k\) are independent, with mean 0 and variance 1, then \(\mathbf q\cdot\mathbf k\) has mean 0 and variance \(d\), so its spread is \(\sqrt d\) — and \(\mathbf q\cdot\mathbf k/\sqrt d\) has variance 1.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">One product \(q_ik_i\): its mean is \(\mathbb E[q_i]\,\mathbb E[k_i]=0\), and its variance is
+      \[\begin{aligned}\mathbb E[q_i^2k_i^2]&=\mathbb E[q_i^2]\,\mathbb E[k_i^2]\\ &=1\cdot1=1.\end{aligned}\]
+      <span class="dwhy">For independent numbers the mean of a product is the product of the means (<a href="unit-14.html#s2">Unit 14</a>).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The \(d\) products are independent, so their variances add: \(\operatorname{Var}(\mathbf q\cdot\mathbf k)=d\cdot1=d\). The spread is \(\sqrt d\). Dividing by \(\sqrt d\) divides the variance by \(d\), leaving 1.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(d=64\): spread 8. \(d=512\): spread \(\approx22.6\). After dividing, spread 1 for every \(d\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · a spiky softmax lets almost no blame through</span>
+    <p class="dgoal"><b>Claim.</b> The slopes of softmax are \(\partial p_i/\partial s_j=p_i(\delta_{ij}-p_j)\). When one share is nearly 1 (a spiky row), every slope is nearly 0.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write \(p_i=e^{s_i}/Z\) with \(Z=\sum_le^{s_l}\). Then \(\partial Z/\partial s_j=e^{s_j}\), and by the quotient rule
+      \[\begin{aligned}\frac{\partial p_i}{\partial s_j}&=\frac{\delta_{ij}e^{s_i}}{Z}-\frac{e^{s_i}e^{s_j}}{Z^2}\\ &=p_i(\delta_{ij}-p_j).\end{aligned}\]
+      <span class="dwhy">\(\delta_{ij}\) is 1 when \(i=j\) and 0 otherwise.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">If \(p_1\approx1\) then every other \(p_i\approx0\). The slopes with \(i\ne1\) carry a factor \(p_i\approx0\); the slopes of \(p_1\) are \(p_1(1-p_1)\approx0\) and \(-p_1p_j\approx0\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Scores 8 and 0: \(p_1(1-p_1)\approx0.00034\). Scores 1 and 0: \(\approx0.197\).</span></div></div>
+  </div>
+<!--@D s6-->
+  <div class="derive">
+    <span class="tag">Prove it · h heads cost the same as one</span>
+    <p class="dgoal"><b>Claim.</b> With \(h\) heads of size \(d_k=d/h\), the matrices \(W_Q^{(i)},W_K^{(i)},W_V^{(i)}\) (each \(d\times d_k\)) and \(W_O\) (\(d\times d\)) hold \(4d^2\) weights — the same for every \(h\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">One head has three matrices of \(d\times d_k\) weights. All \(h\) heads together:
+      \[3\cdot h\cdot d\cdot\frac dh=3d^2.\]
+      <span class="dwhy">The \(h\) cancels: more heads, each smaller.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The glued answer has length \(h\cdot d_k=d\), so \(W_O\) is \(d\times d\): \(d^2\) more. Total \(4d^2\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">In fact the \(h\) matrices \(W_Q^{(i)}\) placed side by side are just one \(d\times d\) matrix, cut into \(h\) column blocks.</span></div></div>
+  </div>
+<!--@D s7-->
+  <div class="derive">
+    <span class="tag">Prove it · without positions, attention cannot see order</span>
+    <p class="dgoal"><b>Claim.</b> Shuffle the rows of \(X\) with a permutation matrix \(P\). Then the attention answers are shuffled the same way and nothing else changes: \(\operatorname{Att}(PX)=P\,\operatorname{Att}(X)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">\(Q,K,V\) are made row by row, so they shuffle too: \(PQ,PK,PV\). The score table becomes
+      \[\begin{aligned}&(PQ)(PK)^{\mathsf T}\\ &=P\,(QK^{\mathsf T})\,P^{\mathsf T}:\end{aligned}\]
+      the same table with its rows and columns shuffled alike.
+      <span class="dwhy">A row-wise softmax does not care where a row sits, and shuffling the columns of a row just shuffles its shares.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">So the shares are \(PAP^{\mathsf T}\), and the answers are \(PAP^{\mathsf T}\,PV=PA\,(P^{\mathsf T}P)\,V=P\,AV\), because \(P^{\mathsf T}P=I\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A permutation matrix is orthonormal (<a href="unit-03.html#s9">Unit 3</a>): \(P^{\mathsf T}P=I\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · with rotary positions the score depends only on the gap</span>
+    <p class="dgoal"><b>Claim.</b> Let \(R_\phi\) turn a 2-D arrow by the angle \(\phi\). Then \((R_{m\theta}\mathbf q)\cdot(R_{n\theta}\mathbf k)=\mathbf q\cdot R_{(n-m)\theta}\,\mathbf k\), which depends on \(m\) and \(n\) only through \(n-m\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write the dot product as a matrix product: \((R_{m\theta}\mathbf q)^{\mathsf T}(R_{n\theta}\mathbf k)=\mathbf q^{\mathsf T}R_{m\theta}^{\mathsf T}R_{n\theta}\mathbf k\).
+      <span class="dwhy">\((AB)^{\mathsf T}=B^{\mathsf T}A^{\mathsf T}\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Turning back by \(m\theta\) undoes a turn by \(m\theta\): \(R_{m\theta}^{\mathsf T}=R_{-m\theta}\). And two turns add up: \(R_{-m\theta}R_{n\theta}=R_{(n-m)\theta}\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">With \(\mathbf q=\mathbf k=(1,0)\) the score is \(\cos((n-m)\theta)\): for \(\theta=30^\circ\) and a gap of 2 it is \(\cos60^\circ=0.5\) (<a href="unit-04.html#s9">Unit 4</a>'s turns).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · moving the clock tags along is a fixed turn</span>
+    <p class="dgoal"><b>Claim.</b> For one clock of speed \(\omega\), the tag of position \(p+k\) is a fixed rotation of the tag of position \(p\): \(\big(\sin\omega(p+k),\cos\omega(p+k)\big)\) is obtained from \((\sin\omega p,\cos\omega p)\) by a matrix that depends only on \(k\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">By the angle-sum rules,
+      \[\begin{aligned}&\sin\omega(p+k)\\ &=\cos\omega k\,\sin\omega p\\ &\quad+\sin\omega k\,\cos\omega p,\\ &\cos\omega(p+k)\\ &=-\sin\omega k\,\sin\omega p\\ &\quad+\cos\omega k\,\cos\omega p.\end{aligned}\]
+      <span class="dwhy">These are the formulas for \(\sin(a+b)\) and \(\cos(a+b)\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">So the new pair is \(\begin{pmatrix}\cos\omega k&\sin\omega k\\ -\sin\omega k&\cos\omega k\end{pmatrix}\) times the old pair — a matrix with no \(p\) in it.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">That is why one fixed \(W_Q\) can make a word ask "who is \(k\) places before me?" — the attention lab's head 2 does exactly this, with \(k=1\).</span></div></div>
+  </div>
+<!--@D s8-->
+  <div class="derive">
+    <span class="tag">Prove it · layer norm gives mean 0 and spread 1</span>
+    <p class="dgoal"><b>Claim.</b> For \(\mathbf x\in\mathbb R^d\) with mean \(\mu\) and variance \(\sigma^2>0\), the list \(\hat{\mathbf x}=(\mathbf x-\mu)/\sigma\) has mean 0 and variance 1, and it does not change if \(\mathbf x\) is shifted by a constant or scaled by a positive number.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Mean: \(\frac1d\sum_i(x_i-\mu)/\sigma=(\mu-\mu)/\sigma=0\). Variance: \(\frac1d\sum_i(x_i-\mu)^2/\sigma^2=\sigma^2/\sigma^2=1\).
+      <span class="dwhy">The same standardising as <a href="unit-10.html#s5">Unit 10</a>, but across the entries of one word, not across examples.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Replace \(\mathbf x\) by \(a\mathbf x+c\) with \(a>0\): the mean becomes \(a\mu+c\) and the spread \(a\sigma\), so
+      \[\begin{aligned}&\frac{a\mathbf x+c-(a\mu+c)}{a\sigma}\\ &=\frac{\mathbf x-\mu}{\sigma}.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\((1,2,3,6)\) and \((2,4,6,12)\) and \((11,12,13,16)\) all give \((-1.069,-0.535,0,1.604)\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the shortcut gives the blame an express lane</span>
+    <p class="dgoal"><b>Claim.</b> For \(\mathbf y=\mathbf x+f(\mathbf x)\), the Jacobian is \(I+J_f\). Through \(N\) such blocks the blame is multiplied by \((I+J_N)\cdots(I+J_1)=I+(\text{terms with at least one }J)\), so it never has to fade to zero.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Differentiate entry by entry: \(\partial y_i/\partial x_j=\delta_{ij}+\partial f_i/\partial x_j\). As a matrix, \(I+J_f\).
+      <span class="dwhy">The Jacobian of \(\mathbf x\) itself is the identity (<a href="unit-06.html#s10">Unit 6</a>).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Blame at the bottom is \((I+J_1)^{\mathsf T}\cdots(I+J_N)^{\mathsf T}\) times blame at the top. Multiply the brackets out: one term is \(I\cdot I\cdots I=I\), which passes the blame unchanged; every other term contains some \(J\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Without shortcuts the product is \(J_1^{\mathsf T}\cdots J_N^{\mathsf T}\), which fades or explodes like the powers of Unit 17. With them, the identity term keeps a clean line from top to bottom.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · the weights of one block</span>
+    <p class="dgoal"><b>Claim.</b> A block with size \(d\) and feed-forward width \(d_{ff}\) has \(4d^2+2dd_{ff}\) weights, \(4d+d_{ff}+d\) biases and \(4d\) layer-norm numbers. For \(d=512\), \(d_{ff}=2048\): 3 145 728, then 3 150 336, then 3 152 384.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Attention: \(W_Q,W_K,W_V,W_O\) are each \(d\times d\) in total (§6), so \(4d^2=1\,048\,576\), plus \(4d=2048\) biases.
+      <span class="dwhy">One bias per output entry of each matrix.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Feed-forward: \(W_1\) is \(d\times d_{ff}\) and \(W_2\) is \(d_{ff}\times d\), so \(2dd_{ff}=2\,097\,152\), plus biases \(d_{ff}+d=2560\). Two layer norms, each with \(\boldsymbol\gamma,\boldsymbol\beta\) of length \(d\): \(4d=2048\).
+      \[\begin{aligned}&1\,048\,576+2\,097\,152\\ &=3\,145\,728;\\ &+2048+2560\\ &=3\,150\,336;\\ &+2048=3\,152\,384.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">With \(d_{ff}=4d\) the weights are \(4d^2+8d^2=12d^2\): a third in attention, two thirds in the small network.</span></div></div>
+  </div>
+<!--@D s9-->
+  <div class="derive">
+    <span class="tag">Prove it · masked words have no influence at all</span>
+    <p class="dgoal"><b>Claim.</b> With the causal mask, the answer of word \(i\) does not change when you change anything about the words \(j>i\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">For \(j>i\) the masked score is \(-\infty\), so \(e^{-\infty}=0\) and \(A_{ij}=0\) exactly — whatever \(\mathbf q_i\cdot\mathbf k_j\) was.
+      <span class="dwhy">In practice a very large negative number such as \(-10^9\) is used; its exponential is 0 in computer arithmetic.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The shares on \(j\le i\) are \(e^{s_{ij}}/\sum_{l\le i}e^{s_{il}}\): only keys \(l\le i\) appear. The answer \(\sum_{j\le i}A_{ij}\mathbf v_j\) uses only values \(j\le i\). No key, query or value of a later word appears anywhere.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">So one masked pass over "I drink chai" is three honest guessing games at once: predict "drink" from "I", "chai" from "I drink", and so on.</span></div></div>
+  </div>

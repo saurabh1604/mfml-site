@@ -1,0 +1,138 @@
+<!-- ================= 10 · WHAT EMBEDDINGS GET WRONG ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>What embeddings get wrong</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>"He hit a six with his <strong>bat</strong>." "A <strong>bat</strong> flew out of the old fort at dusk." Same word, two completely different things.</p>
+    <p>Or: "We sat on the river <strong>bank</strong>." "I opened an account at the <strong>bank</strong>." You never mix them up, because the sentence tells you which one is meant.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Everything so far gives each word <strong>one</strong> vector, whatever the sentence. So what does "bat" get? The training game pulls it toward cricket words every time it appears in a cricket sentence, and toward animal words every time it appears in an animal sentence. It ends up roughly a <strong>blend</strong> of the two meanings, weighted by how often each one is used.</p>
+    <p>A tiny example. Let the cricket meaning point along \((1,0)\) and the animal meaning along \((0,1)\). If 80% of the sentences with "bat" are about cricket, the single vector is about</p>
+    <p>\[0.8\,(1,0)+0.2\,(0,1)=(0.8,\ 0.2).\]</p>
+    <p>Its cosine with the cricket meaning is \(0.8/\sqrt{0.68}\approx0.970\), and with the animal meaning only \(0.2/\sqrt{0.68}\approx0.243\). The rare meaning is almost drowned. And a word used half and half sits in the middle, close to <em>neither</em> group.</p>
+    <p><strong>Vectors copy the text they learn from.</strong> The lists are a mirror of how words are used in the corpus — nothing more. If the training text more often writes "the doctor … he" and "the nurse … she", then "doctor" leans toward the male end of the female–male direction, and "nurse" toward the female end. That is a fact about the <em>text</em>, not about doctors or nurses. It matters because a system built on these vectors will repeat the pattern. People measure such leanings with exactly the directions you toggled in §9, and can remove a direction when it should not matter.</p>
+    <p>Both problems point to the same fix: a word's vector should depend on the <strong>sentence it sits in</strong>. That is where Units 17 and 18 go.</p>
+  </div>
+
+  <div class="widget reveal" id="w-polysemy">
+    <div class="widget-head"><span class="w-title">The word with two lives</span><span class="w-sub">The cricket words and the animal words from the explorer. "bat" gets one vector: a blend of both meanings. Slide how often it is used in cricket sentences and watch it travel.</span></div>
+    <p class="try"><b>Try:</b> Slide to 100%: bat sits in the cricket group. Slide to 0%: among the animals. At 50% it sits in the empty space between, and its nearest neighbours are weak. Then press the two sentence buttons for a peek at Unit 18: a vector that moves with its sentence.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="po-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A green group of cricket words and a gold group of animal words float apart. A pink glowing point labelled bat slides along a dashed path between the two groups as the slider moves; thin lines join it to its three nearest words."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="controls"><div class="ctl"><label for="po-s">used in cricket</label><input id="po-s" type="range" min="0" max="1" step="0.01" value="0.5"><output id="po-s-o">50%</output></div></div>
+        <div class="presets"><button class="preset" id="po-cric">"He hit a six with his bat"</button><button class="preset" id="po-anim">"A bat flew out of the fort"</button></div>
+        <div id="po-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}\mathbf v_{\text{bat}}\approx\ &s\,\mathbf v_{\text{cricket meaning}}\\ +\ &(1-s)\,\mathbf v_{\text{animal meaning}}\end{aligned}\]</p>
+    <p>One vector per word must blend all its meanings, weighted by how often each is used — so rare meanings fade and two-faced words sit between groups. And the vectors faithfully copy the patterns of their text, including the ones we would rather they did not. The cure is a vector that changes with its sentence.</p>
+  </div>
+  <div class="check reveal" data-check="c18">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A word is used in its first meaning \((1,0)\) half the time and in its second meaning \((0,1)\) half the time. Its single vector is the blend \((0.5,0.5)\). What is its cosine with each meaning?</p>
+    <div class="opts">
+      <button data-why="The blend is shorter than 1, so divide by its length √0.5 ≈ 0.707: 0.5/0.707 ≈ 0.707, not 0.5.">0.5 with each</button>
+      <button data-correct data-why="Right. (0.5, 0.5)·(1, 0) = 0.5, and the blend's length is √0.5 ≈ 0.707, so the cosine is 0.707 — the same for both meanings. The word sits at 45°, halfway between, fully at home in neither group.">about 0.707 with each</button>
+      <button data-why="A cosine of 1 means pointing exactly the same way. The blend points halfway between, at 45° from each meaning: cos 45° ≈ 0.707.">1 with each</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> A single vector per word must blend every meaning of that word and copies every pattern of its training text, which is why the next units make a word's vector depend on its sentence.</p>
+</section>
+
+<!-- ================= 11 · MEASURING SIMILARITY ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Measuring similarity well</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Two customers at a tea stall. One buys 2 cups of chai and 1 biscuit. The other, buying for his family, takes 4 cups of chai and 2 biscuits. Their <em>taste</em> is identical — twice as much chai as biscuits. Only the <em>size</em> of the order differs.</p>
+    <p>A good "similar taste" measure should say they are the same.</p>
+  </div>
+  <div class="prose reveal">
+    <p>We have met three ways to compare two lists. Take the orders \(\mathbf a=(2,1)\) and \(\mathbf b=(4,2)\), and a third customer who likes biscuits more, \(\mathbf c=(1,2)\).</p>
+    <ul>
+      <li><strong>Dot product</strong>: \(\mathbf a\cdot\mathbf b=10\), \(\mathbf a\cdot\mathbf c=4\). It mixes taste with size: bigger orders give bigger numbers.</li>
+      <li><strong>Distance</strong> (straight-line, Euclidean): \(\lVert\mathbf a-\mathbf b\rVert=\sqrt{2^2+1^2}\approx2.236\), but \(\lVert\mathbf a-\mathbf c\rVert=\sqrt{1^2+1^2}\approx1.414\). Distance says \(\mathbf a\) is closer to \(\mathbf c\) — the size difference beats the taste. (With an office order of 20 and 10 it would be worse: about 20.12 against 1.414.)</li>
+      <li><strong>Cosine</strong>: \(\cos(\mathbf a,\mathbf b)=1\) exactly (same direction), \(\cos(\mathbf a,\mathbf c)=4/5=0.8\). Cosine sees only taste.</li>
+    </ul>
+    <p>For word vectors, the length mostly tracks how often a word appears, and the direction tracks what it means. That is why cosine is the standard choice.</p>
+    <p><strong>The peace treaty: normalise.</strong> Divide every vector by its length so it has length 1 (it sits on the unit circle). Then the dot product <em>is</em> the cosine, and the distance follows from it:</p>
+    <p>\[\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2=2-2\cos\theta.\]</p>
+    <p>Bigger cosine means smaller distance, so all three measures agree on who is nearest. Real systems normalise once and then use fast dot products.</p>
+  </div>
+
+  <div class="widget reveal" id="w-cosine">
+    <div class="widget-head"><span class="w-title">Three rulers for "similar"</span><span class="w-sub">Drag the tips of the two arrows. The dot product, the cosine (with its angle) and the distance update together.</span></div>
+    <p class="try"><b>Try:</b> Drag \(\mathbf b\) along the same line as \(\mathbf a\), far out: the cosine stays 1 while the distance grows. Swing it to a right angle: cosine 0. Then press <em>normalise</em>: both arrows snap to length 1, and the distance becomes \(\sqrt{2-2\cos\theta}\).</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 420px;min-width:0"><div class="svgstage"><svg id="cz-svg" viewBox="0 0 480 360" class="svg-lab" role="img" aria-label="A plane with two draggable arrows a and b from the origin, the angle between them marked with an arc, the dashed straight line between their tips for the distance, and the unit circle drawn faintly."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="preset" id="cz-norm" aria-pressed="false">normalise</button><button class="preset" id="cz-shop">the two shoppers</button><button class="preset" id="cz-right">right angle</button></div>
+        <div id="cz-read" class="readout" style="margin-top:.6rem;line-height:1.85"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf a\cdot\mathbf b=\lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta\]</p>
+    <p>The dot product is length × length × cosine. For meaning we want only the cosine, so we either divide by the lengths or normalise every vector once. After normalising, dot product, cosine and distance all rank neighbours the same way.</p>
+  </div>
+  <div class="check reveal" data-check="c19">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Two vectors of length 1 have cosine 0.5. How far apart are their tips?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The squared distance is 2 − 2(0.5) = 1, so the distance is 1. (The two tips and the origin form an equal-sided triangle: 60° at the origin.)">1</button>
+      <button data-why="0.5 is the cosine. The squared distance is 2 − 2·0.5 = 1, so the distance is 1.">0.5</button>
+      <button data-why="√2 is the distance at a right angle (cosine 0). With cosine 0.5 the squared distance is 2 − 1 = 1.">\(\sqrt2\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c20">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(\mathbf a=(3,4)\) and \(\mathbf b=(6,8)\). What are the dot product, the cosine and the distance?</p>
+    <div class="opts">
+      <button data-why="The cosine is 1: b is exactly 2a, the same direction. A cosine of 0.5 would need a 60° angle.">50, 0.5 and 5</button>
+      <button data-why="The dot product is 3·6 + 4·8 = 18 + 32 = 50, not 25.">25, 1 and 5</button>
+      <button data-correct data-why="Right. Dot: 18 + 32 = 50. Lengths 5 and 10, so the cosine is 50/50 = 1. Distance: ‖(3, 4)‖ = 5. Same direction, different sizes: cosine says 'identical', distance says '5 apart'.">50, 1 and 5</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s11-->
+  <p class="onesent reveal"><b>In one sentence:</b> The dot product mixes size and direction, distance is fooled by size, cosine keeps only direction — and after normalising to length 1 all three agree, since \(\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2=2-2\cos\theta\).</p>
+</section>
+
+<!-- ================= 12 · CARRY FORWARD ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>The whole unit fits on one card. Here it is, piece by piece.</p>
+  </div>
+  <div class="cards reveal-stagger">
+    <div class="cd"><h4>One-hot is blind</h4>Every pair of one-hot words has dot product 0 and distance \(\sqrt2\). Names, no meaning.</div>
+    <div class="cd"><h4>Count the next word</h4>\(P(w'\mid w)=\text{count}(w\,w')/\text{count}(w)\). Add-one smoothing: \((c+1)/(n+V)\).</div>
+    <div class="cd"><h4>Perplexity</h4>\(2^{\text{average surprise}}\): the number of equally likely words the model is as unsure as. 1 is perfect, \(V\) is clueless.</div>
+    <div class="cd"><h4>Company</h4>A word's row of neighbour counts is a vector. Similar meaning = cosine near 1.</div>
+    <div class="cd"><h4>Squeeze</h4>Keep the top \(k\) singular values: rows of \(U_k\Sigma_k\). Energy kept \(\sum_{i\le k}\sigma_i^2/\sum\sigma_i^2\). PPMI tames common words.</div>
+    <div class="cd"><h4>Learn: word2vec</h4>Score \(\sigma(\mathbf u\cdot\mathbf v)\). Pull real neighbours in, push \(k\) random words out.</div>
+    <div class="cd"><h4>Cheap questions</h4>A full softmax costs \(V\) dot products per pair; negative sampling costs \(k+1\).</div>
+    <div class="cd"><h4>Neural LM</h4>Look up rows (one-hot × table), glue, hidden layer, softmax. The table is the first layer.</div>
+    <div class="cd"><h4>Meaning is a direction</h4>\(A-B+C\), then nearest by cosine, skipping \(A,B,C\). One vector per word blends its meanings and copies its text.</div>
+  </div>
+  <div class="prose reveal">
+    <p><strong>Where this goes next.</strong></p>
+    <ul>
+      <li><strong><a href="unit-17.html">Unit 17 · Machines with Memory</a>.</strong> Our neural language model saw only the last two words. A recurrent network reads a sentence <em>one word at a time</em> and carries a running memory along, so it can use everything before — and the fading or exploding of that memory becomes an eigenvalue story (<a href="unit-04.html">Unit 4</a>).</li>
+      <li><strong><a href="unit-18.html">Unit 18 · Attention and Transformers</a>.</strong> The fix for "bat" and "bank": every word looks at every other word in its sentence, using the very dot products of this unit, and takes on a new vector that fits its context.</li>
+    </ul>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\text{king}-\text{man}+\text{woman}\approx\text{queen}\]</p>
+    <p>A word becomes a point in space, placed by the company it keeps — counted and squeezed, or learned by a guessing game. In that space, closeness is similarity and a difference of meaning is a direction. Every language model you will meet from here on starts by turning its words into such vectors.</p>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> Give each word a short list of numbers learned from the company it keeps — by counting and the SVD, or by word2vec's guessing game — and meaning becomes geometry: similar words point the same way and differences of meaning are directions.</p>
+</section>
+
+<!--@PRACTICE-->

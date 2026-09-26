@@ -1,0 +1,204 @@
+<!-- ================= 1 · A WORD IS JUST A LABEL ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>Why a computer can't read a word</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A new shopkeeper opens a stock register. He gives every item a code number: 1 is chai, 2 is coffee, 3 is a cricket bat.</p>
+    <p>Is 2 "closer" to 1 than 3 is? No. The numbers are just labels. They say nothing about what the items are. Chai and coffee are both hot drinks, but the register cannot know that.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>A computer sees words the same way. To a computer, "chai" is just a label. So our first job is to turn each word into numbers the computer can work with.</p>
+    <p>The simplest way is to give each word its own slot. Take a tiny vocabulary of three words: chai, coffee, cricket. Each word becomes a list of three numbers with a single 1 in its own slot:</p>
+    <p>\[\text{chai}=(1,0,0),\quad \text{coffee}=(0,1,0),\quad \text{cricket}=(0,0,1).\]</p>
+    <p>A list of zeros with a single 1 — people call it a <strong>one-hot vector</strong>. With a real vocabulary of 50 000 words, each list is 50 000 numbers long, with one 1 and 49 999 zeros.</p>
+    <p>Now measure how alike two words are, the way <a href="unit-03.html#s2d">Unit 3</a> taught us: with the <strong>dot product</strong>. Multiply slot by slot and add:</p>
+    <p>\[\text{chai}\cdot\text{coffee}=1\cdot0+0\cdot1+0\cdot0=0.\]</p>
+    <p>And chai with cricket? Also 0. Every pair of different one-hot words has dot product 0. They all stand at right angles to each other. The distance between any two of them is the same too: \(\sqrt{1^2+1^2}=\sqrt2\approx1.414\).</p>
+    <p>So in one-hot land, chai is exactly as far from coffee as it is from cricket. The lists carry a <strong>name</strong>, but no <strong>meaning</strong>.</p>
+  </div>
+
+  <div class="widget reveal" id="w-onehot">
+    <div class="widget-head"><span class="w-title">Three words, two ways to place them</span><span class="w-sub">In one-hot land each word sits on its own axis, all at right angles. In "meaning" land the lists are free, so words that are used alike can lean together.</span></div>
+    <p class="try"><b>Try:</b> Start in one-hot land and read the three distances: all the same, 1.414. Then press <em>▶ let meaning pull</em> and watch chai and coffee lean together while cricket stays apart. Drag the picture to look from the side.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="oh-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. Three glowing arrows start at one point. In one-hot mode they lie along the three axes, labelled chai, coffee and cricket, each at a right angle to the others, and three equal dashed lines of length 1.414 join their tips. In meaning mode the chai and coffee arrows swing close together while the cricket arrow points away, and the dashed line between chai and coffee becomes short."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="tabs" id="oh-mode" role="tablist"><button role="tab" aria-selected="true" data-t="onehot">one-hot</button><button role="tab" aria-selected="false" data-t="meaning">meaning</button></div>
+        <div class="presets" style="margin-top:.6rem"><button class="play" id="oh-play">▶ let meaning pull</button></div>
+        <div id="oh-read" class="readout" style="margin-top:.6rem;line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf e_i\cdot\mathbf e_j=0,\\ \lVert\mathbf e_i-\mathbf e_j\rVert=\sqrt2\quad(i\ne j)\end{gathered}\]</p>
+    <p>One-hot lists put every word at right angles to every other word, all the same distance apart. They tell words apart, but they cannot say "these two are alike". We want short lists where <strong>close means similar</strong>. The rest of this unit is about finding them.</p>
+  </div>
+  <div class="check reveal" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With a vocabulary of 10 000 words written one-hot, what is the dot product of "chai" and "coffee", and how far apart are they?</p>
+    <div class="opts">
+      <button data-why="The two 1s sit in different slots, so every product in the sum has a 0 in it. The dot product is 0, not 1.">dot product 1, distance 0</button>
+      <button data-correct data-why="Right. Different slots, so every product is 0: the dot product is 0. The difference has one +1 and one −1, so its length is √(1 + 1) = √2 ≈ 1.414 — the same for every pair of different words, however big the vocabulary.">dot product 0, distance \(\sqrt2\approx1.414\)</button>
+      <button data-why="The length of the lists does not matter. Only two slots differ (one +1, one −1), so the distance is √2 whatever the vocabulary size.">dot product 0, distance \(\sqrt{10\,000}=100\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A vocabulary has 50 000 words. How many numbers are in one word's one-hot list, and how many of them are not zero?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. One slot per word in the vocabulary, so 50 000 numbers, and exactly one of them is 1. That is a lot of storage for very little information — one more reason to look for short, dense lists.">50 000 numbers, and 1 of them is not zero</button>
+      <button data-why="A one-hot list has one slot for every word in the vocabulary, not one slot per letter. So it is 50 000 long.">as many numbers as the word has letters</button>
+      <button data-why="Only the word's own slot holds a 1. All the other 49 999 slots are 0.">50 000 numbers, and half of them are not zero</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s1-->
+  <div class="prose reveal">
+    <p><strong>The road ahead.</strong> We will find good word lists in four steps.</p>
+    <ol class="roadmap">
+      <li><strong>Guess by counting</strong> (§2–§3): count which word follows which, and learn to score a guesser by how surprised it is — its <em>perplexity</em>.</li>
+      <li><strong>Know a word by its company</strong> (§4–§5): count which words appear near each other, then squeeze that big table with the SVD from <a href="unit-05.html#s7">Unit 5</a>.</li>
+      <li><strong>Learn the lists</strong> (§6–§8): let a machine learn them by playing a yes/no guessing game (word2vec), see why that game is so cheap, and build a small neural network that reads two words and guesses the next.</li>
+      <li><strong>The geometry of meaning</strong> (§9–§11): meaning as a direction, king − man + woman, what the lists get wrong, and how best to measure "similar".</li>
+    </ol>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> A one-hot list gives every word its own slot, so every pair of words is at right angles and \(\sqrt2\) apart — it names words but carries no meaning.</p>
+</section>
+
+<!-- ================= 2 · N-GRAMS ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>Guess the next word by counting</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You type "good" on your phone, and the keyboard offers "morning". How does it know? It has seen you, and millions of others, type "good morning" many times. It simply remembers what usually comes next.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Let us build that keyboard by hand. Here is a tiny collection of text — people call a collection like this a <strong>corpus</strong>:</p>
+    <p class="plain-first" style="font-family:var(--mono);font-size:.9rem;padding:.6rem 1rem">I drink chai . &nbsp;·&nbsp; I drink coffee . &nbsp;·&nbsp; I drink chai . &nbsp;·&nbsp; I play cricket .</p>
+    <p>The full stop counts as a word too: it means "the sentence ends here". Now count every pair of neighbours. "I" is followed by "drink" 3 times and by "play" once. "drink" is followed by "chai" 2 times and by "coffee" once.</p>
+    <p>To guess what follows "drink", divide each count by the row total:</p>
+    <p>\[\begin{aligned}P(\text{chai}\mid\text{drink})&=\frac{2}{3},\\ P(\text{coffee}\mid\text{drink})&=\frac13.\end{aligned}\]</p>
+    <p>Read \(P(\text{chai}\mid\text{drink})\) as "the chance that the next word is chai, given that this word is drink". A model that looks only at the one word before is called a <strong>bigram</strong> model ("bi" = two words at a time). Looking at two words before gives a <em>trigram</em>, and in general an <em>n-gram</em>.</p>
+    <p>To score a whole sentence, multiply the guesses along it. Every sentence here starts with "I", so</p>
+    <p>\[\begin{aligned}&P(\text{I drink chai .})\\ &=P(\text{drink}\mid\text{I})\,P(\text{chai}\mid\text{drink})\,P(.\mid\text{chai})\\ &=\frac34\cdot\frac23\cdot1=\frac12.\end{aligned}\]</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>The zero problem.</strong> What does the model say about "I drink cricket ."? The pair "drink cricket" was never seen, so its count is 0, and the whole sentence gets probability 0. One unseen pair wipes out the whole sentence. With real text most possible pairs are never seen, so this happens all the time.</p>
+    <p>The simplest fix is <strong>add-one smoothing</strong>: pretend every pair was seen one extra time. Our vocabulary has 7 words (I, drink, play, chai, coffee, cricket and the full stop), so the row for "drink" gains 7 extra counts:</p>
+    <p>\[\begin{aligned}P(\text{chai}\mid\text{drink})&=\frac{2+1}{3+7}=0.3,\\ P(\text{cricket}\mid\text{drink})&=\frac{0+1}{3+7}=0.1.\end{aligned}\]</p>
+    <p>No zeros any more. The price: the words we really saw lose a little of their share.</p>
+  </div>
+
+  <div class="widget reveal" id="w-bigram">
+    <div class="widget-head"><span class="w-title">A keyboard that counts</span><span class="w-sub">Edit the corpus. The table counts every pair of neighbours; pick a word to see the bars for what comes next; then let the model write a sentence of its own.</span></div>
+    <p class="try"><b>Try:</b> Pick "drink" and read 2/3 and 1/3. Turn on <em>add-one</em> and watch 0.3, 0.1 and the other small bars appear. Add the line "I play football ." and see the "play" row change. Press <em>✎ write a sentence</em> a few times. Last, score "I drink cricket ." and watch one zero wipe it out.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:1 1 250px">
+        <label class="bg-lbl" for="bg-text">the corpus (one sentence per line)</label>
+        <textarea id="bg-text" class="bg-text" rows="6" spellcheck="false"></textarea>
+        <div class="presets" style="margin-top:.5rem"><button class="preset" id="bg-smooth" aria-pressed="false">add-one</button><button class="preset" id="bg-reset">reset corpus</button><button class="play" id="bg-gen">✎ write a sentence</button></div>
+        <div id="bg-out" class="readout bg-out" style="margin-top:.6rem">…</div>
+        <label class="bg-lbl" for="bg-score" style="margin-top:.9rem">score a sentence</label>
+        <input id="bg-score" class="ex-find" value="I drink chai ." autocomplete="off" spellcheck="false">
+        <div id="bg-chain" class="bg-chain"></div>
+      </div>
+      <div class="wcol" style="flex:2 1 420px;min-width:0">
+        <div class="scroll-x"><div id="bg-table"></div></div>
+        <div class="bg-prevrow"><span class="lbl">after the word</span><span id="bg-prev" class="bg-chips"></span></div>
+        <div class="svgstage"><svg id="bg-bars" viewBox="0 0 560 220" class="svg-lab" role="img" aria-label="A bar chart: one bar for every word in the vocabulary, showing the chance that it comes next after the chosen word."></svg></div>
+        <div id="bg-read" class="readout" style="margin-top:.5rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[P(w_{\text{next}}\mid w)=\frac{\text{count}(w\,w_{\text{next}})}{\text{count}(w)}\]</p>
+    <p>A table of counts is already a language model. But it has two weak spots. Any pair it never saw gets probability 0 (smoothing patches this). And it learns every word <strong>on its own</strong>: seeing "drink chai" teaches it nothing about "drink coffee", because to a count table, chai and coffee are just two different labels — the one-hot problem again.</p>
+  </div>
+  <div class="check reveal" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the four-sentence corpus, what is \(P(\text{coffee}\mid\text{drink})\), and what is \(P(\text{cricket}\mid\text{play})\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. 'drink' is followed 3 times: chai, coffee, chai. Coffee once, so 1/3. 'play' is followed once, by cricket, so 1/1 = 1.">\(\tfrac13\) and \(1\)</button>
+      <button data-why="Divide by the count of the FIRST word's row, not by the whole corpus. The row for 'drink' has 3 entries (chai, coffee, chai), so coffee gets 1/3.">\(\tfrac1{15}\) and \(\tfrac1{15}\)</button>
+      <button data-why="'play' is followed only by 'cricket' in this corpus, so the chance is 1 out of 1, not 1/4.">\(\tfrac13\) and \(\tfrac14\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With add-one smoothing (7 words in the vocabulary), what is \(P(\text{coffee}\mid\text{drink})\)?</p>
+    <div class="opts">
+      <button data-why="Add one to the count (1 + 1 = 2), but also add the vocabulary size to the row total (3 + 7 = 10). So 2/10 = 0.2.">\(\tfrac{2}{4}=0.5\)</button>
+      <button data-correct data-why="Right. The count becomes 1 + 1 = 2 and the row total becomes 3 + 7 = 10, one extra for each of the 7 possible next words. So 2/10 = 0.2 — a little less than the raw 1/3.">\(\tfrac{1+1}{3+7}=0.2\)</button>
+      <button data-why="Smoothing adds 1 to the count but also 7 to the total, so the answer changes: (1 + 1)/(3 + 7) = 0.2.">still \(\tfrac13\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s2-->
+  <p class="onesent reveal"><b>In one sentence:</b> A bigram model guesses the next word as count(pair) ÷ count(word), multiplies the guesses along a sentence, and needs smoothing so that unseen pairs do not get probability zero.</p>
+</section>
+
+<!-- ================= 3 · PERPLEXITY ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Scoring a language model: perplexity</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>At the railway station the speaker says: "The train to Delhi is running…". Before the next word comes, you already guess "late". If it is "late", you are not surprised at all. If it is "early", you are very surprised.</p>
+    <p>A good language model is one that is rarely surprised by real text.</p>
+  </div>
+  <div class="prose reveal">
+    <p>In <a href="unit-14.html#s11">Unit 14</a> we measured surprise. If the model gave the word that really came next a probability \(p\), its surprise is \(\log_2(1/p)\) bits. Probability \(\tfrac12\) → 1 bit. Probability \(\tfrac14\) → 2 bits. Probability 1 → 0 bits: no surprise at all.</p>
+    <p>Let a model read four words of real text. It gave the words that really came next these probabilities: \(0.5,\ 0.25,\ 0.5,\ 0.125\). The surprises are 1, 2, 1 and 3 bits. The <strong>average surprise</strong> is</p>
+    <p>\[\frac{1+2+1+3}{4}=1.75\text{ bits}.\]</p>
+    <p>This average is the cross-entropy of Unit 14. It is hard to feel what "1.75 bits" means, so we turn it back into a count of choices:</p>
+    <p>\[2^{1.75}\approx3.364.\]</p>
+    <p>This number is the <strong>perplexity</strong>. It says: on average, the model was as unsure as someone choosing between about <strong>3.4 equally likely words</strong>. Lower is better. A perfect model has perplexity 1 (one sure choice).</p>
+    <p>A model that knows nothing and spreads its guess evenly over a vocabulary of \(V\) words gives every word \(1/V\). Its surprise is \(\log_2V\) every time, so its perplexity is exactly \(V\). That is the worst sensible score, and a useful yardstick: a model with perplexity 120 on a 50 000-word vocabulary has narrowed each guess from 50 000 choices to about 120.</p>
+  </div>
+
+  <div class="widget reveal" id="w-perplexity">
+    <div class="widget-head"><span class="w-title">Surprise, averaged, turned into a spinner</span><span class="w-sub">Set the probability the model gave to each of four real next words. The bars show each surprise; the spinner shows the perplexity — how many equal slices the model's uncertainty is worth.</span></div>
+    <p class="try"><b>Try:</b> Press <em>0.5 · 0.25 · 0.5 · 0.125</em>: average 1.75 bits, perplexity 3.364. Press <em>no idea (1/6 each)</em>: perplexity 6, like a die with six faces. Then press <em>one bad miss</em> and watch a single word given 0.01 drag the whole score up.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px;min-width:0"><div class="svgstage"><svg id="pp-svg" viewBox="0 0 600 300" class="svg-lab" role="img" aria-label="Left: four bars, one per word of text, whose heights are the surprise in bits for the chosen probabilities, with a dashed line at their average. Right: a round spinner cut into as many equal slices as the perplexity, with the number in the middle."></svg></div></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="pp-p1">word 1 · \(p_1\)</label><input id="pp-p1" type="range" min="0.01" max="1" step="0.005" value="0.5"><output id="pp-p1-o">0.5</output></div>
+          <div class="ctl"><label for="pp-p2">word 2 · \(p_2\)</label><input id="pp-p2" type="range" min="0.01" max="1" step="0.005" value="0.25"><output id="pp-p2-o">0.25</output></div>
+          <div class="ctl"><label for="pp-p3">word 3 · \(p_3\)</label><input id="pp-p3" type="range" min="0.01" max="1" step="0.005" value="0.5"><output id="pp-p3-o">0.5</output></div>
+          <div class="ctl"><label for="pp-p4">word 4 · \(p_4\)</label><input id="pp-p4" type="range" min="0.01" max="1" step="0.005" value="0.125"><output id="pp-p4-o">0.125</output></div>
+        </div>
+        <div class="presets"><button class="preset" id="pp-spec">0.5 · 0.25 · 0.5 · 0.125</button><button class="preset" id="pp-six">no idea (1/6 each)</button><button class="preset" id="pp-perfect">perfect</button><button class="preset" id="pp-miss">one bad miss</button></div>
+        <div id="pp-read" class="readout" style="margin-top:.6rem;line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}\text{perplexity}&=2^{\,\frac1N\sum_{t}\log_2\frac{1}{p_t}}\\ &=\Big(\prod_{t=1}^{N}p_t\Big)^{-1/N}\end{aligned}\]</p>
+    <p>Perplexity is the average surprise, turned back into a number of equally likely choices. It is 1 for a perfect model and \(V\) for a model that guesses evenly over \(V\) words. Because it averages <em>logs</em>, one word the model thought nearly impossible can ruin the score — so a good model never says "impossible".</p>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A model gives each of the four real next words probability 0.5. What is its perplexity?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Each surprise is log₂(1/0.5) = 1 bit, so the average is 1 bit and the perplexity is 2¹ = 2: like choosing between two equally likely words each time.">2</button>
+      <button data-why="Perplexity is 2 to the power of the AVERAGE surprise, not the total. Each word has 1 bit of surprise, the average is 1, so the perplexity is 2.">16</button>
+      <button data-why="0.5 is a probability, not a perplexity. Turn it into surprise (1 bit), average, then raise 2 to that power: 2¹ = 2.">0.5</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A model with no knowledge guesses evenly over a vocabulary of 10 000 words. What is its perplexity on any text?</p>
+    <div class="opts">
+      <button data-why="Every word gets 1/10 000, so the surprise is log₂ 10 000 ≈ 13.29 bits each time. The perplexity turns that back into choices: 2^13.29 = 10 000.">about 13.29</button>
+      <button data-why="The surprise is the same for every word, log₂ 10 000 bits, so the average is that too, and 2 to that power is 10 000.">1</button>
+      <button data-correct data-why="Right. The surprise is log₂ 10 000 every time, and 2 raised to it gives back 10 000. A model that knows nothing is as unsure as a 10 000-sided die.">10 000</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s3-->
+  <p class="onesent reveal"><b>In one sentence:</b> Perplexity is 2 raised to the average surprise in bits — the number of equally likely words the model is as unsure as — so 1 is perfect, \(V\) is knowing nothing, and 0.5, 0.25, 0.5, 0.125 gives about 3.364.</p>
+</section>

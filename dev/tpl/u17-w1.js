@@ -1,0 +1,200 @@
+/* ================= UNIT 17 · Act I widgets: w-order, w-rnn-step, w-unroll ================= */
+
+/* ---------- §1 · w-order: a bag, a window, a running note ---------- */
+(function(){
+  const svg=document.getElementById('or-svg'); if(!svg) return;
+  const read=document.getElementById('or-read'), sents=document.getElementById('or-sents');
+  const VEC={dog:[1,0],man:[0,1],bites:[1,1],sees:[-1,1]}, VOC=Object.keys(VEC);
+  const st={mode:'note',th:90,k:1,win:3,A:['dog','bites','man'],B:['man','bites','dog'],prog:3};
+  const LONG=['The','train','to','Delhi','from','platform','four','is','late'];
+  const turn=(v,th,k)=>{ const c=Math.cos(th*Math.PI/180), s=Math.sin(th*Math.PI/180); return [k*(c*v[0]-s*v[1]),k*(s*v[0]+c*v[1])]; };
+  function notes(words){ const P=[[0,0]], T=[null]; words.forEach(w=>{ const h=P[P.length-1], r=turn(h,st.th,st.k), x=VEC[w]; T.push(r); P.push([r[0]+x[0],r[1]+x[1]]); }); return {P,T}; }
+  const fmtV=v=>'('+v.map(x=>N(Math.abs(x)<1e-9?0:x,2)).join(', ')+')';
+  function drawSent(){ const opt=w=>VOC.map(v=>`<option${v===w?' selected':''}>${v}</option>`).join('');
+    sents.innerHTML=['A','B'].map(K=>`<div class="or-row"><span class="or-tag" style="background:${K==='A'?cv(K17.word):cv(K17.alt)}">${K}</span>`+st[K].map((w,i)=>`<select data-s="${K}" data-i="${i}" aria-label="sentence ${K} word ${i+1}">${opt(w)}</select>`).join('')+'</div>').join('');
+    sents.querySelectorAll('select').forEach(s=>s.addEventListener('change',()=>{ st[s.dataset.s][+s.dataset.i]=s.value; st.prog=3; draw(); })); }
+  function draw(){ svg.innerHTML=''; const V=narrowSVG(svg,560,360,400,430), W=V.W, H=V.H, ph=V.n; const glow=glo(svg);
+    if(st.mode==='note'){ const cols={A:cv(K17.word),B:cv(K17.alt)}, NA=notes(st.A), NB=notes(st.B);
+      const pts=[...NA.P,...NA.T.slice(1),...NB.P,...NB.T.slice(1)]; let x0=Math.min(...pts.map(q=>q[0])),x1=Math.max(...pts.map(q=>q[0])),y0=Math.min(...pts.map(q=>q[1])),y1=Math.max(...pts.map(q=>q[1]));
+      const cxm=(x0+x1)/2, cym=(y0+y1)/2, half=Math.max(1.6,(x1-x0)/2+.7,((y1-y0)/2+.6)*W/H);
+      const p=plane(svg,cxm-half,cxm+half,cym-half*H/W,cym+half*H/W,{pad:22});
+      const ends={};
+      ['A','B'].forEach(K=>{ const {P,T}=K==='A'?NA:NB, col=cols[K], n=Math.min(3,st.prog);
+        for(let t=1;t<=3;t++){ const on=t<=Math.ceil(n), part=t<n?1:Math.max(0,n-(t-1)); if(!on) break;
+          const h=P[t-1], r=T[t];
+          if(Math.hypot(...h)>1e-9&&(st.th>0||st.k<1)){ let d=''; for(let q=0;q<=24;q++){ const u=q/24, z=turn(h,st.th*u,1+(st.k-1)*u); d+=(q?'L':'M')+p.px(z[0]).toFixed(1)+','+p.py(z[1]).toFixed(1); } el('path',{d,fill:'none',stroke:col,'stroke-width':1.4,'stroke-dasharray':'3 4',opacity:.7},svg); }
+          const x=VEC[st[K][t-1]], tip=[r[0]+x[0]*part,r[1]+x[1]*part];
+          if(part>.02) arrow(p,r[0],r[1],tip[0],tip[1],col,2.6);
+          if(part>.95){ const X0=p.px(r[0]),Y0=p.py(r[1]),X1=p.px(tip[0]),Y1=p.py(tip[1]), L=Math.hypot(X1-X0,Y1-Y0)||1, nx=-(Y1-Y0)/L, ny=(X1-X0)/L, sg=K==='A'?1:-1;
+            txt(svg,(X0+X1)/2+nx*13*sg,(Y0+Y1)/2+ny*13*sg+4,st[K][t-1],'font:700 11px system-ui;fill:'+col,'middle'); } }
+        ends[K]=P[3];
+        if(n>=3){ const e=P[3]; glowDot(svg,p.px(e[0]),p.py(e[1]),7,col,glow); } });
+      glowDot(svg,p.px(0),p.py(0),3.5,'var(--ink-2)',null);
+      if(st.prog>=3){ const same=Math.hypot(ends.A[0]-ends.B[0],ends.A[1]-ends.B[1])<1e-9;
+        ['A','B'].forEach((K,i)=>{ const e=ends[K], X=p.px(e[0])+(same?(i?-16:16):0), Y=p.py(e[1])-(same?0:0); el('circle',{cx:X,cy:Y-17,r:9,fill:K==='A'?cv(K17.word):cv(K17.alt)},svg); txt(svg,X,Y-13,K,'font:800 10.5px system-ui;fill:#fff','middle'); });
+        read.innerHTML='A · '+st.A.join(' ')+' → note <b class="w">'+fmtV(ends.A)+'</b><br>B · '+st.B.join(' ')+' → note <b style="color:var(--s2)">'+fmtV(ends.B)+'</b><br>'+(same?'<b>Same note</b> — this reader cannot tell A from B.':'<b class="m">Different notes</b> — the order left its mark.')+(st.th===0&&st.k===1?' (A turn of 0° is a plain running total: order is lost.)':'');
+        svg.dataset.ends=JSON.stringify([ends.A.map(v=>+v.toFixed(6)),ends.B.map(v=>+v.toFixed(6))]); svg.dataset.same=same?'1':'0'; }
+      txt(svg,12,18,ph?'dashed: turn · arrow: add':'dashed: turn the old note · arrow: add the new word','font:600 11px system-ui;fill:var(--ink-muted)');
+    }
+    else if(st.mode==='bag'){ const cnt=K=>{ const c={}; VOC.forEach(v=>c[v]=0); st[K].forEach(w=>c[w]++); return c; }; const cA=cnt('A'), cB=cnt('B');
+      const sum=K=>st[K].reduce((s,w)=>[s[0]+VEC[w][0],s[1]+VEC[w][1]],[0,0]);
+      txt(svg,W/2,26,ph?'a bag keeps only the counts':'what a bag of words keeps: how many of each word','font:700 12px system-ui;fill:var(--ink-2)','middle');
+      VOC.forEach((v,i)=>{ const x=(ph?28:80)+i*(ph?92:112); txt(svg,x+30,H-40,v,'font:700 12px system-ui;fill:var(--ink-2)','middle');
+        [['A',cA[v],cv(K17.word),0],['B',cB[v],cv(K17.alt),32]].forEach(([K,n,col,dx])=>{ const h=n*80; const g=el('g',glow?{filter:glow}:{},svg);
+          el('rect',{x:x+dx,y:H-60-h,width:26,height:Math.max(1,h),rx:5,fill:col,opacity:.85},g); if(n) txt(svg,x+dx+13,H-66-h,String(n),'font:700 11px system-ui;fill:'+col,'middle'); }); });
+      el('line',{x1:ph?16:50,y1:H-60,x2:W-(ph?16:40),y2:H-60,stroke:'var(--axis)','stroke-width':1.5},svg);
+      const same=VOC.every(v=>cA[v]===cB[v]), sA=sum('A'), sB=sum('B');
+      txt(svg,ph?20:60,60,'A','font:800 12px system-ui;fill:'+cv(K17.word)); txt(svg,ph?44:80,60,(ph?'sum ':'sum of word vectors ')+fmtV(sA),'font:600 11.5px system-ui;fill:var(--ink-2)');
+      txt(svg,ph?20:60,84,'B','font:800 12px system-ui;fill:'+cv(K17.alt)); txt(svg,ph?44:80,84,(ph?'sum ':'sum of word vectors ')+fmtV(sB),'font:600 11.5px system-ui;fill:var(--ink-2)');
+      read.innerHTML=same?'<b>Identical bags.</b> A and B have the same words the same number of times, so every count and every sum agrees: '+fmtV(sA)+'. The order is invisible.':'<b class="m">Different bags</b> — but only because the <em>words</em> differ, not their order.';
+      svg.dataset.same=same?'1':'0'; }
+    else { const k=st.win, n=LONG.length, prog=Math.min(n,Math.max(1,Math.round(st.prog*3))), last=prog-1, lo=Math.max(0,last-k+1);
+      txt(svg,W/2,30,ph?'a window of the last '+k+' word'+(k>1?'s':''):'a window of the last '+k+' word'+(k>1?'s':'')+' — everything older is forgotten','font:700 12px system-ui;fill:var(--ink-2)','middle');
+      const xs=i=>ph?72+(i%3)*128:28+i*(504/(n-1)), ys=i=>ph?110+Math.floor(i/3)*62:150, y=150;
+      LONG.forEach((w,i)=>{ const on=i>=lo&&i<=last, seen=i<=last, isTrain=i===1; const x=xs(i);
+        const g=el('g',{opacity:!seen?.25:on?1:.4},svg), y=ys(i), tw=ph?112:54;
+        el('rect',{x:x-tw/2,y:y-16,width:tw,height:30,rx:8,fill:on?'color-mix(in srgb,var(--s1) 22%,transparent)':'none',stroke:isTrain?cv(K17.gate):on?cv(K17.word):'var(--ink-muted)','stroke-width':isTrain?2.2:1.3,'stroke-dasharray':on?'':'3 3'},g);
+        txt(g,x,y+4,w,'font:700 11px system-ui;fill:'+(on?'var(--ink)':'var(--ink-muted)'),'middle'); });
+      const x0=xs(lo)-31, x1=xs(last)+31; const br=el('g',glow&&!ph?{filter:glow}:{style:ph?'display:none':''},svg);
+      el('path',{d:`M${x0},${y-26} L${x0},${y-34} L${x1},${y-34} L${x1},${y-26}`,fill:'none',stroke:cv(K17.word),'stroke-width':2.2},br);
+      el('path',{d:`M${x0},${y+24} L${x0},${y+32} L${x1},${y+32} L${x1},${y+24}`,fill:'none',stroke:cv(K17.word),'stroke-width':2.2},br);
+      if(!ph) txt(svg,(x0+x1)/2,y-42,'window','font:700 11px system-ui;fill:'+cv(K17.word),'middle');
+      const hasTrain=lo<=1&&last>=1, atLate=last===n-1;
+      txt(svg,W/2,ph?330:250,atLate?(hasTrain?(ph?'"train" is still in view':'"late" arrives and "train" is still in view: the window knows what is late.'):(ph?'"train" has dropped out':'"late" arrives, but "train" has dropped out: what is late?')):'reading … word '+(last+1)+' of '+n,'font:700 12.5px system-ui;fill:'+(atLate?(hasTrain?cv(K17.mem):'var(--critical)'):'var(--ink-2)'),'middle');
+      txt(svg,W/2,ph?360:275,ph?'the window must hold 8 words':'"train" is word 2 and "late" is word 9, so the window must hold at least 8 words','font:500 11px system-ui;fill:var(--ink-muted)','middle');
+      read.innerHTML='Window of <b>'+k+'</b> · at "late" it holds: <b class="w">'+LONG.slice(Math.max(0,n-k)).join(' ')+'</b><br>'+(k>=8?'"train" is still inside — but a bigger window means more to learn, and any fixed size is too small for some sentence.':'"train" is outside the window. A fixed window forgets everything older.');
+      svg.dataset.train=(Math.max(0,n-k)<=1)?'1':'0'; }
+    mfont(svg);
+  }
+  tabs(document.getElementById('or-mode'),t=>{ st.mode=t; st.prog=t==='win'?3:3; document.getElementById('or-ctl-note').style.display=t==='note'?'':'none'; document.getElementById('or-ctl-win').style.display=t==='win'?'':'none'; document.getElementById('or-swap').style.display=t==='win'?'none':''; draw(); });
+  bindCtl('or-th',v=>{ st.th=v; st.prog=3; draw(); },v=>v+'°');
+  bindCtl('or-k',v=>{ st.k=v; st.prog=3; draw(); },v=>N(v,2));
+  bindCtl('or-win',v=>{ st.win=v; st.prog=3; draw(); },v=>String(v));
+  document.getElementById('or-swap').addEventListener('click',()=>{ st.B=st.B.slice().reverse(); if(st.B.join()===st.A.join()) st.B=[st.A[2],st.A[1],st.A[0]]; drawSent(); st.prog=3; draw(); });
+  let tw=null; document.getElementById('or-play').addEventListener('click',()=>{ if(tw) tw.stop(); tw=tween(st.mode==='win'?4200:3000,u=>{ st.prog=.34+u*2.66; draw(); },()=>{ st.prog=3; draw(); }); });
+  drawSent(); draw(); new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']}); onResize(draw);
+  window.U17Order={st,draw};
+})();
+
+/* ---------- §2 · w-rnn-step: step a recurrent cell through a sentence ---------- */
+(function(){
+  const svg=document.getElementById('rs-svg'); if(!svg) return;
+  const read=document.getElementById('rs-read');
+  const SENT=['the','train','to','Delhi','is','late'], CODE=[.2,.9,-.3,.7,-.4,1];      /* toy one-number word codes (hand-made) */
+  const rnd=seeded(17), MIX=Array.from({length:6},()=>Array.from({length:6},()=>(rnd()*2-1)*.55)), UMIX=Array.from({length:6},()=>(rnd()*2-1)*.9); UMIX[0]=1;
+  const st={mode:'one',w:.5,u:1,wm:'slide',k:3};
+  function run(){ if(st.mode==='one'){ const r=rnn1(st.w,st.u,0,EX.x,0); return {words:['word 1','blank','blank'],x:EX.x,h:r.h.map(v=>[v]),z:r.z}; }
+    const h=[new Array(6).fill(0)];
+    CODE.forEach(x=>{ const p=h[h.length-1], n=new Array(6).fill(0);
+      for(let i=0;i<6;i++){ let z=0; if(st.wm==='slide'){ z=(i===0?st.u*x:st.w*p[i-1]); } else { for(let j=0;j<6;j++) z+=st.w*MIX[i][j]*p[j]; z+=st.u*UMIX[i]*x; } n[i]=tanh(z); }
+      h.push(n); }); return {words:SENT,x:CODE,h}; }
+  const heat=v=>{ const a=Math.min(1,Math.abs(v)); return {fill:v>=0?cv(K17.mem):cv(K17.edge),op:.12+.8*a}; };
+  function draw(){ svg.innerHTML=''; const V=narrowSVG(svg,760,330,440,340), W=V.W, ph=V.n, glow=glo(svg), R=run(), T=R.words.length;
+    const x0=ph?(st.mode==='one'?46:34):(st.mode==='one'?150:84), colW=ph?(W-x0-(st.mode==='one'?54:34))/T:(st.mode==='one'?150:106), cx=t=>x0+t*colW;   /* t = 1…T */
+    /* h0 */
+    const one=st.mode==='one';
+    const bar=(x,v,on,lab)=>{ if(one){ const y0=222, hh=66; el('line',{x1:x-26,y1:y0,x2:x+26,y2:y0,stroke:'var(--axis)','stroke-width':1.2},svg);
+        el('rect',{x:x-18,y:y0-hh,width:36,height:hh*2,rx:6,fill:'none',stroke:'var(--line)','stroke-dasharray':'3 3'},svg);
+        const h=v[0]*hh, g=el('g',{opacity:on?1:.25},svg); if(glow&&on) g.setAttribute('filter',glow);
+        el('rect',{x:x-14,y:h>=0?y0-h:y0,width:28,height:Math.max(1.5,Math.abs(h)),rx:5,fill:h>=0?cv(K17.mem):cv(K17.edge)},g);
+        txt(svg,x,y0+hh+18,on?N(v[0],4):'?','font:700 12.5px system-ui;fill:'+(on?cv(K17.mem):'var(--ink-muted)'),'middle'); }
+      else { const s=26, y0=138; v.forEach((q,i)=>{ const hc=heat(q), g=el('g',{opacity:on?1:.22},svg);
+          el('rect',{x:x-s/2-6,y:y0+i*(s+4),width:s+12,height:s,rx:5,fill:hc.fill,opacity:hc.op},g);
+          el('rect',{x:x-s/2-6,y:y0+i*(s+4),width:s+12,height:s,rx:5,fill:'none',stroke:'var(--line)'},g);
+          if(on&&!ph) txt(svg,x,y0+i*(s+4)+s/2+4,N(q,2),'font:600 10px system-ui;fill:var(--ink)','middle'); }); }
+      txt(svg,x,one?134:128,lab,'font:700 12px system-ui;fill:var(--ink-2)','middle'); };
+    if(!one&&!ph) txt(svg,22,138+13,'slot 1','font:600 10px system-ui;fill:var(--ink-muted)'), txt(svg,22,138+5*30+13,'slot 6','font:600 10px system-ui;fill:var(--ink-muted)');
+    bar(cx(0),R.h[0],true,'h₀');
+    for(let t=1;t<=T;t++){ const x=cx(t), on=t<=st.k, cur=t===st.k;
+      /* word tile */
+      const g=el('g',{opacity:on?1:.4},svg); const tw=ph?(one?96:58):(one?80:68); el('rect',{x:x-tw/2,y:14,width:tw,height:28,rx:8,fill:'color-mix(in srgb,var(--s1) 18%,transparent)',stroke:cv(K17.word),'stroke-width':cur?2.2:1.2},g);
+      txt(g,x,33,R.words[t-1],'font:700 12px system-ui;fill:var(--ink)','middle');
+      txt(svg,x,58,(ph&&!one?'':'x = ')+N(R.x[t-1],2),'font:600 10.5px system-ui;fill:'+cv(K17.word),'middle');
+      /* the cell */
+      const cg=el('g',{opacity:on?1:.35},svg); if(cur&&glow) cg.setAttribute('filter',glow);
+      el('rect',{x:x-26,y:70,width:52,height:36,rx:9,fill:'color-mix(in srgb,var(--s3) 10%,transparent)',stroke:cv(K17.mem),'stroke-width':cur?2.2:1.2},cg);
+      txt(cg,x,93,'cell','font:700 11px system-ui;fill:var(--ink-2)','middle');
+      edge(svg,x,44,x,68,cv(K17.word),1.4,null,on?.9:.3);
+      /* the note arrow from the previous column */
+      const px=cx(t-1); edge(svg,px+(t===1?20:26),88,x-28,88,cv(K17.mem),on?2.4:1.2,on?glow:null,on?1:.3);
+      if(t===1||one) txt(svg,(px+x)/2,82,one?'× w':'W','font:700 10.5px system-ui;fill:'+cv(K17.mem),'middle');
+      bar(x,R.h[t],on,'h'+SUB(t)); }
+    const k=st.k;
+    if(one){ if(k===0) read.innerHTML='The note starts at <b class="m">h₀ = 0</b>. Press <em>next</em> to read the first input.';
+      else { const hp=R.h[k-1][0], x=R.x[k-1], z=st.w*hp+st.u*x;
+        read.innerHTML='h'+SUB(k)+' = tanh(w·h'+SUB(k-1)+' + u·x'+SUB(k)+') = tanh('+N(st.w,2)+' · '+N(hp,4)+' + '+N(st.u,2)+' · '+N(x,2)+') = tanh('+N(z,4)+') = <b class="m">'+N(R.h[k][0],4)+'</b>'+
+          (k===3?'<br>The first input kept <b>'+N(R.h[3][0]/Math.max(1e-12,R.h[1][0])*100,1)+'%</b> of its size after two more steps.':''); } }
+    else { if(k===0) read.innerHTML='Six empty slots. With <em>slide down</em>, W copies slot 1 into slot 2, slot 2 into slot 3 … each times w, and U writes the new word into slot 1.';
+      else { const h=R.h[k]; read.innerHTML='After <b class="w">'+SENT[k-1]+'</b>: note = <b class="m">('+h.map(v=>N(v,2)).join(', ')+')</b><br>'+(st.wm==='slide'?'Slot '+Math.min(6,k)+' now holds what <b class="w">the</b> wrote, shrunk by w and tanh '+(k-1)+' time'+(k===2?'':'s')+'.':'A mixing W blends all slots at every step: the words are smeared across the whole note.'); } }
+    svg.dataset.h=R.h.slice(1).map(v=>v.map(q=>q.toFixed(4)).join('|')).join(','); svg.dataset.k=k; mfont(svg); }
+  const Tn=()=>st.mode==='one'?3:6;
+  const upd=()=>draw();
+  bindCtl('rs-w',v=>{ st.w=v; upd(); },v=>N(v,2)); bindCtl('rs-u',v=>{ st.u=v; upd(); },v=>N(v,2));
+  tabs(document.getElementById('rs-mode'),t=>{ st.mode=t; st.k=t==='one'?3:6; const w0=t==='one'?.5:.8; st.w=w0; st.u=1; setCtl('rs-w',w0,v=>N(v,2)); setCtl('rs-u',1,v=>N(v,2)); document.getElementById('rs-wm').style.display=t==='six'?'':'none'; draw(); });
+  document.getElementById('rs-wm').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ st.wm=b.dataset.m; pressOnly(document.getElementById('rs-wm'),b); draw(); }));
+  document.getElementById('rs-next').addEventListener('click',()=>{ st.k=Math.min(Tn(),st.k+1); draw(); });
+  document.getElementById('rs-prev').addEventListener('click',()=>{ st.k=Math.max(0,st.k-1); draw(); });
+  document.getElementById('rs-reset').addEventListener('click',()=>{ st.k=0; draw(); });
+  let timer=null; document.getElementById('rs-play').addEventListener('click',()=>{ clearInterval(timer); st.k=0; draw(); if(RM){ st.k=Tn(); draw(); return; } timer=setInterval(()=>{ st.k++; draw(); if(st.k>=Tn()) clearInterval(timer); },650); });
+  draw(); new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']}); onResize(draw);
+  window.U17Step={st,draw,run};
+})();
+
+/* ---------- §3 · w-unroll: the loop unfolded into a chain of twins (3-D) ---------- */
+(function(){
+  const box=document.getElementById('un-3d'); if(!box||!CIN) return;
+  const read=document.getElementById('un-read');
+  const st={T:5,u:0,flash:-1};
+  const SP=1.7;
+  function readout(){ const uses=st.T-1; read.innerHTML=(st.u>.5?'<b>'+st.T+'</b> copies of the cell, one per word · <b class="g">W</b> is used <b>'+uses+'</b> time'+(uses===1?'':'s')+' — always the same W':'Folded: one cell, and the gold loop feeds its note back in')+
+    '<br>numbers to learn (h = 4, d = 3): W 16 + U 12 + b 4 = <b class="m">32</b> — for '+st.T+' words, or 3000';
+    box.dataset.state=[st.T,st.u>.5?'unrolled':'folded'].join(','); }
+  function build(){ return CIN.stage3d(box,{camera:cam3({pos:[1.2,3.7,8.6],look:[0,.9,0],fov:38},{pos:[7.2,5.0,9.6],look:[0,.8,0],fov:44}),orbit:true,autoRotate:0,
+    build(ctx){ const {THREE,root,isLight,colors}=ctx, hx=hxOf(ctx), dark=!isLight;
+      starfield(ctx,300,16); glassFloor(ctx,15,{div:40,y:-.2});
+      const C={mem:hx(K17.mem),word:hx(K17.word),gate:hx(K17.gate),prob:hx(K17.prob)};
+      const copies=[]; for(let i=0;i<8;i++){ const g=new THREE.Group(); root.add(g);
+        const glass=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:dark?0xcfe0ff:0xffffff,transparent:true,opacity:dark?.12:.3,roughness:.05,metalness:.3,depthWrite:false}));
+        const edges=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1)),new THREE.LineBasicMaterial({color:C.mem,transparent:true,opacity:.75}));
+        const orb=CIN.prim.dot(ctx,[0,0,0],C.mem,.16); const halo=haloSprite(ctx,C.mem,.8);
+        const tile=new THREE.Mesh(new THREE.BoxGeometry(.62,.1,.42),new THREE.MeshStandardMaterial({color:C.word,emissive:C.word,emissiveIntensity:dark?.6:.2,roughness:.3})); tile.position.set(0,-1.05,0);
+        const up=liveTube(ctx,C.word,.018,.8); aimTube(THREE,up,[0,-.98,0],[0,-.52,0]);
+        g.add(glass,edges,orb,halo,tile,up); g.position.y=1;
+        const xl=lab(ctx,'x'+SUB(i+1),[0,-1.42,.25],{size:30,weight:700,scale:.0085,color:colors.s1,bg:false}); g.add(xl);
+        const hl=lab(ctx,'h'+SUB(i+1),[0,.82,0],{size:30,weight:700,scale:.0085,color:colors.s3,bg:false}); g.add(hl);
+        copies.push({g,edges,orb,halo}); }
+      /* the gold W arrows between neighbours, and the loop for the folded cell */
+      const arrows=[]; for(let i=0;i<7;i++){ const a=CIN.prim.arrow(ctx,[0,1,0],[1,1,0],C.gate,{radius:.035,head:.22}); root.add(a); const wl=lab(ctx,'W',[0,1.35,0],{size:30,weight:800,scale:.0085,color:colors.s4,bg:!dark}); root.add(wl); arrows.push({a,wl}); }
+      const loop=new THREE.Mesh(new THREE.TorusGeometry(.62,.035,12,60,Math.PI*1.45),new THREE.MeshStandardMaterial({color:C.gate,emissive:C.gate,emissiveIntensity:dark?.8:.3,transparent:true}));
+      loop.position.set(.52,1.45,0); loop.rotation.z=-Math.PI*.22; root.add(loop);
+      const loopHead=new THREE.Mesh(new THREE.ConeGeometry(.1,.22,16),loop.material); root.add(loopHead);
+      const loopLab=lab(ctx,'W',[1.35,2.15,0],{size:30,weight:800,scale:.0085,color:colors.s4,bg:!dark}); root.add(loopLab);
+      const h0=CIN.prim.dot(ctx,[0,1,0],C.mem,.11); root.add(h0); const h0l=lab(ctx,'h₀',[0,1.4,0],{size:26,weight:700,scale:.0085,color:colors.s3,bg:false}); root.add(h0l);
+      const hudEl=hud(box);
+      ctx.redraw=()=>{ const T=st.T, u=easeIO(clamp01(st.u)), xs=i=>(i-(T-1)/2)*SP*u;
+        copies.forEach((c,i)=>{ c.g.visible=i<T&&(u>.02||i===0); c.g.position.x=xs(i); const on=i<T; c.g.scale.setScalar(on?1:0.001);
+          if(u<.02&&i>0) c.g.visible=false; });
+        arrows.forEach((A,i)=>{ const vis=i<T-1&&u>.15; A.a.visible=A.wl.visible=vis; if(!vis) return;
+          const x0=xs(i)+.52, x1=xs(i+1)-.52; if(x1-x0<.05){ A.a.visible=A.wl.visible=false; return; }
+          A.a.userData.set(new THREE.Vector3(x0,1,0),new THREE.Vector3(x1,1,0)); A.wl.position.set((x0+x1)/2,1.32,0); });
+        const lv=u<.5; loop.visible=loopHead.visible=loopLab.visible=lv; const lo=1-u*2; loop.material.opacity=Math.max(0,lo); loopLab.material.opacity=Math.max(0,lo);
+        loopHead.position.set(.52+.62*Math.cos(-Math.PI*.22+Math.PI*1.45)+.0,1.45+.62*Math.sin(-Math.PI*.22+Math.PI*1.45),0); loopHead.rotation.z=Math.PI*1.23+Math.PI*.5;
+        const x00=xs(0)-.52; h0.position.set(x00-.55*Math.max(u,.001)-.2,1,0); h0l.position.set(h0.position.x,1.35,0);
+        const fl=st.flash>=0?Math.sin(Math.PI*clamp01(st.flash)):0;
+        arrows.forEach(A=>{ A.a.traverse(m=>{ if(m.material){ m.material.emissiveIntensity=(dark?.55:.15)+2.2*fl; } }); A.a.scale.setScalar(1+.5*fl); });
+        loop.material.emissiveIntensity=(dark?.8:.3)+2*fl;
+        hudEl.innerHTML=fl>0?'one <b>W</b>, used on every gold arrow at once':(u>.5?'unrolled · '+T+' twins, one per word':'folded · one cell with a loop');
+        RR(ctx); };
+      ctx.redraw();
+    },
+    update(ctx,t,dt){ if(ctx.dead) return false; ctx.copiesSpin=(ctx.copiesSpin||0)+dt; return false; }}); }
+  const S3=mountStage(box,build); flipRemount(S3);
+  const redraw=()=>{ readout(); if(S3&&S3.handle&&S3.handle.ctx.redraw) S3.handle.ctx.redraw(); };
+  bindCtl('un-T',v=>{ st.T=v; redraw(); },v=>String(v));
+  let tw=null; const play=document.getElementById('un-play');
+  play.addEventListener('click',()=>{ if(tw) tw.stop(); const from=st.u, to=st.u>.5?0:1; play.textContent=to?'▶ fold':'▶ unroll';
+    tw=tween(1600,u=>{ st.u=from+(to-from)*u; redraw(); },()=>{ st.u=to; redraw(); }); });
+  let tf=null; document.getElementById('un-share').addEventListener('click',()=>{ if(st.u<.5){ st.u=1; play.textContent='▶ fold'; } if(tf) tf.stop(); tf=tween(1300,u=>{ st.flash=u; redraw(); },()=>{ st.flash=-1; redraw(); }); });
+  st.u=1; play.textContent='▶ fold';
+  readout(); window.U17Unroll={st,redraw};
+})();

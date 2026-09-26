@@ -1,0 +1,240 @@
+<!-- ================= 7 · CLIPPING ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>First aid for explosions: clip the gradient</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>School buses in India carry a <strong>speed governor</strong>. The driver can press the pedal as hard as he likes; the bus will not go faster than the limit. It still goes where he steers — only not at a crazy speed.</p>
+    <p>Gradient clipping is a speed governor for training.</p>
+  </div>
+  <div class="prose reveal">
+    <p>When blame explodes, the gradient can become enormous for a single step. Picture the loss as a landscape: mostly gentle slopes, but here and there a <strong>cliff</strong> — a sudden wall where the loss jumps. That wall is what exploding powers of \(W\) look like. Touch the edge of the cliff and the slope is huge. A plain step \(\theta\leftarrow\theta-\eta\,\mathbf g\) then throws the weights far away, and all the progress so far is lost.</p>
+    <p>The fix is simple. Pick a limit \(c\). If the gradient is longer than \(c\), shrink it to length \(c\) and <strong>keep its direction</strong>:</p>
+    <p>\[\text{if }\|\mathbf g\|>c:\qquad\mathbf g\leftarrow c\,\frac{\mathbf g}{\|\mathbf g\|}.\]</p>
+    <p><strong>A tiny example.</strong> \(\mathbf g=(30,40)\), so \(\|\mathbf g\|=\sqrt{900+1600}=50\). With \(c=5\): \(\mathbf g\leftarrow5\cdot(30,40)/50=(3,4)\). Same direction, length 5. A gradient like \((1,2,2)\), of length 3, is shorter than 5 and passes through untouched.</p>
+    <p>Clipping only helps with <strong>explosions</strong>. It cannot help with <strong>fading</strong>: if the blame reaching word 1 is \(10^{-9}\), there is no signal left to rescue. For fading we need a new design — that is §8.</p>
+  </div>
+
+  <div class="widget reveal" id="w-clip">
+    <div class="widget-head"><span class="w-title">A loss cliff, with and without the speed governor</span><span class="w-sub">A gentle slope with a sharp wall. The ball rolls downhill by gradient steps. Gold steps are clipped; red steps are not.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ roll</em> with clipping off: the ball creeps to the edge, feels the huge slope of the wall and is flung off the map. Turn clipping on and roll again: it walks down the wall in small steps and reaches the valley. Then lower the limit \(c\) and see the steps get shorter.</p>
+    <div id="cl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A lit loss landscape: a high flat shelf on one side, a sharp cliff wall, and a gentle valley below it. A glowing ball rolls downhill in steps. Without clipping one step at the cliff edge throws it far off the map; with clipping it walks down the cliff in short gold steps to the valley floor."></div><p class="stage-tap">drag the picture to orbit</p>
+    <div class="wrow" style="margin-top:.7rem">
+      <div class="wcol" style="flex:1 1 280px">
+        <div class="controls"><div class="ctl"><label for="cl-c">limit \(c\)</label><input id="cl-c" type="range" min="0.5" max="5" step="0.25" value="2"><output id="cl-c-o">2</output></div></div>
+        <div class="presets"><button class="preset" id="cl-on" aria-pressed="false">clipping off</button><button class="play" id="cl-play">▶ roll</button><button class="preset" id="cl-reset">reset</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="cl-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf g\leftarrow\min\Big(1,\ \frac{c}{\|\mathbf g\|}\Big)\,\mathbf g\]</p>
+    <p>Clipping keeps the <strong>direction</strong> of the gradient and caps its <strong>length</strong>. One exploding step can no longer throw training off a cliff. It is cheap first aid for explosions — and no cure for fading.</p>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The gradient is \(\mathbf g=(0,-12,5)\) and the limit is \(c=2.6\). What is the clipped gradient?</p>
+    <div class="opts">
+      <button data-why="Clipping never cuts each entry separately — that would change the direction. The length is √(144 + 25) = 13, so scale everything by 2.6/13 = 0.2.">\((0,-2.6,2.6)\)</button>
+      <button data-correct data-why="Right. ‖g‖ = √(0 + 144 + 25) = 13 &gt; 2.6. Scale by 2.6/13 = 0.2: (0, −2.4, 1). Its length is 2.6 and it points the same way.">\((0,-2.4,1)\)</button>
+      <button data-why="13 is longer than the limit 2.6, so the gradient must be shrunk: multiply by 2.6/13 = 0.2 to get (0, −2.4, 1).">\((0,-12,5)\), unchanged</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> When the gradient is longer than a limit \(c\), shrink it to length \(c\) without turning it — \((30,40)\) becomes \((3,4)\) — which tames explosions but cannot rescue memory that has faded.</p>
+</section>
+
+<!-- ================= ACT III · GATES ================= -->
+<!-- ================= 8 · LSTM ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The LSTM: a memory with an express lane</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A shopkeeper's ledger — the bahi-khata — passes from day to day. Each evening he makes three small choices. With an <strong>eraser</strong>: what to rub out. With a <strong>pen</strong>: what to write in. And at the <strong>window</strong>: what to read out to the customer.</p>
+    <p>The ledger itself is never torn up and rewritten. It rides from day to day almost untouched. That is the LSTM's secret.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Why does the plain cell forget? At every step its whole note is multiplied by \(W\) and squeezed by tanh. There is no way to carry a number along <em>unchanged</em>. So in 1997 Hochreiter and Schmidhuber added a second note that runs along the top: the <strong>cell state</strong> \(\mathbf c_t\). People call the whole design <strong>LSTM</strong>, "long short-term memory". Think of the cell state as an <strong>express lane</strong>: at each step only two gentle things happen to it.</p>
+    <p>First, three <strong>gates</strong> are computed. A gate is a list of numbers between 0 and 1, made with a sigmoid (<a href="unit-15.html#s2">Unit 15</a>). 0 means "shut", 1 means "wide open". Each gate looks at the new word and the last note:</p>
+    <ul>
+      <li>the <strong>forget gate</strong> \(\mathbf f_t\) — the eraser: how much of the old cell state to keep;</li>
+      <li>the <strong>input gate</strong> \(\mathbf i_t\) — the pen: how much of the new candidate to write in;</li>
+      <li>the <strong>output gate</strong> \(\mathbf o_t\) — the window: how much of the cell state to show as the note.</li>
+    </ul>
+    <p>The candidate \(\mathbf g_t=\tanh(\dots)\) is what the pen would write. Then:</p>
+    <p>\[\begin{aligned}\mathbf c_t&=\mathbf f_t\odot\mathbf c_{t-1}+\mathbf i_t\odot\mathbf g_t\\ \mathbf h_t&=\mathbf o_t\odot\tanh(\mathbf c_t)\end{aligned}\]</p>
+    <p>The symbol \(\odot\) just means "multiply entry by entry". Each gate has its own weights, like a small layer: \(\mathbf f_t=\sigma(W_f\mathbf h_{t-1}+U_f\mathbf x_t+\mathbf b_f)\), and the same shape for \(\mathbf i_t\), \(\mathbf o_t\) and \(\mathbf g_t\) (with tanh for \(\mathbf g_t\)).</p>
+    <p><strong>A tiny example.</strong> Forget gate \(f=0.9\), old cell state \(c_{t-1}=1\), input gate \(i=0.2\), candidate \(g=0.5\):</p>
+    <p>\[c_t=0.9\cdot1+0.2\cdot0.5=0.9+0.1=1.0.\]</p>
+    <p>We erased a tenth, then wrote in a little. With the window fully open (\(o=1\)), the note is \(h_t=\tanh(1.0)\approx0.7616\).</p>
+  </div>
+
+  <div class="widget reveal" id="w-notebook">
+    <div class="widget-head"><span class="w-title">The cell state as a tank with three valves</span><span class="w-sub">The tank holds the cell state. The drain valve is the forget gate, the inlet valve is the input gate, and the window valve is the output gate. Gold shows how open each valve is.</span></div>
+    <p class="try"><b>Try:</b> Start from the worked example and press <em>▶ one step</em>: 0.9 stays, 0.1 flows in, the tank reads 1.0. Close the drain completely (\(f=1\)) and shut the inlet (\(i=0\)): the tank holds its level exactly — memory with no fading at all. Then shut the window (\(o=0\)): the tank is still full, but the note shows 0.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage"><svg id="nb-svg" viewBox="0 0 560 340" class="svg-lab" role="img" aria-label="A glass tank of glowing green liquid: the cell state. A drain valve at the bottom (the forget gate), an inlet pipe from a candidate cup above (the input gate), and a window valve on the side leading to the note (the output gate). Each valve has a gold ring that fills as the gate opens."></svg></div></div>
+      <div class="wcol" style="flex:2 1 260px">
+        <div class="controls">
+          <div class="ctl"><label for="nb-c">old \(c_{t-1}\)</label><input id="nb-c" type="range" min="-2" max="2" step="0.1" value="1"><output id="nb-c-o">1</output></div>
+          <div class="ctl"><label for="nb-f">forget \(f\)</label><input id="nb-f" type="range" min="0" max="1" step="0.05" value="0.9"><output id="nb-f-o">0.9</output></div>
+          <div class="ctl"><label for="nb-i">input \(i\)</label><input id="nb-i" type="range" min="0" max="1" step="0.05" value="0.2"><output id="nb-i-o">0.2</output></div>
+          <div class="ctl"><label for="nb-g">candidate \(g\)</label><input id="nb-g" type="range" min="-1" max="1" step="0.05" value="0.5"><output id="nb-g-o">0.5</output></div>
+          <div class="ctl"><label for="nb-o">output \(o\)</label><input id="nb-o" type="range" min="0" max="1" step="0.05" value="1"><output id="nb-o-o">1</output></div>
+        </div>
+        <div class="presets"><button class="play" id="nb-play">▶ one step</button><button class="preset" id="nb-hold">hold forever</button><button class="preset" id="nb-reset">worked example</button></div>
+        <div id="nb-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Why the express lane saves the blame.</strong> Look at how the cell state moves from one step to the next: \(\mathbf c_t=\mathbf f_t\odot\mathbf c_{t-1}+\dots\) Along this lane there is no \(W\) to multiply by, and no tanh to squeeze. So walking back along the lane, the blame is multiplied by just \(f\) at each step (<a href="#s5">§5</a>'s product, with a much kinder factor):</p>
+    <p>\[\frac{\partial c_T}{\partial c_k}=f_{k+1}\,f_{k+2}\cdots f_T\qquad(\text{along the lane}).\]</p>
+    <p>With \(f=0.9\) for ten steps: \(0.9^{10}\approx0.349\). Compare the plain cell with \(w=0.5\): \(0.5^{10}\approx0.000977\). The express lane carries about <strong>350 times</strong> more blame back to the start.</p>
+    <p>Be honest, though: a gate of 0.9 still fades over long distances. After 50 steps, \(0.9^{50}\approx0.00515\). What saves the LSTM is that the network <strong>chooses</strong> \(f\) at every word. When it needs to remember, it learns to hold \(f\) very close to 1: \(0.99^{50}\approx0.605\). And when it wants to forget — at a full stop, say — it can drop \(f\) to 0 and wipe the slate.</p>
+  </div>
+
+  <div class="widget reveal" id="w-lstm">
+    <div class="widget-head"><span class="w-title">The memory lab: race a plain cell, an LSTM and a GRU</span><span class="w-sub">The task: remember the first word. Each sentence starts with <em>chai</em> or <em>coffee</em>, then comes a string of filler words that each nudge the note at random. At the end we ask: which drink was first? The three cells have <strong>hand-set weights</strong> (not trained) — chosen to show each design at its most sensible.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ read the sentence</em> and watch the three memories travel along the lanes; gold rings are gates opening. Then open <em>blame through time</em> and slide the length from 5 to 50: the plain cell's blame collapses, the gated cells' stays high. Last, press <em>honest LSTM (f = 0.9)</em> and look at the accuracy at 50 words.</p>
+    <div id="lb-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene of three glowing lanes running from left to right, one per cell: a plain recurrent cell, a GRU and an LSTM. A tile at the start of each lane shows the first word, chai or coffee. Beads along each lane show that cell's memory after each word, lifted up for chai and down for coffee. The plain cell's beads drift back to the middle and get lost among the random nudges; the GRU's and LSTM's stay lifted. Gold rings around the gated lanes glow where a gate opens. At the end of each lane a tick or a cross shows whether that cell answered right."></div><p class="stage-tap">drag the picture to orbit</p>
+    <div class="wrow" style="margin-top:.7rem">
+      <div class="wcol" style="flex:1 1 300px">
+        <div class="controls">
+          <div class="ctl"><label for="lb-T">sentence length</label><input id="lb-T" type="range" min="5" max="50" step="1" value="20"><output id="lb-T-o">20</output></div>
+          <div class="ctl"><label for="lb-A">filler noise</label><input id="lb-A" type="range" min="0" max="1" step="0.05" value="0.5"><output id="lb-A-o">0.5</output></div>
+          <div class="ctl"><label for="lb-w">plain cell \(w\)</label><input id="lb-w" type="range" min="0.5" max="1.2" step="0.01" value="0.9"><output id="lb-w-o">0.9</output></div>
+          <div class="ctl"><label for="lb-f">LSTM forget \(f\)</label><input id="lb-f" type="range" min="0.5" max="0.999" step="0.001" value="0.99"><output id="lb-f-o">0.99</output></div>
+        </div>
+        <div class="presets"><button class="play" id="lb-run">▶ read the sentence</button><button class="preset" id="lb-new">new sentence</button><button class="preset" id="lb-honest">honest LSTM (f = 0.9)</button><button class="preset" id="lb-reset">reset</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 320px"><div id="lb-read" class="readout lb-read"></div></div>
+    </div>
+    <div class="tabs" id="lb-tabs" role="tablist" style="margin-top:.7rem"><button role="tab" aria-selected="true" data-t="acc">accuracy vs length</button><button role="tab" aria-selected="false" data-t="blame">blame through time</button></div>
+    <div class="svgstage" style="margin-top:.5rem"><svg id="lb-svg" viewBox="0 0 760 280" class="svg-lab" role="img" aria-label="A chart. In accuracy mode: for each sentence length from 5 to 50, the share of 400 random sentences each cell answers right. In blame mode: on a log scale, how much blame from the end reaches each earlier word, for the three cells."></svg></div>
+    <details class="lb-how"><summary>How the three cells are wired (the hand-set weights)</summary>
+      <p>Each word is one number \(s\): chai is \(+1\), coffee is \(-1\), and each filler is a random number between \(-A\) and \(A\) (the filler noise). A marker \(m\) is 1 on the first word and 0 after it.</p>
+      <p>\[\begin{aligned}\text{plain: }&h_t=\tanh(w\,h_{t-1}+s_t)\\ \text{LSTM: }&i_t=\sigma(10m_t-5)\\ &c_t=f\,c_{t-1}+i_t\tanh(s_t)\\ \text{GRU: }&z_t=\sigma(10m_t-5)\\ &h_t=(1-z_t)h_{t-1}\\ &\qquad+z_t\tanh(s_t)\end{aligned}\]</p>
+      <p>So the input gate and the update gate are wide open on the first word (\(\sigma(5)\approx0.993\)) and nearly shut afterwards (\(\sigma(-5)\approx0.0067\)). The answer is the sign of the final memory. Because these gates look only at the word, the blame along each lane is exactly \(\prod w(1-h^2)\), \(\prod f\) and \(\prod(1-z)\).</p>
+    </details>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf c_t=\mathbf f_t\odot\mathbf c_{t-1}+\mathbf i_t\odot\mathbf g_t\\ \frac{\partial c_T}{\partial c_k}=\prod_{t=k+1}^{T}f_t\end{gathered}\]</p>
+    <p>The LSTM keeps a second memory on an express lane. Nothing multiplies it by \(W\) or squeezes it — only the forget gate scales it and the input gate adds to it. So blame travels back along the lane multiplied only by \(f\), which the network can hold near 1 for as long as it needs to remember.</p>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">One LSTM step: \(f=0.5\), \(c_{t-1}=2\), \(i=1\), \(g=-0.4\). What is the new cell state \(c_t\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. c = f·c_prev + i·g = 0.5 · 2 + 1 · (−0.4) = 1 − 0.4 = 0.6. Half the old memory was erased, and a negative candidate was written in fully.">\(0.6\)</button>
+      <button data-why="The candidate g = −0.4 is negative, so writing it in lowers the level: 0.5 · 2 + 1 · (−0.4) = 0.6, not 1.4.">\(1.4\)</button>
+      <button data-why="The forget gate multiplies the OLD state (2), not the new one: 0.5 · 2 + 1 · (−0.4) = 0.6.">\(0.3\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Along the express lane the forget gate stays at \(f=0.95\). How much blame reaches a word 20 steps back?</p>
+    <div class="opts">
+      <button data-why="The factors multiply: 0.95²⁰, not 1 − 20 × 0.05 = 0. That is about 0.358.">0, because \(20\times0.05=1\) is used up</button>
+      <button data-correct data-why="Right. Twenty factors of 0.95: 0.95²⁰ ≈ 0.358. More than a third of the blame arrives — a plain cell with w = 0.5 would pass on less than one millionth.">\(0.95^{20}\approx0.358\)</button>
+      <button data-why="0.95 is the factor for one step. Over twenty steps it is 0.95²⁰ ≈ 0.358.">\(0.95\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Try it, then answer</span>
+    <p class="q">In the memory lab, keep the filler noise at 0.5, press <em>honest LSTM (f = 0.9)</em> and look at the accuracy curves at 50 words. What do you see?</p>
+    <div class="opts">
+      <button data-why="With f = 0.9 the LSTM's memory of the first word shrinks to 0.9⁴⁹ ≈ 0.006 of its size by the end, and the filler noise starts to win sometimes. It does not stay perfect.">The LSTM still gets 100%, the plain cell 100% too</button>
+      <button data-correct data-why="Right. The GRU (its lane is held at 0.993) stays at 100%, the plain cell is a coin toss near 50%, and the honest LSTM slips to about 86% at 50 words. A gate of 0.9 is kind, but over 50 steps it still fades.">The GRU stays at 100%, the LSTM slips to about 86%, the plain cell is near 50%</button>
+      <button data-why="The LSTM does slip, but not all the way: at 50 words it still gets about 86% right, far better than the plain cell's coin toss near 50%.">All three fall to about 50%</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s8-->
+  <p class="onesent reveal"><b>In one sentence:</b> The LSTM carries a cell state on an express lane, \(c_t=f\,c_{t-1}+i\,g\), so blame flows back multiplied only by the forget gate — \(0.9^{10}\approx0.349\) instead of \(0.5^{10}\approx0.000977\) — and the network can hold \(f\) near 1 to remember.</p>
+</section>
+
+<!-- ================= 9 · GRU ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>The GRU: a lighter cousin with one blend dial</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A chaiwala keeps one big pot on the stove all day. Every hour he pours in some fresh tea. A little fresh, and the pot tastes much as before. A lot fresh, and the old taste is gone.</p>
+    <p>How much fresh tea to pour — that is one dial. The GRU is built around this dial.</p>
+  </div>
+  <div class="prose reveal">
+    <p>In 2014 Cho and colleagues asked: can we keep the express lane with fewer parts? Their <strong>GRU</strong> ("gated recurrent unit") drops the separate cell state. It keeps one note and two gates:</p>
+    <ul>
+      <li>the <strong>update gate</strong> \(\mathbf z_t\) — the dial: how much new to pour in;</li>
+      <li>the <strong>reset gate</strong> \(\mathbf r_t\) — how much of the old note to look at when making the new candidate.</li>
+    </ul>
+    <p>\[\begin{aligned}\tilde{\mathbf h}_t&=\tanh\big(W(\mathbf r_t\odot\mathbf h_{t-1})+U\mathbf x_t+\mathbf b\big)\\ \mathbf h_t&=(1-\mathbf z_t)\odot\mathbf h_{t-1}+\mathbf z_t\odot\tilde{\mathbf h}_t\end{aligned}\]</p>
+    <p>The second line is a <strong>blend</strong>: part old note, part fresh candidate, with the dial \(\mathbf z_t\) between 0 and 1. When \(z\) is near 0, the old note passes straight through — the express lane again, now multiplied by \(1-z\) at each step.</p>
+    <p><strong>A tiny example.</strong> Old note \(h_{t-1}=0.8\), candidate \(\tilde h_t=-0.4\), dial \(z=0.25\):</p>
+    <p>\[h_t=0.75\cdot0.8+0.25\cdot(-0.4)=0.6-0.1=0.5.\]</p>
+    <p>Three quarters old, one quarter new. And since it is a blend, the new note always lies <strong>between</strong> the old note and the candidate.</p>
+  </div>
+
+  <div class="widget reveal" id="w-gru">
+    <div class="widget-head"><span class="w-title">The blend dial</span><span class="w-sub">The GRU's update: a note with two numbers (a green arrow), a fresh candidate (a blue arrow), and the new note on the straight line between them.</span></div>
+    <p class="try"><b>Try:</b> Turn the dial \(z\) from 0 to 1 and watch the new note slide from the old arrow to the candidate along a straight line. Lower the reset gate \(r\): the candidate stops looking at the old note. Press <em>▶ ten steps</em> with \(z=0.1\): the note drifts only slowly — a long memory.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage"><svg id="gr-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="A plane with three arrows from the origin: the old note in green, the candidate in blue and the new note in gold, whose tip lies on the dashed straight line joining the other two tips. A dial on the right shows z."></svg></div></div>
+      <div class="wcol" style="flex:2 1 260px">
+        <div class="controls">
+          <div class="ctl"><label for="gr-z">update \(z\)</label><input id="gr-z" type="range" min="0" max="1" step="0.05" value="0.25"><output id="gr-z-o">0.25</output></div>
+          <div class="ctl"><label for="gr-r">reset \(r\)</label><input id="gr-r" type="range" min="0" max="1" step="0.05" value="1"><output id="gr-r-o">1</output></div>
+        </div>
+        <div class="presets"><button class="play" id="gr-play">▶ ten steps</button><button class="preset" id="gr-reset">worked example</button></div>
+        <div id="gr-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>What do the gates cost?</strong> Each gate, and each candidate, is a small layer of its own: a matrix for the old note (\(h\times h\)), a matrix for the word (\(h\times d\)) and a shift (\(h\)). That is \(h(h+d)+h\) numbers — exactly a plain cell's worth. A plain cell has one such block, a GRU has three (\(\mathbf z\), \(\mathbf r\), the candidate), an LSTM four (\(\mathbf f\), \(\mathbf i\), \(\mathbf o\), \(\mathbf g\)).</p>
+    <p>For a note of \(h=128\) numbers and words of \(d=64\) numbers: one block is \(128\cdot192+128=24\,704\). So a plain cell has 24 704 numbers to learn, a GRU \(3\times24\,704=74\,112\), and an LSTM \(4\times24\,704=98\,816\).</p>
+  </div>
+
+  <div class="widget reveal" id="w-gates-compare">
+    <div class="widget-head"><span class="w-title">Three cells side by side</span><span class="w-sub">The same note size and word size. Each gold block is one small layer, \(h(h+d)+h\) numbers.</span></div>
+    <p class="try"><b>Try:</b> Leave \(h=128\), \(d=64\) and read 24 704, 74 112 and 98 816. Double \(h\): the counts almost quadruple, because \(h\cdot h\) dominates. Click a cell to see its equations.</p>
+    <div class="svgstage"><svg id="gc-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="Three cell diagrams side by side — plain, GRU, LSTM — each made of gold blocks, one per gate or candidate, with a bar under each showing its parameter count."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 280px"><div class="controls">
+        <div class="ctl"><label for="gc-h">note size \(h\)</label><input id="gc-h" type="range" min="8" max="512" step="8" value="128"><output id="gc-h-o">128</output></div>
+        <div class="ctl"><label for="gc-d">word size \(d\)</label><input id="gc-d" type="range" min="8" max="512" step="8" value="64"><output id="gc-d-o">64</output></div>
+      </div></div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="gc-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf h_t=(1-\mathbf z_t)\odot\mathbf h_{t-1}+\mathbf z_t\odot\tilde{\mathbf h}_t\]</p>
+    <p>A GRU is one blend dial: keep the old note, or pour in the new. With \(z\) near 0 the old note rides straight through — an express lane without a separate tank. It learns three blocks of weights where an LSTM learns four and a plain cell one, and in practice the two gated cells work about equally well.</p>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A GRU step with \(z=0.5\), old note \(h_{t-1}=0.2\) and candidate \(\tilde h_t=0.6\). What is \(h_t\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. (1 − 0.5) · 0.2 + 0.5 · 0.6 = 0.1 + 0.3 = 0.4 — exactly halfway between the old note and the candidate.">\(0.4\)</button>
+      <button data-why="That adds the two in full. A GRU blends: (1 − z) of the old plus z of the new: 0.1 + 0.3 = 0.4.">\(0.8\)</button>
+      <button data-why="The dial z multiplies the candidate, and 1 − z the old note: 0.5 · 0.2 + 0.5 · 0.6 = 0.4. With z = 0.5 both get half.">\(0.3\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c18">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">An LSTM has a note of \(h=10\) numbers and words of \(d=5\) numbers. How many numbers does it learn?</p>
+    <div class="opts">
+      <button data-why="160 is one block: 10 · 15 + 10. An LSTM has four blocks (f, i, o, g): 4 × 160 = 640.">160</button>
+      <button data-why="480 is three blocks — that would be a GRU. An LSTM has four: 640.">480</button>
+      <button data-correct data-why="Right. One block is h(h + d) + h = 10 · 15 + 10 = 160, and the LSTM has four of them (forget, input, output, candidate): 640.">640</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s9-->
+  <p class="onesent reveal"><b>In one sentence:</b> A GRU blends old and new with one dial, \(h_t=(1-z)h_{t-1}+z\tilde h_t\) — 0.75 · 0.8 + 0.25 · (−0.4) = 0.5 — and costs three blocks of \(h(h+d)+h\) numbers against the LSTM's four.</p>
+</section>

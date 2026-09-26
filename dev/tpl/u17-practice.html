@@ -1,0 +1,229 @@
+<!-- ================= 13 · PRACTICE ARENA ================= -->
+<section class="unit" id="spractice">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Practice arena — fourteen problems, solved in full</h2></div>
+  <div class="prose reveal">
+    <p>Fourteen problems, easy to hard: a forward pass by hand, one step with matrices, counting shared weights, blame through three steps, the step at which memory is gone, eigenvalues that decide, clipping, one LSTM step, the express lane, one GRU step, parameter counts, greedy against beam, the shapes of a translator, and a recorded run to diagnose. Every number was checked by machine.</p>
+    <p>Three habits do most of the work. <strong>Write the notes down</strong>: keep a table of every \(h_t\) (and \(c_t\)) on the way forward, because the way back needs them. <strong>Count steps, not words</strong>: from \(h_k\) to \(h_T\) there are \(T-k\) factors. And <strong>look for the power</strong>: whenever something is multiplied by the same number again and again, it is \(w^T\), and \(\ln\) turns "how many steps?" into a division.</p>
+  </div>
+
+  <!-- ===== Problem 1 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span><span class="chip">forward pass</span></div>
+    <p class="pq">A one-number recurrent cell has \(w=0.8\), \(u=1\), \(b=0\) and \(h_0=0\). It reads \(x=(1,\,-1,\,0.5)\). Find \(h_1\), \(h_2\) and \(h_3\) (four decimals).</p>
+    <p class="ptest"><b>What this tests.</b> \(h_t=\tanh(wh_{t-1}+ux_t+b)\), one step at a time. <b>Plan.</b> Keep old, add new, squeeze — three times.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — word 1.</b> \(h_1=\tanh(0.8\cdot0+1)=\tanh(1)\approx0.7616\).</div>
+      <div class="pstep"><b>Step 2 — word 2.</b> \(0.8\cdot0.7616=0.6093\); add \(-1\): \(-0.3907\). \(h_2=\tanh(-0.3907)\approx-0.3720\).</div>
+      <div class="pstep"><b>Step 3 — word 3.</b> \(0.8\cdot(-0.3720)=-0.2976\); add \(0.5\): \(0.2024\). \(h_3=\tanh(0.2024)\approx0.1997\).</div>
+      <p class="pans">answers at a glance: \(h_1\approx0.7616\), \(h_2\approx-0.3720\), \(h_3\approx0.1997\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The note is a running mix: the old note, scaled by \(w\), plus the new word, then squeezed. A negative word can flip the sign of the whole note.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 2 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span><span class="chip">a step with matrices</span></div>
+    <p class="pq">A cell has a note of 2 numbers and words of 1 number:
+    \[W=\begin{pmatrix}0.5&-0.5\\ 0&1\end{pmatrix},\ U=\begin{pmatrix}1\\ 2\end{pmatrix},\ \mathbf b=\begin{pmatrix}0\\ -1\end{pmatrix},\ \mathbf h_0=\begin{pmatrix}1\\ 0\end{pmatrix}.\]
+    <b>(a)</b> Find \(\mathbf h_1\) for the word \(x_1=0.5\). <b>(b)</b> Find \(\mathbf h_2\) for the word \(x_2=0\).</p>
+    <p class="ptest"><b>What this tests.</b> The vector cell \(\mathbf h_t=\tanh(W\mathbf h_{t-1}+Ux_t+\mathbf b)\), with tanh applied entry by entry. <b>Plan.</b> Three pieces, add, squeeze each entry.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a), the three pieces.</b> \(W\mathbf h_0=(0.5,0)\), \(Ux_1=(0.5,1)\), \(\mathbf b=(0,-1)\). Sum: \((1,0)\).</div>
+      <div class="pstep"><b>Step 2 — (a), squeeze.</b> \(\mathbf h_1=(\tanh1,\tanh0)\approx(0.7616,0)\).</div>
+      <div class="pstep"><b>Step 3 — (b).</b> \(W\mathbf h_1=(0.5\cdot0.7616-0,\ 0)=(0.3808,0)\); \(Ux_2=(0,0)\); add \(\mathbf b\): \((0.3808,-1)\).</div>
+      <div class="pstep"><b>Step 4 — (b), squeeze.</b> \(\mathbf h_2\approx(\tanh0.3808,\ \tanh(-1))\approx(0.3634,\ -0.7616)\).</div>
+      <p class="pans">answers at a glance: (a) \(\mathbf h_1\approx(0.7616,\ 0)\). (b) \(\mathbf h_2\approx(0.3634,\ -0.7616)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The shift \(\mathbf b\) acts at every step, even when the word is 0. Here it pushes the second entry to \(\tanh(-1)\) on its own.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span><span class="chip">shared weights</span></div>
+    <p class="pq">A next-word model has a note of \(h=4\) numbers, words of \(d=3\) numbers, and a read-out \(\operatorname{softmax}(V\mathbf h_t+\mathbf c)\) over a vocabulary of 5 words. <b>(a)</b> How many numbers does it learn? <b>(b)</b> How many for a 10-word sentence, and for a 100-word sentence? <b>(c)</b> How many would a 10-step chain need if every step had its own \(W,U,\mathbf b\) (the read-out still shared)?</p>
+    <p class="ptest"><b>What this tests.</b> Shapes and sharing. <b>Plan.</b> Count each matrix by rows × columns; remember that length does not enter.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the cell.</b> \(W\): \(4\times4=16\). \(U\): \(4\times3=12\). \(\mathbf b\): 4. Cell total 32.</div>
+      <div class="pstep"><b>Step 2 — the read-out.</b> \(V\): \(5\times4=20\). \(\mathbf c\): 5. Read-out total 25.</div>
+      <div class="pstep"><b>Step 3 — (a), (b).</b> \(32+25=57\), and the same 57 for 10 words or 100 words.</div>
+      <div class="pstep"><b>Step 4 — (c).</b> Ten separate cells: \(10\times32=320\), plus the read-out 25: 345.</div>
+      <p class="pans">answers at a glance: (a) 57. (b) 57 and 57. (c) 345.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The unrolled chain grows with the sentence; the list of weights does not. That is the whole point of sharing.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">medium</span><span class="chip">blame through time</span></div>
+    <p class="pq">A one-number cell has \(w=0.8\), \(u=1\), \(b=0\), \(h_0=0\) and reads \(x=(1,0,0)\). <b>(a)</b> Find \(h_1,h_2,h_3\). <b>(b)</b> Find \(\partial h_3/\partial h_2\), \(\partial h_2/\partial h_1\) and \(\partial h_3/\partial h_1\). <b>(c)</b> Find \(\partial h_3/\partial x_1\).</p>
+    <p class="ptest"><b>What this tests.</b> The BPTT product \(\prod w(1-h_t^2)\). <b>Plan.</b> Forward first and store every note; then one factor per step.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(h_1=\tanh1\approx0.7616\). \(h_2=\tanh(0.6093)\approx0.5436\). \(h_3=\tanh(0.4349)\approx0.4094\).</div>
+      <div class="pstep"><b>Step 2 — (b), one factor per step.</b>
+      \[\begin{aligned}\frac{\partial h_3}{\partial h_2}&=0.8\,(1-0.4094^2)\approx0.6659\\ \frac{\partial h_2}{\partial h_1}&=0.8\,(1-0.5436^2)\approx0.5636\end{aligned}\]</div>
+      <div class="pstep"><b>Step 3 — (b), multiply.</b> \(\partial h_3/\partial h_1\approx0.6659\times0.5636\approx0.3753\).</div>
+      <div class="pstep"><b>Step 4 — (c).</b> \(h_1=\tanh(ux_1)\), so \(\partial h_1/\partial x_1=u\,(1-h_1^2)\approx0.4200\). Then \(\partial h_3/\partial x_1\approx0.3753\times0.4200\approx0.1576\).</div>
+      <p class="pans">answers at a glance: (a) 0.7616, 0.5436, 0.4094. (b) 0.6659, 0.5636, 0.3753. (c) \(\approx0.1576\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>With \(w=0.8\) instead of 0.5, each factor is bigger, and the first word still reaches \(h_3\) at more than a third of its size. The factors decide everything.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 5 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">medium</span><span class="chip">fade or explode</span></div>
+    <p class="pq">In the loop \(h_t=w\,h_{t-1}\), the blame after \(T\) steps is \(w^T\). <b>(a)</b> Write a formula for the first \(T\) at which \(w^T\) drops below \(\varepsilon\) (for \(0&lt;w&lt;1\)). <b>(b)</b> Apply it for \(w=0.8\), \(\varepsilon=10^{-3}\). <b>(c)</b> For \(w=1.2\), find the first \(T\) at which \(w^T\) exceeds 1000.</p>
+    <p class="ptest"><b>What this tests.</b> Turning "how many steps?" into a division with logarithms. <b>Plan.</b> Take \(\ln\) of both sides; mind that \(\ln w&lt;0\) flips the inequality.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(w^T&lt;\varepsilon\iff T\ln w&lt;\ln\varepsilon\iff T&gt;\dfrac{\ln\varepsilon}{\ln w}\) (dividing by the negative \(\ln w\) flips the sign). So \(T=\big\lfloor\ln\varepsilon/\ln w\big\rfloor+1\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(\ln10^{-3}/\ln0.8\approx-6.9078/-0.2231\approx30.96\), so \(T=31\). Check: \(0.8^{30}\approx0.00124\), \(0.8^{31}\approx0.00099\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(1.2^T&gt;1000\iff T&gt;\ln1000/\ln1.2\approx6.9078/0.1823\approx37.89\), so \(T=38\). Check: \(1.2^{37}\approx850.6\), \(1.2^{38}\approx1020.7\).</div>
+      <p class="pans">answers at a glance: (a) \(T=\lfloor\ln\varepsilon/\ln w\rfloor+1\). (b) 31. (c) 38.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Even gentle numbers are ruthless over a few dozen steps: 0.8 loses a factor of 1000 in 31 steps, and 1.2 gains one in 38.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 6 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span><span class="chip">eigenvalues decide</span></div>
+    <p class="pq">Two recurrent matrices: \(A=\begin{pmatrix}0.6&0.2\\ 0.2&0.6\end{pmatrix}\) and \(B=\begin{pmatrix}1.1&0.3\\ 0.3&1.1\end{pmatrix}\). <b>(a)</b> Find the eigenvalues and eigenvectors of each and say whether memory fades or explodes. <b>(b)</b> Find \(A^{10}\mathbf v\) and \(B^{10}\mathbf v\) for \(\mathbf v=(1,0)\).</p>
+    <p class="ptest"><b>What this tests.</b> Splitting \(\mathbf v\) along eigen-directions (<a href="unit-04.html">Unit 4</a>) and powering each part. <b>Plan.</b> Both matrices have the form \(\begin{pmatrix}p&q\\ q&p\end{pmatrix}\): eigenvectors \((1,1)\), \((1,-1)\), eigenvalues \(p\pm q\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(A(1,1)=(0.8,0.8)\), \(A(1,-1)=(0.4,-0.4)\): eigenvalues 0.8 and 0.4, both below 1 — fades. \(B(1,1)=(1.4,1.4)\), \(B(1,-1)=(0.8,-0.8)\): eigenvalues 1.4 and 0.8; \(|\lambda|_{\max}=1.4&gt;1\) — explodes.</div>
+      <div class="pstep"><b>Step 2 — split v.</b> \((1,0)=\tfrac12(1,1)+\tfrac12(1,-1)\).</div>
+      <div class="pstep"><b>Step 3 — (b), A.</b> \(A^{10}\mathbf v=\tfrac12\,0.8^{10}(1,1)+\tfrac12\,0.4^{10}(1,-1)\). With \(\tfrac12\,0.8^{10}\approx0.053687\) and \(\tfrac12\,0.4^{10}\approx0.0000524\): \(\approx(0.05374,\ 0.05363)\).</div>
+      <div class="pstep"><b>Step 4 — (b), B.</b> \(B^{10}\mathbf v=\tfrac12\,1.4^{10}(1,1)+\tfrac12\,0.8^{10}(1,-1)\approx14.4627(1,1)+0.0537(1,-1)\approx(14.516,\ 14.409)\).</div>
+      <p class="pans">answers at a glance: (a) \(A\): 0.8 on \((1,1)\), 0.4 on \((1,-1)\) — fades; \(B\): 1.4 on \((1,1)\), 0.8 on \((1,-1)\) — explodes. (b) \(A^{10}\mathbf v\approx(0.0537,\ 0.0536)\), \(B^{10}\mathbf v\approx(14.52,\ 14.41)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>After many steps the note points along the eigenvector with the biggest \(|\lambda|\), and its size goes like \(|\lambda|_{\max}^t\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff easy">easy</span><span class="chip">clipping</span></div>
+    <p class="pq">The limit is \(c=4\) and the step size \(\eta=0.1\). <b>(a)</b> Clip \(\mathbf g=(6,-8,0)\) and give the weight change \(-\eta\mathbf g'\). <b>(b)</b> Clip \(\mathbf g=(1,2,2)\).</p>
+    <p class="ptest"><b>What this tests.</b> \(\mathbf g'=\min(1,c/\|\mathbf g\|)\,\mathbf g\). <b>Plan.</b> Length first; scale only if it is too long.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a), length.</b> \(\|\mathbf g\|=\sqrt{36+64+0}=10&gt;4\).</div>
+      <div class="pstep"><b>Step 2 — (a), scale.</b> Multiply by \(4/10=0.4\): \(\mathbf g'=(2.4,-3.2,0)\), of length 4.</div>
+      <div class="pstep"><b>Step 3 — (a), step.</b> \(-0.1\,\mathbf g'=(-0.24,\ 0.32,\ 0)\).</div>
+      <div class="pstep"><b>Step 4 — (b).</b> \(\|\mathbf g\|=\sqrt{1+4+4}=3\le4\), so nothing changes: \(\mathbf g'=(1,2,2)\).</div>
+      <p class="pans">answers at a glance: (a) \(\mathbf g'=(2.4,-3.2,0)\), change \((-0.24,0.32,0)\). (b) \((1,2,2)\), unchanged.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Clipping scales the whole vector by one number. The direction — the ratio 6 : −8 — is kept.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span><span class="chip">one LSTM step</span></div>
+    <p class="pq">A one-number LSTM has \(c_{t-1}=2\). Before their squeezes, the gates and the candidate come out as: forget 2, input 0, output 1, candidate 1. Find \(f,i,o,g\), then \(c_t\) and \(h_t\).</p>
+    <p class="ptest"><b>What this tests.</b> Gates are sigmoids, the candidate is a tanh; \(c_t=fc_{t-1}+ig\), \(h_t=o\tanh c_t\). <b>Plan.</b> Four squeezes, then the two formulas.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — the gates.</b> \(f=\sigma(2)\approx0.8808\), \(i=\sigma(0)=0.5\), \(o=\sigma(1)\approx0.7311\).</div>
+      <div class="pstep"><b>Step 2 — the candidate.</b> \(g=\tanh(1)\approx0.7616\).</div>
+      <div class="pstep"><b>Step 3 — the cell state.</b> \(c_t=0.8808\cdot2+0.5\cdot0.7616\approx1.7616+0.3808=2.1424\).</div>
+      <div class="pstep"><b>Step 4 — the note.</b> \(\tanh(2.1424)\approx0.9728\), so \(h_t\approx0.7311\cdot0.9728\approx0.7112\).</div>
+      <p class="pans">answers at a glance: \(f\approx0.8808\), \(i=0.5\), \(o\approx0.7311\), \(g\approx0.7616\); \(c_t\approx2.1424\), \(h_t\approx0.7112\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The cell state may grow past 1 — it is never squeezed on the lane. Only the note \(h_t\) is squeezed, when it is read out through the window.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff easy">easy</span><span class="chip">the express lane</span></div>
+    <p class="pq">Along an LSTM's express lane the forget gate stays at \(f\). <b>(a)</b> With \(f=0.95\), how much blame reaches a word 20 steps back? 100 steps back? <b>(b)</b> What is the smallest \(f\) that still delivers at least half the blame from 100 steps back?</p>
+    <p class="ptest"><b>What this tests.</b> \(\partial c_T/\partial c_k=f^{T-k}\), used forwards and backwards. <b>Plan.</b> Powers for (a); a root for (b).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(0.95^{20}\approx0.3585\) and \(0.95^{100}\approx0.00592\).</div>
+      <div class="pstep"><b>Step 2 — (b), set up.</b> We need \(f^{100}\ge0.5\), so \(f\ge0.5^{1/100}\).</div>
+      <div class="pstep"><b>Step 3 — (b), compute.</b> \(0.5^{1/100}=e^{\ln0.5/100}=e^{-0.006931}\approx0.99309\).</div>
+      <p class="pans">answers at a glance: (a) \(\approx0.3585\) and \(\approx0.00592\). (b) \(f\ge0.99309\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>To remember across 100 words, the forget gate must sit within about 0.007 of 1. The network learns to do that exactly where it matters.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff easy">easy</span><span class="chip">one GRU step</span></div>
+    <p class="pq">A GRU with a note of 2 numbers has \(\mathbf h_{t-1}=(0.8,-0.2)\), candidate \(\tilde{\mathbf h}_t=(-0.4,0.6)\) and update gate \(\mathbf z_t=(0.25,0.5)\). <b>(a)</b> Find \(\mathbf h_t\). <b>(b)</b> A one-number GRU keeps \(z=0.1\) and gets candidate 0 at every step, starting from \(h_0=1\). After how many steps is the note first below 0.5?</p>
+    <p class="ptest"><b>What this tests.</b> The blend \((1-\mathbf z)\odot\mathbf h_{t-1}+\mathbf z\odot\tilde{\mathbf h}_t\), entry by entry, and its power. <b>Plan.</b> Each entry has its own dial.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a), entry 1.</b> \(0.75\cdot0.8+0.25\cdot(-0.4)=0.6-0.1=0.5\).</div>
+      <div class="pstep"><b>Step 2 — (a), entry 2.</b> \(0.5\cdot(-0.2)+0.5\cdot0.6=-0.1+0.3=0.2\).</div>
+      <div class="pstep"><b>Step 3 — (b).</b> With candidate 0, \(h_t=0.9\,h_{t-1}\), so \(h_t=0.9^t\). \(0.9^6\approx0.531\), \(0.9^7\approx0.478\): 7 steps.</div>
+      <p class="pans">answers at a glance: (a) \(\mathbf h_t=(0.5,\ 0.2)\). (b) 7 steps.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Each entry of the note has its own dial. One entry can hold a memory (small \(z\)) while another is rewritten (big \(z\)).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">medium</span><span class="chip">parameter counts</span></div>
+    <p class="pq">Note size \(h=256\), word size \(d=100\). <b>(a)</b> Give the general count for a plain cell, a GRU and an LSTM. <b>(b)</b> Apply it. <b>(c)</b> How many numbers do you save by swapping the LSTM for a GRU?</p>
+    <p class="ptest"><b>What this tests.</b> One block is \(h(h+d)+h\); plain 1 block, GRU 3, LSTM 4. <b>Plan.</b> Compute one block, then multiply.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(P=h(h+d)+h\); plain \(P\), GRU \(3P\), LSTM \(4P\).</div>
+      <div class="pstep"><b>Step 2 — one block.</b> \(256\cdot356+256=91\,136+256=91\,392\).</div>
+      <div class="pstep"><b>Step 3 — (b).</b> Plain 91 392; GRU 274 176; LSTM 365 568.</div>
+      <div class="pstep"><b>Step 4 — (c).</b> \(365\,568-274\,176=91\,392\) — exactly one block.</div>
+      <p class="pans">answers at a glance: (a) \(P\), \(3P\), \(4P\) with \(P=h(h+d)+h\). (b) 91 392 · 274 176 · 365 568. (c) 91 392.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Gates are not free: each is a whole plain cell's worth of weights. The LSTM is always exactly 4 times a plain cell.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff medium">medium</span><span class="chip">greedy vs beam</span></div>
+    <p class="pq">A decoder's choices. First word: "the" 0.6, "my" 0.4. After "the": "tea" 0.3, "chai" 0.3, "cup" 0.4. After "my": "chai" 0.8, "tea" 0.2. <b>(a)</b> What does greedy decoding output, with what probability? <b>(b)</b> What does beam search with width 2 output? <b>(c)</b> Give both log-scores.</p>
+    <p class="ptest"><b>What this tests.</b> Sentence probability as a product; keeping the \(k\) best. <b>Plan.</b> List every two-word candidate the beam sees.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> Greedy takes "the" (0.6), then its best, "cup" (0.4): \(0.6\times0.4=0.24\).</div>
+      <div class="pstep"><b>Step 2 — (b), grow both beams.</b> the tea 0.18, the chai 0.18, the cup 0.24, my chai \(0.4\times0.8=0.32\), my tea 0.08.</div>
+      <div class="pstep"><b>Step 3 — (b), keep the best 2.</b> "my chai" 0.32 and "the cup" 0.24. The winner is "my chai".</div>
+      <div class="pstep"><b>Step 4 — (c).</b> \(\ln0.24\approx-1.427\); \(\ln0.32\approx-1.139\).</div>
+      <p class="pans">answers at a glance: (a) "the cup", 0.24. (b) "my chai", 0.32. (c) −1.427 and −1.139.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A first word that looks a little worse can lead to a much surer second word. Greedy never finds out; a beam of width 2 does.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 13 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 13</span><span class="pdiff medium">medium</span><span class="chip">shapes of a translator</span></div>
+    <p class="pq">An English → Hindi encoder–decoder uses plain cells. Word vectors have 256 numbers in both languages; both notes have 512 numbers; the Hindi vocabulary has 10 000 words. <b>(a)</b> Give the shapes of the encoder's \(W\) and \(U\), the size of the summary, and the shape of the read-out \(V\). <b>(b)</b> Count every number learned (cells, shifts, read-out \(V\) and \(\mathbf c\); not the word vectors). <b>(c)</b> A 20-word English sentence goes in: how many numbers enter the encoder, and how many leave it as the summary?</p>
+    <p class="ptest"><b>What this tests.</b> The shape rule, and the bottleneck in numbers. <b>Plan.</b> Rows for where numbers go, columns for where they come from.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> Encoder \(W\): \(512\times512\); \(U\): \(512\times256\). Summary: the final note, 512 numbers. Read-out \(V\): \(10\,000\times512\) (one row per Hindi word).</div>
+      <div class="pstep"><b>Step 2 — (b), one cell.</b> \(512\cdot768+512=393\,216+512=393\,728\). Encoder and decoder: \(2\times393\,728=787\,456\).</div>
+      <div class="pstep"><b>Step 3 — (b), read-out.</b> \(10\,000\cdot512+10\,000=5\,130\,000\). Total: \(5\,917\,456\).</div>
+      <div class="pstep"><b>Step 4 — (c).</b> \(20\times256=5120\) numbers in; 512 out — a ten-to-one squeeze.</div>
+      <p class="pans">answers at a glance: (a) \(512\times512\), \(512\times256\), 512, \(10\,000\times512\). (b) 5 917 456. (c) 5120 in, 512 out.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Most of the weights sit in the read-out over the vocabulary. And however long the sentence, the summary stays 512 numbers.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 14 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 14</span><span class="pdiff hard">hard</span><span class="chip">diagnose the run</span></div>
+    <p class="pq">Three recurrent models were trained on the same task. For each, the size of the blame reaching the note \(k\) steps back from the end was recorded:
+    <table class="plain"><thead><tr><th>run</th><th>k = 0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>
+      <tr><td>A</td><td>1</td><td>0.42</td><td>0.176</td><td>0.0741</td><td>0.0311</td><td>0.0131</td></tr>
+      <tr><td>B</td><td>1</td><td>2.1</td><td>4.41</td><td>9.26</td><td>19.4</td><td>40.8</td></tr>
+      <tr><td>C</td><td>1</td><td>0.97</td><td>0.941</td><td>0.913</td><td>0.885</td><td>0.859</td></tr></tbody></table>
+    <b>(a)</b> Find each run's factor per step. <b>(b)</b> Predict the blame 20 steps back for each. <b>(c)</b> One run is an LSTM, one a plain cell with small weights, one a plain cell with big weights. Which is which, and which fix does each plain cell need? <b>(d)</b> If run B's 40.8 were the whole gradient's length, by what factor would clipping at \(c=5\) scale it?</p>
+    <p class="ptest"><b>What this tests.</b> Reading a geometric sequence, and matching it to fade, explode or express lane. <b>Plan.</b> Divide neighbours; then raise the factor to the 20th power.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> Neighbour ratios are steady: A ≈ 0.42 (\(0.0131^{1/5}\approx0.42\)), B ≈ 2.1 (\(40.8^{1/5}\approx2.1\)), C ≈ 0.97 (\(0.859^{1/5}\approx0.97\)).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> A: \(0.42^{20}\approx2.9\times10^{-8}\). B: \(2.1^{20}\approx2.8\times10^{6}\). C: \(0.97^{20}\approx0.544\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> C holds the blame steady at 0.97 per step: the LSTM's express lane with \(f\approx0.97\). A fades (\(|\lambda|&lt;1\)): the plain cell with small weights — it needs gates (an LSTM or GRU). B explodes (\(|\lambda|&gt;1\)): the plain cell with big weights — it needs clipping first aid (and gates would help it too).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(40.8&gt;5\), so scale by \(5/40.8\approx0.1225\).</div>
+      <p class="pans">answers at a glance: (a) 0.42, 2.1, 0.97. (b) \(\approx2.9\times10^{-8}\), \(\approx2.8\times10^{6}\), \(\approx0.544\). (c) A = plain, small weights → gates; B = plain, big weights → clipping; C = LSTM. (d) \(\approx0.1225\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Blame through time is a geometric sequence. One ratio tells you everything: below 1 it fades, above 1 it explodes, near 1 you have an express lane.</p></div>
+    </details>
+  </div>
+
+  <div class="next-card reveal">
+    <div class="kicker" style="color:var(--ink-muted)">Next up</div>
+    <p style="margin:.35rem 0 .6rem"><strong><a href="unit-18.html">Unit 18 · Attention and Transformers →</a></strong></p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">The decoder of this unit sees the English sentence only through one small summary, and every word waits for the word before it. Attention throws both limits away: every word asks every other word a question, weighs the answers with softmax, and blends them — all at once. Queries, keys and values, why we divide by √d, many heads, positions as rotations, and a residual express lane that you will now recognise.</p>
+    <p style="margin:0;font-size:.85rem"><a href="unit-16.html">← Unit 16 · Words as Vectors</a> · <a href="index.html">All units</a></p>
+  </div>
+</section>

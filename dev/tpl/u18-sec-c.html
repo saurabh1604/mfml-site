@@ -1,0 +1,233 @@
+<!-- ================= 7 · POSITIONS ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Where is each word? Positions</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Tip a bag of word cards onto a table: "dog", "bites", "man". Could it say "dog bites man"? Or "man bites dog"? The bag cannot tell you. The cards are the same; only the <strong>order</strong> differs — and order is the whole news story.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>Look back at the attention formula. It compares words by dot products and blends their values. Nowhere does it ask "which word came first?" So attention on its own is <strong>order-blind</strong>. Shuffle the words, and every word gets exactly the same answer as before — the answers just come out in the shuffled order.</p>
+    <p><strong>A tiny check.</strong> Take toy vectors dog \(=(2,0)\), man \(=(0,2)\), bites \(=(1,1)\), and let each word's query, key and value be its own vector. In "dog bites man" the word <em>dog</em> ends up as \((1.723,\ 0.277)\). In "man bites dog" it ends up as … \((1.723,\ 0.277)\). The same. Attention cannot tell who bit whom.</p>
+    <p>The fix: <strong>add a position tag</strong> to each word's vector before attention. Give the first word \((1,0)\), the middle word \((0,0)\) and the last word \((0,1)\). Now <em>dog</em> becomes \((2.967,\ 0.019)\) when it comes first and \((1.576,\ 1.284)\) when it comes last. Order finally matters.</p>
+  </div>
+
+  <div class="widget reveal" id="w-shuffle">
+    <div class="widget-head"><span class="w-title">Shuffle the words</span><span class="w-sub">Three words, their attention answers drawn as arrows. Shuffle the order and see whether any answer changes.</span></div>
+    <p class="try"><b>Try:</b> Press <em>shuffle</em> a few times with <em>position tags</em> off: the words move, but each keeps exactly its arrow. Turn <em>position tags</em> on and shuffle again: now each word's arrow changes with its place.</p>
+    <div class="svgstage"><svg id="sh-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="Three word cards in a row with their attention answers drawn as arrows on a small grid under each card. Shuffling the cards moves them; with position tags off every card keeps its arrow, with tags on the arrows change."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 240px"><div class="presets"><button class="play" id="sh-shuffle">⇄ shuffle</button><button class="preset" id="sh-pos" aria-pressed="false">position tags</button><button class="preset" id="sh-reset">dog bites man</button></div></div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="sh-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Tags that work for any length: clocks.</strong> The first transformer gave each position a tag made of <strong>clock hands turning at different speeds</strong>. Picture a row of clocks. The first clock's hand turns 1 radian (about 57°) per word. The next turns 10 times slower, the next 10 times slower again. For position \(p\), each clock contributes the two numbers \(\sin(\omega p)\) and \(\cos(\omega p)\) — where its hand points. With \(d=8\) there are four clocks, with speeds \(\omega=1,\ 0.1,\ 0.01,\ 0.001\):</p>
+    <p>\[\begin{aligned}\text{pos }1:\ &(\sin1,\cos1,\ \sin0.1,\cos0.1,\ \dots)\\ &\approx(0.841,\ 0.540,\ 0.0998,\ 0.995,\\ &\qquad 0.0100,\ 1.000,\ 0.0010,\ 1.000)\end{aligned}\]</p>
+    <p>The fast clock tells near positions apart. The slow clocks tell far positions apart — like the hour hand and the minute hand together tell the time better than either alone.</p>
+  </div>
+  <div class="widget reveal" id="w-clocks">
+    <div class="widget-head"><span class="w-title">Position as a row of clocks</span><span class="w-sub">Top: four clocks for \(d=8\), each turning at its own speed. Bottom: the tags of positions 0 to 63 as a colour strip — each row is one position, each column one number of the tag.</span></div>
+    <p class="try"><b>Try:</b> Drag the position from 0 to 50. The fast clock spins round and round; the slowest barely moves. Find a pair of far positions whose fast clocks agree — the slow clocks still tell them apart.</p>
+    <div class="svgstage"><svg id="ck-svg" viewBox="0 0 760 360" class="svg-lab" role="img" aria-label="Four clock faces in a row with hands at the current position's angles, labelled with their speeds 1, 0.1, 0.01 and 0.001. Below, a strip of colour: 64 rows for positions 0 to 63 and 8 columns for the sine and cosine of each clock, with the current row marked."></svg></div>
+    <div class="controls" style="max-width:34rem"><div class="ctl"><label for="ck-pos">position</label><input id="ck-pos" type="range" min="0" max="63" step="1" value="1"><output id="ck-pos-o">1</output></div></div>
+    <div id="ck-read" class="readout" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Rotary positions (RoPE).</strong> Many modern models use the clock idea more directly. Instead of <em>adding</em> a tag, they <strong>turn</strong> the query and the key. Split each into pairs of numbers — little arrows. A word at position \(m\) turns its query arrow by \(m\theta\). A word at position \(n\) turns its key arrow by \(n\theta\). Turning is a rotation matrix, the "turn" of <a href="unit-04.html#s9">Unit 4</a>.</p>
+    <p>The magic: the dot product of two arrows depends only on the <strong>angle between them</strong>. Turning both by the same extra amount changes nothing. So the score depends only on the <strong>gap</strong> \(m-n\), not on where the pair sits in the sentence.</p>
+    <p><strong>Tiny numbers.</strong> Take \(\theta=30^\circ\) and \(\mathbf q=\mathbf k=(1,0)\). Put the query at position 3 and the key at position 1: the arrows point at \(90^\circ\) and \(30^\circ\), the angle between them is \(60^\circ\), and the score is \(\cos60^\circ=0.5\). Move them to positions 5 and 3: arrows at \(150^\circ\) and \(90^\circ\), still \(60^\circ\) apart, score 0.5. Positions 2 and 0: again 0.5.</p>
+  </div>
+  <div class="widget reveal" id="w-rope">
+    <div class="widget-head"><span class="w-title">Rotary positions: turn the arrows</span><span class="w-sub">A glass clock face. The orange query arrow is turned by \(m\theta\), the blue key arrow by \(n\theta\). The gold arc is the angle between them — the only thing the score sees.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ move both forward</em>: both arrows turn together and the score does not change at all. Then drag only \(m\): the gap changes and so does the score. Turn on <em>three clocks</em> to see a stack of dials turning at different speeds, as in a real model.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="rp-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A glass clock face lies flat with twelve tick marks. An orange query arrow and a blue key arrow start at the centre, each turned to its own angle. A gold arc joins their tips and shows the angle between them. With three clocks on, three dials stand stacked like a tower, turning at different speeds."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls">
+          <div class="ctl"><label for="rp-m">query at \(m\)</label><input id="rp-m" type="range" min="0" max="11" step="1" value="3"><output id="rp-m-o">3</output></div>
+          <div class="ctl"><label for="rp-n">key at \(n\)</label><input id="rp-n" type="range" min="0" max="11" step="1" value="1"><output id="rp-n-o">1</output></div>
+          <div class="ctl"><label for="rp-th">\(\theta\)</label><input id="rp-th" type="range" min="5" max="90" step="5" value="30"><output id="rp-th-o">30°</output></div>
+        </div>
+        <div class="presets"><button class="play" id="rp-both">▶ move both forward</button><button class="preset" id="rp-many" aria-pressed="false">three clocks</button></div>
+        <div id="rp-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\big(R_{m\theta}\mathbf q\big)\cdot\big(R_{n\theta}\mathbf k\big)=\mathbf q\cdot R_{(n-m)\theta}\,\mathbf k\]</p>
+    <p>Attention alone treats a sentence as a bag of words. Positions put the order back in. Either add a tag of clock hands turning at different speeds, or turn each query and key by an angle that grows with its position. With turning, the score depends only on how far apart the two words are — "two words back" means the same thing everywhere in the sentence.</p>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With RoPE, \(\theta=30^\circ\) and \(\mathbf q=\mathbf k=(1,0)\): what is the score for query position 7 and key position 1?</p>
+    <div class="opts">
+      <button data-why="The gap is 7 − 1 = 6 positions, so the angle is 6 × 30° = 180°, not 60°. The score is cos 180° = −1.">0.5</button>
+      <button data-correct data-why="Right. The gap is 6, the angle between the arrows is 6 × 30° = 180°, and the score is cos 180° = −1: the arrows point in opposite directions.">−1</button>
+      <button data-why="The score depends on the gap, 6, not on the positions themselves. 6 × 30° = 180°, and cos 180° = −1.">cos 210° ≈ −0.866</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">No position information at all. You swap the first and last words of a sentence. What happens to the attention answer of the middle word?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The middle word still sees the same set of keys and values — only their order changed — and a weighted sum does not care about order. Its answer is exactly the same.">It stays exactly the same</button>
+      <button data-why="Swapping changes the order of the words it looks at, but its answer is a sum over all of them, and a sum does not depend on order. It stays the same.">It changes, because the words it looks at moved</button>
+      <button data-why="Nothing in attention without positions knows about places, so nothing can become zero because of a swap. The answer is unchanged.">It becomes zero</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> Attention is order-blind, so we either add a position tag made of clock hands turning at different speeds, or turn each query and key by an angle that grows with position, which makes every score depend only on the gap between the two words.</p>
+</section>
+
+<!-- ================= ACT III · THE TRANSFORMER ================= -->
+<!-- ================= 8 · THE BLOCK ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The transformer block</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A dabbawala's tiffin travels across Mumbai through a few stations. At each station someone may add a note or a sweet. But the tiffin itself always rides on. Nothing that was inside is thrown away — each station only <strong>adds</strong>.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>A transformer is a stack of identical <strong>blocks</strong>. Each word's vector rides up through them, like the tiffin. One block has four stations:</p>
+    <ol class="roadmap">
+      <li><strong>Attention.</strong> The word collects a blend from the other words (§3–§7).</li>
+      <li><strong>Add, then steady.</strong> Add what attention gave to the word's <em>own</em> vector: \(\mathbf x+\operatorname{Attention}(\mathbf x)\). This shortcut is the <strong>residual path</strong>. Then <strong>layer norm</strong> rescales the result to a steady size.</li>
+      <li><strong>A small network.</strong> Each word, on its own, goes through a two-layer network of <a href="unit-15.html#s1">Unit 15</a>: matrix, ReLU, matrix. This is the <strong>feed-forward</strong> part. Here the word "thinks about" what it just collected.</li>
+      <li><strong>Add, then steady</strong> — again.</li>
+    </ol>
+    <p><strong>Why the shortcut?</strong> Because of the blame. On the way back (<a href="unit-15.html#s8">Unit 15</a>), the slope of \(\mathbf x+f(\mathbf x)\) is \(1+f'\), not just \(f'\). Even if \(f'\) is tiny, the "1" carries the blame straight down, block after block. It is the LSTM's express lane from <a href="unit-17.html">Unit 17</a>, built into every block.</p>
+    <p><strong>Layer norm, by hand.</strong> It makes each word's list have average 0 and spread 1 — the "standardise" of <a href="unit-10.html#s5">Unit 10</a>, done inside the network, one word at a time. Take \(\mathbf x=(1,2,3,6)\):</p>
+    <p>\[\begin{aligned}\text{mean}&=\tfrac{1+2+3+6}{4}=3\\ \text{variance}&=\tfrac{(-2)^2+(-1)^2+0^2+3^2}{4}=\tfrac{14}{4}=3.5\\ \text{result}&=\tfrac{\mathbf x-3}{\sqrt{3.5}}\\ &\approx(-1.069,\ -0.535,\ 0,\ 1.604)\end{aligned}\]</p>
+    <p>Then two learned lists, a scale \(\boldsymbol\gamma\) and a shift \(\boldsymbol\beta\), stretch and move each entry, so the network can undo the steadying where it wants to.</p>
+  </div>
+
+  <div class="widget reveal" id="w-layernorm">
+    <div class="widget-head"><span class="w-title">Layer norm: centre, then shrink to spread 1</span><span class="w-sub">Four numbers of one word as bars. The dashed line is their mean. Layer norm slides the bars so the mean is 0, then scales them so the spread is 1, then applies the scale γ and shift β.</span></div>
+    <p class="try"><b>Try:</b> Drag the four numbers. Make them all bigger by the same amount — the result does not change. Double them all — the result does not change either. Then move γ and β.</p>
+    <div class="svgstage"><svg id="ln-svg" viewBox="0 0 760 290" class="svg-lab" role="img" aria-label="Left: four bars for the input numbers with a dashed line at their mean. Middle: the same bars centred on zero. Right: the bars after scaling to spread one and applying gamma and beta."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 300px"><div class="controls">
+        <div class="ctl"><label for="ln-x1">\(x_1\)</label><input id="ln-x1" type="range" min="-6" max="10" step="0.5" value="1"><output id="ln-x1-o">1</output></div>
+        <div class="ctl"><label for="ln-x2">\(x_2\)</label><input id="ln-x2" type="range" min="-6" max="10" step="0.5" value="2"><output id="ln-x2-o">2</output></div>
+        <div class="ctl"><label for="ln-x3">\(x_3\)</label><input id="ln-x3" type="range" min="-6" max="10" step="0.5" value="3"><output id="ln-x3-o">3</output></div>
+        <div class="ctl"><label for="ln-x4">\(x_4\)</label><input id="ln-x4" type="range" min="-6" max="10" step="0.5" value="6"><output id="ln-x4-o">6</output></div>
+      </div></div>
+      <div class="wcol" style="flex:1 1 300px"><div class="controls">
+        <div class="ctl"><label for="ln-g">scale γ</label><input id="ln-g" type="range" min="0" max="3" step="0.1" value="1"><output id="ln-g-o">1</output></div>
+        <div class="ctl"><label for="ln-b">shift β</label><input id="ln-b" type="range" min="-2" max="2" step="0.1" value="0"><output id="ln-b-o">0</output></div>
+      </div><div id="ln-read" class="readout" style="margin-top:.4rem;line-height:1.7"></div></div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>One word through one block.</strong> Take a word with \(\mathbf x=(1,0,1,2)\) (toy numbers, \(d=4\)). Say attention hands back \((0,2,2,4)\). The shortcut adds them: \((1,2,3,6)\). Layer norm gives \((-1.069,-0.535,0,1.604)\) — the numbers above. The small network adds its own small change, and a second add-and-steady finishes the block. Follow it in 3-D.</p>
+  </div>
+  <div class="widget reveal" id="w-block">
+    <div class="widget-head"><span class="w-title">A tiffin's ride through one block</span><span class="w-sub">The word's four numbers ride upward as four glowing bars. Glass floors are the stations. The side lane is the residual path: a copy of the vector that jumps past each station and is added back on top.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ send the word up</em>. Watch the copy take the express lane and meet the station's output at each "add". Then use <em>next station</em> to go one floor at a time and read the numbers. Last, pick a model size to count the block's weights.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="bk-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D tower of glass floors: attention, add, layer norm, feed-forward, add, layer norm. A cluster of four glowing bars — the word's vector — rises from floor to floor and changes height at each station. A side lane carries a copy of the vector past the attention and feed-forward floors and merges it back at each add floor."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="presets"><button class="play" id="bk-play">▶ send the word up</button><button class="preset" id="bk-step">next station</button><button class="preset" id="bk-reset">reset</button></div>
+        <div id="bk-read" class="readout" style="margin-top:.6rem;line-height:1.7"></div>
+        <div class="tabs" id="bk-d" role="tablist" style="margin-top:.6rem"><button role="tab" aria-selected="false" data-t="256">d = 256</button><button role="tab" aria-selected="true" data-t="512">d = 512</button><button role="tab" aria-selected="false" data-t="768">d = 768</button><button role="tab" aria-selected="false" data-t="1024">d = 1024</button></div>
+        <table class="kv" id="bk-params"></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Counting the weights of one block.</strong> Take \(d=512\) and a feed-forward middle of \(d_{ff}=2048\) (four times wider, the usual choice).</p>
+    <p>\[\begin{aligned}\text{attention: }4d^2&=1\,048\,576\\ \text{feed-forward: }2\,d\,d_{ff}&=2\,097\,152\\ \text{weights only}&=3\,145\,728\end{aligned}\]</p>
+    <p>Biases add \(4d=2048\) for attention and \(d_{ff}+d=2560\) for the feed-forward part, giving <strong>3 150 336</strong>. The two layer norms add \(2\times2d=2048\) more (\(\boldsymbol\gamma\) and \(\boldsymbol\beta\) each), for <strong>3 152 384</strong> in all. Two thirds of a block lives in its small network, not in attention.</p>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf h=\operatorname{LN}\big(\mathbf x+\operatorname{Attention}(\mathbf x)\big)\\ \mathbf y=\operatorname{LN}\big(\mathbf h+\operatorname{FFN}(\mathbf h)\big)\end{gathered}\]</p>
+    <p>A block is: look around (attention), think alone (a small network), and after each, <strong>add</strong> the result to what you had and <strong>steady</strong> it with layer norm. The adds are an express lane for the blame; layer norm keeps the numbers at a calm size, block after block.</p>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">What is the layer norm (with \(\gamma=1,\beta=0\)) of \((2,4,4,6)\)?</p>
+    <div class="opts">
+      <button data-why="The mean is 4, so centring gives (−2, 0, 0, 2). But then divide by the spread: the variance is (4 + 0 + 0 + 4)/4 = 2, so divide by √2.">(−2, 0, 0, 2)</button>
+      <button data-correct data-why="Right. Mean 4; centred (−2, 0, 0, 2); variance (4 + 0 + 0 + 4)/4 = 2; divide by √2 ≈ 1.414: (−1.414, 0, 0, 1.414).">(−1.414, 0, 0, 1.414)</button>
+      <button data-why="Dividing by the largest entry is not layer norm. Layer norm subtracts the mean (4) and divides by the spread √2: (−1.414, 0, 0, 1.414).">(0.333, 0.667, 0.667, 1)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Inside a block the station \(f\) has slope \(f'=0.01\) for some entry. What slope does the blame see across \(\mathbf x+f(\mathbf x)\) for that entry?</p>
+    <div class="opts">
+      <button data-why="That would be the slope of f alone. The shortcut adds x, whose slope is 1, so the total is 1 + 0.01.">0.01</button>
+      <button data-correct data-why="Right. The slope of x + f(x) is 1 + f′ = 1.01. The blame passes through almost untouched, so stacking many blocks does not make it fade.">1.01</button>
+      <button data-why="Slopes of a sum add; they do not multiply. 1 + 0.01 = 1.01.">0.01 × 1 = 0.01</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s8-->
+  <p class="onesent reveal"><b>In one sentence:</b> A transformer block is attention and then a small per-word network, each wrapped as "add to yourself, then layer-norm", so the residual path carries the blame straight down and layer norm keeps every word's numbers at mean 0 and spread 1.</p>
+</section>
+
+<!-- ================= 9 · CAUSAL MASK ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>No peeking: the causal mask</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A quiz master reads a question one word at a time and stops to ask, "What comes next?" If you had the printed question in your hand, the game would be silly — you would just read the next word. So the rule is: you may look only at the words already read out.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p>A model that writes text, one word after another, plays the quiz. While it learns to predict word 3, it must not see word 3. So in the attention map every word may look only at itself and the words to its <strong>left</strong>.</p>
+    <p>The trick is tiny. Before softmax, set every score above the diagonal to \(-\infty\). Since \(e^{-\infty}=0\), those words get a share of exactly 0, and softmax spreads the whole share among the allowed words.</p>
+    <p><strong>With the numbers of §3.</strong> Row 1 may only see word 1, so its shares are \((1,0,0)\) and its answer is \(\mathbf v_1=(2,0)\). Row 2 sees words 1 and 2 with scores \(0\) and \(1.414\):</p>
+    <p>\[\Big(\frac{1}{1+e^{1.414}},\ \frac{e^{1.414}}{1+e^{1.414}}\Big)\approx(0.196,\ 0.804)\]</p>
+    <p>and its answer is \(0.196\,(2,0)+0.804\,(0,2)\approx(0.391,\ 1.609)\). Row 3 is the last word, so it may see everything, and it is unchanged: \((0.248,0.248,0.503)\), answer \((1,1)\).</p>
+    <p><strong>Three ways to wire attention.</strong> An <strong>encoder</strong> reads a whole input and may look both ways (no mask) — good for understanding. A <strong>decoder</strong> writes, so it uses the mask. An <strong>encoder–decoder</strong> (for translation) adds <strong>cross-attention</strong>: the decoder's words ask their queries of the encoder's words. That is the cure for the bottleneck of <a href="unit-17.html">Unit 17</a>: instead of one small summary note, every word being written can look back at <em>every</em> word of the input.</p>
+  </div>
+
+  <div class="widget reveal" id="w-mask">
+    <div class="widget-head"><span class="w-title">Mask the future</span><span class="w-sub">The scores, the shares and the answers of the §3 example. In <em>decoder</em> mode the top-right cells become −∞ and their shares 0. In <em>cross-attention</em> a Hindi sentence being written asks its questions of an English sentence.</span></div>
+    <p class="try"><b>Try:</b> Switch from <em>encoder</em> to <em>decoder</em> and watch row 2 re-share its weight between the two cells it may still see. Press <em>▶ fill row by row</em>. Then open <em>cross-attention</em> and see "chai" look back at "chai", and "peeta" (drink) at "drink".</p>
+    <div class="svgstage"><svg id="mk-svg" viewBox="0 0 760 330" class="svg-lab" role="img" aria-label="Three tables side by side: the scores, the attention shares and the answers. Masked cells are hatched and show minus infinity and zero."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 280px">
+        <div class="tabs" id="mk-mode" role="tablist"><button role="tab" aria-selected="true" data-t="enc">encoder (both ways)</button><button role="tab" aria-selected="false" data-t="dec">decoder (no peeking)</button><button role="tab" aria-selected="false" data-t="cross">cross-attention</button></div>
+        <div class="presets"><button class="play" id="mk-play">▶ fill row by row</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="mk-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\operatorname{softmax}\!\Big(\frac{QK^{\mathsf T}}{\sqrt d}+M\Big)V,\\ M_{ij}=\begin{cases}0&j\le i\\ -\infty&j>i\end{cases}\end{gathered}\]</p>
+    <p>Adding \(-\infty\) above the diagonal gives the future words a share of exactly zero, so each word's answer is built only from the words before it. Because of that, one pass over a sentence trains the model on <strong>every</strong> next-word guess at once — word 1 predicting word 2, words 1–2 predicting word 3, and so on.</p>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With the causal mask, row 1 of any attention map is always the same. What is it, for a 4-word sentence?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The first word may look only at itself, so it gets the whole share: (1, 0, 0, 0), and its answer is its own value.">(1, 0, 0, 0)</button>
+      <button data-why="Equal shares would mean looking at all four words, including the future ones. With the mask, word 1 sees only itself: (1, 0, 0, 0).">(0.25, 0.25, 0.25, 0.25)</button>
+      <button data-why="The row must add up to 1 — softmax over the one allowed cell gives that cell 1. So (1, 0, 0, 0), not all zeros.">(0, 0, 0, 0)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In a masked (decoder) attention you change the value of word 4 in a 5-word sentence. Which words' answers can change?</p>
+    <div class="opts">
+      <button data-why="Word 4 is visible to itself and to the words after it, not only to itself: word 5 may look left at word 4 too.">Only word 4's</button>
+      <button data-why="Words 1–3 may not look to the right, so they never see word 4: their shares on it are exactly 0.">All five</button>
+      <button data-correct data-why="Right. Only words at position 4 or later are allowed to look at word 4, so only the answers of words 4 and 5 can change. Words 1–3 give it a share of exactly 0.">Words 4 and 5 only</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s9-->
+  <p class="onesent reveal"><b>In one sentence:</b> Setting the scores above the diagonal to \(-\infty\) before softmax gives future words exactly zero share, so a decoder builds each word only from the words before it, while cross-attention lets a decoder look back at every word of the input.</p>
+</section>

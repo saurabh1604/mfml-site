@@ -1,0 +1,217 @@
+<!-- ================= 4 · MANY SHAPES ================= -->
+<section class="unit" id="s4">
+  <div class="sec-head reveal"><span class="sec-num">4</span><h2>Many shapes of the same idea</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>One pen can write very different things: a caption under a photo, a single word on a review ("great!"), a label on each item of a list, or a full letter in another language.</p>
+    <p>The recurrent cell is that pen. What changes is only <strong>where the inputs go in</strong> and <strong>where we read the answers out</strong>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>So far the cell only reads. To make it say something, we add a read-out layer. At any word \(t\) we can turn the note into scores and then into probabilities with softmax (<a href="unit-14.html#s10">Unit 14</a>):</p>
+    <p>\[\hat{\mathbf y}_t=\operatorname{softmax}\big(V\,\mathbf h_t+\mathbf c\big).\]</p>
+    <p>Where we put inputs and read-outs gives the four classic shapes:</p>
+    <ul>
+      <li><strong>Many → one.</strong> Read a whole review, then read out once at the end: happy or unhappy. (Sentiment.)</li>
+      <li><strong>One → many.</strong> Give it one input — a photo's vector — and let it write a caption word by word.</li>
+      <li><strong>Many → many, same length.</strong> Read out at every word: tag each word as a noun, a verb or other.</li>
+      <li><strong>Many → many, different length.</strong> Read a whole English sentence, then write a Hindi one. This needs two cells, and it is §10.</li>
+    </ul>
+    <p>And one favourite: the <strong>language model</strong>. At every word, guess the <em>next</em> word. This is the neural language model of <a href="unit-16.html#s8">Unit 16</a>, but now the note carries <em>all</em> earlier words, not just the last two.</p>
+    <p><strong>A tiny example.</strong> After reading "the train to", the read-out gives the scores Delhi 2, Mumbai 1, late 0.5, the −1. Softmax turns them into probabilities: \(e^2\approx7.389\), \(e^1\approx2.718\), \(e^{0.5}\approx1.649\), \(e^{-1}\approx0.368\), total \(\approx12.124\). So Delhi gets \(7.389/12.124\approx0.609\), Mumbai \(0.224\), late \(0.136\), the \(0.030\). If the true next word is "Delhi", this step's loss is \(-\ln0.609\approx0.495\) — the surprise of Unit 14. The loss for the whole sentence is the <strong>sum</strong> of these, one per word.</p>
+  </div>
+
+  <div class="widget reveal" id="w-shapes">
+    <div class="widget-head"><span class="w-title">One cell, five jobs</span><span class="w-sub">The same unrolled chain of cells. Blue arrows are inputs going in; cyan arrows are read-outs coming out. Only the wiring changes.</span></div>
+    <p class="try"><b>Try:</b> Click through the five shapes and count the blue and cyan arrows. In <em>next word</em>, press <em>▶ read</em>: after each word the bars show the cell's guess for the word that comes next.</p>
+    <div class="tabs" id="sh-tabs" role="tablist"><button role="tab" aria-selected="true" data-t="m1">many → one</button><button role="tab" aria-selected="false" data-t="1m">one → many</button><button role="tab" aria-selected="false" data-t="mm">tag each word</button><button role="tab" aria-selected="false" data-t="s2s">translate</button><button role="tab" aria-selected="false" data-t="lm">next word</button></div>
+    <div class="svgstage" style="margin-top:.6rem"><svg id="sh-svg" viewBox="0 0 760 340" class="svg-lab" role="img" aria-label="An unrolled chain of recurrent cells drawn as glass boxes joined by green note arrows. Depending on the chosen job, blue input arrows enter from below and cyan output arrows leave from above, at one, some or all of the cells."></svg></div>
+    <div class="presets" style="margin-top:.5rem"><button class="play" id="sh-play">▶ read</button></div>
+    <div id="sh-read" class="readout" style="margin-top:.5rem;line-height:1.7"></div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\hat{\mathbf y}_t=\operatorname{softmax}(V\mathbf h_t+\mathbf c)\\ L=\sum_t-\ln\hat y_t[\text{true word}]\end{gathered}\]</p>
+    <p>One cell, many jobs. Feed inputs at one step or at every step; read out at the end or at every step. When we read out at every step, each step adds its own surprise to the loss, and the total is what training makes small.</p>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You want to read a customer's 40-word complaint and decide one thing: is it about <em>delivery</em>, <em>price</em> or <em>quality</em>? Which shape, and how many read-outs?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. Many words go in, one answer comes out: many → one. We read out once, after the last word, as a softmax over the 3 topics.">Many → one: one read-out of 3 probabilities, after the last word</button>
+      <button data-why="Tagging reads out at every word, giving 40 answers. We want one answer for the whole complaint: many → one.">Tag each word: 40 read-outs</button>
+      <button data-why="One → many takes one input and writes many words. Here many words go in and only one label comes out.">One → many: 3 read-outs</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The read-out after "the train to" gives Delhi 0.609, Mumbai 0.224, late 0.136, the 0.030. The true next word is "Mumbai". What is this step's loss?</p>
+    <div class="opts">
+      <button data-why="0.495 is −ln 0.609, the loss if the true word were Delhi. For Mumbai it is −ln 0.224 ≈ 1.50.">\(\approx0.495\)</button>
+      <button data-correct data-why="Right. The loss is the surprise of the true word: −ln 0.224 ≈ 1.50. The model gave Mumbai a small probability, so it pays more.">\(\approx1.50\)</button>
+      <button data-why="The loss uses the probability of the true word only: −ln 0.224 ≈ 1.50. It does not use 1 − 0.609.">\(\approx0.94\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s4-->
+  <p class="onesent reveal"><b>In one sentence:</b> Put inputs in and read outputs out at one step or at every step, and the same cell can caption, judge, tag, translate or guess the next word — with the total loss the sum of each step's surprise.</p>
+</section>
+
+<!-- ================= ACT II · BLAME THROUGH TIME ================= -->
+<!-- ================= 5 · BACKPROP THROUGH TIME ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>Backprop through time: blame walks back along the words</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A relay team loses the race. The coach starts at the finish line and walks back along the track, asking each runner: "How much of the delay was yours?"</p>
+    <p>Every runner here is the same person — our one cell, used at every word. So when the coach adds up the blame for that one person, he adds it from <strong>every leg of the race</strong>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>An unrolled cell is a deep network (§3), so we train it exactly as in <a href="unit-15.html#s7">Unit 15</a>: a forward pass that stores every note, then a backward pass with the same two rules. We just walk back along <strong>time</strong> instead of along layers. People call this <strong>backpropagation through time</strong>, or BPTT.</p>
+    <ul>
+      <li><strong>Rule A, at every tanh.</strong> Multiply the incoming blame by the slope of tanh, which is \(1-h_t^2\) (you stored \(h_t\) on the way forward).</li>
+      <li><strong>Rule B, at every \(w\,h_{t-1}+u\,x_t+b\).</strong> Blame for the old note: multiply by \(w\). Blame for the weight: blame times the note that came in, \(h_{t-1}\).</li>
+      <li><strong>The new twist: add up.</strong> The same \(w\) is used at every step. So its gradient is the <strong>sum</strong> of what each step reports.</li>
+    </ul>
+    <p><strong>A tiny example.</strong> Take §2's cell (\(w=0.5\), inputs \(1,0,0\), notes \(0.7616,\ 0.3634,\ 0.1797\)). How much does a small nudge to \(h_1\) move \(h_3\)? Walk back one step at a time. Each step is "slope of tanh times \(w\)":</p>
+    <p>\[\begin{aligned}\frac{\partial h_3}{\partial h_2}&=w\,(1-h_3^2)=0.5\,(1-0.1797^2)\approx0.4838\\ \frac{\partial h_2}{\partial h_1}&=w\,(1-h_2^2)=0.5\,(1-0.3634^2)\approx0.4340\\ \frac{\partial h_3}{\partial h_1}&=0.4838\times0.4340\approx0.2100\end{aligned}\]</p>
+    <p>A nudge to the first note reaches the third note at only about a fifth of its size. The blame going back shrinks the same way. That is the first word's voice fading — now seen from the backward side.</p>
+  </div>
+
+  <div class="widget reveal" id="w-bptt">
+    <div class="widget-head"><span class="w-title">The step machine: forward through four words, back through four words</span><span class="w-sub">The same cell (\(w=0.5\), \(u=1\)) reads 1, 0, 0, 0. The loss asks the last note to still remember the first word: \(L=\tfrac12(h_4-1)^2\). Green is the note going right. Red is the blame coming back — each red disc is drawn to size.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ play</em>. Watch four green notes appear, then a red disc that starts big at word 4 and shrinks at every step back. At the last step, see the three reports for \(w\) being added up.</p>
+    <div class="st-scrub" id="bp-scrub" role="tablist" aria-label="the steps"></div>
+    <div class="st-grid">
+      <div class="st-left"><div class="svgstage"><svg id="bp-svg" viewBox="0 0 560 320" class="svg-lab" role="img" aria-label="Four glass cells in a row, one per word. Above each, its note in green. Below each, its blame in red, as a disc whose area shows the size of the blame. Arrows go right for the forward pass and left for the backward pass."></svg></div></div>
+      <div class="st-right"><div class="st-card" id="bp-card" aria-live="polite"></div></div>
+    </div>
+    <div class="presets st-nav"><button class="preset" id="bp-prev">◀ back</button><button class="play" id="bp-play">▶ play</button><button class="preset" id="bp-next">next ▶</button><button class="preset" id="bp-reset">start again</button><span class="st-count" id="bp-count">step 1 / 10</span></div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\frac{\partial L}{\partial w}=\sum_{t=1}^{T}\frac{\partial L}{\partial z_t}\,h_{t-1}\\ \frac{\partial h_T}{\partial h_k}=\prod_{t=k+1}^{T}w\,(1-h_t^2)\end{gathered}\]</p>
+    <p>Backprop through time is Unit 15's backward pass on the unrolled chain. The shared weight collects blame from every step, added up. And the blame reaching an early word is a <strong>product</strong> of one factor per step — so if each factor is below 1, it shrinks fast.</p>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Suppose every step's factor \(w(1-h_t^2)\) is exactly 0.5. How much of a nudge to \(h_1\) reaches \(h_5\)?</p>
+    <div class="opts">
+      <button data-why="From h₁ to h₅ there are four steps, not five: 0.5⁴ = 0.0625.">\(0.5^5\approx0.031\)</button>
+      <button data-correct data-why="Right. h₁ → h₂ → h₃ → h₄ → h₅ is four steps, each multiplying by 0.5: 0.5⁴ = 0.0625. Only one sixteenth arrives.">\(0.5^4=0.0625\)</button>
+      <button data-why="The factors multiply, they do not add: four steps of 0.5 give 0.5 × 0.5 × 0.5 × 0.5 = 0.0625.">\(4\times0.5=2\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the step machine, the copies of the cell at words 2, 3 and 4 report \(-0.144\), \(-0.159\) and \(-0.162\) for \(w\); word 1 reports 0. What is \(\partial L/\partial w\)?</p>
+    <div class="opts">
+      <button data-why="That is only the last copy's report. The weight is shared, so every copy's report counts: add them.">\(-0.162\)</button>
+      <button data-why="That is the average. Shared weights add up the reports: −0.144 − 0.159 − 0.162 + 0 ≈ −0.466.">\(\approx-0.155\)</button>
+      <button data-correct data-why="Right. One w is used at every step, so its gradient is the sum: −0.144 − 0.159 − 0.162 + 0 ≈ −0.466 (the page's exact value is −0.4655).">\(\approx-0.466\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s5-->
+  <p class="onesent reveal"><b>In one sentence:</b> Backprop through time runs Rule A and Rule B back along the unrolled chain, adds up the shared weight's gradient from every step, and multiplies one factor per step on the way back — here 0.4838 × 0.4340 ≈ 0.21.</p>
+</section>
+
+<!-- ================= 6 · FADE OR EXPLODE ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Why memory fades or explodes</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Hold a microphone near its own loudspeaker. If the speaker plays the sound a little <strong>softer</strong> than it came in, every loop makes it quieter, and it dies away. If it plays a little <strong>louder</strong>, every loop makes it bigger, and within a second there is a terrible screech.</p>
+    <p>Only when the loop gives back <strong>exactly</strong> what came in does the sound hold steady. Memory in a recurrent cell lives on the same knife edge.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Strip the cell down to its loop: no tanh, no new words, just \(h_t=w\,h_{t-1}\). After \(T\) steps,</p>
+    <p>\[h_T=w^T\,h_0,\qquad\frac{\partial h_T}{\partial h_0}=w^T.\]</p>
+    <p>The same power shows up forward (how much of the first word is left) and backward (how much blame reaches it). Put in numbers for \(T=10\):</p>
+    <ul>
+      <li>\(w=0.5\): \(0.5^{10}\approx0.000977\). Less than a thousandth is left. The memory has <strong>faded</strong>.</li>
+      <li>\(w=1.5\): \(1.5^{10}\approx57.67\). The blame is 58 times too big. It has <strong>exploded</strong>.</li>
+      <li>\(w=1\): \(1^{10}=1\). Held steady — the knife edge.</li>
+    </ul>
+    <p>Powers are ruthless. A number a little below 1 goes to 0; a little above 1 runs away. After 50 steps even \(w=0.9\) leaves \(0.005\), and \(w=1.1\) gives about 117.</p>
+  </div>
+
+  <div class="widget reveal" id="w-power">
+    <div class="widget-head"><span class="w-title">Powers of one number</span><span class="w-sub">Each bar is \(w^t\) — how much of the first word is left after \(t\) steps, and how much blame reaches it. The height axis is on a log scale: every grid line is 10 times the one below.</span></div>
+    <p class="try"><b>Try:</b> Set \(w=0.5\) and read the bar at \(t=10\): 0.000977. Set \(w=1.5\): 57.67. Now slide \(w\) slowly across 1 and watch the bars tip from falling to rising. Turn on <em>with tanh</em>: the squeeze only ever makes the bars shorter.</p>
+    <div class="svgstage"><svg id="pw-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="A bar chart on a log scale. For each step t from 1 to 50, a bar shows w to the power t. Green bars fall toward zero when w is below 1; red bars climb when w is above 1. Dashed lines mark one thousandth and one thousand."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 300px"><div class="controls">
+        <div class="ctl"><label for="pw-w">\(w\)</label><input id="pw-w" type="range" min="0.3" max="1.7" step="0.01" value="0.5"><output id="pw-w-o">0.5</output></div>
+        <div class="ctl"><label for="pw-T">\(T\)</label><input id="pw-T" type="range" min="1" max="50" step="1" value="10"><output id="pw-T-o">10</output></div>
+      </div>
+      <div class="presets"><button class="preset" data-w="0.5">fade 0.5</button><button class="preset" data-w="1">keep 1</button><button class="preset" data-w="1.5">explode 1.5</button><button class="preset" id="pw-tanh" aria-pressed="false">with tanh</button></div></div>
+      <div class="wcol" style="flex:1.2 1 300px"><div id="pw-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Now with a real note: a matrix.</strong> When the note is a list of numbers, the loop is \(\mathbf h_t=W\mathbf h_{t-1}\), so \(\mathbf h_T=W^T\mathbf h_0\). Powers of a <em>matrix</em>. How do we see where those go? With the eigenvectors of <a href="unit-04.html">Unit 4</a>: the special directions that \(W\) only stretches, never turns. Along an eigenvector with eigenvalue \(\lambda\), each step just multiplies by \(\lambda\) — back to the one-number story.</p>
+    <p>A tiny example: \(W=\begin{pmatrix}0.9&0.4\\ 0.1&0.6\end{pmatrix}\). Its eigenvalues are \(\lambda_1=1\) and \(\lambda_2=0.5\) (check: they add to the trace \(1.5\) and multiply to the determinant \(0.54-0.04=0.5\)). The directions are \((4,1)\) for \(\lambda_1=1\) and \((1,-1)\) for \(\lambda_2=0.5\).</p>
+    <p>Start the note at \(\mathbf v=(1,0)\). Split it along the two directions: \((1,0)=0.2\,(4,1)+0.2\,(1,-1)\). Now every step keeps the first part whole and halves the second:</p>
+    <p>\[W^t\mathbf v=0.2\,(4,1)+0.2\cdot0.5^t\,(1,-1)\ \longrightarrow\ (0.8,\,0.2).\]</p>
+    <p>After one step, \((0.9,0.1)\); after two, \((0.85,0.15)\); after ten, almost exactly \((0.8,0.2)\). The part along the \(\lambda=1\) direction <strong>survives</strong>. The part along the \(\lambda=0.5\) direction <strong>halves every step</strong> and is gone.</p>
+    <p>So the rule is: look at the <strong>biggest eigenvalue size</strong>, \(|\lambda|_{\max}\). Below 1, everything fades. Above 1, something explodes. Backward, the blame is multiplied by \(W^{\mathsf T}\) at each step — and \(W^{\mathsf T}\) has the same eigenvalues, so the same verdict holds for the blame. And the tanh slope \(1-h^2\) is never more than 1, so it can only add fading.</p>
+  </div>
+
+  <div class="widget reveal" id="w-eigen-memory">
+    <div class="widget-head"><span class="w-title">Eigen-memory: watch a note being multiplied by the same matrix, step after step</span><span class="w-sub">The floor is the note's plane. Time rises upward: bead \(t\) sits at height \(t\) above the point \(W^t\mathbf v\). The glass walls stand on the eigen-directions.</span></div>
+    <p class="try"><b>Try:</b> On <em>keep</em> (the worked matrix), watch the path slide onto the \(\lambda=1\) wall and climb straight up at \((0.8,0.2)\). Try <em>fade</em>: the path spirals down into the centre. <em>Explode</em>: it runs off the floor. <em>Rotate</em>: the eigenvalues are complex, and the path winds up a perfect spiral staircase. Then edit the four numbers yourself.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="em-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A glass floor with a grid is the plane of the note. A chain of glowing beads climbs upward, one bead per time step, each sitting above the note W to the power t times v. Two tall glass walls stand along the eigen-directions of W, coloured by their eigenvalues. For the keep preset the chain slides onto one wall and climbs straight up; for rotate it forms a spiral staircase."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:2 1 280px">
+        <div class="presets" id="em-pre"><button class="preset" data-p="fade" aria-pressed="false">fade</button><button class="preset" data-p="keep" aria-pressed="true">keep</button><button class="preset" data-p="explode" aria-pressed="false">explode</button><button class="preset" data-p="rotate" aria-pressed="false">rotate</button></div>
+        <div class="em-mat" aria-label="the matrix W">
+          <span class="em-br">W =</span>
+          <div class="em-grid">
+            <input id="em-a" type="number" step="0.05" value="0.9" aria-label="W row 1 column 1"><input id="em-b" type="number" step="0.05" value="0.4" aria-label="W row 1 column 2">
+            <input id="em-c" type="number" step="0.05" value="0.1" aria-label="W row 2 column 1"><input id="em-d" type="number" step="0.05" value="0.6" aria-label="W row 2 column 2">
+          </div>
+        </div>
+        <div class="presets"><button class="play" id="em-play">▶ multiply 30 times</button></div>
+        <div id="em-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div>
+      </div>
+    </div>
+    <div class="svgstage" style="margin-top:.7rem"><svg id="em-bars" viewBox="0 0 760 190" class="svg-lab" role="img" aria-label="A bar chart on a log scale of the length of W to the power t times v, for t from 1 to 30."></svg></div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf h_T=W^T\mathbf h_0\\ |\lambda|_{\max}<1\Rightarrow\text{fades}\\ |\lambda|_{\max}>1\Rightarrow\text{explodes}\end{gathered}\]</p>
+    <p>The gradient through time carries <strong>powers of one matrix</strong>. So its eigenvalues decide: along each eigen-direction, memory is multiplied by \(\lambda\) at every step. Below 1 it fades away, above 1 it blows up, and only exactly 1 holds on. This is the central fact of recurrent networks.</p>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A one-number loop has \(w=0.5\). After how many steps is the memory first below one thousandth (\(10^{-3}\))?</p>
+    <div class="opts">
+      <button data-why="0.5⁹ ≈ 0.00195 is still above 0.001. One more step is needed: 0.5¹⁰ ≈ 0.000977.">9 steps</button>
+      <button data-correct data-why="Right. 0.5⁹ ≈ 0.00195 is still above 0.001, but 0.5¹⁰ ≈ 0.000977 is below. So 10 steps.">10 steps</button>
+      <button data-why="Halving 1000 times is far more than needed. Every 10 halvings divide by about 1000 (2¹⁰ = 1024), so 10 steps already get below a thousandth.">1000 steps</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(W=\begin{pmatrix}0.5&0\\ 0&1.2\end{pmatrix}\) and the note starts at \((1,1)\). What happens over many steps?</p>
+    <div class="opts">
+      <button data-why="The first number does fade (0.5ᵗ), but the second grows as 1.2ᵗ. The biggest eigenvalue size is 1.2 &gt; 1, so the note explodes.">It fades to (0, 0)</button>
+      <button data-correct data-why="Right. The eigenvalues are 0.5 and 1.2. After t steps the note is (0.5ᵗ, 1.2ᵗ): the first part fades, the second explodes. |λ|max = 1.2 &gt; 1 wins.">The first number fades, the second explodes</button>
+      <button data-why="The eigenvalues are 0.5 and 1.2; neither is 1. Nothing holds steady: one part fades, the other explodes.">It settles at (0, 1)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Try it, then answer</span>
+    <p class="q">In the eigen-memory stage, load <em>rotate</em>. Its matrix turns the note by about 37° each step without stretching it. What are the sizes \(|\lambda|\) of its eigenvalues, and what does the note's length do?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. A pure turn has complex eigenvalues 0.8 ± 0.6i, each of size √(0.64 + 0.36) = 1. So the length stays exactly 1 forever, and the path winds up a spiral staircase.">Both have size 1; the length stays exactly the same</button>
+      <button data-why="The eigenvalues are complex, 0.8 ± 0.6i, but their size is √(0.8² + 0.6²) = 1, not 0.8. The length does not shrink.">Size 0.8; the length shrinks</button>
+      <button data-why="A turn cannot stretch: its eigenvalues 0.8 ± 0.6i have size exactly 1. The length stays 1.">Size 1.4; the length grows</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s6-->
+  <p class="onesent reveal"><b>In one sentence:</b> Memory and blame are multiplied by the same matrix at every step, so after \(T\) steps they carry \(W^T\) — and the biggest eigenvalue size decides whether they fade (0.5¹⁰ ≈ 0.000977) or explode (1.5¹⁰ ≈ 57.67).</p>
+</section>

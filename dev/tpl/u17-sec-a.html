@@ -1,0 +1,197 @@
+<!-- ================= ACT I · READING ONE WORD AT A TIME ================= -->
+<!-- ================= 1 · WHY ORDER MATTERS ================= -->
+<section class="unit" id="s1">
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>Why order matters</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Two newspaper headlines. "Dog bites man." Nobody cares. "Man bites dog." Front page!</p>
+    <p>Both use the same three words. Only the <strong>order</strong> is different — and the order is the whole story. A machine that reads must notice the order.</p>
+  </div>
+  <div class="prose reveal">
+    <p>In <a href="unit-16.html">Unit 16</a> every word became a list of numbers. So how do we turn a whole sentence into numbers? Here are three ideas. The first two fail, and how they fail tells us what we need.</p>
+    <p><strong>Idea 1 · Throw the words in a bag.</strong> Add up the word vectors, or just count the words. People call this a <em>bag of words</em>. It is quick. But "dog bites man" and "man bites dog" have exactly the same bag: one "dog", one "bites", one "man". The sums are the same. The order is lost.</p>
+    <p><strong>Idea 2 · Look at the last few words.</strong> Keep a small window, say the last 3 words, like the word-pair counts of <a href="unit-16.html#s2">Unit 16</a>. This keeps local order. But it forgets everything older. Take the announcement "The train to Delhi from platform four is late". When "late" arrives, a 3-word window holds only "four is late". <em>What</em> is late? The word "train" has already dropped out.</p>
+    <p><strong>Idea 3 · Read one word at a time and keep a running note.</strong> Think of a shopkeeper with a notebook. After each customer, he updates one line. But a plain running total does not care about order either: 5 + 3 is the same as 3 + 5. So we add one twist. <strong>Before</strong> writing in the new word, we first <strong>change the old note a little</strong> — turn it, shrink it — with a matrix. Then an old word has been turned many times and a new word only once. The order leaves its mark.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>A tiny example.</strong> Give each word a toy vector (hand-made, not trained): \(\text{dog}=(1,0)\), \(\text{man}=(0,1)\), \(\text{bites}=(1,1)\). The note starts at \((0,0)\). At each word we do two things: turn the note a quarter turn with \(W=\begin{pmatrix}0&-1\\ 1&0\end{pmatrix}\), then add the word. A quarter turn sends \((a,b)\) to \((-b,a)\).</p>
+    <ul>
+      <li><strong>dog bites man:</strong> after "dog" the note is \((1,0)\). Turn it: \((0,1)\); add "bites": \((1,2)\). Turn it: \((-2,1)\); add "man": \((-2,2)\).</li>
+      <li><strong>man bites dog:</strong> after "man", \((0,1)\). Turn: \((-1,0)\); add "bites": \((0,1)\). Turn: \((-1,0)\); add "dog": \((0,0)\).</li>
+    </ul>
+    <p>Two different notes: \((-2,2)\) and \((0,0)\). Without the turn, both would end at the plain sum \((2,2)\). The turn is what makes the note remember order.</p>
+  </div>
+
+  <div class="widget reveal" id="w-order">
+    <div class="widget-head"><span class="w-title">Three ways to read a sentence</span><span class="w-sub">A bag of words, a sliding window, and a running note. Word vectors here are toy numbers made by hand.</span></div>
+    <p class="try"><b>Try:</b> In <em>running note</em>, set the turn to 0° and watch both sentences land on the same point — that is the bag of words again. Turn it back up and they split apart. Then open <em>window</em> and slide the window size down to 3: "train" falls out before "late" arrives.</p>
+    <div class="tabs" id="or-mode" role="tablist"><button role="tab" aria-selected="false" data-t="bag">bag of words</button><button role="tab" aria-selected="false" data-t="win">window</button><button role="tab" aria-selected="true" data-t="note">running note</button></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage"><svg id="or-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="The running note drawn as a path on a grid. Blue arrows show the note for 'dog bites man', orange arrows show it for 'man bites dog'. Each step turns the old note and then adds the new word. The two paths end at different points."></svg></div></div>
+      <div class="wcol" style="flex:2 1 280px">
+        <div class="or-sent" id="or-sents"></div>
+        <div class="controls" id="or-ctl-note">
+          <div class="ctl"><label for="or-th">turn each step</label><input id="or-th" type="range" min="0" max="180" step="5" value="90"><output id="or-th-o">90°</output></div>
+          <div class="ctl"><label for="or-k">keep</label><input id="or-k" type="range" min="0.3" max="1" step="0.05" value="1"><output id="or-k-o">1</output></div>
+        </div>
+        <div class="controls" id="or-ctl-win" style="display:none">
+          <div class="ctl"><label for="or-win">window size</label><input id="or-win" type="range" min="1" max="8" step="1" value="3"><output id="or-win-o">3</output></div>
+        </div>
+        <div class="presets"><button class="preset" id="or-swap">swap sentence B</button><button class="play" id="or-play">▶ read both</button></div>
+        <div id="or-read" class="readout" style="margin-top:.6rem;line-height:1.7"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{new note}=\\ W\,(\text{old note})+\text{new word}\end{gathered}\]</p>
+    <p>A bag of words forgets order. A window forgets the past. A <strong>running note</strong> keeps both, if it changes the old note before adding the new word. Every word leaves its mark, and older marks have been changed more times.</p>
+  </div>
+  <div class="check reveal" data-check="c1">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With a plain bag of words (just count the words), which pair of sentences looks <em>different</em>?</p>
+    <div class="opts">
+      <button data-why="Both have one 'dog', one 'bites' and one 'man'. Same counts, same bag. The bag cannot see order.">"dog bites man" and "man bites dog"</button>
+      <button data-correct data-why="Right. The first has 'chai' twice; the second has 'chai' once and 'coffee' once. Different counts, so the bags differ. Order never matters to a bag — only which words, and how many.">"chai chai please" and "chai coffee please"</button>
+      <button data-why="Same three words, once each: the bags are equal. Only a reader that follows order can tell these apart.">"late is train" and "train is late"</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Use the same rule (quarter turn, then add) and the same toy vectors. What is the note after reading "bites dog" (just these two words)?</p>
+    <div class="opts">
+      <button data-why="That is the plain sum (1,1) + (1,0). But the note after 'bites' is turned first: (1,1) turns to (−1,1), then add dog (1,0).">\((2,1)\)</button>
+      <button data-correct data-why="Right. After 'bites' the note is (1,1). A quarter turn sends (a,b) to (−b,a), so (1,1) becomes (−1,1). Add dog (1,0): (0,1).">\((0,1)\)</button>
+      <button data-why="The turn sends (a, b) to (−b, a). For (1,1) that is (−1, 1), not (1, −1). Then adding (1,0) gives (0, 1).">\((2,-1)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="prose reveal">
+    <p><strong>The road ahead.</strong> The unit has four acts.</p>
+    <ol class="roadmap">
+      <li><strong>Reading one word at a time</strong> (§1–§4): the recurrent cell, the same cell copied along time, and the many jobs it can do.</li>
+      <li><strong>Blame through time</strong> (§5–§7): training sends blame back through every word; it gets multiplied by the same matrix again and again, so its eigenvalues decide whether memory fades or explodes; and a first-aid trick for explosions.</li>
+      <li><strong>Gates</strong> (§8–§9): the LSTM's express lane for memory, the lighter GRU, and a lab where you race all three.</li>
+      <li><strong>Translating</strong> (§10–§12): an encoder–decoder that turns English into Hindi through one summary vector, how it picks its words, and the bottleneck that Unit 18 removes.</li>
+    </ol>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> A sentence is an ordered list, so a reader must keep a running note and change the old note before adding each new word — that is how order leaves a mark.</p>
+</section>
+
+<!-- ================= 2 · THE RECURRENT CELL ================= -->
+<section class="unit" id="s2">
+  <div class="sec-head reveal"><span class="sec-num">2</span><h2>The recurrent cell: one small machine, used again and again</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You sit in a long lecture with one small card for notes. After each new sentence from the teacher, you rewrite the card: keep some of what was there, add the new point, and squeeze it so it still fits on the card.</p>
+    <p>You use the <strong>same habit</strong> every time. That habit is the recurrent cell. The card is its memory.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Now we make the running note a real network part. The note is a list of numbers called the <strong>hidden state</strong>, \(\mathbf h_t\) — "the note after word \(t\)". At each word the cell does one small job:</p>
+    <p>\[\mathbf h_t=\tanh\big(W\,\mathbf h_{t-1}+U\,\mathbf x_t+\mathbf b\big).\]</p>
+    <ul>
+      <li>\(W\mathbf h_{t-1}\): <strong>carry the old note over</strong>, changed by the matrix \(W\).</li>
+      <li>\(U\mathbf x_t\): <strong>write in the new word</strong> \(\mathbf x_t\), mixed by the matrix \(U\).</li>
+      <li>\(\mathbf b\): a small shift, as in every layer of <a href="unit-15.html#s1">Unit 15</a>.</li>
+      <li>\(\tanh\): <strong>squeeze</strong> every number to between −1 and 1, so the note never overflows the card. It is the bend of Unit 15.</li>
+    </ul>
+    <p>The most important fact: \(W\), \(U\) and \(\mathbf b\) are the <strong>same at every word</strong>. The cell does not grow a new set of weights for word 7. One small machine reads a sentence of any length.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>A tiny example with one number.</strong> Let the note be a single number. Take \(w=0.5\), \(u=1\), \(b=0\), start with \(h_0=0\), and feed three inputs \(x=(1,0,0)\) — one real word, then two blanks.</p>
+    <p>\[\begin{aligned}h_1&=\tanh(0.5\cdot0+1\cdot1)=\tanh(1)\approx0.7616\\ h_2&=\tanh(0.5\cdot0.7616+0)=\tanh(0.3808)\approx0.3634\\ h_3&=\tanh(0.5\cdot0.3634+0)=\tanh(0.1817)\approx0.1797\end{aligned}\]</p>
+    <p>Watch the first word <strong>fade</strong>. Each step keeps half of the note (\(w=0.5\)), and tanh squeezes it a little more. After three steps only 0.18 is left of the 0.76. Keep this in mind — it is the seed of the whole unit.</p>
+  </div>
+
+  <div class="widget reveal" id="w-rnn-step">
+    <div class="widget-head"><span class="w-title">Step a recurrent cell through a sentence</span><span class="w-sub">Each column is one word. Under it, the note after reading it. Green means positive, violet negative, and brighter means bigger.</span></div>
+    <p class="try"><b>Try:</b> In <em>one number</em>, press <em>next</em> three times and read 0.7616, 0.3634, 0.1797. Push <em>keep old</em> to 1 and the first word lasts much longer. Then switch to <em>a note of 6 numbers</em>: with <em>slide down</em>, every word enters at the top slot and slides down one slot per word, fading as it goes — a diagonal streak.</p>
+    <div class="tabs" id="rs-mode" role="tablist"><button role="tab" aria-selected="true" data-t="one">one number (the worked example)</button><button role="tab" aria-selected="false" data-t="six">a note of 6 numbers</button></div>
+    <div class="svgstage" style="margin-top:.6rem"><svg id="rs-svg" viewBox="0 0 760 330" class="svg-lab" role="img" aria-label="A row of word columns. Under each word, a glass cell box, and under that the note after that word: one bar for the one-number note, or a strip of six coloured squares for the six-number note. A glowing arrow carries the note from each column to the next."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 300px">
+        <div class="controls">
+          <div class="ctl"><label for="rs-w">keep old \(w\)</label><input id="rs-w" type="range" min="0" max="1.5" step="0.05" value="0.5"><output id="rs-w-o">0.5</output></div>
+          <div class="ctl"><label for="rs-u">new word \(u\)</label><input id="rs-u" type="range" min="0" max="2" step="0.05" value="1"><output id="rs-u-o">1</output></div>
+        </div>
+        <div class="presets" id="rs-wm" style="display:none"><span class="lbl">W:</span><button class="preset" data-m="slide" aria-pressed="true">slide down</button><button class="preset" data-m="mix" aria-pressed="false">mix</button></div>
+        <div class="presets"><button class="preset" id="rs-prev">◀ back</button><button class="play" id="rs-play">▶ read</button><button class="preset" id="rs-next">next ▶</button><button class="preset" id="rs-reset">reset</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 320px"><div id="rs-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf h_t=\tanh\big(W\,\mathbf h_{t-1}+U\,\mathbf x_t+\mathbf b\big)\]</p>
+    <p>A recurrent cell is one layer of Unit 15 with a second input: its own note from one word ago. The same weights are used at every word. The note is the memory — and with \(|w|<1\), what an old word wrote there fades a little at every step.</p>
+  </div>
+  <div class="check reveal" data-check="c3">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Same cell, but \(w=1\): \(u=1\), \(b=0\), \(h_0=0\), inputs \(x=(1,0)\). What is \(h_2\)?</p>
+    <div class="opts">
+      <button data-why="With w = 1 the old note is kept whole, but tanh still squeezes: h₂ = tanh(1 · 0.7616) = tanh(0.7616) ≈ 0.642, not 0.7616.">\(0.7616\)</button>
+      <button data-correct data-why="Right. h₁ = tanh(1) ≈ 0.7616. Then h₂ = tanh(1 · 0.7616 + 0) = tanh(0.7616) ≈ 0.642. Even with w = 1 the squeeze of tanh makes the note shrink a little.">\(\approx0.642\)</button>
+      <button data-why="That would be the plain sum 1 + 0 without any tanh. The cell squeezes: h₂ = tanh(0.7616) ≈ 0.642.">\(1\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c4">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A recurrent cell reads a 100-word review. How many different \(W\) matrices does it use?</p>
+    <div class="opts">
+      <button data-why="That would be a different layer per word. A recurrent cell uses the same W at every word — that is the whole idea.">100, one per word</button>
+      <button data-why="The cell really does use W once per word (99 times after the first), but always the same W. There is only one W to learn.">99, one between each pair of words</button>
+      <button data-correct data-why="Right. One W, one U, one b, used at every word. The same small machine reads a review of 10 words or 10 000 words.">Just 1, used at every word</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s2-->
+  <p class="onesent reveal"><b>In one sentence:</b> A recurrent cell updates its note with \(\mathbf h_t=\tanh(W\mathbf h_{t-1}+U\mathbf x_t+\mathbf b)\), using the same weights at every word, and with a small \(w\) the first word fades: 0.7616, 0.3634, 0.1797.</p>
+</section>
+
+<!-- ================= 3 · UNROLLING ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Unrolling: the loop is a chain of twins</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A dabbawala carries a lunch box from station to station. Film him, and print one photo at every station. Lay the photos in a row. It looks like a long chain of dabbawalas passing the box along.</p>
+    <p>But it is one man, doing the same job again and again. The chain is just the loop, laid out in time.</p>
+  </div>
+  <div class="prose reveal">
+    <p>We often draw the recurrent cell as one box with a loop arrow: its note goes out and comes straight back in. That is compact, but hard to reason about. So we <strong>unroll</strong> it: draw one copy of the box for every word, and turn the loop into an arrow from each copy to the next.</p>
+    <p>For a three-word sentence the unrolled picture is</p>
+    <p>\[\mathbf h_0\xrightarrow{\ \text{cell}\ }\mathbf h_1\xrightarrow{\ \text{cell}\ }\mathbf h_2\xrightarrow{\ \text{cell}\ }\mathbf h_3,\]</p>
+    <p>with the words \(\mathbf x_1,\mathbf x_2,\mathbf x_3\) coming in from below. Look at it and you see an old friend: a <strong>deep network</strong> from <a href="unit-15.html#s1">Unit 15</a>, three layers deep. There is one difference. In Unit 15 every layer had its own matrix. Here every "layer" uses the <strong>same</strong> \(W\), \(U\) and \(\mathbf b\). We say the weights are <strong>shared</strong> (or tied).</p>
+    <p><strong>Count the numbers it learns.</strong> Say the note has \(h\) numbers and each word has \(d\). Then \(W\) is \(h\times h\), \(U\) is \(h\times d\) and \(\mathbf b\) has \(h\) entries, so</p>
+    <p>\[\text{numbers to learn}=h\cdot h+h\cdot d+h=h(h+d)+h.\]</p>
+    <p>With \(h=4\) and \(d=3\): \(16+12+4=32\). For a 3-word sentence: 32. For a 3000-word book: still 32. The unrolled chain gets longer; the list of weights does not.</p>
+  </div>
+
+  <div class="widget reveal" id="w-unroll">
+    <div class="widget-head"><span class="w-title">Unroll the loop</span><span class="w-sub">One glass cell with a gold loop — or a chain of identical copies, one per word. The gold arrows are all the same matrix \(W\).</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ fold</em> and watch the chain fold back into one cell with a loop; press it again to unroll. Press <em>light up W</em>: every gold arrow flashes at the same moment, because they are one matrix. Drag the length from 2 to 8 words: the chain grows, the weight count stays 32.</p>
+    <div id="un-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A row of identical glass boxes stands on a glass floor, one per word. Blue word tiles rise into each box from below, a green orb — the note — sits in each box, and gold arrows carry the note from each box to the next. Folded, all the boxes merge into one box with a gold loop arrow."></div><p class="stage-tap">drag the picture to orbit</p>
+    <div class="wrow" style="margin-top:.7rem">
+      <div class="wcol" style="flex:1 1 280px">
+        <div class="controls"><div class="ctl"><label for="un-T">words</label><input id="un-T" type="range" min="2" max="8" step="1" value="5"><output id="un-T-o">5</output></div></div>
+        <div class="presets"><button class="play" id="un-play">▶ unroll</button><button class="preset" id="un-share">light up W</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="un-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{unrolled RNN}=\\ \text{a deep network whose layers}\\ \text{all share }W,\,U,\,\mathbf b\end{gathered}\]</p>
+    <p>A recurrent network is a loop. Unroll it and it is a chain as long as the sentence, one copy of the cell per word. So everything we learned about deep networks — forward pass, backward pass, blame that fades — carries over. The only new twist is that the copies are twins.</p>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A cell has a note of \(h=3\) numbers and reads words of \(d=2\) numbers. It reads a 50-word sentence. How many weights and shifts does it learn?</p>
+    <div class="opts">
+      <button data-why="That counts one full set per word: 18 × 50. The copies share one set, so the answer is just 18.">900</button>
+      <button data-correct data-why="Right. W is 3 × 3 (9), U is 3 × 2 (6), b has 3: 9 + 6 + 3 = 18. The length of the sentence does not change it.">18</button>
+      <button data-why="9 + 6 = 15 forgets the shift b with its 3 entries. The count is h(h + d) + h = 3 · 5 + 3 = 18.">15</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s3-->
+  <p class="onesent reveal"><b>In one sentence:</b> Unrolled, a recurrent cell is a deep network as long as the sentence whose layers are twins, so it learns only \(h(h+d)+h\) numbers however long the sentence is.</p>
+</section>

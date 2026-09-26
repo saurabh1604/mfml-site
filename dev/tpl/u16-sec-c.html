@@ -1,0 +1,201 @@
+<!-- ================= 7 · WHY NOT FULL SOFTMAX ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Why not a softmax over every word?</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A teacher wants to know if you understand who chai's friends are. She could ask: "Out of all 50 000 students in this city, rank how likely each one is to be chai's friend." That takes all day.</p>
+    <p>Or she could ask five quick yes/no questions: "Is hot a friend? Is football a friend? Is kettle?…" Five answers, and she learns nearly as much.</p>
+  </div>
+  <div class="prose reveal">
+    <p>There is a more obvious way to play word2vec's game. Given the middle word chai, ask the model to pick the neighbour out of the <strong>whole vocabulary</strong>, with a softmax from <a href="unit-14.html#s10">Unit 14</a>:</p>
+    <p>\[P(\text{hot}\mid\text{chai})=\frac{e^{\mathbf u_{\text{hot}}\cdot\mathbf v_{\text{chai}}}}{\sum_{w=1}^{V}e^{\mathbf u_{w}\cdot\mathbf v_{\text{chai}}}}.\]</p>
+    <p>This is correct, and it is exactly how a full language model ends (§8). The trouble is the bottom line. To compute it you need a dot product and an \(e^{(\cdot)}\) for <strong>every</strong> word in the vocabulary. With \(V=50\,000\), that is 50 000 dot products for one training pair. Worse, the gradient of a softmax touches every one of those 50 000 neighbour lists, so every step must update all of them.</p>
+    <p>Negative sampling replaces that one giant question with \(k+1\) small yes/no questions: the real neighbour plus \(k\) random words. With \(k=5\) that is 6 dot products and 6 sigmoids per pair:</p>
+    <p>\[\frac{50\,000}{6}\approx8\,333\ \text{times less work}.\]</p>
+    <p>word2vec was trained on billions of word pairs. That saving is the difference between a year and an afternoon.</p>
+    <p><strong>Which random words?</strong> If negatives were picked in proportion to how often words appear, "the" and "is" would be picked all the time and teach little. word2vec picks a word with probability proportional to its count raised to the power \(\tfrac34\). That gently lifts rare words: a word seen 100 times and one seen once would share the picks 99% to 1%; after the \(\tfrac34\) power it is \(100^{0.75}\approx31.6\) against 1, about 97% to 3%.</p>
+  </div>
+
+  <div class="widget reveal" id="w-cost">
+    <div class="widget-head"><span class="w-title">One big question, or a few small ones</span><span class="w-sub">Every dot is one word of the vocabulary. A full softmax must light them all for every training pair; negative sampling lights only \(k+1\).</span></div>
+    <p class="try"><b>Try:</b> Set the vocabulary to 50 000 and \(k=5\): about 8 333 times less work. Push the vocabulary to a million: the full softmax grows, the yes/no game does not. Then press <em>▶ one training pair</em> to watch both light up.</p>
+    <div class="svgstage"><svg id="cs-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="Left: a large field of dots, one per vocabulary word, which all light up for the full softmax. Right: the same field with only a handful of dots lit, the real neighbour and k random words. Below, two bars on a log scale compare the number of dot products per training pair."></svg></div>
+    <div class="stage-rail">
+      <div class="ctl"><label for="cs-v">vocabulary</label><input id="cs-v" type="range" min="2" max="6" step="0.05" value="4.699"><output id="cs-v-o">50,000</output></div>
+      <div class="ctl"><label for="cs-k">negatives \(k\)</label><input id="cs-k" type="range" min="1" max="20" step="1" value="5"><output id="cs-k-o">5</output></div>
+      <button class="play" id="cs-play">▶ one training pair</button>
+    </div>
+    <div id="cs-read" class="readout" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{full softmax: } V\ \text{dot products}\\ \text{negative sampling: } k+1\end{gathered}\]</p>
+    <p>The softmax asks "which one, out of everybody?" and must look at everybody. Negative sampling asks "this one — yes or no?" a few times. The cost stops depending on the size of the vocabulary, which is what made training on billions of words possible.</p>
+  </div>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The vocabulary has 100 000 words and you use \(k=10\) negatives. About how many times fewer dot products does one training pair need?</p>
+    <div class="opts">
+      <button data-why="Count the real neighbour too: k + 1 = 11 small questions, not 10. So 100 000/11 ≈ 9 091.">10 000</button>
+      <button data-correct data-why="Right. The full softmax needs 100 000 dot products; negative sampling needs k + 1 = 11. 100 000/11 ≈ 9 091.">about 9 091</button>
+      <button data-why="The saving is the vocabulary size divided by k + 1, not the vocabulary times k.">about 1 000 000</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> A full softmax costs one dot product per vocabulary word on every step, while negative sampling asks only \(k+1\) yes/no questions — 50 000 against 6 for \(k=5\).</p>
+</section>
+
+<!-- ================= 8 · A NEURAL LANGUAGE MODEL ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>A neural language model</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Mumbai's dabbawalas pass a lunch box along a relay. One picks it up, one sorts it, one carries it, one hands it over. Nobody does the whole job, but the box always arrives.</p>
+    <p>A neural language model is a relay like that. Look up the words, glue them together, mix them in a small network, and hand over a probability for every possible next word.</p>
+  </div>
+  <div class="prose reveal">
+    <p>In §2 we guessed the next word from a table of counts. The table could not share anything between "chai" and "coffee". In 2003, Yoshua Bengio and his team built a model that could. It works in five steps:</p>
+    <ol class="roadmap">
+      <li><strong>Look up.</strong> Keep a table \(E\) with one row of \(d\) numbers for each word — an <strong>embedding table</strong>. Look up the row of each previous word.</li>
+      <li><strong>Glue.</strong> Put the rows side by side into one longer list (people say <em>concatenate</em>). Two previous words with \(d=2\) give a list of 4.</li>
+      <li><strong>Mix.</strong> Pass it through a hidden layer, exactly as in <a href="unit-15.html#s1">Unit 15</a>: \(\mathbf h=\tanh(W\mathbf x+\mathbf b)\).</li>
+      <li><strong>Score every word.</strong> One more layer gives one score per vocabulary word, and a softmax (<a href="unit-14.html#s10">Unit 14</a>) turns the scores into probabilities.</li>
+      <li><strong>Learn.</strong> Train with cross-entropy and backprop (<a href="unit-15.html#s8">Unit 15</a>). The blame flows all the way back into the rows of \(E\), so the table is learned too.</li>
+    </ol>
+    <p><strong>The lookup is a matrix multiply.</strong> Write a word one-hot and multiply it by the table. With three words and \(d=2\):</p>
+    <p>\[\begin{pmatrix}0&1&0\end{pmatrix}\begin{pmatrix}1&2\\ 3&4\\ 5&6\end{pmatrix}=\begin{pmatrix}3&4\end{pmatrix}.\]</p>
+    <p>The single 1 picks out row 2. So an embedding table is nothing new: it is <strong>the first layer's weight matrix</strong>, fed with one-hot inputs. Computers skip the multiply and just fetch the row — same answer, far less work.</p>
+  </div>
+
+  <div class="widget reveal" id="w-lookup">
+    <div class="widget-head"><span class="w-title">One-hot times a table = fetch a row</span><span class="w-sub">A one-hot word (left) multiplies the embedding table (middle). Every row but one is multiplied by 0, so only one row survives.</span></div>
+    <p class="try"><b>Try:</b> Click each word in turn. Watch the 1 move and the matching row light up. Then press <em>▶ multiply slowly</em> to see all the zero rows vanish.</p>
+    <div class="lk-words bg-chips" id="lk-words"></div>
+    <div class="scroll-x"><div id="lk-eq" class="lk-eq"></div></div>
+    <div class="presets" style="margin-top:.5rem"><button class="play" id="lk-play">▶ multiply slowly</button></div>
+    <div id="lk-read" class="readout" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Now the whole relay. We trained a tiny model ourselves, for this page, on just seven sentences: "I drink hot chai .", "we drink hot chai .", "I drink hot coffee .", "we drink hot coffee .", "I play cricket .", "we play cricket .", "we play football .". It has a vocabulary of 10 words, embeddings of \(d=2\) numbers, and 8 hidden neurons. Its whole brain is 150 numbers.</p>
+    <p>Notice what it has <strong>never</strong> seen: "I play football". A count table would give it probability exactly 0. But "I" and "we" were used in the same places, so the model learned almost the same row for both. It guesses football after "I play" with probability about 0.256 — nearly what it gives after "we play" (0.258). That is <strong>sharing</strong>, and it is the whole point of word vectors.</p>
+  </div>
+  <div class="widget reveal" id="w-nlm">
+    <div class="widget-head"><span class="w-title">A tiny neural language model, every number visible</span><span class="w-sub">Pick two previous words. Their rows are fetched, glued into 4 numbers, mixed by 8 hidden neurons and turned into a probability for each of the 10 words. The small map shows every word's learned 2-number row.</span></div>
+    <p class="try"><b>Try:</b> Pick "drink" then "hot": chai and coffee share the top. Pick "I" then "play": cricket first, but football gets a real share though the model never saw "I play football". In the map, find "I" and "we" sitting almost on top of each other.</p>
+    <div class="bg-prevrow"><span class="lbl">word 1</span><span id="nl-w1" class="bg-chips"></span></div>
+    <div class="bg-prevrow"><span class="lbl">word 2</span><span id="nl-w2" class="bg-chips"></span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px;min-width:0"><div class="svgstage"><svg id="nl-svg" viewBox="0 0 640 330" class="svg-lab" role="img" aria-label="The model as a relay from left to right: the two chosen words, their two looked-up rows of 2 numbers, the glued list of 4, eight hidden neurons as glowing bars, and ten probability bars for the next word."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px;min-width:0"><div class="svgstage"><svg id="nl-map" viewBox="0 0 260 260" class="svg-lab" role="img" aria-label="A small plane with all ten words at their learned two-number embeddings. I and we sit close together; chai and coffee sit on top of each other."></svg></div>
+        <div id="nl-read" class="readout" style="margin-top:.5rem;line-height:1.7"></div></div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}\mathbf x&=[\,E_{w_1};\,E_{w_2}\,],\\ \mathbf h&=\tanh(W\mathbf x+\mathbf b),\\ P(\cdot\mid w_1w_2)&=\operatorname{softmax}(U\mathbf h+\mathbf c)\end{aligned}\]</p>
+    <p>A neural language model is a Unit 15 network with a lookup table in front and a softmax at the end. The table is just the first layer's weights, learned by the same backprop. Because similar words get similar rows, what the model learns about one word helps it with the others.</p>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A vocabulary has 4 words and \(E=\begin{pmatrix}1&0&2\\ 0&1&1\\ 3&1&0\\ 2&2&2\end{pmatrix}\). What is \((0,0,1,0)\,E\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The 1 sits in slot 3, so the product picks row 3 of E: (3, 1, 0). Every other row is multiplied by 0.">\((3,1,0)\)</button>
+      <button data-why="(2, 1, 0, 2) is column 3 of E read downwards. A one-hot ROW vector on the left picks a ROW of E: row 3 is (3, 1, 0).">\((2,1,0,2)\)</button>
+      <button data-why="Nothing is added up here: three of the four rows are multiplied by 0 and vanish, and row 3 is left as it is: (3, 1, 0).">\((6,4,5)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Our tiny model has \(V=10\) words, \(d=2\), two previous words and 8 hidden neurons. How many numbers does it learn? (Table, then hidden weights and biases, then output weights and biases.)</p>
+    <div class="opts">
+      <button data-why="You left out the embedding table: 10 × 2 = 20 more. Total 20 + 40 + 90 = 150.">130</button>
+      <button data-why="The hidden layer reads the GLUED list of 4 numbers, so its weight matrix is 8 × 4 = 32, not 8 × 2. Total: 20 + (32 + 8) + (80 + 10) = 150.">134</button>
+      <button data-correct data-why="Right. Table 10 × 2 = 20. Hidden: 8 × 4 = 32 weights + 8 biases = 40. Output: 10 × 8 = 80 weights + 10 biases = 90. Total 20 + 40 + 90 = 150.">150</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s8-->
+  <p class="onesent reveal"><b>In one sentence:</b> A neural language model looks up each previous word's row in an embedding table (one-hot × matrix = picking a row), glues the rows, mixes them in a hidden layer and ends with a softmax over the vocabulary — and since similar words get similar rows, it can guess sentences it never saw.</p>
+</section>
+
+<!-- ================= 9 · THE GEOMETRY OF MEANING ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>The geometry of meaning</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A friend gives you directions: "From the station, walk 2 blocks north and 3 blocks east." Those directions are not tied to the station. Start from the temple instead and follow the same walk — you land somewhere new, but in the same position relative to where you started.</p>
+    <p>In a good word space, the step from "man" to "woman" is a walk like that. Start the same walk from "king".</p>
+  </div>
+  <div class="prose reveal">
+    <p>Here are four hand-made vectors with just two numbers each (we built them for this example; they are not trained):</p>
+    <p>\[\begin{aligned}\text{king}&=(3,2), & \text{man}&=(1,2),\\ \text{queen}&=(3,-2), & \text{woman}&=(1,-2).\end{aligned}\]</p>
+    <p>The step from man to woman is \(\text{woman}-\text{man}=(0,-4)\). The step from king to queen is \(\text{queen}-\text{king}=(0,-4)\). The same step. So the four points make a <strong>parallelogram</strong>, and we can use it to answer the puzzle "man is to woman as king is to ?":</p>
+    <p>\[\text{king}-\text{man}+\text{woman}=(3,2)-(1,2)+(1,-2)=(3,-2).\]</p>
+    <p>That is exactly queen. With real, trained vectors the answer is never exact; it lands <strong>near</strong> a word. So we search: which word's vector has the biggest cosine with the answer? For \((3,-2)\): queen 1, woman 0.868, king 0.385, man −0.124.</p>
+    <p><strong>Skip the three words you started with.</strong> In trained vectors the step "woman − man" is small next to the words themselves, so the answer often lies closest to king itself. A search that allowed king would just return king — true, but useless. So the search always leaves out the three input words.</p>
+  </div>
+
+  <div class="widget reveal" id="w-para">
+    <div class="widget-head"><span class="w-title">The parallelogram, by hand</span><span class="w-sub">Drag king, man or woman. The answer king − man + woman is drawn as the fourth corner, and the nearest word by cosine lights up.</span></div>
+    <p class="try"><b>Try:</b> Leave the points as they are: the corner lands exactly on queen. Drag woman a little: the corner moves the same way, and the nearest word is still queen until it drifts too far. Turn on <em>include the inputs</em> and drag man near king — see why we skip them.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px;min-width:0"><div class="svgstage"><svg id="pa2-svg" viewBox="0 0 520 380" class="svg-lab" role="img" aria-label="A plane with draggable points king, man and woman, the fixed words queen, prince, princess, boy and girl, and a parallelogram whose fourth corner is king minus man plus woman."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="preset" id="pa2-inc" aria-pressed="false">include the inputs</button><button class="preset" id="pa2-reset">reset</button></div>
+        <div id="pa2-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Now the real playground. Below are 60 words. Their vectors are <strong>hand-made</strong> by us — not trained on text — so that you can check every answer with your own sense of meaning. Each word has 13 numbers: nine meanings we chose (is it a person? royal? female or male? young? a drink? about cricket? an animal? a place? a capital city?), four random "family fingerprint" numbers shared by a family such as king, queen, prince and princess, and a little random noise. The sums and the cosines use all 13 numbers. To draw them we look through a fixed 3-D window — a projection, like a shadow on a wall (<a href="unit-03.html#s10">Unit 3</a>). A shadow of a parallelogram is still a parallelogram, so the picture never lies about the arithmetic.</p>
+  </div>
+  <div class="widget reveal" id="w-analogy">
+    <div class="widget-head"><span class="w-title">The embedding explorer</span><span class="w-sub">Sixty hand-made words in space. Choose \(A-B+C\): the parallelogram draws itself and the nearest words by cosine are listed. Toggle direction arrows to see meaning as a direction.</span></div>
+    <p class="try"><b>Try:</b> Start with king − man + woman. Then try the others: prince − boy + girl, Delhi − India + Japan, puppy − dog + cat. Turn on the <em>female</em> arrows — the same arrow at every pair. Type any word in the search box to fly to it and list its neighbours.</p>
+    <div class="ex-bar">
+      <label class="ex-slot"><span>A</span><select id="ex-a" aria-label="word A"></select></label><span class="ex-op">−</span>
+      <label class="ex-slot"><span>B</span><select id="ex-b" aria-label="word B"></select></label><span class="ex-op">+</span>
+      <label class="ex-slot"><span>C</span><select id="ex-c" aria-label="word C"></select></label><span class="ex-op">≈</span><span id="ex-ans" class="ex-ans">?</span>
+    </div>
+    <div class="presets ex-pre" id="ex-pre"><button class="preset" data-q="king,man,woman">king − man + woman</button><button class="preset" data-q="prince,boy,girl">prince − boy + girl</button><button class="preset" data-q="Delhi,India,Japan">Delhi − India + Japan</button><button class="preset" data-q="puppy,dog,cat">puppy − dog + cat</button><button class="preset" data-q="king,man,boy">king − man + boy</button><button class="preset" data-q="Paris,France,Italy">Paris − France + Italy</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 480px"><div id="ex-3d" class="stage3d tall ex-stage" role="img" aria-label="Orbitable 3D scene of sixty glowing word points in five coloured groups: people in violet, tea words in orange, cricket words in green, animals in gold and places in cyan, with the word bat in pink between cricket and animals. A glowing parallelogram joins the chosen words A, B, C and the answer point, which is ringed; optional arrows show directions such as female, royal, young and capital city."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 260px;min-width:0">
+        <label class="bg-lbl" for="ex-find">find a word</label>
+        <input id="ex-find" class="ex-find" list="ex-list" placeholder="type: chai, lion, Tokyo…" autocomplete="off"><datalist id="ex-list"></datalist>
+        <div class="bg-lbl" style="margin-top:.6rem">direction arrows</div>
+        <div class="presets" id="ex-dirs"><button class="preset" data-d="female" aria-pressed="false">female</button><button class="preset" data-d="royal" aria-pressed="false">royal</button><button class="preset" data-d="young" aria-pressed="false">young</button><button class="preset" data-d="capital" aria-pressed="false">capital city</button><button class="preset" data-d="topic" aria-pressed="false">tea → cricket</button></div>
+        <div class="presets" style="margin-top:.4rem"><button class="preset" id="ex-inc" aria-pressed="false">include A, B, C in the search</button><button class="preset" id="ex-names" aria-pressed="true">all names</button></div>
+        <div id="ex-read" class="readout ex-read" style="margin-top:.6rem;line-height:1.7"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf q=\mathbf v_a-\mathbf v_b+\mathbf v_c,\\ \text{answer}=\arg\max_{w\notin\{a,b,c\}}\ \cos(\mathbf v_w,\mathbf q)\end{gathered}\]</p>
+    <p>In a good word space, a <strong>difference</strong> of meanings is a <strong>direction</strong>. The same arrow turns man into woman, king into queen and boy into girl; another turns a country into its capital. So "B is to C as A is to ?" becomes arithmetic: \(A-B+C\), then the nearest word by cosine, leaving out \(A\), \(B\) and \(C\).</p>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Toy vectors: Delhi \(=(1,1,3)\), India \(=(1,0,3)\), Japan \(=(3,0,1)\). What is Delhi − India + Japan?</p>
+    <div class="opts">
+      <button data-why="Subtract India from Delhi first: (0, 1, 0), the 'capital city' step. Then add Japan: (3, 1, 1).">\((5,1,7)\)</button>
+      <button data-correct data-why="Right. Delhi − India = (0, 1, 0), the step from a country to its capital. Add Japan: (3, 1, 1) — Japan plus the capital step, which is where Tokyo should be.">\((3,1,1)\)</button>
+      <button data-why="(3, −1, 1) would be Japan MINUS the capital step. The sum is Delhi − India + Japan = (1 − 1 + 3, 1 − 0 + 0, 3 − 3 + 1) = (3, 1, 1).">\((3,-1,1)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why does the analogy search leave out the three input words?</p>
+    <div class="opts">
+      <button data-why="The inputs are not impossible answers in principle — they are just too EASY answers: the step between meanings is small, so the result is usually closest to the first word itself.">Because their cosine with the answer is always zero</button>
+      <button data-correct data-why="Right. In trained vectors the step woman − man is short next to the vectors themselves, so king − man + woman usually stays closest to king. Leaving the inputs out makes the search return the next nearest word, queen.">Because the answer usually lands closest to one of them — often A itself</button>
+      <button data-why="The search could compute their cosines perfectly well. We skip them because they would win too often, not because of any difficulty.">Because the computer cannot compute their cosine</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s9-->
+  <p class="onesent reveal"><b>In one sentence:</b> Differences of meaning are directions, so king − man + woman = (3, −2) = queen in our toy plane, and with real vectors we take the nearest word by cosine, leaving out the three words we started from.</p>
+</section>

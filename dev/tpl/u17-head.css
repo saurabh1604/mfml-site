@@ -1,0 +1,90 @@
+/* ================= UNIT 17 · Machines with Memory ================= */
+.hero-prev{margin:1.1rem 0 0;font-family:var(--ui);font-size:.84rem}
+.hero-prev a{pointer-events:auto;color:var(--ink-2);border-bottom:1px solid color-mix(in srgb,var(--s6) 50%,transparent)}
+.hero-prev a:hover{color:var(--ink);text-decoration:none}
+.hero .kicker{color:var(--s6);text-shadow:0 0 18px color-mix(in srgb,var(--s6) 55%,transparent)}
+.sec-num{color:color-mix(in srgb,var(--s6) 60%,transparent)}
+.k-fwd{color:var(--s1);font-weight:650}
+.k-bwd{color:var(--critical);font-weight:650}
+.k-pos{color:var(--s3);font-weight:650}
+.k-neg{color:var(--s2);font-weight:650}
+.k-awake{color:var(--s4);font-weight:650}
+.k-sleep{color:var(--ink-muted);font-weight:650}
+ol.roadmap{padding-left:1.4rem}
+ol.roadmap li{margin:.35rem 0}
+/* 2-D stages: an SVG on the same glass as the 3-D ones */
+.svgstage{position:relative;border-radius:var(--r-md);overflow:hidden;background:radial-gradient(80% 80% at 50% 40%,color-mix(in srgb,var(--s6) 6%,transparent),transparent 72%);border:1px solid var(--line)}
+.svgstage svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.svgstage .hud{max-width:calc(100% - 1.4rem)}
+.svgstage svg text{font-family:var(--ui)}
+.widget .toolbar{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin:.5rem 0}
+.widget .toolbar .lbl{font-family:var(--ui);font-size:.76rem;color:var(--ink-muted);margin-right:.2rem}
+/* the carry-forward summary */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.8rem;max-width:62rem;margin:1.2rem auto}
+.cards .cd{border:1px solid var(--line);border-radius:var(--r-md);background:color-mix(in srgb,var(--surface) 70%,transparent);padding:.8rem 1rem;font-family:var(--ui);font-size:.86rem;min-width:0}
+.cards .cd h4{margin:0 0 .35rem;font-family:var(--ui);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--s6)}
+.cards .cd .katex-display{margin:.3rem 0}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-family:var(--ui);font-size:.76rem;color:var(--ink-2);margin:.45rem 0 0}
+.legend i{display:inline-block;width:.8rem;height:3px;margin-right:.3rem;vertical-align:.2rem;border-radius:2px}
+table.kv{width:100%;border-collapse:collapse;font-family:var(--ui);font-size:.82rem;margin:.7rem 0 0}
+table.kv th{font-weight:600;color:var(--ink-muted);text-align:left;padding:.28rem .5rem .28rem 0;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:top}
+table.kv td{font-family:var(--mono);font-size:.8rem;color:var(--ink);text-align:right;padding:.28rem 0;border-bottom:1px solid var(--line)}
+.warnmsg{font-family:var(--ui);font-size:.82rem;color:var(--critical)}
+@media (max-width:640px){.svgstage svg text{font-size:14px}}
+/* step machine (w-bptt) — the Unit 15 stepper look */
+.st-scrub button{font-family:var(--ui);font-size:.74rem;font-weight:700;border:1px solid var(--line);background:color-mix(in srgb,var(--surface-2) 80%,transparent);color:var(--ink-2);border-radius:8px;cursor:pointer}
+.st-scrub{display:flex;flex-wrap:wrap;gap:.25rem;margin:.3rem 0 .7rem}
+.st-scrub button{min-width:2.2rem;padding:.24rem .4rem}
+.st-scrub button.f[aria-selected="true"]{background:color-mix(in srgb,var(--s1) 28%,transparent);border-color:var(--s1);color:var(--ink)}
+.st-scrub button.b[aria-selected="true"]{background:color-mix(in srgb,var(--critical) 26%,transparent);border-color:var(--critical);color:var(--ink)}
+.st-scrub button.u[aria-selected="true"]{background:color-mix(in srgb,var(--s4) 26%,transparent);border-color:var(--s4);color:var(--ink)}
+.st-scrub button.done{color:var(--ink);border-color:color-mix(in srgb,var(--ink-2) 35%,transparent)}
+.st-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:1rem;align-items:start}
+@media (max-width:900px){.st-grid{grid-template-columns:minmax(0,1fr)}}
+.st-left{display:flex;flex-direction:column;gap:.6rem;min-width:0}
+.st-chainbox{overflow-x:auto}
+.st-card{border:1px solid var(--line);border-radius:var(--r-md);padding:.85rem 1rem;background:color-mix(in srgb,var(--surface-2) 50%,transparent);min-height:15rem;min-width:0}
+.st-head{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.st-badge{font-family:var(--ui);font-weight:800;font-size:.7rem;letter-spacing:.1em;border-radius:6px;padding:.16rem .5rem;color:#fff}
+.st-badge.f{background:linear-gradient(135deg,var(--s1),var(--s6))}
+.st-badge.b{background:linear-gradient(135deg,var(--critical),var(--s2))}
+.st-badge.u{background:linear-gradient(135deg,var(--s4),var(--s2));color:#1a1206}
+.st-rule{font-family:var(--ui);font-size:.7rem;font-weight:700;border-radius:999px;padding:.12rem .55rem;border:1px solid var(--line);color:var(--ink-2)}
+.st-rule.a{border-color:var(--s4);color:var(--s4)} .st-rule.b{border-color:var(--s1);color:var(--s1)} .st-rule.s{border-color:var(--critical);color:var(--critical)} .st-rule.u{border-color:var(--s4);color:var(--s4)}
+.st-title{font-family:var(--ui);font-size:1.02rem;margin:.5rem 0 .1rem}
+.st-sub{font-family:var(--ui);font-size:.82rem;color:var(--ink-muted);margin:0 0 .4rem}
+.st-info{margin-top:.6rem;line-height:1.7;font-size:.8rem}
+.st-win{font-family:var(--ui);font-size:1rem;font-weight:700;margin:.6rem 0 .2rem;padding:.55rem .8rem;border-radius:10px;background:color-mix(in srgb,var(--s3) 14%,transparent);border:1px solid color-mix(in srgb,var(--s3) 50%,transparent)}
+.st-win b{color:var(--s3)}
+.st-nav{margin-top:.7rem;align-items:center}
+.st-count{font-family:var(--mono);font-size:.78rem;color:var(--ink-muted);margin-left:.4rem}
+/* ---- Unit 17 colour words ---- */
+.k-word{color:var(--s1);font-weight:650}
+.k-mem{color:var(--s3);font-weight:650}
+.k-prob{color:var(--s6);font-weight:650}
+.k-loss{color:var(--critical);font-weight:650}
+.k-gate{color:var(--s4);font-weight:650}
+.readout b.m{color:var(--s3)} .readout b.r{color:var(--critical)} .readout b.g{color:var(--s4)} .readout b.w{color:var(--s1)} .readout b.p{color:var(--s6)}
+/* w-order: sentence pickers */
+.or-sent{display:flex;flex-direction:column;gap:.45rem;margin:.1rem 0 .6rem}
+.or-row{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;font-family:var(--ui);font-size:.8rem}
+.or-row .or-tag{font-weight:800;font-size:.7rem;letter-spacing:.1em;border-radius:6px;padding:.12rem .45rem;color:#fff}
+.or-row select{font-family:var(--ui);font-size:.8rem;background:var(--surface-2,var(--surface));color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:.18rem .3rem}
+/* w-eigen-memory: the editable matrix */
+.em-mat{display:flex;align-items:center;gap:.5rem;margin:.7rem 0 .5rem;font-family:var(--ui)}
+.em-br{font-family:var(--body,var(--serif));font-style:italic;font-size:1.05rem}
+.em-grid{display:grid;grid-template-columns:repeat(2,4.6rem);gap:.3rem .45rem;padding:.3rem .5rem;border-left:2px solid var(--ink-2);border-right:2px solid var(--ink-2);border-radius:6px}
+.em-grid input{width:100%;font-family:var(--mono);font-size:.86rem;text-align:right;background:color-mix(in srgb,var(--surface-2,var(--surface)) 85%,transparent);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.22rem .35rem}
+.em-grid input:focus{outline:2px solid var(--s4);outline-offset:1px}
+/* w-lstm: the lab */
+.lb-read table{width:100%;border-collapse:collapse;font-family:var(--ui);font-size:.8rem}
+.lb-read th{font-weight:600;color:var(--ink-muted);text-align:left;padding:.22rem .4rem .22rem 0;border-bottom:1px solid var(--line)}
+.lb-read td{font-family:var(--mono);font-size:.78rem;text-align:right;padding:.22rem .1rem .22rem .4rem;border-bottom:1px solid var(--line);white-space:nowrap}
+.lb-read td.ok{color:var(--s3)} .lb-read td.bad{color:var(--critical)}
+.lb-read .lb-cap{font-family:var(--ui);font-size:.8rem;color:var(--ink-2);margin:.45rem 0 0;line-height:1.55}
+details.lb-how{margin-top:.7rem;border:1px solid var(--line);border-radius:var(--r-md);padding:.5rem .8rem;background:color-mix(in srgb,var(--surface-2,var(--surface)) 40%,transparent)}
+details.lb-how summary{cursor:pointer;font-family:var(--ui);font-size:.82rem;font-weight:650;color:var(--ink-2)}
+details.lb-how p{font-size:.9rem}
+.stage3d .hud.hud-b{max-width:calc(100% - 1.4rem)}
+@media (max-width:640px){.em-grid{grid-template-columns:repeat(2,4.2rem)}}
+@media (max-width:640px){.lb-read td,.lb-read th{font-size:.7rem;padding-left:.2rem}.lb-read td{letter-spacing:-.02em}}
