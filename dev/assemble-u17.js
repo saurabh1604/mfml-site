@@ -5,7 +5,7 @@ const R = f => fs.readFileSync(f, 'utf8');
 const has = f => fs.existsSync(f);
 const u15 = R('src/unit-15.html');
 const TITLE_ESC = 'Machines with Memory';
-const DESC = 'Reading one word at a time. A recurrent cell keeps a running note and updates it with the same weights at every word; unrolled, it is a deep network whose layers are twins. Training sends blame back through time, multiplied by the same matrix again and again, so its eigenvalues decide whether memory fades away or blows up. Then gradient clipping, the LSTM with its express lane, the GRU with its blend dial, a memory lab that races all three, and an encoder–decoder that translates English into Hindi through one summary vector — the bottleneck that attention removes.';
+const DESC = 'Reading one word at a time. A recurrent cell keeps a running note and updates it with the same weights at every word; unrolled, it is a deep network whose layers are twins. A tiny language model learns to talk, with teacher forcing and temperature. Training sends blame back through time, multiplied by the same matrix again and again, so its eigenvalues decide whether memory fades away or blows up. Then gradient clipping, the LSTM with its express lane, the GRU with its blend dial, readers that go both ways or in floors, and an encoder–decoder that translates English into Hindi through one summary vector, picks its words by beam search and is graded by BLEU — the bottleneck that attention removes.';
 
 /* ---- 1 · head + CSS ---- */
 let head = u15.slice(0, u15.indexOf('</head>'));
@@ -33,7 +33,7 @@ if (/Unit 15/.test(top)) throw new Error('topbar still says Unit 15');
 
 /* ---- 3 · hero + sections + drawers + practice ---- */
 let body = R('tpl/u17-hero.html').trimEnd() + '\n\n<main id="main-content" tabindex="-1">\n\n' +
-  ['a', 'b', 'c', 'd'].map(k => R(`tpl/u17-sec-${k}.html`)).join('\n') + '\n</main>\n';
+  ['a', 'b', 'c', 'd', 'e'].filter(k => has(`tpl/u17-sec-${k}.html`)).map(k => R(`tpl/u17-sec-${k}.html`)).join('\n') + '\n</main>\n';
 const DER = {};
 R('tpl/u17-derives.html').split(/<!--@D (\w+)-->/).slice(1).forEach((x, i, arr) => { if (i % 2 === 0) DER[x] = arr[i + 1].split(/(?=  <div class="derive">)/).map(s => s.trimEnd()).filter(s => s.includes('class="derive"')); });
 const usedDer = new Set();
@@ -64,7 +64,7 @@ const NEW_TAIL = '{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking i
 if (!ux.includes('var U = 15;')) throw new Error('ux block: no var U = 15');
 const ux17 = ux.replace('var U = 15;', 'var U = 17;').replace(ux.includes(NEW_TAIL) ? NEW_TAIL : OLD_TAIL, NEW_TAIL);
 if (!ux17.includes('var U = 17;') || !ux17.includes(NEW_TAIL) || (ux17.match(/"n":17,/g) || []).length !== 1 || /U15|u15-/.test(ux17)) throw new Error('ux block not patched');
-const JS = ['tpl/u17-kit.js', 'tpl/u17-shared.js', 'tpl/u17-hero.js', 'tpl/u17-w1.js', 'tpl/u17-w2.js', 'tpl/u17-w3.js', 'tpl/u17-w4.js'].filter(has);
+const JS = ['tpl/u17-kit.js', 'tpl/u17-shared.js', 'tpl/u17-hero.js', 'tpl/u17-w1.js', 'tpl/u17-w2.js', 'tpl/u17-w3.js', 'tpl/u17-w4.js', 'tpl/u17-talk-model.js', 'tpl/u17-w5.js', 'tpl/u17-w6.js'].filter(has);
 const script = '<!--@cinema-js-->\n<script>\n(function(){\n"use strict";\n' + shared.trimEnd() + '\n\n' + JS.map(f => '/* ---- ' + f.replace('tpl/', '') + ' ---- */\n' + R(f).trimEnd()).join('\n\n') + '\n\n})();\n' + ux17 + '</script>\n</body>\n</html>\n';
 
 const out = head + '\n' + top + body + '\n' + script;

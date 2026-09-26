@@ -2,8 +2,8 @@
 const { chromium } = require('playwright');
 const SITE = 'file:///home/claude/mfml-site/site';
 const UNITS = process.env.ONLY ? process.env.ONLY.split(',').map(Number) : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-const EXPECT_CHECKS = { 1: 11, 2: 11, 3: 13, 4: 13, 5: 17, 6: 17, 7: 16, 8: 17, 9: 15, 10: 15, 11: 20, 12: 22, 13: 20, 14: 20, 15: 20, 16: 20, 17: 20, 18: 20 };
-const EXPECT_PROBS = { 1: 10, 2: 18, 3: 8, 4: 5, 5: 12, 6: 10, 7: 11, 8: 12, 9: 12, 10: 12, 11: 14, 12: 12, 13: 16, 14: 14, 15: 14, 16: 14, 17: 14, 18: 14 };
+const EXPECT_CHECKS = { 1: 11, 2: 11, 3: 13, 4: 13, 5: 17, 6: 17, 7: 16, 8: 17, 9: 15, 10: 15, 11: 20, 12: 22, 13: 20, 14: 20, 15: 20, 16: 43, 17: 37, 18: 31 };
+const EXPECT_PROBS = { 1: 10, 2: 18, 3: 8, 4: 5, 5: 12, 6: 10, 7: 11, 8: 12, 9: 12, 10: 12, 11: 14, 12: 12, 13: 16, 14: 14, 15: 14, 16: 16, 17: 16, 18: 16 };
 
 let bad = 0;
 const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
@@ -178,7 +178,7 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
     const want = ['13 widgets · 11 checks · 10 problems', '11 widgets · 11 checks · 18 problems',
                   '10 widgets · 13 checks · 8 problems', '8 widgets · 13 checks · 5 problems',
                   '10 widgets · 17 checks · 12 problems', '13 widgets · 17 checks · 10 problems',
-                  '7 widgets · 16 checks · 11 problems', '9 widgets · 17 checks · 12 problems', '11 widgets · 15 checks · 12 problems', '11 widgets · 15 checks · 12 problems', '15 widgets · 20 checks · 14 problems', '16 widgets · 22 checks · 12 problems', '16 widgets · 20 checks · 16 problems', '16 widgets · 20 checks · 14 problems', '14 widgets · 20 checks · 14 problems', '14 widgets · 20 checks · 14 problems', '14 widgets · 20 checks · 14 problems', '15 widgets · 20 checks · 14 problems'];
+                  '7 widgets · 16 checks · 11 problems', '9 widgets · 17 checks · 12 problems', '11 widgets · 15 checks · 12 problems', '11 widgets · 15 checks · 12 problems', '15 widgets · 20 checks · 14 problems', '16 widgets · 22 checks · 12 problems', '16 widgets · 20 checks · 16 problems', '16 widgets · 20 checks · 14 problems', '14 widgets · 20 checks · 14 problems', '23 widgets · 43 checks · 16 problems', '17 widgets · 37 checks · 16 problems', '18 widgets · 31 checks · 16 problems'];
     feet.forEach((f, i) => { if (f.trim() !== want[i]) fail('hub', `card ${i + 1} reads "${f.trim()}", should be "${want[i]}"`); });
 
     /* returning student: partial on 3, complete on 1, last position in unit 3 */
@@ -194,9 +194,9 @@ const fail = (where, msg) => { console.log(`  ❌ ${where}: ${msg}`); bad++; };
 
     if (!(await page.locator('#progress-row.on').count())) fail('hub', 'progress row hidden for a returning student');
     const overall = (await page.locator('#overall-txt').textContent()).trim();
-    if (overall !== '15 of 307 checks passed') fail('hub', `overall reads "${overall}", expected "15 of 307 checks passed"`);
+    if (overall !== '15 of 358 checks passed') fail('hub', `overall reads "${overall}", expected "15 of 358 checks passed"`);
     const barW = await page.evaluate(() => document.getElementById('obar-fill').style.width);
-    if (barW !== '4.9%') fail('hub', `overall bar width ${barW}, expected 4.9%`);
+    if (barW !== '4.2%') fail('hub', `overall bar width ${barW}, expected 4.2%`);
     const cont = await page.locator('#continue-link');
     if (!(await cont.isVisible())) fail('hub', 'continue button hidden despite a stored position');
     if (await cont.getAttribute('href') !== 'unit-03.html#s7') fail('hub', `continue href = ${await cont.getAttribute('href')}`);

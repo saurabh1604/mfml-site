@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- Dev-only test page for the Unit 16 word2vec widgets (w-window, w-cbow, w-skipgram, w-lab). NOT published.
+     Serve the repo root over http (e.g. `python3 -m http.server 8791` in /home/claude/mfml-site) and open /dev/w2v-harness.html.
+     It borrows every <style> block of the published unit-16.html so the widgets sit on the real site skin,
+     then adds tpl/u16-w2v.css, the four fragments of tpl/u16-w2v.html and tpl/u16-w2v.js (nothing else: the widgets must stand alone). -->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>word2vec widgets harness</title>
+<style>.hbar{position:sticky;top:0;z-index:9;display:flex;gap:.5rem;padding:.5rem 1rem;background:var(--page,#000);font:13px system-ui}</style>
+</head>
+<body>
+<div class="hbar"><button onclick="document.documentElement.setAttribute('data-theme','dark')">dark</button><button onclick="document.documentElement.setAttribute('data-theme','light')">light</button></div>
+<main id="main-content">
+  <section class="unit" id="s8"><div class="sec-head"><span class="sec-num">8</span><h2>The sliding window</h2></div><div data-slot="window"></div></section>
+  <section class="unit" id="s9"><div class="sec-head"><span class="sec-num">9</span><h2>CBOW</h2></div><div data-slot="cbow"></div></section>
+  <section class="unit" id="s10"><div class="sec-head"><span class="sec-num">10</span><h2>Skip-gram</h2></div><div data-slot="skipgram"></div></section>
+  <section class="unit" id="s11"><div class="sec-head"><span class="sec-num">11</span><h2>The race</h2></div><div data-slot="lab"></div></section>
+</main>
+<script>
+(async function(){
+  const q=new URLSearchParams(location.search); const th=q.get('theme')||(function(){ try{ return localStorage.getItem('mfml-theme'); }catch(e){ return null; } })();
+  if(th) document.documentElement.setAttribute('data-theme',th);
+  const page=await (await fetch('../unit-16.html')).text();
+  const doc=new DOMParser().parseFromString(page,'text/html');
+  doc.querySelectorAll('head style').forEach(s=>{ if(s.id!=='u16-extra') document.head.appendChild(document.importNode(s,true)); });
+  const css=document.createElement('style'); css.id='u16-w2v-css'; css.textContent=await (await fetch('tpl/u16-w2v.css?'+Date.now())).text(); document.head.appendChild(css);
+  const html=await (await fetch('tpl/u16-w2v.html?'+Date.now())).text();
+  const frags={}; html.split(/<!--@W2VFRAG (\w+)-->/).slice(1).forEach((x,i,a)=>{ if(i%2===0) frags[x]=a[i+1]; });
+  document.querySelectorAll('[data-slot]').forEach(n=>{ const f=frags[n.dataset.slot]; if(f) n.outerHTML=f; else n.textContent='(missing fragment '+n.dataset.slot+')'; });
+  document.querySelectorAll('.reveal').forEach(n=>n.classList.add('in'));
+  const js=await (await fetch('tpl/u16-w2v.js?'+Date.now())).text();
+  const s=document.createElement('script'); s.textContent=js; document.body.appendChild(s);
+  window.HARNESS_READY=true;
+})();
+</script>
+</body>
+</html>

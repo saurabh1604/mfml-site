@@ -3,8 +3,9 @@
 const fs = require('fs');
 const R = f => fs.readFileSync(f, 'utf8');
 const u15 = R('src/unit-15.html');
+const has = f => fs.existsSync(f);
 const TITLE = 'Words as Vectors';
-const DESC = 'Teaching a machine what words mean. Count which word follows which and score the guesser by its perplexity; count which words keep company and squeeze the table with the SVD; let word2vec learn short vectors by a yes/no guessing game; build a small neural language model; and find that meaning is a direction: king − man + woman lands next to queen.';
+const DESC = 'How a machine learns what words mean from nothing but text. Guess the next word by counting and score the guesser by its perplexity; know a word by the company it keeps, weigh that company with TF-IDF and PMI, and squeeze it with the SVD; then stop counting and start predicting with word2vec\'s two games, CBOW and skip-gram, made cheap by negative sampling; see why counting and predicting meet (GloVe); and find that meaning is a direction: king − man + woman lands next to queen.';
 const UNITS_OLD = '{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"}]';
 const UNITS_NEW = '{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"},{"n":16,"t":"Words as Vectors"},{"n":17,"t":"Machines with Memory"},{"n":18,"t":"Attention and Transformers"}]';
 
@@ -23,7 +24,10 @@ sub('/* ---- unit-8/9/10/11/13/15 additions ---- */', '/* ---- unit-8/9/10/11/13
 const x0 = head.indexOf('<style id="u15-extra">'); if (x0 < 0) throw new Error('no u15-extra style');
 const x1 = head.indexOf('</style>', x0); head = head.slice(0, x0) + head.slice(x1 + '</style>'.length);
 if (/Unit 15|unit-15|u15-|U15|The Network, Whole/.test(head)) throw new Error('head still mentions unit 15: ' + head.match(/.{30}(Unit 15|unit-15|u15-|U15|The Network, Whole).{30}/)[0]);
-head = head.trimEnd() + '\n<style id="u16-extra">\n' + R('tpl/u16-head.css').trimEnd() + '\n</style>\n</head>';
+/* word2vec widgets (16-w2v): tpl/u16-w2v.css follows u16-head.css, only if it exists */
+let css16 = R('tpl/u16-head.css').trimEnd();
+if (has('tpl/u16-w2v.css')) css16 += '\n/* ---- the word2vec widgets (tpl/u16-w2v.css) ---- */\n' + R('tpl/u16-w2v.css').trimEnd();
+head = head.trimEnd() + '\n<style id="u16-extra">\n' + css16 + '\n</style>\n</head>';
 
 /* ---- 2 · body top (skip link, topbar, toc) ---- */
 let top = u15.slice(u15.indexOf('<body>'), u15.indexOf('<section class="hero-stage">'));
@@ -32,8 +36,21 @@ top = top.replace('/ Unit 15 · The Network, Whole', '/ Unit 16 · ' + TITLE);
 if (/Unit 15|unit-15|u15/.test(top)) throw new Error('topbar still says Unit 15');
 
 /* ---- 3 · hero + sections + drawers + practice ---- */
+const SECS = ['a', 'b', 'c', 'd', 'e'].map(k => `tpl/u16-sec-${k}.html`).filter(has);
 let body = R('tpl/u16-hero.html').trimEnd() + '\n\n<main id="main-content" tabindex="-1">\n\n' +
-  ['a', 'b', 'c', 'd'].map(k => R(`tpl/u16-sec-${k}.html`)).join('\n') + '\n</main>\n';
+  SECS.map(R).join('\n') + '\n</main>\n';
+/* ---- assembler contract with 16-w2v: every <!--@W2V name--> becomes the fragment of tpl/u16-w2v.html that starts with
+   <!--@W2VFRAG name--> (fragments are separated by these markers). Missing file/fragment → a visible stub + a warning. ---- */
+const W2V_NAMES = ['window', 'cbow', 'skipgram', 'lab'], FRAG = {};
+if (has('tpl/u16-w2v.html')) R('tpl/u16-w2v.html').split(/<!--@W2VFRAG (\w+)-->/).slice(1).forEach((x, i, arr) => { if (i % 2 === 0) FRAG[x] = arr[i + 1].trim(); });
+const stubs = [];
+for (const n of W2V_NAMES) { const k = (body.match(new RegExp('<!--@W2V ' + n + '-->', 'g')) || []).length; if (k > 1 || (k === 0 && body.includes('<!--@W2V '))) throw new Error('W2V slot "' + n + '" appears ' + k + ' times (want exactly 1)'); }
+body = body.replace(/<!--@W2V (\w+)-->/g, (m, name) => {
+  if (!W2V_NAMES.includes(name)) throw new Error('unknown W2V slot: ' + name);
+  if (FRAG[name]) return FRAG[name];
+  stubs.push(name);
+  return `  <div class="widget reveal" id="w-${name}"><div class="widget-head"><span class="w-title">The ${name} widget</span><span class="w-sub">Being built in this round.</span></div><p class="try"><b>Try:</b> come back soon.</p></div>`; });
+for (const k of Object.keys(FRAG)) if (!W2V_NAMES.includes(k)) throw new Error('tpl/u16-w2v.html has an unknown fragment: ' + k);
 const DER = {};
 R('tpl/u16-derives.html').split(/<!--@D (\w+)-->/).slice(1).forEach((x, i, arr) => { if (i % 2 === 0) DER[x] = arr[i + 1].split(/(?=  <div class="derive">)/).map(s => s.trimEnd()).filter(s => s.includes('class="derive"')); });
 const usedDer = new Set();
@@ -44,10 +61,10 @@ body = body.replace('<!--@PRACTICE-->', () => R('tpl/u16-practice.html').trimEnd
 if (/<!--@/.test(body)) throw new Error('unfilled placeholder: ' + body.match(/<!--@[^>]*-->/)[0]);
 
 /* true counts → hero chips and the check total */
-const nChecks = (body.match(/class="check reveal"/g) || []).length, nWidgets = (body.match(/<div class="widget reveal"/g) || []).length,
+const nChecks = (body.match(/class="check reveal"/g) || []).length, nWidgets = (body.match(/<div class="widget reveal[^"]*"/g) || []).length,
   n3d = (body.match(/class="stage3d[^"]*"/g) || []).length, nProbs = (body.match(/class="prob reveal"/g) || []).length,
   nDer = (body.match(/class="derive"/g) || []).length;
-const n3dW = [...body.matchAll(/<div class="widget reveal" id="(w-[^"]+)"[\s\S]*?(?=<div class="widget reveal"|<\/section>)/g)].filter(m => /class="stage3d/.test(m[0])).length;
+const n3dW = [...body.matchAll(/<div class="widget reveal[^"]*" id="(w-[^"]+)"[\s\S]*?(?=<div class="widget reveal|<\/section>)/g)].filter(m => /class="stage3d/.test(m[0])).length;
 body = body.replace('@@WIDGETS@@', nWidgets).replace('@@W3D@@', n3dW).replace('@@CHECKS@@', nChecks).replace('@@DERIVES@@', nDer).replace('@@PROBS@@', nProbs);
 if (/@@\w+@@/.test(body)) throw new Error('unfilled count: ' + body.match(/@@\w+@@/)[0]);
 const ids = [...body.matchAll(/data-check="(c\d+)"/g)].map(m => m[1]); if (new Set(ids).size !== ids.length) throw new Error('duplicate check id');
@@ -62,7 +79,8 @@ const ux = u15.slice(u15.lastIndexOf('/* ================= MBM-UX-V2'), u15.last
 if (!ux.includes('var U = 15;') || !(ux.includes(UNITS_OLD) || ux.includes(UNITS_NEW))) throw new Error('ux block of unit 15 has changed shape');
 const ux16 = ux.replace('var U = 15;', 'var U = 16;').replace(ux.includes(UNITS_NEW) ? UNITS_NEW : UNITS_OLD, UNITS_NEW);
 if (!ux16.includes('var U = 16;') || !ux16.includes(UNITS_NEW) || (ux16.match(/"n":16,/g) || []).length !== 1) throw new Error('ux block not patched');
-const JS = ['tpl/u16-kit.js', 'tpl/u16-shared.js', 'tpl/u16-hero.js', 'tpl/u16-w1.js', 'tpl/u16-w2.js', 'tpl/u16-w3.js', 'tpl/u16-w4.js'].filter(f => fs.existsSync(f));
+/* tpl/u16-w2v.js (16-w2v) comes last; it wraps itself and must not depend on the files before it */
+const JS = ['tpl/u16-kit.js', 'tpl/u16-shared.js', 'tpl/u16-hero.js', 'tpl/u16-w1.js', 'tpl/u16-w2.js', 'tpl/u16-w3.js', 'tpl/u16-w4.js', 'tpl/u16-w2v.js'].filter(has);
 const script = '<!--@cinema-js-->\n<script>\n(function(){\n"use strict";\n' + shared.trimEnd() + '\n\n' + JS.map(f => '/* ---- ' + f.replace('tpl/', '') + ' ---- */\n' + R(f).trimEnd()).join('\n\n') + '\n\n})();\n' + ux16 + '</script>\n</body>\n</html>\n';
 
 const out = head + '\n' + top + body + '\n' + script;
@@ -71,4 +89,5 @@ for (const bad of [/exam paper/i, /question bank/i, /past paper/i, /\bexams?\b/i
 if (/mfml-u15|u15-|U15|unit-15\.html#|Unit 15 of 20/.test(out.replace('<a href="unit-15.html">← Unit 15 · The Network, Whole</a>', ''))) {
   const m = out.match(/.{40}(mfml-u15|u15-|U15|Unit 15 of 20).{40}/); if (m) throw new Error('unit 15 leftover: ' + m[0]); }
 fs.writeFileSync('src/unit-16.html', out);
-console.log('assembled src/unit-16.html', out.length, 'bytes;', nChecks, 'checks;', nWidgets, 'widgets (' + n3dW + ' in 3D, ' + n3d + ' stages);', nProbs, 'problems;', nDer, 'derives;', 'JS:', JS.map(f => f.replace('tpl/u16-', '')).join(' '));
+if (stubs.length) console.log('WARNING: word2vec widget stub(s) used for: ' + stubs.join(', ') + ' (tpl/u16-w2v.html missing or incomplete)');
+console.log('assembled src/unit-16.html', out.length, 'bytes;', nChecks, 'checks;', nWidgets, 'widgets (' + n3dW + ' in 3D, ' + n3d + ' stages);', nProbs, 'problems;', nDer, 'derives;', 'sections:', SECS.map(f => f.replace('tpl/u16-sec-', '').replace('.html', '')).join(''), '· JS:', JS.map(f => f.replace('tpl/u16-', '')).join(' '));

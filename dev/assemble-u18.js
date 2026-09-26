@@ -5,7 +5,7 @@ const R = f => fs.readFileSync(f, 'utf8');
 const has = f => fs.existsSync(f);
 const u15 = R('src/unit-15.html');
 const TITLE_ESC = 'Attention and Transformers';
-const DESC = 'Every word asks every other word a question. Attention as a soft lookup: queries, keys and values worked by hand, why we divide by the square root of d, an attention lab where you type a sentence and watch “it” find “ball”, many heads as many subspaces, positions as clock hands and rotations, the transformer block with residual paths and layer norm, the causal mask, the n² price, and a tiny transformer walked end to end with every number visible.';
+const DESC = 'How a machine learns to look back instead of remembering: the decoder that glances at every note (seq2seq attention and the alignment map), attention as a soft lookup, queries, keys and values worked by hand, why we divide by the square root of d, one word with many meanings (contextual vectors), an attention lab where “it” finds “ball”, many heads, three ways to add position (learned, clock tags, rotary), the transformer block with its residual notebook and layer norm, the causal mask that trains every next word at once, BERT, GPT and the encoder–decoder, the n² price, and a tiny transformer walked end to end.';
 
 /* ---- 1 · head + CSS ---- */
 let head = u15.slice(0, u15.indexOf('</head>'));
@@ -32,7 +32,7 @@ if (/Unit 15/.test(top)) throw new Error('topbar still says Unit 15');
 
 /* ---- 3 · hero + sections + drawers + practice ---- */
 let body = R('tpl/u18-hero.html').trimEnd() + '\n\n<main id="main-content" tabindex="-1">\n\n' +
-  ['a', 'b', 'c', 'd'].map(k => R(`tpl/u18-sec-${k}.html`)).join('\n') + '\n</main>\n';
+  ['a', 'b', 'c', 'd', 'e'].map(k => R(`tpl/u18-sec-${k}.html`)).join('\n') + '\n</main>\n';
 const DER = {};
 R('tpl/u18-derives.html').split(/<!--@D (\w+)-->/).slice(1).forEach((x, i, arr) => { if (i % 2 === 0) DER[x] = arr[i + 1].split(/(?=  <div class="derive">)/).map(s => s.trimEnd()).filter(s => s.includes('class="derive"')); });
 const usedDer = new Set();
@@ -41,6 +41,8 @@ body = body.replace(/<!--@ALG (\w+)-->/g, (m, sid) => { const d = DER[sid]; if (
 for (const k of Object.keys(DER)) if (!usedDer.has(k)) throw new Error('derive group never placed: ' + k);
 body = body.replace('<!--@PRACTICE-->', () => R('tpl/u18-practice.html').trimEnd());
 if (/<!--@/.test(body)) throw new Error('unfilled placeholder: ' + body.match(/<!--@[^>]*-->/)[0]);
+/* digit groups (1 048 576) never break across lines: in text (not in tags, not inside \( \) or \[ \]) the space becomes a no-break space */
+body = body.split(/(<[^>]+>)/).map(p => p.startsWith('<') ? p : p.split(/(\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\])/).map((q, k) => k % 2 ? q : q.replace(/(?<=\d) (?=\d{3}(?!\d))/g, ' ')).join('')).join('');
 
 /* true counts → hero chips and the check total */
 const nChecks = (body.match(/class="check reveal"/g) || []).length, nWidgets = (body.match(/<div class="widget reveal"/g) || []).length,
@@ -62,13 +64,15 @@ const OLD = '{"n":15,"t":"The Network, Whole"}]', NEW = '{"n":15,"t":"The Networ
 if (!ux.includes('var U = 15;') || !(ux.includes(OLD) || ux.includes(NEW))) throw new Error('ux block: anchors missing');
 const ux18 = ux.replace('var U = 15;', 'var U = 18;').replace(ux.includes(NEW) ? NEW : OLD, NEW);
 if (!ux18.includes('var U = 18;') || !ux18.includes(NEW) || (ux18.match(/"n":18,/g) || []).length !== 1) throw new Error('ux block not patched');
-const JS = ['tpl/u18-kit.js', 'tpl/u18-shared.js', 'tpl/u18-hero.js', 'tpl/u18-w1.js', 'tpl/u18-w2.js', 'tpl/u18-w3.js', 'tpl/u18-w4.js'].filter(has);
+const JS = ['tpl/u18-kit.js', 'tpl/u18-shared.js', 'tpl/u18-hero.js', 'tpl/u18-w1.js', 'tpl/u18-w2.js', 'tpl/u18-w3.js', 'tpl/u18-w4.js', 'tpl/u18-w5.js'].filter(has);
 const script = '<!--@cinema-js-->\n<script>\n(function(){\n"use strict";\n' + shared.trimEnd() + '\n\n' + JS.map(f => '/* ---- ' + f.replace('tpl/', '') + ' ---- */\n' + R(f).trimEnd()).join('\n\n') + '\n\n})();\n' + ux18 + '</script>\n</body>\n</html>\n';
 
 const out = head + '\n' + top + body + '\n' + script;
-for (const bad of ['MFML', 'ZC416', 'BITS', 'WILP']) { if (out.replace(/mfml-/g, '').includes(bad)) throw new Error('brand leak: ' + bad); }
-for (const bad of [/exam paper/i, /question bank/i, /past paper/i, /\bexams?\b/i]) { const m = out.match(bad); if (m) throw new Error('forbidden phrase: ' + m[0]); }
-if (/mfml-u15|u15-|U15/.test(out)) throw new Error('unit 15 leftover: ' + out.match(/.{40}(mfml-u15|u15-|U15).{40}/)[0]);
-if (/Unit 15 of 20|\/ Unit 15|var U = 15/.test(out)) throw new Error('unit 15 chrome leftover');
+/* the text checks skip embedded font data (base64 can spell anything by chance) */
+const words = out.replace(/data:font\/[a-z0-9]+;base64,[A-Za-z0-9+\/=]+/g, 'data:font');
+for (const bad of ['MFML', 'ZC416', 'BITS', 'WILP']) { if (words.replace(/mfml-/g, '').includes(bad)) throw new Error('brand leak: ' + bad); }
+for (const bad of [/exam paper/i, /question bank/i, /past paper/i, /\bexams?\b/i]) { const m = words.match(bad); if (m) throw new Error('forbidden phrase: ' + m[0]); }
+if (/mfml-u15|u15-|U15/.test(words)) throw new Error('unit 15 leftover: ' + words.match(/.{40}(mfml-u15|u15-|U15).{40}/)[0]);
+if (/Unit 15 of 20|\/ Unit 15|var U = 15/.test(words)) throw new Error('unit 15 chrome leftover');
 fs.writeFileSync('src/unit-18.html', out);
 console.log('assembled src/unit-18.html', out.length, 'bytes;', nChecks, 'checks;', nWidgets, 'widgets (' + n3dW + ' in 3D, ' + n3d + ' stages);', nProbs, 'problems;', nDer, 'derives;', 'JS:', JS.map(f => f.replace('tpl/u18-', '')).join(' '));
