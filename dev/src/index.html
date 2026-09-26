@@ -697,20 +697,20 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
     <a class="card" href="unit-16.html" data-unit="16">
       <canvas class="glyph" data-g="16" aria-hidden="true"></canvas>
       <div class="top"><span class="num">16</span><h3>Words as Vectors</h3></div>
-      <p>Teaching a machine what words mean. Count which word follows which and score the guesser by its perplexity; count which words keep company and squeeze the table with the SVD; let word2vec learn short vectors by a yes/no guessing game — and find that meaning is a direction: king − man + woman lands next to queen.</p>
-      <div class="foot"><span class="status ready">Ready</span><span>14 widgets · 20 checks · 14 problems</span></div>
+      <p>Teaching a machine what words mean. Guess the next word by counting, make room for the unseen, and score the guesser by its surprise (perplexity). Know a word by the company it keeps, weighed by PMI and squeezed by the SVD. Then word2vec’s two games, CBOW and skip-gram, made cheap by negative sampling — and king&nbsp;−&nbsp;man&nbsp;+&nbsp;woman lands near queen.</p>
+      <div class="foot"><span class="status ready">Ready</span><span>23 widgets · 43 checks · 16 problems</span></div>
     </a>
     <a class="card" href="unit-17.html" data-unit="17">
       <canvas class="glyph" data-g="17" aria-hidden="true"></canvas>
       <div class="top"><span class="num">17</span><h3>Machines with Memory</h3></div>
-      <p>Reading one word at a time. A recurrent cell keeps a running note with the same weights at every word; training sends blame back through time, multiplied by one matrix again and again, so its eigenvalues decide whether memory fades or blows up. Then clipping, the LSTM’s express lane, the GRU’s blend dial, and the encoder–decoder bottleneck that attention removes.</p>
-      <div class="foot"><span class="status ready">Ready</span><span>14 widgets · 20 checks · 14 problems</span></div>
+      <p>Reading one word at a time. A recurrent cell keeps a running note, and a tiny model learns to talk. Blame flows back through time, multiplied by the same matrix again and again, so its eigenvalues decide whether memory fades or explodes. Then clipping, the LSTM’s express lane, the GRU’s blend dial, reading both ways, and translation graded by BLEU.</p>
+      <div class="foot"><span class="status ready">Ready</span><span>17 widgets · 37 checks · 16 problems</span></div>
     </a>
     <a class="card" href="unit-18.html" data-unit="18">
       <canvas class="glyph" data-g="18" aria-hidden="true"></canvas>
       <div class="top"><span class="num">18</span><h3>Attention and Transformers</h3></div>
-      <p>Every word asks every other word a question. Queries, keys and values worked by hand, why we divide by √d, an attention lab where “it” finds “ball”, many heads as many subspaces, positions as rotations, residual paths and layer norm, the causal mask — and a tiny transformer walked end to end with every number visible.</p>
-      <div class="foot"><span class="status ready">Ready</span><span>15 widgets · 20 checks · 14 problems</span></div>
+      <p>Look back instead of remembering. Every word asks every other word a question: queries, keys and values worked by hand, why we divide by √d, and how “bank” finds its meaning. Then an attention lab, many heads, three ways to mark position, the block, the no-peeking mask that trains every guess at once, BERT versus GPT — and a tiny transformer walked end to end.</p>
+      <div class="foot"><span class="status ready">Ready</span><span>18 widgets · 31 checks · 16 problems</span></div>
     </a>
   </div>
 
@@ -772,7 +772,7 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
   /* Fallbacks are used only until a student opens the unit itself — each unit
      page writes its true check count to mfml-uN-total when it loads. */
-  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15,11:20,12:22,13:20,14:20,15:20,16:20,17:20,18:20};
+  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15,11:20,12:22,13:20,14:20,15:20,16:43,17:37,18:31};
   const TITLE={1:'Systems of Linear Equations',2:'Vector Spaces',3:'Analytic Geometry',
                4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent',10:'Optimization I',11:'Optimization II',12:'Principal Component Analysis',13:'Support Vector Machines',14:'Thinking in Probabilities',15:'The Network, Whole',16:'Words as Vectors',17:'Machines with Memory',18:'Attention and Transformers'};
   let done=0, total=0;
@@ -838,8 +838,8 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
     [6,'Derivatives','Differentiation',2,17],[7,'Backprop','Backprop & Automatic Differentiation',2,16],[8,'Taylor','Taylor & MacLaurin Series',2,17],
     [9,'Gradient descent','Gradient Descent',3,15],[10,'Optim.\u00a0I','Optimization I — Gradients that Work',3,15],[11,'Optim.\u00a0II','Optimization II — Five Ways Down One Valley',3,20],
     [12,'PCA','Principal Component Analysis',4,22],[13,'SVM','Support Vector Machines',4,20],
-    [14,'Probability','Thinking in Probabilities',5,20],[15,'Networks','The Network, Whole',5,20],[16,'Word vectors','Words as Vectors',5,20],
-    [17,'RNNs','Machines with Memory',5,20],[18,'Transformers','Attention and Transformers',5,20],
+    [14,'Probability','Thinking in Probabilities',5,20],[15,'Networks','The Network, Whole',5,20],[16,'Word vectors','Words as Vectors',5,43],
+    [17,'RNNs','Machines with Memory',5,37],[18,'Transformers','Attention and Transformers',5,31],
     [19,'LLM maths','The Maths Inside an LLM',6,0],[20,'Diffusion','From Noise to Pictures: VAEs and Diffusion',6,0]];
   const PC={1:'--s1',2:'--s3',3:'--s2',4:'--s7',5:'--s6',6:'--s5'};
   const last=+((get('mfml-last')||'').split('|')[0])||0;
