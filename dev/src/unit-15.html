@@ -1962,9 +1962,9 @@ details.pl-gcd summary{font-size:.76rem}
   <div class="prose reveal">
     <p><strong>Where this goes next.</strong></p>
     <ul>
-      <li><strong>Unit 16 · Words as Vectors.</strong> The network's first real job: reading. Each word becomes a list of numbers, and a softmax over the whole vocabulary — thousands of classes — predicts the next word. The blame at that softmax is \(\mathbf q-\mathbf y\) again.</li>
-      <li><strong>Unit 17 · Machines with Memory.</strong> The same layer is used again and again, once per word, so the backward pass runs back <em>through time</em> — and the fading and exploding of §10 become an eigenvalue story.</li>
-      <li><strong>Unit 18 · Attention and Transformers.</strong> Fixed wires are replaced by wires the network chooses for itself, using dot products (<a href="unit-03.html#s2d">Unit 3</a>) and softmax.</li>
+      <li><strong><a href="unit-16.html">Unit 16 · Words as Vectors</a>.</strong> The network's first real job: reading. Each word becomes a list of numbers, and a softmax over the whole vocabulary — thousands of classes — predicts the next word. The blame at that softmax is \(\mathbf q-\mathbf y\) again.</li>
+      <li><strong><a href="unit-17.html">Unit 17 · Machines with Memory</a>.</strong> The same layer is used again and again, once per word, so the backward pass runs back <em>through time</em> — and the fading and exploding of §10 become an eigenvalue story.</li>
+      <li><strong><a href="unit-18.html">Unit 18 · Attention and Transformers</a>.</strong> Fixed wires are replaced by wires the network chooses for itself, using dot products (<a href="unit-03.html#s2d">Unit 3</a>) and softmax.</li>
     </ul>
   </div>
   <div class="callout remember reveal"><span class="tag">The realization</span>
@@ -2206,7 +2206,7 @@ details.pl-gcd summary{font-size:.76rem}
 
   <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
-    <p style="margin:.35rem 0 .6rem"><strong>Unit 16 · Words as Vectors</strong> <span style="color:var(--ink-muted)">— upcoming</span></p>
+    <p style="margin:.35rem 0 .6rem"><strong><a href="unit-16.html">Unit 16 · Words as Vectors →</a></strong></p>
     <p style="margin:0 0 .6rem;font-family:var(--serif)">The network gets its first real job: reading. Each word becomes a list of numbers — a vector — and a softmax over the whole vocabulary predicts the next word. The blame at that softmax is prediction minus truth again. And meaning turns out to be a direction: the arrow from "man" to "woman" points the same way as the arrow from "king" to "queen".</p>
     <p style="margin:0;font-size:.85rem"><a href="unit-14.html">← Unit 14 · Thinking in Probabilities</a> · <a href="index.html">All units</a></p>
   </div>
@@ -4238,7 +4238,7 @@ window.U15Play={
 /* ================= MBM-UX-V2 · navigation, resume, revision, print ================= */
 (function(){
   var U = 15;
-  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"},{"n":6,"t":"Differentiation"},{"n":7,"t":"Backprop & Auto-diff"},{"n":8,"t":"Taylor & MacLaurin"},{"n":9,"t":"Gradient Descent"},{"n":10,"t":"Optimization I"},{"n":11,"t":"Optimization II"},{"n":12,"t":"Principal Component Analysis"},{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"}];
+  var UNITS = [{"n":1,"t":"Systems of Linear Equations"},{"n":2,"t":"Vector Spaces"},{"n":3,"t":"Analytic Geometry"},{"n":4,"t":"Determinants & Eigenvalues"},{"n":5,"t":"Decompositions & SVD"},{"n":6,"t":"Differentiation"},{"n":7,"t":"Backprop & Auto-diff"},{"n":8,"t":"Taylor & MacLaurin"},{"n":9,"t":"Gradient Descent"},{"n":10,"t":"Optimization I"},{"n":11,"t":"Optimization II"},{"n":12,"t":"Principal Component Analysis"},{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"},{"n":16,"t":"Words as Vectors"},{"n":17,"t":"Machines with Memory"},{"n":18,"t":"Attention and Transformers"}];
   var st = {get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
             set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   var secs = [].slice.call(document.querySelectorAll('section.unit'));

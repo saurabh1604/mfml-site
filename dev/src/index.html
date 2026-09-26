@@ -539,7 +539,7 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
   <div class="hero-scrim"></div>
   <div class="wrap">
   <header class="hero">
-    <a class="eyebrow" href="#units"><span class="eb-new">New</span><span class="eb-txt">Probabilities and the whole network are now live</span><span class="eb-arr" aria-hidden="true">→</span></a>
+    <a class="eyebrow" href="#units"><span class="eb-new">New</span><span class="eb-txt">Words, memory and attention are now live</span><span class="eb-arr" aria-hidden="true">→</span></a>
     <h1>Learn the math under the machine <em>by touching it.</em></h1>
     <p class="lede">From a single straight line to the transformer. Every idea begins as a story, becomes something you can hold and bend, and ends worked out in full.</p>
     <div class="start-row" id="start-row"><a class="cta" href="unit-01.html">Start with Unit 1 <span aria-hidden="true">→</span></a><a class="cta-ghost" href="#journey">Explore the route</a></div>
@@ -579,7 +579,7 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
   <div class="lp-head course-head reveal" id="units">
     <span class="lp-eyebrow">The course</span>
     <h2>Six parts, from vectors to generative AI</h2>
-    <p>Parts I–IV are open, and Part V has begun. The units still being written show what each will build on.</p>
+    <p>Parts I–V are open now. Part VI is being written, and each of its cards shows what it will build on.</p>
   </div>
   <h2 class="part reveal" id="part-1" data-p="1"><span class="roman">I</span>Part I · Linear Algebra</h2>
   <p class="part-sub reveal" data-p="1">Where vectors live, and the matrices that move them.</p>
@@ -680,7 +680,7 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
   </div>
 
   <h2 class="part reveal" id="part-5" data-p="5"><span class="roman">V</span>Part V · Models that Read</h2>
-  <p class="part-sub reveal" data-p="5">From geometry to uncertainty, then networks that read — each unit ending with the problem the next one solves.</p>
+  <p class="part-sub reveal" data-p="5">From geometry to uncertainty, then networks that read — words as points, a running memory, then attention, each unit solving the problem the last one left.</p>
   <div class="grid reveal-stagger" data-p="5">
     <a class="card" href="unit-14.html" data-unit="14">
       <canvas class="glyph" data-g="14" aria-hidden="true"></canvas>
@@ -694,30 +694,24 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
       <p>A real network with every number visible. A layer is a matrix, a shift and a bend; without the bend every stack collapses into one matrix, and with it enough folds trace any shape. The full forward and backward pass worked by hand — at the output the gradient is just prediction − truth — then a playground where you build a network and watch the blame flow back.</p>
       <div class="foot"><span class="status ready">Ready</span><span>14 widgets · 20 checks · 14 problems</span></div>
     </a>
-    <div class="card locked roadmap">
+    <a class="card" href="unit-16.html" data-unit="16">
       <canvas class="glyph" data-g="16" aria-hidden="true"></canvas>
       <div class="top"><span class="num">16</span><h3>Words as Vectors</h3></div>
-      <p>Teaching a machine what words mean. From counting word pairs to a neural language model (perplexity is the exponential of cross-entropy), a co-occurrence matrix squeezed by the SVD, word2vec, and the geometry of meaning.</p>
-      <p class="aha"><b>The aha</b> Meaning is a direction: king − man + woman lands next to queen.</p>
-      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-03.html">3</a><a class="bchip" href="unit-05.html">5</a><a class="bchip" href="unit-12.html">12</a><a class="bchip" href="unit-14.html">14</a><a class="bchip" href="unit-15.html">15</a></div>
-      <div class="foot"><span class="status soon">Upcoming</span></div>
-    </div>
-    <div class="card locked roadmap">
+      <p>Teaching a machine what words mean. Count which word follows which and score the guesser by its perplexity; count which words keep company and squeeze the table with the SVD; let word2vec learn short vectors by a yes/no guessing game — and find that meaning is a direction: king − man + woman lands next to queen.</p>
+      <div class="foot"><span class="status ready">Ready</span><span>14 widgets · 20 checks · 14 problems</span></div>
+    </a>
+    <a class="card" href="unit-17.html" data-unit="17">
       <canvas class="glyph" data-g="17" aria-hidden="true"></canvas>
       <div class="top"><span class="num">17</span><h3>Machines with Memory</h3></div>
-      <p>Reading one word at a time. The recurrent cell, backprop through time, why gradients fade or explode, LSTM and GRU gates, and the encoder–decoder with its bottleneck.</p>
-      <p class="aha"><b>The aha</b> The gradient carries powers of one matrix, so its eigenvalues decide whether memory fades away or blows up.</p>
-      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-04.html">4</a><a class="bchip" href="unit-07.html">7</a><a class="bchip" href="unit-15.html">15</a><span class="bchip soon">16</span></div>
-      <div class="foot"><span class="status soon">Upcoming</span></div>
-    </div>
-    <div class="card locked roadmap">
+      <p>Reading one word at a time. A recurrent cell keeps a running note with the same weights at every word; training sends blame back through time, multiplied by one matrix again and again, so its eigenvalues decide whether memory fades or blows up. Then clipping, the LSTM’s express lane, the GRU’s blend dial, and the encoder–decoder bottleneck that attention removes.</p>
+      <div class="foot"><span class="status ready">Ready</span><span>14 widgets · 20 checks · 14 problems</span></div>
+    </a>
+    <a class="card" href="unit-18.html" data-unit="18">
       <canvas class="glyph" data-g="18" aria-hidden="true"></canvas>
       <div class="top"><span class="num">18</span><h3>Attention and Transformers</h3></div>
-      <p>Every word asks every other word a question. Queries, keys and values, why we divide by √d, softmax weights, many heads as many subspaces, positions as rotations, residual paths and layer norm, causal masking.</p>
-      <p class="aha"><b>The aha</b> Attention is Unit 13’s kernel vote: similarity by a dot product, then a weighted sum.</p>
-      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-03.html">3</a><a class="bchip" href="unit-04.html">4</a><a class="bchip" href="unit-10.html">10</a><a class="bchip" href="unit-12.html">12</a><a class="bchip" href="unit-13.html">13</a><a class="bchip" href="unit-14.html">14</a></div>
-      <div class="foot"><span class="status soon">Upcoming</span></div>
-    </div>
+      <p>Every word asks every other word a question. Queries, keys and values worked by hand, why we divide by √d, an attention lab where “it” finds “ball”, many heads as many subspaces, positions as rotations, residual paths and layer norm, the causal mask — and a tiny transformer walked end to end with every number visible.</p>
+      <div class="foot"><span class="status ready">Ready</span><span>15 widgets · 20 checks · 14 problems</span></div>
+    </a>
   </div>
 
   <h2 class="part reveal" id="part-6" data-p="6"><span class="roman">VI</span>Part VI · Models that Create<span class="soon-tag">Upcoming</span></h2>
@@ -728,7 +722,7 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
       <div class="top"><span class="num">19</span><h3>The Maths Inside an LLM</h3></div>
       <p>What happens when a model writes. Next-token likelihood at scale, sampling with temperature, top-k and top-p, rotary positions, the KV cache, LoRA fine-tuning, alignment with a reward and a KL leash (and DPO), and scaling laws.</p>
       <p class="aha"><b>The aha</b> Fine-tuning a giant model is Eckart–Young: change only a rank-8 slice and leave the rest alone.</p>
-      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-04.html">4</a><a class="bchip" href="unit-05.html">5</a><a class="bchip" href="unit-11.html">11</a><a class="bchip" href="unit-14.html">14</a><span class="bchip soon">18</span></div>
+      <div class="builds"><span class="blabel">Builds on</span><a class="bchip" href="unit-04.html">4</a><a class="bchip" href="unit-05.html">5</a><a class="bchip" href="unit-11.html">11</a><a class="bchip" href="unit-14.html">14</a><a class="bchip" href="unit-18.html">18</a></div>
       <div class="foot"><span class="status soon">Upcoming</span></div>
     </div>
     <div class="card locked roadmap">
@@ -778,9 +772,9 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
   /* ============ MBM-UX-V2 · real progress across every unit ============ */
   /* Fallbacks are used only until a student opens the unit itself — each unit
      page writes its true check count to mfml-uN-total when it loads. */
-  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15,11:20,12:22,13:20,14:20,15:20};
+  const FALLBACK={1:11,2:11,3:13,4:13,5:17,6:17,7:16,8:17,9:15,10:15,11:20,12:22,13:20,14:20,15:20,16:20,17:20,18:20};
   const TITLE={1:'Systems of Linear Equations',2:'Vector Spaces',3:'Analytic Geometry',
-               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent',10:'Optimization I',11:'Optimization II',12:'Principal Component Analysis',13:'Support Vector Machines',14:'Thinking in Probabilities',15:'The Network, Whole'};
+               4:'Determinants & Eigenvalues',5:'Decompositions & SVD',6:'Differentiation',7:'Backprop & Auto-diff',8:'Taylor & MacLaurin',9:'Gradient Descent',10:'Optimization I',11:'Optimization II',12:'Principal Component Analysis',13:'Support Vector Machines',14:'Thinking in Probabilities',15:'The Network, Whole',16:'Words as Vectors',17:'Machines with Memory',18:'Attention and Transformers'};
   let done=0, total=0;
 
   document.querySelectorAll('a.card[data-unit]').forEach(card=>{
@@ -844,8 +838,8 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
     [6,'Derivatives','Differentiation',2,17],[7,'Backprop','Backprop & Automatic Differentiation',2,16],[8,'Taylor','Taylor & MacLaurin Series',2,17],
     [9,'Gradient descent','Gradient Descent',3,15],[10,'Optim.\u00a0I','Optimization I — Gradients that Work',3,15],[11,'Optim.\u00a0II','Optimization II — Five Ways Down One Valley',3,20],
     [12,'PCA','Principal Component Analysis',4,22],[13,'SVM','Support Vector Machines',4,20],
-    [14,'Probability','Thinking in Probabilities',5,20],[15,'Networks','The Network, Whole',5,20],[16,'Word vectors','Words as Vectors',5,0],
-    [17,'RNNs','Machines with Memory',5,0],[18,'Transformers','Attention and Transformers',5,0],
+    [14,'Probability','Thinking in Probabilities',5,20],[15,'Networks','The Network, Whole',5,20],[16,'Word vectors','Words as Vectors',5,20],
+    [17,'RNNs','Machines with Memory',5,20],[18,'Transformers','Attention and Transformers',5,20],
     [19,'LLM maths','The Maths Inside an LLM',6,0],[20,'Diffusion','From Noise to Pictures: VAEs and Diffusion',6,0]];
   const PC={1:'--s1',2:'--s3',3:'--s2',4:'--s7',5:'--s6',6:'--s5'};
   const last=+((get('mfml-last')||'').split('|')[0])||0;
@@ -1337,6 +1331,45 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
       N.forEach((ns,l)=>ns.forEach(([x,y])=>{ const lit=fwd?front>=l:front<=l, out=l===3, c=lit?col:pal.s7; g.fillStyle=c; glow(g,c,lit?12:6);
         g.beginPath(); g.arc(x,y,out?5:3.6,0,7); g.fill(); g.fillStyle=pal.page; noglow(g); g.beginPath(); g.arc(x,y,out?2.2:1.5,0,7); g.fill(); }));
       noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText(fwd?'forward':'blame ŷ − y',w-6,h-6); g.globalAlpha=1; g.textAlign='left'; },
+    /* 16 · words as vectors — a faint cloud of words; the man→woman arrow is carried over to king and lands on queen */
+    16(g,w,h,t){ const cx=w/2-34, cy=h*.5; let sd=11; const rnd=()=>{ sd=(sd*16807)%2147483647; return sd/2147483647; };
+      noglow(g); g.fillStyle=pal.s7; g.globalAlpha=.45;
+      for(let k=0;k<26;k++){ g.beginPath(); g.arc(w/2+(rnd()-.5)*150,cy+(rnd()-.5)*54,1.2,0,7); g.fill(); } g.globalAlpha=1;
+      const P={man:[-34,12],woman:[12,17],king:[-22,-19],queen:[24,-14]}, cyc=(t*.35)%2, u=C.ease.out(Math.min(1,cyc/1.1)), land=cyc>1.1;
+      const arrow=(a,b,col,wid,px)=>{ const x0=cx+a[0], y0=cy+a[1], x1=cx+b[0], y1=cy+b[1], an=Math.atan2(y1-y0,x1-x0);
+        g.strokeStyle=col; g.fillStyle=col; g.lineWidth=wid; g.lineCap='round'; glow(g,col,px); g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke();
+        g.beginPath(); g.moveTo(x1,y1); g.lineTo(x1-5*Math.cos(an-.45),y1-5*Math.sin(an-.45)); g.lineTo(x1-5*Math.cos(an+.45),y1-5*Math.sin(an+.45)); g.closePath(); g.fill(); g.lineCap='butt'; };
+      const d=[P.woman[0]-P.man[0],P.woman[1]-P.man[1]];
+      arrow(P.man,P.woman,pal.s3,1.6,8);
+      arrow(P.king,[P.king[0]+d[0]*u,P.king[1]+d[1]*u],pal.s2,2,12);
+      noglow(g); g.font='600 7px Inter,system-ui';
+      Object.entries(P).forEach(([k,[x,y]])=>{ const q=k==='queen', col=q?(land?pal.s4:pal.ink2):(k==='king'?pal.s2:pal.s1); g.fillStyle=col; glow(g,col,q&&land?14:7);
+        g.beginPath(); g.arc(cx+x,cy+y,q&&land?3.4:2.6,0,7); g.fill(); noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.85; g.fillText(k,cx+x+5,cy+y+(y<0?-3:9)); g.globalAlpha=1; });
+      noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText(land?'≈ queen':'king − man + woman',w-6,h-6); g.globalAlpha=1; g.textAlign='left'; },
+    /* 17 · memory — a chain of twin cells; the running note steps forward, then the red blame pulse runs back and fades at every step */
+    17(g,w,h,t){ const n=6, cy=h*.44, xs=[...Array(n)].map((_,i)=>w/2-72+i*22), ph=(t*.5)%2.4, fwd=ph<1, u=fwd?ph:(ph-1)/1.4, lam=.62;
+      g.strokeStyle=pal.axis; g.lineWidth=1; noglow(g);
+      for(let i=0;i<n-1;i++){ g.beginPath(); g.moveTo(xs[i]+7,cy); g.lineTo(xs[i+1]-7,cy); g.stroke(); }
+      xs.forEach(x=>{ g.beginPath(); g.moveTo(x,cy+24); g.lineTo(x,cy+8); g.stroke(); });
+      const lit=fwd?u*(n-1):-1;
+      xs.forEach((x,i)=>{ const on=i<=lit, col=on?pal.s6:pal.s7; g.strokeStyle=col; g.lineWidth=1.5; glow(g,col,on?10:5);
+        g.beginPath(); g.roundRect?g.roundRect(x-7,cy-7,14,14,3.5):g.rect(x-7,cy-7,14,14); g.stroke();
+        noglow(g); g.fillStyle=pal.s1; g.globalAlpha=.8; g.beginPath(); g.arc(x,cy+26,1.8,0,7); g.fill(); g.globalAlpha=1; });
+      if(fwd){ const px=xs[0]+(xs[n-1]-xs[0])*u; g.fillStyle=pal.s6; glow(g,pal.s6,12); g.beginPath(); g.arc(px,cy,2.4,0,7); g.fill(); }
+      else { const s=(n-1)*(1-u), k=(n-1)-s, px=xs[0]+(xs[n-1]-xs[0])*s/(n-1), a=Math.pow(lam,k);
+        for(let i=n-1;i>=Math.ceil(s);i--){ const b=Math.pow(lam,n-1-i); g.fillStyle=pal.s2; g.globalAlpha=.25+.6*b; glow(g,pal.s2,6); g.beginPath(); g.arc(xs[i],cy-14,1.2+2.4*b,0,7); g.fill(); }
+        g.globalAlpha=Math.max(.2,a); g.fillStyle=pal.s2; glow(g,pal.s2,14*a+4); g.beginPath(); g.arc(px,cy,1.4+3.2*a,0,7); g.fill(); g.globalAlpha=1; }
+      noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText(fwd?'reading':'blame × 0.62 a step',w-6,h-6); g.globalAlpha=1; g.textAlign='left'; },
+    /* 18 · attention — one word asks every other word; arc thickness is its softmax weight, the output is their weighted sum */
+    18(g,w,h,t){ const n=6, y0=h*.64, xs=[...Array(n)].map((_,i)=>w/2-62+i*22), cyc=t*.4, q=Math.floor(cyc)%n, fr=cyc%1, T=[1,4,0,5,2,3];
+      const S=xs.map((_,j)=>j===q?.4:-.9*Math.abs(T[j]-T[q])/2+(j===(q+2)%n?1.6:0)), E=S.map(v=>Math.exp(v*1.6)), Z=E.reduce((a,b)=>a+b,0), A=E.map(v=>v/Z), grow=C.ease.out(Math.min(1,fr*2.4));
+      noglow(g); xs.forEach((x,j)=>{ if(j===q) return; const a=A[j], mx=(xs[q]+x)/2, hh=Math.abs(x-xs[q])*.62+6;
+        g.strokeStyle=pal.s7; g.globalAlpha=(.25+.75*Math.min(1,a*2.6))*grow; g.lineWidth=.6+a*6; glow(g,pal.s7,6+a*10);
+        g.beginPath(); g.moveTo(xs[q],y0-5); g.quadraticCurveTo(mx,y0-5-hh*grow,x,y0-5); g.stroke(); }); g.globalAlpha=1;
+      xs.forEach((x,j)=>{ const me=j===q, a=A[j], col=me?pal.s2:pal.s1; g.fillStyle=col; glow(g,col,me?14:6); g.globalAlpha=me?1:.45+.55*Math.min(1,a*3);
+        g.beginPath(); g.roundRect?g.roundRect(x-6,y0-4,12,8,2.5):g.rect(x-6,y0-4,12,8); g.fill();
+        noglow(g); g.globalAlpha=.8; g.fillStyle=pal.s4; const bh=a*12*grow; g.fillRect(x-1.5,y0+7,3,bh); g.globalAlpha=1; });
+      noglow(g); g.fillStyle=pal.ink2; g.globalAlpha=.75; g.font='600 8px Inter,system-ui'; g.textAlign='right'; g.fillText('softmax(q·k / √d)',w-6,h-6); g.globalAlpha=1; g.textAlign='left'; },
     /* 07 · blame flowing backwards through a small graph */
     7(g,w,h,t){ const cx=w/2, cy=h/2; const X=[cx-46,cx-8,cx+30,cx+56], LAY=[[-18,18],[-24,0,24],[-12,12],[0]];
       const N=LAY.map((ys,l)=>ys.map(y=>[X[l],cy+y])); const E=[];
@@ -1352,29 +1385,6 @@ button.cta-ghost:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent
   };
   /* upcoming units: dim outline glyphs that breathe slowly (t = phase, pal.ink2 stroke set by draw) */
   const LOCKED={
-    /* 17 · encoder → context vector → decoder, a pulse of memory travelling along the chain */
-    17(g,w,h,t){ const cy=h*.5, xs=[-54,-36,-18,18,36,54].map(x=>w/2+x);
-      xs.forEach((x,i)=>{ g.beginPath(); g.roundRect?g.roundRect(x-6,cy-6,12,12,3):g.rect(x-6,cy-6,12,12); g.stroke();
-        g.beginPath(); if(i<3){ g.moveTo(x,cy+20); g.lineTo(x,cy+7); } else { g.moveTo(x,cy-7); g.lineTo(x,cy-20); } g.stroke(); });
-      for(let i=0;i<5;i++){ if(i===2) continue; g.beginPath(); g.moveTo(xs[i]+6,cy); g.lineTo(xs[i+1]-6,cy); g.stroke(); }
-      g.beginPath(); g.moveTo(xs[2]+6,cy); g.lineTo(w/2-4,cy); g.moveTo(w/2+4,cy); g.lineTo(xs[3]-6,cy); g.stroke();
-      const u=(t*.32)%1, px=xs[0]+(xs[5]-xs[0])*u;
-      g.save(); g.fillStyle=pal.s7; g.globalAlpha=.9; g.beginPath(); g.arc(w/2,cy,3+1.2*Math.sin(t*2),0,7); g.fill();
-      g.globalAlpha=.8; g.fillStyle=pal.s4; g.beginPath(); g.arc(px,cy,2.2,0,7); g.fill(); g.restore(); },
-    /* 18 · attention — one word looks at every other word; line weight = attention */
-    18(g,w,h,t){ const n=6, y0=h*.78, y1=h*.24, xs=[...Array(n)].map((_,i)=>w/2-50+i*20);
-      xs.forEach(x=>{ g.beginPath(); g.arc(x,y0,2.4,0,7); g.stroke(); g.beginPath(); g.arc(x,y1,2.4,0,7); g.stroke(); });
-      const q=Math.floor(t*.45)%n, fr=(t*.45)%1, W=[.08,.5,.1,.22,.05,.05].map((_,j)=>Math.exp(-Math.abs(j-((q*2+1)%n))*.9)); const Z=W.reduce((a,b)=>a+b,0);
-      g.save(); g.strokeStyle=pal.s7;
-      xs.forEach((x,j)=>{ const a=W[j]/Z; g.globalAlpha=Math.min(1,.35+a*2)*Math.min(1,.25+fr*3); g.lineWidth=.7+a*4; g.beginPath(); g.moveTo(xs[q],y1+3); g.bezierCurveTo(xs[q],h*.52,x,h*.52,x,y0-3); g.stroke(); });
-      g.globalAlpha=.95; g.fillStyle=pal.s4; g.beginPath(); g.arc(xs[q],y1,3,0,7); g.fill(); g.restore(); },
-    /* 16 · words as vectors — the king/queen parallelogram */
-    16(g,w,h,t){ const cx=w/2-18, cy=h*.72, wob=Math.sin(t*.7)*2;
-      const P={man:[0,0],king:[10,-34],woman:[40,4],queen:[50,-30+wob]};
-      const ar=(a,b)=>{ g.beginPath(); g.moveTo(cx+a[0],cy+a[1]); g.lineTo(cx+b[0],cy+b[1]); g.stroke(); };
-      ar(P.man,P.king); ar(P.woman,P.queen);
-      g.save(); g.setLineDash([2,3]); ar(P.man,P.woman); ar(P.king,P.queen); g.restore();
-      g.save(); g.fillStyle=pal.ink2; g.font='600 7px Inter,system-ui'; Object.entries(P).forEach(([k,[x,y]])=>{ g.beginPath(); g.arc(cx+x,cy+y,2,0,7); g.stroke(); g.fillText(k,cx+x+4,cy+y+3); }); g.restore(); },
     /* 19 · an LLM — a token stream, each next token sampled from a small bar chart */
     19(g,w,h,t){ const cy=h*.35, k=Math.floor(t*.9)%6;
       for(let i=0;i<6;i++){ g.globalAlpha=i<=k?.75:.25; g.strokeRect(w/2-54+i*18,cy-5,14,10); }
