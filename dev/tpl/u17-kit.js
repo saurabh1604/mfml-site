@@ -150,3 +150,41 @@ function glassFloor(ctx,size,o){ o=o||{}; const {THREE,root,isLight}=ctx, hx=hxO
   return {grid,slab}; }
 function seeded(seed){ let s=seed>>>0||1; return ()=>{ s=(s*16807)%2147483647; return (s-1)/2147483646; }; }
 function gauss2(rnd){ const u=Math.max(1e-9,rnd()), v=rnd(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+/* ================= Round 22 · honesty and clutter tools =================
+   reg(id, api)      every widget registers {state(), …}: state() returns the numbers its picture was drawn from (verify-u17 reads it)
+   tickify(svg)      tags every text already in the SVG as a low-importance tick label (call right after plane()/frame())
+   declutter(svg)    after drawing: movable labels (data-alt="dx,dy;dx,dy") step aside from earlier labels; tick labels that touch a real label are hidden
+   labelRects(ctx)   screen rectangles of every visible sprite label in a 3-D stage (for the overlap test) */
+const U17W=window.U17W=window.U17W||{};
+function reg(id,api){ U17W[id]=api; return api; }
+function tickify(svg){ svg.querySelectorAll('text').forEach(t=>t.classList.add('tick')); }
+function tbb(t){ try{ const b=t.getBBox(); if(!b.width&&!b.height) return null; return {x0:b.x,y0:b.y,x1:b.x+b.width,y1:b.y+b.height}; }catch(e){ return null; } }
+const boxHit=(a,b,m)=>!!(a&&b&&a.x0<b.x1-m&&b.x0<a.x1-m&&a.y0<b.y1-m&&b.y0<a.y1-m);
+function declutter(svg){ const vis=t=>{ for(let n=t;n&&n!==svg;n=n.parentNode){ if(n.style&&n.style.display==='none') return false; if(n.getAttribute&&n.getAttribute('display')==='none') return false; } return true; };
+  const all=[...svg.querySelectorAll('text')].filter(vis), ticks=all.filter(t=>t.classList.contains('tick')), real=all.filter(t=>!t.classList.contains('tick')), placed=[];
+  /* fixed labels first, then the movable ones (data-alt), each checked against everything already placed */
+  real.filter(t=>!t.dataset.alt).forEach(t=>{ const b=tbb(t); if(b) placed.push(b); });
+  real.filter(t=>t.dataset.alt).forEach(t=>{ let b=tbb(t); const alts=(t.dataset.alt||'').split(';').filter(Boolean).map(s=>s.split(',').map(Number));
+    if(alts.length&&placed.some(p=>boxHit(b,p,.5))){ const x0=+t.getAttribute('x'), y0=+t.getAttribute('y'); let ok=false;
+      for(const [dx,dy] of alts){ t.setAttribute('x',x0+dx); t.setAttribute('y',y0+dy); b=tbb(t); if(!placed.some(p=>boxHit(b,p,.5))){ ok=true; break; } }
+      if(!ok){ t.setAttribute('x',x0+alts[0][0]); t.setAttribute('y',y0+alts[0][1]); b=tbb(t); } }
+    if(b) placed.push(b); });
+  ticks.forEach(t=>{ const b=tbb(t); if(placed.some(p=>boxHit(b,p,-1.5))) t.style.display='none'; }); }
+/* hide axis tick labels that sit under a drawn stroke (segments [x0,y0,x1,y1] in viewBox units; a point is a zero-length segment) */
+function hideTicksOn(svg,segs,pad){ pad=pad==null?2:pad; svg.querySelectorAll('text.tick').forEach(t=>{ if(t.style.display==='none') return; const b=tbb(t); if(!b) return;
+    const hit=segs.some(([a,c,d,e,r])=>{ const q=pad+(r||0), n=Math.max(1,Math.ceil(Math.hypot(d-a,e-c)/2)); for(let i=0;i<=n;i++){ const x=a+(d-a)*i/n, y=c+(e-c)*i/n; if(x>=b.x0-q&&x<=b.x1+q&&y>=b.y0-q&&y<=b.y1+q) return true; } return false; });
+    if(hit) t.style.display='none'; }); }
+function labelRects(ctx){ if(!ctx||!ctx.camera) return []; const T=ctx.THREE, cam=ctx.camera, W=ctx.size.w, H=ctx.size.h, out=[];
+  ctx.scene.updateMatrixWorld(true); cam.updateMatrixWorld(); cam.matrixWorldInverse.copy(cam.matrixWorld).invert();
+  ctx.scene.traverse(o=>{ if(!o.isSprite) return; for(let p=o;p;p=p.parent) if(!p.visible) return;
+    const m=o.material; if(!m||!m.map||m.map===_spark||!m.map.image||!m.map.image.getContext||m.opacity<.15) return;
+    const c=new T.Vector3().setFromMatrixPosition(o.matrixWorld).applyMatrix4(cam.matrixWorldInverse); if(c.z>=-cam.near) return;
+    const s=new T.Vector3().setFromMatrixScale(o.matrixWorld);
+    const P=(dx,dy)=>{ const q=new T.Vector3(c.x+dx,c.y+dy,c.z).applyMatrix4(cam.projectionMatrix); return [(q.x+1)/2*W,(1-q.y)/2*H]; };
+    const a=P(-s.x/2,-s.y/2), b=P(s.x/2,s.y/2); out.push({text:o.userData.text||'',x0:Math.min(a[0],b[0]),x1:Math.max(a[0],b[0]),y0:Math.min(a[1],b[1]),y1:Math.max(a[1],b[1])}); });
+  return out; }
+/* the verify hook for a 3-D stage: its visible labels, measured on screen */
+function stageRects(S){ return ()=>S&&S.handle?labelRects(S.handle.ctx):[]; }
+/* every sprite label remembers its text (for the overlap report) — this page's own copy of the runtime, patched at load */
+if(CIN&&CIN.prim&&!CIN.prim._u17){ const L0=CIN.prim.label; CIN.prim.label=function(ctx,text,pos,opts){ const sp=L0.call(this,ctx,text,pos,opts); sp.userData.text=text; return sp; }; CIN.prim._u17=true; }

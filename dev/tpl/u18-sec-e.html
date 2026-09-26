@@ -1,0 +1,82 @@
+<!-- ================= 14 · CARRY FORWARD ================= -->
+<section class="unit" id="s14">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>The whole unit fits on twelve cards. Each has one picture you should be able to draw from memory.</p>
+  </div>
+  <div class="cards u18cards reveal-stagger">
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <rect x="8" y="5" width="28" height="13" rx="4" fill="var(--s1)" opacity=".25" stroke="var(--s1)"/><rect x="46" y="5" width="28" height="13" rx="4" fill="var(--s1)" opacity=".25" stroke="var(--s1)"/><rect x="84" y="5" width="28" height="13" rx="4" fill="var(--s1)" opacity=".25" stroke="var(--s1)"/>
+        <path d="M60 46 C60 34 22 30 22 19" fill="none" stroke="var(--s4)" stroke-width="2.1" opacity=".55"/><path d="M60 46 C60 34 60 30 60 19" fill="none" stroke="var(--s4)" stroke-width="2.5" opacity=".7"/><path d="M60 46 C60 34 98 30 98 19" fill="none" stroke="var(--s4)" stroke-width="5.9" opacity=".95" stroke-linecap="round"/>
+        <rect x="46" y="46" width="28" height="13" rx="4" fill="var(--s2)" opacity=".3" stroke="var(--s2)" stroke-width="1.5"/></svg>
+      <h4>Look back</h4>Keep every note. Before each output word, score the notes, softmax, blend: a fresh context vector for every word written.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <circle cx="40" cy="14" r="10" fill="var(--s4)" opacity=".3"/><circle cx="64" cy="34" r="5.5" fill="var(--s4)" opacity=".3"/><circle cx="24" cy="36" r="3" fill="var(--s4)" opacity=".3"/>
+        <line x1="12" y1="56" x2="40" y2="14" stroke="var(--s1)" stroke-width="1.6"/><line x1="12" y1="56" x2="64" y2="34" stroke="var(--s1)" stroke-width="1.6"/><line x1="12" y1="56" x2="24" y2="36" stroke="var(--s1)" stroke-width="1.6"/>
+        <line x1="12" y1="56" x2="46" y2="20" stroke="var(--s2)" stroke-width="2.6" stroke-linecap="round"/>
+        <rect x="86" y="24" width="7" height="32" rx="2" fill="var(--s4)"/><rect x="97" y="42" width="7" height="14" rx="2" fill="var(--s4)"/><rect x="108" y="51" width="7" height="5" rx="2" fill="var(--s4)"/></svg>
+      <h4>A soft lookup</h4>Score the query against every key, softmax the scores, blend the values. Never "no match" — and it can learn.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <circle cx="20" cy="32" r="7" fill="var(--ink-2)"/>
+        <line x1="27" y1="30" x2="84" y2="10" stroke="var(--s2)" stroke-width="2.4"/><line x1="28" y1="32" x2="90" y2="32" stroke="var(--s1)" stroke-width="2.4"/><line x1="27" y1="34" x2="84" y2="54" stroke="var(--s3)" stroke-width="2.4"/>
+        <text x="92" y="13" style="font:700 10px Inter,system-ui;fill:var(--s2)">q</text><text x="97" y="36" style="font:700 10px Inter,system-ui;fill:var(--s1)">k</text><text x="92" y="58" style="font:700 10px Inter,system-ui;fill:var(--s3)">v</text></svg>
+      <h4>Q, K, V</h4>Three views of every word from three shared matrices; softmax(QKᵀ/√d)·V lets every word ask every word, in one hop.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <g fill="var(--s1)" opacity=".85"><rect x="6" y="46" width="5" height="10"/><rect x="12" y="40" width="5" height="16"/><rect x="18" y="34" width="5" height="22"/><rect x="24" y="31" width="5" height="25"/><rect x="30" y="34" width="5" height="22"/><rect x="36" y="40" width="5" height="16"/><rect x="42" y="46" width="5" height="10"/></g>
+        <path d="M56 34 L68 34" stroke="var(--ink-muted)" stroke-width="1.6"/><path d="M68 34 l-5 -3 v6 z" fill="var(--ink-muted)"/>
+        <g fill="var(--s4)"><rect x="80" y="44" width="5" height="12"/><rect x="86" y="16" width="5" height="40"/><rect x="92" y="10" width="5" height="46"/><rect x="98" y="16" width="5" height="40"/><rect x="104" y="44" width="5" height="12"/></g></svg>
+      <h4>Divide by √<span class="nc">d</span></h4>Dot products spread like √d. Dividing by √d keeps softmax soft and the blame flowing — not by d, which blinds it.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <line x1="14" y1="58" x2="112" y2="58" stroke="var(--axis)"/><line x1="14" y1="58" x2="14" y2="4" stroke="var(--axis)"/>
+        <line x1="14" y1="58" x2="44" y2="28" stroke="var(--ink-muted)" stroke-width="2.4"/>
+        <line x1="14" y1="58" x2="59" y2="43" stroke="var(--s6)" stroke-width="3"/><line x1="14" y1="58" x2="29" y2="13" stroke="var(--s5)" stroke-width="3"/>
+        <path d="M32 53 A 19 19 0 0 0 20 40" fill="none" stroke="var(--s4)" stroke-width="2"/></svg>
+      <h4>A chameleon word</h4>A word's output is a blend over its own sentence, so "bank" by a river and "bank" with money end up 53° apart.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <g fill="var(--ink-2)"><circle cx="14" cy="32" r="3.5"/><circle cx="37" cy="32" r="3.5"/><circle cx="60" cy="32" r="3.5"/><circle cx="83" cy="32" r="3.5"/><circle cx="106" cy="32" r="3.5"/></g>
+        <path d="M83 28 Q60 -4 37 28" fill="none" stroke="var(--s5)" stroke-width="3"/><path d="M83 36 Q71 56 60 36" fill="none" stroke="var(--s6)" stroke-width="3"/></svg>
+      <h4>Many heads</h4>Cut d into h heads of size d/h, each looking through its own glasses; glue and mix with W_O. Same 4d² weights.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <g stroke="var(--ink-muted)" stroke-width="1.2"><rect x="6" y="14" width="28" height="36" rx="3" fill="none"/><line x1="6" y1="26" x2="34" y2="26"/><line x1="6" y1="38" x2="34" y2="38"/></g>
+        <circle cx="60" cy="32" r="16" fill="none" stroke="var(--ink-muted)" stroke-width="1.2"/><line x1="60" y1="32" x2="70" y2="20" stroke="var(--s2)" stroke-width="2.4"/>
+        <line x1="92" y1="46" x2="112" y2="46" stroke="var(--s1)" stroke-width="2.4"/><line x1="92" y1="46" x2="106" y2="30" stroke="var(--s2)" stroke-width="2.4"/><path d="M103 46 A 11 11 0 0 0 99 38" fill="none" stroke="var(--s4)" stroke-width="1.8"/></svg>
+      <h4>Positions, three ways</h4>Learned rows, clock-hand tags, or turning q and k (RoPE). With clocks and turns, only the distance between two words matters.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <g fill="var(--s1)" opacity=".18" stroke="var(--s1)" stroke-width="1"><path d="M20 54 L66 54 L78 48 L32 48 Z"/><path d="M20 40 L66 40 L78 34 L32 34 Z"/><path d="M20 26 L66 26 L78 20 L32 20 Z"/><path d="M20 12 L66 12 L78 6 L32 6 Z"/></g>
+        <path d="M80 51 Q96 44 96 30 Q96 16 80 9" fill="none" stroke="var(--s4)" stroke-width="2.6"/><path d="M80 9 l6 -1 l-3 5 z" fill="var(--s4)"/></svg>
+      <h4>The block</h4>Talk (attention), think (a small network); after each, add to the page and steady it. The adds are the blame's express lane.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <g transform="translate(34 4)"><g fill="var(--s4)"><rect x="0" y="0" width="10" height="10" rx="2"/><rect x="0" y="11" width="10" height="10" rx="2"/><rect x="11" y="11" width="10" height="10" rx="2"/><rect x="0" y="22" width="10" height="10" rx="2"/><rect x="11" y="22" width="10" height="10" rx="2"/><rect x="22" y="22" width="10" height="10" rx="2"/><rect x="0" y="33" width="10" height="10" rx="2"/><rect x="11" y="33" width="10" height="10" rx="2"/><rect x="22" y="33" width="10" height="10" rx="2"/><rect x="33" y="33" width="10" height="10" rx="2"/><rect x="0" y="44" width="10" height="10" rx="2"/><rect x="11" y="44" width="10" height="10" rx="2"/><rect x="22" y="44" width="10" height="10" rx="2"/><rect x="33" y="44" width="10" height="10" rx="2"/><rect x="44" y="44" width="10" height="10" rx="2"/></g>
+        <g fill="var(--grid)"><rect x="11" y="0" width="10" height="10" rx="2"/><rect x="22" y="0" width="10" height="10" rx="2"/><rect x="33" y="0" width="10" height="10" rx="2"/><rect x="44" y="0" width="10" height="10" rx="2"/><rect x="22" y="11" width="10" height="10" rx="2"/><rect x="33" y="11" width="10" height="10" rx="2"/><rect x="44" y="11" width="10" height="10" rx="2"/><rect x="33" y="22" width="10" height="10" rx="2"/><rect x="44" y="22" width="10" height="10" rx="2"/><rect x="44" y="33" width="10" height="10" rx="2"/></g></g></svg>
+      <h4>The mask</h4>−∞ above the diagonal: no peeking. One pass trains every next-word guess at once — the class answering together.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <g fill="var(--s4)"><rect x="6" y="18" width="30" height="30" rx="3"/></g>
+        <g fill="var(--s4)"><path d="M45 18 h10 v10 h10 v10 h10 v10 h-30 z"/></g><g fill="var(--grid)"><path d="M55 18 h20 v20 h-10 v-10 h-10 z"/></g>
+        <g fill="var(--s4)" opacity=".55"><rect x="84" y="18" width="14" height="30" rx="2"/></g><g fill="var(--s4)"><rect x="100" y="18" width="14" height="30" rx="2"/></g></svg>
+      <h4>Three families</h4>BERT reads both ways and fills in hidden words. GPT reads left to right and guesses every next word. Encoder–decoder joins the two with cross-attention.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <g fill="none" stroke="var(--s4)" stroke-width="1.2"><rect x="6" y="44" width="12" height="12"/><rect x="28" y="32" width="24" height="24"/><rect x="62" y="8" width="48" height="48"/></g>
+        <g stroke="var(--s4)" stroke-width=".6" opacity=".7"><line x1="12" y1="44" x2="12" y2="56"/><line x1="6" y1="50" x2="18" y2="50"/><line x1="40" y1="32" x2="40" y2="56"/><line x1="28" y1="44" x2="52" y2="44"/><line x1="74" y1="8" x2="74" y2="56"/><line x1="86" y1="8" x2="86" y2="56"/><line x1="98" y1="8" x2="98" y2="56"/><line x1="62" y1="20" x2="110" y2="20"/><line x1="62" y1="32" x2="110" y2="32"/><line x1="62" y1="44" x2="110" y2="44"/></g></svg>
+      <h4>The <span class="nc">n²</span> price</h4>n² scores per head per layer, all computed at once, with no extra weights. Long texts cost time and memory.</div>
+    <div class="cd"><svg class="mini" viewBox="0 0 120 64" aria-hidden="true">
+        <g fill="var(--s1)" opacity=".2" stroke="var(--s1)"><rect x="10" y="44" width="40" height="10" rx="3"/><rect x="10" y="30" width="40" height="10" rx="3"/><rect x="10" y="16" width="40" height="10" rx="3"/></g>
+        <path d="M54 24 L64 24" stroke="var(--ink-muted)" stroke-width="1.6"/><path d="M64 24 l-5 -3 v6 z" fill="var(--ink-muted)"/>
+        <g fill="var(--s6)"><rect x="70" y="36" width="7" height="20" rx="2"/><rect x="80" y="46" width="7" height="10" rx="2"/><rect x="100" y="48" width="7" height="8" rx="2"/><rect x="110" y="52" width="7" height="4" rx="2"/></g><rect x="90" y="10" width="7" height="46" rx="2" fill="var(--s4)"/></svg>
+      <h4>A tiny transformer</h4>Embed + position → blocks → scores → softmax, graded at every position; tie the output to the embedding table to save V·d weights.</div>
+  </div>
+  <div class="prose reveal">
+    <p><strong>The one idea under it all.</strong> Look back at <a href="unit-13.html#s12">Unit 13</a>. A kernel classifier decided by a <em>vote</em>: every training point voted, with a weight given by its similarity to the new point. Attention is that vote. The similarity is \(e^{\mathbf q\cdot\mathbf k/\sqrt d}\), the voters hand over their values, and softmax makes the weights add up to 1. The dot product of <a href="unit-03.html#s2d">Unit 3</a> — agreement between two lists — ends up deciding what a machine pays attention to.</p>
+    <p><strong>Where this goes next.</strong></p>
+    <ul>
+      <li><strong>Unit 19 · The Maths Inside an LLM.</strong> Stack these blocks a hundred deep, make \(d\) in the thousands, and train a decoder on a huge pile of text to predict the next word. Then the new questions: how the machine <em>picks</em> its word (temperature, top-k, top-p), why it keeps a cache of old keys and values, and how a small add-on (LoRA) can steer a giant model.</li>
+      <li><strong>Unit 20 · From Noise to Pictures.</strong> The same attention blocks, turned from reading to drawing.</li>
+    </ul>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}\mathbf x_i\ \leftarrow\ &\mathbf x_i\\ &+\sum_j\operatorname{softmax}_j\!\Big(\frac{\mathbf q_i\cdot\mathbf k_j}{\sqrt d}\Big)\,\mathbf v_j\end{aligned}\]</p>
+    <p>Every word asks every other word a question, scores the answers by a dot product, and adds a softmax-weighted blend of what they carry to itself. Repeat in many heads, with positions, shortcuts and layer norm, block after block, trained on every next word at once — that is a transformer.</p>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> Attention is a similarity-weighted vote — dot products, softmax, a weighted sum of values — and a transformer stacks it with positions, residual paths, layer norm and small networks into a machine that reads a whole text at once, looking back wherever it matters.</p>
+</section>
+
+<!--@PRACTICE-->

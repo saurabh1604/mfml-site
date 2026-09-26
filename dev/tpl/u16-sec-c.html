@@ -1,201 +1,274 @@
-<!-- ================= 7 · WHY NOT FULL SOFTMAX ================= -->
-<section class="unit" id="s7">
-  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Why not a softmax over every word?</h2></div>
-  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>A teacher wants to know if you understand who chai's friends are. She could ask: "Out of all 50 000 students in this city, rank how likely each one is to be chai's friend." That takes all day.</p>
-    <p>Or she could ask five quick yes/no questions: "Is hot a friend? Is football a friend? Is kettle?…" Five answers, and she learns nearly as much.</p>
-  </div>
-  <div class="prose reveal">
-    <p>There is a more obvious way to play word2vec's game. Given the middle word chai, ask the model to pick the neighbour out of the <strong>whole vocabulary</strong>, with a softmax from <a href="unit-14.html#s10">Unit 14</a>:</p>
-    <p>\[P(\text{hot}\mid\text{chai})=\frac{e^{\mathbf u_{\text{hot}}\cdot\mathbf v_{\text{chai}}}}{\sum_{w=1}^{V}e^{\mathbf u_{w}\cdot\mathbf v_{\text{chai}}}}.\]</p>
-    <p>This is correct, and it is exactly how a full language model ends (§8). The trouble is the bottom line. To compute it you need a dot product and an \(e^{(\cdot)}\) for <strong>every</strong> word in the vocabulary. With \(V=50\,000\), that is 50 000 dot products for one training pair. Worse, the gradient of a softmax touches every one of those 50 000 neighbour lists, so every step must update all of them.</p>
-    <p>Negative sampling replaces that one giant question with \(k+1\) small yes/no questions: the real neighbour plus \(k\) random words. With \(k=5\) that is 6 dot products and 6 sigmoids per pair:</p>
-    <p>\[\frac{50\,000}{6}\approx8\,333\ \text{times less work}.\]</p>
-    <p>word2vec was trained on billions of word pairs. That saving is the difference between a year and an afternoon.</p>
-    <p><strong>Which random words?</strong> If negatives were picked in proportion to how often words appear, "the" and "is" would be picked all the time and teach little. word2vec picks a word with probability proportional to its count raised to the power \(\tfrac34\). That gently lifts rare words: a word seen 100 times and one seen once would share the picks 99% to 1%; after the \(\tfrac34\) power it is \(100^{0.75}\approx31.6\) against 1, about 97% to 3%.</p>
-  </div>
-
-  <div class="widget reveal" id="w-cost">
-    <div class="widget-head"><span class="w-title">One big question, or a few small ones</span><span class="w-sub">Every dot is one word of the vocabulary. A full softmax must light them all for every training pair; negative sampling lights only \(k+1\).</span></div>
-    <p class="try"><b>Try:</b> Set the vocabulary to 50 000 and \(k=5\): about 8 333 times less work. Push the vocabulary to a million: the full softmax grows, the yes/no game does not. Then press <em>▶ one training pair</em> to watch both light up.</p>
-    <div class="svgstage"><svg id="cs-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="Left: a large field of dots, one per vocabulary word, which all light up for the full softmax. Right: the same field with only a handful of dots lit, the real neighbour and k random words. Below, two bars on a log scale compare the number of dot products per training pair."></svg></div>
-    <div class="stage-rail">
-      <div class="ctl"><label for="cs-v">vocabulary</label><input id="cs-v" type="range" min="2" max="6" step="0.05" value="4.699"><output id="cs-v-o">50,000</output></div>
-      <div class="ctl"><label for="cs-k">negatives \(k\)</label><input id="cs-k" type="range" min="1" max="20" step="1" value="5"><output id="cs-k-o">5</output></div>
-      <button class="play" id="cs-play">▶ one training pair</button>
-    </div>
-    <div id="cs-read" class="readout" style="margin-top:.5rem"></div>
-  </div>
-
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{gathered}\text{full softmax: } V\ \text{dot products}\\ \text{negative sampling: } k+1\end{gathered}\]</p>
-    <p>The softmax asks "which one, out of everybody?" and must look at everybody. Negative sampling asks "this one — yes or no?" a few times. The cost stops depending on the size of the vocabulary, which is what made training on billions of words possible.</p>
-  </div>
-  <div class="check reveal" data-check="c13">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">The vocabulary has 100 000 words and you use \(k=10\) negatives. About how many times fewer dot products does one training pair need?</p>
-    <div class="opts">
-      <button data-why="Count the real neighbour too: k + 1 = 11 small questions, not 10. So 100 000/11 ≈ 9 091.">10 000</button>
-      <button data-correct data-why="Right. The full softmax needs 100 000 dot products; negative sampling needs k + 1 = 11. 100 000/11 ≈ 9 091.">about 9 091</button>
-      <button data-why="The saving is the vocabulary size divided by k + 1, not the vocabulary times k.">about 1 000 000</button>
-    </div>
-    <div class="why"></div>
-  </div>
-<!--@ALG s7-->
-  <p class="onesent reveal"><b>In one sentence:</b> A full softmax costs one dot product per vocabulary word on every step, while negative sampling asks only \(k+1\) yes/no questions — 50 000 against 6 for \(k=5\).</p>
-</section>
-
-<!-- ================= 8 · A NEURAL LANGUAGE MODEL ================= -->
+<!-- ================= ACT IV · STOP COUNTING, START PREDICTING: WORD2VEC ================= -->
+<!-- ================= 8 · FROM COUNTING TO PREDICTING ================= -->
 <section class="unit" id="s8">
-  <div class="sec-head reveal"><span class="sec-num">8</span><h2>A neural language model</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>From counting to predicting: the word2vec idea</h2></div>
+  <p class="qopen reveal">Counting worked. So why did the people who built word2vec stop counting?</p>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>Mumbai's dabbawalas pass a lunch box along a relay. One picks it up, one sorts it, one carries it, one hands it over. Nobody does the whole job, but the box always arrives.</p>
-    <p>A neural language model is a relay like that. Look up the words, glue them together, mix them in a small network, and hand over a probability for every possible next word.</p>
+    <p>A new teacher joins a school and wants to know which children are friends. She could keep a register: every lunch, for a whole year, write down who sat next to whom. At the end she owns a giant table.</p>
+    <p>Or she could play a game. Each lunch, before the children sit down, she <strong>guesses</strong> who will sit next to whom, and she corrects herself whenever she is wrong. After a month she has no register at all — but she knows the friendships. The knowledge lives in her head.</p>
   </div>
   <div class="prose reveal">
-    <p>In §2 we guessed the next word from a table of counts. The table could not share anything between "chai" and "coffee". In 2003, Yoshua Bengio and his team built a model that could. It works in five steps:</p>
+    <p>Acts II and III kept the register. The company table of §5 has a row and a column for every word: with 50 000 words that is 2.5 billion boxes, almost all of them zero. New text means counting again, and squeezing such a table with the SVD (§7) is heavy work.</p>
+    <p>In 2013 Tomas Mikolov and his team at Google played the teacher's game instead. Their method is called <strong>word2vec</strong>, and its motto could be: <strong>don't write down the gossip — train a guesser, then read its mind.</strong></p>
+    <p>Here is the game. Slide a <strong>window</strong> along the text, one word at a time. The word in the middle is the <strong>centre word</strong>. The words up to \(C\) places on either side are its <strong>context</strong>. At every stop the machine plays one of two games:</p>
+    <ul>
+      <li><strong>Fill in the blank.</strong> Hide the centre word and guess it from the context. This game is called <strong>CBOW</strong> (§9).</li>
+      <li><strong>Guess the neighbours.</strong> Show the centre word and guess each context word. This game is called <strong>skip-gram</strong> (§10).</li>
+    </ul>
+    <p>Take <em>we drink hot chai every morning</em> with \(C=2\), and stop at "hot". Its context is <em>we, drink, chai, every</em>. CBOW makes <strong>one</strong> example from this stop: (we, drink, chai, every) → hot. Skip-gram makes <strong>four</strong> pairs: hot → we, hot → drink, hot → chai, hot → every.</p>
+    <p>Now count over the whole sentence. CBOW makes one example at each of the 6 stops: <strong>6</strong> examples. Skip-gram makes one pair per neighbour, and the words near the ends have fewer neighbours: \(2+3+4+4+3+2=\mathbf{18}\) pairs. Keep that ratio in mind. It is the whole difference in cost between the two games (§11).</p>
+  </div>
+<!--@W2V window-->
+  <div class="prose reveal">
+    <p><strong>One small network plays both games.</strong> It is made of just two tables of numbers, and it works in four moves.</p>
     <ol class="roadmap">
-      <li><strong>Look up.</strong> Keep a table \(E\) with one row of \(d\) numbers for each word — an <strong>embedding table</strong>. Look up the row of each previous word.</li>
-      <li><strong>Glue.</strong> Put the rows side by side into one longer list (people say <em>concatenate</em>). Two previous words with \(d=2\) give a list of 4.</li>
-      <li><strong>Mix.</strong> Pass it through a hidden layer, exactly as in <a href="unit-15.html#s1">Unit 15</a>: \(\mathbf h=\tanh(W\mathbf x+\mathbf b)\).</li>
-      <li><strong>Score every word.</strong> One more layer gives one score per vocabulary word, and a softmax (<a href="unit-14.html#s10">Unit 14</a>) turns the scores into probabilities.</li>
-      <li><strong>Learn.</strong> Train with cross-entropy and backprop (<a href="unit-15.html#s8">Unit 15</a>). The blame flows all the way back into the rows of \(E\), so the table is learned too.</li>
+      <li><strong>Look up.</strong> Every word owns a row in the <strong>input table</strong> \(W_{\text{in}}\), which has \(V\) rows of \(d\) numbers. The row of word \(w\) is its <em>input vector</em> \(\mathbf v_w\). Feeding a one-hot word into the table simply picks out its row (§14 shows why).</li>
+      <li><strong>Form one opinion, \(\mathbf h\).</strong> CBOW averages the rows of the context words. Skip-gram just takes the centre word's row. Either way \(\mathbf h\) is a list of \(d\) numbers.</li>
+      <li><strong>Score every word.</strong> Every word also owns a column in the <strong>output table</strong> \(W_{\text{out}}\), its <em>output vector</em> \(\mathbf u_w\). Its score is the dot product \(\mathbf u_w\cdot\mathbf h\) — how well it lines up with the opinion (<a href="unit-03.html#s2d">Unit 3</a>).</li>
+      <li><strong>Turn scores into chances</strong> with a softmax over the whole vocabulary (<a href="unit-14.html#s10">Unit 14</a>), and learn from the surprise at the true word.</li>
     </ol>
-    <p><strong>The lookup is a matrix multiply.</strong> Write a word one-hot and multiply it by the table. With three words and \(d=2\):</p>
-    <p>\[\begin{pmatrix}0&1&0\end{pmatrix}\begin{pmatrix}1&2\\ 3&4\\ 5&6\end{pmatrix}=\begin{pmatrix}3&4\end{pmatrix}.\]</p>
-    <p>The single 1 picks out row 2. So an embedding table is nothing new: it is <strong>the first layer's weight matrix</strong>, fed with one-hot inputs. Computers skip the multiply and just fetch the row — same answer, far less work.</p>
+    <p>Read the shapes along the way: \(V\to d\to V\). With \(V=50\,000\) words and \(d=300\), every word has to squeeze through a doorway only 300 numbers wide.</p>
   </div>
-
-  <div class="widget reveal" id="w-lookup">
-    <div class="widget-head"><span class="w-title">One-hot times a table = fetch a row</span><span class="w-sub">A one-hot word (left) multiplies the embedding table (middle). Every row but one is multiplied by 0, so only one row survives.</span></div>
-    <p class="try"><b>Try:</b> Click each word in turn. Watch the 1 move and the matching row light up. Then press <em>▶ multiply slowly</em> to see all the zero rows vanish.</p>
-    <div class="lk-words bg-chips" id="lk-words"></div>
-    <div class="scroll-x"><div id="lk-eq" class="lk-eq"></div></div>
-    <div class="presets" style="margin-top:.5rem"><button class="play" id="lk-play">▶ multiply slowly</button></div>
-    <div id="lk-read" class="readout" style="margin-top:.5rem"></div>
+  <figure class="netfig reveal" id="fig-net">
+    <div class="svgstage"><svg id="nf-svg" viewBox="0 0 820 330" class="svg-lab" role="img" aria-label="The word2vec network drawn left to right. A one-hot column of five words with only chai lit. An arrow into the input table, five rows of two numbers, with chai's row lit in blue. An arrow into the hidden list h of two numbers. An arrow into the output table, two rows of five numbers, one green column per word. An arrow into five scores and five probability bars, one per word. Under the picture: the shapes V to d to V."></svg></div>
+    <figcaption>The network that plays both games, with the toy numbers of §9–§10 (\(V=5\) words, \(d=2\)). Input vectors are <span class="swatch s-in"></span>blue rows; output vectors are <span class="swatch s-out"></span>green columns. Real models use \(V\approx50\,000\) and \(d\approx300\).</figcaption>
+  </figure>
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Because the doorway is narrow. The network cannot keep a separate answer for each of 50 000 words — it has only \(d\) numbers per word. So words that must make the <strong>same guesses</strong> get pushed into <strong>nearly the same rows</strong>. Chai and coffee are guessed from the same neighbours and guess the same neighbours, so the only way to play well is to give them almost the same vectors. It is the same squeeze as the SVD of §7 — done by a guessing game instead of a formula.</p>
   </div>
-
-  <div class="prose reveal">
-    <p>Now the whole relay. We trained a tiny model ourselves, for this page, on just seven sentences: "I drink hot chai .", "we drink hot chai .", "I drink hot coffee .", "we drink hot coffee .", "I play cricket .", "we play cricket .", "we play football .". It has a vocabulary of 10 words, embeddings of \(d=2\) numbers, and 8 hidden neurons. Its whole brain is 150 numbers.</p>
-    <p>Notice what it has <strong>never</strong> seen: "I play football". A count table would give it probability exactly 0. But "I" and "we" were used in the same places, so the model learned almost the same row for both. It guesses football after "I play" with probability about 0.256 — nearly what it gives after "we play" (0.258). That is <strong>sharing</strong>, and it is the whole point of word vectors.</p>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>word2vec is not a deep network. There is no bend in the middle: \(\mathbf h\) is just a looked-up row, or an average of rows. All the learning lives in the two tables. And only one of them is the prize: after training we <strong>throw the game away and keep the input table</strong>. Its rows are the word vectors.</p>
   </div>
-  <div class="widget reveal" id="w-nlm">
-    <div class="widget-head"><span class="w-title">A tiny neural language model, every number visible</span><span class="w-sub">Pick two previous words. Their rows are fetched, glued into 4 numbers, mixed by 8 hidden neurons and turned into a probability for each of the 10 words. The small map shows every word's learned 2-number row.</span></div>
-    <p class="try"><b>Try:</b> Pick "drink" then "hot": chai and coffee share the top. Pick "I" then "play": cricket first, but football gets a real share though the model never saw "I play football". In the map, find "I" and "we" sitting almost on top of each other.</p>
-    <div class="bg-prevrow"><span class="lbl">word 1</span><span id="nl-w1" class="bg-chips"></span></div>
-    <div class="bg-prevrow"><span class="lbl">word 2</span><span id="nl-w2" class="bg-chips"></span></div>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 460px;min-width:0"><div class="svgstage"><svg id="nl-svg" viewBox="0 0 640 330" class="svg-lab" role="img" aria-label="The model as a relay from left to right: the two chosen words, their two looked-up rows of 2 numbers, the glued list of 4, eight hidden neurons as glowing bars, and ten probability bars for the next word."></svg></div></div>
-      <div class="wcol" style="flex:1 1 240px;min-width:0"><div class="svgstage"><svg id="nl-map" viewBox="0 0 260 260" class="svg-lab" role="img" aria-label="A small plane with all ten words at their learned two-number embeddings. I and we sit close together; chai and coffee sit on top of each other."></svg></div>
-        <div id="nl-read" class="readout" style="margin-top:.5rem;line-height:1.7"></div></div>
-    </div>
-  </div>
-
   <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{aligned}\mathbf x&=[\,E_{w_1};\,E_{w_2}\,],\\ \mathbf h&=\tanh(W\mathbf x+\mathbf b),\\ P(\cdot\mid w_1w_2)&=\operatorname{softmax}(U\mathbf h+\mathbf c)\end{aligned}\]</p>
-    <p>A neural language model is a Unit 15 network with a lookup table in front and a softmax at the end. The table is just the first layer's weights, learned by the same backprop. Because similar words get similar rows, what the model learns about one word helps it with the others.</p>
+    <p>\[\underbrace{\text{one-hot}}_{V}\ \xrightarrow{\ W_{\text{in}}\ }\ \underbrace{\ \mathbf h\ }_{d}\ \xrightarrow{\ W_{\text{out}}\ }\ \underbrace{\text{scores}}_{V}\]</p>
+    <p>word2vec replaces counting with guessing. A window slides along the text. At each stop a tiny two-table network either fills in the centre word from its context (CBOW) or guesses the context from the centre word (skip-gram). The guessing is only a test. What we keep is the input table, whose rows were forced to put words with the same company close together.</p>
   </div>
-  <div class="check reveal" data-check="c14">
+  <div class="check reveal" data-check="c20">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">A vocabulary has 4 words and \(E=\begin{pmatrix}1&0&2\\ 0&1&1\\ 3&1&0\\ 2&2&2\end{pmatrix}\). What is \((0,0,1,0)\,E\)?</p>
+    <p class="q">A sentence has 5 words and the window is \(C=1\). How many examples does CBOW make, and how many pairs does skip-gram make?</p>
     <div class="opts">
-      <button data-correct data-why="Right. The 1 sits in slot 3, so the product picks row 3 of E: (3, 1, 0). Every other row is multiplied by 0.">\((3,1,0)\)</button>
-      <button data-why="(2, 1, 0, 2) is column 3 of E read downwards. A one-hot ROW vector on the left picks a ROW of E: row 3 is (3, 1, 0).">\((2,1,0,2)\)</button>
-      <button data-why="Nothing is added up here: three of the four rows are multiplied by 0 and vanish, and row 3 is left as it is: (3, 1, 0).">\((6,4,5)\)</button>
+      <button data-correct data-why="Right. CBOW makes one example at every stop: 5. Skip-gram makes one pair per neighbour. The two end words have one neighbour each, the three inside words have two: 1 + 2 + 2 + 2 + 1 = 8.">5 and 8</button>
+      <button data-why="Not every word has two neighbours. The first and last words have only one each, so skip-gram makes 1 + 2 + 2 + 2 + 1 = 8 pairs, not 5 × 2 = 10.">5 and 10</button>
+      <button data-why="These are swapped. CBOW makes exactly one example per stop (5); it is skip-gram that makes one pair per neighbour (8).">8 and 5</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c15">
+  <div class="check reveal" data-check="c21">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">Our tiny model has \(V=10\) words, \(d=2\), two previous words and 8 hidden neurons. How many numbers does it learn? (Table, then hidden weights and biases, then output weights and biases.)</p>
+    <p class="q">Training is over. Which part of the word2vec network do we keep as the word vectors?</p>
     <div class="opts">
-      <button data-why="You left out the embedding table: 10 × 2 = 20 more. Total 20 + 40 + 90 = 150.">130</button>
-      <button data-why="The hidden layer reads the GLUED list of 4 numbers, so its weight matrix is 8 × 4 = 32, not 8 × 2. Total: 20 + (32 + 8) + (80 + 10) = 150.">134</button>
-      <button data-correct data-why="Right. Table 10 × 2 = 20. Hidden: 8 × 4 = 32 weights + 8 biases = 40. Output: 10 × 8 = 80 weights + 10 biases = 90. Total 20 + 40 + 90 = 150.">150</button>
+      <button data-why="The chances are guesses about one window of text. They change at every stop, and they are thrown away with the game.">the softmax chances from the last window</button>
+      <button data-correct data-why="Right. Each row of the input table is one word's vector. The game — the output table, the scores, the softmax — was only the test that shaped those rows.">the rows of the input table \(W_{\text{in}}\)</button>
+      <button data-why="The hidden list h is worked out afresh at every stop from rows of the input table. It is not stored anywhere; the rows it came from are.">the hidden list \(\mathbf h\)</button>
     </div>
     <div class="why"></div>
   </div>
 <!--@ALG s8-->
-  <p class="onesent reveal"><b>In one sentence:</b> A neural language model looks up each previous word's row in an embedding table (one-hot × matrix = picking a row), glues the rows, mixes them in a hidden layer and ends with a softmax over the vocabulary — and since similar words get similar rows, it can guess sentences it never saw.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> word2vec slides a window along the text and trains a tiny two-table network to guess each centre word from its neighbours (CBOW) or the neighbours from the centre word (skip-gram), then keeps the input table as the word vectors — don't write down the gossip, train a guesser and read its mind.</p>
 </section>
 
-<!-- ================= 9 · THE GEOMETRY OF MEANING ================= -->
+<!-- ================= 9 · CBOW ================= -->
 <section class="unit" id="s9">
-  <div class="sec-head reveal"><span class="sec-num">9</span><h2>The geometry of meaning</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>CBOW: the committee fills in the blank</h2></div>
+  <p class="qopen reveal">How could a game of fill-in-the-blank teach a computer that chai is like coffee?</p>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>A friend gives you directions: "From the station, walk 2 blocks north and 3 blocks east." Those directions are not tied to the station. Start from the temple instead and follow the same walk — you land somewhere new, but in the same position relative to where you started.</p>
-    <p>In a good word space, the step from "man" to "woman" is a walk like that. Start the same walk from "king".</p>
+    <p>The teacher writes on the board: <em>"Every morning my grandfather drinks a hot cup of ____."</em> Nobody asks what the missing word is. "Chai," says the whole class.</p>
+    <p>You did not look anything up. The words around the blank — <em>drinks, hot, cup</em> — each pointed somewhere, and together they pointed at one word. A <strong>committee of neighbours</strong> voted on the blank.</p>
   </div>
   <div class="prose reveal">
-    <p>Here are four hand-made vectors with just two numbers each (we built them for this example; they are not trained):</p>
-    <p>\[\begin{aligned}\text{king}&=(3,2), & \text{man}&=(1,2),\\ \text{queen}&=(3,-2), & \text{woman}&=(1,-2).\end{aligned}\]</p>
-    <p>The step from man to woman is \(\text{woman}-\text{man}=(0,-4)\). The step from king to queen is \(\text{queen}-\text{king}=(0,-4)\). The same step. So the four points make a <strong>parallelogram</strong>, and we can use it to answer the puzzle "man is to woman as king is to ?":</p>
-    <p>\[\text{king}-\text{man}+\text{woman}=(3,2)-(1,2)+(1,-2)=(3,-2).\]</p>
-    <p>That is exactly queen. With real, trained vectors the answer is never exact; it lands <strong>near</strong> a word. So we search: which word's vector has the biggest cosine with the answer? For \((3,-2)\): queen 1, woman 0.868, king 0.385, man −0.124.</p>
-    <p><strong>Skip the three words you started with.</strong> In trained vectors the step "woman − man" is small next to the words themselves, so the answer often lies closest to king itself. A search that allowed king would just return king — true, but useless. So the search always leaves out the three input words.</p>
+    <p>That game — fill in the blank from the words around it — is the first way word2vec learns. It is called <strong>CBOW</strong>, the <em>continuous bag of words</em>.</p>
+    <p>Let us play one round by hand. We use a toy model with a vocabulary of five words and vectors of just \(d=2\) numbers, so that every step fits on paper. We chose the starting numbers by hand to keep the arithmetic clean; a real model starts from small random numbers.</p>
+    <div class="scroll-x"><table class="plain vt">
+      <thead><tr><th>word</th><th class="c-in">input vector \(\mathbf v\)</th><th class="c-out">output vector \(\mathbf u\)</th></tr></thead>
+      <tbody><tr><td>we</td><td>(0, 1)</td><td>(0, 0)</td></tr><tr><td>drink</td><td>(1, 0)</td><td>(1, 0)</td></tr><tr><td>chai</td><td>(1, 1)</td><td>(1, 1)</td></tr><tr><td>daily</td><td>(0, 1)</td><td>(0, 1)</td></tr><tr><td>cricket</td><td>(−1, 0)</td><td>(−1, −1)</td></tr></tbody></table></div>
+    <p>Take the tiny sentence <em>we drink chai daily</em>, use a window of one word on each side, and hide the middle word, chai. The committee is <em>drink</em> and <em>daily</em>. The machine plays in four moves.</p>
+    <ol class="roadmap">
+      <li><strong>Look up the neighbours.</strong> Their input vectors are drink = (1, 0) and daily = (0, 1).</li>
+      <li><strong>Average them.</strong> \(\mathbf h=\big((1,0)+(0,1)\big)/2=(0.5,\ 0.5)\). This single point is the committee's combined opinion.</li>
+      <li><strong>Score every word.</strong> Dot each output vector with \(\mathbf h\): we 0, drink 0.5, chai 1, daily 0.5, cricket −1.</li>
+      <li><strong>Turn scores into a guess.</strong> The softmax gives 0.135, 0.223, <strong>0.368</strong>, 0.223, 0.050. The true word is chai, so the surprise is \(-\ln0.368\approx1.00\).</li>
+    </ol>
+    <p>Written as formulas, the four moves are:</p>
+    <p>\[\begin{aligned}\mathbf h&=\tfrac12\big(\mathbf v_{\text{drink}}+\mathbf v_{\text{daily}}\big),\\ s_w&=\mathbf u_w\cdot\mathbf h,\\ \mathbf p&=\operatorname{softmax}(\mathbf s),\\ L&=-\ln p_{\text{chai}}.\end{aligned}\]</p>
+    <p>Read them aloud. <em>The first line asks the committee for its average opinion. The second gives every word in the vocabulary a score: how well its answer-arrow lines up with that opinion. The third turns the scores into chances that add up to 1. The fourth measures how surprised the model was by the truth.</em></p>
+    <p>And now the name makes sense. <strong>Bag</strong>: averaging throws away the order of the neighbours — "drink … daily" and "daily … drink" give the same \(\mathbf h\), like words tipped into a bag. <strong>Continuous</strong>: the vectors are dense lists of real numbers, not counts.</p>
   </div>
-
-  <div class="widget reveal" id="w-para">
-    <div class="widget-head"><span class="w-title">The parallelogram, by hand</span><span class="w-sub">Drag king, man or woman. The answer king − man + woman is drawn as the fourth corner, and the nearest word by cosine lights up.</span></div>
-    <p class="try"><b>Try:</b> Leave the points as they are: the corner lands exactly on queen. Drag woman a little: the corner moves the same way, and the nearest word is still queen until it drifts too far. Turn on <em>include the inputs</em> and drag man near king — see why we skip them.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 440px;min-width:0"><div class="svgstage"><svg id="pa2-svg" viewBox="0 0 520 380" class="svg-lab" role="img" aria-label="A plane with draggable points king, man and woman, the fixed words queen, prince, princess, boy and girl, and a parallelogram whose fourth corner is king minus man plus woman."></svg></div></div>
-      <div class="wcol" style="flex:1 1 240px">
-        <div class="presets"><button class="preset" id="pa2-inc" aria-pressed="false">include the inputs</button><button class="preset" id="pa2-reset">reset</button></div>
-        <div id="pa2-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
-      </div>
-    </div>
-  </div>
-
   <div class="prose reveal">
-    <p>Now the real playground. Below are 60 words. Their vectors are <strong>hand-made</strong> by us — not trained on text — so that you can check every answer with your own sense of meaning. Each word has 13 numbers: nine meanings we chose (is it a person? royal? female or male? young? a drink? about cricket? an animal? a place? a capital city?), four random "family fingerprint" numbers shared by a family such as king, queen, prince and princess, and a little random noise. The sums and the cosines use all 13 numbers. To draw them we look through a fixed 3-D window — a projection, like a shadow on a wall (<a href="unit-03.html#s10">Unit 3</a>). A shadow of a parallelogram is still a parallelogram, so the picture never lies about the arithmetic.</p>
+    <p><strong>How it learns.</strong> <a href="unit-15.html#s6">Unit 15</a> showed that the blame arriving at the scores of a softmax is simply <strong>prediction − truth</strong>:</p>
+    <p>\[\begin{aligned}\mathbf e=\mathbf p-\mathbf y=(&0.135,\ 0.223,\ -0.632,\\ &0.223,\ 0.050).\end{aligned}\]</p>
+    <p>Only chai's entry is negative, and negative blame means "raise me". One step (with step size \(\eta=1\)) now does three things:</p>
+    <ul>
+      <li><strong>The answers move.</strong> Every output vector moves by \(-\eta\,e_w\,\mathbf h\). Chai's is pulled <em>toward</em> \(\mathbf h\): \((1,1)+0.632\,(0.5,0.5)=(1.316,\ 1.316)\). Every other word's is pushed <em>away</em> from \(\mathbf h\), each in proportion to the probability it wrongly took.</li>
+      <li><strong>The blame reaches the committee.</strong> The blame on \(\mathbf h\) is \(\sum_w e_w\,\mathbf u_w=(-0.458,\ -0.458)\). It says: move the opinion toward chai's answer-arrow.</li>
+      <li><strong>The blame is shared equally.</strong> \(\mathbf h\) was an average of two neighbours, so each member moves by half: \(-\eta\cdot\tfrac12(-0.458,\ -0.458)=(0.229,\ 0.229).\) Drink becomes \((1.229,\ 0.229)\) and daily becomes \((0.229,\ 1.229)\).</li>
+    </ul>
+    <p>Play the same blank again. The model now gives chai <strong>0.594</strong> instead of 0.368, and the surprise drops from 1.00 to <strong>0.52</strong>.</p>
   </div>
-  <div class="widget reveal" id="w-analogy">
-    <div class="widget-head"><span class="w-title">The embedding explorer</span><span class="w-sub">Sixty hand-made words in space. Choose \(A-B+C\): the parallelogram draws itself and the nearest words by cosine are listed. Toggle direction arrows to see meaning as a direction.</span></div>
-    <p class="try"><b>Try:</b> Start with king − man + woman. Then try the others: prince − boy + girl, Delhi − India + Japan, puppy − dog + cat. Turn on the <em>female</em> arrows — the same arrow at every pair. Type any word in the search box to fly to it and list its neighbours.</p>
-    <div class="ex-bar">
-      <label class="ex-slot"><span>A</span><select id="ex-a" aria-label="word A"></select></label><span class="ex-op">−</span>
-      <label class="ex-slot"><span>B</span><select id="ex-b" aria-label="word B"></select></label><span class="ex-op">+</span>
-      <label class="ex-slot"><span>C</span><select id="ex-c" aria-label="word C"></select></label><span class="ex-op">≈</span><span id="ex-ans" class="ex-ans">?</span>
-    </div>
-    <div class="presets ex-pre" id="ex-pre"><button class="preset" data-q="king,man,woman">king − man + woman</button><button class="preset" data-q="prince,boy,girl">prince − boy + girl</button><button class="preset" data-q="Delhi,India,Japan">Delhi − India + Japan</button><button class="preset" data-q="puppy,dog,cat">puppy − dog + cat</button><button class="preset" data-q="king,man,boy">king − man + boy</button><button class="preset" data-q="Paris,France,Italy">Paris − France + Italy</button></div>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 480px"><div id="ex-3d" class="stage3d tall ex-stage" role="img" aria-label="Orbitable 3D scene of sixty glowing word points in five coloured groups: people in violet, tea words in orange, cricket words in green, animals in gold and places in cyan, with the word bat in pink between cricket and animals. A glowing parallelogram joins the chosen words A, B, C and the answer point, which is ringed; optional arrows show directions such as female, royal, young and capital city."></div><p class="stage-tap">drag the picture to orbit</p></div>
-      <div class="wcol" style="flex:1 1 260px;min-width:0">
-        <label class="bg-lbl" for="ex-find">find a word</label>
-        <input id="ex-find" class="ex-find" list="ex-list" placeholder="type: chai, lion, Tokyo…" autocomplete="off"><datalist id="ex-list"></datalist>
-        <div class="bg-lbl" style="margin-top:.6rem">direction arrows</div>
-        <div class="presets" id="ex-dirs"><button class="preset" data-d="female" aria-pressed="false">female</button><button class="preset" data-d="royal" aria-pressed="false">royal</button><button class="preset" data-d="young" aria-pressed="false">young</button><button class="preset" data-d="capital" aria-pressed="false">capital city</button><button class="preset" data-d="topic" aria-pressed="false">tea → cricket</button></div>
-        <div class="presets" style="margin-top:.4rem"><button class="preset" id="ex-inc" aria-pressed="false">include A, B, C in the search</button><button class="preset" id="ex-names" aria-pressed="true">all names</button></div>
-        <div id="ex-read" class="readout ex-read" style="margin-top:.6rem;line-height:1.7"></div>
-      </div>
-    </div>
+<!--@W2V cbow-->
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Every time chai is the blank, its answer-arrow is pulled toward the average of the neighbours it had — and those neighbours are pulled toward chai's answer-arrow. Coffee is the blank in the same kinds of sentences (<em>drink, hot, cup, morning</em>), so its arrows receive the same pulls. Two words pulled toward the same places end up in the same place. Nobody told the machine that chai and coffee are drinks. The blanks did.</p>
   </div>
-
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>The vectors we keep are not the answers to the blanks. Each word has <strong>two</strong> vectors: an input vector \(\mathbf v\), used when it sits on the committee, and an output vector \(\mathbf u\), used when it is the answer. After training we throw the game away and keep the <strong>input table</strong> — the committee members' vectors. The game was only the test that forced that table to be good.</p>
+  </div>
   <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{gathered}\mathbf q=\mathbf v_a-\mathbf v_b+\mathbf v_c,\\ \text{answer}=\arg\max_{w\notin\{a,b,c\}}\ \cos(\mathbf v_w,\mathbf q)\end{gathered}\]</p>
-    <p>In a good word space, a <strong>difference</strong> of meanings is a <strong>direction</strong>. The same arrow turns man into woman, king into queen and boy into girl; another turns a country into its capital. So "B is to C as A is to ?" becomes arithmetic: \(A-B+C\), then the nearest word by cosine, leaving out \(A\), \(B\) and \(C\).</p>
+    <p>\[\begin{aligned}\mathbf h&=\frac1{2C}\sum_{c\,\in\,\text{context}}\mathbf v_c,\\ \mathbf v_c&\leftarrow\mathbf v_c-\frac{\eta}{2C}\sum_w\big(p_w-y_w\big)\,\mathbf u_w\end{aligned}\]</p>
+    <p>CBOW averages the context vectors, scores every word against that average, and nudges the vectors until the true centre word wins. With \(C\) words on each side the committee has \(2C\) members, and each member receives a \(\tfrac1{2C}\) share of the blame.</p>
   </div>
-  <div class="check reveal" data-check="c16">
+  <div class="check reveal" data-check="c22">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">Toy vectors: Delhi \(=(1,1,3)\), India \(=(1,0,3)\), Japan \(=(3,0,1)\). What is Delhi − India + Japan?</p>
+    <p class="q">In the toy round, swap the two neighbours so the sentence reads <em>we daily chai drink</em>. What happens to the model's chance for chai?</p>
     <div class="opts">
-      <button data-why="Subtract India from Delhi first: (0, 1, 0), the 'capital city' step. Then add Japan: (3, 1, 1).">\((5,1,7)\)</button>
-      <button data-correct data-why="Right. Delhi − India = (0, 1, 0), the step from a country to its capital. Add Japan: (3, 1, 1) — Japan plus the capital step, which is where Tokyo should be.">\((3,1,1)\)</button>
-      <button data-why="(3, −1, 1) would be Japan MINUS the capital step. The sum is Delhi − India + Japan = (1 − 1 + 3, 1 − 0 + 0, 3 − 3 + 1) = (3, 1, 1).">\((3,-1,1)\)</button>
+      <button data-why="CBOW never looks at where a neighbour sits. It only averages their vectors, and (1, 0) + (0, 1) is the same sum in either order.">it changes, because drink now comes after chai</button>
+      <button data-correct data-why="Right. The average of drink and daily is (0.5, 0.5) in either order, so every score and every chance is unchanged: chai still gets 0.368. That is the &quot;bag&quot; in the name.">it stays 0.368 — the average does not care about order</button>
+      <button data-why="Nothing is looked up by position, so no pair is &quot;unseen&quot;. The committee's average is exactly the same, and chai keeps 0.368.">it drops to 0, because chai never came after daily</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c17">
+  <div class="check reveal" data-check="c23">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">Why does the analogy search leave out the three input words?</p>
+    <p class="q">The window grows from one word on each side to two, so the committee has four members. What share of the blame on \(\mathbf h\) does each member now receive?</p>
     <div class="opts">
-      <button data-why="The inputs are not impossible answers in principle — they are just too EASY answers: the step between meanings is small, so the result is usually closest to the first word itself.">Because their cosine with the answer is always zero</button>
-      <button data-correct data-why="Right. In trained vectors the step woman − man is short next to the vectors themselves, so king − man + woman usually stays closest to king. Leaving the inputs out makes the search return the next nearest word, queen.">Because the answer usually lands closest to one of them — often A itself</button>
-      <button data-why="The search could compute their cosines perfectly well. We skip them because they would win too often, not because of any difficulty.">Because the computer cannot compute their cosine</button>
+      <button data-why="Half was the share when the committee had two members. Now h is an average of four vectors, so each counts for a quarter — and gets a quarter of the blame.">still a half</button>
+      <button data-why="Nobody gets all of it: h is an average, and each of the four vectors made up only a quarter of it.">all of it</button>
+      <button data-correct data-why="Right. h is the average of four vectors, so each vector moves h by only a quarter of its own change. The blame is shared the same way: each member gets a quarter. Bigger committees mean thinner shares.">a quarter</button>
     </div>
     <div class="why"></div>
   </div>
 <!--@ALG s9-->
-  <p class="onesent reveal"><b>In one sentence:</b> Differences of meaning are directions, so king − man + woman = (3, −2) = queen in our toy plane, and with real vectors we take the nearest word by cosine, leaving out the three words we started from.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> CBOW averages the neighbours' vectors, scores every word against that average, and nudges the vectors until the true middle word wins — a committee of neighbours filling in the blank.</p>
+</section>
+
+<!-- ================= 10 · SKIP-GRAM ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Skip-gram: one word guesses its neighbours</h2></div>
+  <p class="qopen reveal">What if we turn the game around, and ask one word to guess the company it keeps?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Show a friend one word cut out of yesterday's newspaper: <em>wicket</em>. Ask her which words were probably printed around it. "Bowler," she says. "Over. Six. Bat."</p>
+    <p>One word, many guesses. And to make those guesses she had to know what a wicket is.</p>
+  </div>
+  <div class="prose reveal">
+    <p>That is the second game, <strong>skip-gram</strong>: the centre word throws a guess at each of its neighbours. (The name: a bigram of §2 is two words side by side; a <em>skip</em>-gram is a pair that may skip over the words in between. The centre word is paired with every word in its window.) We use the same toy model and the same sentence, <em>we drink chai daily</em>, with a window of one. This time chai is shown, and it must guess drink and daily.</p>
+    <ol class="roadmap">
+      <li><strong>Look up the centre word.</strong> No committee, no averaging: \(\mathbf h=\mathbf v_{\text{chai}}=(1,\ 1)\).</li>
+      <li><strong>Score every word.</strong> we 0, drink 1, chai 2, daily 1, cricket −2.</li>
+      <li><strong>Make one list of chances.</strong> The softmax gives 0.072, 0.195, 0.529, 0.195, 0.010. The <strong>same</strong> list is used for every neighbour slot — the slot on the left and the slot on the right.</li>
+      <li><strong>Add up the surprises.</strong> The true neighbours, drink and daily, got 0.195 each: \(L=-\ln0.195-\ln0.195\approx3.27\).</li>
+    </ol>
+    <p>\[\begin{aligned}\mathbf h&=\mathbf v_{\text{chai}},\\ p_w&=\operatorname{softmax}(\mathbf u\cdot\mathbf h)_w,\\ L&=-\ln p_{\text{drink}}-\ln p_{\text{daily}}.\end{aligned}\]</p>
+    <p>Read it aloud: <em>the centre word's own vector is the opinion; one list of chances covers the whole vocabulary; each true neighbour adds its own surprise.</em></p>
+    <p>Now look at the model's favourite guess: chai itself, with 0.529. Chai's input vector and output vector are both (1, 1), so the word points straight at its own answer-arrow. But a word is almost never its own neighbour. Watch one step fix that.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>How it learns.</strong> Each neighbour slot sends back prediction − truth, and because both slots used the same list of chances, their errors simply add up:</p>
+    <p>\[\begin{aligned}\mathbf E&=2\,\mathbf p-\mathbf y_{\text{drink}}-\mathbf y_{\text{daily}}\\ &=(0.143,\ -0.611,\ 1.059,\\ &\qquad -0.611,\ 0.019).\end{aligned}\]</p>
+    <ul>
+      <li><strong>The answers move.</strong> Drink's and daily's output vectors are pulled toward \(\mathbf h\): they become \((1.611,\ 0.611)\) and \((0.611,\ 1.611)\). Chai's own output vector took 0.529 in <em>both</em> slots, so it is pushed hard away: \((1,1)-1.059\,(1,1)=(-0.059,\ -0.059)\).</li>
+      <li><strong>The centre word takes all the blame.</strong> The blame on \(\mathbf h\) is \(\sum_w E_w\,\mathbf u_w=(0.429,\ 0.429)\). There is no committee to share it with, so \(\mathbf v_{\text{chai}}\) moves by all of it: \((1,1)-(0.429,\ 0.429)=(0.571,\ 0.571)\). Chai stops pointing at itself.</li>
+    </ul>
+    <p>After this one step the chances are 0.092, <strong>0.386</strong>, 0.102, <strong>0.386</strong>, 0.034. Drink and daily are now the favourites, and the loss has fallen from 3.27 to <strong>1.90</strong>.</p>
+  </div>
+<!--@W2V skipgram-->
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p><strong>One list must cover all the company.</strong> A single softmax has to spread its chances over all of a word's usual neighbours. The best this model could ever do for chai is 0.5 on drink and 0.5 on daily — a loss of \(2\ln2\approx1.386\), never 0. So skip-gram literally learns a word's company as a list of chances. Two words that keep the same company must produce the same list, and the only way to do that is to have nearly the same input vector.</p>
+    <p><strong>The centre word gets every update in full.</strong> It receives the sum of all its neighbours' errors. So even a word that appears only a few times gets strong, undiluted updates each time it does appear.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Skip-gram does not make a different guess for each position. The neighbour on the left and the neighbour two places to the right are guessed from the <strong>same</strong> list of chances. The window says which words count as company; it does not say where they sit.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}L&=-\sum_{c\,\in\,\text{context}}\ln p_c,\\ \mathbf v_{\text{centre}}&\leftarrow\mathbf v_{\text{centre}}-\eta\sum_w E_w\,\mathbf u_w\end{aligned}\]</p>
+    <p>Skip-gram uses the centre word's own vector as the opinion, makes one softmax over the vocabulary, and checks it against every neighbour. The errors of all the slots add up, and the centre word receives the whole sum. (The lab in §11 plays a cheaper version of this game, with negative sampling in place of the full softmax — see §12.)</p>
+  </div>
+  <div class="check reveal" data-check="c24">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the skip-gram round, chai has two neighbours, drink and daily. How many softmax lists does the model work out for this one position?</p>
+    <div class="opts">
+      <button data-why="Both slots start from the same opinion h = v_chai and the same output table, so they would produce identical lists. Skip-gram works out the list once and checks it twice.">two — one for each neighbour slot</button>
+      <button data-correct data-why="Right. One opinion, one output table, one list of chances. It is checked against drink and against daily, and the two errors are added.">one — checked against both neighbours</button>
+      <button data-why="The softmax makes one list with a chance for each of the five words; it is not five separate lists.">five — one for each word of the vocabulary</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c25">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why does a rare word usually end up with a better vector from skip-gram than from CBOW?</p>
+    <div class="opts">
+      <button data-why="Both games read exactly the same text, so they meet the rare word equally often. The difference is how much each meeting moves its vector.">skip-gram sees the rare word more often</button>
+      <button data-why="Both games use the same vocabulary and the same tables. The difference lies in how the blame is shared.">skip-gram has a bigger vocabulary</button>
+      <button data-correct data-why="Right. In CBOW the rare word is one voice in a committee of 2C, so it gets a thin share of each update. In skip-gram it is the centre of up to 2C guesses and gets the whole sum of their blame.">in skip-gram it gets the full blame of up to \(2C\) guesses; in CBOW only a \(\tfrac1{2C}\) share</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c26">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the whole text, chai's only neighbours are drink and daily, equally often. What is the lowest loss skip-gram can ever reach at this position?</p>
+    <div class="opts">
+      <button data-why="Zero would need a chance of 1 for drink AND a chance of 1 for daily. One list of chances cannot give both 1 — they must share.">0</button>
+      <button data-correct data-why="Right. The best one list can do is 0.5 on each, and then L = −ln 0.5 − ln 0.5 = 2 ln 2 ≈ 1.386. The drawer proves no other split does better.">\(2\ln2\approx1.386\)</button>
+      <button data-why="ln 2 ≈ 0.693 is the surprise of ONE slot at 0.5. There are two slots, and their surprises add: 2 ln 2 ≈ 1.386.">\(\ln2\approx0.693\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s10-->
+  <p class="onesent reveal"><b>In one sentence:</b> Skip-gram looks up the centre word's vector, makes one softmax over the whole vocabulary and checks it against every neighbour — so it learns a word's company as a list of chances, and the centre word gets the full sum of its neighbours' blame.</p>
+</section>
+
+<!-- ================= 11 · CBOW OR SKIP-GRAM ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>CBOW or skip-gram? Race them</h2></div>
+  <p class="qopen reveal">Two games, one goal. Which one should you play?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A coaching class and home tuition. In the coaching class, the teacher asks one question and takes one answer from a room of forty. It is fast, but the quiet student in the back row barely changes the answer. At home tuition, the teacher sits with one student and asks question after question. It is slower and costs more — but the weak student gets full attention.</p>
+    <p>CBOW is the coaching class. Skip-gram is home tuition. And the rare words are the quiet students.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Both games read the same text through the same window, and both train the same two tables. Put them side by side:</p>
+    <div class="scroll-x"><table class="plain cmp">
+      <thead><tr><th></th><th>CBOW · fill in the blank</th><th>skip-gram · guess the neighbours</th></tr></thead>
+      <tbody>
+        <tr><td>what goes in → what comes out</td><td>the context (up to \(2C\) words) → the centre word</td><td>the centre word → each context word</td></tr>
+        <tr><td>guesses at each stop</td><td>1</td><td>up to \(2C\)</td></tr>
+        <tr><td>what is averaged</td><td>the \(2C\) context vectors</td><td>nothing</td></tr>
+        <tr><td>a word's share of the blame</td><td>\(\tfrac1{2C}\) of the committee's</td><td>the full sum of its neighbours'</td></tr>
+        <tr><td>speed</td><td>faster — about \(2C\) times fewer guesses</td><td>slower</td></tr>
+        <tr><td>frequent words</td><td>slightly better, smoother</td><td>good</td></tr>
+        <tr><td>rare words, small collections of text</td><td>weaker</td><td>better</td></tr>
+      </tbody></table></div>
+    <p>The rule of thumb comes from the people who built word2vec (Mikolov and colleagues, 2013): <strong>CBOW is several times faster and a little better for frequent words; skip-gram works well with small amounts of text and represents even rare words well.</strong> In practice the most popular choice is skip-gram with negative sampling (§12), a window of about 5 words and 100–300 numbers per word.</p>
+    <p><strong>Why do rare words do better in skip-gram?</strong> Follow the blame. In CBOW a rare word is one voice in a committee of \(2C\), so every update it receives is divided by the size of the committee — and the committee's answer is mostly shaped by the common words around it. In skip-gram the rare word is the centre of up to \(2C\) guesses, and it receives every one of those updates in full.</p>
+    <p>Below, both games train <strong>side by side</strong>: the same sentences, in the same order, from the same random start. Watch three things. The <strong>cost counters</strong>: at each stop skip-gram makes up to \(2C\) guesses where CBOW makes one. The <strong>maps</strong>: both sort the words into topics they were never told about. And the <strong>nearest neighbours</strong> of a frequent word and of a rare word, in each model.</p>
+  </div>
+<!--@W2V lab-->
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Both games are fed by the same thing: which words share a window. Words that keep the same company receive the same pulls in either game, so both tables end up putting them together. The games differ only in how the pulls are <em>packaged</em> — one averaged guess per window, or one guess per neighbour — and that packaging decides the cost and how much attention each word gets.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Faster is not worse, and slower is not better. On a large collection of text both games reach vectors of similar quality; the choice is about time and about rare words. And a toy lab with about a hundred short sentences is noisy: change the random start before you judge a winner.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{CBOW: 1 guess per stop}\\ \text{skip-gram: up to }2C\\ \text{guesses per stop}\end{gathered}\]</p>
+    <p>CBOW buys speed by averaging the committee into one guess. Skip-gram pays about \(2C\) times more to give every word — and especially every rare word — its own full update.</p>
+  </div>
+  <div class="check reveal" data-check="c27">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You widen the window from \(C=2\) to \(C=4\). In the middle of a long sentence, how many guesses does each game now make at one stop?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. CBOW still makes one guess per stop — its committee just grows from 4 to 8 members. Skip-gram makes one guess per neighbour: 2C = 8. Its cost grows with the window; CBOW's guess count does not.">CBOW 1, skip-gram 8</button>
+      <button data-why="CBOW averages the whole context into ONE opinion and makes ONE guess, however big the window. Only skip-gram makes a guess per neighbour.">CBOW 8, skip-gram 8</button>
+      <button data-why="The window counts C words on EACH side. With C = 4 there are 8 neighbours, so skip-gram makes 8 guesses; CBOW makes 1.">CBOW 1, skip-gram 4</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c28">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You have a small collection of old letters, full of rare village names, and plenty of computer time. Which game is the better bet?</p>
+    <div class="opts">
+      <button data-why="CBOW's strengths are speed and frequent words. Here time is plentiful and the words that matter are rare — each would be one thin voice in a committee.">CBOW, because it is faster</button>
+      <button data-correct data-why="Right. The text is small and the words that matter are rare — exactly where skip-gram shines, because each rare word gets the full blame of every guess it makes. The extra cost does not matter here.">skip-gram</button>
+      <button data-why="Both can learn rare words; skip-gram simply gives them more attention per appearance. With few appearances, that attention is what counts.">neither — rare words cannot be learned</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> CBOW is the coaching class — one averaged guess per window, fast and smooth — while skip-gram is home tuition — up to \(2C\) guesses per window, slower, but every word, especially every rare one, gets its full share of attention.</p>
 </section>

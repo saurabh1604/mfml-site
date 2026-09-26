@@ -3,6 +3,7 @@ const SUB=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]||c)
 const SUP=n=>String(n).replace(/-/g,'−').split('').map(c=>({'−':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'})[c]||c).join('');
 const nm=s=>String(s).replace(/-/g,'−');                       /* a real minus sign in readouts */
 const F=(v,d)=>nm((+v).toFixed(d==null?2:d));                  /* fixed width, minus sign */
+const FX=(v,d)=>F(v,d);                                          /* same, for draw() bodies whose local F is a font size */
 const sci=(v,d)=>nm((+v).toExponential(d==null?2:d)).replace('e+','e');
 const trim=s=>s.indexOf('.')<0?s:s.replace(/0+$/,'').replace(/\.$/,'');
 const T4=v=>trim(F(v,4));
@@ -84,11 +85,72 @@ function reshape(ctx,surf,fs,zs,ramp,gamma){ const T=ctx.THREE, geo=surf.userDat
   const lut=surf.userData.lut, span=(zmax-zmin)||1;
   for(let i=0;i<n;i++){ pos.setY(i,zv[i]*zs); const K=lut[Math.max(0,Math.min(63,Math.round(Math.pow((zv[i]-zmin)/span,gamma||1)*63)))]; col.setXYZ(i,K.r,K.g,K.b); }
   pos.needsUpdate=true; col.needsUpdate=true; geo.computeVertexNormals(); surf.userData.zmin=zmin; surf.userData.zmax=zmax; surf.userData.mesh.frustumCulled=false; return {zmin,zmax}; }
+/* ---- label placement without collisions: try candidate spots in order, keep the first whose box hits no obstacle ---- */
+function bboxOf(n){ try{ const b=n.getBBox(); return {x:b.x,y:b.y,w:b.width,h:b.height}; }catch(e){ return null; } }
+const hitBox=(a,b,p)=>{ p=p||0; return a.x<b.x+b.w+p&&b.x<a.x+a.w+p&&a.y<b.y+b.h+p&&b.y<a.y+a.h+p; };
+const circBox=(x,y,r)=>({x:x-r,y:y-r,w:2*r,h:2*r});
+const inside=(b,B)=>!B||(b.x>=B.x&&b.y>=B.y&&b.x+b.w<=B.x+B.w&&b.y+b.h<=B.y+B.h);
+/* first free candidate wins; if none is free, the in-bounds candidate that covers the least of the other labels */
+const ovArea=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+function placeLabel(parent,cands,s,style,obst,pad,bounds){ let best=null, bestCost=Infinity, bestB=null; const P=pad==null?2:pad;
+  for(const [x,y,anc] of cands){ const t=txt(parent,x,y,s,style,anc), b=bboxOf(t);
+    if(b&&b.w>0&&inside(b,bounds)&&!obst.some(o=>hitBox(b,o,P))){ if(best) best.remove(); obst.push(b); t._free=true; return t; }
+    const cost=!b?1e9:(inside(b,bounds)?0:1e6)+obst.reduce((a,o)=>a+ovArea(b,{x:o.x-P,y:o.y-P,w:o.w+2*P,h:o.h+2*P}),0);
+    if(cost<bestCost){ if(best) best.remove(); best=t; bestCost=cost; bestB=b; } else t.remove(); }
+  if(bestB) obst.push(bestB); if(best) best._free=false; return best; }
+/* a block of lines (say a name over a price) at the first free candidate [x, first baseline, anchor]; line k sits dy below the first */
+function placeLines(parent,cands,lines,obst,pad,bounds){ const P=pad==null?2:pad; let best=null, bestCost=Infinity;
+  for(const [x,y,anc] of cands){ const ts=lines.map(L=>txt(parent,x,y+(L.dy||0),L.s,L.style,anc)), bs=ts.map(bboxOf);
+    if(bs.every(b=>b&&b.w>0&&inside(b,bounds)&&!obst.some(o=>hitBox(b,o,P)))){ if(best) best.ts.forEach(n=>n.remove()); bs.forEach(b=>obst.push(b)); return ts; }
+    const cost=bs.reduce((a,b)=>a+(!b?1e9:(inside(b,bounds)?0:1e6)+obst.reduce((s,o)=>s+ovArea(b,{x:o.x-P,y:o.y-P,w:o.w+2*P,h:o.h+2*P}),0)),0);
+    if(cost<bestCost){ if(best) best.ts.forEach(n=>n.remove()); best={ts,bs}; bestCost=cost; } else ts.forEach(n=>n.remove()); }
+  best.bs.forEach(b=>{ if(b) obst.push(b); }); return best.ts; }
+/* ---- 3-D labels on screen: every sprite label remembers its text, and spriteRects() projects them to CSS-pixel boxes (for the no-overlap tests) ---- */
+if(CIN&&CIN.prim&&!CIN.prim._u18){ const L0=CIN.prim.label; CIN.prim.label=function(ctx,text,pos,opts){ const s=L0.call(this,ctx,text,pos,opts); s.userData.label=String(text); s.userData.prio=opts&&opts.prio!=null?opts.prio:((opts&&opts.size)||26); return s; }; CIN.prim._u18=true; }
+/* 3-D labels never pile up. Before every frame the labels are projected to the screen and, from the most important down
+   (bigger labels first, or an explicit prio), any label that would touch one already shown is faded out. It comes back
+   as soon as the camera turns and frees its spot. Used by the widget stages (not the hero, which fades its own labels). */
+function declutter(ctx){ const T=ctx.THREE, cam=ctx.camera, W=ctx.size.w, H=ctx.size.h, v=new T.Vector3(), sc=new T.Vector3(), L=[];
+  ctx.scene.updateMatrixWorld(); cam.updateMatrixWorld(); const k=H/(2*Math.tan(cam.fov*Math.PI/360));
+  ctx.scene.traverseVisible(o=>{ if(!o.isSprite||!o.userData.label) return; const m=o.material; if(m.userData.base==null) m.userData.base=m.opacity==null?1:m.opacity;
+    o.getWorldPosition(v); const d=-v.clone().applyMatrix4(cam.matrixWorldInverse).z; if(d<=0) return; const p=v.clone().project(cam); o.getWorldScale(sc);
+    const s=k/d, w=sc.x*s, h=sc.y*s, cx=(p.x+1)/2*W, cy=(1-p.y)/2*H; L.push({m,pr:o.userData.prio||0,r:{x:cx-w/2+w*.08,y:cy-h/2+h*.2,w:w*.84,h:h*.6}}); });
+  /* the HTML read-outs laid over the canvas are obstacles too, and a label that would be cut by the canvas edge fades */
+  L.sort((a,b)=>b.pr-a.pr); const kept=stageObstacles(ctx);
+  L.forEach(e=>{ const r=e.r, off=r.x<-1||r.y<-1||r.x+r.w>W+1||r.y+r.h>H+1, hit=off||kept.some(o=>hitBox(r,o,1)); e.m.opacity=hit?0:e.m.userData.base; if(!hit) kept.push(r); }); }
+/* boxes of the .hud / .hint notes that sit over a stage's canvas, in canvas pixels */
+function stageObstacles(ctx){ const cvs=ctx.renderer&&ctx.renderer.domElement, host=cvs&&cvs.parentNode; if(!host||!host.querySelectorAll) return [];
+  const R=cvs.getBoundingClientRect(), out=[]; host.querySelectorAll('.hud,.hint').forEach(e=>{ if(!e.textContent.trim()) return; const b=e.getBoundingClientRect(); if(b.width>0&&b.height>0) out.push({x:b.left-R.left,y:b.top-R.top,w:b.width,h:b.height,t:'['+e.className+': '+e.textContent.trim().slice(0,24)+']'}); });
+  return out; }
+/* A stage is built for one layout: CSS gives .stage3d a phone height under 640 px, the widgets pick phone label sizes and
+   cameras under 560 px, and cinema pins the height it found on its first build. When a resize crosses either line, unpin
+   the height and rebuild the stage from scratch, so a desktop stage never lingers on a phone (or the other way round). */
+function watchLayout(box,S){ const key=()=>(matchMedia('(max-width:640px)').matches?'p':'d')+((box.parentNode||box).clientWidth<560?'n':'w'); let k0=key(), tm=0;
+  const go=()=>{ clearTimeout(tm); tm=setTimeout(()=>{ const k=key(); if(k===k0||!(box.parentNode||box).clientWidth) return; k0=k; box.style.height=''; if(S&&S.handle) remount(S); },150); };
+  addEventListener('resize',go); if('ResizeObserver' in window) new ResizeObserver(go).observe(box.parentNode||box); }
+/* turn a stage's camera around its target (tests look at the labels from every side) */
+function turnView(ctx,a){ if(!ctx||!ctx.orbit) return; ctx.orbit.sph.theta+=a; ctx.orbit.place(); RR(ctx); }
+function declutterOn(ctx){ const R=ctx.renderer, r0=R.render.bind(R); R.render=(s,c)=>{ try{ declutter(ctx); }catch(e){} r0(s,c); }; }
+function spriteRects(ctx){ if(!ctx||!ctx.camera) return []; const T=ctx.THREE, cam=ctx.camera, W=ctx.size.w, H=ctx.size.h, out=[], v=new T.Vector3(), sc=new T.Vector3(); cam.updateMatrixWorld();
+  const k=H/(2*Math.tan(cam.fov*Math.PI/360));
+  ctx.scene.traverseVisible(o=>{ if(!o.isSprite||o.userData.label==null||!o.userData.label) return; if((o.material.opacity==null?1:o.material.opacity)<.3) return;
+    o.getWorldPosition(v); const d=-v.clone().applyMatrix4(cam.matrixWorldInverse).z; if(d<=0) return; const p=v.clone().project(cam);
+    o.getWorldScale(sc); const s=k/d, w=sc.x*s, h=sc.y*s, cx=(p.x+1)/2*W, cy=(1-p.y)/2*H;
+    const x=cx-w/2, y=cy-h/2, tx=x+w*.08, ty=y+h*.2;   /* the text's own box inside the sprite's padding */
+    out.push({t:o.userData.label,x,y,w,h,bg:o.userData.bg,cut:tx<-1||ty<-1||tx+w*.84>W+1||ty+h*.6>H+1}); });
+  return out; }
+/* the same, plus the HUD notes as fixed boxes (tests: no label may hide under a read-out) */
+function stageRects(ctx){ if(!ctx) return []; return spriteRects(ctx).concat(stageObstacles(ctx).map(o=>({t:o.t,x:o.x-.08*o.w/.84,y:o.y-.2*o.h/.6,w:o.w/.84,h:o.h/.6,hud:true}))); }
+/* mark one tab as selected without firing its handler */
+function selTab(bar,t){ if(bar) bar.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.t)===String(t)?'true':'false')); }
 function pressOnly(bar,btn){ if(bar) bar.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===btn?'true':'false')); }
 function setCtl(id,v,d){ const r=document.getElementById(id), o=document.getElementById(id+'-o'); if(r) r.value=v; if(o) o.textContent=typeof d==='function'?d(v):nm(fmt(v,d==null?2:d)); }
 /* show only the blocks whose data-tab matches (blocks with no data-tab are always shown) */
 function showTab(root,key){ root.querySelectorAll('[data-tab]').forEach(n=>{ n.style.display=(n.dataset.tab===key)?'':'none'; }); }
 
+/* SVG labels carry their font in an inline style (Inter, then system-ui): a label with Hindi in it puts the page's own
+   Devanagari face first, so मैं चाय पीता हूँ render the same on every device (Latin letters still fall through to Inter) */
+const dv=(s,style)=>/[\u0900-\u097F]/.test(s)?style.replace('system-ui',"'U18 Deva',system-ui"):style;
 const critHex=()=>CIN.hex(getComputedStyle(document.documentElement).getPropertyValue('--critical').trim());
 /* ================= CINEMA SCENE KIT (from Unit 11) =================
    Coordinates: math (w1, w2, height z) → three.js [w1, z*zs, -w2]. Every helper returns THREE objects already added to ctx.root
@@ -143,7 +205,7 @@ function starfield(ctx,n,R){ const {THREE,root}=ctx; if(ctx.isLight) return null
   let s=7; const rnd=()=>{ s=(s*16807)%2147483647; return s/2147483647; };
   for(let k=0;k<n;k++){ let x,y,z; do{ x=(rnd()*2-1)*R; y=(rnd()*2-1)*R*.55; z=(rnd()*2-1)*R-3; }while(Math.hypot(x,y-1,z)<R*.3); sp[3*k]=x; sp[3*k+1]=y; sp[3*k+2]=z; }
   const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(sp,3));
-  const p=new THREE.Points(g,new THREE.PointsMaterial({color:hxOf(ctx)('ink2'),size:.05,transparent:true,opacity:.65,blending:THREE.AdditiveBlending,depthWrite:false})); root.add(p); return p; }
+  const p=new THREE.Points(g,new THREE.PointsMaterial({color:hxOf(ctx)('ink2'),size:2.2,sizeAttenuation:false,map:sparkTex(THREE),transparent:true,opacity:.7,blending:THREE.AdditiveBlending,depthWrite:false})); root.add(p); return p; }
 function glassFloor(ctx,size,o){ o=o||{}; const {THREE,root,isLight}=ctx, hx=hxOf(ctx);
   const grid=CIN.prim.grid(ctx,size,o.div||24,hx('grid'),{opacity:isLight?.5:.3}); grid.position.y=o.y||0; root.add(grid);
   const slab=new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshStandardMaterial({color:isLight?0xffffff:0x0b1020,roughness:.85,transparent:true,opacity:isLight?.35:.55,depthWrite:false})); slab.rotation.x=-Math.PI/2; slab.position.y=(o.y||0)-.004; root.add(slab);

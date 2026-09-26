@@ -1,0 +1,291 @@
+<!-- ================= ACT V · THE GEOMETRY OF MEANING, AND ITS LIMITS ================= -->
+<!-- ================= 15 · THE GEOMETRY OF MEANING ================= -->
+<section class="unit" id="s15">
+  <div class="sec-head reveal"><span class="sec-num">15</span><h2>The geometry of meaning</h2></div>
+  <p class="qopen reveal">If every word is a point, what does it mean to walk from "man" to "woman"?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A friend gives you directions: "From the station, walk 2 blocks north and 3 blocks east." Those directions are not tied to the station. Start from the temple and follow the same walk, and you land somewhere new — but in the same position relative to where you started.</p>
+    <p>In a good word space, the step from "man" to "woman" is a walk like that. Start the same walk from "king".</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>First, three rulers for "similar".</strong> We have met three ways to compare two lists of numbers. Take two tea-stall orders \(\mathbf a=(2,1)\) (two cups of chai, one biscuit) and \(\mathbf b=(4,2)\) — the same taste, just a bigger order — and a third customer who likes biscuits more, \(\mathbf c=(1,2)\).</p>
+    <ul>
+      <li><strong>Dot product</strong>: \(\mathbf a\cdot\mathbf b=10\), \(\mathbf a\cdot\mathbf c=4\). It mixes taste with size: bigger orders give bigger numbers.</li>
+      <li><strong>Distance</strong>: \(\lVert\mathbf a-\mathbf b\rVert=\sqrt{2^2+1^2}\approx2.236\) but \(\lVert\mathbf a-\mathbf c\rVert=\sqrt{1^2+1^2}\approx1.414\). Distance says \(\mathbf a\) is closer to \(\mathbf c\) — the size difference beats the taste. (With an office order of (20, 10) it gets worse: about 20.12 against 1.414.)</li>
+      <li><strong>Cosine</strong>: \(\cos(\mathbf a,\mathbf b)=1\) exactly (the same direction), \(\cos(\mathbf a,\mathbf c)=4/5=0.8\). The cosine sees only taste.</li>
+    </ul>
+    <p>For word vectors, the length mostly tracks how often a word appears, and the direction tracks what it means — so the cosine is the standard ruler. To make the three rulers agree, <strong>normalise</strong>: shrink or stretch every vector to length 1. Then the dot product <em>is</em> the cosine, and distance follows from it, \(\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2=2-2\cos\theta\), so all three rulers rank neighbours the same way. Real systems normalise once and then use fast dot products.</p>
+  </div>
+
+  <div class="widget reveal" id="w-cosine">
+    <div class="widget-head"><span class="w-title">Three rulers for "similar"</span><span class="w-sub">Drag the tips of the two arrows. The dot product, the cosine (with its angle) and the distance update together.</span></div>
+    <p class="try"><b>Try:</b> Start with the two shoppers: cosine exactly 1, distance 2.236. Drag \(\mathbf b\) further out along the same line: the cosine stays 1 while the distance grows. Swing it to a right angle: cosine 0. Then press <em>normalise</em>: both arrows snap to length 1, and the distance becomes \(\sqrt{2-2\cos\theta}\).</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 420px;min-width:0"><div class="svgstage"><svg id="cz-svg" viewBox="0 0 480 360" class="svg-lab" role="img" aria-label="A plane with two draggable arrows a and b from the origin, the angle between them marked with an arc, the dashed straight line between their tips for the distance, and the unit circle drawn faintly."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="preset" id="cz-norm" aria-pressed="false">normalise</button><button class="preset" id="cz-shop">the two shoppers</button><button class="preset" id="cz-right">right angle</button></div>
+        <div id="cz-read" class="readout" style="margin-top:.6rem;line-height:1.85"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Now the walk.</strong> Here are four hand-made vectors with just two numbers each (we built them for this example; they are not trained):</p>
+    <p>\[\begin{aligned}\text{king}&=(3,2), & \text{man}&=(1,2),\\ \text{queen}&=(3,-2), & \text{woman}&=(1,-2).\end{aligned}\]</p>
+    <p>The step from man to woman is \(\text{woman}-\text{man}=(0,-4)\). The step from king to queen is \(\text{queen}-\text{king}=(0,-4)\) — the same step. The four points make a <strong>parallelogram</strong>, and that answers the puzzle "man is to woman as king is to ?":</p>
+    <p>\[\begin{aligned}&\text{king}-\text{man}+\text{woman}\\ &=(3,2)-(1,2)+(1,-2)=(3,-2).\end{aligned}\]</p>
+    <p>That is exactly queen. With real, trained vectors the answer is never exact; it lands <strong>near</strong> a word. So we search for the nearest word by cosine. For \((3,-2)\): queen 1, woman 0.868, king 0.385, man −0.124.</p>
+    <p><strong>Skip the three words you started with.</strong> In trained vectors the step "woman − man" is short next to the words themselves, so the answer usually lies closest to king itself. A search that allowed king would just return king — true, but useless. So the search always leaves out the three input words.</p>
+  </div>
+
+  <div class="widget reveal" id="w-para">
+    <div class="widget-head"><span class="w-title">The parallelogram, by hand</span><span class="w-sub">Drag king, man or woman. The answer king − man + woman is drawn as the fourth corner, and the nearest word by cosine lights up.</span></div>
+    <p class="try"><b>Try:</b> Leave the points as they are: the corner lands exactly on queen. Drag woman a little: the corner moves the same way, and the nearest word stays queen until it drifts too far. Turn on <em>include the inputs</em> and drag man close to king — see why we skip them.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px;min-width:0"><div class="svgstage"><svg id="pa2-svg" viewBox="0 0 520 380" class="svg-lab" role="img" aria-label="A plane with draggable points king, man and woman, the fixed words queen, prince, princess, boy and girl, and a parallelogram whose fourth corner is king minus man plus woman."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px">
+        <div class="presets"><button class="preset" id="pa2-inc" aria-pressed="false">include the inputs</button><button class="preset" id="pa2-reset">reset</button></div>
+        <div id="pa2-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>A bigger playground.</strong> Below are 60 words. Their vectors are <strong>hand-made</strong> by us — not trained on text — so that you can check every answer with your own sense of meaning. Each word has 13 numbers: nine meanings we chose (is it a person? royal? female or male? young? a drink? about cricket? an animal? a place? a capital city?), four random "family fingerprint" numbers shared by a family such as king, queen, prince and princess, and a little random noise. The sums and the cosines use all 13 numbers.</p>
+    <p>To draw them we look through a fixed 3-D window — a projection, like a shadow on a wall (<a href="unit-03.html#s10">Unit 3</a>). A shadow of a parallelogram is still a parallelogram, so the picture never lies about the arithmetic. But lengths and angles <em>do</em> change in a shadow: two dots that look close may not be, so always read the cosines in the box, never the picture alone.</p>
+    <p><strong>How do people test real embeddings?</strong> Two ways. <em>Similarity</em>: people rate pairs of words — chai and coffee, cup and kettle — and we check whether the cosines put the pairs in the same order. <em>Analogies</em>: thousands of puzzles like "Delhi is to India as Tokyo is to ?", and we count how often the nearest word to \(A-B+C\) is the right one.</p>
+  </div>
+  <div class="widget reveal" id="w-analogy">
+    <div class="widget-head"><span class="w-title">The embedding explorer</span><span class="w-sub">Sixty hand-made words in space, drawn as dots. Choose \(A-B+C\): the parallelogram draws itself, the three words and the answer are named, and the nearest words by cosine are listed. Point at any dot to read its word, or turn on the direction arrows.</span></div>
+    <p class="try"><b>Try:</b> Start with king − man + woman. Then try the others: prince − boy + girl, Delhi − India + Japan, puppy − dog + cat. Turn on the <em>female</em> arrows — nearly the same arrow at every pair. Type any word in the search box to fly to it and list its neighbours.</p>
+    <div class="ex-bar">
+      <label class="ex-slot"><span>A</span><select id="ex-a" aria-label="word A"></select></label><span class="ex-op">−</span>
+      <label class="ex-slot"><span>B</span><select id="ex-b" aria-label="word B"></select></label><span class="ex-op">+</span>
+      <label class="ex-slot"><span>C</span><select id="ex-c" aria-label="word C"></select></label><span class="ex-op">≈</span><span id="ex-ans" class="ex-ans">?</span>
+    </div>
+    <div class="presets ex-pre" id="ex-pre"><button class="preset" data-q="king,man,woman">king − man + woman</button><button class="preset" data-q="prince,boy,girl">prince − boy + girl</button><button class="preset" data-q="Delhi,India,Japan">Delhi − India + Japan</button><button class="preset" data-q="puppy,dog,cat">puppy − dog + cat</button><button class="preset" data-q="king,man,boy">king − man + boy</button><button class="preset" data-q="Paris,France,Italy">Paris − France + Italy</button></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 480px"><div id="ex-3d" class="stage3d tall ex-stage" role="img" aria-label="Orbitable 3D scene of sixty glowing word dots in five coloured groups: people in violet, tea words in orange, cricket words in green, animals in gold and places in cyan, with the word bat in pink between cricket and animals. A glowing parallelogram joins the chosen words A, B, C and the answer point, which is ringed; only those words and the nearest neighbours are named. Optional arrows show directions such as female, royal, young and capital city."></div><p class="stage-tap">drag the picture to orbit · point at a dot to read it</p></div>
+      <div class="wcol" style="flex:1 1 260px;min-width:0">
+        <label class="bg-lbl" for="ex-find">find a word</label>
+        <input id="ex-find" class="ex-find" list="ex-list" placeholder="type: chai, lion, Tokyo…" autocomplete="off"><datalist id="ex-list"></datalist>
+        <div class="bg-lbl" style="margin-top:.6rem">direction arrows</div>
+        <div class="presets" id="ex-dirs"><button class="preset" data-d="female" aria-pressed="false">female</button><button class="preset" data-d="royal" aria-pressed="false">royal</button><button class="preset" data-d="young" aria-pressed="false">young</button><button class="preset" data-d="capital" aria-pressed="false">capital city</button><button class="preset" data-d="topic" aria-pressed="false">tea → cricket</button></div>
+        <div class="presets" style="margin-top:.4rem"><button class="preset" id="ex-inc" aria-pressed="false">include A, B, C in the search</button><button class="preset" id="ex-names" aria-pressed="false">name every dot</button></div>
+        <div id="ex-read" class="readout ex-read" style="margin-top:.6rem;line-height:1.7"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Think of what separates "king" from "queen" in text: the same small change of company — "he", "his", "sir" around one; "she", "her", "madam" around the other — while the royal company (crown, palace, throne) stays. Man and woman differ by that <em>same</em> change. If the same change of company always moves a vector the same way, it becomes the same arrow everywhere, and adding it to king swaps king's "he" company for "she" company while keeping the crown.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Analogies are less magical than they look. On real vectors, king − man + woman lands nearest to <em>king</em> itself; many famous analogies only "work" because the three inputs are skipped. And a picture of word vectors is always a shadow: never trust how close two dots <em>look</em> — trust the cosine.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf q=\mathbf v_a-\mathbf v_b+\mathbf v_c,\\ \text{answer}=\arg\max_{w\notin\{a,b,c\}}\ \cos(\mathbf v_w,\mathbf q)\end{gathered}\]</p>
+    <p>In a good word space, closeness (by cosine) is similarity and a <strong>difference</strong> of meanings is a <strong>direction</strong>. The same arrow turns man into woman, king into queen and boy into girl; another turns a country into its capital. "B is to C as A is to ?" becomes arithmetic: \(A-B+C\), then the nearest word by cosine, leaving out \(A\), \(B\) and \(C\).</p>
+  </div>
+  <div class="check reveal" data-check="c37">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Toy vectors: Delhi \(=(1,1,3)\), India \(=(1,0,3)\), Japan \(=(3,0,1)\). What is Delhi − India + Japan?</p>
+    <div class="opts">
+      <button data-why="Subtract India from Delhi first: (0, 1, 0), the 'capital city' step. Then add Japan: (3, 1, 1).">\((5,1,7)\)</button>
+      <button data-correct data-why="Right. Delhi − India = (0, 1, 0), the step from a country to its capital. Add Japan: (3, 1, 1) — Japan plus the capital step, which is where Tokyo should be.">\((3,1,1)\)</button>
+      <button data-why="(3, −1, 1) would be Japan MINUS the capital step. The sum is Delhi − India + Japan = (1 − 1 + 3, 1 − 0 + 0, 3 − 3 + 1) = (3, 1, 1).">\((3,-1,1)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c38">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Why does the analogy search leave out the three input words?</p>
+    <div class="opts">
+      <button data-why="Nothing is cancelled away. The step woman − man is short, so king − man + woman stays very close to king: the inputs score the HIGHEST cosines, not tiny ones. That is exactly why we skip them.">because \(A-B+C\) cancels them out, so their cosines are tiny</button>
+      <button data-correct data-why="Right. In trained vectors the step woman − man is short next to the vectors themselves, so king − man + woman usually stays closest to king. Leaving the inputs out makes the search return the next nearest word, queen.">because the answer usually lands closest to one of them — often \(A\) itself</button>
+      <button data-why="Three words fewer makes no real difference to the speed of a search over 50 000 words. We skip them because they would win too often: the answer usually lands closest to A itself.">to make the search faster</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c39">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Two vectors of length 1 have cosine 0.5. How far apart are their tips?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The squared distance is 2 − 2(0.5) = 1, so the distance is 1. (The two tips and the origin make an equal-sided triangle: 60° at the origin.)">1</button>
+      <button data-why="0.5 is the cosine. The squared distance is 2 − 2·0.5 = 1, so the distance is 1.">0.5</button>
+      <button data-why="√2 is the distance at a right angle (cosine 0). With cosine 0.5 the squared distance is 2 − 1 = 1.">\(\sqrt2\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c40">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A word vector is \(\mathbf a=(3,4)\). The same word counted over twice as much text gives \(\mathbf b=(6,8)\). What do the dot product, the cosine and the distance say?</p>
+    <div class="opts">
+      <button data-why="The cosine is 1: b is exactly 2a, the same direction. A cosine of 0.5 would need a 60° angle.">50, 0.5 and 5</button>
+      <button data-why="The dot product is 3·6 + 4·8 = 18 + 32 = 50, not 25.">25, 1 and 5</button>
+      <button data-correct data-why="Right. Dot: 18 + 32 = 50. Lengths 5 and 10, so the cosine is 50/50 = 1. Distance: ‖(3, 4)‖ = 5. The same word, the same meaning: cosine says 'identical', distance says '5 apart'.">50, 1 and 5</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s15-->
+  <p class="onesent reveal"><b>In one sentence:</b> Measure "similar" by the cosine (after normalising, all three rulers agree), and a difference of meanings becomes a direction — king − man + woman = (3, −2) = queen in our toy plane, and with real vectors we take the nearest word by cosine, leaving out the three words we started from.</p>
+</section>
+
+<!-- ================= 16 · LIMITS AND PIECES ================= -->
+<section class="unit" id="s16">
+  <div class="sec-head reveal"><span class="sec-num">16</span><h2>What one vector per word gets wrong — and how pieces help</h2></div>
+  <p class="qopen reveal">What should a machine do with a word that means two things — or with a word it has never seen?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>"He hit a six with his <strong>bat</strong>." "A <strong>bat</strong> flew out of the old fort at dusk." Same word, two completely different things. You never mix them up, because the sentence tells you which one is meant.</p>
+    <p>And when a shopkeeper says "ask the <strong>chaiwala</strong>", you understand at once — though you may never have heard that exact word — because you know its pieces.</p>
+  </div>
+  <div class="prose reveal">
+    <p><strong>Problem 1 · one vector must blend every meaning.</strong> Everything so far gives each word <em>one</em> vector, whatever the sentence. So what does "bat" get? Training pulls it toward cricket words every time it appears in a cricket sentence and toward animal words every time it appears in an animal sentence. It ends up roughly a <strong>blend</strong>, weighted by how often each meaning is used.</p>
+    <p>A tiny example. Let the cricket meaning point along \((1,0)\) and the animal meaning along \((0,1)\). If 80% of the sentences with "bat" are about cricket, the single vector is about</p>
+    <p>\[0.8\,(1,0)+0.2\,(0,1)=(0.8,\ 0.2).\]</p>
+    <p>Its cosine with the cricket meaning is \(0.8/\sqrt{0.68}\approx0.970\), and with the animal meaning only \(0.2/\sqrt{0.68}\approx0.243\). The rare meaning is almost drowned. A word used half and half sits in the middle, close to <em>neither</em> group.</p>
+    <p><strong>Problem 2 · vectors copy the text they learn from.</strong> The vectors are a mirror of how words are used in the corpus — nothing more. If the training text more often writes "the doctor … he" and "the nurse … she", then "doctor" leans toward the male end of the female–male direction and "nurse" toward the female end. That is a fact about the <em>text</em>, not about doctors or nurses. It matters because a system built on these vectors will repeat the pattern. People measure such leanings with directions like the ones in §15. They can also remove such a direction from every vector, but that hides only part of the pattern, so the text itself still matters.</p>
+    <p><strong>Problem 3 · words never seen get no vector at all.</strong> A table has one row per word it met in training. A new word — a spelling mistake, a new brand, "chaiwala" — has no row, and a plain word2vec model can say nothing about it.</p>
+  </div>
+
+  <div class="widget reveal" id="w-polysemy">
+    <div class="widget-head"><span class="w-title">The word with two lives</span><span class="w-sub">The cricket words and the animal words from the explorer, drawn as dots (point at one to read it). "bat" gets one vector: a blend of both meanings. Slide how often it is used in cricket sentences and watch it travel; its three nearest words are named.</span></div>
+    <p class="try"><b>Try:</b> Slide to 100%: bat sits in the cricket group. Slide to 0%: among the animals. At 50% it sits in the empty space between, and its nearest neighbours are weak (best cosine about 0.69). Then press the two sentence buttons for a peek at Unit 18: a vector that moves with its sentence.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="po-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A green group of cricket words and a gold group of animal words float apart as dots, each group with one label. A pink glowing point labelled bat slides along a dashed path between the two groups as the slider moves; thin lines join it to its three nearest words, which are named."></div><p class="stage-tap">drag the picture to orbit · point at a dot to read it</p></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="controls"><div class="ctl"><label for="po-s">used in cricket</label><input id="po-s" type="range" min="0" max="1" step="0.01" value="0.5"><output id="po-s-o">50%</output></div></div>
+        <div class="presets"><button class="preset" id="po-cric">"He hit a six with his bat"</button><button class="preset" id="po-anim">"A bat flew out of the fort"</button></div>
+        <div id="po-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The fix for unseen words: pieces.</strong> In 2017 Piotr Bojanowski and colleagues at Facebook built <strong>fastText</strong>, a word2vec in which a word's vector is the <strong>sum of the vectors of its pieces</strong>. The pieces are short runs of letters called <em>character n-grams</em>, taken after marking the start and end of the word with &lt; and &gt;. With pieces of 3 letters:</p>
+    <p class="plain-first tokline">&lt;chai&gt; → <span class="tk">&lt;ch</span> <span class="tk">cha</span> <span class="tk">hai</span> <span class="tk">ai&gt;</span></p>
+    <p class="plain-first tokline">&lt;chaiwala&gt; → <span class="tk sh">&lt;ch</span> <span class="tk sh">cha</span> <span class="tk sh">hai</span> <span class="tk">aiw</span> <span class="tk">iwa</span> <span class="tk">wal</span> <span class="tk">ala</span> <span class="tk">la&gt;</span></p>
+    <p>"chaiwala" shares <strong>3</strong> pieces with "chai" (&lt;ch, cha, hai) and 3 with "dudhwala" (wal, ala, la&gt;). So even though "chaiwala" was never seen, adding up its pieces gives it a sensible vector — near chai, and near the other -walas. (Real fastText uses pieces of 3 to 6 letters, plus the whole word.)</p>
+    <p><strong>How modern language models cut text: byte-pair encoding.</strong> Big language models go one step further and choose their pieces from data. Start with single characters. Count every pair of neighbouring symbols across the corpus, merge the most frequent pair into one new symbol, and repeat. Take a corpus with the words hug (10 times), pug (5), pun (12), bun (4) and hugs (5):</p>
+    <ol class="roadmap">
+      <li><strong>u + g</strong> appears 10 + 5 + 5 = <strong>20</strong> times → merge into "ug".</li>
+      <li><strong>u + n</strong> appears 12 + 4 = <strong>16</strong> times → "un".</li>
+      <li><strong>h + ug</strong> appears 10 + 5 = <strong>15</strong> times → "hug".</li>
+      <li><strong>p + un</strong> appears <strong>12</strong> times → "pun".</li>
+    </ol>
+    <p>After these four merges, "hugs" is cut as <em>hug · s</em>, and a word never seen, "bug", as <em>b · ug</em>. When two pairs tie, we merge the one met first in reading order. Frequent words become single tokens, and rare words are spelled out of common pieces — so nothing is ever unknown. This is <strong>byte-pair encoding</strong> (BPE). Most large language models cut their text this way, or with a close cousin of it, and the pieces of Unit 19 are made like this.</p>
+  </div>
+
+  <div class="widget reveal" id="w-pieces">
+    <div class="widget-head"><span class="w-title">Words in pieces</span><span class="w-sub"><em>fastText</em>: type a word and see its 3-letter pieces; pieces it shares with known words light up. <em>BPE</em>: step through the merges on the small corpus, then cut any word you type with the merges learned so far.</span></div>
+    <p class="try"><b>Try:</b> Type <em>chaiwala</em>: it shares 3 pieces with chai, 3 with dudhwala and 4 with sabziwala. Press <em>kadakchai</em>: 4 pieces from kadak, 3 from chai. Then look at <em>chain</em> in the list — 3 pieces shared with chai, and no meaning shared at all. In <em>BPE</em>, press <em>next merge</em> four times — u+g (20), u+n (16), h+ug (15), p+un (12) — then cut <em>hugs</em> and <em>bug</em>.</p>
+    <div class="tabs" id="pc-tabs" role="tablist" style="margin-bottom:.6rem"><button role="tab" aria-selected="true" data-t="ft">fastText pieces</button><button role="tab" aria-selected="false" data-t="bpe">BPE merges</button></div>
+    <div data-tab="ft">
+      <div class="wrow">
+        <div class="wcol" style="flex:1 1 260px;min-width:0">
+          <label class="bg-lbl" for="pc-word">a word</label><input id="pc-word" class="ex-find" value="chaiwala" autocomplete="off" spellcheck="false">
+          <div class="presets" style="margin-top:.45rem" id="pc-pre"><button class="preset" data-w="chaiwala">chaiwala</button><button class="preset" data-w="kadakchai">kadakchai</button><button class="preset" data-w="chais">chais</button><button class="preset" data-w="cricketer">cricketer</button></div>
+          <div id="pc-pieces" class="pc-pieces"></div>
+        </div>
+        <div class="wcol" style="flex:1.3 1 340px;min-width:0"><div id="pc-known" class="pc-known"></div><div id="pc-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div></div>
+      </div>
+    </div>
+    <div data-tab="bpe" style="display:none">
+      <div class="wrow">
+        <div class="wcol" style="flex:1.2 1 320px;min-width:0">
+          <div class="presets"><button class="play" id="bp-next">next merge ▶</button><button class="preset" id="bp-reset">reset</button></div>
+          <div id="bp-corpus" class="bp-corpus"></div>
+          <div id="bp-pairs" class="bp-pairs"></div>
+        </div>
+        <div class="wcol" style="flex:1 1 260px;min-width:0">
+          <label class="bg-lbl" for="bp-word">cut a word</label><input id="bp-word" class="ex-find" value="hugs" autocomplete="off" spellcheck="false">
+          <div class="presets" style="margin-top:.45rem" id="bp-pre"><button class="preset" data-w="hugs">hugs</button><button class="preset" data-w="bug">bug</button><button class="preset" data-w="puns">puns</button><button class="preset" data-w="hunger">hunger</button></div>
+          <div id="bp-cut" class="pc-pieces"></div>
+          <div id="bp-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Pieces are shared. A rare word is almost always made of common pieces, and a common piece has been seen thousands of times inside other words, so its vector is well trained. Adding up well-trained pieces gives even an unseen word a vector in the right neighbourhood — the way you understood "chaiwala" from "chai" and "-wala".</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Pieces are not meanings. "chai" and "chain" share &lt;ch, cha and hai, yet have nothing in common. Pieces help because, <em>over many words</em>, pieces like "wala", "ing" or "un" really do carry meaning — for any single word they can mislead. And pieces do nothing for "bat": both meanings are spelled the same. Only the sentence can tell them apart, which is where <a href="unit-18.html">Unit 18</a> goes: every word gets a <strong>new vector computed from its sentence</strong>, so "bat" in a cricket sentence and "bat" in a fort get different vectors.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf v_{\text{bat}}\approx s\,\mathbf v_{\text{cricket}}+(1-s)\,\mathbf v_{\text{animal}},\\ \mathbf v_{\text{word}}=\sum_{\text{pieces }g}\mathbf z_g\end{gathered}\]</p>
+    <p>One vector per word must blend all its meanings (weighted by use), copies the patterns of its text, and has nothing to say about unseen words. Pieces fix the unseen words — fastText adds up character n-grams, BPE learns a vocabulary of frequent pieces — but only a vector that changes with its sentence can fix "bat".</p>
+  </div>
+  <div class="check reveal" data-check="c41">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A word is used in its first meaning \((1,0)\) half the time and in its second meaning \((0,1)\) half the time. Its single vector is the blend \((0.5,0.5)\). What is its cosine with each meaning?</p>
+    <div class="opts">
+      <button data-why="The blend is shorter than 1, so divide by its length √0.5 ≈ 0.707: 0.5/0.707 ≈ 0.707, not 0.5.">0.5 with each</button>
+      <button data-correct data-why="Right. (0.5, 0.5)·(1, 0) = 0.5, and the blend's length is √0.5 ≈ 0.707, so the cosine is 0.707 — the same for both meanings. The word sits at 45°, halfway between, fully at home in neither group.">about 0.707 with each</button>
+      <button data-why="A cosine of 1 means pointing exactly the same way. The blend points halfway between, at 45° from each meaning: cos 45° ≈ 0.707.">1 with each</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c42">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With 3-letter pieces, how many pieces does "&lt;chais&gt;" share with "&lt;chai&gt;"?</p>
+    <div class="opts">
+      <button data-why="Not all of chai's pieces are inside chais: chai ends with &quot;ai&amp;gt;&quot;, but chais has &quot;ais&quot; and &quot;is&amp;gt;&quot; there. Only &amp;lt;ch, cha and hai are shared.">4 — every piece of chai is in chais</button>
+      <button data-correct data-why="Right. &amp;lt;chais&amp;gt; → &amp;lt;ch, cha, hai, ais, is&amp;gt;; &amp;lt;chai&amp;gt; → &amp;lt;ch, cha, hai, ai&amp;gt;. They share &amp;lt;ch, cha and hai: 3 pieces. The end marker makes &quot;ai&amp;gt;&quot; different from &quot;ais&quot;.">3</button>
+      <button data-why="They share more than the first letter. &amp;lt;ch, cha and hai all appear in both: 3 pieces.">1</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c43">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">After the four BPE merges (u+g, u+n, h+ug, p+un), how is the new word "bug" cut?</p>
+    <div class="opts">
+      <button data-why="&quot;bug&quot; was never merged as a whole: no merge made a &quot;bug&quot; symbol. The merges that apply turn u+g into &quot;ug&quot;, leaving b · ug.">bug — one token</button>
+      <button data-why="The first merge, u + g, applies to &quot;bug&quot; too: its u and g become &quot;ug&quot;. So it is b · ug, not three letters.">b · u · g</button>
+      <button data-correct data-why="Right. Apply the merges in order: u + g → &quot;ug&quot;; u + n, h + ug and p + un find nothing to merge. So &quot;bug&quot; is cut as b · ug — an unseen word spelled out of a known piece.">b · ug</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s16-->
+  <p class="onesent reveal"><b>In one sentence:</b> One vector per word blends every meaning of that word (80% cricket gives cosines 0.970 and 0.243), copies the patterns of its text and knows nothing of unseen words — pieces fix the unseen words (chaiwala shares 3 pieces with chai; BPE cuts bug as b · ug), and Unit 18's vectors that change with the sentence fix the rest.</p>
+</section>
+
+<!-- ================= 17 · CARRY FORWARD ================= -->
+<section class="unit" id="s17">
+  <div class="sec-head reveal"><span class="sec-num">17</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>The whole unit fits on one wall of cards. Each card is one picture to keep.</p>
+  </div>
+  <div class="cards cards-mini reveal-stagger">
+    <div class="cd"><svg class="mini" data-mini="map" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>A label, then a map</h4>One-hot lists are a phone directory: every pair of words at right angles and \(\sqrt2\) apart. We want a map, where close means similar.</div>
+    <div class="cd"><svg class="mini" data-mini="chain" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>A chain of guesses</h4>\(P(w_1\cdots w_n)=\prod_tP(w_t\mid\text{history})\); a short memory (bigram, trigram) and count ÷ total; \(\langle s\rangle\), \(\langle/s\rangle\) start and stop the chain.</div>
+    <div class="cd"><svg class="mini" data-mini="smooth" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Never seen ≠ impossible</h4>Smoothing moves a little probability to unseen pairs. Add-one drowns real counts in a big vocabulary; interpolation and backoff ask a more general adviser.</div>
+    <div class="cd"><svg class="mini" data-mini="die" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Perplexity</h4>\(2^{\text{average surprise}}\): how many faces the model's die has. 1 is perfect, \(V\) is clueless; compare only on the same test text.</div>
+    <div class="cd"><svg class="mini" data-mini="table" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>The company a word keeps</h4>A row of neighbour counts is a vector; similar = cosine near 1. Small windows find stand-ins, big windows topic-mates.</div>
+    <div class="cd"><svg class="mini" data-mini="pmi" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Weigh by surprise</h4>PMI \(=\log_2\frac{P(w,c)}{P(w)P(c)}\) and TF-IDF give "the" the weight 0. Beware rare pairs.</div>
+    <div class="cd"><svg class="mini" data-mini="svd" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Squeeze: friends of friends</h4>Keep the top \(k\) singular directions (rows of \(U_k\Sigma_k\)). Shared directions make chai and tea friends through coffee.</div>
+    <div class="cd"><svg class="mini" data-mini="cbow" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>CBOW: the committee</h4>Average the context vectors, softmax over the vocabulary, error = prediction − truth, blame shared \(\tfrac1{2C}\) each.</div>
+    <div class="cd"><svg class="mini" data-mini="sg" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Skip-gram: one word, many guesses</h4>One softmax checked against every neighbour; the centre gets the full sum of the blame — good for rare words.</div>
+    <div class="cd"><svg class="mini" data-mini="cheap" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Three ways to make it cheap</h4>Negative sampling (\(k+1\) yes/no questions), hierarchical softmax (\(\log_2V\) forks), subsampling (keep each copy with \(\sqrt{t/f}\)).</div>
+    <div class="cd"><svg class="mini" data-mini="meet" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Counting meets predicting</h4>Same company, same pulls, same place. At best \(\mathbf u\cdot\mathbf v=\operatorname{PMI}-\ln k\); GloVe fits log counts so ratios become directions.</div>
+    <div class="cd"><svg class="mini" data-mini="nlm" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>A neural language model</h4>Look up (one-hot × table = a row), glue, hidden layer, softmax. The table is the first layer — the same kind of table word2vec learns.</div>
+    <div class="cd"><svg class="mini" data-mini="para" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Meaning is a direction</h4>\(A-B+C\), then the nearest word by cosine, skipping \(A,B,C\). Pictures are shadows; trust the cosine.</div>
+    <div class="cd"><svg class="mini" data-mini="pieces" viewBox="0 0 120 56" aria-hidden="true"></svg><h4>Limits, and pieces</h4>One vector blends every meaning and copies its text. Pieces (fastText, BPE) handle unseen words; context handles "bat".</div>
+  </div>
+  <div class="prose reveal">
+    <p><strong>Where this goes next.</strong></p>
+    <ul>
+      <li><strong><a href="unit-17.html">Unit 17 · Machines with Memory</a>.</strong> Every model here saw a fixed window of words. A recurrent network reads a sentence <em>one word at a time</em> and carries a running memory along, so it can use everything before — and the fading or exploding of that memory becomes an eigenvalue story (<a href="unit-04.html">Unit 4</a>).</li>
+      <li><strong><a href="unit-18.html">Unit 18 · Attention and Transformers</a>.</strong> The fix for "bat" and "bank": every word looks at every other word in its sentence, using the very dot products of this unit, and takes on a new vector that fits its context.</li>
+      <li><strong>Unit 19 · The Maths Inside an LLM</strong> (coming soon). A softmax over a whole vocabulary of BPE pieces, at the scale of billions of words — the cost problem of §12, met head-on.</li>
+    </ul>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\text{king}-\text{man}+\text{woman}\approx\text{queen}\]</p>
+    <p>A word becomes a point in space, placed by the company it keeps — counted, weighed and squeezed, or learned by a guessing game, which turns out to be the same thing. In that space, closeness is similarity and a difference of meaning is a direction. Every language model you will meet from here on starts by turning its words, or pieces of words, into such vectors.</p>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> Give each word a short list of numbers learned from the company it keeps — by counting, weighing and the SVD, or by word2vec's two guessing games, which secretly do the same — and meaning becomes geometry: similar words point the same way and differences of meaning are directions.</p>
+</section>
+
+<!--@PRACTICE-->

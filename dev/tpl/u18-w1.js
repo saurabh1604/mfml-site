@@ -1,53 +1,94 @@
-/* ================= UNIT 18 · Act I widgets: w-relay, w-lookup, w-qkv ================= */
+/* ================= UNIT 18 · Act I widgets: w-align (§1), w-lookup (§2) ================= */
 
-/* ---------- §1 · w-relay: pass the message, or ask directly ---------- */
+/* ---------- §1 · w-align: the interpreter looks back ---------- */
 (function(){
-  const svg=document.getElementById('rl-svg'); if(!svg) return;
-  const read=document.getElementById('rl-read');
-  const WORDS=['the','train','to','delhi','is','late','because','of','the','heavy','rain','today'];
-  const st={mode:'relay',n:8,t:1};            /* t = progress of the story, 0…1 (1 = finished) */
-  let narrow=false;
-  function layout(){ const n=st.n;
-    if(!narrow){ svg.setAttribute('viewBox','0 0 760 330'); const x0=60,x1=700; return {W:760,H:330,P:Array.from({length:n},(_,i)=>[x0+(x1-x0)*i/(n-1),222]),row:true}; }
-    svg.setAttribute('viewBox','0 0 400 430'); const cx=200,cy=205,r=150;
-    return {W:400,H:430,P:Array.from({length:n},(_,i)=>{ const a=Math.PI+i/n*2*Math.PI; return [cx+r*Math.cos(a),cy+r*Math.sin(a)]; }),row:false}; }
-  function draw(){ svg.innerHTML=''; const L=layout(), n=st.n, glow=glo(svg), F=fz(svg,12), Fs=fz(svg,10.5), P=L.P;
-    const blue=cv(K18.tok), gold=cv(K18.w);
-    const g=el('g',{},svg);
-    if(st.mode==='all'){
-      /* every pair joined directly: arcs above the row (or chords across the circle) */
-      const lit=clamp01(st.t*1.4);
-      for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){ const [x1,y1]=P[i],[x2,y2]=P[j];
-        let d; if(L.row){ const h=Math.min(185,24+(x2-x1)*.36); d=`M${x1},${y1-14} Q${(x1+x2)/2},${y1-14-h*2} ${x2},${y2-14}`; } else d=`M${x1},${y1} Q${(x1+x2)/2*.5+100},${(y1+y2)/2*.5+102} ${x2},${y2}`;
-        el('path',{d,fill:'none',stroke:gold,'stroke-width':1.3,opacity:(.12+.6*lit).toFixed(3),filter:glow&&lit>.5?glow:'none'},g); }
-    } else {
-      /* the relay: one hop after another; the first word's voice halves each time */
-      for(let i=0;i+1<n;i++){ const [x1,y1]=P[i],[x2,y2]=P[i+1]; el('line',{x1,y1,x2,y2,stroke:'var(--ink-muted)','stroke-width':1.4,'stroke-dasharray':'4 4',opacity:.55},g);
-        if(L.row){ const done=st.t*(n-1)>=i+1-1e-9, mx=(x1+x2)/2; el('path',{d:`M${x1+8},${y1-40} Q${mx},${y1-96} ${x2-8},${y2-40}`,fill:'none',stroke:done?cv(K18.q):'var(--ink-muted)','stroke-width':done?2:1.2,opacity:done?.9:.4,'marker-end':''},g);
-          txt(svg,mx,y1-78,'turn '+(i+1),`font:700 ${Fs}px system-ui;fill:${done?'var(--s2)':'var(--ink-muted)'}`,'middle'); } }
-      const hop=st.t*(n-1), k=Math.floor(Math.min(n-1.0001,hop)), f=hop-k;
-      const a=P[k], b=P[Math.min(n-1,k+1)], x=a[0]+(b[0]-a[0])*f, y=a[1]+(b[1]-a[1])*f, v=Math.pow(.5,hop);
-      if(st.t<1){ el('circle',{cx:x,cy:y,r:(5+14*Math.sqrt(v)).toFixed(2),fill:cv(K18.q),opacity:(.25+.75*v).toFixed(3),filter:glow||'none'},g); }
-      /* the voice that reached each word */
-      P.forEach(([px,py],i)=>{ if(i>hop+1e-9) return; const vv=Math.pow(.5,i), bh=46*vv;
-        if(L.row){ el('rect',{x:px-7,y:py+30,width:14,height:Math.max(1.5,bh),rx:3,fill:cv(K18.q),opacity:.85},g); txt(svg,px,py+30+Math.max(1.5,bh)+F*1.1,N(vv,vv<.01?4:3),`font:700 ${Fs}px system-ui;fill:var(--s2)`,'middle'); } });
-    }
-    /* the words */
-    P.forEach(([x,y],i)=>{ glowDot(svg,x,y,9,blue,glow); const w=WORDS[i];
-      if(L.row) txt(svg,x,y-22,w,`font:600 ${F}px system-ui;fill:var(--ink)`,'middle');
-      else { const cx=200,cy=205, dx=x-cx, dy=y-cy, d=Math.hypot(dx,dy)||1; txt(svg,x+dx/d*30,y+dy/d*26+F*.35,w,`font:600 ${F}px system-ui;fill:var(--ink)`,'middle'); } });
-    if(!L.row&&st.mode==='relay'){ const hop=st.t*(n-1); txt(svg,200,210,'voice left: '+N(Math.pow(.5,hop),3),`font:700 ${F}px system-ui;fill:var(--s2)`,'middle'); }
-    if(L.row) txt(svg,20,24,st.mode==='relay'?'hop after hop — the note fades':'every pair joined — one hop each',`font:700 ${F}px system-ui;fill:var(--ink-muted)`);
-    const n2=n*n;
-    read.innerHTML=st.mode==='relay'
-      ?'Relay · hand-overs from the first word to the last: <b>'+(n-1)+'</b> · steps that must wait in a row: <b>'+n+'</b><br>the first word\'s voice at the end: 0.5<sup>'+(n-1)+'</sup> ≈ <b>'+N(Math.pow(.5,n-1),4)+'</b>'
-      :'Attention · questions asked: '+n+' × '+n+' = <b>'+n2+'</b> · hops from the first word to the last: <b>1</b><br>steps that must wait in a row: <b>1</b> — all questions at the same time';
-    svg.dataset.state=st.mode+','+n; }
-  bindCtl('rl-n',v=>{ st.n=v; st.t=1; draw(); },v=>String(v));
-  tabs(document.getElementById('rl-mode'),t=>{ st.mode=t; st.t=1; draw(); });
-  let tw=null; document.getElementById('rl-play').addEventListener('click',()=>{ if(tw) tw.stop(); st.t=0; tw=tween(st.mode==='relay'?3200:1400,u=>{ st.t=u; draw(); },()=>{ st.t=1; draw(); }); });
-  relayout(svg,()=>{ narrow=narrowOf(svg); draw(); });
-  window.U18Relay={st,draw};
+  const svg=document.getElementById('al-svg'); if(!svg) return;
+  const read=document.getElementById('al-read'), stepBar=document.getElementById('al-step'), modeBar=document.getElementById('al-mode');
+  const A=ALIGN, st={mode:'att',step:1,k:1,u:1}, v3=v=>'('+v.map(x=>F(x,3)).join(', ')+')';
+  const calc=t=>{ const q=A.Q[t].map(v=>v*st.k), s=A.H.map(h=>dot(q,h)), w=softmax(s), c=[0,1,2].map(i=>w.reduce((a,x,j)=>a+x*A.H[j][i],0)); return {q,s,w,c}; };
+  /* the picture's legend, in one place: beam width and opacity, map-cell opacity, context-bar height */
+  const bw=w=>1.5+13*w, bo=w=>.25+.75*w, co=w=>.08+.92*w;
+  const G=n=>n?{W:400,H:766,nx:[70,200,330],nw:104,ny:40,nh:66,dx:[52,148,252,348],dw:86,dy:292,dh:58,gx:120,gy:458,cw:80,rh:34,mt:410,cy0:626,cyb:726,cmax:64,cvx:200}
+    :{W:760,H:400,nx:[80,196,312],nw:100,ny:40,nh:66,dx:[70,176,282,388],dw:88,dy:292,dh:58,gx:572,gy:66,cw:58,rh:36,mt:22,cy0:240,cyb:352,cmax:70,cvx:659};
+  let narrow=false, lastRead='';
+  function draw(){ svg.innerHTML=''; narrow=narrowOf(svg); const g=G(narrow); svg.setAttribute('viewBox',`0 0 ${g.W} ${g.H}`);
+    const u=st.u, glow=u>=1?glo(svg):null, F=fz(svg,12.5), Fs=fz(svg,10.5), Fb=fz(svg,16), att=st.mode==='att';   /* glow filters only at rest: while the story plays, SVG filters are the costly part of a frame */
+    const blue=cv(K18.k), gold=cv(K18.w), orange=cv(K18.q), cur=calc(st.step);
+    const sec=(t,x,y,anc)=>txt(svg,x,y,t,`font:700 ${Fs}px system-ui;fill:var(--ink-muted);letter-spacing:.04em`,anc);
+    sec(narrow?'ENGLISH NOTES · read left to right':'ENGLISH NOTES · the encoder read left to right',narrow?18:30,24);
+    sec(narrow?'HINDI · written one word at a time':'HINDI · the decoder writes one word at a time',narrow?18:26,g.dy+g.dh+(narrow?24:30));
+    /* ---- the encoder notes: a card each, with the note's three numbers as tiny bars ---- */
+    const noteTop=g.ny, noteBot=g.ny+g.nh;
+    A.EN.forEach((w,j)=>{ const cx=g.nx[j], x0=cx-g.nw/2;
+      el('rect',{x:x0,y:noteTop,width:g.nw,height:g.nh,rx:12,fill:'color-mix(in srgb,'+blue+' 13%,transparent)',stroke:blue,'stroke-width':1.5},svg);
+      txt(svg,cx,noteTop+20,w,`font:800 ${F}px system-ui;fill:var(--ink)`,'middle');
+      A.H[j].forEach((v,i)=>{ const bx=cx-22+i*16, h=4+22*v; el('rect',{x:bx,y:noteBot-10-h,width:11,height:h,rx:2,fill:blue,opacity:v?.95:.35},svg); });
+      if(j<2) edge(svg,x0+g.nw+3,noteTop+g.nh/2,g.nx[j+1]-g.nw/2-3,noteTop+g.nh/2,'var(--ink-muted)',1.3,null,.8); });
+    /* ---- no attention: the relay's last note is the only thing the decoder gets ---- */
+    let sumP=null;
+    if(!att){ const sw=narrow?260:76, sh=narrow?52:g.nh, sx=narrow?200:446, sy=narrow?126:g.ny;
+      el('rect',{x:sx-sw/2,y:sy,width:sw,height:sh,rx:12,fill:'color-mix(in srgb,var(--ink-muted) 16%,transparent)',stroke:'var(--ink-2)','stroke-width':1.6,'stroke-dasharray':'5 3'},svg);
+      txt(svg,sx,sy+(narrow?20:26),'summary',`font:800 ${F}px system-ui;fill:var(--ink)`,'middle');
+      txt(svg,sx,sy+(narrow?20+F*1.35:44),narrow?'one note for the whole sentence':'one note',`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`,'middle');
+      if(narrow) edge(svg,g.nx[2],noteBot+2,sx+sw/2-8,sy-2,'var(--ink-muted)',1.3,null,.8); else edge(svg,g.nx[2]+g.nw/2+3,noteTop+g.nh/2,sx-sw/2-3,noteTop+g.nh/2,'var(--ink-muted)',1.3,null,.8);
+      sumP=[sx,sy+sh]; }
+    /* ---- beams from the word being written back to the notes ---- */
+    const bx=g.dx[st.step], by=g.dy;
+    if(att){ cur.w.forEach((w,j)=>{ const x2=g.nx[j], y2=noteBot+2, d=`M${bx},${by} C${bx},${by-70} ${x2},${y2+70} ${x2},${y2}`;
+        const p=el('path',{d,fill:'none',stroke:gold,'stroke-width':bw(w).toFixed(3),opacity:bo(w).toFixed(3),'stroke-linecap':'round',filter:glow&&w>.5?glow:'none','data-role':'beam','data-j':j},svg);
+        if(u<1){ const L=p.getTotalLength?p.getTotalLength():400; p.setAttribute('stroke-dasharray',L); p.setAttribute('stroke-dashoffset',(L*(1-u)).toFixed(1)); }
+        if(u>.55) txt(svg,x2+10,noteBot+(narrow?20:22),FX(w,3),`font:800 ${F}px system-ui;fill:${w>.5?'var(--s4)':'var(--ink-2)'}`+HALO,'start').setAttribute('data-role','wlab'); });
+    } else { for(let t=0;t<=st.step;t++){ const x1=g.dx[t], d=`M${x1},${by} C${x1},${by-60} ${sumP[0]},${sumP[1]+60} ${sumP[0]},${sumP[1]+2}`;
+        el('path',{d,fill:'none',stroke:'var(--ink-2)','stroke-width':t===st.step?5:2,opacity:t===st.step?.75:.3,'stroke-linecap':'round','data-role':'sumbeam'},svg); } }
+    /* ---- the Hindi being written ---- */
+    A.HI.forEach((w,t)=>{ const cx=g.dx[t], x0=cx-g.dw/2, done=t<st.step, now=t===st.step;
+      el('rect',{x:x0,y:g.dy,width:g.dw,height:g.dh,rx:12,fill:now?'color-mix(in srgb,'+orange+' 20%,transparent)':done?'color-mix(in srgb,var(--surface-2) 80%,transparent)':'none',stroke:now?orange:'var(--ink-muted)','stroke-width':now?2:1.2,'stroke-dasharray':t>st.step?'5 4':'none',filter:now&&glow?glow:'none'},svg);
+      if(t<=st.step){ txt(svg,cx,g.dy+25,w,dv(w,`font:800 ${Fb}px system-ui;fill:${now?'var(--s2)':'var(--ink)'}`),'middle'); txt(svg,cx,g.dy+46,A.TR[t],`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`,'middle'); }
+      else txt(svg,cx,g.dy+36,'?',`font:700 ${Fb}px system-ui;fill:var(--ink-muted)`,'middle'); });
+    /* ---- the alignment map ---- */
+    const gx=g.gx, gy=g.gy, cw=g.cw, rh=g.rh;
+    txt(svg,narrow?20:gx-60,g.mt,att?(narrow?'ALIGNMENT MAP · hand-made numbers':'ALIGNMENT MAP · hand-made'):'NO MAP',`font:700 ${Fs}px system-ui;fill:var(--ink-muted);letter-spacing:.04em`);
+    A.EN.forEach((w,j)=>txt(svg,gx+(j+.5)*cw,gy-8,w,`font:700 ${Fs}px system-ui;fill:var(--s1)`,'middle'));
+    A.HI.forEach((w,r)=>{ txt(svg,gx-8,gy+(r+.5)*rh+F*.36,w,dv(w,`font:700 ${F}px system-ui;fill:${r===st.step?'var(--s2)':'var(--ink-2)'}`),'end');
+      const R=calc(r), f=r<st.step?1:r===st.step?clamp01((u-.35)/.65):0;
+      R.w.forEach((w,c)=>{ const x=gx+c*cw, y=gy+r*rh, on=att&&f>0;
+        const cell=el('rect',{x:x+1.5,y:y+1.5,width:cw-3,height:rh-3,rx:6,fill:on?gold:'var(--grid)',opacity:on?(co(w)*f).toFixed(3):.35,stroke:'var(--line)','data-role':'cell','data-r':r,'data-c':c,'data-t':on&&f>.5?FX(w,3):''},svg);
+        if(on&&f>.5) txt(svg,x+cw/2,y+rh/2+Fs*.36,FX(w,3),`font:700 ${Fs}px system-ui;fill:${w>.55?'#1a1206':'var(--ink)'}`,'middle'); }); });
+    if(att) el('rect',{x:gx-2,y:gy+st.step*rh,width:3*cw+4,height:rh,rx:7,fill:'none',stroke:orange,'stroke-width':2,filter:glow||'none'},svg);
+    else { const mx=gx+1.5*cw, my=gy+2*rh; txt(svg,mx,my-6,'every word gets',`font:700 ${F}px system-ui;fill:var(--ink-2)`+HALO,'middle'); txt(svg,mx,my+F*1.1,'the same summary',`font:700 ${F}px system-ui;fill:var(--ink-2)`+HALO,'middle'); }
+    /* ---- the context vector: the blend, drawn as three bars under the map's columns ---- */
+    txt(svg,narrow?20:gx-60,g.cy0,att?'CONTEXT c = the blend of the notes':'CONTEXT = the summary, every time',`font:700 ${Fs}px system-ui;fill:var(--ink-muted);letter-spacing:.04em`);
+    if(att){ cur.c.forEach((v,j)=>{ const x=gx+(j+.5)*cw, h=Math.max(1.5,g.cmax*v*u);
+        el('rect',{x:x-cw*.28,y:g.cyb-h,width:cw*.56,height:h,rx:4,fill:blue,opacity:.9,filter:glow&&v>.5?glow:'none','data-role':'cbar','data-j':j},svg);
+        if(u>.55) txt(svg,x,g.cyb-h-6,FX(v,3),`font:700 ${Fs}px system-ui;fill:var(--ink)`,'middle'); });
+      el('line',{x1:gx,y1:g.cyb,x2:gx+3*cw,y2:g.cyb,stroke:'var(--axis)','stroke-width':1.2},svg);
+      A.EN.forEach((w,j)=>txt(svg,gx+(j+.5)*cw,g.cyb+(narrow?16:15),w,`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`,'middle')); }
+    /* ---- readout ---- */
+    const t=st.step, rk=[st.mode,t,st.k].join('|');
+    if(rk!==lastRead){ lastRead=rk; read.innerHTML=att?'writing <b style="color:var(--s2)">'+A.HI[t]+'</b> ('+A.TR[t]+', “'+A.GL[t]+'”) · decoder state q = '+vecN(A.Q[t],2)+(st.k!==1?' × '+N(st.k,2)+' = '+vecN(cur.q,2):'')+'<br>scores q·h = '+vecN(cur.s,3)+' → shares <b style="color:var(--s4)">'+v3(cur.w)+'</b><br>context c = '+cur.w.map((w,j)=>FX(w,3)+'·h<sub>'+A.EN[j]+'</sub>').join(' + ')+' = <b>'+v3(cur.c)+'</b> · it looks most at <b>'+A.EN[cur.w.indexOf(Math.max(...cur.w))]+'</b>'
+      :'No attention (Unit 17) · the decoder writes all four words from <b>one summary</b>. Every word gets the same few numbers, and a 50-word sentence would have to fit into the same few numbers too — that is the bottleneck.'; }
+    svg.dataset.state=[st.mode,t,N(st.k,2),cur.w.map(x=>x.toFixed(3)).join(' ')].join('|'); }
+  /* ---- the story: write the four words one after another ---- */
+  let chain=null; const stop=()=>{ if(chain){ chain.dead=true; if(chain.tw) chain.tw.stop(); clearTimeout(chain.to); chain=null; } };
+  /* off screen, the story keeps its clock but draws nothing; it catches up the moment it is seen again */
+  let seen=true;
+  if('IntersectionObserver' in window) new IntersectionObserver(es=>es.forEach(e=>{ seen=e.isIntersecting; if(seen&&chain) draw(); }),{rootMargin:'120px 0px'}).observe(svg);
+  function play(){ stop(); const me=chain={dead:false,tw:null,to:0};
+    const go=t=>{ if(me.dead) return; st.step=t; st.u=0; selTab(stepBar,t); draw();
+      me.tw=tween(1150,u=>{ if(me.dead) return; st.u=u; if(seen) draw(); },()=>{ if(me.dead) return; st.u=1; draw(); if(t<3) me.to=setTimeout(()=>go(t+1),RM?0:380); else chain=null; }); };
+    go(0); }
+  document.getElementById('al-play').addEventListener('click',play);
+  tabs(modeBar,t=>{ stop(); st.mode=t; st.u=1; draw(); });
+  tabs(stepBar,t=>{ stop(); st.step=+t; st.u=1; draw(); });
+  bindCtl('al-k',v=>{ stop(); st.k=v; st.u=1; draw(); },v=>N(v,1));
+  relayout(svg,()=>draw());
+  U18.align={st,draw,calc,play,stop,legend:{bw,bo,co},
+    state(){ const q=s=>[...svg.querySelectorAll(s)];
+      return {mode:st.mode,step:st.step,k:st.k,u:st.u,cur:calc(st.step),rows:[0,1,2,3].map(calc),
+        beams:q('[data-role=beam]').map(p=>({j:+p.dataset.j,w:+p.getAttribute('stroke-width'),o:+p.getAttribute('opacity')})),
+        sumBeams:q('[data-role=sumbeam]').length,
+        cells:q('[data-role=cell]').map(r=>({r:+r.dataset.r,c:+r.dataset.c,o:+r.getAttribute('opacity'),t:r.dataset.t})),
+        bars:q('[data-role=cbar]').map(r=>({j:+r.dataset.j,h:+r.getAttribute('height')})),cmax:G(narrow).cmax}; }};
 })();
 
 /* ---------- §2 · w-lookup: the strict shopkeeper and the kind one ---------- */
@@ -58,9 +99,10 @@
   const st={q:[1.5,1],beta:1,mode:'soft'};
   const mixHex=(w)=>{ const rgb=D.map(d=>[1,3,5].map(o=>parseInt(d.c.slice(o,o+2),16))); const m=[0,1,2].map(c=>Math.round(rgb.reduce((s,r,i)=>s+w[i]*r[c],0))); return '#'+m.map(v=>v.toString(16).padStart(2,'0')).join(''); };
   function shares(){ const s=D.map(d=>st.beta*dot(st.q,d.k)); if(st.mode==='hard'){ const b=s.indexOf(Math.max(...s)); return {s,w:s.map((_,i)=>i===b?1:0)}; } return {s,w:softmax(s)}; }
-  let narrow=false, map=null;
+  const halo=w=>8+46*Math.sqrt(w);
+  let narrow=false, map=null, BW=0;
   function draw(){ svg.innerHTML=''; narrow=narrowOf(svg);
-    svg.setAttribute('viewBox',narrow?'0 0 400 740':'0 0 640 380');
+    svg.setAttribute('viewBox',narrow?'0 0 400 760':'0 0 640 380');
     const glow=glo(svg), F=fz(svg,12), Fs=fz(svg,10.5);
     const MX=narrow?[20,380]:[16,366], MY=narrow?[16,376]:[12,368], R=2.2;
     const px=x=>MX[0]+(x+R)/(2*R)*(MX[1]-MX[0]), py=y=>MY[1]-(y+R)/(2*R)*(MY[1]-MY[0]);
@@ -69,27 +111,39 @@
     el('rect',{x:MX[0],y:MY[0],width:MX[1]-MX[0],height:MY[1]-MY[0],rx:10,fill:'none',stroke:'var(--line)'},g);
     for(let v=-2;v<=2;v++){ el('line',{x1:px(v),y1:MY[0],x2:px(v),y2:MY[1],stroke:'var(--grid)','stroke-width':1},g); el('line',{x1:MX[0],y1:py(v),x2:MX[1],y2:py(v),stroke:'var(--grid)','stroke-width':1},g); }
     el('line',{x1:MX[0],y1:py(0),x2:MX[1],y2:py(0),stroke:'var(--axis)','stroke-width':1.3},g); el('line',{x1:px(0),y1:MY[0],x2:px(0),y2:MY[1],stroke:'var(--axis)','stroke-width':1.3},g);
-    txt(svg,MX[1]-6,py(0)-6,'more milky →',`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`,'end');
-    txt(svg,px(0)+6,MY[0]+F+2,'↑ more strong',`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`);
+    const obst=[];
+    obst.push(bboxOf(txt(svg,MX[1]-6,py(0)-6,'more milky →',`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`+HALO,'end')));
+    obst.push(bboxOf(txt(svg,px(0)+6,MY[0]+F+2,'↑ more strong',`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`+HALO)));
     const {s,w}=shares(), P={px,py,svg,glow};
-    D.forEach((d,i)=>{ const [x,y]=d.k; if(w[i]>.004) el('circle',{cx:px(x),cy:py(y),r:(8+46*Math.sqrt(w[i])).toFixed(2),fill:cv(K18.w),opacity:(.10+.30*w[i]).toFixed(3)},g);
-      arrow(P,0,0,x,y,cv(K18.k),2.4); el('circle',{cx:px(x),cy:py(y),r:9,fill:d.c,stroke:'var(--ink-2)','stroke-width':1.2},svg);
-      const above=y>=0, lx=px(x), ly=above?py(y)-18-F*1.15:py(y)+18+F*.8;
-      txt(svg,lx,ly,d.n,`font:700 ${F}px system-ui;fill:var(--ink)`,'middle');
-      txt(svg,lx,ly+F*1.15,'₹'+d.p+' · score '+N(s[i],2),`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`,'middle'); });
+    D.forEach((d,i)=>{ const [x,y]=d.k; if(w[i]>.004) el('circle',{cx:px(x),cy:py(y),r:halo(w[i]).toFixed(2),fill:cv(K18.w),opacity:(.10+.30*w[i]).toFixed(3),'data-role':'halo','data-i':i},g);
+      arrow(P,0,0,x,y,cv(K18.k),2.4); });
     arrow(P,0,0,st.q[0],st.q[1],cv(K18.q),3.4);
-    { const qx=px(st.q[0]), qy=py(st.q[1]), below=st.q[1]>=0; txt(svg,qx+(st.q[0]>=0?-6:6),qy+(below?22+F*.4:-16),'your wish',`font:700 ${F}px system-ui;fill:var(--s2)`,st.q[0]>=0?'end':'start'); }
+    D.forEach((d,i)=>{ const [x,y]=d.k; el('circle',{cx:px(x),cy:py(y),r:9,fill:d.c,stroke:'var(--ink-2)','stroke-width':1.2},svg); obst.push(circBox(px(x),py(y),11)); });
+    /* each drink's name and price above (or below) its dot, with a halo so it reads over the glow */
+    const mapBox={x:MX[0]+2,y:MY[0]+2,w:MX[1]-MX[0]-4,h:MY[1]-MY[0]-4};
+    D.forEach((d,i)=>{ const [x,y]=d.k, X=px(x), Y=py(y), gapL=F*1.3, up=[X,Y-16-gapL,'middle'], down=[X,Y+18+F*.8,'middle'];
+      placeLines(svg,[...(y>=0?[up,down]:[down,up]),[X+16,Y-gapL*.5+F*.35,'start'],[X-16,Y-gapL*.5+F*.35,'end']],
+        [{s:d.n,style:`font:700 ${F}px system-ui;fill:var(--ink)`+HALO},{s:'₹'+d.p+' · score '+N(s[i],2),style:`font:600 ${Fs}px system-ui;fill:var(--ink-muted)`+HALO,dy:gapL}],obst,1,mapBox); });
+    /* the query's own label "q": the first free spot around the arrow tip */
+    { const qx=px(st.q[0]), qy=py(st.q[1]), L=Math.hypot(qx-px(0),qy-py(0))||1, ux=(qx-px(0))/L, uy=(qy-py(0))/L, o=16;
+      const cands=[[qx+ux*o,qy+uy*o+F*.35,ux>=0?'start':'end'],[qx-uy*o,qy+ux*o+F*.35,'middle'],[qx+uy*o,qy-ux*o+F*.35,'middle'],[qx+14,qy-12,'start'],[qx-14,qy-12,'end'],[qx+14,qy+22,'start'],[qx-14,qy+22,'end'],
+        [Math.min(qx+12,MX[1]-6),qy+F*2.2,'end'],[Math.max(qx-12,MX[0]+6),qy+F*2.2,'start'],[qx,qy+F*2.4,'middle'],[qx,qy-F*1.6,'middle']];
+      const box=mapBox, sty=`font:800 ${F}px system-ui;fill:var(--s2)`+HALO, keep=obst.length;
+      let ql=placeLabel(svg,cands,'q · your wish',sty,obst,1,box);
+      if(!ql._free){ ql.remove(); obst.length=keep; ql=placeLabel(svg,cands,'q',sty,obst,1,box); }   /* no room for the words: the letter alone (the caption says what q is) */
+      ql.setAttribute('data-role','qlab'); }
     el('circle',{cx:px(st.q[0]),cy:py(st.q[1]),r:13,fill:cv(K18.q),opacity:.18,style:'cursor:grab'},svg);
-    /* the shares and the cup */
-    const BX=narrow?30:392, BY=narrow?410:40, BW=narrow?200:150, bh=narrow?26:30;
-    txt(svg,BX,BY-10,st.mode==='soft'?'shares (softmax)':'the one best match',`font:700 ${Fs}px system-ui;fill:var(--ink-muted)`);
-    D.forEach((d,i)=>{ const y=BY+i*(bh+10); el('rect',{x:BX,y,width:BW,height:bh,rx:6,fill:'var(--grid)',opacity:.45},svg);
-      el('rect',{x:BX,y,width:Math.max(1.5,BW*w[i]),height:bh,rx:6,fill:cv(K18.w),opacity:.9,filter:glow&&w[i]>.3?glow:'none'},svg);
-      txt(svg,BX+6,y+bh/2+F*.36,d.n,`font:600 ${F}px system-ui;fill:var(--ink)`);
+    /* the shares: names in their own column, bars beside them */
+    const NX=narrow?24:384, BX=narrow?130:474, BY=narrow?418:44; BW=narrow?190:108; const bh=narrow?26:28;
+    txt(svg,NX,BY-12,st.mode==='soft'?'SHARES (softmax)':'THE ONE BEST MATCH',`font:700 ${Fs}px system-ui;fill:var(--ink-muted);letter-spacing:.04em`);
+    D.forEach((d,i)=>{ const y=BY+i*(bh+10);
+      txt(svg,NX,y+bh/2+F*.36,d.n,`font:600 ${F}px system-ui;fill:var(--ink)`);
+      el('rect',{x:BX,y,width:BW,height:bh,rx:6,fill:'var(--grid)',opacity:.45},svg);
+      el('rect',{x:BX,y,width:Math.max(1.5,BW*w[i]),height:bh,rx:6,fill:cv(K18.w),opacity:.92,filter:glow&&w[i]>.3?glow:'none','data-role':'bar','data-i':i},svg);
       txt(svg,BX+BW+6,y+bh/2+F*.36,N(w[i],3),`font:700 ${F}px system-ui;fill:var(--s4)`); });
     const price=w.reduce((a,x,i)=>a+x*D[i].p,0), mix=mixHex(w);
-    const CX=narrow?190:470, CY=narrow?590:222, cw=narrow?84:96, chh=narrow?100:112;
-    el('path',{d:`M${CX-cw/2},${CY} L${CX+cw/2},${CY} L${CX+cw/2-12},${CY+chh} L${CX-cw/2+12},${CY+chh} Z`,fill:mix,stroke:'var(--ink-2)','stroke-width':2},svg);
+    const CX=narrow?200:500, CY=narrow?598:220, cw=narrow?84:96, chh=narrow?100:104;
+    el('path',{d:`M${CX-cw/2},${CY} L${CX+cw/2},${CY} L${CX+cw/2-12},${CY+chh} L${CX-cw/2+12},${CY+chh} Z`,fill:mix,stroke:'var(--ink-2)','stroke-width':2,'data-role':'cup'},svg);
     el('path',{d:`M${CX+cw/2-2},${CY+22} q26,6 18,34 q-6,16 -24,12`,fill:'none',stroke:'var(--ink-2)','stroke-width':3},svg);
     el('ellipse',{cx:CX,cy:CY,rx:cw/2,ry:7,fill:mix,stroke:'var(--ink-2)','stroke-width':1.5},svg);
     txt(svg,CX,CY+chh+F*1.6,'your cup: ₹'+N(price,2),`font:800 ${fz(svg,14)}px system-ui;fill:var(--ink)`,'middle');
@@ -100,91 +154,8 @@
   bindCtl('lk-s',v=>{ st.beta=v; draw(); },v=>N(v,1));
   tabs(document.getElementById('lk-mode'),t=>{ st.mode=t; draw(); });
   relayout(svg,draw);
-  window.U18Lookup={st,draw,shares};
-})();
-
-/* ---------- §3 · w-qkv: one lookup in space (3-D) ---------- */
-(function(){
-  const box=document.getElementById('qk-3d'); if(!box||!CIN) return;
-  const read=document.getElementById('qk-read'), matBox=document.getElementById('qk-mat');
-  const st={ang:0,len:2,phase:4,preset:0};      /* phase 0…4: how far the story has run (4 = everything shown) */
-  const q=()=>[st.len*Math.cos(st.ang*Math.PI/180),st.len*Math.sin(st.ang*Math.PI/180)].map(v=>Math.abs(v)<1e-9?0:v);
-  const calc=()=>attend([q()],EX.K,EX.V);
-  const UP=2.7;                                   /* height of the value floor */
-  function readout(){ const r=calc(), qq=q(), raw=EX.K.map(k=>dot(qq,k));
-    read.innerHTML='query <b style="color:var(--s2)">q = '+vecN(qq,3)+'</b><br>'+
-      '① q·k = '+vecN(raw,3)+' → ÷√2 = <b>'+vecN(r.S[0],3)+'</b><br>'+
-      '② shares = <b style="color:var(--s4)">'+vecN(r.A[0],3)+'</b><br>'+
-      '③ blend: '+r.A[0].map((w,i)=>N(w,3)+'·v'+SUB(i+1)).join(' + ')+'<br>'+
-      '④ answer = <b style="color:var(--ink)">'+vecN(r.O[0],3)+'</b>';
-    box.dataset.state=[vecN(qq,3),vecN(r.A[0],3),vecN(r.O[0],3)].join(' ');
-    /* the matrix form: every query at once, with this query's row lit */
-    const all=attend(EX.Q,EX.K,EX.V), same=EX.Q.findIndex(r=>Math.abs(r[0]-qq[0])<1e-6&&Math.abs(r[1]-qq[1])<1e-6);
-    const Q=same>=0?EX.Q:[qq], A=same>=0?all.A:r.A, O=same>=0?all.O:r.O, hi=same>=0?same:0;
-    const rc=(i)=>i===hi?'rowhot':'';
-    matBox.innerHTML=`<span class="qk-blk"><span class="qk-lab">softmax</span></span><span class="op">(</span><span class="qk-blk"><span class="qk-lab">Q</span>${matHTML(Q,{tone:'q',cell:rc})}</span><span class="qk-blk"><span class="qk-lab">Kᵀ</span>${matHTML(T_(EX.K),{tone:'k'})}</span><span class="op">/ √2 )</span><span class="op">=</span><span class="qk-blk"><span class="qk-lab">A</span>${matHTML(A,{tone:'gold',cell:rc})}</span><span class="op">·</span><span class="qk-blk"><span class="qk-lab">V</span>${matHTML(EX.V,{tone:'v'})}</span><span class="op">=</span><span class="qk-blk"><span class="qk-lab">answers</span>${matHTML(O,{tone:'par',cell:rc})}</span>`;
-  }
-  let S3=null;
-  function build(){ return CIN.stage3d(box,{camera:{pos:[-2.1,5.0,5.0],look:[.6,1.25,-.6],fov:38},orbit:true,autoRotate:.1,autoRotateStopsOnUser:true,
-    build(ctx){ const {THREE,root,colors,isLight}=ctx, hx=hxOf(ctx), dark=!isLight;
-      starfield(ctx,240,15); glassFloor(ctx,6.4,{div:24});
-      const up=CIN.prim.glass(ctx,5.2,5.2,hx('s3'),dark?.07:.12); up.rotation.x=-Math.PI/2; up.position.y=UP; root.add(up);
-      const upGrid=CIN.prim.grid(ctx,5.2,20,hx('grid'),{opacity:dark?.22:.35}); upGrid.position.y=UP+.002; root.add(upGrid);
-      const stem=liveTube(ctx,hx('ink2'),.006,.35); aimTube(THREE,stem,[0,0,0],[0,UP,0]); root.add(stem);
-      const C={q:hx(K18.q),k:hx(K18.k),v:hx(K18.v),w:hx(K18.w),ink:hx('ink')};
-      const P2=(x,y,h)=>[x,h||0,-y];
-      const keyA=EX.K.map(k=>{ const a=CIN.prim.arrow(ctx,P2(0,0,.02),P2(k[0],k[1],.02),C.k,{radius:.035,head:.2}); root.add(a); return a; });
-      EX.K.forEach((k,i)=>root.add(lab(ctx,'k'+SUB(i+1),P2(k[0]+(k[0]?.32:-.3),k[1]-(k[1]?.0:.3)+(i===1?.25:0),.12),{size:26,scale:.011,color:colors.s1,bg:true})));
-      const valA=EX.V.map((v,i)=>{ const a=CIN.prim.arrow(ctx,P2(0,0,UP+.02),P2(v[0],v[1],UP+.02),C.v,{radius:.03,head:.2}); a.traverse(m=>{ if(m.material){ m.material.transparent=true; m.material.opacity=.45; } }); root.add(a);
-        root.add(lab(ctx,'v'+SUB(i+1),P2(v[0]+.15,v[1]+.2,UP+.05),{size:22,scale:.011,color:colors.s3,bg:!dark})); return a; });
-      const qArrow=CIN.prim.arrow(ctx,P2(0,0,.03),P2(2,0,.03),C.q,{radius:.045,head:.24}); root.add(qArrow); const qLab=slot(ctx,root);
-      /* shadows of q on each key line (the dot product as a projection) */
-      const proj=EX.K.map(()=>{ const t=liveTube(ctx,C.q,.008,.55); root.add(t); const d=CIN.prim.dot(ctx,[0,0,0],C.q,.05); root.add(d); return {t,d}; });
-      /* gold pillars: the shares */
-      const pil=EX.K.map(k=>{ const m=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,1,28),new THREE.MeshStandardMaterial({color:C.w,emissive:C.w,emissiveIntensity:dark?.55:.2,roughness:.3,transparent:true,opacity:.78})); m.position.set(...P2(k[0],k[1],0)); root.add(m); return m; });
-      const pilLab=EX.K.map(()=>slot(ctx,root));
-      /* the chain of shrunken values, and the answer */
-      const chain=EX.V.map(()=>{ const a=CIN.prim.arrow(ctx,[0,UP,0],[.5,UP,0],C.v,{radius:.04,head:.16}); root.add(a); return a; });
-      const out=CIN.prim.arrow(ctx,[0,UP,0],[1,UP,0],C.ink,{radius:.055,head:.26}); root.add(out); const outH=haloSprite(ctx,C.ink,.6); root.add(outH); const outLab=slot(ctx,root);
-      const hudEl=hud(box); hint(box,'drag to orbit');
-      ctx.redraw=()=>{ const qq=q(), r=calc(), w=r.A[0], ph=st.phase, V3=THREE.Vector3;
-        const qv=qq.map(x=>x);
-        if(Math.hypot(...qv)>1e-6){ qArrow.visible=true; qArrow.userData.set(new V3(...P2(0,0,.03)),new V3(...P2(qv[0],qv[1],.03))); } else qArrow.visible=false;
-        qLab.set('q',P2(qv[0]*1.1+.1,qv[1]*1.1+.1,.3),{size:26,scale:.011,color:colors.s2,bg:!dark});
-        /* ① projections */
-        const u1=clamp01(ph);
-        EX.K.forEach((k,i)=>{ const L2=dot(k,k), t=dot(qv,k)/L2, f=[k[0]*t,k[1]*t];
-          aimTube(THREE,proj[i].t,P2(qv[0],qv[1],.04),P2(f[0],f[1],.04)); proj[i].t.visible=u1>.02&&Math.hypot(qv[0]-f[0],qv[1]-f[1])>.02; proj[i].t.material.opacity=.55*u1;
-          proj[i].d.position.set(...P2(f[0],f[1],.04)); proj[i].d.visible=u1>.02; });
-        /* ② pillars */
-        const u2=easeIO(clamp01(ph-1));
-        pil.forEach((m,i)=>{ const h=Math.max(.002,w[i]*2.2*u2); m.scale.y=h; m.position.y=h/2; m.visible=u2>.01;
-          if(u2>.5) pilLab[i].set(N(w[i],3),[m.position.x,h+.28,m.position.z],{size:24,scale:.011,color:colors.s4,bg:!dark}); else pilLab[i].hide(); });
-        /* ③ chain of shrunken values */
-        const u3=clamp01(ph-2); let acc=[0,0];
-        chain.forEach((a,i)=>{ const part=easeIO(clamp01(u3*3-i)), v=EX.V[i], s=[v[0]*w[i]*part,v[1]*w[i]*part];
-          const A=P2(acc[0],acc[1],UP+.05), B=P2(acc[0]+s[0],acc[1]+s[1],UP+.05);
-          a.visible=part>.02&&Math.hypot(s[0],s[1])>.03; if(a.visible) a.userData.set(new V3(...A),new V3(...B)); acc=[acc[0]+s[0],acc[1]+s[1]]; });
-        /* ④ the answer */
-        const u4=easeIO(clamp01(ph-3)), o=r.O[0];
-        out.visible=u4>.02&&Math.hypot(...o)>.03; if(out.visible) out.userData.set(new V3(...P2(0,0,UP+.08)),new V3(...P2(o[0]*u4,o[1]*u4,UP+.08)));
-        outH.position.set(...P2(o[0],o[1],UP+.08)); outH.material.opacity=(dark?.7:.3)*u4;
-        if(u4>.6) outLab.set('answer '+vecN(o,3),P2(o[0]+.2,o[1]+.35,UP+.45),{size:21,scale:.011,color:colors.ink,bg:true}); else outLab.hide();
-        hudEl.innerHTML=ph<1?'① dot products: the shadow of q on each key':ph<2?'② softmax: gold pillars = shares <b>'+vecN(w,3)+'</b>':ph<3?'③ shrink each value by its share, lay them tip to tail':'④ answer <b>'+vecN(o,3)+'</b>';
-        RR(ctx); };
-      ctx.redraw();
-    }}); }
-  S3=mountStage(box,build);
-  const redraw=()=>{ readout(); if(S3&&S3.handle&&S3.handle.ctx.redraw) S3.handle.ctx.redraw(); };
-  const setQ=(a,l)=>{ st.ang=a; st.len=l; setCtl('qk-ang',a,v=>Math.round(v)+'°'); setCtl('qk-len',l,v=>N(v,2)); };
-  bindCtl('qk-ang',v=>{ st.ang=v; st.phase=4; redraw(); },v=>Math.round(v)+'°');
-  bindCtl('qk-len',v=>{ st.len=v; st.phase=4; redraw(); },v=>N(v,2));
-  const PRE=[[0,2],[90,2],[45,Math.SQRT2]];
-  tabs(document.getElementById('qk-row'),t=>{ const [a,l]=PRE[+t]; setQ(a,l); st.preset=+t; st.phase=4; redraw(); });
-  let tw=null; document.getElementById('qk-play').addEventListener('click',()=>{ if(tw) tw.stop(); st.phase=0; redraw();
-    const t0=performance.now(); tw={dead:false,stop(){ this.dead=true; }}; const me=tw;
-    if(RM){ st.phase=4; redraw(); return; }
-    (function fr(now){ if(me.dead) return; st.phase=Math.min(4,(now-t0)/1100); redraw(); if(st.phase<4) requestAnimationFrame(fr); })(t0); });
-  readout();
-  window.U18QKV={st,redraw,setQ};
+  U18.lookup={st,draw,shares,D,
+    state(){ const {s,w}=shares(); return {mode:st.mode,q:st.q.slice(),beta:st.beta,scores:s,shares:w,price:w.reduce((a,x,i)=>a+x*D[i].p,0),cup:mixHex(w),BW,
+      bars:[...svg.querySelectorAll('[data-role=bar]')].map(r=>({i:+r.dataset.i,w:+r.getAttribute('width')})),
+      q2px:map?[map.px(st.q[0]),map.py(st.q[1])]:null}; }};
 })();

@@ -19,7 +19,7 @@ function bptt1(w,u,b,xs,y){ const {h,z}=rnn1(w,u,b,xs,0), T=xs.length; const dh=
   for(let t=T;t>=1;t--){ dz[t]=dh[t]*(1-h[t]*h[t]); cw[t]=dz[t]*h[t-1]; cu[t]=dz[t]*xs[t-1]; dw+=cw[t]; du+=cu[t]; db+=dz[t]; dh[t-1]=w*dz[t]; }
   return {h,z,dh,dz,cw,cu,dw,du,db,L:.5*(h[T]-y)**2,T}; }
 const EX={w:.5,u:1,b:0,x:[1,0,0]};                      /* §2's worked example */
-const BP={w:.5,u:1,b:0,x:[1,0,0,0],y:1};                 /* §5's step machine */
+const BP={w:.5,u:1,b:0,x:[1,0,0,0],y:1};                 /* §6's step machine */
 
 /* ---- 2 × 2 matrices: eigenvalues (real or a complex pair) and powers ---- */
 function eig2(M){ const a=M[0][0],b=M[0][1],c=M[1][0],d=M[1][1], tr=a+d, det=a*d-b*c, disc=tr*tr/4-det;
@@ -29,7 +29,7 @@ function eig2(M){ const a=M[0][0],b=M[0][1],c=M[1][0],d=M[1][1], tr=a+d, det=a*d
   const re=tr/2, im=Math.sqrt(-disc); return {real:false,re,im,rho:Math.hypot(re,im),tr,det,angle:Math.atan2(im,re)}; }
 const mv2=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];
 function orbit2(M,v,T){ const P=[v.slice()]; for(let t=0;t<T;t++) P.push(mv2(M,P[P.length-1])); return P; }
-const EIGW=[[.9,.4],[.1,.6]];                            /* §6's worked matrix: eigenvalues 1 and 0.5 */
+const EIGW=[[.9,.4],[.1,.6]];                            /* §7's worked matrix: eigenvalues 1 and 0.5 */
 
 /* ---- gradient clipping ---- */
 function clipVec(g,c){ const n=Math.hypot(...g); return n>c?g.map(x=>x*c/n):g.slice(); }
@@ -65,7 +65,7 @@ function labAccuracy(o){ return o.lengths.map(T=>{ const rnd=seeded(1000+T); let
   for(let k=0;k<o.trials;k++){ const R=labCells(labSentence(T,o.A,rnd),o); ['rnn','lstm','gru'].forEach(c=>{ if(R.ok[c]) a[c]++; }); }
   return {T,rnn:a.rnn/o.trials,lstm:a.lstm/o.trials,gru:a.gru/o.trials}; }); }
 
-/* ---- the beam-search tree of §11 (a decoder writing an English sentence) ---- */
+/* ---- the beam-search tree of §13 (a decoder writing an English sentence) ---- */
 const BEAM={root:[['the',.5],['our',.4],['a',.1]],
   next:{the:[['train',.4],['bus',.3],['rain',.3]],our:[['train',.9],['bus',.1]],a:[['train',.6],['bus',.4]]}};
 function beamSearch(k){ let beams=[{w:[],p:1}]; const log=[];
@@ -86,7 +86,10 @@ function beamSearch(k){ let beams=[{w:[],p:1}]; const log=[];
    narrowSVG() lets a widget pick a narrower viewBox on phones, so the grown labels still have room. */
 const PHONE=()=>innerWidth<640;
 function narrowSVG(svg,W,H,Wn,Hn){ const n=PHONE()&&Wn; svg.setAttribute('viewBox','0 0 '+(n?Wn:W)+' '+(n?Hn:H)); return {W:n?Wn:W,H:n?Hn:H,n:!!n}; }
-function mfont(svg,min){ const r=svg.getBoundingClientRect().width, W=svg.viewBox.baseVal.width; if(!r||!W) return; const k=W/r, lo=(min||11.5)*k; if(k<=1.02) return;
+/* a glow filter on a group would put a soft halo behind its text too; keep the glow on the shapes and the text crisp */
+function unglowText(root){ const fix=(g,f)=>{ [...g.children].forEach(c=>{ if(c.tagName==='text') return; if(c.querySelector&&c.querySelector('text')) fix(c,f); else if(!c.getAttribute('filter')) c.setAttribute('filter',f); }); };
+  root.querySelectorAll('[filter]').forEach(g=>{ if(g.tagName==='text'){ g.removeAttribute('filter'); return; } if(!g.querySelector('text')) return; const f=g.getAttribute('filter'); g.removeAttribute('filter'); fix(g,f); }); }
+function mfont(svg,min){ unglowText(svg); const r=svg.getBoundingClientRect().width, W=svg.viewBox.baseVal.width; if(!r||!W) return; const k=W/r, lo=(min||11.5)*k; if(k<=1.02) return;
   svg.querySelectorAll('text').forEach(t=>{ const s=t.getAttribute('style')||''; const m=s.match(/font:\s*(\d+)\s+([\d.]+)px/); if(!m) return; const f=+m[2]; if(f<lo) t.setAttribute('style',s.replace(m[0],'font:'+m[1]+' '+lo.toFixed(1)+'px')); }); }
 /* redraw a 2-D widget when the phone/desktop layout flips or the width changes a lot */
 function onResize(fn){ let w0=innerWidth; addEventListener('resize',()=>{ if(Math.abs(innerWidth-w0)>40||(innerWidth<640)!==(w0<640)){ w0=innerWidth; fn(); } }); }

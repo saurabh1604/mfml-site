@@ -1,29 +1,33 @@
-<!-- ================= 4 · CO-OCCURRENCE ================= -->
-<section class="unit" id="s4">
-  <div class="sec-head reveal"><span class="sec-num">4</span><h2>You shall know a word by the company it keeps</h2></div>
+<!-- ================= ACT III · MEANING FROM THE COMPANY A WORD KEEPS ================= -->
+<!-- ================= 5 · COMPANY ================= -->
+<section class="unit" id="s5">
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>You shall know a word by the company it keeps</h2></div>
+  <p class="qopen reveal">How can you learn what a word means without ever opening a dictionary?</p>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>You hear a word you do not know: "kadak". Then you hear it used: "a cup of kadak chai", "I like my chai kadak", "kadak and sweet, please". You still have no dictionary. But you already know it has something to do with tea.</p>
-    <p>You learned the word from its <strong>neighbours</strong>. A linguist named J. R. Firth put it in one line in 1957: "You shall know a word by the company it keeps."</p>
+    <p>You hear a word you do not know: "kadak". Then you hear it used: "a cup of kadak chai", "I like my chai kadak", "kadak and sweet, please". You still have no dictionary. But you already know it has something to do with strong tea.</p>
+    <p>You learned the word from its <strong>neighbours</strong>. The linguist J. R. Firth put it in one line in 1957: "You shall know a word by the company it keeps."</p>
   </div>
   <div class="prose reveal">
-    <p>Let us turn that idea into numbers. Pick some <strong>target words</strong> (chai, coffee, cricket, football) and some <strong>neighbour words</strong> (drink, hot, play, match). Read a corpus. Each time a neighbour word appears within 2 words of a target word, add 1 to their box. This window of "2 words either side" is called the <strong>window size</strong>.</p>
-    <p>Here is the table we get from a small made-up corpus (the widget below shows the sentences):</p>
+    <p>The counting of Act II only asked "what comes <em>next</em>?". Now we ask a wider question: "what is <em>around</em>?". There are two classic ways to write the company down in a table.</p>
+    <p><strong>1 · Word × document.</strong> Rows are words, columns are documents, and each box counts how often the word appears in that document. A row answers "which documents talk about this word?". This <strong>term–document table</strong> is how search engines began: to answer the query "chai", look along the row for chai.</p>
+    <p><strong>2 · Word × word.</strong> Rows are the words we want to understand (the <strong>targets</strong>), columns are <strong>neighbour words</strong>, and each box counts how often the neighbour appears within a few words of the target. How many words either side count as "near" is the <strong>window size</strong>. With a window of 2, here is the table from a small made-up corpus (the widget shows its sentences):</p>
     <div class="scroll-x"><table class="plain co-tbl">
       <thead><tr><th></th><th>drink</th><th>hot</th><th>play</th><th>match</th></tr></thead>
       <tbody><tr><th>chai</th><td>5</td><td>4</td><td>0</td><td>1</td></tr><tr><th>coffee</th><td>4</td><td>5</td><td>0</td><td>0</td></tr><tr><th>cricket</th><td>0</td><td>0</td><td>5</td><td>4</td></tr><tr><th>football</th><td>0</td><td>1</td><td>4</td><td>5</td></tr></tbody></table></div>
-    <p>This is a <strong>co-occurrence matrix</strong>: "how often do these two words occur together". Now read each row as a vector. Chai is \((5,4,0,1)\). Coffee is \((4,5,0,0)\). Cricket is \((0,0,5,4)\). These are our first word vectors, and they are no longer one-hot: chai and coffee share neighbours, so their rows look alike.</p>
-    <p>How alike? Use the angle between the rows, from <a href="unit-03.html#s6">Unit 3</a>. The cosine of that angle is</p>
+    <p>This is a <strong>co-occurrence matrix</strong>: "how often do these two words occur together". Read each row as a vector. Chai is \((5,4,0,1)\), coffee is \((4,5,0,0)\), cricket is \((0,0,5,4)\). These are our first real word vectors, and they are no longer one-hot: chai and coffee share neighbours, so their rows look alike.</p>
+    <p>How alike? Use the angle between the rows, from <a href="unit-03.html#s6">Unit 3</a>:</p>
     <p>\[\cos\theta=\frac{\mathbf a\cdot\mathbf b}{\lVert\mathbf a\rVert\,\lVert\mathbf b\rVert}.\]</p>
-    <p>For chai and coffee: the dot product is \(5\cdot4+4\cdot5+0+0=40\). The lengths are \(\sqrt{42}\) and \(\sqrt{41}\). So</p>
+    <p>For chai and coffee the dot product is \(5\cdot4+4\cdot5+0+0=40\), and the lengths are \(\sqrt{42}\) and \(\sqrt{41}\). So</p>
     <p>\[\cos(\text{chai},\text{coffee})=\frac{40}{\sqrt{42}\,\sqrt{41}}\approx0.964.\]</p>
-    <p>For chai and cricket the dot product is only \(1\cdot4=4\), so the cosine is \(4/(\sqrt{42}\sqrt{41})\approx0.096\). And cricket with football gives \(40/(\sqrt{41}\sqrt{42})\approx0.964\) again. The two tea words point almost the same way. The two sport words point almost the same way. The two groups are nearly at right angles.</p>
-    <p>Why the cosine and not the plain dot product? A word that appears ten times as often has counts ten times as big — a longer arrow — but the same kind of company. The cosine ignores the length and keeps only the <strong>direction</strong>: which company a word keeps, not how often it talks.</p>
+    <p>For chai and cricket the dot product is only \(1\cdot4=4\), so the cosine is \(4/(\sqrt{42}\sqrt{41})\approx0.096\). Cricket and football give \(40/(\sqrt{41}\sqrt{42})\approx0.964\) again. The tea words point almost the same way, the sport words point almost the same way, and the two groups are nearly at right angles.</p>
+    <p><strong>Why the angle and not the length?</strong> A word used ten times as often has counts ten times as big — a longer arrow — but the same kind of company. The cosine ignores the length and keeps only the <strong>direction</strong>: which company a word keeps, not how often it talks.</p>
   </div>
 
   <div class="widget reveal" id="w-cooc">
-    <div class="widget-head"><span class="w-title">Counting the company</span><span class="w-sub">The corpus on the left, the table it builds on the right. Change the window and the table rebuilds. Pick two target words to see the angle between their rows.</span></div>
-    <p class="try"><b>Try:</b> With window 2 you get exactly the table above. Set the window to 1: chai loses its "drink" (it sits 2 words away in "drink hot chai") and chai–cricket drops to 0. Set it to 3: "chai before every match" adds one more match. Pick chai and cricket, then cricket and football, and compare the angles.</p>
-    <div class="wrow">
+    <div class="widget-head"><span class="w-title">Counting the company</span><span class="w-sub">Two ways to write down company. <em>Word × word</em>: the corpus on the left builds the table on the right; change the window and it rebuilds. <em>Word × document</em>: four tiny documents, counted by document — and the question "who is most like chai?" answered both ways.</span></div>
+    <p class="try"><b>Try:</b> With window 2 you get exactly the table above. Set the window to 1: chai loses its "drink" (it sits two words away in "drink hot chai") and chai–cricket drops to 0. Pick cricket and football, then chai and cricket, and compare the angles. Then open <em>word × document</em>: by neighbours chai's closest word is coffee (0.972); by documents it is kettle (0.8), and coffee drops to 0.</p>
+    <div class="tabs" id="co-tabs" role="tablist" style="margin-bottom:.7rem"><button role="tab" aria-selected="true" data-t="ww">word × word</button><button role="tab" aria-selected="false" data-t="wd">word × document</button></div>
+    <div class="wrow" data-tab="ww">
       <div class="wcol" style="flex:1 1 280px;min-width:0">
         <div id="co-sent" class="co-sent"></div>
       </div>
@@ -31,68 +35,189 @@
         <div class="stage-rail"><div class="ctl"><label for="co-win">window</label><input id="co-win" type="range" min="1" max="3" step="1" value="2"><output id="co-win-o">2</output></div></div>
         <div class="scroll-x"><div id="co-mat"></div></div>
         <div class="bg-prevrow"><span class="lbl">compare</span><span id="co-pick" class="bg-chips"></span></div>
-        <div class="svgstage"><svg id="co-svg" viewBox="0 0 460 250" class="svg-lab" role="img" aria-label="Two arrows from one point, one for each chosen word's row of counts, with the angle between them marked and the cosine written beside it."></svg></div>
+        <div class="svgstage"><svg id="co-svg" viewBox="0 0 460 250" class="svg-lab" role="img" aria-label="Two arrows from one point, one for each chosen word's row of counts, with the angle between them marked and the cosine written beside it; next to them, the two rows as paired bars."></svg></div>
         <div id="co-read" class="readout" style="margin-top:.5rem"></div>
+      </div>
+    </div>
+    <div class="wrow" data-tab="wd" style="display:none">
+      <div class="wcol" style="flex:1 1 280px;min-width:0">
+        <div id="cd-docs" class="co-docs"></div>
+      </div>
+      <div class="wcol" style="flex:1.4 1 380px;min-width:0">
+        <div class="scroll-x"><div id="cd-mat"></div></div>
+        <div class="svgstage" style="margin-top:.6rem"><svg id="cd-svg" viewBox="0 0 460 230" class="svg-lab" role="img" aria-label="Two small bar charts side by side answering who is most like chai. Left, by neighbours within two words: coffee is far ahead. Right, by documents: kettle is far ahead and coffee is at zero."></svg></div>
+        <div id="cd-read" class="readout" style="margin-top:.5rem"></div>
       </div>
     </div>
   </div>
 
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Because words that mean similar things are <em>used</em> in similar places. Chai and coffee both sit after "drink" and "hot"; cricket and football both sit near "play" and "match". Similar use gives similar rows, and similar rows point the same way. And the <strong>window size decides the kind of similarity</strong>. A small window (one or two words) finds words that can <em>replace</em> each other in a sentence — chai and coffee both fit "a cup of hot ___". A big window, like a whole document, finds words about the <em>same topic</em> — chai, kettle and cup live in the same documents even though "a cup of hot kettle" makes no sense.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>"Similar" is not "means the same". Good and bad keep almost identical company ("a ___ day", "a very ___ idea"), so their rows are close — yet they are opposites. Company tells you a word's <em>kind</em> and <em>topic</em>; it cannot always tell you which way round the meaning goes.</p>
+  </div>
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\begin{gathered}\text{word}\ \mapsto\ \text{its row of}\\ \text{neighbour counts},\\ \text{similar}=\cos\theta\ \text{near }1\end{gathered}\]</p>
-    <p>A word's row in the co-occurrence matrix is a first, honest word vector. Words used in the same places get rows that point the same way. We did not tell the computer that chai and coffee are drinks. The <strong>counts</strong> told it.</p>
+    <p>A word's row in a company table is a first, honest word vector. Words used in the same places get rows that point the same way. We did not tell the computer that chai and coffee are drinks — the <strong>counts</strong> told it. Small windows find stand-ins, big windows find topic-mates.</p>
   </div>
-  <div class="check reveal" data-check="c7">
+  <div class="check reveal" data-check="c11">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">From the table, what is the cosine between coffee \((4,5,0,0)\) and football \((0,1,4,5)\)?</p>
     <div class="opts">
       <button data-why="That is the plain dot product: 4·0 + 5·1 + 0·4 + 0·5 = 5. Divide by the two lengths, √41 and √42, to get the cosine.">5</button>
-      <button data-correct data-why="Right. The dot product is 5 (only the 'hot' column overlaps), and the lengths are √41 and √42. So cos = 5/√1722 ≈ 0.120: nearly at right angles.">about 0.120</button>
-      <button data-why="0.964 belongs to pairs that share most of their company, like chai and coffee. Coffee and football share only one 'hot', so the cosine is small: 5/(√41·√42) ≈ 0.120.">about 0.964</button>
+      <button data-correct data-why="Right. The dot product is 5 (only the &quot;hot&quot; column overlaps), and the lengths are √41 and √42. So cos = 5/√1722 ≈ 0.120: nearly at right angles.">about 0.120</button>
+      <button data-why="0.964 belongs to pairs that share most of their company, like chai and coffee. Coffee and football share only one &quot;hot&quot;, so the cosine is small: 5/(√41·√42) ≈ 0.120.">about 0.964</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c8">
+  <div class="check reveal" data-check="c12">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Suppose chai were twice as common, so its row became \((10,8,0,2)\). What happens to its cosine with coffee?</p>
     <div class="opts">
-      <button data-correct data-why="Right. Doubling a vector doubles the dot product AND doubles its length, and the two cancel. The direction is the same, so the cosine stays 0.964. That is exactly why we use the cosine.">It stays about 0.964</button>
-      <button data-why="The dot product doubles, but so does chai's length, and the cosine divides one by the other. It does not change.">It doubles to about 1.93</button>
-      <button data-why="Nothing about the company changed, only how often chai is said. The cosine sees only the direction, which is unchanged.">It halves</button>
+      <button data-correct data-why="Right. Doubling a vector doubles the dot product AND doubles its length, and the two cancel. The direction is the same, so the cosine stays 0.964. That is exactly why we use the cosine.">it stays about 0.964</button>
+      <button data-why="The dot product doubles, but so does chai's length, and the cosine divides one by the other. It does not change.">it doubles to about 1.93</button>
+      <button data-why="Nothing about the company changed, only how often chai is said. The cosine sees only the direction, which is unchanged.">it halves</button>
     </div>
     <div class="why"></div>
   </div>
-<!--@ALG s4-->
-  <p class="onesent reveal"><b>In one sentence:</b> Count how often each word appears near each neighbour word; each row is a word vector, and the cosine of the angle between rows — 0.964 for chai and coffee, 0.096 for chai and cricket — measures how alike their company is.</p>
+  <div class="check reveal" data-check="c13">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You widen the window from two words to a whole paragraph. Which pair becomes more alike?</p>
+    <div class="opts">
+      <button data-why="Chai and coffee were already alike with a small window — they are stand-ins for each other. A wide window adds topic words, which is what brings chai and kettle together.">chai and coffee</button>
+      <button data-correct data-why="Right. Kettle never sits in chai's slot, so a small window keeps them apart. A paragraph-wide window counts all the tea-making words around both, so chai and kettle start to share their company: topic-mates.">chai and kettle</button>
+      <button data-why="A wider window adds company from the same paragraph. Chai and cricket rarely share paragraphs, so they do not get closer.">chai and cricket</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s5-->
+  <p class="onesent reveal"><b>In one sentence:</b> Count the company a word keeps — by document or by neighbours within a window — and each row becomes a word vector whose angle to another row says how alike their company is: 0.964 for chai and coffee, 0.096 for chai and cricket, stand-ins with small windows, topic-mates with big ones.</p>
 </section>
 
-<!-- ================= 5 · SVD ================= -->
-<section class="unit" id="s5">
-  <div class="sec-head reveal"><span class="sec-num">5</span><h2>Squeeze it with the SVD</h2></div>
+<!-- ================= 6 · TF-IDF AND PMI ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Not all company counts: TF-IDF and PMI</h2></div>
+  <p class="qopen reveal">"The" sits next to chai more often than any other word. Does that make "the" the best clue to what chai means?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Two people are seen together at the market. If both of them go to the market every single day, meeting there means nothing — they would bump into each other anyway. But if both rarely leave home and yet keep turning up at the same stall, that means a lot.</p>
+    <p>A meeting only tells you something when it happens <strong>more often than chance</strong> would explain.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Raw counts reward words that are everywhere. "The", "is" and "a" sit next to every word and appear in every document, so they swamp both of our tables. We need to weigh each count by how <em>surprising</em> it is. There is one standard fix for each table.</p>
+    <p><strong>For the term–document table: TF-IDF.</strong> Give each count a weight</p>
+    <p>\[\text{weight}=\text{tf}\times\log_{10}\frac{N}{\text{df}}.\]</p>
+    <p>Read it aloud: <em>tf</em>, the term frequency, is how often the word appears in this document. <em>df</em>, the document frequency, is how many of the \(N\) documents contain the word at all. The log part, the <em>idf</em>, is large for rare words and exactly 0 for a word that is in every document, because \(\log 1=0\).</p>
+    <p>Take three documents. D1 has "the" 3 times, "chai" twice and "hot" once. D2 has "the" twice and "cricket" three times. D3 has "the", "chai" and "cricket" once each. Then</p>
+    <ul>
+      <li>"the" is in all 3 documents: idf \(=\log_{10}(3/3)=\mathbf0\).</li>
+      <li>"chai" and "cricket" are in 2 of 3: idf \(=\log_{10}1.5\approx\mathbf{0.176}\).</li>
+      <li>"hot" is in 1 of 3: idf \(=\log_{10}3\approx\mathbf{0.477}\).</li>
+    </ul>
+    <p>So in D1, chai weighs \(2\times0.176=0.352\), hot weighs \(0.477\), and "the" weighs \(0\) despite being the most frequent word. In D2 cricket weighs \(3\times0.176=0.528\); in D3 chai and cricket weigh 0.176 each. <strong>A word that is in every document says nothing about any one of them.</strong></p>
+    <p><strong>For the word × word table: PMI.</strong> Ask how many times more often two words meet than two strangers would by chance. If chai and "hot" had nothing to do with each other, they would meet with probability \(P(\text{chai})\,P(\text{hot})\) (independence, <a href="unit-14.html#s3">Unit 14</a>). So compare the real meetings with that:</p>
+    <p>\[\operatorname{PMI}(w,c)=\log_2\frac{P(w,c)}{P(w)\,P(c)}.\]</p>
+    <p>This is the <strong>pointwise mutual information</strong>. Worked example, with \(N=40\) counted pairs: chai meets hot 8 times, "the" 10 times and "match" 2 times; cricket meets hot 2 times, "the" 10 times and "match" 8 times. Add up the rows and columns first. Chai and cricket each take part in 20 of the 40 pairs; hot in 10, "the" in 20 and match in 10. So \(P(\text{chai})=20/40=0.5\), \(P(\text{hot})=10/40=0.25\), \(P(\text{the})=20/40=0.5\), \(P(\text{match})=10/40=0.25\), and \(P(\text{chai},\text{hot})=8/40=0.2\):</p>
+    <p>\[\begin{aligned}&\operatorname{PMI}(\text{chai},\text{hot})\\ &\quad=\log_2\frac{0.2}{0.5\cdot0.25}=\log_21.6\approx0.678,\\ &\operatorname{PMI}(\text{chai},\text{the})\\ &\quad=\log_2\frac{0.25}{0.5\cdot0.5}=0,\\ &\operatorname{PMI}(\text{chai},\text{match})\\ &\quad=\log_2\frac{0.05}{0.5\cdot0.25}\approx-1.322.\end{aligned}\]</p>
+    <p>Raw counts said "the" was chai's biggest neighbour (10 meetings). PMI says it tells us <strong>nothing</strong>: chai meets "the" exactly as often as chance predicts. Negative values mean "meet less often than chance", and they are noisy with small counts, so people usually keep only the positive part, \(\operatorname{PPMI}=\max(\operatorname{PMI},0)\).</p>
+  </div>
+
+  <div class="widget reveal" id="w-pmi">
+    <div class="widget-head"><span class="w-title">From raw counts to surprise</span><span class="w-sub"><em>PMI</em>: edit the counts, then walk the four steps — what chance alone would give, the ratio, its log, and the positive part. <em>TF-IDF</em>: the same idea for documents. In steps ① and ② the shade only shows how big a number is; from step ③ on, blue means "more than chance" and red "less than chance".</span></div>
+    <p class="try"><b>Try:</b> Walk the steps ① to ⑤ and watch the "the" column fade to 0 while chai–hot stays at 0.678. Then raise chai–"the" from 10 to 14: PMI(chai, the) turns positive. Last, open <em>TF-IDF</em>: "the" is the commonest word in D1, yet its weight is 0.</p>
+    <div class="tabs" id="pm-tabs" role="tablist" style="margin-bottom:.7rem"><button role="tab" aria-selected="true" data-t="pmi">PMI · word × word</button><button role="tab" aria-selected="false" data-t="tfidf">TF-IDF · word × document</button></div>
+    <div data-tab="pmi">
+      <div class="pm-steps" id="pm-steps" role="tablist"><button role="tab" aria-selected="true" data-s="0">① counts</button><button role="tab" aria-selected="false" data-s="1">② if strangers</button><button role="tab" aria-selected="false" data-s="2">③ ratio</button><button role="tab" aria-selected="false" data-s="3">④ PMI = log₂</button><button role="tab" aria-selected="false" data-s="4">⑤ PPMI</button></div>
+      <div class="wrow" style="margin-top:.6rem">
+        <div class="wcol" style="flex:1.3 1 360px;min-width:0"><div class="scroll-x"><div id="pm-grid" class="pm-grid"></div></div><div class="presets" style="margin-top:.5rem"><button class="preset" id="pm-reset">reset counts</button></div></div>
+        <div class="wcol" style="flex:1 1 260px;min-width:0"><div id="pm-read" class="readout" style="line-height:1.8"></div></div>
+      </div>
+    </div>
+    <div data-tab="tfidf" style="display:none">
+      <div class="wrow">
+        <div class="wcol" style="flex:1 1 250px;min-width:0"><div id="tf-docs" class="co-docs"></div></div>
+        <div class="wcol" style="flex:1.4 1 360px;min-width:0"><div class="scroll-x"><div id="tf-grid" class="pm-grid"></div></div><div id="tf-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Chance alone would already put common words next to everything. Dividing by what chance would give — \(P(w)P(c)\) for PMI, the share of documents that contain the word for IDF — cancels the part of a count that is just <em>popularity</em>, and leaves the part that is about <em>this pair</em>. What survives is company that is actually informative.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>PMI over-rewards rare pairs. In a corpus of a million pairs, two words that each appear <em>once</em>, and appear together, get \(\log_2(10^6)\approx19.9\) bits — the biggest number in the table, from a single sighting that may be a typo. That is why people ignore very rare words, or gently raise the counts of the neighbour words to a power below 1, such as 0.75 (the same trick returns in §12).</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\operatorname{PMI}(w,c)=\log_2\frac{P(w,c)}{P(w)\,P(c)},\\ \text{tf-idf}=\text{tf}\cdot\log_{10}\frac{N}{\text{df}}\end{gathered}\]</p>
+    <p>Not all company counts. Weigh each meeting by how much more often it happens than chance would allow: PMI for pairs of words, TF-IDF for words in documents. A neighbour that is everywhere, like "the", gets weight 0.</p>
+  </div>
+  <div class="check reveal" data-check="c14">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A word appears in every one of 1 000 documents — 50 times in one of them. What is its TF-IDF weight in that document?</p>
+    <div class="opts">
+      <button data-why="A high tf is multiplied by the idf, and the idf of a word in every document is log(1000/1000) = log 1 = 0. The product is 0.">50 — it appears 50 times</button>
+      <button data-correct data-why="Right. idf = log₁₀(1000/1000) = 0, so the weight is 50 × 0 = 0. A word that is in every document cannot tell one document from another.">0</button>
+      <button data-why="It is not negative: the idf is exactly 0 (log of 1), so the product is 0, however large the tf.">a negative number</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With the same 40 pairs, cricket meets hot 2 times. What is \(\operatorname{PMI}(\text{cricket},\text{hot})\), and what is its PPMI?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. P(cricket, hot) = 2/40 = 0.05, and chance gives P(cricket)P(hot) = 0.5 × 0.25 = 0.125. log₂(0.05/0.125) = log₂ 0.4 ≈ −1.322: they meet less than chance. PPMI keeps only the positive part: 0.">about −1.322; PPMI 0</button>
+      <button data-why="The ratio is 0.05/0.125 = 0.4, which is below 1, so its log is negative, not positive. Chai and hot are the pair that meet more than chance.">about 0.678; PPMI 0.678</button>
+      <button data-why="2 is the raw count. PMI compares it with chance: log₂((2/40)/(0.5 × 0.25)) = log₂ 0.4 ≈ −1.322, and PPMI turns that into 0.">2; PPMI 2</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Two rare words each appear once in a million counted pairs — and that one time, they appear together. What does PMI say about them?</p>
+    <div class="opts">
+      <button data-why="PMI divides by the chance of meeting, which is tiny for two rare words. That makes one meeting look hugely surprising — not ordinary.">about 0 — one meeting is nothing special</button>
+      <button data-why="The count is only 1, but PMI is about the ratio to chance, (1/N)/((1/N)(1/N)) = N, which is enormous.">it cannot be computed with a count of 1</button>
+      <button data-correct data-why="Right. The ratio is (1/10⁶)/((1/10⁶)·(1/10⁶)) = 10⁶, so PMI = log₂ 10⁶ ≈ 19.9 bits — more than any common pair. One sighting, possibly a typo, tops the table: the rare-pair trap.">a huge value, about 19.9 bits</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s6-->
+  <p class="onesent reveal"><b>In one sentence:</b> Weigh company by surprise, not by size — PMI \(=\log_2\frac{P(w,c)}{P(w)P(c)}\) gives chai–hot 0.678 and chai–the exactly 0, and TF-IDF gives any word found in every document the weight 0 — but beware rare pairs, which PMI over-rewards.</p>
+</section>
+
+<!-- ================= 7 · THE SVD SQUEEZE ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Squeeze the table: the SVD finds friends of friends</h2></div>
+  <p class="qopen reveal">In our text, chai and tea never share a single neighbour. Can the machine still discover that they are alike?</p>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>A school gives a long survey with 100 questions. When the teacher reads the answers, she notices that most of them can be summed up in two scores: "loves sport" and "loves music". Two numbers per student say almost everything the 100 answers say.</p>
-    <p>A co-occurrence table is like that survey. It is huge, but most of what it says fits in a few numbers per word.</p>
+    <p>A company table is like that survey. It is huge, but most of what it says fits in a few numbers per word.</p>
   </div>
   <div class="prose reveal">
-    <p>A real table has one row for every word and one column for every neighbour word: 50 000 × 50 000, and mostly zeros. Rows that long are clumsy. We want short rows that keep the pattern and drop the noise.</p>
-    <p>The tool is the <strong>SVD</strong> from <a href="unit-05.html#s7">Unit 5</a>. It writes any matrix as \(C=U\Sigma V^{\mathsf T}\): a turn, a stretch by the <strong>singular values</strong> \(\sigma_1\ge\sigma_2\ge\dots\), and another turn. The big singular values are the strong patterns. The small ones are mostly noise. Keep only the top \(k\) and you get the best rank-\(k\) copy of the table (<a href="unit-05.html#s10">Unit 5's layer cake</a>).</p>
-    <p>For our 4 × 4 table the singular values are</p>
-    <p>\[\sigma\approx(9.528,\ 8.528,\ 1.143,\ 1.087).\]</p>
-    <p>Two big, two small. How much do the top two keep? Measure a table's "energy" as the sum of the squares of all its entries — here \(42+41+41+42=166\). That is also \(\sigma_1^2+\sigma_2^2+\sigma_3^2+\sigma_4^2\). The top two give \(9.528^2+8.528^2\approx163.5\), which is</p>
+    <p>A real table has one row for every word and one column for every neighbour word: 50 000 × 50 000, mostly zeros. Rows that long are clumsy. We want short rows that keep the pattern and drop the noise.</p>
+    <p>The tool is the <strong>SVD</strong> from <a href="unit-05.html#s7">Unit 5</a>. It writes any matrix as \(C=U\Sigma V^{\mathsf T}\): a turn, a stretch by the <strong>singular values</strong> \(\sigma_1\ge\sigma_2\ge\dots\), and another turn. Big singular values are the strong patterns; small ones are mostly noise. Keep only the top \(k\) and you get the best rank-\(k\) copy of the table (<a href="unit-05.html#s10">Unit 5's layer cake</a>). Each word's new, short vector is its row of \(U_k\Sigma_k\).</p>
+    <p>For our 4 × 4 table of §5 the singular values are \(\sigma\approx(9.528,\ 8.528,\ 1.143,\ 1.087)\): two big, two small. Measure a table's "energy" as the sum of the squares of all its entries — here \(42+41+41+42=166\), which also equals \(\sigma_1^2+\dots+\sigma_4^2\). The top two keep</p>
     <p>\[\frac{\sigma_1^2+\sigma_2^2}{\sigma_1^2+\dots+\sigma_4^2}\approx\frac{163.5}{166}\approx98.5\%\]</p>
-    <p>of the energy. If we rebuild the table from just those two, the error (the Frobenius size of what is left over) is \(\sqrt{\sigma_3^2+\sigma_4^2}\approx1.578\) — small next to entries of 4 and 5.</p>
-    <p>Each word now gets just two numbers: its row of \(U_2\Sigma_2\).</p>
+    <p>of the energy, and rebuilding the table from just those two leaves an error of \(\sqrt{\sigma_3^2+\sigma_4^2}\approx1.578\) — small next to entries of 4 and 5. Each word now gets two numbers:</p>
     <p>\[\begin{aligned}\text{chai}&\approx(5.009,\,-4.032)\\ \text{coffee}&\approx(4.530,\,-4.452)\\ \text{cricket}&\approx(4.450,\,4.540)\\ \text{football}&\approx(5.037,\,4.004)\end{aligned}\]</p>
-    <p>(The SVD is free to flip the sign of any direction, so another program may print some of these with the opposite sign. The angles do not change.) Read them: the first number is about 5 for every word — it says "this word is used a lot". The second number is the interesting one: negative for tea, positive for sport. In two dimensions, \(\cos(\text{chai},\text{coffee})\approx0.995\) and \(\cos(\text{chai},\text{cricket})\approx0.097\). The squeeze made the tea words even more alike — it threw away the noise that kept them apart.</p>
+    <p>(The SVD may flip the sign of any direction, so another program may print some of these with the opposite sign; the angles do not change.) The first number is about 5 for every word: it says "this word is used a lot". The second is the interesting one: negative for tea, positive for sport. In two numbers, \(\cos(\text{chai},\text{coffee})\approx0.995\) and \(\cos(\text{chai},\text{cricket})\approx0.097\). The squeeze made the tea words even more alike — it threw away the noise that kept them apart.</p>
+    <p><strong>Weigh first, then squeeze.</strong> On real text, run the SVD on the PPMI table of §6, not on raw counts. Otherwise the loud columns like "the" take over the first direction, and it only says "how common is this word".</p>
   </div>
   <div class="prose reveal">
-    <p><strong>One more fix: common words shout.</strong> In real text the word "the" sits near everything. Its column is huge, so raw counts mostly measure "how common is this word". The fix is to ask a better question: <em>does this pair appear together more often than chance would give?</em> If chai and "hot" together are 3 times more common than you would expect from how common each one is alone, that is interesting; if "the" and chai are just as common together as chance predicts, that is nothing. Take the log of that ratio and keep only positive values — people call it <strong>PPMI</strong> (positive pointwise mutual information). The formula is in the drawer below. Try the switch in the next widget and watch the clusters snap apart.</p>
+    <p><strong>Now the surprise: friends of friends.</strong> Here is a new table with seven neighbour words:</p>
+    <div class="scroll-x"><table class="plain co-tbl">
+      <thead><tr><th></th><th>drink</th><th>hot</th><th>cup</th><th>kettle</th><th>play</th><th>match</th><th>bat</th></tr></thead>
+      <tbody><tr><th>chai</th><td>4</td><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th>tea</th><td>0</td><td>0</td><td>4</td><td>4</td><td>0</td><td>0</td><td>0</td></tr><tr><th>coffee</th><td>3</td><td>3</td><td>3</td><td>3</td><td>0</td><td>0</td><td>0</td></tr><tr><th>cricket</th><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>4</td><td>0</td></tr><tr><th>football</th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>4</td></tr></tbody></table></div>
+    <p>Chai and tea never share a single neighbour, so their raw cosine is exactly <strong>0</strong>. But coffee shares neighbours with <em>both</em> of them. The singular values are \(\sqrt{68}\approx8.246\), \(\sqrt{48}\approx6.928\), \(\sqrt{32}\approx5.657\), \(4\) and \(0\), so the energy kept is 41.5% at \(k=1\), 70.7% at \(k=2\) and 90.2% at \(k=3\).</p>
+    <p>Squeeze to \(k=2\). The words get the coordinates chai \((4,0)\), tea \((4,0)\), coffee \((6,0)\), cricket \((0,\ 4.899)\), football \((0,\ 4.899)\). Chai and tea now sit on the very same line: \(\cos(\text{chai},\text{tea})=\mathbf1\). Coffee, a friend of both, made them friends. The rebuilt table even fills in the blanks: it gives chai a count of 2 next to cup and next to kettle, words it never met — because coffee meets them.</p>
+    <p>Keep one more direction, \(k=3\), and the new direction gives chai \(-4\) and tea \(+4\): it records exactly what makes them different. The cosine drops back to 0. <strong>Squeeze enough and hidden friendships appear; keep everything and you keep the differences too.</strong> Using the SVD this way on a word–document table is called <strong>latent semantic analysis</strong> (LSA) — "latent" because it finds similarities that no single count shows.</p>
   </div>
 
   <div class="widget reveal" id="w-svd-words">
-    <div class="widget-head"><span class="w-title">Sixteen words, squeezed into 1, 2 or 3 numbers</span><span class="w-sub">A made-up table of 16 words × 12 neighbour words, squeezed by the SVD to \(k\) numbers per word. Each word is drawn as its <em>direction</em>, so the angle between two dots is exactly what the cosine measures. The colours are only our labels — the SVD never sees them.</span></div>
+    <div class="widget-head"><span class="w-title">Sixteen words, squeezed into 1, 2 or 3 numbers</span><span class="w-sub">A made-up table of 16 words × 12 neighbour words, squeezed by the SVD to \(k\) numbers per word. Each word is drawn as its <em>direction</em>, so the angle between two dots is exactly what the cosine measures. Colours are only our labels — the SVD never sees them. Point at a dot to read its word.</span></div>
     <p class="try"><b>Try:</b> Start at \(k=1\) with raw counts: every word points the same way — the first direction only says "how common". Slide to \(k=2\), then 3: the groups open up, but only a little. Now switch to <em>PPMI</em>: three clean arms at right angles, one per topic. Read cos(chai, cricket) in the box: 0.525 with raw counts (both words share the loud "the" column), about 0 with PPMI.</p>
     <div class="wrow">
-      <div class="wcol" style="flex:3 1 460px"><div id="sv-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. Sixteen glowing word points: tea words in orange, sport words in green, travel words in violet. Each word is drawn as a direction from the centre. With k equal to 1 they all point the same way; with k equal to 2 they spread around a ring on a flat glass sheet; with k equal to 3 they spread over a glass sphere. With raw counts the three groups stay close together; with PPMI switched on they split into three spots at right angles, one per topic."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:3 1 460px"><div id="sv-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. Sixteen glowing word points: tea words in orange, sport words in green, travel words in violet, each drawn as a direction from the centre. With k equal to 1 they all point the same way; with k equal to 2 they spread around a ring on a flat glass sheet; with k equal to 3 they spread over a glass sphere. With raw counts the three groups stay close together; with PPMI switched on they split into three spots at right angles, one per topic."></div><p class="stage-tap">drag the picture to orbit · point at a dot to read it</p></div>
       <div class="wcol" style="flex:1 1 260px">
         <div class="controls"><div class="ctl"><label for="sv-k">keep \(k\)</label><input id="sv-k" type="range" min="1" max="3" step="1" value="3"><output id="sv-k-o">3</output></div></div>
         <div class="tabs" id="sv-mode" role="tablist"><button role="tab" aria-selected="true" data-t="raw">raw counts</button><button role="tab" aria-selected="false" data-t="ppmi">PPMI</button></div>
@@ -103,11 +228,28 @@
     </div>
   </div>
 
+  <div class="widget reveal" id="w-friends">
+    <div class="widget-head"><span class="w-title">Friends of friends</span><span class="w-sub">The chai · tea · coffee table, rebuilt from its top \(k\) directions. Gold boxes are blanks the squeeze filled in. On the right, the three drink words drawn in the plane of direction 1 (drinks) and direction 3 (chai versus tea), where their angles are exact.</span></div>
+    <p class="try"><b>Try:</b> At \(k=2\) chai and tea lie on one line — cosine 1 — and the rebuilt table gives chai a 2 for cup and for kettle, though it never met them. Slide to \(k=3\): direction 3 opens up, chai and tea swing apart to 90°, and the blanks empty again. \(k=4\) only separates cricket from football.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.3 1 360px;min-width:0"><div class="scroll-x"><div id="fr-grid" class="pm-grid"></div></div>
+        <div class="controls" style="margin-top:.6rem"><div class="ctl"><label for="fr-k">keep \(k\)</label><input id="fr-k" type="range" min="2" max="4" step="1" value="2"><output id="fr-k-o">2</output></div></div></div>
+      <div class="wcol" style="flex:1 1 280px;min-width:0"><div class="svgstage"><svg id="fr-svg" viewBox="0 0 320 300" class="svg-lab" role="img" aria-label="Three arrows from one point for chai, tea and coffee, in the plane of direction 1 and direction 3. At k = 2 all three lie along direction 1. At k = 3 chai tilts down, tea tilts up, and coffee stays in the middle, with the angle between chai and tea marked."></svg></div>
+        <div id="fr-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>The squeeze keeps only the few directions that explain the most counts. A direction is shared by <em>groups</em> of words and <em>groups</em> of neighbours, so it cannot fit chai's two neighbours and tea's two neighbours separately — it fits "the drink neighbours" as one block, because coffee connects the two halves. Words that only reach each other through a friend get pulled onto the same direction. The detail that tells them apart lives in a weaker direction, and a small \(k\) throws it away.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>A bigger \(k\) is not always better. \(k\) too small, and different topics are squashed together; \(k\) too large, and you keep the noise and the small differences, so hidden friendships vanish again. For words people usually keep a few hundred directions out of tens of thousands. And the sign of each direction is arbitrary — never read meaning into a minus sign on its own.</p>
+  </div>
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\begin{gathered}C\approx U_k\Sigma_kV_k^{\mathsf T},\\ \text{word vectors}=\text{rows of }U_k\Sigma_k\end{gathered}\]</p>
-    <p>The SVD finds the few strong directions hiding in a big table of counts. Keep those, drop the rest, and each word gets a short list of numbers. The energy kept, \(\sum_{i\le k}\sigma_i^2/\sum_i\sigma_i^2\), tells you how much of the table survived. Weighting the counts by PPMI first stops common words from hogging the first direction.</p>
+    <p>The SVD finds the few strong directions hiding in a big table of counts. Keep those, drop the rest, and each word gets a short list of numbers; the energy kept, \(\sum_{i\le k}\sigma_i^2/\sum_i\sigma_i^2\), tells you how much of the table survived. Because each direction is shared by whole groups of words, the squeeze also finds friends of friends.</p>
   </div>
-  <div class="check reveal" data-check="c9">
+  <div class="check reveal" data-check="c17">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">A table has singular values \(3,\ 2,\ 1\). What share of the energy do you keep with \(k=1\)?</p>
     <div class="opts">
@@ -117,7 +259,7 @@
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c10">
+  <div class="check reveal" data-check="c18">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">A table has singular values \(5,\ 3,\ 0.4,\ 0.3\). You keep \(k=2\). How big is the rebuild error (Frobenius)?</p>
     <div class="opts">
@@ -127,94 +269,16 @@
     </div>
     <div class="why"></div>
   </div>
-<!--@ALG s5-->
-  <p class="onesent reveal"><b>In one sentence:</b> The SVD squeezes a co-occurrence table to its top \(k\) directions; the rows of \(U_k\Sigma_k\) are short word vectors, the energy kept is \(\sum_{i\le k}\sigma_i^2/\sum\sigma_i^2\) (98.5% for our table at \(k=2\)), and PPMI stops common words from taking over.</p>
-</section>
-
-<!-- ================= 6 · WORD2VEC ================= -->
-<section class="unit" id="s6">
-  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Learning vectors instead of counting: word2vec</h2></div>
-  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>Two friends play a game on a long train ride. One reads a word from a newspaper — "chai" — and then a second word. Sometimes the second word really was next to "chai" in the paper ("hot"). Sometimes it is a random word picked from anywhere ("football"). The other friend must say: <strong>real neighbour, or random?</strong></p>
-    <p>To win this game again and again, you have to learn what chai is like. That is the whole idea of word2vec.</p>
-  </div>
-  <div class="prose reveal">
-    <p>Counting and squeezing works, but the table is enormous and the SVD of a 50 000 × 50 000 table is slow. In 2013, Tomas Mikolov and his team at Google tried another way: skip the table, and <strong>learn</strong> the short lists directly by playing the guessing game above. Their method is called <strong>word2vec</strong>, and the game version is called <strong>skip-gram with negative sampling</strong>.</p>
-    <p>Each word gets <strong>two</strong> lists of numbers: \(\mathbf v\) for when it is the middle word, and \(\mathbf u\) for when it is a neighbour. The game's score for a pair is the dot product \(\mathbf u\cdot\mathbf v\), squeezed into a probability with the sigmoid from <a href="unit-14.html#s13">Unit 14</a>:</p>
-    <p>\[P(\text{real neighbour})=\sigma(\mathbf u\cdot\mathbf v)=\frac{1}{1+e^{-\mathbf u\cdot\mathbf v}}.\]</p>
-    <p>A big positive dot product means "surely real". A big negative one means "surely random". For each real pair we also pick a few random words — the <strong>negatives</strong> — and want the model to say "random" to them.</p>
-    <p><strong>A worked round.</strong> Use lists of just two numbers. Middle word chai: \(\mathbf v_{\text{chai}}=(1,0)\). A real neighbour, hot: \(\mathbf u_{\text{hot}}=(0.5,0.5)\). A random negative, football: \(\mathbf u_{\text{football}}=(-0.5,1)\).</p>
-    <ul>
-      <li>Real pair: \(\mathbf u_{\text{hot}}\cdot\mathbf v_{\text{chai}}=0.5\), so \(\sigma(0.5)\approx0.622\). The model is 62% sure hot is real. Good, but not great.</li>
-      <li>Negative pair: \(\mathbf u_{\text{football}}\cdot\mathbf v_{\text{chai}}=-0.5\). The chance it says "random" is \(\sigma(+0.5)\approx0.622\).</li>
-      <li>The loss is the surprise of both right answers (in nats, as in Unit 14): \(-\ln0.622-\ln0.622\approx0.948\).</li>
-    </ul>
-    <p>Now take one step downhill (<a href="unit-09.html#s4">Unit 9</a>) with step size \(\eta=1\). Each guess is "wrong by" \(1-0.622\approx0.378\). The update rules turn out to be very simple (the drawer has the algebra):</p>
-    <ul>
-      <li><strong>Pull the real neighbour toward chai:</strong> \(\mathbf u_{\text{hot}}\leftarrow\mathbf u_{\text{hot}}+0.378\,\mathbf v_{\text{chai}}=(0.878,\ 0.5)\).</li>
-      <li><strong>Push the random word away from chai:</strong> \(\mathbf u_{\text{football}}\leftarrow\mathbf u_{\text{football}}-0.378\,\mathbf v_{\text{chai}}=(-0.878,\ 1)\).</li>
-      <li><strong>Turn chai toward hot and away from football:</strong> \(\mathbf v_{\text{chai}}\leftarrow\mathbf v_{\text{chai}}+0.378\,(\mathbf u_{\text{hot}}-\mathbf u_{\text{football}})=(1.378,\ -0.189)\).</li>
-    </ul>
-    <p>After this one step, the real pair scores \(\sigma(1.114)\approx0.753\), the negative pair gives "random" with \(\sigma(1.398)\approx0.802\), and the loss has dropped from 0.948 to about 0.505.</p>
-  </div>
-
-  <div class="widget reveal" id="w-sgstep">
-    <div class="widget-head"><span class="w-title">One round of the game, as arrows</span><span class="w-sub">Chai's middle-word arrow in blue, the real neighbour "hot" in green, the random word "football" in red. Each step pulls the real pair together and pushes the random pair apart.</span></div>
-    <p class="try"><b>Try:</b> Press <em>one step</em> once and check the numbers above: loss 0.948 → 0.505. Keep stepping: hot swings in line with chai, football swings round to the opposite side, and the loss slides toward 0. Try a smaller \(\eta\) and count how many more steps you need.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 440px;min-width:0"><div class="svgstage"><svg id="sg-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="A plane with three arrows from the origin: v chai in blue, u hot in green and u football in red. Faint trails show where each arrow was before the latest steps. A small panel shows the loss after each step."></svg></div></div>
-      <div class="wcol" style="flex:1 1 250px">
-        <div class="controls"><div class="ctl"><label for="sg-eta">step \(\eta\)</label><input id="sg-eta" type="range" min="0.1" max="2" step="0.1" value="1"><output id="sg-eta-o">1</output></div></div>
-        <div class="presets"><button class="play" id="sg-step">one step</button><button class="preset" id="sg-run">▶ ten steps</button><button class="preset" id="sg-reset">reset</button></div>
-        <div id="sg-read" class="readout" style="margin-top:.6rem;line-height:1.8"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="prose reveal">
-    <p>Now play the game for real, on thousands of pairs. Below, a small made-up corpus of sentences about tea, cricket and travel trains word2vec live in your browser. Each word has three numbers, so we can draw it in 3-D. We draw each word's direction on a glass globe, because for meaning only the direction counts.</p>
-  </div>
-  <div class="widget reveal" id="w-w2v">
-    <div class="widget-head"><span class="w-title">word2vec, training live</span><span class="w-sub">Every word starts at a random point. Each tick plays thousands of rounds of "real or random?". Words that keep the same company drift to the same part of the globe. The colours are only our labels; the game never sees them.</span></div>
-    <p class="try"><b>Try:</b> Press <em>▶ train</em> and watch the three colours gather into three patches while the loss curve falls. Press <em>new start</em> for a different random beginning: the patches land in new places, but they still form. Try 1 negative against 10, and window 1 against 3.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 460px"><div id="wv-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A faint glass globe. About twenty-five glowing word points sit on its surface: tea words in orange, cricket words in green, travel words in violet, and a few common words like the and a in grey. As training runs, the points of each colour slide toward each other and form three separate patches."></div><p class="stage-tap">drag the picture to orbit</p></div>
-      <div class="wcol" style="flex:1 1 260px">
-        <div class="controls">
-          <div class="ctl"><label for="wv-win">window</label><input id="wv-win" type="range" min="1" max="3" step="1" value="2"><output id="wv-win-o">2</output></div>
-          <div class="ctl"><label for="wv-neg">negatives \(k\)</label><input id="wv-neg" type="range" min="1" max="10" step="1" value="5"><output id="wv-neg-o">5</output></div>
-        </div>
-        <div class="presets"><button class="play" id="wv-play">▶ train</button><button class="preset" id="wv-seed">new start</button></div>
-        <div class="svgstage" style="margin-top:.6rem"><svg id="wv-loss" viewBox="0 0 300 140" class="svg-lab" role="img" aria-label="The training loss over time, falling as the words sort themselves."></svg></div>
-        <div id="wv-read" class="readout" style="margin-top:.5rem;line-height:1.7"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{aligned}L=&-\ln\sigma(\mathbf u_{+}\cdot\mathbf v)\\ &-\sum_{\text{negatives}}\ln\sigma(-\mathbf u_{-}\cdot\mathbf v)\end{aligned}\]</p>
-    <p>word2vec is just logistic regression (Unit 14) on pairs of words. Every step <strong>pulls</strong> real neighbours together and <strong>pushes</strong> random words apart. Two words that keep the same company get pulled toward the same neighbours, so they end up pointing the same way — without anyone ever counting a table.</p>
-  </div>
-  <div class="check reveal" data-check="c11">
+  <div class="check reveal" data-check="c19">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">At the very start, a pair has \(\mathbf u\cdot\mathbf v=0\). What probability does the model give to "real neighbour"?</p>
+    <p class="q">In the friends-of-friends table, chai and tea have cosine 1 at \(k=2\). What happens to their cosine at \(k=3\)?</p>
     <div class="opts">
-      <button data-correct data-why="Right. σ(0) = 1/(1 + e⁰) = 1/2. A dot product of 0 means the model has no opinion — a coin toss.">0.5</button>
-      <button data-why="σ(0) = 1/(1 + 1) = 0.5, not 0. A probability of 0 would need a dot product far below zero.">0</button>
-      <button data-why="σ(0) = 1/(1 + e⁰) = 1/2. Only a very large dot product gets close to 1.">1</button>
+      <button data-why="More directions do not always mean more agreement. The third direction is exactly the one that tells chai and tea apart (−4 against +4).">it stays 1 — more directions, more agreement</button>
+      <button data-correct data-why="Right. Direction 3 gives chai −4 and tea +4, and it is as strong as their shared direction (4 each). Their vectors become (4, 0, −4) and (4, 0, 4): dot product 16 − 16 = 0. The difference is kept, so the hidden friendship disappears.">it drops back to 0</button>
+      <button data-why="It does not go negative: the vectors (4, 0, −4) and (4, 0, 4) have dot product 0, so they are at a right angle, not opposite.">it becomes −1</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c12">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">In the worked round, after one step with \(\eta=1\), what happens to the score \(\mathbf u_{\text{football}}\cdot\mathbf v_{\text{chai}}\)?</p>
-    <div class="opts">
-      <button data-why="The step pushes football AWAY from chai, so the dot product becomes more negative, not positive.">it rises from −0.5 to +0.5</button>
-      <button data-correct data-why="Right. With the new arrows (−0.878, 1) and (1.378, −0.189): −0.878·1.378 + 1·(−0.189) ≈ −1.398. The random word is pushed further away, so the model is surer it is random: σ(1.398) ≈ 0.802.">it falls from −0.5 to about −1.398</button>
-      <button data-why="Only the real neighbour's score goes up. The negative's score goes down: about −1.398 after the step.">it stays at −0.5</button>
-    </div>
-    <div class="why"></div>
-  </div>
-<!--@ALG s6-->
-  <p class="onesent reveal"><b>In one sentence:</b> word2vec gives each word a middle list \(\mathbf v\) and a neighbour list \(\mathbf u\), scores a pair by \(\sigma(\mathbf u\cdot\mathbf v)\), and each step pulls real neighbours in and pushes random words out — in our round, loss 0.948 → 0.505.</p>
+<!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> The SVD squeezes a company table to its top \(k\) directions (98.5% of our 4 × 4 table at \(k=2\)), and because each direction is shared by groups of words it finds friends of friends — chai and tea, who never meet, get cosine 1 at \(k=2\) through coffee, and 0 again when \(k=3\) keeps their difference.</p>
 </section>

@@ -1,11 +1,15 @@
 /* ================= UNIT 18 · the unit's shared maths and colour language ================= */
 /* one colour language for the whole unit: queries orange, keys blue, values green, weights gold, probability cyan */
 const K18={q:'s2',k:'s1',v:'s3',w:'s4',tok:'s1',prob:'s6',loss:'critical',h1:'s5',h2:'s6'};
+/* every widget registers here: window.U18.<name> = {st, draw, state()} — state() returns the numbers the picture was drawn from */
+const U18=window.U18=window.U18||{};
+/* a text halo so labels stay readable over beams, bars and glows */
+const HALO=';paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round';
 const cv=k=>k==='critical'?'var(--critical)':'var(--'+k+')';
 /* numbers: integers print bare, others trimmed; always a real minus sign */
 const N=(v,d)=>{ if(!isFinite(v)) return v>0?'∞':'−∞'; if(Math.abs(v)<5e-13) return '0'; const r=Math.round(v); if(Math.abs(v-r)<1e-9) return nm(String(r)); return trim(F(v,d==null?3:d)); };
 const vecN=(v,d)=>'('+v.map(x=>N(x,d)).join(', ')+')';
-const grp=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');       /* 1 048 576 */
+const grp=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');  /* 1 048 576, with no-break spaces so a number never splits across lines */
 /* ---- linear algebra on plain arrays ---- */
 const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
 const matMul=(A,B)=>A.map(r=>B[0].map((_,j)=>r.reduce((s,x,k)=>s+x*B[k][j],0)));
@@ -19,7 +23,18 @@ function attend(Q,K,V,o){ o=o||{}; const d=Q[0].length, sc=o.scale===false?1:Mat
   const A=S.map(softmax), O=A.map(r=>V[0].map((_,c)=>r.reduce((s,w,j)=>s+w*V[j][c],0))); return {S,A,O}; }
 const layerNorm=(x,g,b)=>{ const m=x.reduce((a,c)=>a+c,0)/x.length, v=x.reduce((a,c)=>a+(c-m)**2,0)/x.length, s=Math.sqrt(v); return x.map((c,i)=>(s>0?(c-m)/s:0)*(g==null?1:g)+(b==null?0:b)); };
 
-/* ---- THE worked example of §3 and §9 ---- */
+/* ---- §1 · the interpreter's notes (hand-made): one-hot notes, one decoder state per Hindi word ---- */
+const ALIGN={EN:['I','drink','tea'],HI:['मैं','चाय','पीता','हूँ'],TR:['main','chai','peeta','hoon'],GL:['I','tea','drink','am'],
+  H:[[1,0,0],[0,1,0],[0,0,1]],Q:[[2,0,0],[0,.5,2],[0,2,.5],[1,1,0]]};
+(function(){ const w=softmax(ALIGN.Q[1].map((v,i)=>v)), got=w.map(x=>x.toFixed(3)).join();
+  if(got!=='0.100,0.164,0.736') console.warn('U18: alignment example drifted: '+got); })();
+
+/* ---- §5 · a chameleon word (hand-made 2-D vectors: nature, money); Q = K = V = X ---- */
+const CTX={BANK:[1,1],NB:{river:[2,0],stream:[3,0],the:[.3,.3],money:[0,2],loan:[.5,2.5]},ORDER:['river','stream','the','money','loan']};
+CTX.run=nb=>{ const X=[CTX.NB[nb],CTX.BANK], r=attend([CTX.BANK],X,X); return {s:r.S[0],w:r.A[0],out:r.O[0]}; };
+CTX.cos=(u,v)=>dot(u,v)/Math.hypot(...u)/Math.hypot(...v);
+
+/* ---- THE worked example of §3 and §10 ---- */
 const EX={K:[[1,0],[0,1],[1,1]], V:[[2,0],[0,2],[1,1]], Q:[[2,0],[0,2],[1,1]]};
 (function(){ const r=attend(EX.Q,EX.K,EX.V), m=attend(EX.Q,EX.K,EX.V,{causal:true});
   const want=[r.A[0].map(x=>x.toFixed(3)).join(),r.O[0].map(x=>x.toFixed(3)).join(),m.A[1].map(x=>x.toFixed(3)).join(),m.O[1].map(x=>x.toFixed(3)).join()].join(' ; ');
@@ -108,5 +123,5 @@ const fz=(svg,b)=>Math.max(b,11.5/svgScale(svg));
 /* narrow = the stage is phone-sized: widgets switch to a portrait layout */
 const narrowOf=el=>{ const w=(el.parentNode||el).getBoundingClientRect().width; return w>0&&w<560; };
 /* redraw an SVG widget when its layout class (narrow/wide) or the theme changes */
-function relayout(svg,draw){ let was=null, lw=0; const go=()=>{ const n=narrowOf(svg), w=(svg.parentNode||svg).getBoundingClientRect().width; if(n!==was||(lw&&Math.abs(w-lw)/lw>.12)){ was=n; lw=w; draw(true); } else if(!lw) lw=w; };
+function relayout(svg,draw){ let was=null, lw=0; const go=()=>{ const n=narrowOf(svg), w=(svg.parentNode||svg).getBoundingClientRect().width; if(n!==was||(lw&&Math.abs(w-lw)/lw>.025)){ was=n; lw=w; draw(true); } else if(!lw) lw=w; };
   addEventListener('resize',go); if('ResizeObserver' in window) new ResizeObserver(()=>go()).observe(svg.parentNode||svg); new MutationObserver(()=>draw(true)).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']}); go(); return go; }

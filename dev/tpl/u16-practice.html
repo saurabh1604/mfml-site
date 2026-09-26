@@ -1,164 +1,244 @@
-<!-- ================= 13 · PRACTICE ARENA ================= -->
+<!-- ================= 18 · PRACTICE ARENA ================= -->
 <section class="unit" id="spractice">
-  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Practice arena — fourteen problems, solved in full</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">18</span><h2>Practice arena — sixteen problems, solved in full</h2></div>
   <div class="prose reveal">
-    <p>Fourteen problems, easy to hard: one-hot lists, counting bigrams, perplexity forwards and backwards, cosines of count rows, singular values and a rank-1 copy, word2vec scores, a word2vec step, the cost of a softmax, an analogy, an embedding lookup, the size of a model, and two recorded models to judge. Every number here was checked by machine.</p>
-    <p>Three habits do most of the work. <strong>Write the counts or vectors in a small table first.</strong> <strong>Turn probabilities into surprises</strong> (bits) before averaging — never average the probabilities themselves. And <strong>for "similar", divide by the lengths</strong>: use the cosine, not the raw dot product.</p>
+    <p>Sixteen problems, easy to hard, one or more for every idea of the unit: chains of guesses, smoothing, perplexity, TF-IDF, PMI, cosines, the SVD squeeze, counting training examples, a CBOW pass, a skip-gram pass, a negative-sampling step, a path down a tree, subsampling, GloVe ratios, BPE merges and an analogy. Some run forwards, some backwards (find the setting that gives a result), and one asks you to judge two recorded models. Every number was checked by machine.</p>
+    <p>Three habits do most of the work. <strong>Write the counts or vectors in a small table first.</strong> <strong>Turn probabilities into surprises</strong> before you average them. And <strong>for "similar", divide by the lengths</strong>: use the cosine, not the raw dot product.</p>
   </div>
 
   <!-- ===== Problem 1 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span><span class="chip">one-hot</span></div>
-    <p class="pq">A vocabulary has 5 words, in the order (tea, milk, bat, ball, run). <b>(a)</b> Write the one-hot vector of "bat". <b>(b)</b> Compute \(\mathbf e_{\text{milk}}\cdot\mathbf e_{\text{ball}}\) and \(\mathbf e_{\text{bat}}\cdot\mathbf e_{\text{bat}}\). <b>(c)</b> How far apart are "tea" and "run"? <b>(d)</b> With a vocabulary of 20 000 words, how many numbers does one one-hot vector hold, compared with a 300-number embedding?</p>
-    <p class="ptest"><b>What this tests.</b> What a one-hot list is, and why it carries no meaning. <b>Plan.</b> One 1 in the word's own slot; dot products count shared slots.</p>
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span><span class="chip">a chain of guesses</span></div>
+    <p class="pq">The corpus is "we play cricket", "we play football", "we watch cricket", and a bigram model adds \(\langle s\rangle\) and \(\langle/s\rangle\) to every sentence. <b>(a)</b> Give \(P(\text{we}\mid\langle s\rangle)\), \(P(\text{play}\mid\text{we})\), \(P(\text{cricket}\mid\text{play})\) and \(P(\langle/s\rangle\mid\text{cricket})\). <b>(b)</b> What chance does the model give \(\langle s\rangle\) we play cricket \(\langle/s\rangle\)? <b>(c)</b> And \(\langle s\rangle\) we watch football \(\langle/s\rangle\)? <b>(d)</b> List every sentence the model can produce with a chance above 0, and add up their chances.</p>
+    <p class="ptest"><b>What this tests.</b> The chain rule with a one-word memory, count ÷ total, and why the end marker makes the chances of all sentences add up to 1. <b>Plan.</b> Make the table of next-word counts for every history, then multiply along each sentence.</p>
     <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> "bat" is word 3: \(\mathbf e_{\text{bat}}=(0,0,1,0,0)\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> milk and ball have their 1s in different slots (2 and 4), so every product is 0: \(\mathbf e_{\text{milk}}\cdot\mathbf e_{\text{ball}}=0\). A word with itself shares its one slot: \(\mathbf e_{\text{bat}}\cdot\mathbf e_{\text{bat}}=1\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> The difference is \((1,0,0,0,-1)\), so the distance is \(\sqrt{1+1}=\sqrt2\approx1.414\) — the same for every pair.</div>
-      <div class="pstep"><b>Step 4 — (d).</b> One-hot: 20 000 numbers (19 999 of them zero). Embedding: 300 numbers, all useful. That is \(20\,000/300\approx66.7\) times shorter.</div>
-      <p class="pans">answers at a glance: (a) \((0,0,1,0,0)\). (b) 0 and 1. (c) \(\sqrt2\approx1.414\). (d) 20 000 against 300.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>One-hot lists are all at right angles and all \(\sqrt2\) apart. They are names, not meanings.</p></div>
+      <div class="pstep"><b>Step 1 — the counts.</b> After \(\langle s\rangle\): we 3. After we: play 2, watch 1. After play: cricket 1, football 1. After watch: cricket 1. After cricket: \(\langle/s\rangle\) 2. After football: \(\langle/s\rangle\) 1.</div>
+      <div class="pstep"><b>Step 2 — (a).</b> \(P(\text{we}\mid\langle s\rangle)=3/3=1\), \(P(\text{play}\mid\text{we})=2/3\), \(P(\text{cricket}\mid\text{play})=1/2\), \(P(\langle/s\rangle\mid\text{cricket})=2/2=1\).</div>
+      <div class="pstep"><b>Step 3 — (b).</b> Multiply along the chain: \(1\cdot\tfrac23\cdot\tfrac12\cdot1=\tfrac13\).</div>
+      <div class="pstep"><b>Step 4 — (c).</b> "watch" was only ever followed by cricket, so \(P(\text{football}\mid\text{watch})=0\), and one zero makes the whole sentence 0.</div>
+      <div class="pstep"><b>Step 5 — (d).</b> From "we" the chain can go to play or watch; from play to cricket or football; from watch only to cricket; then it must stop. Three sentences: we play cricket (\(\tfrac13\)), we play football (\(1\cdot\tfrac23\cdot\tfrac12\cdot1=\tfrac13\)), we watch cricket (\(1\cdot\tfrac13\cdot1\cdot1=\tfrac13\)). Total: 1.</div>
+      <p class="pans">answers at a glance: (a) 1, \(2/3\), \(1/2\), 1. (b) \(1/3\). (c) 0. (d) three sentences, \(1/3\) each, total 1.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>With the end marker, a bigram model shares out exactly 1 among all the sentences it can write.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 2 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span><span class="chip">bigrams</span></div>
-    <p class="pq">The corpus is "we play cricket . &nbsp;we play football . &nbsp;we watch cricket ." (every sentence starts with "we"; the full stop is a word). <b>(a)</b> Give \(P(\text{play}\mid\text{we})\), \(P(\text{cricket}\mid\text{play})\) and \(P(\text{cricket}\mid\text{watch})\). <b>(b)</b> What probability does the bigram model give "we play cricket ."? <b>(c)</b> With add-one smoothing over the 6-word vocabulary, give \(P(\text{cricket}\mid\text{play})\), \(P(\text{watch}\mid\text{play})\) and \(P(.\mid\text{cricket})\). <b>(d)</b> The smoothed probability of "we play cricket ."?</p>
-    <p class="ptest"><b>What this tests.</b> Counting pairs, dividing by the row total, and add-one. <b>Plan.</b> Make the table of next-word counts first.</p>
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">medium</span><span class="chip">smoothing</span></div>
+    <p class="pq">Same corpus as Problem 1. The possible next words are we, play, watch, cricket, football and \(\langle/s\rangle\) (\(V=6\)). <b>(a)</b> With add-one smoothing, give \(P(\text{cricket}\mid\text{play})\) and \(P(\text{watch}\mid\text{play})\). <b>(b)</b> The unigram adviser counts the 12 tokens that follow the \(\langle s\rangle\) markers. With interpolation \(0.7\,P_{\text{bigram}}+0.3\,P_{\text{unigram}}\), give the same two chances. <b>(c)</b> Which weight \(\lambda\) on the bigram would make \(P(\text{watch}\mid\text{play})\) exactly 0.05? <b>(d)</b> Show that the interpolated row for "play" adds up to 1 whatever \(\lambda\) is.</p>
+    <p class="ptest"><b>What this tests.</b> Add-one, interpolation, and running interpolation backwards. <b>Plan.</b> Write the "play" row (cricket 1, football 1, total 2) and the unigram counts first.</p>
     <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — the counts.</b> After "we": play 2, watch 1 (total 3). After "play": cricket 1, football 1 (total 2). After "watch": cricket 1 (total 1). After "cricket": "." 2 (total 2). After "football": "." 1.</div>
-      <div class="pstep"><b>Step 2 — (a).</b> \(P(\text{play}\mid\text{we})=2/3\), \(P(\text{cricket}\mid\text{play})=1/2\), \(P(\text{cricket}\mid\text{watch})=1/1=1\).</div>
-      <div class="pstep"><b>Step 3 — (b).</b> \(\tfrac23\cdot\tfrac12\cdot P(.\mid\text{cricket})=\tfrac23\cdot\tfrac12\cdot1=\tfrac13\).</div>
-      <div class="pstep"><b>Step 4 — (c).</b> Add 1 to the count and \(V=6\) to the total: \(P(\text{cricket}\mid\text{play})=\tfrac{1+1}{2+6}=0.25\), \(P(\text{watch}\mid\text{play})=\tfrac{0+1}{2+6}=0.125\), \(P(.\mid\text{cricket})=\tfrac{2+1}{2+6}=0.375\).</div>
-      <div class="pstep"><b>Step 5 — (d).</b> \(P(\text{play}\mid\text{we})=\tfrac{2+1}{3+6}=\tfrac13\), so the sentence gets \(\tfrac13\cdot0.25\cdot0.375=0.03125\).</div>
-      <p class="pans">answers at a glance: (a) \(2/3\), \(1/2\), \(1\). (b) \(1/3\). (c) 0.25, 0.125, 0.375. (d) 0.03125.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Smoothing moves probability from seen pairs to unseen ones — the seen sentence becomes less likely, but nothing is impossible any more.</p></div>
+      <div class="pstep"><b>Step 1 — (a).</b> Add 1 to each count and \(V=6\) to the total: \(P(\text{cricket}\mid\text{play})=\tfrac{1+1}{2+6}=0.25\), \(P(\text{watch}\mid\text{play})=\tfrac{0+1}{2+6}=0.125\).</div>
+      <div class="pstep"><b>Step 2 — the unigram counts.</b> we 3, play 2, watch 1, cricket 2, football 1, \(\langle/s\rangle\) 3: 12 tokens.</div>
+      <div class="pstep"><b>Step 3 — (b).</b> \(P(\text{cricket}\mid\text{play})=0.7\cdot\tfrac12+0.3\cdot\tfrac2{12}=0.35+0.05=0.4\). \(P(\text{watch}\mid\text{play})=0.7\cdot0+0.3\cdot\tfrac1{12}=0.025\).</div>
+      <div class="pstep"><b>Step 4 — (c).</b> Only the unigram part helps watch: \((1-\lambda)\cdot\tfrac1{12}=0.05\), so \(1-\lambda=0.6\) and \(\lambda=0.4\).</div>
+      <div class="pstep"><b>Step 5 — (d).</b> The bigram row adds to 1 and the unigram row adds to 1, so the blend adds to \(\lambda\cdot1+(1-\lambda)\cdot1=1\).</div>
+      <p class="pans">answers at a glance: (a) 0.25 and 0.125. (b) 0.4 and 0.025. (c) \(\lambda=0.4\). (d) \(\lambda+(1-\lambda)=1\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Interpolation gives an unseen pair the unigram's share, scaled by \(1-\lambda\): more trust in the general adviser, more chance for the unseen.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 3 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span><span class="chip">perplexity</span></div>
-    <p class="pq">A model reads five words. It gave the words that really came next the probabilities \(0.25,\ 0.5,\ 0.125,\ 0.5,\ 1\). <b>(a)</b> Find each surprise in bits and the average. <b>(b)</b> Find the perplexity. <b>(c)</b> Redo (a)–(b) in nats (natural logs, then \(e^{(\cdot)}\)) and check the perplexity is the same.</p>
-    <p class="ptest"><b>What this tests.</b> Surprise, average surprise, perplexity. <b>Plan.</b> \(\log_2(1/p)\) for each word; average; raise 2 to it.</p>
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff medium">medium</span><span class="chip">perplexity, both ways</span></div>
+    <p class="pq"><b>(a)</b> A model gave five real next words the probabilities \(0.25,\ 0.5,\ 0.125,\ 0.5,\ 1\). Find the average surprise in bits and the perplexity. <b>(b)</b> What is the perplexity of a model that guesses evenly over 8 words? <b>(c)</b> On a 3-word text a model gave the first two true words 0.5 and 0.25. What must it give the third for the perplexity to be exactly 4? <b>(d)</b> Two models were each scored twice: on their own training text and on new text they had never seen. A scored 45 on its training text and 210 on the new text; B scored 80 and 95. Which would you use, and how many bits per word better is it on the new text?</p>
+    <p class="ptest"><b>What this tests.</b> Perplexity as \(2^{\text{average surprise}}=(p_1\cdots p_N)^{-1/N}\), forwards, backwards, and as a judge (<a href="unit-10.html">Unit 10</a>'s overfitting). <b>Plan.</b> Work in bits: \(\log_2(1/p)\) for each word.</p>
     <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — surprises.</b> \(\log_2 4=2\), \(\log_2 2=1\), \(\log_2 8=3\), \(1\), \(\log_2 1=0\).</div>
-      <div class="pstep"><b>Step 2 — average.</b> \((2+1+3+1+0)/5=7/5=1.4\) bits.</div>
-      <div class="pstep"><b>Step 3 — perplexity.</b> \(2^{1.4}\approx2.639\).</div>
-      <div class="pstep"><b>Step 4 — in nats.</b> The average of \(\ln(1/p)\) is \(1.4\ln2\approx0.9704\) nats, and \(e^{0.9704}\approx2.639\). The same.</div>
-      <p class="pans">answers at a glance: (a) 2, 1, 3, 1, 0 bits; average 1.4 bits. (b) \(2^{1.4}\approx2.639\). (c) 0.9704 nats, \(e^{0.9704}\approx2.639\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Perplexity does not depend on the base of the log — bits with 2, nats with \(e\).</p></div>
+      <div class="pstep"><b>Step 1 — (a).</b> Surprises: 2, 1, 3, 1, 0 bits. Average \(7/5=1.4\) bits. Perplexity \(2^{1.4}\approx2.639\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> Every word gets \(1/8\): perplexity 8, a fair die with 8 faces.</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \((0.5\cdot0.25\cdot p)^{-1/3}=4\) means \(0.125\,p=4^{-3}=\tfrac1{64}\), so \(p=\tfrac18=0.125\). Check: surprises 1, 2, 3; average 2; \(2^2=4\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Judge on new text only: B (95 &lt; 210). In bits: \(\log_2 210\approx7.714\) and \(\log_2 95\approx6.570\), so B is \(\log_2(210/95)\approx1.144\) bits per word better. A's big jump from 45 to 210 is the sign of memorising.</div>
+      <p class="pans">answers at a glance: (a) 1.4 bits; \(2^{1.4}\approx2.639\). (b) 8. (c) \(p=0.125\). (d) B; about 1.144 bits per word.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A model that always gives the truth probability \(p\) has perplexity \(1/p\); and only the score on text the model never saw counts.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 4 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff medium">medium</span><span class="chip">perplexity, backwards</span></div>
-    <p class="pq"><b>(a)</b> A model guesses evenly over a vocabulary of 8 words. What is its perplexity? <b>(b)</b> A model always gives the true next word probability 0.2. Its perplexity? <b>(c)</b> On a 3-word text a model gave the first two true words probabilities 0.5 and 0.25. What probability must it give the third word for the perplexity to be exactly 4?</p>
-    <p class="ptest"><b>What this tests.</b> Perplexity as \((p_1\cdots p_N)^{-1/N}\), and running it backwards. <b>Plan.</b> Write the product, set it equal, solve.</p>
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff easy">easy</span><span class="chip">TF-IDF</span></div>
+    <p class="pq">Four documents. D1: the ×4, chai ×3, milk ×1. D2: the ×3, cricket ×2, bat ×1. D3: the ×2, chai ×1, cricket ×1. D4: the ×1, milk ×1, kadak ×2. <b>(a)</b> Give the document frequency and \(\text{idf}=\log_{10}(N/\text{df})\) of the, chai, milk, cricket, bat and kadak. <b>(b)</b> Give the TF-IDF weights of the, chai and milk in D1. <b>(c)</b> Which word is the best keyword for D4? <b>(d)</b> A new word has idf \(\approx0.125\). In how many of the 4 documents does it appear?</p>
+    <p class="ptest"><b>What this tests.</b> TF-IDF, and reading idf backwards. <b>Plan.</b> Count documents, not copies, for df; then multiply by the counts.</p>
     <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> Every word gets \(1/8\): perplexity \(8\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \((0.2^N)^{-1/N}=1/0.2=5\).</div>
-      <div class="pstep"><b>Step 3 — (c), set up.</b> \((0.5\cdot0.25\cdot p)^{-1/3}=4\) means \(0.125\,p=4^{-3}=1/64\).</div>
-      <div class="pstep"><b>Step 4 — (c), solve.</b> \(p=\dfrac{1/64}{1/8}=\dfrac18=0.125\). Check: surprises 1, 2, 3 bits, average 2, and \(2^2=4\).</div>
-      <p class="pans">answers at a glance: (a) 8. (b) 5. (c) \(p=0.125\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>A model that always gives the truth probability \(p\) has perplexity \(1/p\).</p></div>
+      <div class="pstep"><b>Step 1 — (a).</b> the: in all 4, idf \(\log_{10}1=0\). chai, milk, cricket: in 2 each, idf \(\log_{10}2\approx0.301\). bat, kadak: in 1 each, idf \(\log_{10}4\approx0.602\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> In D1: the \(4\times0=0\), chai \(3\times0.301\approx0.903\), milk \(1\times0.301\approx0.301\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> In D4: the 0, milk \(1\times0.301=0.301\), kadak \(2\times0.602\approx1.204\). Kadak is the best keyword.</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(\log_{10}(4/\text{df})=0.125\) gives \(4/\text{df}\approx1.334\), so \(\text{df}=3\) (indeed \(\log_{10}(4/3)\approx0.125\)).</div>
+      <p class="pans">answers at a glance: (a) df 4, 2, 2, 2, 1, 1; idf 0, 0.301, 0.301, 0.301, 0.602, 0.602. (b) 0, 0.903, 0.301. (c) kadak (1.204). (d) 3 documents.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A word everywhere has idf 0; a word in one document out of \(N\) has the biggest idf, \(\log_{10}N\).</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 5 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff easy">easy</span><span class="chip">cosine of counts</span></div>
-    <p class="pq">Count rows over the neighbours (drink, hot, play): tea \(=(3,4,0)\), coffee \(=(6,8,0)\), cricket \(=(0,3,4)\). <b>(a)</b> Compute cos(tea, coffee) and cos(tea, cricket). <b>(b)</b> Compute the straight-line distances tea–coffee and tea–cricket. <b>(c)</b> Which measure says tea is closer to coffee?</p>
-    <p class="ptest"><b>What this tests.</b> Cosine against distance on count rows. <b>Plan.</b> Lengths first: \(\lVert(3,4,0)\rVert=5\).</p>
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">medium</span><span class="chip">PMI</span></div>
+    <p class="pq">Counted pairs (\(N=60\)): tea meets hot 15, the 12, over 3 times; bat meets hot 3, the 12, over 15 times. <b>(a)</b> Give the row and column totals and the "if strangers" count, row total × column total ÷ \(N\), for tea with each word. <b>(b)</b> Give \(\operatorname{PMI}(\text{tea},c)\) for c = hot, the, over. <b>(c)</b> Give the PPMI of each. <b>(d)</b> Keeping the "if strangers" count for tea–hot fixed, how many tea–hot meetings would make its PMI exactly 1?</p>
+    <p class="ptest"><b>What this tests.</b> PMI as the log of count ÷ chance. <b>Plan.</b> Totals first, then one ratio per box.</p>
     <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — lengths.</b> tea 5, coffee 10, cricket 5.</div>
-      <div class="pstep"><b>Step 2 — (a).</b> tea·coffee \(=18+32=50\), so cos \(=50/(5\cdot10)=1\). tea·cricket \(=0+12+0=12\), so cos \(=12/25=0.48\).</div>
-      <div class="pstep"><b>Step 3 — (b).</b> tea − coffee \(=(-3,-4,0)\): distance 5. tea − cricket \(=(3,1,-4)\): distance \(\sqrt{26}\approx5.099\).</div>
-      <div class="pstep"><b>Step 4 — (c).</b> The cosine clearly says coffee (1 against 0.48). The distance barely prefers coffee (5 against 5.099) — coffee is just "tea, twice as often", and distance is confused by that size.</div>
-      <p class="pans">answers at a glance: (a) 1 and 0.48. (b) 5 and \(\sqrt{26}\approx5.099\). (c) the cosine, decisively.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Counts grow with how common a word is; the cosine divides that away.</p></div>
+      <div class="pstep"><b>Step 1 — (a).</b> Rows: tea 30, bat 30. Columns: hot 18, the 24, over 18. If strangers: tea–hot \(30\cdot18/60=9\), tea–the \(30\cdot24/60=12\), tea–over \(9\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(\log_2(15/9)=\log_2(5/3)\approx0.737\); \(\log_2(12/12)=0\); \(\log_2(3/9)=\log_2(1/3)\approx-1.585\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> Keep the positive part: 0.737, 0 and 0.</div>
+      <div class="pstep"><b>Step 4 — (d).</b> PMI 1 means a ratio of \(2^1=2\): \(2\times9=18\) meetings.</div>
+      <p class="pans">answers at a glance: (a) rows 30, 30; columns 18, 24, 18; strangers 9, 12, 9. (b) 0.737, 0, −1.585. (c) 0.737, 0, 0. (d) 18.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>PMI counts meetings against chance: 0 means "no more than strangers", and "the" usually scores 0 with everyone.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 6 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span><span class="chip">singular values</span></div>
-    <p class="pq"><b>(a)</b> Find the singular values of \(A=\begin{pmatrix}3&1\\ 1&3\end{pmatrix}\) and check that \(\sigma_1^2+\sigma_2^2\) equals the sum of the squares of the entries. <b>(b)</b> A co-occurrence table has singular values \(6,\ 4,\ 2,\ 1\). What share of the energy do \(k=1\) and \(k=2\) keep? <b>(c)</b> What is the smallest \(k\) that keeps at least 90%? <b>(d)</b> What is the rank-2 rebuild error?</p>
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff easy">easy</span><span class="chip">cosine of counts</span></div>
+    <p class="pq">Count rows over the neighbours (drink, hot, play): tea \(=(3,4,0)\), coffee \(=(6,8,0)\), cricket \(=(0,3,4)\). <b>(a)</b> Compute cos(tea, coffee) and cos(tea, cricket). <b>(b)</b> Compute the straight-line distances tea–coffee and tea–cricket. <b>(c)</b> Which measure clearly says tea is closer to coffee, and why?</p>
+    <p class="ptest"><b>What this tests.</b> Cosine against distance on count rows. <b>Plan.</b> Lengths first: \(\lVert(3,4,0)\rVert=5\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — lengths.</b> tea 5, coffee 10, cricket 5.</div>
+      <div class="pstep"><b>Step 2 — (a).</b> tea·coffee \(=18+32=50\), so cos \(=50/(5\cdot10)=1\). tea·cricket \(=0+12+0=12\), so cos \(=12/25=0.48\).</div>
+      <div class="pstep"><b>Step 3 — (b).</b> tea − coffee \(=(-3,-4,0)\): distance 5. tea − cricket \(=(3,1,-4)\): distance \(\sqrt{26}\approx5.099\).</div>
+      <div class="pstep"><b>Step 4 — (c).</b> The cosine (1 against 0.48). Distance barely prefers coffee (5 against 5.099), because coffee is just "tea, counted twice as often", and distance is fooled by that size.</div>
+      <p class="pans">answers at a glance: (a) 1 and 0.48. (b) 5 and \(\sqrt{26}\approx5.099\). (c) the cosine, decisively.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Counts grow with how common a word is; the cosine divides that away.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span><span class="chip">the SVD squeeze</span></div>
+    <p class="pq"><b>(a)</b> Find the singular values of \(A=\begin{pmatrix}3&1\\ 1&3\end{pmatrix}\) and check that \(\sigma_1^2+\sigma_2^2\) equals the sum of the squares of the entries. <b>(b)</b> A company table has singular values \(6,\ 4,\ 2,\ 1\). What share of the energy do \(k=1\) and \(k=2\) keep? <b>(c)</b> What is the smallest \(k\) that keeps at least 90%? <b>(d)</b> What is the rank-2 rebuild error?</p>
     <p class="ptest"><b>What this tests.</b> Energy \(=\sum\sigma_i^2\), and the error of keeping \(k\). <b>Plan.</b> For a symmetric matrix with positive eigenvalues, the singular values are the eigenvalues.</p>
     <details class="sol"><summary>Show the full solution</summary>
       <div class="pstep"><b>Step 1 — (a).</b> \(A\) is symmetric; its eigenvalues solve \((3-\lambda)^2=1\): \(\lambda=4,2\). Both positive, so \(\sigma=(4,2)\). Check: \(16+4=20=9+1+1+9\).</div>
       <div class="pstep"><b>Step 2 — (b).</b> Total \(36+16+4+1=57\). \(k=1\): \(36/57\approx63.2\%\). \(k=2\): \(52/57\approx91.2\%\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \(k=1\) is below 90%, \(k=2\) is above: the answer is 2.</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(k=1\) is below 90% and \(k=2\) is above, so \(k=2\).</div>
       <div class="pstep"><b>Step 4 — (d).</b> \(\sqrt{\sigma_3^2+\sigma_4^2}=\sqrt{4+1}=\sqrt5\approx2.236\).</div>
       <p class="pans">answers at a glance: (a) \(\sigma=(4,2)\); \(16+4=20\). (b) 63.2% and 91.2%. (c) \(k=2\). (d) \(\sqrt5\approx2.236\).</p>
       <div class="callout remember reveal"><span class="tag">Remember</span><p>Square the singular values before you add them — energy lives in \(\sigma^2\).</p></div>
     </details>
   </div>
 
-  <!-- ===== Problem 7 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span><span class="chip">rank-1 copy</span></div>
-    <p class="pq">For \(A=\begin{pmatrix}3&1\\ 1&3\end{pmatrix}\) from Problem 6: <b>(a)</b> give the top singular vectors \(\mathbf u_1=\mathbf v_1\). <b>(b)</b> Build the best rank-1 copy \(A_1=\sigma_1\mathbf u_1\mathbf v_1^{\mathsf T}\). <b>(c)</b> Compute \(A-A_1\) and its Frobenius size, and compare with \(\sigma_2\). <b>(d)</b> Treat the rows of \(A\) as two word vectors. What single coordinate does each word get from \(U_1\Sigma_1\)?</p>
-    <p class="ptest"><b>What this tests.</b> Building a low-rank copy by hand. <b>Plan.</b> The eigenvector for 4 solves \((A-4I)\mathbf x=0\).</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \((A-4I)\mathbf x=\begin{pmatrix}-1&1\\ 1&-1\end{pmatrix}\mathbf x=0\) gives \(\mathbf x\propto(1,1)\), so \(\mathbf u_1=\mathbf v_1=(1,1)/\sqrt2\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \(\mathbf u_1\mathbf v_1^{\mathsf T}=\tfrac12\begin{pmatrix}1&1\\ 1&1\end{pmatrix}\), so \(A_1=4\cdot\tfrac12\begin{pmatrix}1&1\\ 1&1\end{pmatrix}=\begin{pmatrix}2&2\\ 2&2\end{pmatrix}\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \(A-A_1=\begin{pmatrix}1&-1\\ -1&1\end{pmatrix}\), with size \(\sqrt{1+1+1+1}=2=\sigma_2\). Exactly as promised.</div>
-      <div class="pstep"><b>Step 4 — (d).</b> \(U_1\Sigma_1=4\,\mathbf u_1=(4/\sqrt2,\ 4/\sqrt2)\approx(2.828,\ 2.828)\): both words get 2.828 — at \(k=1\) the difference between them is squeezed out.</div>
-      <p class="pans">answers at a glance: (a) \((1,1)/\sqrt2\). (b) \(\begin{pmatrix}2&2\\ 2&2\end{pmatrix}\). (c) \(\begin{pmatrix}1&-1\\ -1&1\end{pmatrix}\), size 2 \(=\sigma_2\). (d) 2.828 each.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Each word's squeezed coordinates are its row of \(U_k\Sigma_k\); whatever the dropped directions carried is gone.</p></div>
-    </details>
-  </div>
-
   <!-- ===== Problem 8 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span><span class="chip">skip-gram scores</span></div>
-    <p class="pq">Middle word \(\mathbf v=(1,1)\). Real neighbour \(\mathbf u_+=(1,0)\). Two negatives: \(\mathbf u_1=(0,-1)\) and \(\mathbf u_2=(-1,-1)\). <b>(a)</b> Compute the three dot products. <b>(b)</b> The probability the model says "real" for the neighbour, and "random" for each negative. <b>(c)</b> The skip-gram loss in nats.</p>
-    <p class="ptest"><b>What this tests.</b> The negative-sampling loss. <b>Plan.</b> Real pair: \(\sigma(z)\). Negative pair: \(\sigma(-z)\). Loss: minus the log of each, added.</p>
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span><span class="chip">counting examples</span></div>
+    <p class="pq"><b>(a)</b> A 6-word sentence, window \(C=2\): how many examples does CBOW make, and how many pairs does skip-gram make? <b>(b)</b> Find a formula for the number of skip-gram pairs from a sentence of \(n\) words (\(n\ge C+1\)). <b>(c)</b> Apply it to \(n=10\), \(C=3\). <b>(d)</b> With \(C=2\), a sentence gave 34 skip-gram pairs. How many words did it have? <b>(e)</b> In a very long text, about how many times more guesses does skip-gram make than CBOW?</p>
+    <p class="ptest"><b>What this tests.</b> The cost difference between the two games, as a general formula. <b>Plan.</b> Count the neighbours of each position, left and right separately.</p>
     <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \(\mathbf u_+\cdot\mathbf v=1\), \(\mathbf u_1\cdot\mathbf v=-1\), \(\mathbf u_2\cdot\mathbf v=-2\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> Real: \(\sigma(1)\approx0.7311\). Random for \(\mathbf u_1\): \(\sigma(1)\approx0.7311\). Random for \(\mathbf u_2\): \(\sigma(2)\approx0.8808\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \(-\ln0.7311-\ln0.7311-\ln0.8808\approx0.3133+0.3133+0.1269=0.7535\).</div>
-      <p class="pans">answers at a glance: (a) 1, −1, −2. (b) 0.7311, 0.7311, 0.8808. (c) \(\approx0.7535\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>For a negative, the right answer is "random", so its probability is \(\sigma(-\mathbf u\cdot\mathbf v)\) — the more negative the dot product, the better.</p></div>
+      <div class="pstep"><b>Step 1 — (a).</b> CBOW: one example per word, 6. Skip-gram: \(2+3+4+4+3+2=18\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> The left neighbours add up to \(0+1+\dots+C\) for the first \(C+1\) positions and \(C\) for each of the other \(n-1-C\): \(\tfrac12C(C+1)+C(n-1-C)=Cn-\tfrac12C(C+1)\). The right side gives the same, so the total is \(2Cn-C(C+1)\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(2\cdot3\cdot10-3\cdot4=60-12=48\) pairs (CBOW: 10).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(4n-6=34\), so \(n=10\).</div>
+      <div class="pstep"><b>Step 5 — (e).</b> For large \(n\), \((2Cn-C(C+1))/n\to2C\).</div>
+      <p class="pans">answers at a glance: (a) 6 and 18. (b) \(2Cn-C(C+1)\). (c) 48 (CBOW 10). (d) 10 words. (e) about \(2C\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Skip-gram makes about \(2C\) guesses for every one CBOW makes — that is the whole price of home tuition.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 9 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff hard">hard</span><span class="chip">one word2vec step</span></div>
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff hard">hard</span><span class="chip">one CBOW round</span></div>
+    <p class="pq">A vocabulary of four words with \(d=2\). Input vectors: tea \((1,0)\), hot \((1,1)\), cup \((0,1)\), bat \((-1,0)\). Output vectors: tea \((1,1)\), hot \((0,1)\), cup \((1,0)\), bat \((-1,-1)\). The sentence is "hot tea cup", window 1, and the blank is tea. <b>(a)</b> Find \(\mathbf h\). <b>(b)</b> Find the four scores and the softmax. <b>(c)</b> Find the loss. <b>(d)</b> Find \(\mathbf e=\mathbf p-\mathbf y\) and the blame on \(\mathbf h\), \(\sum_w e_w\mathbf u_w\). <b>(e)</b> With \(\eta=1\), how far does each context vector move?</p>
+    <p class="ptest"><b>What this tests.</b> The whole CBOW round: average, score, softmax, prediction − truth, and the equal share of the blame. <b>Plan.</b> Keep four decimals; do the output side before the input side.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(\mathbf h=\big((1,1)+(0,1)\big)/2=(0.5,\ 1)\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> Scores \(\mathbf u_w\cdot\mathbf h\): tea 1.5, hot 1, cup 0.5, bat −1.5. \(e^{s}\): 4.4817, 2.7183, 1.6487, 0.2231, total 9.0718. Softmax: 0.4940, 0.2996, 0.1817, 0.0246.</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(L=-\ln0.4940\approx0.7052\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(\mathbf e=(-0.5060,\ 0.2996,\ 0.1817,\ 0.0246)\). Blame on \(\mathbf h\): \(-0.5060(1,1)+0.2996(0,1)+0.1817(1,0)+0.0246(-1,-1)=(-0.3488,\ -0.2309)\).</div>
+      <div class="pstep"><b>Step 5 — (e).</b> Each of the two context vectors moves by \(-\eta\cdot\tfrac12(-0.3488,-0.2309)=(0.1744,\ 0.1155)\): toward tea's output vector. (If you also update the output vectors and play the blank again, tea's chance rises to 0.7742.)</div>
+      <p class="pans">answers at a glance: (a) \((0.5,1)\). (b) scores 1.5, 1, 0.5, −1.5; softmax 0.4940, 0.2996, 0.1817, 0.0246. (c) 0.7052. (d) \(\mathbf e=(-0.5060,0.2996,0.1817,0.0246)\); blame \((-0.3488,-0.2309)\). (e) \((0.1744,\ 0.1155)\) each.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The committee shares the blame equally: with \(2C\) members, each gets \(\tfrac1{2C}\) of it.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff hard">hard</span><span class="chip">one skip-gram round</span></div>
+    <p class="pq">The same four words and vectors as Problem 9. Now tea is the centre word and must guess its two neighbours, hot and cup. <b>(a)</b> Find \(\mathbf h\) and the softmax. <b>(b)</b> Find the loss. <b>(c)</b> Find the summed error \(\mathbf E=2\mathbf p-\mathbf y_{\text{hot}}-\mathbf y_{\text{cup}}\) and the blame on the centre word. <b>(d)</b> With \(\eta=1\), what is tea's new input vector? <b>(e)</b> What is the lowest loss skip-gram could ever reach at this position?</p>
+    <p class="ptest"><b>What this tests.</b> One softmax checked against two neighbours, errors that add up, and the floor of \(2\ln2\). <b>Plan.</b> The centre's own input vector is \(\mathbf h\) — no averaging.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(\mathbf h=\mathbf v_{\text{tea}}=(1,0)\). Scores: tea 1, hot 0, cup 1, bat −1. Softmax: 0.3995, 0.1470, 0.3995, 0.0541.</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(L=-\ln0.1470-\ln0.3995\approx1.9176+0.9176=2.8352\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(\mathbf E=(0.7990,\ -0.7061,\ -0.2010,\ 0.1081)\). Blame on the centre: \(0.7990(1,1)-0.7061(0,1)-0.2010(1,0)+0.1081(-1,-1)=(0.4898,\ -0.0152)\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(\mathbf v_{\text{tea}}\leftarrow(1,0)-(0.4898,-0.0152)=(0.5102,\ 0.0152)\). The whole blame goes to the centre word.</div>
+      <div class="pstep"><b>Step 5 — (e).</b> One list must share its chances between hot and cup: the best is 0.5 each, a loss of \(2\ln2\approx1.386\).</div>
+      <p class="pans">answers at a glance: (a) \((1,0)\); 0.3995, 0.1470, 0.3995, 0.0541. (b) 2.8352. (c) \(\mathbf E=(0.7990,-0.7061,-0.2010,0.1081)\); blame \((0.4898,-0.0152)\). (d) \((0.5102,\ 0.0152)\). (e) \(2\ln2\approx1.386\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Skip-gram's centre word takes the full sum of its neighbours' errors — nothing is divided.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff hard">hard</span><span class="chip">one negative-sampling step</span></div>
     <p class="pq">\(\mathbf v=(0,1)\), real neighbour \(\mathbf u_+=(1,1)\), one negative \(\mathbf u_-=(1,-1)\), step size \(\eta=0.5\). <b>(a)</b> Find \(g_+=1-\sigma(\mathbf u_+\cdot\mathbf v)\) and \(g_-=\sigma(\mathbf u_-\cdot\mathbf v)\). <b>(b)</b> Do one step of the pull-and-push rules for all three vectors. <b>(c)</b> Give the new scores \(\mathbf u_\pm\cdot\mathbf v\) and the loss before and after.</p>
-    <p class="ptest"><b>What this tests.</b> The update rules \(\mathbf u_+\mathrel{+}=\eta g_+\mathbf v\), \(\mathbf u_-\mathrel{-}=\eta g_-\mathbf v\), \(\mathbf v\mathrel{+}=\eta(g_+\mathbf u_+-g_-\mathbf u_-)\), all using the OLD vectors. <b>Plan.</b> Compute the two "how wrong" numbers once, then update.</p>
+    <p class="ptest"><b>What this tests.</b> The rules \(\mathbf u_+\mathrel{+}=\eta g_+\mathbf v\), \(\mathbf u_-\mathrel{-}=\eta g_-\mathbf v\), \(\mathbf v\mathrel{+}=\eta(g_+\mathbf u_+-g_-\mathbf u_-)\), all using the OLD vectors. <b>Plan.</b> Compute the two "how wrong" numbers once, then update.</p>
     <details class="sol"><summary>Show the full solution</summary>
       <div class="pstep"><b>Step 1 — (a).</b> \(\mathbf u_+\cdot\mathbf v=1\): \(g_+=1-\sigma(1)\approx0.2689\). \(\mathbf u_-\cdot\mathbf v=-1\): \(g_-=\sigma(-1)\approx0.2689\).</div>
       <div class="pstep"><b>Step 2 — the neighbours.</b> \(\mathbf u_+\leftarrow(1,1)+0.5(0.2689)(0,1)=(1,\ 1.1345)\). \(\mathbf u_-\leftarrow(1,-1)-0.5(0.2689)(0,1)=(1,\ -1.1345)\).</div>
-      <div class="pstep"><b>Step 3 — the middle word.</b> \(g_+\mathbf u_+-g_-\mathbf u_-=0.2689\big((1,1)-(1,-1)\big)=(0,\ 0.5379)\), so \(\mathbf v\leftarrow(0,1)+0.5(0,0.5379)=(0,\ 1.2689)\).</div>
+      <div class="pstep"><b>Step 3 — the centre word.</b> \(g_+\mathbf u_+-g_-\mathbf u_-=0.2689\big((1,1)-(1,-1)\big)=(0,\ 0.5379)\), so \(\mathbf v\leftarrow(0,1)+0.5(0,0.5379)=(0,\ 1.2689)\).</div>
       <div class="pstep"><b>Step 4 — (c).</b> New scores: \(1.1345\times1.2689\approx1.4396\) and \(-1.4396\). Loss before: \(-2\ln\sigma(1)\approx0.6265\). After: \(-2\ln\sigma(1.4396)\approx0.4254\).</div>
       <p class="pans">answers at a glance: (a) \(g_+=g_-\approx0.2689\). (b) \(\mathbf u_+=(1,1.1345)\), \(\mathbf u_-=(1,-1.1345)\), \(\mathbf v=(0,1.2689)\). (c) scores \(\pm1.4396\); loss 0.6265 → 0.4254.</p>
       <div class="callout remember reveal"><span class="tag">Remember</span><p>Use the old vectors on the right-hand side of all three updates — compute first, then overwrite.</p></div>
     </details>
   </div>
 
-  <!-- ===== Problem 10 ===== -->
+  <!-- ===== Problem 12 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff medium">medium</span><span class="chip">cost</span></div>
-    <p class="pq">Vocabulary \(V=30\,000\), vectors of \(d=300\) numbers, \(k=5\) negatives. A dot product of two 300-number lists costs 300 multiply-adds. <b>(a)</b> How many multiply-adds does one training pair cost with a full softmax (just the scores)? <b>(b)</b> With negative sampling? <b>(c)</b> The ratio. <b>(d)</b> For \(10^9\) training pairs, the totals.</p>
-    <p class="ptest"><b>What this tests.</b> \(V\) dot products against \(k+1\). <b>Plan.</b> Multiply counts by 300.</p>
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff medium">medium</span><span class="chip">down the tree</span></div>
+    <p class="pq">A hierarchical softmax with four leaves (LL, LR, RL, RR) and \(\mathbf h=(2,-1)\). The root has \(\boldsymbol\theta=(1,1)\), the left fork \((0,1)\), the right fork \((0.5,1)\); each fork sends \(\sigma(\boldsymbol\theta\cdot\mathbf h)\) to the left. <b>(a)</b> Find the three fork scores \(\boldsymbol\theta\cdot\mathbf h\). <b>(b)</b> Find the chance of each leaf. <b>(c)</b> Check that they add up to 1. <b>(d)</b> A balanced tree over 30 000 words: how many decisions per guess, and how many times less work than a full softmax?</p>
+    <p class="ptest"><b>What this tests.</b> A leaf's chance as the product of its left/right decisions, and the \(\log_2V\) cost. <b>Plan.</b> Remember \(\sigma(-z)=1-\sigma(z)\).</p>
     <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \(30\,000\times300=9\,000\,000\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \((5+1)\times300=1\,800\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \(9\,000\,000/1\,800=5\,000\) \(=V/(k+1)\).</div>
-      <div class="pstep"><b>Step 4 — (d).</b> Full: \(9\times10^{15}\). Negative sampling: \(1.8\times10^{12}\).</div>
-      <p class="pans">answers at a glance: (a) 9 000 000. (b) 1 800. (c) 5 000. (d) \(9\times10^{15}\) against \(1.8\times10^{12}\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>The saving is \(V/(k+1)\), and it grows with the vocabulary.</p></div>
+      <div class="pstep"><b>Step 1 — (a).</b> Root: \(2-1=1\). Left fork: \(0\cdot2+1\cdot(-1)=-1\). Right fork: \(1-1=0\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> Root left \(\sigma(1)=0.7311\), right 0.2689. LL \(=0.7311\cdot\sigma(-1)=0.7311\cdot0.2689\approx0.1966\). LR \(=0.7311\cdot0.7311\approx0.5344\). RL \(=0.2689\cdot\sigma(0)=0.1345\). RR \(=0.2689\cdot0.5=0.1345\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(0.1966+0.5344+0.1345+0.1345=1\) (exactly, before rounding).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(2^{14}=16\,384&lt;30\,000\le2^{15}=32\,768\), so 15 decisions; \(30\,000/15=2\,000\) times less work.</div>
+      <p class="pans">answers at a glance: (a) 1, −1, 0. (b) 0.1966, 0.5344, 0.1345, 0.1345. (c) 1. (d) 15 decisions; 2 000 times less.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Every fork splits what it receives into two parts that add up, so the leaves always add up to 1.</p></div>
     </details>
   </div>
 
-  <!-- ===== Problem 11 ===== -->
+  <!-- ===== Problem 13 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">medium</span><span class="chip">analogy</span></div>
+    <div class="prob-head"><span class="ptag">Problem 13</span><span class="pdiff medium">medium</span><span class="chip">subsampling</span></div>
+    <p class="pq">Subsampling keeps each copy of a word with frequency \(f\) with chance \(\sqrt{t/f}\) (and always if \(f\le t\)), with \(t=10^{-5}\). <b>(a)</b> Give the keep chances for \(f=10^{-3}\), \(f=4\times10^{-4}\) and \(f=2.5\times10^{-6}\). <b>(b)</b> Of 1 000 copies of the \(10^{-3}\) word, how many are kept on average? <b>(c)</b> In another model a word with \(f=0.01\) is kept 5% of the time. What \(t\) was used? <b>(d)</b> A word with \(f_1=10^{-3}\) is 100 times as common as one with \(f_2=10^{-5}\). How many times as common is it after subsampling?</p>
+    <p class="ptest"><b>What this tests.</b> The keep rule forwards and backwards, and the square-root flattening. <b>Plan.</b> A kept share is \(f\sqrt{t/f}=\sqrt{tf}\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(\sqrt{10^{-5}/10^{-3}}=\sqrt{0.01}=0.1\). \(\sqrt{10^{-5}/(4\times10^{-4})}=\sqrt{0.025}\approx0.158\). \(2.5\times10^{-6}\le t\): always kept, 1.</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(1000\times0.1=100\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(\sqrt{t/0.01}=0.05\) gives \(t/0.01=0.0025\), so \(t=2.5\times10^{-5}\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Kept shares: \(\sqrt{t f_1}=\sqrt{10^{-8}}=10^{-4}\); the second word has \(f_2=t\), so it keeps all of its \(10^{-5}\). The ratio is \(10^{-4}/10^{-5}=10\) — down from 100.</div>
+      <p class="pans">answers at a glance: (a) 0.1, about 0.158, 1. (b) 100. (c) \(t=2.5\times10^{-5}\). (d) 10 times.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Subsampling turns a word's share \(f\) into about \(\sqrt{tf}\): common words shrink the most, rare words are untouched.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 14 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 14</span><span class="pdiff medium">medium</span><span class="chip">GloVe ratios</span></div>
+    <p class="pq">Around "ice" and around "steam", 1 000 context words were counted each. The probe solid appears 38 and 2 times, gas 1 and 19, water 60 and 60, fashion 2 and 2. <b>(a)</b> Give \(P(k\mid\text{ice})/P(k\mid\text{steam})\) for each probe. <b>(b)</b> Give the natural log of each ratio — what GloVe wants \((\mathbf w_{\text{ice}}-\mathbf w_{\text{steam}})\cdot\tilde{\mathbf w}_k\) to be. <b>(c)</b> Which probe vectors should end up at right angles to \(\mathbf w_{\text{ice}}-\mathbf w_{\text{steam}}\)? <b>(d)</b> Give GloVe's weights \(f(x)=(x/100)^{3/4}\) (1 above 100) for \(x=38\), 2, 60 and 150.</p>
+    <p class="ptest"><b>What this tests.</b> Meaning in ratios, and why rare counts get small weights. <b>Plan.</b> Both targets have 1 000 contexts, so the ratio of probabilities is the ratio of counts.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> solid \(38/2=19\), gas \(1/19\approx0.0526\), water \(60/60=1\), fashion \(2/2=1\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(\ln19\approx2.944\), \(\ln(1/19)\approx-2.944\), \(\ln1=0\), \(\ln1=0\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> Water and fashion: their target dot product is 0. Water is shared by both, fashion by neither — either way it cannot tell ice from steam.</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(0.38^{0.75}\approx0.484\), \(0.02^{0.75}\approx0.0532\), \(0.6^{0.75}\approx0.682\), and 1 for 150.</div>
+      <p class="pans">answers at a glance: (a) 19, 0.0526, 1, 1. (b) 2.944, −2.944, 0, 0. (c) water and fashion. (d) 0.484, 0.0532, 0.682, 1.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A probe that tells two words apart gives a ratio far from 1; one that doesn't gives 1, and its arrow is at right angles to their difference.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 15 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 15</span><span class="pdiff hard">hard</span><span class="chip">BPE by hand</span></div>
+    <p class="pq">A corpus: low ×5, lower ×2, newest ×6, widest ×3. Run byte-pair encoding from single letters; when two pairs tie, merge the one met first reading the corpus in order. <b>(a)</b> Count the neighbouring pairs and find the first merge. <b>(b)</b> Find the next three merges. <b>(c)</b> Cut "lowest" and "slow" with these four merges. <b>(d)</b> How many symbols does the whole corpus have (counting repeats) before any merge, and after the four merges?</p>
+    <p class="ptest"><b>What this tests.</b> The BPE loop — count, merge the most frequent pair, repeat — and the tie rule. <b>Plan.</b> Multiply every pair by its word's count; recount after each merge.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> e+s: 6 (newest) + 3 (widest) = 9; s+t: 9 as well; w+e: 2 + 6 = 8; l+o and o+w: 7 each; n+e, e+w: 6; w+i, i+d, d+e: 3; e+r: 2. The top two tie at 9, and e+s is met first (in "newest"), so merge 1 is <b>e+s → es</b> (9).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> Now es+t = 9 is alone at the top: merge 2 <b>es+t → est</b> (9). Then l+o and o+w tie at 7, and l+o comes first: merge 3 <b>l+o → lo</b> (7). Then lo+w = 7: merge 4 <b>lo+w → low</b> (7).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> "lowest": l o w e s t → (es) → (est) → (lo) → (low): <b>low · est</b>. "slow": s l o w → <b>s · low</b>.</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Before: \(3\cdot5+5\cdot2+6\cdot6+6\cdot3=79\) letters. After: low (1 symbol) ×5, low e r (3) ×2, n e w est (4) ×6, w i d est (4) ×3: \(5+6+24+12=47\).</div>
+      <p class="pans">answers at a glance: (a) e+s (9, tie with s+t broken by order). (b) es+t (9), l+o (7), lo+w (7). (c) low · est; s · low. (d) 79 → 47.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>BPE turns frequent chunks into single tokens and spells everything else from pieces — so the text gets shorter and no word is ever unknown.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 16 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 16</span><span class="pdiff medium">medium</span><span class="chip">analogy</span></div>
     <p class="pq">Toy vectors: India \(=(1,0,3)\), Delhi \(=(1,1.2,3)\), Japan \(=(3,0,1)\), Tokyo \(=(3,1,1)\), Kyoto \(=(3,1,2)\). <b>(a)</b> Compute \(\mathbf q=\) Delhi − India + Japan. <b>(b)</b> Compute the cosine of \(\mathbf q\) with Tokyo, Kyoto, Japan and Delhi. <b>(c)</b> Which word does the search return (skipping the inputs)? <b>(d)</b> Would the answer change if the inputs were allowed?</p>
     <p class="ptest"><b>What this tests.</b> Analogy arithmetic and the cosine search. <b>Plan.</b> Add first, then one cosine per candidate.</p>
     <details class="sol"><summary>Show the full solution</summary>
@@ -171,57 +251,10 @@
     </details>
   </div>
 
-  <!-- ===== Problem 12 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff medium">medium</span><span class="chip">lookup</span></div>
-    <p class="pq">A 4-word vocabulary has the table \(E=\begin{pmatrix}2&1\\ 0&3\\ 1&1\\ 4&0\end{pmatrix}\). <b>(a)</b> Compute \(\mathbf e_3E\). <b>(b)</b> A model reads "word 2, word 4" and glues the rows. What is \(\mathbf x\)? <b>(c)</b> The blame arriving at \(\mathbf x\) is \(\mathbf g=(0.1,\,-0.2,\,0.3,\,0.5)\). Which rows of \(E\) get a gradient, and what is it? <b>(d)</b> After one step with \(\eta=1\), give the new rows, and count how many of the 8 numbers of \(E\) changed.</p>
-    <p class="ptest"><b>What this tests.</b> One-hot × table = row, and backprop into the table. <b>Plan.</b> The first two numbers of \(\mathbf g\) belong to word 2's row, the last two to word 4's.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> Row 3: \((1,1)\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \(\mathbf x=[\,(0,3);\,(4,0)\,]=(0,3,4,0)\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> Row 2 gets \((0.1,-0.2)\), row 4 gets \((0.3,0.5)\); rows 1 and 3 get nothing.</div>
-      <div class="pstep"><b>Step 4 — (d).</b> Row 2: \((0,3)-(0.1,-0.2)=(-0.1,\ 3.2)\). Row 4: \((4,0)-(0.3,0.5)=(3.7,\ -0.5)\). 4 of the 8 numbers changed.</div>
-      <p class="pans">answers at a glance: (a) \((1,1)\). (b) \((0,3,4,0)\). (c) rows 2 and 4: \((0.1,-0.2)\), \((0.3,0.5)\). (d) \((-0.1,3.2)\), \((3.7,-0.5)\); 4 numbers.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Only the rows of the words in the example move — that is what makes huge tables trainable.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 13 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 13</span><span class="pdiff medium">medium</span><span class="chip">model size</span></div>
-    <p class="pq">A neural language model has \(V=10\,000\) words, embeddings of \(d=100\), reads the \(n=3\) previous words, and has one hidden layer of \(H=500\) neurons. <b>(a)</b> How many numbers in the embedding table? <b>(b)</b> In the hidden layer (weights and biases)? <b>(c)</b> In the output layer? <b>(d)</b> The total, and which part is biggest?</p>
-    <p class="ptest"><b>What this tests.</b> Shapes: table \(V\times d\); hidden \(H\times(nd)\) plus \(H\); output \(V\times H\) plus \(V\). <b>Plan.</b> One line each.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \(10\,000\times100=1\,000\,000\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> The glued input has \(3\times100=300\) numbers: \(500\times300+500=150\,500\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \(10\,000\times500+10\,000=5\,010\,000\).</div>
-      <div class="pstep"><b>Step 4 — (d).</b> \(1\,000\,000+150\,500+5\,010\,000=6\,160\,500\). The output layer — the softmax over the vocabulary — is the biggest part.</div>
-      <p class="pans">answers at a glance: (a) 1 000 000. (b) 150 500. (c) 5 010 000. (d) 6 160 500; the output layer.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>With a large vocabulary, the first layer (the table) and the last (the softmax) hold most of the numbers.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 14 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 14</span><span class="pdiff hard">hard</span><span class="chip">diagnose</span></div>
-    <p class="pq">Two language models were trained on the same text and tested on new text they had never seen:</p>
-    <div class="scroll-x"><table class="plain"><thead><tr><th>model</th><th>perplexity on training text</th><th>perplexity on new text</th></tr></thead><tbody><tr><td>A</td><td>45</td><td>210</td></tr><tr><td>B</td><td>80</td><td>95</td></tr></tbody></table></div>
-    <p class="pq"><b>(a)</b> Which model would you use? <b>(b)</b> Give each model's average surprise on the new text, in bits per word. <b>(c)</b> How many bits per word better is the better model, and on a 1000-word text, how many times more probable does it find the text? (Answer as a power of 2.) <b>(d)</b> How many bits per word does model A lose between training text and new text?</p>
-    <p class="ptest"><b>What this tests.</b> Perplexity as \(2^{\text{bits}}\), and spotting overfitting (<a href="unit-10.html">Unit 10</a>). <b>Plan.</b> Take \(\log_2\) of every perplexity.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> Model B: only the score on <em>new</em> text matters, and 95 &lt; 210.</div>
-      <div class="pstep"><b>Step 2 — (b).</b> A: \(\log_2210\approx7.714\) bits. B: \(\log_2 95\approx6.570\) bits.</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \(\log_2(210/95)\approx1.144\) bits per word. Over 1000 words the probabilities differ by a factor \(2^{1000\times1.144}\approx2^{1144}\).</div>
-      <div class="pstep"><b>Step 4 — (d).</b> \(\log_2(210/45)\approx2.222\) bits per word. A has memorised its training text (overfitting); B's gap is only \(\log_2(95/80)\approx0.248\) bits.</div>
-      <p class="pans">answers at a glance: (a) B. (b) A 7.714, B 6.570 bits. (c) 1.144 bits; about \(2^{1144}\) times. (d) 2.222 bits.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Judge a language model on text it has not seen. A big gap between training and new perplexity means memorising.</p></div>
-    </details>
-  </div>
-
   <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
     <p style="margin:.35rem 0 .6rem"><strong><a href="unit-17.html">Unit 17 · Machines with Memory →</a></strong></p>
-    <p style="margin:0 0 .6rem;font-family:var(--serif)">Our neural language model could only see the last two words. Next, a network reads a sentence one word at a time and carries a running memory along — the same layer used again and again. Then we follow the blame backwards through time and find out why memory fades or explodes, and how gates fix it.</p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">Every model in this unit looked at a fixed window of words. Next, a network reads a sentence one word at a time and carries a running memory along — the same layer used again and again. Then we follow the blame backwards through time and find out why memory fades or explodes, and how gates fix it.</p>
     <p style="margin:0;font-size:.85rem"><a href="unit-15.html">← Unit 15 · The Network, Whole</a> · <a href="index.html">All units</a></p>
   </div>
 </section>

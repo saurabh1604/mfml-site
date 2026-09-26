@@ -16,7 +16,18 @@
     return CIN.stage3d(box,{fill:true,orbit:fine,zoom:false,autoRotate:0,camera:{pos,look,fov:wide?31:44},
       build(ctx){
         const {THREE,root,colors,isLight,camera}=ctx, hx=hxOf(ctx), dark=!isLight, SC=wide?.0086:.0078;
-        let offW=0; const applyOffset=()=>{ const w=ctx.size.w, h=ctx.size.h; if(!wide||!w||w===offW) return; offW=w; camera.setViewOffset(w,h,-Math.round(w*.26),0,w,h); };
+        /* fit the belt between the intro text and the right edge (or the page's contents list, when it is shown):
+           measure the belt on screen, zoom out if it is too wide for the gap, then slide it right of the text */
+        let offW=0; const applyOffset=()=>{ const w=ctx.size.w, h=ctx.size.h; if(!wide||!w||w===offW) return; offW=w;
+          camera.clearViewOffset(); camera.zoom=1; camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+          const sx=q=>{ const v=new THREE.Vector3(q[0],q[1],q[2]).project(camera); return (v.x+1)/2*w; };
+          const xs=[[-4.3,CY-.5,.6],[-4.3,CY+.6,-.6],[-4.3,CY+.6,.6],[LOSSX+.3,CY,.3],[LOSSX+.3,CY-.5,0]].map(sx), a=Math.min(...xs), B=Math.max(...xs)-a;
+          const br=box.getBoundingClientRect(), lede=document.querySelector('.hero .lede'), toc=document.getElementById('toc'), tocOn=!!toc&&getComputedStyle(toc).display!=='none'&&toc.getBoundingClientRect().left<br.right-1;   /* shown and on screen (not the closed drawer) */
+          const L=lede?lede.getBoundingClientRect().right-br.left+40:w*.52, R=tocOn?toc.getBoundingClientRect().left-br.left-18:w-22;
+          const z=Math.max(.62,Math.min(1,(R-L)/B)); camera.zoom=z; camera.updateProjectionMatrix();
+          const dx=Math.round(L-(w/2+(a-w/2)*z)); camera.setViewOffset(w,h,-dx,0,w,h);
+          const hd=box.querySelector('.hud'); if(hd) hd.style.right=tocOn?(w-(toc.getBoundingClientRect().left-br.left)+12)+'px':'';
+          box.dataset.fit=[Math.round(L),Math.round(R),z.toFixed(3),dx].join(','); box.dataset.fitW=w; };
         applyOffset();
         starfield(ctx,560,24);
         { const top=new THREE.DirectionalLight(0xffffff,dark?.45:.25); top.position.set(2,8,4); root.add(top); }
@@ -59,7 +70,7 @@
           const stem=liveTube(ctx,C.gate,.012,.5); aimTube(THREE,stem,[X(t),CY+.47,0],[X(t),LANEY-.2,0]); lane.add(stem); return r; });
         { const stem=liveTube(ctx,C.gate,.012,.5); aimTube(THREE,stem,[LOSSX,CY+.22,0],[LOSSX,LANEY,0]); lane.add(stem); }
         const laneLab=lab(ctx,'LSTM express lane · × f each step',[.2,LANEY+.42,0],{size:19,scale:SC,color:colors.s4,bg:!dark}); lane.add(laneLab);
-        const hudEl=hud(box,wide?'hud-r':''); hudEl.style.maxWidth='calc(100% - 1.4rem)';
+        const hudEl=hud(box,wide?'hud-r':''); hudEl.style.maxWidth='calc(100% - 1.4rem)'; offW=0; applyOffset();
         if(fine) hint(box,'drag to orbit');
         const lerp=(a,b,u)=>a+(b-a)*u;
         const setLane=(u)=>{ lane.visible=u>.01; lane.position.y=-1.1*(1-u); lane.traverse(m=>{ if(m.material){ m.material.transparent=true; if(m.userData.op==null) m.userData.op=m.material.opacity; m.material.opacity=m.userData.op*u; } }); };
@@ -105,7 +116,7 @@
               vt.set(txt,kind==='lane'?[X(t)+.42,y+.42,0]:[X(t),.25,1.05],{size:27,weight:800,scale:SC,color:kind==='lane'?colors.s4:cssv('critical'),bg:true});
               if(vt.sp){ vt.sp.material.opacity=fade; } }
             else vt.hide();
-            if(t===NW-2&&hopDone>1.2&&hopDone<2.6){ ft.set('× '+N(fac,2)+' each step',kind==='lane'?[(X(t)+X(t+1))/2,y+.5,.3]:[LOSSX-.2,CY+1.3,0],{size:24,weight:800,scale:SC,color:kind==='lane'?colors.s4:cssv('critical'),bg:!dark}); } else ft.hide(); }
+            if(t===NW-2&&hopDone>1.2&&hopDone<2.6){ ft.set('× '+N(fac,2)+' each step',kind==='lane'?[(X(t)+X(t+1))/2,y+.5,.3]:[(X(t)+X(t+1))/2,CY+1.3,0],{size:24,weight:800,scale:SC,color:kind==='lane'?colors.s4:cssv('critical'),bg:!dark}); } else ft.hide(); }
           /* the switch */
           const sw=seg(tt,BX[0]-1.1,BX[0]-.4);
           if(tt>BX[0]-1.2&&tt<LN[0]){ switchTag.set(sw<.5?'switch · w = 0.5':'switch · w = 1.5',[X(2)+.75,CY+1.55,0],{size:26,weight:800,scale:SC,color:sw<.5?colors.s3:cssv('critical'),bg:true}); } else switchTag.hide();
@@ -130,6 +141,6 @@
       update(ctx,t){ if(reduced||ctx.dead) return false; return ctx.hero.tick(t); }
     });
   }
-  const HS=mountStage(box,build);
+  const HS=mountStage(box,build); reg('hero',{rects:stageRects(HS),fit:()=>box.dataset.fit});
   let rw=innerWidth; addEventListener('resize',()=>{ const wide=innerWidth>=760; if(wide!==(rw>=760)) remount(HS); rw=innerWidth; });
 })();

@@ -89,3 +89,113 @@ table.bgt td.chg{box-shadow:0 0 0 1.5px var(--s4) inset,0 0 14px -3px var(--s4)}
 .bg-chain .bc.zero b{color:var(--critical)}
 .bg-chain .bc.tot{border-color:var(--s4);background:color-mix(in srgb,var(--s4) 12%,transparent)}
 .bg-chain .bx{color:var(--ink-muted);font-family:var(--mono)}
+/* ---- round 22: the opening question, comparison tables, the network figure ---- */
+.qopen{max-width:var(--prose);margin:.1rem auto 1.1rem;padding:.15rem 0 .15rem 1rem;border-left:3px solid color-mix(in srgb,var(--s4) 70%,transparent);font-family:var(--display);font-style:italic;font-weight:500;font-size:1.3rem;line-height:1.42;color:var(--ink)}
+@media (max-width:640px){.qopen{font-size:1.14rem}}
+table.plain.vt td,table.plain.vt th{text-align:center;font-family:var(--mono);font-size:.84rem}
+table.plain.vt th{font-family:var(--ui)}
+table.plain.vt th.c-in{color:var(--s1)} table.plain.vt th.c-out{color:var(--s3)}
+table.plain.vt td:first-child{font-family:var(--ui);font-weight:650;color:var(--ink-2)}
+table.plain.cmp{font-size:.86rem}
+table.plain.cmp td:first-child{font-family:var(--ui);font-weight:650;color:var(--ink-muted);font-size:.8rem;white-space:normal;min-width:8.5rem}
+table.plain.cmp th:nth-child(2){color:var(--s1)} table.plain.cmp th:nth-child(3){color:var(--s4)}
+.netfig{max-width:62rem;margin:1.4rem auto}
+.netfig figcaption{font-family:var(--ui);font-size:.84rem;color:var(--ink-muted);margin:.5rem .2rem 0;line-height:1.55}
+.swatch{display:inline-block;width:.75rem;height:.75rem;border-radius:3px;vertical-align:-.08rem;margin:0 .15rem 0 .1rem}
+.swatch.s-in{background:var(--s1)} .swatch.s-out{background:var(--s3)} .swatch.s-ctr{background:var(--s4)} .swatch.s-prob{background:var(--s6)} .swatch.s-neg{background:var(--s2)}
+/* tokens as chips (s1, s2) */
+.tokline{font-family:var(--mono);font-size:.9rem;line-height:2.1;padding:.5rem .9rem}
+.tk{display:inline-block;padding:.02rem .42rem;border-radius:6px;border:1px solid color-mix(in srgb,var(--s1) 45%,transparent);background:color-mix(in srgb,var(--s1) 12%,transparent);color:var(--ink);line-height:1.5}
+.tk.mk{border-color:color-mix(in srgb,var(--ink-muted) 60%,transparent);background:color-mix(in srgb,var(--ink-muted) 12%,transparent);color:var(--ink-2);font-size:.82em}
+/* w-bigram: the memory strip, the path through the table, the step badges */
+.bg-strip{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;margin-top:.6rem;font-family:var(--mono);font-size:.86rem;min-height:1.8rem}
+.bg-strip .tk{transition:all .25s var(--ease)}
+.bg-strip .tk.tgt{border-color:var(--s4);background:color-mix(in srgb,var(--s4) 26%,transparent);box-shadow:0 0 14px -4px var(--s4);font-weight:700}
+.bg-strip .tk.mem{border-color:var(--s3);background:color-mix(in srgb,var(--s3) 22%,transparent);box-shadow:0 0 12px -5px var(--s3)}
+.bg-strip .tk.gone{opacity:.32;text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--ink-muted) 70%,transparent)}
+.bg-strip .tk.todo{opacity:.45;border-style:dashed}
+.bg-memlab{font-family:var(--ui);font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--s3);margin-left:.3rem}
+table.bgt th.corner{font-size:.62rem;font-weight:600;color:var(--ink-muted);white-space:nowrap;text-align:right}
+table.bgt th.hot{color:var(--s4)}
+table.bgt td{position:relative}
+table.bgt td.path{box-shadow:0 0 0 1.6px var(--s4) inset;color:var(--ink);font-weight:700}
+table.bgt td.now{box-shadow:0 0 0 2.4px var(--s4) inset,0 0 18px -3px var(--s4);background:color-mix(in srgb,var(--s4) 30%,transparent)}
+.stepb{position:absolute;top:-.42rem;right:-.3rem;font-style:normal;font-family:var(--ui);font-size:.6rem;font-weight:800;line-height:1;padding:.14rem .26rem;border-radius:999px;background:var(--s4);color:#1a1300;pointer-events:none}
+.bg-chain .bc.cur{border-color:var(--s4);box-shadow:0 0 14px -4px var(--s4)}
+.bg-chain .bc.run{border-style:dashed}
+.bg-out .gw.mk{color:var(--ink-muted);font-size:.84em}
+/* a control that does nothing for the current mode */
+.ctl.off{opacity:.38}
+.ctl.off input{pointer-events:none}
+/* hover tooltip for unlabelled dots in the 3-D stages */
+.w3tip{position:absolute;z-index:6;transform:translate(-50%,-100%);pointer-events:none;opacity:0;transition:opacity .12s;font-family:var(--ui);font-size:.8rem;font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--surface) 92%,transparent);border:1.5px solid var(--line);border-radius:999px;padding:.12rem .55rem;white-space:nowrap;box-shadow:0 6px 18px -8px rgba(0,0,0,.6)}
+/* w-cooc documents, w-pmi / w-friends grids */
+.co-docs{display:grid;gap:.5rem}
+.co-docs .doc{border:1px solid var(--line);border-radius:var(--r-sm);padding:.45rem .6rem;background:color-mix(in srgb,var(--surface-2) 50%,transparent);font-family:var(--mono);font-size:.76rem;line-height:1.55}
+.co-docs .doc b{display:block;font-family:var(--ui);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:.15rem}
+.co-docs .w-t{color:var(--s4);font-weight:700}
+.co-docs .w-k{color:var(--s2);font-weight:700}
+.co-docs .w-c{color:var(--s3);font-weight:700}
+.co-docs .w-x{color:var(--s1);font-weight:700}
+.co-docs .w-z{color:var(--ink-muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--ink-muted) 60%,transparent)}
+.pm-steps{display:flex;flex-wrap:wrap;gap:.35rem}
+.pm-steps button{font-family:var(--ui);font-size:.78rem;font-weight:650;border:1px solid var(--line);background:color-mix(in srgb,var(--surface-2) 80%,transparent);color:var(--ink-2);border-radius:999px;padding:.28rem .7rem;cursor:pointer}
+.pm-steps button[aria-selected="true"]{background:color-mix(in srgb,var(--s1) 22%,transparent);border-color:var(--s1);color:var(--ink);box-shadow:var(--glow-1)}
+table.pmt{border-collapse:separate;border-spacing:4px;font-family:var(--mono);font-size:.84rem;margin:0 auto}
+table.pmt th{font-family:var(--ui);font-weight:650;font-size:.74rem;color:var(--ink-muted);padding:.2rem .4rem;white-space:nowrap}
+table.pmt th.rw{color:var(--s1);text-align:right}
+table.pmt th.cl{color:var(--s3)}
+table.pmt td{min-width:3.4rem;text-align:center;padding:.34rem .4rem;border-radius:7px;color:var(--ink);background:color-mix(in srgb,var(--surface-2) 70%,transparent);transition:background .3s}
+table.pmt td.pos{background:color-mix(in srgb,var(--s1) calc(var(--h,0)*70%),color-mix(in srgb,var(--surface-2) 70%,transparent))}
+table.pmt td.neg{background:color-mix(in srgb,var(--critical) calc(var(--h,0)*60%),color-mix(in srgb,var(--surface-2) 70%,transparent))}
+table.pmt td.zero{color:var(--ink-muted)}
+table.pmt td.fill{box-shadow:0 0 0 1.6px var(--s4) inset,0 0 14px -4px var(--s4)}
+table.pmt td.tot,table.pmt th.tot{background:none;color:var(--ink-muted);font-weight:700}
+table.pmt td.hl{box-shadow:0 0 0 1.6px var(--s4) inset}
+table.pmt input{width:3rem;font-family:var(--mono);font-size:.84rem;text-align:center;color:var(--ink);background:transparent;border:1px dashed color-mix(in srgb,var(--s1) 60%,transparent);border-radius:6px;padding:.1rem 0}
+table.pmt caption{caption-side:top;font-family:var(--ui);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);padding-bottom:.3rem;text-align:left}
+/* w-cost: subsampling stream; three-way comparison table */
+.ss-stream{display:flex;flex-wrap:wrap;gap:.35rem;font-family:var(--mono);font-size:.9rem;padding:.55rem .6rem;border:1px solid var(--line);border-radius:var(--r-sm);background:color-mix(in srgb,var(--surface-2) 50%,transparent)}
+.ssw{padding:.08rem .45rem;border-radius:6px;border:1px solid color-mix(in srgb,var(--s1) 40%,transparent);background:color-mix(in srgb,var(--s1) 10%,transparent);transition:all .3s var(--ease)}
+.ssw.drop{opacity:.3;text-decoration:line-through;border-style:dashed;background:none}
+.ssw.ctr{border-color:var(--s4);background:color-mix(in srgb,var(--s4) 24%,transparent);font-weight:700}
+.ssw.win{border-color:var(--s3);background:color-mix(in srgb,var(--s3) 20%,transparent);box-shadow:0 0 12px -5px var(--s3)}
+table.plain.cmp3 th:nth-child(2){color:var(--s6)} table.plain.cmp3 th:nth-child(3){color:var(--s4)} table.plain.cmp3 th:nth-child(4){color:var(--s7)}
+/* w-pieces */
+.tk.sh{border-color:var(--s4);background:color-mix(in srgb,var(--s4) 22%,transparent);box-shadow:0 0 10px -4px var(--s4)}
+.tk.mg{border-color:var(--s7);background:color-mix(in srgb,var(--s7) 20%,transparent)}
+.pc-pieces{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center;font-family:var(--mono);font-size:.88rem;margin-top:.5rem}
+.pc-pieces .bg-lbl{width:100%}
+.pc-known{display:grid;gap:.3rem}
+.pc-row{display:grid;grid-template-columns:5.6rem 1fr 1.4rem;align-items:center;gap:.5rem;font-family:var(--ui);font-size:.82rem}
+.pc-row .pc-g{grid-column:2 / span 2;font-family:var(--mono);font-size:.74rem;color:var(--s4);margin-top:-.2rem}
+.pc-w{font-weight:700;color:var(--ink-2);text-align:right}
+.pc-bar{height:.6rem;border-radius:999px;background:color-mix(in srgb,var(--grid) 80%,transparent);overflow:hidden}
+.pc-bar i{display:block;height:100%;background:var(--s4);border-radius:999px}
+.pc-n{font-family:var(--mono);font-weight:700;color:var(--ink)}
+.bp-corpus{margin-top:.6rem;display:grid;gap:.3rem}
+.bp-w{display:flex;flex-wrap:wrap;align-items:center;gap:.2rem;font-family:var(--mono);font-size:.86rem}
+.bp-c{margin-left:.5rem;font-family:var(--ui);font-size:.74rem;color:var(--ink-muted)}
+.bp-pairs{display:flex;flex-wrap:wrap;gap:.3rem;font-family:var(--mono);font-size:.8rem}
+.bp-pairs .bg-lbl,.bp-m{width:100%}
+.bp-p{border:1px solid var(--line);border-radius:999px;padding:.1rem .5rem;color:var(--ink-2)}
+.bp-p.nx{border-color:var(--s4);background:color-mix(in srgb,var(--s4) 22%,transparent);color:var(--ink);box-shadow:0 0 12px -4px var(--s4)}
+.bp-m{font-family:var(--ui);font-size:.78rem;color:var(--ink-muted);margin-top:.4rem;line-height:1.5}
+.bp-dot{color:var(--ink-muted);margin:0 .1rem}
+/* the carry-forward cards with a small picture each */
+.cards-mini .cd svg.mini{display:block;width:100%;max-width:9.5rem;height:auto;margin:0 0 .45rem}
+/* R22 · maths inside upper-case headers keeps its own letters (v is not V, k is not K) */
+table.plain th .katex,.cards .cd h4 .katex,table.pmt caption .katex,.bg-lbl .katex{text-transform:none;letter-spacing:0}
+/* R22 · phones: the comparison tables and the GloVe table fit without sideways scrolling */
+@media (max-width:520px){
+  table.plain.cmp3{font-size:.78rem} table.plain.cmp3 th{text-transform:none;letter-spacing:0;font-size:.76rem} table.plain.cmp3 td:first-child{min-width:5.2rem}
+  table.plain.cmp3 td,table.plain.cmp3 th{padding:.45rem .4rem}
+  table.plain.co-tbl{font-size:.8rem} table.plain.co-tbl td,table.plain.co-tbl th{padding:.38rem .32rem} table.plain.co-tbl th{text-transform:none;letter-spacing:0;font-size:.74rem}
+  /* R22 review · the widget tables (bigram counts, PMI steps, friends rebuilt) fit a phone without sideways scrolling */
+  table.bgt{border-spacing:2px;font-size:.72rem} table.bgt th{padding:.12rem .14rem;font-size:.68rem}
+  table.bgt th.corner{white-space:normal;max-width:3.4rem;line-height:1.15;font-size:.66rem} table.bgt td{min-width:1.45rem;padding:.2rem .12rem}
+  table.pmt{border-spacing:2px;font-size:.74rem} table.pmt th{padding:.15rem .18rem;font-size:.68rem} table.pmt td{min-width:0;padding:.3rem .2rem}
+  table.pmt input{width:2.2rem;font-size:.76rem}
+}
+/* the smallest phones: the bigram table drops its "total" column (the readout under the bars still says how often the history was seen) */
+@media (max-width:380px){table.bgt th.tot,table.bgt td.tot{display:none}}

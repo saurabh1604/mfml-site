@@ -1,21 +1,244 @@
-<!-- ================= 7 · CLIPPING ================= -->
+<!-- ================= ACT III · BLAME THROUGH TIME ================= -->
+<!-- ================= 6 · BACKPROP THROUGH TIME ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Backprop through time: blame walks back along the words</h2></div>
+  <p class="bigq reveal">The model guessed the last word wrong. How much of that is the fault of the way it handled word 1, word 2, word 3…?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A relay team loses the race. The coach starts at the finish line and walks back along the track, asking each runner: "How much of the delay was yours?"</p>
+    <p>Every runner here is the same person — our one cell, used at every word. So when the coach adds up the blame for that one person, he adds it from <strong>every leg of the race</strong>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>An unrolled cell is a deep network (§3), so we train it exactly as in <a href="unit-15.html#s8">Unit 15</a>: a forward pass that stores every note, then a backward pass with the same two rules. We just walk back along <strong>time</strong> instead of along layers. People call this <strong>backpropagation through time</strong>, or BPTT.</p>
+    <ul>
+      <li><strong>Rule A, at every tanh.</strong> Multiply the incoming blame by the slope of tanh, which is \(1-h_t^2\) (you stored \(h_t\) on the way forward).</li>
+      <li><strong>Rule B, at every \(w\,h_{t-1}+u\,x_t+b\).</strong> Blame for the old note: multiply by \(w\). Blame for the weight: blame times the note that came in, \(h_{t-1}\).</li>
+      <li><strong>The new twist: add up.</strong> The same \(w\) is used at every step. So its gradient is the <strong>sum</strong> of what each step reports.</li>
+    </ul>
+    <p><strong>A tiny example.</strong> Take §2's cell (\(w=0.5\), inputs \(1,0,0\), notes \(0.7616,\ 0.3634,\ 0.1797\)). How much does a small nudge to \(h_1\) move \(h_3\)? Walk back one step at a time. Each step is "slope of tanh times \(w\)":</p>
+    <p>\[\begin{aligned}\frac{\partial h_3}{\partial h_2}&=w\,(1-h_3^2)\\ &=0.5\,(1-0.1797^2)\approx0.4838\\ \frac{\partial h_2}{\partial h_1}&=w\,(1-h_2^2)\\ &=0.5\,(1-0.3634^2)\approx0.4340\\ \frac{\partial h_3}{\partial h_1}&=0.4838\times0.4340\approx0.2100\end{aligned}\]</p>
+    <p>A nudge to the first note reaches the third note at only about a fifth of its size. The blame going back shrinks the same way. That is the first word's voice fading — now seen from the backward side.</p>
+  </div>
+
+  <div class="widget reveal" id="w-bptt">
+    <div class="widget-head"><span class="w-title">The step machine: forward through four words, back through four words</span><span class="w-sub">The same cell (\(w=0.5\), \(u=1\)) reads 1, 0, 0, 0. The loss asks the last note to still remember the first word: \(L=\tfrac12(h_4-1)^2\). Green is the note going right. Red is the blame coming back — each red disc is drawn to size.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ play</em>. Watch four green notes appear, then a red disc that starts big at word 4 and shrinks at every step back. At the last step, see the four reports for \(w\) added up to −0.4655. Then press <em>cut the blame after 2 steps</em>: the notes still flow all the way, but the blame stops at word 3, and only two reports are added: −0.3211.</p>
+    <div class="st-scrub" id="bp-scrub" role="tablist" aria-label="the steps"></div>
+    <div class="st-grid">
+      <div class="st-left"><div class="svgstage"><svg id="bp-svg" viewBox="0 0 560 372" class="svg-lab" role="img" aria-label="Four glass cells in a row, one per word. Above each, its note in green. Below each, its blame in red, as a disc whose area shows the size of the blame. Arrows go right for the forward pass and left for the backward pass."></svg></div></div>
+      <div class="st-right"><div class="st-card" id="bp-card" aria-live="polite"></div></div>
+    </div>
+    <div class="presets st-nav"><button class="preset" id="bp-prev">◀ back</button><button class="play" id="bp-play">▶ play</button><button class="preset" id="bp-next">next ▶</button><button class="preset" id="bp-reset">start again</button><button class="preset" id="bp-trunc" aria-pressed="false">cut the blame after 2 steps</button><span class="st-count" id="bp-count">step 1 / 10</span></div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Every word casts a vote.</strong> Look at the last card of the step machine. The copy of the cell at word 4 says "make \(w\) bigger by this much", the copy at word 3 says its own amount, and so on. Because all the copies are one cell (§3), the one weight hears every vote and adds them up. A word near the end, where the blame is still loud, votes loudly; a word far back votes in a whisper.</p>
+    <p><strong>With a real note, each step is a matrix.</strong> When the note is a list of numbers, one step back multiplies the blame by a matrix, not a number. Going forward, a small nudge to \(\mathbf h_{t-1}\) changes \(\mathbf h_t\) by \(\operatorname{diag}(1-\mathbf h_t^2)\,W\) times that nudge (<a href="unit-06.html#s8">the Jacobian of Unit 6</a>): first \(W\) mixes the nudge, then each entry is scaled by its own tanh slope. So the blame reaching word \(k\) from word \(T\) is a <strong>product of \(T-k\) such matrices</strong> — and every one of them contains the <strong>same \(W\)</strong>. Keep that sentence in mind: it is the whole of §7.</p>
+    <p><strong>Truncated BPTT: cut the walk short.</strong> A novel has 100 000 words. Storing every note and walking the blame back through all of them for every update is far too slow. So in practice we cut the text into chunks of \(k\) words — say \(k=20\) — and walk the blame back only inside a chunk. A 1 000-word text with \(k=20\) becomes \(1000/20=\) <strong>50 chunks</strong>. The note still flows forward from one chunk into the next, so the model can still <em>use</em> old words. But no blame crosses a cut, so the model can never <em>learn</em> a link between two words more than \(k\) apart.</p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>blame walks back</th><th>cost per update</th><th>links it can learn</th></tr></thead>
+      <tbody>
+        <tr><td><strong>full BPTT</strong></td><td>to the first word</td><td>grows with the whole text</td><td>any distance (if the blame survives, §7)</td></tr>
+        <tr><td><strong>truncated, k words</strong></td><td>back to the last cut</td><td>about k steps, fixed</td><td>at most k words apart</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Rule of thumb.</strong> Choose \(k\) a little longer than the longest link you need the model to learn — a sentence or two — and no longer than your memory allows.</p>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why it works</span>
+    <p>An unrolled RNN is just a very deep network in disguise, so the chain rule of Unit 15 needs no new ideas: blame multiplies along the chain, and a shared weight adds up its blame from every place it was used. The only new facts are about <em>time</em>: the chain is as long as the text, and every link in it contains the same matrix.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\frac{\partial L}{\partial w}=\sum_{t=1}^{T}\frac{\partial L}{\partial z_t}\,h_{t-1}\\ \frac{\partial \mathbf h_T}{\partial \mathbf h_k}=\prod_{t=k+1}^{T}\operatorname{diag}(1-\mathbf h_t^2)\,W\end{gathered}\]</p>
+    <p>Backprop through time is Unit 15's backward pass on the unrolled chain. The shared weight collects blame from every step, added up. The blame reaching an early word is a <strong>product</strong> of one factor per step, each containing the same \(W\) — so if each factor shrinks things, the product shrinks fast.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Truncating the <strong>blame</strong> does not truncate the <strong>memory</strong>. The note is carried forward across every cut, so word 45 can still feel word 5. What is lost is only the training signal: the model gets no blame telling it <em>how</em> word 5 should have helped word 45.</p>
+  </div>
+  <div class="check reveal" data-check="c8">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Suppose every step's factor \(w(1-h_t^2)\) is exactly 0.5. How much of a nudge to \(h_1\) reaches \(h_5\)?</p>
+    <div class="opts">
+      <button data-why="From h₁ to h₅ there are four steps, not five: 0.5⁴ = 0.0625.">\(0.5^5\approx0.031\)</button>
+      <button data-correct data-why="Right. h₁ → h₂ → h₃ → h₄ → h₅ is four steps, each multiplying by 0.5: 0.5⁴ = 0.0625. Only one sixteenth arrives.">\(0.5^4=0.0625\)</button>
+      <button data-why="The factors multiply, they do not add: four steps of 0.5 give 0.5 × 0.5 × 0.5 × 0.5 = 0.0625.">\(4\times0.5=2\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c9">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the step machine, the copies of the cell at words 2, 3 and 4 report \(-0.1444\), \(-0.1588\) and \(-0.1623\) for \(w\); word 1 reports 0. The four copies are one cell. What is \(\partial L/\partial w\)?</p>
+    <div class="opts">
+      <button data-why="That is only the last copy's report. The weight is shared, so every copy's report counts: add them.">\(-0.1623\)</button>
+      <button data-why="That is the average of the three. A shared weight adds up the reports, it does not average them: −0.1444 − 0.1588 − 0.1623 + 0 = −0.4655.">\(\approx-0.1552\)</button>
+      <button data-correct data-why="Right. One w is used at every step, so its gradient is the sum of every copy's report: −0.1444 − 0.1588 − 0.1623 + 0 = −0.4655.">\(-0.4655\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c26">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A 1 000-word text is trained with truncated BPTT, chunks of \(k=20\) words (1–20, 21–40, 41–60, …). Can training learn that word 5 should change the guess at word 45?</p>
+    <div class="opts">
+      <button data-why="The note does carry word 5 forward, but training needs blame to flow from word 45 back to word 5 — and it stops at the cut after word 40. So this link cannot be learned.">Yes: the note carries word 5 all the way to word 45</button>
+      <button data-correct data-why="Right. The text is cut into 1000 / 20 = 50 chunks. Word 45 sits in chunk 3, whose blame walks back only to word 41. No blame from word 45 ever reaches word 5, so that link cannot be learned — even though the note does carry word 5 forward.">No: the blame from word 45 stops at word 41</button>
+      <button data-why="It is not about the number of chunks. The text has 1000 / 20 = 50 chunks, but the point is that the blame from word 45 stops at the cut before word 41.">No, because the text has only 50 chunks</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s6-->
+  <p class="onesent reveal"><b>In one sentence:</b> Backprop through time runs Rule A and Rule B back along the unrolled chain, adds up the shared weight's votes from every step, and multiplies one factor per step on the way back — 0.4838 × 0.4340 ≈ 0.21 here — while truncated BPTT cuts that walk into chunks of \(k\) words (50 chunks for 1 000 words and \(k=20\)).</p>
+</section>
+
+<!-- ================= 7 · FADE OR EXPLODE ================= -->
 <section class="unit" id="s7">
-  <div class="sec-head reveal"><span class="sec-num">7</span><h2>First aid for explosions: clip the gradient</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Why memory fades or explodes</h2></div>
+  <p class="bigq reveal">Why can a plain recurrent network remember the last few words but not something from twenty words ago?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Ten children stand in a line and play the whisper game. The teacher whispers a word to the first child, and each child passes on what they heard. Suppose every child speaks at exactly <strong>half</strong> the loudness they heard. That is ten halvings, so the tenth child says the word about a thousand times more quietly than the teacher did. Nobody hears it.</p>
+    <p>Now suppose every child speaks one and a half times <strong>louder</strong>. By the tenth child it is a shout, 58 times the start. Only a line where everyone speaks exactly as loud as they heard keeps the word alive. A recurrent network's memory and its blame both travel down such a line.</p>
+  </div>
+  <div class="prose reveal">
+    <p>Strip the cell down to its loop: no tanh, no new words, just \(h_t=w\,h_{t-1}\). Every step is one child in the line, passing on \(w\) times what it heard. After \(T\) steps,</p>
+    <p>\[h_T=w^T\,h_0,\qquad\frac{\partial h_T}{\partial h_0}=w^T.\]</p>
+    <p>The same power shows up forward (how much of the first word is left) and backward (how much blame reaches it). Put in numbers for \(T=10\):</p>
+    <ul>
+      <li>\(w=0.5\): \(0.5^{10}\approx0.000977\). Less than a thousandth is left. The memory has <strong>faded</strong>.</li>
+      <li>\(w=1.5\): \(1.5^{10}\approx57.67\). The blame is 58 times too big. It has <strong>exploded</strong>.</li>
+      <li>\(w=1\): \(1^{10}=1\). Held steady — the knife edge.</li>
+    </ul>
+    <p>Powers are ruthless. A number a little below 1 goes to 0; a little above 1 runs away. After 20 steps, \(w=0.9\) leaves \(0.9^{20}\approx0.1216\) and \(w=1.1\) gives \(1.1^{20}\approx6.7275\). After 50 steps even \(0.9\) leaves \(0.005\), and \(1.1\) gives about 117.</p>
+    <p><strong>Why this matters.</strong> Read "The <strong>keys</strong> to the old wooden cabinet in the hall <strong>are</strong> …". The verb must be "are", not "is", because of "keys" — nine words back. To learn that, the blame from "are" must travel back nine steps to "keys". If each step passes on half, only \(0.5^{9}\approx0.00195\) of it arrives. The network never finds out that "keys" was the word that mattered.</p>
+  </div>
+
+  <div class="widget reveal" id="w-power">
+    <div class="widget-head"><span class="w-title">Powers of one number: the whisper line</span><span class="w-sub">Bar \(t\) is \(w^t\): how much of the first word is left after \(t\) steps, and how much blame reaches it from \(t\) steps later. The height axis is a log scale: each grid line is 10 000 times the one below.</span></div>
+    <p class="try"><b>Try:</b> Set \(w=0.5\) and read the gold bar at \(t=10\): 0.000977. Press <em>explode 1.5</em>: 57.67. Now slide \(w\) slowly across 1 and watch the bars tip from falling to rising. Turn on <em>with tanh</em>: the dashed outlines are the plain powers, and the squeeze only ever makes the bars shorter. At \(w=1.5\) it even turns the explosion into fading — the note gets stuck near 0.86, where tanh is flat.</p>
+    <div class="svgstage"><svg id="pw-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="A bar chart on a log scale. For each step t from 1 to 50, a bar shows w to the power t, drawn up or down from the line at 1. Green bars fall toward zero when w is below 1; red bars climb when w is above 1. Dashed lines mark one thousandth and one thousand."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 300px"><div class="controls">
+        <div class="ctl"><label for="pw-w">\(w\)</label><input id="pw-w" type="range" min="0.5" max="1.5" step="0.01" value="0.5"><output id="pw-w-o">0.5</output></div>
+        <div class="ctl"><label for="pw-T">\(t\)</label><input id="pw-T" type="range" min="1" max="50" step="1" value="10"><output id="pw-T-o">10</output></div>
+      </div>
+      <div class="presets"><button class="preset" data-w="0.5">fade 0.5</button><button class="preset" data-w="1">keep 1</button><button class="preset" data-w="1.5">explode 1.5</button><button class="preset" id="pw-tanh" aria-pressed="false">with tanh</button><button class="preset" id="pw-reset">reset</button></div></div>
+      <div class="wcol" style="flex:1.2 1 300px"><div id="pw-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Now with a real note: a matrix.</strong> When the note is a list of numbers, the loop is \(\mathbf h_t=W\mathbf h_{t-1}\), so \(\mathbf h_T=W^T\mathbf h_0\). Powers of a <em>matrix</em>. How do we see where those go? With the eigenvectors of <a href="unit-04.html#s5">Unit 4</a>: the special directions that \(W\) only stretches, never turns. Along an eigenvector with eigenvalue \(\lambda\), each step just multiplies by \(\lambda\) — back to the one-number whisper line.</p>
+    <p>A tiny example: \(W=\begin{pmatrix}0.9&0.4\\ 0.1&0.6\end{pmatrix}\). Its eigenvalues are \(\lambda_1=1\) and \(\lambda_2=0.5\) (check: they add to the trace \(1.5\) and multiply to the determinant \(0.54-0.04=0.5\)). The directions are \((4,1)\) for \(\lambda_1=1\) and \((1,-1)\) for \(\lambda_2=0.5\).</p>
+    <p>Start the note at \(\mathbf v=(1,0)\). Split it along the two directions: \((1,0)=0.2\,(4,1)+0.2\,(1,-1)\). Now every step keeps the first part whole and halves the second:</p>
+    <p>\[\begin{aligned}W^t\mathbf v&=0.2\,(4,1)+0.2\cdot0.5^t\,(1,-1)\\ &\longrightarrow\ (0.8,\,0.2).\end{aligned}\]</p>
+    <p>After one step, \((0.9,0.1)\); after two, \((0.85,0.15)\); after ten, almost exactly \((0.8,0.2)\). The part along the \(\lambda=1\) direction <strong>survives</strong>. The part along the \(\lambda=0.5\) direction <strong>halves every step</strong> and is gone. So a matrix is a bundle of whisper lines, one per eigen-direction, each with its own loudness factor \(\lambda\).</p>
+    <p>That gives the rule: look at the <strong>biggest eigenvalue size</strong>, \(|\lambda|_{\max}\) (people call it the <em>spectral radius</em>). Below 1, everything fades. Above 1, something explodes. Backward, the blame is multiplied at each step by the transpose \(W^{\top}\) (rows and columns swapped) — and \(W^{\top}\) has the same eigenvalues as \(W\), so the same verdict holds for the blame. And the tanh slope \(1-h^2\) is never more than 1, so it can only add fading.</p>
+  </div>
+
+  <div class="widget reveal" id="w-eigen-memory">
+    <div class="widget-head"><span class="w-title">Eigen-memory: multiply a note by the same matrix, again and again</span><span class="w-sub">Left: the note's plane. The dots are \(W^t\mathbf v\) for \(t=0,1,2,\dots\); the two coloured lines are the eigen-directions. Right: the length of the note at each step (bars on a log scale: green below 1, gold at exactly 1, red above 1) and the size of its part along each eigen-direction (lines).</span></div>
+    <p class="try"><b>Try:</b> On <em>keep</em> (the worked matrix) press <em>▶ multiply</em>: the blue part (\(\lambda=1\)) stays, the orange part halves at every step, and the dots settle at \((0.8,0.2)\), where the bars go flat at 0.8246. Try <em>fade</em>: both parts shrink and the bars fall. <em>Explode</em>: the bars climb past 1 and the dots run off the map. <em>Rotate</em>: there are no eigen-lines — every direction turns — and the dots walk round a circle with every bar at exactly 1.</p>
+    <div class="presets" id="em-pre"><button class="preset" data-p="fade" aria-pressed="false">fade</button><button class="preset" data-p="keep" aria-pressed="true">keep</button><button class="preset" data-p="explode" aria-pressed="false">explode</button><button class="preset" data-p="rotate" aria-pressed="false">rotate</button></div>
+    <div class="wrow em-row" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 320px"><div class="svgstage"><svg id="em-plane" viewBox="0 0 400 380" class="svg-lab" role="img" aria-label="The plane of a two-number note. Two long coloured lines through the centre are the eigen-directions of W, labelled with their eigenvalues. A green arrow is the starting note v. A chain of dots shows the note after 1, 2, 3 and more multiplications by W; dashed lines split the newest dot into its two eigen-parts."></svg></div></div>
+      <div class="wcol" style="flex:1.25 1 340px"><div class="svgstage"><svg id="em-bars" viewBox="0 0 440 380" class="svg-lab" role="img" aria-label="A log-scale chart against the step t. Bars show the length of the note W to the power t times v. A blue line and an orange line show the size of its part along each eigen-direction."></svg></div></div>
+    </div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 300px">
+        <div class="em-mat" aria-label="the matrix W">
+          <span class="em-br">W =</span>
+          <div class="em-grid">
+            <input id="em-a" type="number" step="0.05" value="0.9" aria-label="W row 1 column 1"><input id="em-b" type="number" step="0.05" value="0.4" aria-label="W row 1 column 2">
+            <input id="em-c" type="number" step="0.05" value="0.1" aria-label="W row 2 column 1"><input id="em-d" type="number" step="0.05" value="0.6" aria-label="W row 2 column 2">
+          </div>
+        </div>
+        <div class="controls"><div class="ctl"><label for="em-t">steps shown</label><input id="em-t" type="range" min="0" max="30" step="1" value="30"><output id="em-t-o">30</output></div></div>
+        <div class="presets"><button class="play" id="em-play">▶ multiply</button><button class="preset" id="em-reset">reset</button></div>
+      </div>
+      <div class="wcol" style="flex:1.2 1 300px"><div id="em-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <table class="plain cmp">
+      <thead><tr><th>biggest |λ|</th><th>forward: the note</th><th>backward: the blame</th><th>what helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>below 1</strong></td><td>old words fade away</td><td>vanishes before it reaches early words</td><td>gates: an express lane (§9, §10)</td></tr>
+        <tr><td><strong>exactly 1</strong></td><td>kept along that direction</td><td>reaches back at full size</td><td>the knife edge gates try to hold</td></tr>
+        <tr><td><strong>above 1</strong></td><td>grows until tanh flattens it</td><td>explodes while the note is small, and training jumps wildly (once tanh has squeezed the note flat, the blame fades instead)</td><td>clip the gradient, start near 1 (§8)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Why it works</span>
+    <p>Split the note along the eigen-directions and the matrix stops mixing: each part is multiplied by its own \(\lambda\) at every step, exactly like one child in the whisper line. After many steps, the part with the biggest \(|\lambda|\) outgrows or outlasts all the others. That is why one number — the spectral radius — decides the fate of both the memory and the blame.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf h_T=W^T\mathbf h_0\\ |\lambda|_{\max}&lt;1\Rightarrow\text{fades}\\ |\lambda|_{\max}&gt;1\Rightarrow\text{explodes}\end{gathered}\]</p>
+    <p>The gradient through time carries <strong>powers of one matrix</strong>. So its eigenvalues decide: along each eigen-direction, memory is multiplied by \(\lambda\) at every step. Below 1 it fades away, above 1 it blows up, and only exactly 1 holds on. This is the central fact of recurrent networks.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Small entries do not mean fading. Every entry of \(W=\begin{pmatrix}0.9&0.4\\ 0.1&0.6\end{pmatrix}\) is below 1, yet one eigenvalue is exactly 1 and part of its memory never fades. And a matrix with big entries can still fade. Look at the <strong>eigenvalues</strong>, not the entries.</p>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A one-number loop has \(w=0.5\). After how many steps is the memory first below one thousandth (\(10^{-3}\))?</p>
+    <div class="opts">
+      <button data-why="0.5⁹ ≈ 0.00195 is still above 0.001. One more step is needed: 0.5¹⁰ ≈ 0.000977.">9 steps</button>
+      <button data-correct data-why="Right. 0.5⁹ ≈ 0.00195 is still above 0.001, but 0.5¹⁰ ≈ 0.000977 is below. So 10 steps.">10 steps</button>
+      <button data-why="Halving 1000 times is far more than needed. Every 10 halvings divide by about 1000 (2¹⁰ = 1024), so 10 steps already get below a thousandth.">1000 steps</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(W=\begin{pmatrix}0.5&0\\ 0&1.2\end{pmatrix}\) and the note starts at \((1,1)\). What happens over many steps?</p>
+    <div class="opts">
+      <button data-why="The first number does fade (0.5ᵗ), but the second grows as 1.2ᵗ. The biggest eigenvalue size is 1.2 &gt; 1, so the note explodes.">It fades to (0, 0)</button>
+      <button data-correct data-why="Right. The eigenvalues are 0.5 and 1.2. After t steps the note is (0.5ᵗ, 1.2ᵗ): the first part fades, the second explodes. |λ|max = 1.2 &gt; 1 wins.">The first number fades, the second explodes</button>
+      <button data-why="The eigenvalues are 0.5 and 1.2; neither is 1. Nothing holds steady: one part fades, the other explodes.">It settles at (0, 1)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c12">
+    <span class="tag">Try it, then answer</span>
+    <p class="q">In the eigen-memory widget, load <em>rotate</em>. Its matrix turns the note by about 37° each step without stretching it. What are the sizes \(|\lambda|\) of its eigenvalues, and what does the note's length do?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. A pure turn has complex eigenvalues 0.8 ± 0.6i, each of size √(0.64 + 0.36) = 1. So the length stays exactly 1 forever, and the dots walk round a circle.">Both have size 1; the length stays exactly the same</button>
+      <button data-why="The eigenvalues are complex, 0.8 ± 0.6i, but their size is √(0.8² + 0.6²) = 1, not 0.8. The length does not shrink.">Size 0.8; the length shrinks</button>
+      <button data-why="A turn cannot stretch: its eigenvalues 0.8 ± 0.6i have size exactly 1. The length stays 1.">Size 1.4; the length grows</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c27">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Every entry of \(W=\begin{pmatrix}0.9&0.4\\ 0.1&0.6\end{pmatrix}\) is smaller than 1. Start the note at \((1,0)\) and multiply by \(W\) again and again. Where does the note end up?</p>
+    <div class="opts">
+      <button data-why="Small entries are not enough to fade. The eigenvalues are 1 and 0.5: the part along (4, 1) is kept for ever, so the note settles at 0.2·(4, 1) = (0.8, 0.2).">At (0, 0): all entries below 1 means it fades</button>
+      <button data-correct data-why="Right. (1, 0) = 0.2·(4, 1) + 0.2·(1, −1). The first part has λ = 1 and stays; the second has λ = 0.5 and dies away. The note settles at (0.8, 0.2) — eigenvalues decide, not entries.">At (0.8, 0.2), and it stays there</button>
+      <button data-why="Nothing here is bigger than 1: the eigenvalues are 1 and 0.5. The λ = 1 part is kept, the other halves, and the note settles at (0.8, 0.2).">It keeps growing, because 0.9 + 0.4 is more than 1</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> Memory and blame pass down a whisper line that multiplies by the same matrix at every step, so after \(T\) steps they carry \(W^T\) — and the biggest eigenvalue size decides whether they fade (0.5¹⁰ ≈ 0.000977) or explode (1.5¹⁰ ≈ 57.67).</p>
+</section>
+
+<!-- ================= 8 · CLIPPING AND GOOD STARTS ================= -->
+<section class="unit" id="s8">
+  <div class="sec-head reveal"><span class="sec-num">8</span><h2>First aid for explosions: clip the gradient, start at the right volume</h2></div>
+  <p class="bigq reveal">If the blame can explode, one bad step can undo hours of training. What stops that from happening?</p>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>School buses in India carry a <strong>speed governor</strong>. The driver can press the pedal as hard as he likes; the bus will not go faster than the limit. It still goes where he steers — only not at a crazy speed.</p>
     <p>Gradient clipping is a speed governor for training.</p>
   </div>
   <div class="prose reveal">
-    <p>When blame explodes, the gradient can become enormous for a single step. Picture the loss as a landscape: mostly gentle slopes, but here and there a <strong>cliff</strong> — a sudden wall where the loss jumps. That wall is what exploding powers of \(W\) look like. Touch the edge of the cliff and the slope is huge. A plain step \(\theta\leftarrow\theta-\eta\,\mathbf g\) then throws the weights far away, and all the progress so far is lost.</p>
+    <p>When blame explodes, the gradient can become enormous for a single step. Picture the loss as a landscape: mostly gentle slopes, but here and there a <strong>cliff</strong> — a sudden wall where the loss jumps. That wall is what exploding powers of \(W\) look like. Touch the edge of the cliff and the slope is huge. A plain step \(\theta\leftarrow\theta-\eta\,\mathbf g\) (<a href="unit-09.html#s4">Unit 9</a>) then throws the weights far away, and all the progress so far is lost.</p>
     <p>The fix is simple. Pick a limit \(c\). If the gradient is longer than \(c\), shrink it to length \(c\) and <strong>keep its direction</strong>:</p>
-    <p>\[\text{if }\|\mathbf g\|>c:\qquad\mathbf g\leftarrow c\,\frac{\mathbf g}{\|\mathbf g\|}.\]</p>
-    <p><strong>A tiny example.</strong> \(\mathbf g=(30,40)\), so \(\|\mathbf g\|=\sqrt{900+1600}=50\). With \(c=5\): \(\mathbf g\leftarrow5\cdot(30,40)/50=(3,4)\). Same direction, length 5. A gradient like \((1,2,2)\), of length 3, is shorter than 5 and passes through untouched.</p>
-    <p>Clipping only helps with <strong>explosions</strong>. It cannot help with <strong>fading</strong>: if the blame reaching word 1 is \(10^{-9}\), there is no signal left to rescue. For fading we need a new design — that is §8.</p>
+    <p>\[\text{if }\|\mathbf g\|&gt;c:\qquad\mathbf g\leftarrow c\,\frac{\mathbf g}{\|\mathbf g\|}.\]</p>
+    <p>Read it aloud: "divide the arrow by its own length, so it has length 1, then stretch it to length \(c\)." <strong>A tiny example.</strong> \(\mathbf g=(30,40)\), so \(\|\mathbf g\|=\sqrt{900+1600}=50\). With \(c=5\): \(\mathbf g\leftarrow5\cdot(30,40)/50=(3,4)\). Same direction, length 5. A gradient like \((1,2,2)\), of length 3, is shorter than 5 and passes through untouched.</p>
+    <p>Clipping only helps with <strong>explosions</strong>. It cannot help with <strong>fading</strong>: if the blame reaching word 1 is \(10^{-9}\), there is no signal left to rescue. For fading we need a new design — that is §9.</p>
   </div>
 
   <div class="widget reveal" id="w-clip">
-    <div class="widget-head"><span class="w-title">A loss cliff, with and without the speed governor</span><span class="w-sub">A gentle slope with a sharp wall. The ball rolls downhill by gradient steps. Gold steps are clipped; red steps are not.</span></div>
-    <p class="try"><b>Try:</b> Press <em>▶ roll</em> with clipping off: the ball creeps to the edge, feels the huge slope of the wall and is flung off the map. Turn clipping on and roll again: it walks down the wall in small steps and reaches the valley. Then lower the limit \(c\) and see the steps get shorter.</p>
+    <div class="widget-head"><span class="w-title">A loss cliff, with and without the speed governor</span><span class="w-sub">A gentle slope with a sharp wall. The ball rolls downhill by gradient steps: blue steps are ordinary, a red step is a long one that nobody clipped, and gold steps were clipped.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ roll</em> with clipping off: the ball creeps to the edge, feels a gradient of length 10.86 at the wall and is flung off the map at step 9. Turn clipping on and roll again: it walks down the wall in small steps and reaches the valley. Then lower the limit \(c\) and see the steps get shorter.</p>
     <div id="cl-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A lit loss landscape: a high flat shelf on one side, a sharp cliff wall, and a gentle valley below it. A glowing ball rolls downhill in steps. Without clipping one step at the cliff edge throws it far off the map; with clipping it walks down the cliff in short gold steps to the valley floor."></div><p class="stage-tap">drag the picture to orbit</p>
     <div class="wrow" style="margin-top:.7rem">
       <div class="wcol" style="flex:1 1 280px">
@@ -26,9 +249,18 @@
     </div>
   </div>
 
+  <div class="prose reveal">
+    <p><strong>Start at the right volume.</strong> The whisper line also tells us how to set up \(W\) before training begins. If \(W\) is <strong>orthogonal</strong> — a pure turn or mirror, one of the "motions that don't lie" of <a href="unit-03.html#s9">Unit 3</a> — it never changes the length of any note. All its eigenvalues then have size exactly 1: the whisper starts at normal volume, neither fading nor exploding, and training can move it from there. So a common start is a random orthogonal \(W\), or even \(W=I\), the identity ("copy the old note"). The talking model of §5 was started at \(0.9\) times an orthogonal matrix — every \(|\lambda|=0.9\), just under the knife edge.</p>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Why it works</span>
+    <p>An explosion is a long gradient, and a long gradient is dangerous only because of its <em>length</em>: the direction still points downhill. Clipping keeps the useful part (the direction) and throws away the dangerous part (the length). A good start helps from the other side: with every \(|\lambda|\) near 1, there is little to explode or to fade in the first place.</p>
+  </div>
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\mathbf g\leftarrow\min\Big(1,\ \frac{c}{\|\mathbf g\|}\Big)\,\mathbf g\]</p>
     <p>Clipping keeps the <strong>direction</strong> of the gradient and caps its <strong>length</strong>. One exploding step can no longer throw training off a cliff. It is cheap first aid for explosions — and no cure for fading.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Do not clip each entry on its own. Capping every entry of \((30,40)\) at 5 gives \((5,5)\), which points at 45° instead of the gradient's 53.13° — you are now walking a different way. Clip the <strong>whole arrow</strong> by one factor: \((3,4)\) still points at 53.13°.</p>
   </div>
   <div class="check reveal" data-check="c13">
     <span class="tag">Pause &amp; predict</span>
@@ -40,201 +272,16 @@
     </div>
     <div class="why"></div>
   </div>
-<!--@ALG s7-->
-  <p class="onesent reveal"><b>In one sentence:</b> When the gradient is longer than a limit \(c\), shrink it to length \(c\) without turning it — \((30,40)\) becomes \((3,4)\) — which tames explosions but cannot rescue memory that has faded.</p>
-</section>
-
-<!-- ================= ACT III · GATES ================= -->
-<!-- ================= 8 · LSTM ================= -->
-<section class="unit" id="s8">
-  <div class="sec-head reveal"><span class="sec-num">8</span><h2>The LSTM: a memory with an express lane</h2></div>
-  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>A shopkeeper's ledger — the bahi-khata — passes from day to day. Each evening he makes three small choices. With an <strong>eraser</strong>: what to rub out. With a <strong>pen</strong>: what to write in. And at the <strong>window</strong>: what to read out to the customer.</p>
-    <p>The ledger itself is never torn up and rewritten. It rides from day to day almost untouched. That is the LSTM's secret.</p>
-  </div>
-  <div class="prose reveal">
-    <p>Why does the plain cell forget? At every step its whole note is multiplied by \(W\) and squeezed by tanh. There is no way to carry a number along <em>unchanged</em>. So in 1997 Hochreiter and Schmidhuber added a second note that runs along the top: the <strong>cell state</strong> \(\mathbf c_t\). People call the whole design <strong>LSTM</strong>, "long short-term memory". Think of the cell state as an <strong>express lane</strong>: at each step only two gentle things happen to it.</p>
-    <p>First, three <strong>gates</strong> are computed. A gate is a list of numbers between 0 and 1, made with a sigmoid (<a href="unit-15.html#s2">Unit 15</a>). 0 means "shut", 1 means "wide open". Each gate looks at the new word and the last note:</p>
-    <ul>
-      <li>the <strong>forget gate</strong> \(\mathbf f_t\) — the eraser: how much of the old cell state to keep;</li>
-      <li>the <strong>input gate</strong> \(\mathbf i_t\) — the pen: how much of the new candidate to write in;</li>
-      <li>the <strong>output gate</strong> \(\mathbf o_t\) — the window: how much of the cell state to show as the note.</li>
-    </ul>
-    <p>The candidate \(\mathbf g_t=\tanh(\dots)\) is what the pen would write. Then:</p>
-    <p>\[\begin{aligned}\mathbf c_t&=\mathbf f_t\odot\mathbf c_{t-1}+\mathbf i_t\odot\mathbf g_t\\ \mathbf h_t&=\mathbf o_t\odot\tanh(\mathbf c_t)\end{aligned}\]</p>
-    <p>The symbol \(\odot\) just means "multiply entry by entry". Each gate has its own weights, like a small layer: \(\mathbf f_t=\sigma(W_f\mathbf h_{t-1}+U_f\mathbf x_t+\mathbf b_f)\), and the same shape for \(\mathbf i_t\), \(\mathbf o_t\) and \(\mathbf g_t\) (with tanh for \(\mathbf g_t\)).</p>
-    <p><strong>A tiny example.</strong> Forget gate \(f=0.9\), old cell state \(c_{t-1}=1\), input gate \(i=0.2\), candidate \(g=0.5\):</p>
-    <p>\[c_t=0.9\cdot1+0.2\cdot0.5=0.9+0.1=1.0.\]</p>
-    <p>We erased a tenth, then wrote in a little. With the window fully open (\(o=1\)), the note is \(h_t=\tanh(1.0)\approx0.7616\).</p>
-  </div>
-
-  <div class="widget reveal" id="w-notebook">
-    <div class="widget-head"><span class="w-title">The cell state as a tank with three valves</span><span class="w-sub">The tank holds the cell state. The drain valve is the forget gate, the inlet valve is the input gate, and the window valve is the output gate. Gold shows how open each valve is.</span></div>
-    <p class="try"><b>Try:</b> Start from the worked example and press <em>▶ one step</em>: 0.9 stays, 0.1 flows in, the tank reads 1.0. Close the drain completely (\(f=1\)) and shut the inlet (\(i=0\)): the tank holds its level exactly — memory with no fading at all. Then shut the window (\(o=0\)): the tank is still full, but the note shows 0.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 440px"><div class="svgstage"><svg id="nb-svg" viewBox="0 0 560 340" class="svg-lab" role="img" aria-label="A glass tank of glowing green liquid: the cell state. A drain valve at the bottom (the forget gate), an inlet pipe from a candidate cup above (the input gate), and a window valve on the side leading to the note (the output gate). Each valve has a gold ring that fills as the gate opens."></svg></div></div>
-      <div class="wcol" style="flex:2 1 260px">
-        <div class="controls">
-          <div class="ctl"><label for="nb-c">old \(c_{t-1}\)</label><input id="nb-c" type="range" min="-2" max="2" step="0.1" value="1"><output id="nb-c-o">1</output></div>
-          <div class="ctl"><label for="nb-f">forget \(f\)</label><input id="nb-f" type="range" min="0" max="1" step="0.05" value="0.9"><output id="nb-f-o">0.9</output></div>
-          <div class="ctl"><label for="nb-i">input \(i\)</label><input id="nb-i" type="range" min="0" max="1" step="0.05" value="0.2"><output id="nb-i-o">0.2</output></div>
-          <div class="ctl"><label for="nb-g">candidate \(g\)</label><input id="nb-g" type="range" min="-1" max="1" step="0.05" value="0.5"><output id="nb-g-o">0.5</output></div>
-          <div class="ctl"><label for="nb-o">output \(o\)</label><input id="nb-o" type="range" min="0" max="1" step="0.05" value="1"><output id="nb-o-o">1</output></div>
-        </div>
-        <div class="presets"><button class="play" id="nb-play">▶ one step</button><button class="preset" id="nb-hold">hold forever</button><button class="preset" id="nb-reset">worked example</button></div>
-        <div id="nb-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="prose reveal">
-    <p><strong>Why the express lane saves the blame.</strong> Look at how the cell state moves from one step to the next: \(\mathbf c_t=\mathbf f_t\odot\mathbf c_{t-1}+\dots\) Along this lane there is no \(W\) to multiply by, and no tanh to squeeze. So walking back along the lane, the blame is multiplied by just \(f\) at each step (<a href="#s5">§5</a>'s product, with a much kinder factor):</p>
-    <p>\[\frac{\partial c_T}{\partial c_k}=f_{k+1}\,f_{k+2}\cdots f_T\qquad(\text{along the lane}).\]</p>
-    <p>With \(f=0.9\) for ten steps: \(0.9^{10}\approx0.349\). Compare the plain cell with \(w=0.5\): \(0.5^{10}\approx0.000977\). The express lane carries about <strong>350 times</strong> more blame back to the start.</p>
-    <p>Be honest, though: a gate of 0.9 still fades over long distances. After 50 steps, \(0.9^{50}\approx0.00515\). What saves the LSTM is that the network <strong>chooses</strong> \(f\) at every word. When it needs to remember, it learns to hold \(f\) very close to 1: \(0.99^{50}\approx0.605\). And when it wants to forget — at a full stop, say — it can drop \(f\) to 0 and wipe the slate.</p>
-  </div>
-
-  <div class="widget reveal" id="w-lstm">
-    <div class="widget-head"><span class="w-title">The memory lab: race a plain cell, an LSTM and a GRU</span><span class="w-sub">The task: remember the first word. Each sentence starts with <em>chai</em> or <em>coffee</em>, then comes a string of filler words that each nudge the note at random. At the end we ask: which drink was first? The three cells have <strong>hand-set weights</strong> (not trained) — chosen to show each design at its most sensible.</span></div>
-    <p class="try"><b>Try:</b> Press <em>▶ read the sentence</em> and watch the three memories travel along the lanes; gold rings are gates opening. Then open <em>blame through time</em> and slide the length from 5 to 50: the plain cell's blame collapses, the gated cells' stays high. Last, press <em>honest LSTM (f = 0.9)</em> and look at the accuracy at 50 words.</p>
-    <div id="lb-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene of three glowing lanes running from left to right, one per cell: a plain recurrent cell, a GRU and an LSTM. A tile at the start of each lane shows the first word, chai or coffee. Beads along each lane show that cell's memory after each word, lifted up for chai and down for coffee. The plain cell's beads drift back to the middle and get lost among the random nudges; the GRU's and LSTM's stay lifted. Gold rings around the gated lanes glow where a gate opens. At the end of each lane a tick or a cross shows whether that cell answered right."></div><p class="stage-tap">drag the picture to orbit</p>
-    <div class="wrow" style="margin-top:.7rem">
-      <div class="wcol" style="flex:1 1 300px">
-        <div class="controls">
-          <div class="ctl"><label for="lb-T">sentence length</label><input id="lb-T" type="range" min="5" max="50" step="1" value="20"><output id="lb-T-o">20</output></div>
-          <div class="ctl"><label for="lb-A">filler noise</label><input id="lb-A" type="range" min="0" max="1" step="0.05" value="0.5"><output id="lb-A-o">0.5</output></div>
-          <div class="ctl"><label for="lb-w">plain cell \(w\)</label><input id="lb-w" type="range" min="0.5" max="1.2" step="0.01" value="0.9"><output id="lb-w-o">0.9</output></div>
-          <div class="ctl"><label for="lb-f">LSTM forget \(f\)</label><input id="lb-f" type="range" min="0.5" max="0.999" step="0.001" value="0.99"><output id="lb-f-o">0.99</output></div>
-        </div>
-        <div class="presets"><button class="play" id="lb-run">▶ read the sentence</button><button class="preset" id="lb-new">new sentence</button><button class="preset" id="lb-honest">honest LSTM (f = 0.9)</button><button class="preset" id="lb-reset">reset</button></div>
-      </div>
-      <div class="wcol" style="flex:1.3 1 320px"><div id="lb-read" class="readout lb-read"></div></div>
-    </div>
-    <div class="tabs" id="lb-tabs" role="tablist" style="margin-top:.7rem"><button role="tab" aria-selected="true" data-t="acc">accuracy vs length</button><button role="tab" aria-selected="false" data-t="blame">blame through time</button></div>
-    <div class="svgstage" style="margin-top:.5rem"><svg id="lb-svg" viewBox="0 0 760 280" class="svg-lab" role="img" aria-label="A chart. In accuracy mode: for each sentence length from 5 to 50, the share of 400 random sentences each cell answers right. In blame mode: on a log scale, how much blame from the end reaches each earlier word, for the three cells."></svg></div>
-    <details class="lb-how"><summary>How the three cells are wired (the hand-set weights)</summary>
-      <p>Each word is one number \(s\): chai is \(+1\), coffee is \(-1\), and each filler is a random number between \(-A\) and \(A\) (the filler noise). A marker \(m\) is 1 on the first word and 0 after it.</p>
-      <p>\[\begin{aligned}\text{plain: }&h_t=\tanh(w\,h_{t-1}+s_t)\\ \text{LSTM: }&i_t=\sigma(10m_t-5)\\ &c_t=f\,c_{t-1}+i_t\tanh(s_t)\\ \text{GRU: }&z_t=\sigma(10m_t-5)\\ &h_t=(1-z_t)h_{t-1}\\ &\qquad+z_t\tanh(s_t)\end{aligned}\]</p>
-      <p>So the input gate and the update gate are wide open on the first word (\(\sigma(5)\approx0.993\)) and nearly shut afterwards (\(\sigma(-5)\approx0.0067\)). The answer is the sign of the final memory. Because these gates look only at the word, the blame along each lane is exactly \(\prod w(1-h^2)\), \(\prod f\) and \(\prod(1-z)\).</p>
-    </details>
-  </div>
-
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{gathered}\mathbf c_t=\mathbf f_t\odot\mathbf c_{t-1}+\mathbf i_t\odot\mathbf g_t\\ \frac{\partial c_T}{\partial c_k}=\prod_{t=k+1}^{T}f_t\end{gathered}\]</p>
-    <p>The LSTM keeps a second memory on an express lane. Nothing multiplies it by \(W\) or squeezes it — only the forget gate scales it and the input gate adds to it. So blame travels back along the lane multiplied only by \(f\), which the network can hold near 1 for as long as it needs to remember.</p>
-  </div>
-  <div class="check reveal" data-check="c14">
+  <div class="check reveal" data-check="c28">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">One LSTM step: \(f=0.5\), \(c_{t-1}=2\), \(i=1\), \(g=-0.4\). What is the new cell state \(c_t\)?</p>
+    <p class="q">In a plain recurrent network, the blame reaching word 1 of a long text is about \(10^{-9}\). You switch on clipping with \(c=5\). What happens to that blame?</p>
     <div class="opts">
-      <button data-correct data-why="Right. c = f·c_prev + i·g = 0.5 · 2 + 1 · (−0.4) = 1 − 0.4 = 0.6. Half the old memory was erased, and a negative candidate was written in fully.">\(0.6\)</button>
-      <button data-why="The candidate g = −0.4 is negative, so writing it in lowers the level: 0.5 · 2 + 1 · (−0.4) = 0.6, not 1.4.">\(1.4\)</button>
-      <button data-why="The forget gate multiplies the OLD state (2), not the new one: 0.5 · 2 + 1 · (−0.4) = 0.6.">\(0.3\)</button>
-    </div>
-    <div class="why"></div>
-  </div>
-  <div class="check reveal" data-check="c15">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">Along the express lane the forget gate stays at \(f=0.95\). How much blame reaches a word 20 steps back?</p>
-    <div class="opts">
-      <button data-why="The factors multiply: 0.95²⁰, not 1 − 20 × 0.05 = 0. That is about 0.358.">0, because \(20\times0.05=1\) is used up</button>
-      <button data-correct data-why="Right. Twenty factors of 0.95: 0.95²⁰ ≈ 0.358. More than a third of the blame arrives — a plain cell with w = 0.5 would pass on less than one millionth.">\(0.95^{20}\approx0.358\)</button>
-      <button data-why="0.95 is the factor for one step. Over twenty steps it is 0.95²⁰ ≈ 0.358.">\(0.95\)</button>
-    </div>
-    <div class="why"></div>
-  </div>
-  <div class="check reveal" data-check="c16">
-    <span class="tag">Try it, then answer</span>
-    <p class="q">In the memory lab, keep the filler noise at 0.5, press <em>honest LSTM (f = 0.9)</em> and look at the accuracy curves at 50 words. What do you see?</p>
-    <div class="opts">
-      <button data-why="With f = 0.9 the LSTM's memory of the first word shrinks to 0.9⁴⁹ ≈ 0.006 of its size by the end, and the filler noise starts to win sometimes. It does not stay perfect.">The LSTM still gets 100%, the plain cell 100% too</button>
-      <button data-correct data-why="Right. The GRU (its lane is held at 0.993) stays at 100%, the plain cell is a coin toss near 50%, and the honest LSTM slips to about 86% at 50 words. A gate of 0.9 is kind, but over 50 steps it still fades.">The GRU stays at 100%, the LSTM slips to about 86%, the plain cell is near 50%</button>
-      <button data-why="The LSTM does slip, but not all the way: at 50 words it still gets about 86% right, far better than the plain cell's coin toss near 50%.">All three fall to about 50%</button>
+      <button data-why="Clipping only ever shrinks: it scales an arrow down when it is longer than c. A tiny gradient is left exactly as it is.">It is scaled up to length 5</button>
+      <button data-correct data-why="Right. Clipping only shrinks gradients that are too long. A fading gradient is far shorter than 5, so it passes through untouched — still 10⁻⁹. Fading needs a different cure: the gates of §9.">Nothing: it is already shorter than 5, so it passes untouched</button>
+      <button data-why="Clipping does not zero anything out; it scales long arrows down. A tiny gradient is shorter than c, so it is left alone.">It is set to 0</button>
     </div>
     <div class="why"></div>
   </div>
 <!--@ALG s8-->
-  <p class="onesent reveal"><b>In one sentence:</b> The LSTM carries a cell state on an express lane, \(c_t=f\,c_{t-1}+i\,g\), so blame flows back multiplied only by the forget gate — \(0.9^{10}\approx0.349\) instead of \(0.5^{10}\approx0.000977\) — and the network can hold \(f\) near 1 to remember.</p>
-</section>
-
-<!-- ================= 9 · GRU ================= -->
-<section class="unit" id="s9">
-  <div class="sec-head reveal"><span class="sec-num">9</span><h2>The GRU: a lighter cousin with one blend dial</h2></div>
-  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>A chaiwala keeps one big pot on the stove all day. Every hour he pours in some fresh tea. A little fresh, and the pot tastes much as before. A lot fresh, and the old taste is gone.</p>
-    <p>How much fresh tea to pour — that is one dial. The GRU is built around this dial.</p>
-  </div>
-  <div class="prose reveal">
-    <p>In 2014 Cho and colleagues asked: can we keep the express lane with fewer parts? Their <strong>GRU</strong> ("gated recurrent unit") drops the separate cell state. It keeps one note and two gates:</p>
-    <ul>
-      <li>the <strong>update gate</strong> \(\mathbf z_t\) — the dial: how much new to pour in;</li>
-      <li>the <strong>reset gate</strong> \(\mathbf r_t\) — how much of the old note to look at when making the new candidate.</li>
-    </ul>
-    <p>\[\begin{aligned}\tilde{\mathbf h}_t&=\tanh\big(W(\mathbf r_t\odot\mathbf h_{t-1})+U\mathbf x_t+\mathbf b\big)\\ \mathbf h_t&=(1-\mathbf z_t)\odot\mathbf h_{t-1}+\mathbf z_t\odot\tilde{\mathbf h}_t\end{aligned}\]</p>
-    <p>The second line is a <strong>blend</strong>: part old note, part fresh candidate, with the dial \(\mathbf z_t\) between 0 and 1. When \(z\) is near 0, the old note passes straight through — the express lane again, now multiplied by \(1-z\) at each step.</p>
-    <p><strong>A tiny example.</strong> Old note \(h_{t-1}=0.8\), candidate \(\tilde h_t=-0.4\), dial \(z=0.25\):</p>
-    <p>\[h_t=0.75\cdot0.8+0.25\cdot(-0.4)=0.6-0.1=0.5.\]</p>
-    <p>Three quarters old, one quarter new. And since it is a blend, the new note always lies <strong>between</strong> the old note and the candidate.</p>
-  </div>
-
-  <div class="widget reveal" id="w-gru">
-    <div class="widget-head"><span class="w-title">The blend dial</span><span class="w-sub">The GRU's update: a note with two numbers (a green arrow), a fresh candidate (a blue arrow), and the new note on the straight line between them.</span></div>
-    <p class="try"><b>Try:</b> Turn the dial \(z\) from 0 to 1 and watch the new note slide from the old arrow to the candidate along a straight line. Lower the reset gate \(r\): the candidate stops looking at the old note. Press <em>▶ ten steps</em> with \(z=0.1\): the note drifts only slowly — a long memory.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 440px"><div class="svgstage"><svg id="gr-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="A plane with three arrows from the origin: the old note in green, the candidate in blue and the new note in gold, whose tip lies on the dashed straight line joining the other two tips. A dial on the right shows z."></svg></div></div>
-      <div class="wcol" style="flex:2 1 260px">
-        <div class="controls">
-          <div class="ctl"><label for="gr-z">update \(z\)</label><input id="gr-z" type="range" min="0" max="1" step="0.05" value="0.25"><output id="gr-z-o">0.25</output></div>
-          <div class="ctl"><label for="gr-r">reset \(r\)</label><input id="gr-r" type="range" min="0" max="1" step="0.05" value="1"><output id="gr-r-o">1</output></div>
-        </div>
-        <div class="presets"><button class="play" id="gr-play">▶ ten steps</button><button class="preset" id="gr-reset">worked example</button></div>
-        <div id="gr-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="prose reveal">
-    <p><strong>What do the gates cost?</strong> Each gate, and each candidate, is a small layer of its own: a matrix for the old note (\(h\times h\)), a matrix for the word (\(h\times d\)) and a shift (\(h\)). That is \(h(h+d)+h\) numbers — exactly a plain cell's worth. A plain cell has one such block, a GRU has three (\(\mathbf z\), \(\mathbf r\), the candidate), an LSTM four (\(\mathbf f\), \(\mathbf i\), \(\mathbf o\), \(\mathbf g\)).</p>
-    <p>For a note of \(h=128\) numbers and words of \(d=64\) numbers: one block is \(128\cdot192+128=24\,704\). So a plain cell has 24 704 numbers to learn, a GRU \(3\times24\,704=74\,112\), and an LSTM \(4\times24\,704=98\,816\).</p>
-  </div>
-
-  <div class="widget reveal" id="w-gates-compare">
-    <div class="widget-head"><span class="w-title">Three cells side by side</span><span class="w-sub">The same note size and word size. Each gold block is one small layer, \(h(h+d)+h\) numbers.</span></div>
-    <p class="try"><b>Try:</b> Leave \(h=128\), \(d=64\) and read 24 704, 74 112 and 98 816. Double \(h\): the counts almost quadruple, because \(h\cdot h\) dominates. Click a cell to see its equations.</p>
-    <div class="svgstage"><svg id="gc-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="Three cell diagrams side by side — plain, GRU, LSTM — each made of gold blocks, one per gate or candidate, with a bar under each showing its parameter count."></svg></div>
-    <div class="wrow" style="margin-top:.6rem">
-      <div class="wcol" style="flex:1 1 280px"><div class="controls">
-        <div class="ctl"><label for="gc-h">note size \(h\)</label><input id="gc-h" type="range" min="8" max="512" step="8" value="128"><output id="gc-h-o">128</output></div>
-        <div class="ctl"><label for="gc-d">word size \(d\)</label><input id="gc-d" type="range" min="8" max="512" step="8" value="64"><output id="gc-d-o">64</output></div>
-      </div></div>
-      <div class="wcol" style="flex:1.3 1 300px"><div id="gc-read" class="readout" style="line-height:1.75"></div></div>
-    </div>
-  </div>
-
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\mathbf h_t=(1-\mathbf z_t)\odot\mathbf h_{t-1}+\mathbf z_t\odot\tilde{\mathbf h}_t\]</p>
-    <p>A GRU is one blend dial: keep the old note, or pour in the new. With \(z\) near 0 the old note rides straight through — an express lane without a separate tank. It learns three blocks of weights where an LSTM learns four and a plain cell one, and in practice the two gated cells work about equally well.</p>
-  </div>
-  <div class="check reveal" data-check="c17">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">A GRU step with \(z=0.5\), old note \(h_{t-1}=0.2\) and candidate \(\tilde h_t=0.6\). What is \(h_t\)?</p>
-    <div class="opts">
-      <button data-correct data-why="Right. (1 − 0.5) · 0.2 + 0.5 · 0.6 = 0.1 + 0.3 = 0.4 — exactly halfway between the old note and the candidate.">\(0.4\)</button>
-      <button data-why="That adds the two in full. A GRU blends: (1 − z) of the old plus z of the new: 0.1 + 0.3 = 0.4.">\(0.8\)</button>
-      <button data-why="The dial z multiplies the candidate, and 1 − z the old note: 0.5 · 0.2 + 0.5 · 0.6 = 0.4. With z = 0.5 both get half.">\(0.3\)</button>
-    </div>
-    <div class="why"></div>
-  </div>
-  <div class="check reveal" data-check="c18">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">An LSTM has a note of \(h=10\) numbers and words of \(d=5\) numbers. How many numbers does it learn?</p>
-    <div class="opts">
-      <button data-why="160 is one block: 10 · 15 + 10. An LSTM has four blocks (f, i, o, g): 4 × 160 = 640.">160</button>
-      <button data-why="480 is three blocks — that would be a GRU. An LSTM has four: 640.">480</button>
-      <button data-correct data-why="Right. One block is h(h + d) + h = 10 · 15 + 10 = 160, and the LSTM has four of them (forget, input, output, candidate): 640.">640</button>
-    </div>
-    <div class="why"></div>
-  </div>
-<!--@ALG s9-->
-  <p class="onesent reveal"><b>In one sentence:</b> A GRU blends old and new with one dial, \(h_t=(1-z)h_{t-1}+z\tilde h_t\) — 0.75 · 0.8 + 0.25 · (−0.4) = 0.5 — and costs three blocks of \(h(h+d)+h\) numbers against the LSTM's four.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> When the gradient is longer than a limit \(c\), shrink it to length \(c\) without turning it — \((30,40)\) becomes \((3,4)\) — and start \(W\) with every \(|\lambda|\) near 1; this tames explosions but cannot rescue memory that has faded.</p>
 </section>

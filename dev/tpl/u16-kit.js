@@ -150,3 +150,55 @@ function glassFloor(ctx,size,o){ o=o||{}; const {THREE,root,isLight}=ctx, hx=hxO
   return {grid,slab}; }
 function seeded(seed){ let s=seed>>>0||1; return ()=>{ s=(s*16807)%2147483647; return (s-1)/2147483646; }; }
 function gauss2(rnd){ const u=Math.max(1e-9,rnd()), v=rnd(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+/* ---- round 22: screen-space rectangles of sprite labels (for the no-overlap tests) and hover tooltips for unlabelled dots ---- */
+function spriteRect(ctx,sp){ const T=ctx.THREE, cam=ctx.camera, R=ctx.renderer.domElement.getBoundingClientRect(); cam.updateMatrixWorld();
+  const right=new T.Vector3().setFromMatrixColumn(cam.matrixWorld,0), up=new T.Vector3().setFromMatrixColumn(cam.matrixWorld,1), c=sp.getWorldPosition(new T.Vector3());
+  const pts=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>c.clone().addScaledVector(right,a*sp.scale.x/2).addScaledVector(up,b*sp.scale.y/2).project(cam));
+  const xs=pts.map(p=>(p.x+1)/2*R.width), ys=pts.map(p=>(1-p.y)/2*R.height);
+  return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys),front:pts.every(p=>p.z<1)}; }
+/* every visible sprite label under root, as {text, rect} — labels carry their text in userData.t */
+function labelRects(ctx){ const out=[]; ctx.root.traverse(o=>{ if(o.isSprite&&o.visible&&o.userData&&o.userData.t&&o.material.opacity>.05) out.push(Object.assign({t:o.userData.t},spriteRect(ctx,o))); }); return out; }
+/* a label slot that remembers its text (so labelRects can report it) */
+function tslot(ctx,root){ const s=slot(ctx,root), set=s.set.bind(s); s.set=(text,pos,opts)=>{ set(text,pos,opts); if(s.sp) s.sp.userData.t=text; }; return s; }
+/* hover tooltips: getItems() → [{p:[x,y,z] (world), t:'word', c:'css colour'}]; the nearest dot within 18 px of the pointer is named */
+function hoverTips(ctx,box,getItems){ const T=ctx.THREE, cv3=ctx.renderer.domElement, tip=document.createElement('div'); tip.className='w3tip'; box.appendChild(tip);
+  const hide=()=>{ tip.style.opacity='0'; box.dataset.hover=''; };
+  cv3.addEventListener('pointermove',e=>{ const R=cv3.getBoundingClientRect(), mx=e.clientX-R.left, my=e.clientY-R.top; let best=null, bd=18;
+    getItems().forEach(it=>{ const v=new T.Vector3(...it.p).project(ctx.camera); if(v.z>1) return; const x=(v.x+1)/2*R.width, y=(1-v.y)/2*R.height, d=Math.hypot(x-mx,y-my); if(d<bd){ bd=d; best={it,x,y}; } });
+    if(!best){ hide(); return; } tip.textContent=best.it.t; tip.style.borderColor=best.it.c||''; tip.style.left=Math.round(best.x)+'px'; tip.style.top=Math.round(best.y-14)+'px'; tip.style.opacity='1'; box.dataset.hover=best.it.t; });
+  cv3.addEventListener('pointerleave',hide); return tip; }
+/* screen-space label layout for 3-D stages. items: [{slot (tslot), anchor:[x,y,z], text, opts, prio}] — lower prio is placed first.
+   Each label goes to the first candidate spot (above, below, right, left, corners, farther out) that overlaps no label already
+   placed and no dot in `avoid` (world points). Re-run whenever the camera moves; returns the placed screen rectangles. */
+function layoutLabels(ctx,items,o){ o=o||{}; const T=ctx.THREE, cam=ctx.camera, R=ctx.renderer.domElement.getBoundingClientRect(), W=R.width, H=R.height; if(!W||!H) return [];
+  cam.updateMatrixWorld(); const placed=[], pad=o.pad==null?3:o.pad, g=o.gap||7, M=3;
+  const toScr=v=>{ const p=new T.Vector3(...v).project(cam); return {x:(p.x+1)/2*W,y:(1-p.y)/2*H,z:p.z}; };
+  const fromScr=(x,y,z)=>new T.Vector3(x/W*2-1,1-y/H*2,z).unproject(cam);
+  const dr=o.dotR||10, dots=(o.avoid||[]).map(v=>{ const s=toScr(v); return {x:s.x-dr,y:s.y-dr,w:2*dr,h:2*dr}; });
+  const ovl=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)+pad-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)+pad-Math.max(a.y,b.y));
+  const hard=(a,b)=>Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x)>1&&Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y)>1;
+  items.slice().sort((a,b)=>(a.prio||0)-(b.prio||0)).forEach(it=>{
+    it.slot.set(it.text,it.anchor,Object.assign({depthTest:false},it.opts)); const sp=it.slot.sp; if(!sp) return;   /* labels always draw on top of lines and glass */
+    const a=toScr(it.anchor); if(a.z>1){ sp.visible=false; it.rect=null; return; }
+    /* never smaller on screen than minPx of text (11 px unless said otherwise), whatever the camera distance or stage size */
+    if(!sp.userData.base) sp.userData.base=sp.scale.clone(); sp.scale.copy(sp.userData.base);
+    let r0=spriteRect(ctx,sp); const minH=1.5*(it.minPx!=null?it.minPx:(o.minPx||11)); if(r0.h>0&&r0.h<minH){ sp.scale.multiplyScalar(minH/r0.h); r0=spriteRect(ctx,sp); }
+    const w=r0.w, h=r0.h;
+    /* candidate spots: next to the anchor, then the corners, then two rings farther out */
+    const cands=[[0,-(h/2+g)],[0,h/2+g],[w/2+g+5,0],[-(w/2+g+5),0],[w/2+4,-(h/2+g)],[-(w/2+4),-(h/2+g)],[w/2+4,h/2+g],[-(w/2+4),h/2+g],
+      [0,-(1.5*h+2*g)],[0,1.5*h+2*g],[w+g+6,-h/2],[-(w+g+6),-h/2],[w+g+6,h/2],[-(w+g+6),h/2],
+      [0,-(2.5*h+3*g)],[0,2.5*h+3*g],[w/2+4,-(1.5*h+2*g)],[-(w/2+4),-(1.5*h+2*g)],[w/2+4,1.5*h+2*g],[-(w/2+4),1.5*h+2*g],[1.5*w+g,0],[-(1.5*w+g),0]];
+    const clampR=rc=>({x:Math.max(M,Math.min(W-M-w,rc.x)),y:Math.max(M,Math.min(H-M-h,rc.y)),w,h});
+    let best=null, bestOv=Infinity, bestI=-1; const score=[], rcs=[];
+    cands.forEach(([dx,dy],ci)=>{ const rc=clampR({x:a.x+dx-w/2,y:a.y+dy-h/2});   /* every spot is pulled inside the stage */
+      const far=Math.hypot(rc.x+w/2-a.x,rc.y+h/2-a.y), ov=placed.reduce((s,q)=>s+ovl(rc,q),0)+dots.reduce((s,q)=>s+.6*ovl(rc,q),0)+.02*far;
+      score[ci]=ov; rcs[ci]=rc; if(ov<bestOv){ bestOv=ov; best=rc; bestI=ci; } });
+    /* keep last frame's spot unless another one is clearly better, so labels do not flicker while the camera turns */
+    const pi=it.slot._ci; if(pi!=null&&pi!==bestI&&score[pi]<=bestOv+.8&&!placed.some(q=>hard(rcs[pi],q))){ best=rcs[pi]; bestI=pi; }
+    it.slot._ci=bestI;
+    /* an optional label that cannot be placed without touching another one is hidden (the readout still lists it) */
+    if(it.optional&&placed.some(q=>hard(best,q))){ sp.visible=false; it.rect=null; return; }
+    /* …and so is one whose only free spot is too far from what it names (a group label must not drift over another group) */
+    if(it.optional&&it.maxFar!=null&&Math.hypot(best.x+w/2-a.x,best.y+h/2-a.y)>(typeof it.maxFar==='function'?it.maxFar(w,h):it.maxFar)){ sp.visible=false; it.rect=null; return; }
+    placed.push(best); sp.position.copy(fromScr(best.x+w/2,best.y+h/2,a.z)); sp.visible=true; it.rect=best; });
+  return placed; }

@@ -1,138 +1,308 @@
-<!-- ================= 10 · WHAT EMBEDDINGS GET WRONG ================= -->
-<section class="unit" id="s10">
-  <div class="sec-head reveal"><span class="sec-num">10</span><h2>What embeddings get wrong</h2></div>
-  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>"He hit a six with his <strong>bat</strong>." "A <strong>bat</strong> flew out of the old fort at dusk." Same word, two completely different things.</p>
-    <p>Or: "We sat on the river <strong>bank</strong>." "I opened an account at the <strong>bank</strong>." You never mix them up, because the sentence tells you which one is meant.</p>
-  </div>
-  <div class="prose reveal">
-    <p>Everything so far gives each word <strong>one</strong> vector, whatever the sentence. So what does "bat" get? The training game pulls it toward cricket words every time it appears in a cricket sentence, and toward animal words every time it appears in an animal sentence. It ends up roughly a <strong>blend</strong> of the two meanings, weighted by how often each one is used.</p>
-    <p>A tiny example. Let the cricket meaning point along \((1,0)\) and the animal meaning along \((0,1)\). If 80% of the sentences with "bat" are about cricket, the single vector is about</p>
-    <p>\[0.8\,(1,0)+0.2\,(0,1)=(0.8,\ 0.2).\]</p>
-    <p>Its cosine with the cricket meaning is \(0.8/\sqrt{0.68}\approx0.970\), and with the animal meaning only \(0.2/\sqrt{0.68}\approx0.243\). The rare meaning is almost drowned. And a word used half and half sits in the middle, close to <em>neither</em> group.</p>
-    <p><strong>Vectors copy the text they learn from.</strong> The lists are a mirror of how words are used in the corpus — nothing more. If the training text more often writes "the doctor … he" and "the nurse … she", then "doctor" leans toward the male end of the female–male direction, and "nurse" toward the female end. That is a fact about the <em>text</em>, not about doctors or nurses. It matters because a system built on these vectors will repeat the pattern. People measure such leanings with exactly the directions you toggled in §9, and can remove a direction when it should not matter.</p>
-    <p>Both problems point to the same fix: a word's vector should depend on the <strong>sentence it sits in</strong>. That is where Units 17 and 18 go.</p>
-  </div>
-
-  <div class="widget reveal" id="w-polysemy">
-    <div class="widget-head"><span class="w-title">The word with two lives</span><span class="w-sub">The cricket words and the animal words from the explorer. "bat" gets one vector: a blend of both meanings. Slide how often it is used in cricket sentences and watch it travel.</span></div>
-    <p class="try"><b>Try:</b> Slide to 100%: bat sits in the cricket group. Slide to 0%: among the animals. At 50% it sits in the empty space between, and its nearest neighbours are weak. Then press the two sentence buttons for a peek at Unit 18: a vector that moves with its sentence.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 460px"><div id="po-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A green group of cricket words and a gold group of animal words float apart. A pink glowing point labelled bat slides along a dashed path between the two groups as the slider moves; thin lines join it to its three nearest words."></div><p class="stage-tap">drag the picture to orbit</p></div>
-      <div class="wcol" style="flex:1 1 260px">
-        <div class="controls"><div class="ctl"><label for="po-s">used in cricket</label><input id="po-s" type="range" min="0" max="1" step="0.01" value="0.5"><output id="po-s-o">50%</output></div></div>
-        <div class="presets"><button class="preset" id="po-cric">"He hit a six with his bat"</button><button class="preset" id="po-anim">"A bat flew out of the fort"</button></div>
-        <div id="po-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{aligned}\mathbf v_{\text{bat}}\approx\ &s\,\mathbf v_{\text{cricket meaning}}\\ +\ &(1-s)\,\mathbf v_{\text{animal meaning}}\end{aligned}\]</p>
-    <p>One vector per word must blend all its meanings, weighted by how often each is used — so rare meanings fade and two-faced words sit between groups. And the vectors faithfully copy the patterns of their text, including the ones we would rather they did not. The cure is a vector that changes with its sentence.</p>
-  </div>
-  <div class="check reveal" data-check="c18">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">A word is used in its first meaning \((1,0)\) half the time and in its second meaning \((0,1)\) half the time. Its single vector is the blend \((0.5,0.5)\). What is its cosine with each meaning?</p>
-    <div class="opts">
-      <button data-why="The blend is shorter than 1, so divide by its length √0.5 ≈ 0.707: 0.5/0.707 ≈ 0.707, not 0.5.">0.5 with each</button>
-      <button data-correct data-why="Right. (0.5, 0.5)·(1, 0) = 0.5, and the blend's length is √0.5 ≈ 0.707, so the cosine is 0.707 — the same for both meanings. The word sits at 45°, halfway between, fully at home in neither group.">about 0.707 with each</button>
-      <button data-why="A cosine of 1 means pointing exactly the same way. The blend points halfway between, at 45° from each meaning: cos 45° ≈ 0.707.">1 with each</button>
-    </div>
-    <div class="why"></div>
-  </div>
-  <p class="onesent reveal"><b>In one sentence:</b> A single vector per word must blend every meaning of that word and copies every pattern of its training text, which is why the next units make a word's vector depend on its sentence.</p>
-</section>
-
-<!-- ================= 11 · MEASURING SIMILARITY ================= -->
-<section class="unit" id="s11">
-  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Measuring similarity well</h2></div>
-  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>Two customers at a tea stall. One buys 2 cups of chai and 1 biscuit. The other, buying for his family, takes 4 cups of chai and 2 biscuits. Their <em>taste</em> is identical — twice as much chai as biscuits. Only the <em>size</em> of the order differs.</p>
-    <p>A good "similar taste" measure should say they are the same.</p>
-  </div>
-  <div class="prose reveal">
-    <p>We have met three ways to compare two lists. Take the orders \(\mathbf a=(2,1)\) and \(\mathbf b=(4,2)\), and a third customer who likes biscuits more, \(\mathbf c=(1,2)\).</p>
-    <ul>
-      <li><strong>Dot product</strong>: \(\mathbf a\cdot\mathbf b=10\), \(\mathbf a\cdot\mathbf c=4\). It mixes taste with size: bigger orders give bigger numbers.</li>
-      <li><strong>Distance</strong> (straight-line, Euclidean): \(\lVert\mathbf a-\mathbf b\rVert=\sqrt{2^2+1^2}\approx2.236\), but \(\lVert\mathbf a-\mathbf c\rVert=\sqrt{1^2+1^2}\approx1.414\). Distance says \(\mathbf a\) is closer to \(\mathbf c\) — the size difference beats the taste. (With an office order of 20 and 10 it would be worse: about 20.12 against 1.414.)</li>
-      <li><strong>Cosine</strong>: \(\cos(\mathbf a,\mathbf b)=1\) exactly (same direction), \(\cos(\mathbf a,\mathbf c)=4/5=0.8\). Cosine sees only taste.</li>
-    </ul>
-    <p>For word vectors, the length mostly tracks how often a word appears, and the direction tracks what it means. That is why cosine is the standard choice.</p>
-    <p><strong>The peace treaty: normalise.</strong> Divide every vector by its length so it has length 1 (it sits on the unit circle). Then the dot product <em>is</em> the cosine, and the distance follows from it:</p>
-    <p>\[\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2=2-2\cos\theta.\]</p>
-    <p>Bigger cosine means smaller distance, so all three measures agree on who is nearest. Real systems normalise once and then use fast dot products.</p>
-  </div>
-
-  <div class="widget reveal" id="w-cosine">
-    <div class="widget-head"><span class="w-title">Three rulers for "similar"</span><span class="w-sub">Drag the tips of the two arrows. The dot product, the cosine (with its angle) and the distance update together.</span></div>
-    <p class="try"><b>Try:</b> Drag \(\mathbf b\) along the same line as \(\mathbf a\), far out: the cosine stays 1 while the distance grows. Swing it to a right angle: cosine 0. Then press <em>normalise</em>: both arrows snap to length 1, and the distance becomes \(\sqrt{2-2\cos\theta}\).</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 420px;min-width:0"><div class="svgstage"><svg id="cz-svg" viewBox="0 0 480 360" class="svg-lab" role="img" aria-label="A plane with two draggable arrows a and b from the origin, the angle between them marked with an arc, the dashed straight line between their tips for the distance, and the unit circle drawn faintly."></svg></div></div>
-      <div class="wcol" style="flex:1 1 240px">
-        <div class="presets"><button class="preset" id="cz-norm" aria-pressed="false">normalise</button><button class="preset" id="cz-shop">the two shoppers</button><button class="preset" id="cz-right">right angle</button></div>
-        <div id="cz-read" class="readout" style="margin-top:.6rem;line-height:1.85"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\mathbf a\cdot\mathbf b=\lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta\]</p>
-    <p>The dot product is length × length × cosine. For meaning we want only the cosine, so we either divide by the lengths or normalise every vector once. After normalising, dot product, cosine and distance all rank neighbours the same way.</p>
-  </div>
-  <div class="check reveal" data-check="c19">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">Two vectors of length 1 have cosine 0.5. How far apart are their tips?</p>
-    <div class="opts">
-      <button data-correct data-why="Right. The squared distance is 2 − 2(0.5) = 1, so the distance is 1. (The two tips and the origin form an equal-sided triangle: 60° at the origin.)">1</button>
-      <button data-why="0.5 is the cosine. The squared distance is 2 − 2·0.5 = 1, so the distance is 1.">0.5</button>
-      <button data-why="√2 is the distance at a right angle (cosine 0). With cosine 0.5 the squared distance is 2 − 1 = 1.">\(\sqrt2\)</button>
-    </div>
-    <div class="why"></div>
-  </div>
-  <div class="check reveal" data-check="c20">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">\(\mathbf a=(3,4)\) and \(\mathbf b=(6,8)\). What are the dot product, the cosine and the distance?</p>
-    <div class="opts">
-      <button data-why="The cosine is 1: b is exactly 2a, the same direction. A cosine of 0.5 would need a 60° angle.">50, 0.5 and 5</button>
-      <button data-why="The dot product is 3·6 + 4·8 = 18 + 32 = 50, not 25.">25, 1 and 5</button>
-      <button data-correct data-why="Right. Dot: 18 + 32 = 50. Lengths 5 and 10, so the cosine is 50/50 = 1. Distance: ‖(3, 4)‖ = 5. Same direction, different sizes: cosine says 'identical', distance says '5 apart'.">50, 1 and 5</button>
-    </div>
-    <div class="why"></div>
-  </div>
-<!--@ALG s11-->
-  <p class="onesent reveal"><b>In one sentence:</b> The dot product mixes size and direction, distance is fooled by size, cosine keeps only direction — and after normalising to length 1 all three agree, since \(\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2=2-2\cos\theta\).</p>
-</section>
-
-<!-- ================= 12 · CARRY FORWARD ================= -->
+<!-- ================= 12 · MAKING IT CHEAP ================= -->
 <section class="unit" id="s12">
-  <div class="sec-head reveal"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
-  <div class="prose reveal">
-    <p>The whole unit fits on one card. Here it is, piece by piece.</p>
-  </div>
-  <div class="cards reveal-stagger">
-    <div class="cd"><h4>One-hot is blind</h4>Every pair of one-hot words has dot product 0 and distance \(\sqrt2\). Names, no meaning.</div>
-    <div class="cd"><h4>Count the next word</h4>\(P(w'\mid w)=\text{count}(w\,w')/\text{count}(w)\). Add-one smoothing: \((c+1)/(n+V)\).</div>
-    <div class="cd"><h4>Perplexity</h4>\(2^{\text{average surprise}}\): the number of equally likely words the model is as unsure as. 1 is perfect, \(V\) is clueless.</div>
-    <div class="cd"><h4>Company</h4>A word's row of neighbour counts is a vector. Similar meaning = cosine near 1.</div>
-    <div class="cd"><h4>Squeeze</h4>Keep the top \(k\) singular values: rows of \(U_k\Sigma_k\). Energy kept \(\sum_{i\le k}\sigma_i^2/\sum\sigma_i^2\). PPMI tames common words.</div>
-    <div class="cd"><h4>Learn: word2vec</h4>Score \(\sigma(\mathbf u\cdot\mathbf v)\). Pull real neighbours in, push \(k\) random words out.</div>
-    <div class="cd"><h4>Cheap questions</h4>A full softmax costs \(V\) dot products per pair; negative sampling costs \(k+1\).</div>
-    <div class="cd"><h4>Neural LM</h4>Look up rows (one-hot × table), glue, hidden layer, softmax. The table is the first layer.</div>
-    <div class="cd"><h4>Meaning is a direction</h4>\(A-B+C\), then nearest by cosine, skipping \(A,B,C\). One vector per word blends its meanings and copies its text.</div>
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>Making it cheap: negative sampling, hierarchical softmax, subsampling</h2></div>
+  <p class="qopen reveal">Every guess in §9 and §10 scored every word of the vocabulary — in a real model, all 50 000 of them. How could training on billions of words ever finish?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A teacher wants to check whether you know who chai's friends are. She could ask: "Out of all 50 000 students in this city, rank how likely each one is to be chai's friend." That takes all day.</p>
+    <p>Or she could ask five quick yes-or-no questions: "Is hot a friend? Is football? Is kettle?…" Or she could play twenty questions: "Is the friend a drink word? Yes. A hot one? Yes…" — and find the answer in a handful of steps. Three ways to test the same knowledge. The last two are fast.</p>
   </div>
   <div class="prose reveal">
-    <p><strong>Where this goes next.</strong></p>
+    <p><strong>The cost of the full softmax.</strong> To turn scores into chances, the softmax divides by a sum over the <em>whole</em> vocabulary:</p>
+    <p>\[p_o=\frac{e^{\mathbf u_o\cdot\mathbf h}}{\sum_{w=1}^{V}e^{\mathbf u_w\cdot\mathbf h}}.\]</p>
+    <p>That bottom line needs one dot product and one \(e^{(\cdot)}\) for <strong>every</strong> word — 50 000 of them for a single guess. Worse, every word takes a little probability, so every output vector receives a little blame and must be updated. word2vec makes billions of guesses. Something has to give.</p>
+    <p><strong>Way 1 · Negative sampling — a few yes/no questions.</strong> Replace "which one, out of everybody?" by "is this one real, or random?". For each real (centre, neighbour) pair, also pick \(k\) random words — the <strong>negatives</strong> — and train the model to say "real" to the true neighbour and "random" to each negative. The score of a pair is a sigmoid of its dot product (<a href="unit-14.html#s13">Unit 14</a>): \(P(\text{real})=\sigma(\mathbf u\cdot\mathbf v)\).</p>
+    <p>A worked round, with lists of two numbers. Centre word chai: \(\mathbf v_{\text{chai}}=(1,0)\). Real neighbour hot: \(\mathbf u_{\text{hot}}=(0.5,0.5)\). One random negative, football: \(\mathbf u_{\text{football}}=(-0.5,1)\).</p>
     <ul>
-      <li><strong><a href="unit-17.html">Unit 17 · Machines with Memory</a>.</strong> Our neural language model saw only the last two words. A recurrent network reads a sentence <em>one word at a time</em> and carries a running memory along, so it can use everything before — and the fading or exploding of that memory becomes an eigenvalue story (<a href="unit-04.html">Unit 4</a>).</li>
-      <li><strong><a href="unit-18.html">Unit 18 · Attention and Transformers</a>.</strong> The fix for "bat" and "bank": every word looks at every other word in its sentence, using the very dot products of this unit, and takes on a new vector that fits its context.</li>
+      <li>Real pair: \(\mathbf u_{\text{hot}}\cdot\mathbf v_{\text{chai}}=0.5\), so \(\sigma(0.5)\approx0.622\): the model is 62% sure hot is real.</li>
+      <li>Negative pair: \(\mathbf u_{\text{football}}\cdot\mathbf v_{\text{chai}}=-0.5\), so the chance it says "random" is \(\sigma(0.5)\approx0.622\).</li>
+      <li>The loss is the surprise of both right answers (in nats, as in Unit 14): \(-\ln0.622-\ln0.622\approx0.948\).</li>
     </ul>
+    <p>One step downhill (<a href="unit-09.html#s4">Unit 9</a>) with \(\eta=1\). Each answer is "wrong by" \(1-0.622\approx0.378\), and the updates are the same pull-and-push we met in CBOW, now for only three vectors:</p>
+    <ul>
+      <li><strong>Pull the real neighbour toward chai:</strong> \(\mathbf u_{\text{hot}}\leftarrow\mathbf u_{\text{hot}}+0.378\,\mathbf v_{\text{chai}}=(0.878,\ 0.5)\).</li>
+      <li><strong>Push the random word away:</strong> \(\mathbf u_{\text{football}}\leftarrow\mathbf u_{\text{football}}-0.378\,\mathbf v_{\text{chai}}=(-0.878,\ 1)\).</li>
+      <li><strong>Turn chai toward hot and away from football:</strong> \(\mathbf v_{\text{chai}}\leftarrow\mathbf v_{\text{chai}}+0.378\,(\mathbf u_{\text{hot}}-\mathbf u_{\text{football}})=(1.378,\ -0.189)\).</li>
+    </ul>
+    <p>After this one step the real pair scores \(\sigma(1.114)\approx0.753\), the negative gets "random" with \(\sigma(1.398)\approx0.802\), and the loss has dropped from 0.948 to about 0.505. The cost: \(k+1\) dot products instead of \(V\). With \(V=50\,000\) and \(k=5\), that is \(50\,000/6\approx8\,333\) times less work.</p>
+    <p><strong>Which random words?</strong> If negatives were picked in proportion to how often words appear, "the" and "is" would be picked all the time and teach little. word2vec picks a word with probability proportional to its count raised to the power \(\tfrac34\). That gently lifts rare words: a word seen 100 times and one seen once would share the picks 99% to 1%; after the \(\tfrac34\) power it is \(100^{0.75}\approx31.6\) against 1, about <strong>96.9% to 3.1%</strong>.</p>
+  </div>
+
+  <div class="widget reveal" id="w-sgstep">
+    <div class="widget-head"><span class="w-title">One round of the yes/no game, as arrows</span><span class="w-sub">Chai's centre-word arrow in blue, the real neighbour "hot" in green, the random word "football" in orange. Each step pulls the real pair together and pushes the random pair apart.</span></div>
+    <p class="try"><b>Try:</b> Press <em>one step</em> once and check the numbers above: loss 0.948 → 0.505. Keep stepping: hot swings round toward chai, football swings round to the other side, and the loss slides toward 0. Try \(\eta=0.5\) and count how many more steps it takes to get the loss below 0.1 (4 steps at \(\eta=1\), 8 at \(\eta=0.5\)).</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px;min-width:0"><div class="svgstage"><svg id="sg-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="A plane with three arrows from the origin: v chai in blue, u hot in green and u football in orange. Faint trails show where each arrow was before the latest steps. A small panel shows the loss after each step."></svg></div></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="controls"><div class="ctl"><label for="sg-eta">step \(\eta\)</label><input id="sg-eta" type="range" min="0.1" max="2" step="0.1" value="1"><output id="sg-eta-o">1</output></div></div>
+        <div class="presets"><button class="play" id="sg-step">one step</button><button class="preset" id="sg-run">▶ ten steps</button><button class="preset" id="sg-reset">reset</button></div>
+        <div id="sg-read" class="readout" style="margin-top:.6rem;line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Way 2 · Hierarchical softmax — twenty questions down a tree.</strong> Put all the words at the leaves of a binary tree. To give a word its chance, walk from the root to its leaf; at every fork, a small sigmoid decides "left or right?", and the word's chance is the <strong>product</strong> of the decisions along its path. Each fork \(n\) has its own vector \(\boldsymbol\theta_n\), and the chance of turning left is \(\sigma(\boldsymbol\theta_n\cdot\mathbf h)\).</p>
+    <p>A four-leaf tree, with \(\mathbf h=(1,1)\). The root asks "drink or sport?" with \(\boldsymbol\theta_1=(0.5,0.5)\); the drink fork asks "chai or coffee?" with \(\boldsymbol\theta_2=(-0.5,0)\); the sport fork asks "cricket or football?" with \(\boldsymbol\theta_3=(1,-2)\). Then \(P(\text{drink})=\sigma(1)=0.7311\), and</p>
+    <p>\[\begin{aligned}P(\text{chai})&=0.7311\,\sigma(-0.5)=0.2760,\\ P(\text{coffee})&=0.7311\,\sigma(0.5)=0.4551,\\ P(\text{cricket})&=0.2689\,\sigma(-1)=0.0723,\\ P(\text{football})&=0.2689\,\sigma(1)=0.1966.\end{aligned}\]</p>
+    <p>These four add up to exactly 1 — and nobody ever added up all the words. Each fork splits its share into two parts that add up to what came in, because \(\sigma(z)+\sigma(-z)=1\). With \(V=50\,000\) words, a balanced tree needs only \(\lceil\log_250\,000\rceil=\mathbf{16}\) decisions per guess instead of 50 000 scores. word2vec even builds the tree so that frequent words sit near the root, with short paths (a <em>Huffman</em> tree).</p>
+    <p><strong>Way 3 · Subsampling — fewer "the"s.</strong> "The" appears millions of times, and after the first thousand it teaches almost nothing about chai. So word2vec simply skips most of them. Each occurrence of a word with frequency \(f\) (its share of all the words) is kept with probability</p>
+    <p>\[P(\text{keep})=\sqrt{t/f},\qquad t=10^{-5},\]</p>
+    <p>and always kept if \(f\le t\). A word with \(f=4\times10^{-5}\) is kept half the time \((\sqrt{0.25}=0.5)\); "the", with \(f=0.05\), only 1.4% of the time \((\sqrt{0.0002}\approx0.0141)\); rare words are never dropped. Two gains: training is faster, and with the "the"s gone, a window of 2 words reaches further — to words that actually carry meaning.</p>
+  </div>
+
+  <div class="widget reveal" id="w-cost">
+    <div class="widget-head"><span class="w-title">Three ways to make it cheap</span><span class="w-sub">Every dot is one word of the vocabulary: a full softmax lights them all for every guess, negative sampling only \(k+1\). The tree answers with a few left/right decisions. Subsampling thins out the common words before training even starts.</span></div>
+    <p class="try"><b>Try:</b> At 50 000 words and \(k=5\) negative sampling does about 8 333 times less work. Push the vocabulary to a million: the softmax grows twenty-fold, negative sampling stays at 6, and the tree grows only from 16 to 20 decisions. On the <em>tree</em> tab click each leaf: its path lights up and its chance is the product of the forks — chai 0.276, coffee 0.455 — and the four add up to 1. On <em>subsampling</em> press <em>draw again</em>: "the" and "and" mostly vanish, rare words always stay, and chai's window of ±2 reaches new words.</p>
+    <div class="tabs" id="cs-tabs" role="tablist" style="margin-bottom:.6rem"><button role="tab" aria-selected="true" data-t="ns">softmax vs negative sampling</button><button role="tab" aria-selected="false" data-t="tree">hierarchical softmax</button><button role="tab" aria-selected="false" data-t="sub">subsampling</button></div>
+    <div data-tab="ns">
+      <div class="svgstage"><svg id="cs-svg" viewBox="0 0 760 330" class="svg-lab" role="img" aria-label="Left: a large field of dots, one per vocabulary word, which all light up for the full softmax. Right: the same field with only a handful of dots lit, the real neighbour and k random words. Below, bars on a log scale compare the work per guess: V for the softmax, k + 1 for negative sampling and log₂ V for the tree."></svg></div>
+      <div class="stage-rail">
+        <div class="ctl"><label for="cs-v">vocabulary</label><input id="cs-v" type="range" min="2" max="6" step="0.05" value="4.699"><output id="cs-v-o">50,000</output></div>
+        <div class="ctl"><label for="cs-k">negatives \(k\)</label><input id="cs-k" type="range" min="1" max="20" step="1" value="5"><output id="cs-k-o">5</output></div>
+        <button class="play" id="cs-play">▶ one guess</button>
+      </div>
+    </div>
+    <div data-tab="tree" style="display:none">
+      <div class="svgstage"><svg id="ht-svg" viewBox="0 0 640 300" class="svg-lab" role="img" aria-label="A binary tree. The root asks drink or sport, with chance 0.731 to the left. The left fork asks chai or coffee, the right fork cricket or football. Each of the four leaves shows its chance, the product of the decisions on its path; the chosen leaf's path glows."></svg></div>
+    </div>
+    <div data-tab="sub" style="display:none">
+      <div class="presets" style="margin-bottom:.5rem"><button class="play" id="ss-draw">↻ draw again</button></div>
+      <div id="ss-stream" class="ss-stream"></div>
+      <div class="svgstage" style="margin-top:.6rem"><svg id="ss-svg" viewBox="0 0 640 210" class="svg-lab" role="img" aria-label="Bars: for each word of the sentence, its chance of being kept, the square root of t over f, on a scale from 0 to 1. Common words like the and and have tiny bars; rare words have full bars."></svg></div>
+    </div>
+    <div id="cs-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Side by side:</p>
+    <div class="scroll-x"><table class="plain cmp cmp3">
+      <thead><tr><th></th><th>full softmax</th><th>negative sampling</th><th>hierarchical softmax</th></tr></thead>
+      <tbody>
+        <tr><td>the question</td><td>which one, out of everybody?</td><td>this one — real or random? (\(k+1\) times)</td><td>left or right? (down a tree)</td></tr>
+        <tr><td>work per guess</td><td>\(V\) (50 000)</td><td>\(k+1\) (6)</td><td>\(\lceil\log_2V\rceil\) (16)</td></tr>
+        <tr><td>true chances that add up to 1?</td><td>yes</td><td>no — a yes/no score per pair</td><td>yes</td></tr>
+        <tr><td>tends to suit</td><td>small vocabularies</td><td>frequent words; the usual default</td><td>rare words</td></tr>
+      </tbody></table></div>
+    <p>Rule of thumb: <strong>negative sampling</strong> is the default (\(k\) of about 5–20 for small collections of text, 2–5 for huge ones), <strong>hierarchical softmax</strong> is worth trying when rare words matter most, and <strong>subsampling</strong> is switched on in both.</p>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>The knowledge was never in the sum over 50 000 words. It is in the pulls: toward the true neighbour, away from what is not a neighbour. Negative sampling keeps the pull toward the truth and replaces "away from everybody" by "away from a few random somebodies" — and over millions of steps every word gets its turn to be the random one. The tree keeps exact chances by splitting them fork by fork. And subsampling drops only the repeats that would have taught nothing new.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>A model trained with negative sampling no longer gives you "the chance of each next word" — it learned a yes/no detector for pairs. Its vectors are excellent, but its scores are not probabilities that add up to 1. If you need real chances, as a language model does (§14), you need the full softmax or the tree.</p>
   </div>
   <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\text{king}-\text{man}+\text{woman}\approx\text{queen}\]</p>
-    <p>A word becomes a point in space, placed by the company it keeps — counted and squeezed, or learned by a guessing game. In that space, closeness is similarity and a difference of meaning is a direction. Every language model you will meet from here on starts by turning its words into such vectors.</p>
+    <p>\[\begin{aligned}L_{\text{NS}}=&-\ln\sigma(\mathbf u_{+}\cdot\mathbf v)\\ &-\sum_{\text{negatives}}\ln\sigma(-\mathbf u_{-}\cdot\mathbf v)\end{aligned}\]</p>
+    <p>Three tricks made word2vec cheap: ask \(k+1\) yes/no questions instead of scoring all \(V\) words (negative sampling), walk \(\log_2V\) forks of a tree (hierarchical softmax), and skip most copies of very common words (subsampling). The cost of a guess stops growing with the vocabulary.</p>
   </div>
-  <p class="onesent reveal"><b>In one sentence:</b> Give each word a short list of numbers learned from the company it keeps — by counting and the SVD, or by word2vec's guessing game — and meaning becomes geometry: similar words point the same way and differences of meaning are directions.</p>
+  <div class="check reveal" data-check="c29">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The vocabulary has 100 000 words and you use \(k=10\) negatives. About how many times fewer dot products does one guess need?</p>
+    <div class="opts">
+      <button data-why="Count the real neighbour too: k + 1 = 11 small questions, not 10. So 100 000/11 ≈ 9 091.">10 000</button>
+      <button data-correct data-why="Right. The full softmax needs 100 000 dot products; negative sampling needs k + 1 = 11. 100 000/11 ≈ 9 091.">about 9 091</button>
+      <button data-why="The saving is the vocabulary size divided by k + 1, not the vocabulary times k.">about 1 000 000</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c30">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A hierarchical softmax is built as a balanced tree over a vocabulary of one million words. How many left/right decisions does one guess need?</p>
+    <div class="opts">
+      <button data-why="1 000 000 is the work of the full softmax. The tree halves the candidates at every fork, so it needs only about log₂ 1 000 000 forks.">1 000 000</button>
+      <button data-why="log₁₀ 1 000 000 = 6 counts ten-way splits. Each fork of this tree splits in TWO, so we need log₂: 2²⁰ ≈ 1 048 576, so 20 forks.">6</button>
+      <button data-correct data-why="Right. Each decision halves the candidates. 2¹⁹ ≈ 524 000 is not enough, 2²⁰ ≈ 1 049 000 is, so ⌈log₂ 1 000 000⌉ = 20 decisions.">20</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c31">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the worked round, after one step with \(\eta=1\), what happens to the score \(\mathbf u_{\text{football}}\cdot\mathbf v_{\text{chai}}\)?</p>
+    <div class="opts">
+      <button data-why="The step pushes football AWAY from chai, so the dot product becomes more negative, not positive.">it rises from −0.5 to +0.5</button>
+      <button data-correct data-why="Right. With the new arrows (−0.878, 1) and (1.378, −0.189): −0.878·1.378 + 1·(−0.189) ≈ −1.398. The random word is pushed further away, so the model is surer it is random: σ(1.398) ≈ 0.802.">it falls from −0.5 to about −1.398</button>
+      <button data-why="Only the real neighbour's score goes up. The negative's score goes down: about −1.398 after the step.">it stays at −0.5</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s12-->
+  <p class="onesent reveal"><b>In one sentence:</b> A full softmax scores all \(V\) words for every guess; negative sampling asks \(k+1\) yes/no questions (50 000 against 6), a tree asks \(\lceil\log_2V\rceil\) left/right questions (16), and subsampling keeps each "the" with chance only \(\sqrt{t/f}\) — together they made training on billions of words possible.</p>
 </section>
 
-<!--@PRACTICE-->
+<!-- ================= 13 · COUNTING AND PREDICTING MEET ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Why it works: counting and predicting meet</h2></div>
+  <p class="qopen reveal">Counting a table and playing a guessing game look nothing alike. Why do they end up with such similar word vectors?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Two strangers in a new city. They have never met. But they shop at the same kirana store, buy vegetables from the same cart and ride the same bus. After a month, look into their bags: the same brand of tea, the same bread, the same bus pass.</p>
+    <p>Nobody introduced them. The <strong>same places</strong> filled their bags with the <strong>same things</strong>.</p>
+  </div>
+  <div class="prose reveal">
+    <p>That is word2vec in one picture. Every time a word appears, its vector is pulled toward the vectors of its neighbours. Two words that keep the same company — even if they never once appear together — receive the same pulls, step after step. So their vectors are pulled to the same place. Watch it happen: in the demo below, chai and coffee never share a sentence, but they share their neighbours.</p>
+  </div>
+
+  <div class="widget reveal" id="w-w2v">
+    <div class="widget-head"><span class="w-title">Strangers who shop at the same stores</span><span class="w-sub">Skip-gram with negative sampling, trained live on made-up sentences in which chai and coffee <em>never</em> meet but keep the same company; wicket keeps cricket company. Each word is a dot on the globe (only its direction counts). Only the three words of the story are named — point at any other dot to read it.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ train</em>. Watch the cosine of chai and coffee climb to nearly 1 while the loss drops — and chai and wicket, who keep different company, stay far apart. Press <em>new start</em>: the dots begin somewhere else, but chai and coffee always end together (above 0.99 from every start we tried). Try 1 negative against 10.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="wv-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. A faint glass globe with small glowing dots for about thirty words. Three words are named: chai in gold, coffee in orange and wicket in green, each with a thin line to the centre. As training runs, chai and coffee slide together although they never appear in the same sentence, while wicket stays with the cricket words, away from chai."></div><p class="stage-tap">drag the picture to orbit · point at a dot to read it</p></div>
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="controls">
+          <div class="ctl"><label for="wv-neg">negatives \(k\)</label><input id="wv-neg" type="range" min="1" max="10" step="1" value="5"><output id="wv-neg-o">5</output></div>
+        </div>
+        <div class="presets"><button class="play" id="wv-play">▶ train</button><button class="preset" id="wv-seed">new start</button></div>
+        <div class="svgstage" style="margin-top:.6rem"><svg id="wv-chart" viewBox="0 0 300 170" class="svg-lab" role="img" aria-label="Two lines over training: the cosine of chai and coffee climbing toward 1, and the cosine of chai and wicket falling."></svg></div>
+        <div id="wv-read" class="readout" style="margin-top:.5rem;line-height:1.7"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The surprise: word2vec is secretly counting.</strong> In 2014 Omer Levy and Yoav Goldberg asked what skip-gram with negative sampling is aiming for, if its vectors had room to give every pair exactly the score it wants. The answer: for every word \(w\) and context word \(c\), it wants</p>
+    <p>\[\mathbf u_c\cdot\mathbf v_w=\operatorname{PMI}(w,c)-\ln k.\]</p>
+    <p>The best possible score for a pair is exactly the PMI of §6 (in natural logs), shifted down by \(\ln k\). For chai and hot, \(\operatorname{PMI}=\ln1.6\approx0.470\); with \(k=5\) negatives the best score is \(0.470-\ln5\approx-1.139\). So a table of dot products \(\mathbf u\cdot\mathbf v\) is a squeezed copy of the PMI table: word2vec is quietly doing what §6 and §7 did by hand — weigh the company, then squeeze it. The counting road and the predicting road arrive at the same city.</p>
+    <p><strong>GloVe makes the meeting explicit.</strong> In 2014 Jeffrey Pennington, Richard Socher and Christopher Manning at Stanford built a method straight on this idea, called <strong>GloVe</strong> (global vectors). Their insight: meaning lives in <strong>ratios</strong> of co-occurrence probabilities. Take chai and lassi, with 1 000 context words counted around each:</p>
+    <div class="scroll-x"><table class="plain co-tbl">
+      <thead><tr><th>probe word \(k\)</th><th>hot</th><th>cold</th><th>drink</th><th>cricket</th></tr></thead>
+      <tbody><tr><th>\(P(k\mid\text{chai})\)</th><td>40/1000</td><td>2/1000</td><td>60/1000</td><td>4/1000</td></tr><tr><th>\(P(k\mid\text{lassi})\)</th><td>2/1000</td><td>40/1000</td><td>60/1000</td><td>4/1000</td></tr><tr><th>ratio</th><td><b>20</b></td><td><b>0.05</b></td><td><b>1</b></td><td><b>1</b></td></tr></tbody></table></div>
+    <p>Words that tell chai and lassi apart give ratios far from 1: "hot" (20) points to chai, "cold" (0.05) to lassi. Words that do not tell them apart give 1, whether they are shared ("drink") or irrelevant to both ("cricket"). The GloVe paper found exactly this pattern for <em>ice</em> and <em>steam</em> with the probes <em>solid</em> and <em>gas</em>, counted over six billion words.</p>
+    <p>So GloVe asks the vectors to reproduce the <em>log</em> counts directly, for every pair of words \(i,j\) seen together \(X_{ij}\) times:</p>
+    <p>\[\mathbf w_i\cdot\tilde{\mathbf w}_j+b_i+\tilde b_j\approx\ln X_{ij}.\]</p>
+    <p>Then differences of vectors turn ratios into dot products: \((\mathbf w_{\text{chai}}-\mathbf w_{\text{lassi}})\cdot\tilde{\mathbf w}_{\text{hot}}\approx\ln20\approx2.996\). Each pair is weighted by \(f(X_{ij})=(X_{ij}/100)^{3/4}\) (and 1 above 100), so rare, noisy counts matter less: \(f(40)\approx0.503\), \(f(2)\approx0.053\).</p>
+  </div>
+
+  <div class="widget reveal" id="w-ratio">
+    <div class="widget-head"><span class="w-title">Meaning lives in ratios</span><span class="w-sub">Left: for the chosen probe word, how often it appears around chai and around lassi, and their ratio on a log scale. Right: vectors hand-made to satisfy GloVe's rule — the difference arrow chai − lassi and one arrow per probe word.</span></div>
+    <p class="try"><b>Try:</b> Pick <em>hot</em>: ratio 20, ln 20 ≈ 3.0, and the difference arrow points toward hot. Pick <em>cold</em>: 0.05, and it points away. Pick <em>drink</em> or <em>cricket</em>: ratio 1, ln 1 = 0 — those arrows stand at right angles to the difference, because they cannot tell chai from lassi.</p>
+    <div class="bg-prevrow"><span class="lbl">probe word</span><span id="gr-pick" class="bg-chips"></span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:1.3 1 380px;min-width:0"><div class="svgstage"><svg id="gr-bars" viewBox="0 0 420 260" class="svg-lab" role="img" aria-label="Two bars for the probe word's probability around chai and around lassi, and a log-scale ruler from 0.01 to 100 with a marker at their ratio."></svg></div></div>
+      <div class="wcol" style="flex:1 1 280px;min-width:0"><div class="svgstage"><svg id="gr-vec" viewBox="0 0 300 260" class="svg-lab" role="img" aria-label="A plane with the difference arrow chai minus lassi, pointing right, and four probe arrows: hot leaning right, cold leaning left, drink straight up and cricket straight down."></svg></div>
+        <div id="gr-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Counting and predicting read the same thing — which words share windows — and both boil it down to the same kind of number: how much more often than chance a pair meets. Counting writes that number into a table and squeezes it; word2vec discovers it through billions of small pulls; GloVe fits it head-on. Different roads, same city, because the city is the company words keep.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>"Predicting is smarter than counting" is a myth. With the same text, the same window and sensible settings (PPMI, a little smoothing, a good \(k\)), well-tuned counting methods and word2vec produce vectors of very similar quality. The big wins of word2vec were <em>speed</em> and <em>scale</em> — it never has to build the giant table.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf u_c\cdot\mathbf v_w\to\operatorname{PMI}(w,c)-\ln k,\\ \mathbf w_i\cdot\tilde{\mathbf w}_j+b_i+\tilde b_j\approx\ln X_{ij}\end{gathered}\]</p>
+    <p>Words that keep the same company receive the same pulls, so their vectors converge. At its best, word2vec's dot products equal the PMI of §6 shifted by \(\ln k\) — it is squeezing the counting table without ever writing it down — and GloVe fits the log counts directly, so that differences of vectors reproduce ratios of probabilities.</p>
+  </div>
+  <div class="check reveal" data-check="c32">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the demo, chai and coffee never appear in the same sentence. What happens to their cosine as training goes on?</p>
+    <div class="opts">
+      <button data-why="Being in the same sentence is not what matters. Their vectors are pulled by their NEIGHBOURS, and those are the same words.">it stays near 0 — they never meet</button>
+      <button data-correct data-why="Right. At every step chai is pulled toward drink, hot and cup — and so is coffee. The same pulls, again and again, move them to the same place: strangers who shop at the same stores.">it climbs toward 1</button>
+      <button data-why="Nothing pushes chai and coffee apart on purpose. Now and then one is drawn as a random negative in the other's round, but the shared pulls win by far.">it falls toward −1</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c33">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">\(\operatorname{PMI}(\text{chai},\text{hot})=\ln1.6\approx0.470\). With only \(k=1\) negative per pair, what is the best score \(\mathbf u_{\text{hot}}\cdot\mathbf v_{\text{chai}}\) skip-gram can aim for?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The target is PMI − ln k, and ln 1 = 0, so the best score is the PMI itself: about 0.470.">about 0.470</button>
+      <button data-why="−1.139 is the target with k = 5 (0.470 − ln 5). With k = 1 the shift is ln 1 = 0.">about −1.139</button>
+      <button data-why="The model is not aiming for certainty. With finite negatives, the best score is PMI − ln k — a finite number, here 0.470.">as large as possible</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c34">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The probe word "drink" is equally common around chai and around lassi. What does GloVe want the dot product \((\mathbf w_{\text{chai}}-\mathbf w_{\text{lassi}})\cdot\tilde{\mathbf w}_{\text{drink}}\) to be?</p>
+    <div class="opts">
+      <button data-why="1 is the RATIO. GloVe works with logs: the dot product should be ln 1 = 0.">1</button>
+      <button data-correct data-why="Right. The ratio is 1, and ln 1 = 0. So drink's arrow stands at right angles to the difference chai − lassi: it cannot tell them apart.">0 — drink's arrow is at right angles to chai − lassi</button>
+      <button data-why="ln 20 ≈ 2.996 belongs to &quot;hot&quot;, the probe that points to chai. Drink is shared equally, so its target is ln 1 = 0.">about 2.996</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s13-->
+  <p class="onesent reveal"><b>In one sentence:</b> Words that keep the same company get the same pulls and converge — strangers who shop at the same stores — and at its best word2vec makes \(\mathbf u\cdot\mathbf v=\operatorname{PMI}-\ln k\) (chai–hot: 0.470 − ln 5 ≈ −1.139), while GloVe fits the log counts so that meaning shows up in ratios like hot's 20 for chai against lassi.</p>
+</section>
+
+<!-- ================= 14 · A NEURAL LANGUAGE MODEL ================= -->
+<section class="unit" id="s14">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>A neural language model</h2></div>
+  <p class="qopen reveal">Can we have both — word vectors that share what they learn, <em>and</em> real chances for the next word?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Mumbai's dabbawalas pass a lunch box along a relay. One picks it up, one sorts it, one carries it, one hands it over. Nobody does the whole job, but the box always arrives.</p>
+    <p>A neural language model is a relay like that. Look up the words, glue them together, mix them in a small network, and hand over a chance for every possible next word.</p>
+  </div>
+  <div class="prose reveal">
+    <p>The count tables of §2 could not share anything between "chai" and "coffee". In 2003 — ten years before word2vec — Yoshua Bengio and his team built a model that could. It works in five steps:</p>
+    <ol class="roadmap">
+      <li><strong>Look up.</strong> Keep a table \(E\) with one row of \(d\) numbers for each word — an <strong>embedding table</strong>. Look up the row of each previous word.</li>
+      <li><strong>Glue.</strong> Put the rows side by side into one longer list (people say <em>concatenate</em>). Two previous words with \(d=2\) give a list of 4.</li>
+      <li><strong>Mix.</strong> Pass it through a hidden layer, exactly as in <a href="unit-15.html#s1">Unit 15</a>: \(\mathbf h=\tanh(W\mathbf x+\mathbf b)\).</li>
+      <li><strong>Score every word.</strong> One more layer gives one score per word, and a softmax (<a href="unit-14.html#s10">Unit 14</a>) turns the scores into chances.</li>
+      <li><strong>Learn.</strong> Train with cross-entropy and backprop (<a href="unit-15.html#s8">Unit 15</a>). The blame flows all the way back into the rows of \(E\), so the table is learned too.</li>
+    </ol>
+    <p><strong>The lookup is a matrix multiply.</strong> Write a word one-hot and multiply it by the table. With three words and \(d=2\):</p>
+    <p>\[\begin{pmatrix}0&1&0\end{pmatrix}\begin{pmatrix}1&2\\ 3&4\\ 5&6\end{pmatrix}=\begin{pmatrix}3&4\end{pmatrix}.\]</p>
+    <p>The single 1 picks out row 2. So an embedding table is nothing new: it is <strong>the first layer's weight matrix</strong>, fed with one-hot inputs. Computers skip the multiply and just fetch the row — same answer, far less work. And it is the <strong>same object</strong> as word2vec's input table \(W_{\text{in}}\) (§8): word2vec is this model with the hidden layer removed, trained on a simpler game.</p>
+  </div>
+
+  <div class="widget reveal" id="w-lookup">
+    <div class="widget-head"><span class="w-title">One-hot times a table = fetch a row</span><span class="w-sub">A one-hot word (left) multiplies the embedding table (middle). Every row but one is multiplied by 0, so only one row survives.</span></div>
+    <p class="try"><b>Try:</b> Click each word in turn. Watch the 1 move and the matching row light up. Then press <em>▶ multiply slowly</em> to see all the zero rows vanish.</p>
+    <div class="lk-words bg-chips" id="lk-words"></div>
+    <div class="scroll-x"><div id="lk-eq" class="lk-eq"></div></div>
+    <div class="presets" style="margin-top:.5rem"><button class="play" id="lk-play">▶ multiply slowly</button></div>
+    <div id="lk-read" class="readout" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="prose reveal">
+    <p>Now the whole relay. We trained a tiny model ourselves, for this page, on just seven sentences: "I drink hot chai .", "we drink hot chai .", "I drink hot coffee .", "we drink hot coffee .", "I play cricket .", "we play cricket .", "we play football .". It has a vocabulary of 10 words, embeddings of \(d=2\) numbers and 8 hidden neurons. Its whole brain is 150 numbers.</p>
+    <p>Notice what it has <strong>never</strong> seen: "I play football". A count table would give it chance exactly 0. But "I" and "we" were used in the same places, so the model learned almost the same row for both. It gives football after "I play" a chance of about 0.256 — nearly what it gives after "we play" (0.258). That is <strong>sharing</strong>, and it is the whole point of word vectors.</p>
+  </div>
+  <div class="widget reveal" id="w-nlm">
+    <div class="widget-head"><span class="w-title">A tiny neural language model, every number visible</span><span class="w-sub">Pick two previous words. Their rows are fetched, glued into 4 numbers, mixed by 8 hidden neurons and turned into a chance for each of the 10 words. The small map shows every word's learned row of 2 numbers.</span></div>
+    <p class="try"><b>Try:</b> Pick "drink" then "hot": chai and coffee share the top. Pick "I" then "play": cricket first, but football gets a real share (0.256) though the model never saw "I play football". In the map, find "I" and "we" sitting almost on top of each other.</p>
+    <div class="bg-prevrow"><span class="lbl">word 1</span><span id="nl-w1" class="bg-chips"></span></div>
+    <div class="bg-prevrow"><span class="lbl">word 2</span><span id="nl-w2" class="bg-chips"></span></div>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px;min-width:0"><div class="svgstage"><svg id="nl-svg" viewBox="0 0 640 330" class="svg-lab" role="img" aria-label="The model as a relay from left to right: the two chosen words, their two looked-up rows of 2 numbers, the glued list of 4, eight hidden neurons as glowing boxes, and ten probability bars for the next word."></svg></div></div>
+      <div class="wcol" style="flex:1 1 240px;min-width:0"><div class="svgstage"><svg id="nl-map" viewBox="0 0 260 260" class="svg-lab" role="img" aria-label="A small plane with all ten words at their learned two-number embeddings. I and we sit close together; chai and coffee sit on top of each other."></svg></div>
+        <div id="nl-read" class="readout" style="margin-top:.5rem;line-height:1.7"></div></div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Because the table is shared by every sentence. When the model learns something after "we play", the blame flows into the row for "we"; since "I" was pushed to nearly the same row by the same kinds of sentences, what was learned about "we" also works for "I". Similar rows make similar guesses — so the model can give a sensible chance to a sentence it has never seen.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>The embedding table is not an extra part bolted onto the network — it <em>is</em> the first layer's weights, learned by the same backprop. And this model still has the short memory of §2: it sees exactly two previous words, no more. Removing that fixed window is the job of <a href="unit-17.html">Unit 17</a>.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{aligned}\mathbf x&=[\,E_{w_1};\,E_{w_2}\,],\\ \mathbf h&=\tanh(W\mathbf x+\mathbf b),\\ P(\cdot\mid w_1w_2)&=\operatorname{softmax}(U\mathbf h+\mathbf c)\end{aligned}\]</p>
+    <p>A neural language model is a Unit 15 network with a lookup table in front and a softmax at the end. The table is just the first layer's weights, learned by the same backprop — the same kind of table word2vec learns. Because similar words get similar rows, what the model learns about one word helps it with the others.</p>
+  </div>
+  <div class="check reveal" data-check="c35">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A vocabulary has 4 words and \(E=\begin{pmatrix}1&0&2\\ 0&1&1\\ 3&1&0\\ 2&2&2\end{pmatrix}\). What is \((0,0,1,0)\,E\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The 1 sits in slot 3, so the product picks row 3 of E: (3, 1, 0). Every other row is multiplied by 0.">\((3,1,0)\)</button>
+      <button data-why="(2, 1, 0, 2) is column 3 of E read downwards. A one-hot ROW vector on the left picks a ROW of E: row 3 is (3, 1, 0).">\((2,1,0,2)\)</button>
+      <button data-why="Nothing is added up here: three of the four rows are multiplied by 0 and vanish, and row 3 is left as it is: (3, 1, 0).">\((6,4,5)\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c36">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Our tiny model has \(V=10\) words, \(d=2\), two previous words and 8 hidden neurons. How many numbers does it learn? (Table, then hidden weights and biases, then output weights and biases.)</p>
+    <div class="opts">
+      <button data-why="You left out the embedding table: 10 × 2 = 20 more. Total 20 + 40 + 90 = 150.">130</button>
+      <button data-why="The hidden layer reads the GLUED list of 4 numbers, so its weight matrix is 8 × 4 = 32, not 8 × 2. Total: 20 + (32 + 8) + (80 + 10) = 150.">134</button>
+      <button data-correct data-why="Right. Table 10 × 2 = 20. Hidden: 8 × 4 = 32 weights + 8 biases = 40. Output: 10 × 8 = 80 weights + 10 biases = 90. Total 20 + 40 + 90 = 150.">150</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s14-->
+  <p class="onesent reveal"><b>In one sentence:</b> A neural language model looks up each previous word's row in an embedding table (one-hot × matrix = picking a row — the same table word2vec learns), glues the rows, mixes them in a hidden layer and ends with a softmax over the vocabulary, so similar words share what they learn and even unseen sentences get sensible chances.</p>
+</section>

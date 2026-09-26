@@ -1,4 +1,144 @@
-<!-- ================= ACT II · MAKING IT WORK ================= -->
+<!-- ================= ACT II · EVERY WORD ASKS EVERY WORD ================= -->
+<!-- ================= 3 · SELF-ATTENTION ================= -->
+<section class="unit" id="s3">
+  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Self-attention: every word asks every word</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A class of eight students plays "pass the message". The first student whispers to the second, the second to the third, and so on. By the time it reaches the eighth student, the message is faint and mixed up — and it took seven turns.</p>
+    <p>Now change the rule. Every student may stand up and ask <strong>any</strong> other student a question directly, and everyone asks at the same time. One turn. Nothing gets lost on the way.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The question.</strong> In §1 the decoder looked back at the encoder's notes. But the encoder itself still read the sentence as a relay: the note written after "tea" knows about "I" only because "I" was passed along from hand to hand. Why keep the relay at all? What if every word could look at every other word directly?</p>
+    <p>That is <strong>self-attention</strong>: the words of one sentence attend to <em>each other</em>. In 2017 Vaswani and others built a whole translator from it, with no relay at all — the <strong>transformer</strong>, in a paper called "Attention Is All You Need". The relay of <a href="unit-17.html">Unit 17</a> had two problems, and self-attention removes both.</p>
+    <ol class="roadmap">
+      <li><strong>The relay forgets.</strong> The first word's voice is handed along seven times to reach word 8. If each hand-over keeps about half of it, what arrives is \(0.5^7\approx0.0078\) — less than 1%. With attention the path from word 1 to word 8 is <strong>one</strong> step long.</li>
+      <li><strong>The relay is slow.</strong> Word 8 must wait for word 7, which waits for word 6. A computer with a thousand workers still has to do the steps one after another, so most of the workers sit idle. With attention all the questions are asked <strong>at once</strong>.</li>
+    </ol>
+    <p>The price is the number of questions. With 8 words, each of the 8 asks all 8 (itself too): \(8\times8=64\) questions. We come back to that price in §12.</p>
+  </div>
+
+  <div class="widget reveal" id="w-relay">
+    <div class="widget-head"><span class="w-title">Pass the message, or ask directly</span><span class="w-sub">One at a time: the relay of Unit 17 — each word hands the note to the next, and the first word's voice (orange bars) halves at every hand-over. Everyone at once: attention — every word is joined to every word by a direct line.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ send the message</em> in the relay and watch the first word's voice shrink on its way: 1, 0.5, 0.25 … 0.0078 at word 8. Switch to <em>everyone at once</em> and press play again: every line lights in the same moment. Then drag the number of words to 10: 9 hand-overs against 100 questions.</p>
+    <div class="svgstage"><svg id="rl-svg" viewBox="0 0 760 330" class="svg-lab" role="img" aria-label="A row of word beads. In the relay picture a glowing note travels from the first bead to the last, one hop at a time, and the bars under the beads show the first word's voice halving at every hop. In the attention picture curved lines join every bead to every other bead and all of them light up at once."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 260px">
+        <div class="tabs" id="rl-mode" role="tablist"><button role="tab" aria-selected="true" data-t="relay">one at a time (Unit 17)</button><button role="tab" aria-selected="false" data-t="all">everyone at once</button></div>
+        <div class="controls"><div class="ctl"><label for="rl-n">words</label><input id="rl-n" type="range" min="4" max="12" step="1" value="8"><output id="rl-n-o">8</output></div></div>
+        <div class="presets"><button class="play" id="rl-play">▶ send the message</button></div>
+      </div>
+      <div class="wcol" style="flex:1.2 1 280px"><div id="rl-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Three views of every word.</strong> For every word to ask every other word, each word needs three things. Think of three badges it wears:</p>
+    <ul>
+      <li>a <span class="k-q">query</span> \(\mathbf q\) — "what am I looking for?"</li>
+      <li>a <span class="k-k">key</span> \(\mathbf k\) — "what do I offer, so that others can find me?"</li>
+      <li>a <span class="k-v">value</span> \(\mathbf v\) — "what do I hand over when someone picks me?"</li>
+    </ul>
+    <p>All three are made from the same word. The word starts as one list of numbers \(\mathbf x\) (its vector from the table of <a href="unit-16.html">Unit 16</a>), written as a row. Three learned matrices turn that one row into three:</p>
+    <p>\[\mathbf q=\mathbf x\,W_Q,\quad\mathbf k=\mathbf x\,W_K,\quad\mathbf v=\mathbf x\,W_V.\]</p>
+    <p>In this unit queries are <span class="k-q">orange</span>, keys are <span class="k-k">blue</span>, values are <span class="k-v">green</span> and attention weights are <span class="k-w">gold</span>. Training chooses the three matrices.</p>
+    <p><strong>One word, worked by hand.</strong> Three words already have their keys and values, each a list of two numbers (so \(d=2\)):</p>
+    <p>\[\begin{aligned}&\mathbf k_1=(1,0),\ \ \mathbf k_2=(0,1),\ \ \mathbf k_3=(1,1)\\ &\mathbf v_1=(2,0),\ \ \mathbf v_2=(0,2),\ \ \mathbf v_3=(1,1)\end{aligned}\]</p>
+    <p>A word asks with the query \(\mathbf q=(2,0)\). Four small moves:</p>
+    <ol class="roadmap">
+      <li><strong>Score each key</strong> with a dot product, then divide by \(\sqrt d=\sqrt2\approx1.414\) (§4 says why): \(\mathbf q\cdot\mathbf k_1=2\), \(\mathbf q\cdot\mathbf k_2=0\), \(\mathbf q\cdot\mathbf k_3=2\). Divided: \((1.414,\ 0,\ 1.414)\).</li>
+      <li><strong>Turn scores into shares</strong> with softmax: \(e^{1.414}\approx4.113\) and \(e^{0}=1\), total \(9.227\). Shares \(\approx(0.446,\ 0.108,\ 0.446)\).</li>
+      <li><strong>Blend the values</strong> with those shares: \(0.446\,(2,0)+0.108\,(0,2)+0.446\,(1,1)\).</li>
+      <li><strong>Read the answer:</strong> \(\approx(1.337,\ 0.663)\).</li>
+    </ol>
+    <p>The query points along the first direction, so it matched keys 1 and 3 equally well and key 2 badly. The answer leans towards \(\mathbf v_1\) and \(\mathbf v_3\).</p>
+  </div>
+
+  <div class="widget reveal" id="w-qkv">
+    <div class="widget-head"><span class="w-title">One lookup, in space</span><span class="w-sub">The floor holds the orange query and the three blue keys. Over each key stands a gold pillar: its share (height = 2.2 × share). Above floats a second floor with the three green values. Each value is shrunk by its share and they are laid tip to tail — where the chain ends is the answer.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ run the lookup</em> and follow the four moves. Then turn the query with the angle slider to 90°: it now points at \(\mathbf k_2\), the tallest pillar moves there and the answer swings to \((0.663,\ 1.337)\). Set the length to 0: the three pillars become equal (0.333 each) and the answer is the plain average \((1,\ 1)\). Last, pick the three queries of the matrix below one by one.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div id="qk-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On a glass floor an orange query arrow and three blue key arrows start from the same point. Over the tip of each key stands a gold pillar whose height is that key's share. Above, on a second glass floor, three green value arrows. Shrunken copies of the values are laid tip to tail, and a bright white arrow from the start to the end of the chain is the answer."></div><p class="stage-tap">drag the picture to orbit</p></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="tabs" id="qk-row" role="tablist"><button role="tab" aria-selected="true" data-t="0">q = (2, 0)</button><button role="tab" aria-selected="false" data-t="1">q = (0, 2)</button><button role="tab" aria-selected="false" data-t="2">q = (1, 1)</button></div>
+        <div class="controls">
+          <div class="ctl"><label for="qk-ang">angle</label><input id="qk-ang" type="range" min="0" max="360" step="1" value="0"><output id="qk-ang-o">0°</output></div>
+          <div class="ctl"><label for="qk-len">length</label><input id="qk-len" type="range" min="0" max="4" step="0.05" value="2"><output id="qk-len-o">2</output></div>
+        </div>
+        <div class="presets"><button class="play" id="qk-play">▶ run the lookup</button></div>
+        <div id="qk-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+    <div id="qk-mat" class="qk-mat"></div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>All the words at once.</strong> In a sentence every word asks its own question. Write the shapes first (the habit of <a href="unit-15.html#s5">Unit 15</a>). A sentence of \(n\) words, each a list of \(d\) numbers, is a table \(X\) of shape \(n\times d\). Stack the queries as the rows of \(Q=XW_Q\), the keys as the rows of \(K=XW_K\), the values as the rows of \(V=XW_V\) — each \(n\times d\). Then every lookup happens in one line:</p>
+    <p>\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\!\Big(\frac{QK^{\mathsf T}}{\sqrt d}\Big)\,V.\]</p>
+    <p><strong>Read it aloud, from the inside out.</strong> \(QK^{\mathsf T}\): every question against every label — an \(n\times n\) table of agreements. Divide by \(\sqrt d\): calm the numbers down (§4). Softmax, row by row: each word shares out exactly 100% of its attention. Times \(V\) (\(n\times d\)): each word collects its blend of gifts — \(n\) new vectors, one per word. The table of shares is the <strong>attention matrix</strong>. With the three queries \((2,0)\), \((0,2)\) and \((1,1)\):</p>
+    <p>\[A\approx\begin{pmatrix}0.446&0.108&0.446\\ 0.108&0.446&0.446\\ 0.248&0.248&0.503\end{pmatrix}.\]</p>
+    <p>The answers are \((1.337,0.663)\), \((0.663,1.337)\) and \((1,1)\). The third query \((1,1)\) likes key 3 most, and its answer is exactly \(\mathbf v_3\) — the other two values balance each other.</p>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>The same three matrices \(W_Q, W_K, W_V\) serve <strong>every</strong> word in every sentence. So the model never learns "what word 5 should ask". It learns <em>kinds</em> of questions — "which thing am I talking about?", "who did the action?" — that work at any position. That is the sharing trick of the recurrent cell (<a href="unit-17.html#s3">Unit 17</a>), but without the relay: every answer is one hop away.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The relay against self-attention.</strong></p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>the relay (Unit 17)</th><th>self-attention</th></tr></thead>
+      <tbody>
+        <tr><td data-l=""><b>path from word 1 to word \(n\)</b></td><td data-l="relay">\(n-1\) hand-overs</td><td data-l="attention">1 hop</td></tr>
+        <tr><td data-l=""><b>steps that must wait in a row</b></td><td data-l="relay">\(n\)</td><td data-l="attention">1 per layer</td></tr>
+        <tr><td data-l=""><b>what a word sees</b></td><td data-l="relay">a fading summary of the words before it</td><td data-l="attention">every word, directly</td></tr>
+        <tr><td data-l=""><b>work for \(n\) words</b></td><td data-l="relay">about \(n\) steps</td><td data-l="attention">\(n^2\) scores (§12)</td></tr>
+      </tbody>
+    </table>
+    <p class="rule"><b>Rule of thumb.</b> When the text fits, attention wins: nothing fades and nothing waits. The \(n^2\) bill is what limits how long the text can be.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>\(Q\), \(K\) and \(V\) are not three different words, and not three copies of one vector. They are <strong>three views of the same word</strong>, made by three different matrices. A word's query and its own key need not agree — a word does not have to pay attention to itself.</p>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\operatorname{softmax}\!\Big(\frac{QK^{\mathsf T}}{\sqrt d}\Big)V\]</p>
+    <p>Every word turns itself into a question, a label and a gift. Each question is scored against every label by a dot product; softmax makes each row of scores into shares; each word collects the gifts in those shares. One matrix line does it for all the words at once. This is Unit 13's <a href="unit-13.html#s12">kernel vote</a>: similarity by a dot product, then a weighted sum.</p>
+  </div>
+  <div class="check reveal" data-check="c5">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A sentence has 10 words. In the relay each hand-over keeps half of the first word's voice. How much of it reaches word 10 in the relay — and with attention?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The relay needs 9 hand-overs: 0.5⁹ ≈ 0.002. With attention word 10 reaches word 1 in one hop, so nothing fades on the way — how much it takes depends only on the share it gives word 1.">Relay about 0.002 (0.5⁹); attention: nothing fades — word 1 is one hop away</button>
+      <button data-why="Attention does not fade with distance: word 10 looks at word 1 directly, one hop, however far apart they are. Only the relay pays 0.5⁹ ≈ 0.002.">About 0.002 either way: the distance is the same</button>
+      <button data-why="From word 1 to word 10 there are 9 gaps, so 9 hand-overs: 0.5⁹ ≈ 0.002, not 0.5¹⁰. And with attention the path is one hop, so no fading at all.">Relay 0.5¹⁰ ≈ 0.001; attention 0.5</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c6">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With the same keys and values, a new query is \(\mathbf q=(0,0)\). What is the answer?</p>
+    <div class="opts">
+      <button data-why="A zero query gives zero scores, but softmax of (0, 0, 0) is not zero: it is (1/3, 1/3, 1/3). The answer is the average of the values.">(0, 0), because the query is zero</button>
+      <button data-correct data-why="Right. All three scores are 0, so the shares are 1/3 each, and the answer is the average value: ((2,0) + (0,2) + (1,1))/3 = (1, 1).">(1, 1), the plain average of the values</button>
+      <button data-why="(1, 1) is v₃, but not because key 3 wins — with a zero query no key wins. Each gets 1/3, and the average of the three values also happens to be (1, 1).">(1, 1), because key 3 is the longest</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c7">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A sentence has 5 words and \(d=2\). What are the shapes of \(QK^{\mathsf T}\) and of the output \(\operatorname{softmax}(QK^{\mathsf T}/\sqrt d)\,V\)?</p>
+    <div class="opts">
+      <button data-why="QKᵀ compares words with words, so it is 5 × 5, not 2 × 2. The 2 is the length of each list, which is summed away inside each dot product.">2 × 2 and 5 × 2</button>
+      <button data-why="The table QKᵀ is 5 × 5 — right. But multiplying a 5 × 5 table by V (5 × 2) gives 5 × 2: one answer of length 2 per word.">5 × 5 and 5 × 5</button>
+      <button data-correct data-why="Right. Q is 5 × 2 and Kᵀ is 2 × 5, so QKᵀ is 5 × 5: every word against every word. Then (5 × 5)(5 × 2) = 5 × 2: one new vector of length 2 for each of the 5 words.">5 × 5 and 5 × 2</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s3-->
+  <p class="onesent reveal"><b>In one sentence:</b> Self-attention drops the relay: every word makes a query, a key and a value with three shared matrices, and \(\operatorname{softmax}(QK^{\mathsf T}/\sqrt d)\,V\) lets every word collect a blend of every value in one hop — students who all ask each other at once instead of passing a whisper down the line.</p>
+</section>
+
 <!-- ================= 4 · WHY DIVIDE BY √d ================= -->
 <section class="unit" id="s4">
   <div class="sec-head reveal"><span class="sec-num">4</span><h2>Why we divide by the square root of d</h2></div>
@@ -8,7 +148,8 @@
   </div>
 
   <div class="prose reveal">
-    <p>A dot product adds up \(d\) little products, one for each entry. More entries means a bigger pile. If the entries of \(\mathbf q\) and \(\mathbf k\) are random numbers of typical size 1, each little product is about size 1 too, and they add up like steps of a drunkard's walk. The pile's typical size — its <strong>spread</strong>, the standard deviation of <a href="unit-14.html#s2">Unit 14</a> — grows like \(\sqrt d\):</p>
+    <p><strong>The question.</strong> Every score in §3 was divided by \(\sqrt d\). What goes wrong without it — and why \(\sqrt d\), not \(d\)?</p>
+    <p>A dot product adds up \(d\) little products, one for each entry. More entries means a bigger pile. If the entries of \(\mathbf q\) and \(\mathbf k\) are random numbers of typical size 1, each little product is about size 1 too, and they add up like coin-toss steps: some push up, some push down, and they partly cancel. The pile's typical size — its <strong>spread</strong>, the standard deviation of <a href="unit-14.html#s2">Unit 14</a> — grows like \(\sqrt d\):</p>
     <p>\[\begin{aligned}d=2&:\ \sqrt2\approx1.41\\ d=64&:\ \sqrt{64}=8\\ d=512&:\ \sqrt{512}\approx22.6\end{aligned}\]</p>
     <p>Why is that bad? Softmax only cares about <strong>gaps</strong> between scores. Take two scores 8 and 0, a normal gap when \(d=64\). Softmax gives</p>
     <p>\[\Big(\frac{e^8}{e^8+1},\ \frac{1}{e^8+1}\Big)\approx(0.99966,\ 0.00034).\]</p>
@@ -18,8 +159,8 @@
 
   <div class="widget reveal" id="w-scale">
     <div class="widget-head"><span class="w-title">The spread grows with d — and √d calms it</span><span class="w-sub">Left: 2 000 dot products of random query and key vectors of length d. Right: one row of eight scores and its softmax shares. Bottom: how much blame can pass through that row.</span></div>
-    <p class="try"><b>Try:</b> Keep <em>divide by √d</em> off and drag \(d\) from 1 to 512: the cloud of scores spreads wider and the shares on the right turn into one tall bar. Then switch <em>divide by √d</em> on: the cloud stays the same width for every \(d\), and the shares stay soft.</p>
-    <div class="svgstage"><svg id="sc-svg" viewBox="0 0 760 360" class="svg-lab" role="img" aria-label="On the left a histogram of dot-product scores with markers at plus and minus the square root of d. On the right eight gold bars show the softmax shares of one row of scores. A meter at the bottom shows the slope of the biggest share."></svg></div>
+    <p class="try"><b>Try:</b> Keep <em>divide by √d</em> off and drag \(d\) from 1 to 512: the cloud of scores spreads wider (to about 22.6) and the shares on the right turn into one tall bar. Then switch <em>divide by √d</em> on: the cloud keeps a spread of about 1 for every \(d\), and the shares stay soft.</p>
+    <div class="svgstage"><svg id="sc-svg" viewBox="0 0 760 360" class="svg-lab" role="img" aria-label="On the left a histogram of dot-product scores with markers at plus and minus the spread. On the right eight gold bars show the softmax shares of one row of scores. A meter at the bottom shows the slope of the biggest share."></svg></div>
     <div class="wrow" style="margin-top:.6rem">
       <div class="wcol" style="flex:1 1 260px">
         <div class="controls"><div class="ctl"><label for="sc-d">size \(d\)</label><input id="sc-d" type="range" min="0" max="9" step="1" value="6"><output id="sc-d-o">64</output></div></div>
@@ -29,21 +170,42 @@
     </div>
   </div>
 
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>For random entries of size 1, the \(d\) little products are independent, so their variances add up: the variance of the pile is \(d\), and its spread is \(\sqrt d\) (the drawer below proves it). Dividing by \(\sqrt d\) divides the spread by \(\sqrt d\), leaving 1. So a small model and a huge model hand softmax scores of the same size, and softmax behaves the same way in both. It is the spirit of putting inputs on one scale in <a href="unit-10.html#s5">Unit 10</a>.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Three choices for the same pair of scores, 8 and 0, with \(d=64\).</strong></p>
+    <table class="plain cmp">
+      <thead><tr><th>divide by</th><th>scores become</th><th>shares</th><th>slope \(p(1-p)\)</th><th>the row is</th></tr></thead>
+      <tbody>
+        <tr><td data-l="divide by"><b>nothing</b></td><td data-l="scores">8 and 0</td><td data-l="shares">(0.99966, 0.00034)</td><td data-l="slope">0.00034</td><td data-l="the row is">spiky and frozen</td></tr>
+        <tr><td data-l="divide by"><b>\(\sqrt d=8\)</b></td><td data-l="scores">1 and 0</td><td data-l="shares">(0.731, 0.269)</td><td data-l="slope">0.197</td><td data-l="the row is">soft, decided and alive</td></tr>
+        <tr><td data-l="divide by"><b>\(d=64\)</b></td><td data-l="scores">0.125 and 0</td><td data-l="shares">(0.531, 0.469)</td><td data-l="slope">0.249</td><td data-l="the row is">nearly flat: it barely prefers anything</td></tr>
+      </tbody>
+    </table>
+    <p class="rule"><b>Rule of thumb.</b> Divide by \(\sqrt d\) — the size of the spread. Too little and the rows freeze; too much and they go blind.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Divide by \(\sqrt d\), not by \(d\). Dividing by \(d\) shrinks every score towards 0 when \(d\) is big, and each row becomes almost flat — every word listens to every other word nearly equally, so attention cannot point at anything.</p>
+  </div>
+
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\begin{gathered}\operatorname{spread}(\mathbf q\cdot\mathbf k)=\sqrt d\\ \Longrightarrow\ \text{use }\frac{\mathbf q\cdot\mathbf k}{\sqrt d}\end{gathered}\]</p>
-    <p>Long vectors make big dot products, and big scores make softmax pick one winner and freeze. Dividing every score by \(\sqrt d\) keeps the scores at a spread of about 1, so the shares stay soft and blame keeps flowing. It is the same spirit as putting inputs on one scale in <a href="unit-10.html#s5">Unit 10</a>.</p>
+    <p>Long vectors make big dot products, and big scores make softmax pick one winner and freeze. Dividing every score by \(\sqrt d\) keeps the scores at a spread of about 1, so the shares stay soft and blame keeps flowing.</p>
   </div>
-  <div class="check reveal" data-check="c6">
+  <div class="check reveal" data-check="c8">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">Queries and keys have \(d=256\) random entries of size about 1. About how big is the spread of \(\mathbf q\cdot\mathbf k\), and what do we divide by?</p>
+    <p class="q">A friend builds a model with \(d=512\) and forgets to divide by \(\sqrt d\). What happens when it trains?</p>
     <div class="opts">
-      <button data-why="The spread of a sum of d independent unit-size products grows like √d, not like d. For d = 256 that is 16, and we divide by 16.">about 256; divide by 256</button>
-      <button data-correct data-why="Right. The spread is √256 = 16. Dividing by √d = 16 brings it back to about 1.">about 16; divide by 16</button>
-      <button data-why="Dividing by 4 would leave a spread of 16/4 = 4 — still too big. The spread is √256 = 16, so we divide by 16.">about 16; divide by 4</button>
+      <button data-why="Sharp is not better if it is frozen. A nearly one-hot row has slope p(1 − p) ≈ 0, so training can hardly move it: the model learns slower, or not at all.">It learns faster, because its attention is more decisive</button>
+      <button data-correct data-why="Right. Raw scores have spread √512 ≈ 22.6, so gaps of 20 or more are common. Softmax of such gaps is nearly one-hot, and its slope p(1 − p) is nearly 0, so almost no blame gets through.">Many attention rows turn almost one-hot and stop learning</button>
+      <button data-why="Softmax compares gaps, and without the scaling the gaps are about 22.6 times bigger. The rows turn spiky and stop passing blame.">Nothing changes: softmax only compares the scores with each other</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c7">
+  <div class="check reveal" data-check="c9">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Two scores are 12 and 0 with \(d=144\). After dividing by \(\sqrt d\), what share does the first word get?</p>
     <div class="opts">
@@ -54,26 +216,111 @@
     <div class="why"></div>
   </div>
 <!--@ALG s4-->
-  <p class="onesent reveal"><b>In one sentence:</b> A dot product of two random length-\(d\) vectors has spread \(\sqrt d\), which makes softmax spiky and frozen, so attention divides every score by \(\sqrt d\) to bring the spread back to about 1.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> A dot product of two random length-\(d\) vectors has spread \(\sqrt d\), which makes softmax spiky and frozen, so attention divides every score by \(\sqrt d\) — like a judge who marks out of 1000 being brought back to marks out of 10 before the prize money is shared.</p>
 </section>
 
-<!-- ================= 5 · THE ATTENTION MAP ================= -->
+<!-- ================= 5 · ONE WORD, MANY MEANINGS ================= -->
 <section class="unit" id="s5">
-  <div class="sec-head reveal"><span class="sec-num">5</span><h2>The attention map: who looks at whom</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">5</span><h2>The payoff: one word, many meanings</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A chameleon sits on a green leaf and turns green. Put the same chameleon on a brown branch and it turns brown. It is the same animal. The colour it shows depends on where it sits.</p>
+    <p>"I sat on the bank of the river." "I took a loan from the bank." Same word, same spelling — a different meaning. Which one it is depends on the words sitting around it.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The question.</strong> In <a href="unit-16.html#s16">Unit 16</a> every word got <strong>one</strong> vector, the same in every sentence. So "bank" had to sit halfway between rivers and money, and "bat" halfway between cricket and caves. Can attention give a word a different vector in each sentence?</p>
+    <p>Yes — and you have already seen how. After self-attention a word's new vector is a blend of the values of the words it attends to. Change the neighbours and the blend changes. Watch it happen with numbers.</p>
+    <p><strong>By hand.</strong> Take lists of just two numbers, made by hand: the first number says "how much about nature", the second "how much about money". So river \(=(2,0)\), money \(=(0,2)\), and bank \(=(1,1)\) — right in the middle, because Unit 16 had to give it one vector for both meanings. To keep the arithmetic small, let every word use its own vector as its query, key and value (\(Q=K=V=X\)); a real model would first multiply by \(W_Q\), \(W_K\) and \(W_V\).</p>
+    <p>Sentence one: "river bank". Bank asks with its query \((1,1)\):</p>
+    <p>\[\begin{aligned}\text{scores: }&(1,1)\cdot(2,0)=2,\quad(1,1)\cdot(1,1)=2\\ \div\sqrt2:\ &(1.414,\ 1.414)\ \Rightarrow\ \text{shares }(0.5,\ 0.5)\\ \text{bank}_{\text{new}}&=0.5\,(2,0)+0.5\,(1,1)=(1.5,\ 0.5)\end{aligned}\]</p>
+    <p>Sentence two: "money bank". The same steps give \(0.5\,(0,2)+0.5\,(1,1)=(0.5,\ 1.5)\).</p>
+    <p>The same word now has <strong>two different vectors</strong>. The first leans towards nature, the second towards money. How different are they? Their cosine (<a href="unit-03.html#s6">Unit 3</a>) is</p>
+    <p>\[\cos=\frac{(1.5)(0.5)+(0.5)(1.5)}{\sqrt{2.5}\,\sqrt{2.5}}=\frac{1.5}{2.5}=0.6,\]</p>
+    <p>an angle of about 53°. Before attention the two "bank"s were one and the same vector, with cosine 1. This is what <strong>contextual embeddings</strong> means: vectors computed from the whole sentence, not looked up once per word. ELMo (2018) built them with the two-way LSTMs of <a href="unit-17.html#s11">Unit 17</a>; BERT (2018) built them with attention (§11).</p>
+  </div>
+
+  <div class="widget reveal" id="w-context">
+    <div class="widget-head"><span class="w-title">A chameleon word</span><span class="w-sub">The plane has two directions: nature (right) and money (up). Grey: "bank" as Unit 16 stored it, the same in every sentence. Each sentence pulls bank along the dotted line towards its neighbour; the thick arrows are bank's new vectors. Gold: the angle between them. Toy vectors, made by hand.</span></div>
+    <p class="try"><b>Try:</b> Start with "river bank" and "money bank": the two banks split to (1.5, 0.5) and (0.5, 1.5), cosine 0.6. Change the first neighbour to <em>stream</em>, a stronger nature word: bank slides further, to (2.34, 0.33). Choose <em>money</em> for both sentences: the two banks become one vector again (cosine 1). Then try <em>the</em>: a word that says nothing hardly moves bank's direction.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 460px"><div class="svgstage"><svg id="cx-svg" viewBox="0 0 760 380" class="svg-lab" role="img" aria-label="A plane with a nature axis and a money axis. A grey arrow is bank's single Unit 16 vector at one, one. Two thick coloured arrows are bank's new vectors in the two sentences: one pulled towards river, one pulled towards money. A gold arc marks the angle between them."></svg></div></div>
+      <div class="wcol" style="flex:1 1 250px">
+        <div class="lbl-row">sentence A: ___ bank</div>
+        <div class="tabs" id="cx-a" role="tablist"></div>
+        <div class="lbl-row">sentence B: ___ bank</div>
+        <div class="tabs" id="cx-b" role="tablist"></div>
+        <div id="cx-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>A word's new vector is a blend of its own value and its neighbours' values. Its own share keeps it recognisable — "bank" never turns into "river". The neighbours' shares pull it towards what the sentence is about. And a neighbour that matches the word's query better gets a bigger share, so it pulls harder. Stack a few layers and every word's vector describes that word <em>in this sentence</em>.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>One vector per word, against one vector per word in each sentence.</strong></p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>static vectors (Unit 16)</th><th>contextual vectors (this unit)</th></tr></thead>
+      <tbody>
+        <tr><td data-l=""><b>how many per word</b></td><td data-l="static">one, for every sentence</td><td data-l="contextual">a fresh one in every sentence</td></tr>
+        <tr><td data-l=""><b>how you get it</b></td><td data-l="static">look up a row of a table</td><td data-l="contextual">run the sentence through the attention layers</td></tr>
+        <tr><td data-l=""><b>"bank" in our two sentences</b></td><td data-l="static">(1, 1) and (1, 1): cosine 1</td><td data-l="contextual">(1.5, 0.5) and (0.5, 1.5): cosine 0.6</td></tr>
+        <tr><td data-l=""><b>cost</b></td><td data-l="static">one lookup</td><td data-l="contextual">a whole forward pass</td></tr>
+      </tbody>
+    </table>
+    <p class="rule"><b>Rule of thumb.</b> Static vectors are cheap and fine for "which words are alike?". Whenever the meaning depends on the sentence — which in real text is almost always — use contextual vectors.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>The contextual vector is not stored anywhere. There is no table row for "bank-near-a-river". The model's lookup table still has exactly <strong>one</strong> row for "bank" — the first layer is Unit 16's table. The context is <strong>computed fresh</strong> by the attention layers every time the model reads a sentence.</p>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf x_{\text{bank}}\ \longrightarrow\ \sum_j A_{\text{bank},j}\,\mathbf v_j\]</p><p>The sum runs over the words \(j\) of <em>this</em> sentence. After attention a word's vector is a blend over the words of its own sentence, so the same word gets a different vector in a different sentence. The one fixed vector per word of Unit 16 becomes a vector that knows its company.</p>
+  </div>
+  <div class="check reveal" data-check="c10">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In "river bank" you replace river by <em>stream</em> \(=(3,0)\), a stronger nature word. What happens to bank's new vector?</p>
+    <div class="opts">
+      <button data-why="The shares are not always 50/50: they came out equal only because river and bank scored the same (2 and 2). Stream scores 3 against bank's 2, so it gets more than half.">It stays at (1.5, 0.5): a word and its neighbour always share 50/50</button>
+      <button data-correct data-why="Right. Scores 3 and 2, divided by √2: 2.121 and 1.414, so stream's share is about 0.670. New bank = 0.670·(3, 0) + 0.330·(1, 1) ≈ (2.34, 0.33): it slides further towards nature, because stream both carries more nature and wins a bigger share.">It slides further towards nature, to about (2.34, 0.33)</button>
+      <button data-why="Attention blends; it does not copy the best match. Bank keeps a share of about 0.33 of itself, so it lands at about (2.34, 0.33), not at (3, 0).">It becomes exactly (3, 0): attention copies the best match</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c11">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">After attention, bank is \((1.5,0.5)\) in "river bank" and \((0.5,1.5)\) in "money bank". What is the cosine between the two?</p>
+    <div class="opts">
+      <button data-why="They are the same word, but not the same vector any more — that is the whole point. Their cosine is 1.5/2.5 = 0.6.">1 — it is the same word</button>
+      <button data-why="They are not at right angles: both still lean on both directions. Dot product 0.75 + 0.75 = 1.5, lengths √2.5 each, so the cosine is 1.5/2.5 = 0.6.">0 — the two meanings have nothing in common</button>
+      <button data-correct data-why="Right. Dot product (1.5)(0.5) + (0.5)(1.5) = 1.5; each length is √2.5, so the cosine is 1.5/2.5 = 0.6 — an angle of about 53°. Related (it is still 'bank'), but clearly two meanings.">0.6 — about 53° apart</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s5-->
+  <p class="onesent reveal"><b>In one sentence:</b> Because a word's output is a blend over its own sentence, the same word gets a different vector in each sentence — a chameleon that takes the colour of its neighbours, so "bank" by a river and "bank" with money end up about 53° apart.</p>
+</section>
+
+<!-- ================= 6 · THE ATTENTION LAB ================= -->
+<section class="unit" id="s6">
+  <div class="sec-head reveal"><span class="sec-num">6</span><h2>The attention lab: who looks at whom</h2></div>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>Read this: "The batsman hit the ball because <strong>it</strong> was loose." What was loose? You did not stop to think. You knew "it" meant the ball, not the batsman. Somewhere in your head, the word "it" reached back and <strong>grabbed</strong> "ball".</p>
     <p>That grab is exactly what attention does. And we can draw it.</p>
   </div>
 
   <div class="prose reveal">
+    <p><strong>The question.</strong> What does attention look like on a whole sentence — who looks at whom?</p>
     <p>Give every word of the sentence its query, key and value, and work out every row of the attention matrix. With 9 words you get a \(9\times9\) table. Row "it" says how much "it" listens to each word. Draw the table as a grid of squares, brighter where the share is bigger: that is an <strong>attention map</strong>.</p>
-    <p>The lab below does exactly the maths of §3, for any short sentence you type. <strong>Its word vectors are toy ones, made by hand</strong> — not taken from a trained model. Each word is a list of 12 numbers. Eight of them are labelled features you can read: <em>thing, someone, action, "it"-word, "he/she"-word, describing word, place, small linking word</em>. The other four say where the word stands (§7). The matrices \(W_Q, W_K, W_V\) are hand-set too, so you can see why each share comes out as it does. But the arithmetic — dot products, \(\sqrt d\), softmax, the blend — is exactly the real one.</p>
+    <p>The lab below does exactly the maths of §3, for any short sentence you type. <strong>Its word vectors are toy ones, made by hand</strong> — not taken from a trained model. Each word is a list of 12 numbers. Eight of them are labelled features you can read: <em>thing, someone, action, "it"-word, "he/she"-word, describing word, place, small linking word</em>. The other four say where the word stands (§8). The matrices \(W_Q, W_K, W_V\) are hand-set too, so you can see why each share comes out as it does. But the arithmetic — dot products, \(\sqrt d\), softmax, the blend — is exactly the real one.</p>
     <p>In the lab, head 1 is set up so that an "it"-word asks "which word is a <em>thing</em>?", and every thing answers "I am a thing". So row "it" gives "ball" a share of about <strong>0.766</strong>, and each of the other eight words about 0.029.</p>
   </div>
 
   <div class="widget reveal" id="w-attnmap">
-    <div class="widget-head"><span class="w-title">The attention lab</span><span class="w-sub">Type a sentence. The words stand in a row as glowing beads. Click a word to see its query go out as gold beams to every word, brighter where the share is bigger. Switch to the landscape to see the whole map as rows of gold pillars.</span></div>
-    <p class="try"><b>Try:</b> Click "it" and find the brightest beam. Load <em>my mother made chai</em> and click "she", then "it". Switch to head 2: every word looks one word back. Turn on <em>no peeking</em> and the top-right half of the map goes dark. Drag the temperature down to 0.3 (spiky) and up to 3 (flat). Last, type your own sentence.</p>
+    <div class="widget-head"><span class="w-title">The attention lab</span><span class="w-sub">Type a sentence. The words stand in a row as glowing beads. Click a word to see its query go out as gold beams to every word, brighter where the share is bigger. Switch to the landscape to see the whole map as rows of gold pillars. Hand-made toy weights.</span></div>
+    <p class="try"><b>Try:</b> Click "it" and find the brightest beam: "ball", 0.766. Load <em>my mother made chai</em> and click "she" (mother, 0.789), then "it". Switch to head 2: every word looks one word back. Turn on <em>no peeking</em> and the top-right half of the map goes dark. Drag the temperature down to 0.3: ball's share climbs to 0.9999. Last, type your own sentence.</p>
     <div class="am-top">
       <label class="lbl" for="am-text">sentence</label>
       <input id="am-text" type="text" value="the batsman hit the ball because it was loose" maxlength="90" spellcheck="false" autocomplete="off">
@@ -98,14 +345,22 @@
   </div>
 
   <div class="prose reveal">
-    <p>Look at the bars under the lab. Before attention, "it" is a pure "it"-word: its <em>thing</em> bar is 0. After attention it has collected about 0.77 of ball's value, so its <em>thing</em> bar has risen to about <strong>0.82</strong>. The word "it" now carries part of the meaning of "ball". The same word in another sentence would pick up something else. That is the big change from <a href="unit-16.html">Unit 16</a>: there, every word had <strong>one fixed vector</strong>. After attention, a word's vector depends on its <strong>context</strong>.</p>
+    <p>Look at the bars under the lab. Before attention, "it" is a pure "it"-word: its <em>thing</em> bar is 0. After attention it has collected about 0.77 of ball's value from head 1 (and a little more from head 2), so its <em>thing</em> bar has risen to about <strong>0.82</strong>. The word "it" now carries part of the meaning of "ball" — the payoff of §5, in a real sentence. The same word in another sentence would pick up something else.</p>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>A query and a key are lists of features, and their dot product adds up the features they share. In head 1 the query of an "it"-word has a big number on the <em>thing</em> feature, and every noun's key carries a 1 there. In this sentence only "ball" is a thing, so row "it" has one big score — and softmax turns one big score into one big share.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>A bright cell is not an explanation. It says "this word's value was blended in heavily", not "this is why the model decided". In trained models many heads park their attention on the first word or on full stops when they have nothing to ask. Read attention maps as clues, not as proof.</p>
   </div>
 
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\mathbf x_i\ \longrightarrow\ \mathbf x_i+\sum_j A_{ij}\,\mathbf v_j\]</p>
-    <p>The attention map is a table of who listens to whom. Each row adds up to 1. After attention each word's vector is its old self plus a blend of what the words it listened to were carrying. So "it" in "the ball … it was loose" ends up close to "ball". A fixed word vector becomes a vector that knows its sentence.</p>
+    <p>The attention map is a table of who listens to whom. Each row adds up to 1. After attention each word's vector is its old self plus a blend of what the words it listened to were carrying (keeping the old self is the residual path of §9). So "it" in "the ball … it was loose" ends up close to "ball".</p>
   </div>
-  <div class="check reveal" data-check="c8">
+  <div class="check reveal" data-check="c12">
     <span class="tag">Try it, then answer</span>
     <p class="q">In the lab, head 1, row "it" of the batsman sentence: "ball" gets about 0.766 and the other eight words share the rest equally. What share does each of the other eight get?</p>
     <div class="opts">
@@ -115,7 +370,7 @@
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c9">
+  <div class="check reveal" data-check="c13">
     <span class="tag">Try it, then answer</span>
     <p class="q">In the lab, slide the temperature for head 1 from 1 down to 0.3. (The temperature divides every score.) What happens to the share of "ball" in row "it"?</p>
     <div class="opts">
@@ -125,62 +380,83 @@
     </div>
     <div class="why"></div>
   </div>
-  <p class="onesent reveal"><b>In one sentence:</b> The attention map shows, row by row, how much each word listens to every other word, and adding the blended values to each word turns fixed word vectors into vectors that depend on the sentence around them.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> The attention map shows, row by row, how much each word listens to every other word — "it" grabbing "ball" — and adding the blended values to each word turns fixed word vectors into vectors that carry their sentence.</p>
 </section>
 
-<!-- ================= 6 · MANY HEADS ================= -->
-<section class="unit" id="s6">
-  <div class="sec-head reveal"><span class="sec-num">6</span><h2>Many heads: many questions at once</h2></div>
+<!-- ================= 7 · MANY HEADS ================= -->
+<section class="unit" id="s7">
+  <div class="sec-head reveal"><span class="sec-num">7</span><h2>Many heads: many questions at once</h2></div>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
     <p>A cricket commentary box has several experts. One watches the batsman's feet. One watches the field placing. One keeps the score. They all watch the <strong>same</strong> ball, but each asks a different question, and together they tell the full story.</p>
   </div>
 
   <div class="prose reveal">
-    <p>One attention can ask only one kind of question at a time. "Which thing does 'it' mean?" is one question. "What word came just before me?" is another. So a transformer runs <strong>several attentions side by side</strong>. Each one is called a <strong>head</strong>.</p>
-    <p>Here is the trick that keeps it cheap. Do not give each head the full length \(d\). Cut it into \(h\) equal pieces. Each head gets its own small \(W_Q, W_K, W_V\) that make queries, keys and values of length</p>
+    <p><strong>The question.</strong> A word often needs two answers at once: "which thing do I mean?" and "what came just before me?". One row of softmax gives one blend. How can one word ask two questions?</p>
+    <p>Run <strong>several attentions side by side</strong>. Each one is called a <strong>head</strong>. Each head has its own \(W_Q, W_K, W_V\), builds its own attention map and makes its own blend.</p>
+    <p>Here is the trick that keeps it cheap. Do not give each head the full length \(d\). Cut it into \(h\) equal pieces. Each head's matrices make queries, keys and values of length</p>
     <p>\[d_k=\frac{d}{h}.\]</p>
-    <p><strong>Tiny numbers.</strong> A common size is \(d=512\) with \(h=8\) heads, so each head works with lists of length \(512/8=64\). Each head builds its own attention map. The eight answers, each of length 64, are glued side by side back into one list of length \(8\times64=512\). A last matrix \(W_O\) (size \(512\times512\)) mixes them.</p>
+    <p><strong>Tiny numbers.</strong> A common size is \(d=512\) with \(h=8\) heads, so each head works with lists of length \(512/8=64\). The eight answers, each of length 64, are glued side by side back into one list of length \(8\times64=512\). A last matrix \(W_O\) (size \(512\times512\)) mixes them.</p>
     <p>The cost is the same as one big head. One big head needs three \(512\times512\) matrices. Eight small heads need \(8\times3\) matrices of size \(512\times64\), which is exactly the same number of weights. Add \(W_O\) and either way attention has \(4d^2=4\times512^2=1\,048\,576\) weights.</p>
-    <p>Each head looks at the words through its own <strong>pair of glasses</strong>: its matrices keep only some directions of the word vectors and throw away the rest. That is the projection of <a href="unit-12.html#s4">Unit 12</a>. Different glasses, different neighbours.</p>
   </div>
 
   <div class="widget reveal" id="w-heads">
-    <div class="widget-head"><span class="w-title">Two heads, one sentence</span><span class="w-sub">The lab's two heads on the same sentence. Arcs above the words: head 1 (meaning). Arcs below: head 2 (the word before). An arc's brightness is its share. Under the sentence, the shapes: how \(d\) is cut into heads and glued back.</span></div>
-    <p class="try"><b>Try:</b> Click different words. For "it", head 1 reaches far back to "ball" while head 2 reaches one step back to "because". Then drag \(d\) and the number of heads, and watch the head size and the weight count: the total never changes with the number of heads.</p>
+    <div class="widget-head"><span class="w-title">Two heads, one sentence</span><span class="w-sub">The lab's two heads on the same sentence. Arcs above the words: head 1 (meaning). Arcs below: head 2 (the word before). An arc's thickness and brightness is its share. Under the sentence, the shapes: how \(d\) is cut into heads and glued back.</span></div>
+    <p class="try"><b>Try:</b> Click different words. For "it", head 1 reaches far back to "ball" (0.77) while head 2 reaches one step back to "because" (0.78). Then drag \(d\) to 768 and the heads to 12: each head gets 64 numbers, and the weight count, 2 359 296, never changes when you change the number of heads.</p>
     <div id="hd-toks" class="am-toks" role="group" aria-label="Pick the word that asks"></div>
     <div class="svgstage"><svg id="hd-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="A sentence written along the middle. Pink arcs above connect the chosen word to the words head 1 listens to; cyan arcs below connect it to the words head 2 listens to. Brighter arcs carry bigger shares."></svg></div>
     <div class="svgstage" style="margin-top:.6rem"><svg id="hd-split" viewBox="0 0 760 170" role="img" aria-label="A long bar of length d is cut into h equal pieces, one per head. Each piece goes through its own attention and the pieces are glued back into one bar of length d, then mixed by W_O."></svg></div>
     <div class="wrow" style="margin-top:.6rem">
       <div class="wcol" style="flex:1 1 260px"><div class="controls">
         <div class="ctl"><label for="hd-d">size \(d\)</label><input id="hd-d" type="range" min="64" max="1024" step="64" value="512"><output id="hd-d-o">512</output></div>
-        <div class="ctl"><label for="hd-h">heads \(h\)</label><input id="hd-h" type="range" min="0" max="5" step="1" value="3"><output id="hd-h-o">8</output></div>
+        <div class="ctl"><label for="hd-h">heads \(h\)</label><input id="hd-h" type="range" min="0" max="7" step="1" value="3"><output id="hd-h-o">8</output></div>
       </div></div>
       <div class="wcol" style="flex:1.3 1 300px"><div id="hd-read" class="readout" style="line-height:1.75"></div></div>
     </div>
   </div>
 
   <div class="prose reveal">
-    <p>Why do the glasses matter? Below, eight words live in a small 3-D space with three directions: <em>is it a drink?</em>, <em>is it hot?</em>, <em>is it a sport?</em> (toy vectors, made by hand). Three heads each see just <strong>one</strong> direction (\(d=3\), \(h=3\), so \(d_k=1\)). Ask about "coffee". The drink head finds chai and lassi. The hot head finds chai and the sun. The sport head has nothing to ask, so it spreads its attention evenly.</p>
+    <p><strong>Each head wears its own glasses.</strong> A head's matrices keep only some directions of the word vectors and throw the rest away — the projection of <a href="unit-12.html#s4">Unit 12</a>. So the same words can be close together through one pair of glasses and far apart through another. Below, eight words have three hand-made features: <em>is it a drink?</em>, <em>is it hot?</em>, <em>is it a sport?</em> Three heads each keep just <strong>one</strong> feature (\(d=3\), \(h=3\), so \(d_k=1\)). Ask about "coffee". The drink head finds chai and lassi. The hot head finds the sun, coffee itself and chai. The sport head has nothing to ask, so it spreads its attention evenly.</p>
   </div>
   <div class="widget reveal" id="w-subspace">
-    <div class="widget-head"><span class="w-title">Each head wears its own glasses</span><span class="w-sub">Words float in 3-D. Each head is a glowing rod through the middle: it sees only the shadow of each word on its rod. Shadows far out on the same side as the asking word's shadow get the biggest share.</span></div>
-    <p class="try"><b>Try:</b> With "coffee" asking, switch between the three heads and watch the gold bars change. Then let "lassi" ask: the drink head still finds the drinks, but the hot head now points the <em>other</em> way — lassi is cold, so it favours the ice.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 460px"><div id="ss-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. Eight labelled word beads float in space. Three coloured rods cross at the centre, one for each head: drink, hot and sport. For the chosen head each bead drops a thin line onto the rod and leaves a small shadow bead there. Gold beams join the asking word to every other word, brighter for bigger shares."></div><p class="stage-tap">drag the picture to orbit</p></div>
-      <div class="wcol" style="flex:1 1 250px">
+    <div class="widget-head"><span class="w-title">Each head wears its own glasses</span><span class="w-sub">Left: what each word is made of — three hand-made features. A head sees only its own column (the glasses); the rest is dimmed. Right: how much the asking word listens to each word, one column per head. Same words, three heads, three different answers.</span></div>
+    <p class="try"><b>Try:</b> With "coffee" asking, click the three heads and compare the three columns of gold bars: drink finds chai and lassi (0.330 each), hot finds sun, coffee and chai, sport gives every word 0.125. Then let "lassi" ask: the drink head still finds the drinks, but the hot head now points the <em>other</em> way — lassi is cold, so it favours the ice.</p>
+    <div class="svgstage"><svg id="ss-svg" viewBox="0 0 760 380" class="svg-lab" role="img" aria-label="Two tables side by side. Left: eight words in rows and three features in columns, drink, hot and sport, with the chosen head's column bright. Right: three columns of gold bars, one per head, showing how much the asking word listens to each word."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 280px">
         <div class="tabs" id="ss-head" role="tablist"><button role="tab" aria-selected="true" data-t="0">drink head</button><button role="tab" aria-selected="false" data-t="1">hot head</button><button role="tab" aria-selected="false" data-t="2">sport head</button></div>
         <div class="lbl-row">asking word</div>
         <div class="tabs" id="ss-q" role="tablist"></div>
-        <div id="ss-read" class="readout" style="margin-top:.6rem;line-height:1.7"></div>
       </div>
+      <div class="wcol" style="flex:1.2 1 300px"><div id="ss-read" class="readout" style="line-height:1.7"></div></div>
     </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>One row of softmax can say one thing: one blend. A word that needs two different blends needs two rows — two heads. Because each head looks through its own projection, the same word can be close to "ball" in one head and close to "because" in another, and the glued answer carries both. Cutting \(d\) into pieces keeps the price the same.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>One big head against many small ones</strong> (\(d=512\)).</p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>1 head of 512</th><th>8 heads of 64</th><th>64 heads of 8</th></tr></thead>
+      <tbody>
+        <tr><td data-l=""><b>attention maps per word</b></td><td data-l="1 × 512">1</td><td data-l="8 × 64">8</td><td data-l="64 × 8">64</td></tr>
+        <tr><td data-l=""><b>weights in \(W_Q,W_K,W_V,W_O\)</b></td><td data-l="1 × 512">1 048 576</td><td data-l="8 × 64">1 048 576</td><td data-l="64 × 8">1 048 576</td></tr>
+        <tr><td data-l=""><b>what can go wrong</b></td><td data-l="1 × 512">one blend must serve every question</td><td data-l="8 × 64">— the usual choice</td><td data-l="64 × 8">each head's space is tiny, its scores are crude</td></tr>
+      </tbody>
+    </table>
+    <p class="rule"><b>Rule of thumb.</b> Keep each head's size \(d_k\) around 64: BERT-base uses \(768/12=64\), and so does the small GPT-2.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>More heads do not mean more weights. Eight heads of 64 cost exactly what one head of 512 costs: \(4d^2\) either way. What changes is how many different questions can be asked at once, and how small each question's space is.</p>
   </div>
 
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\begin{gathered}\operatorname{head}_i=\operatorname{Attention}(Q_i,K_i,V_i)\\ Q_i=XW_Q^{(i)},\ K_i=XW_K^{(i)},\\ V_i=XW_V^{(i)}\\ \operatorname{MultiHead}\\ =\big[\operatorname{head}_1,\dots,\operatorname{head}_h\big]\,W_O\end{gathered}\]</p>
-    <p>Many heads are many small attentions, each looking at the words through its own projection — its own subspace. Cut \(d\) into \(h\) pieces of size \(d/h\), let each head build its own map, glue the answers back and mix them with \(W_O\). You get \(h\) different questions for the price of one.</p>
+    <p>Many heads are many small attentions, each looking at the words through its own projection. Cut \(d\) into \(h\) pieces of size \(d/h\), let each head build its own map, glue the answers back and mix them with \(W_O\). You get \(h\) different questions for the price of one.</p>
   </div>
-  <div class="check reveal" data-check="c10">
+  <div class="check reveal" data-check="c14">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">A model has \(d=768\) and \(h=12\) heads. How long is each head's query, and how many weights do \(W_Q, W_K, W_V, W_O\) have together (no biases)?</p>
     <div class="opts">
@@ -190,16 +466,16 @@
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c11">
+  <div class="check reveal" data-check="c15">
     <span class="tag">Try it, then answer</span>
-    <p class="q">In the glasses widget, "coffee" asks the <em>sport</em> head. Its shadow on the sport rod is at 0. What shares does it give the eight words?</p>
+    <p class="q">In the glasses widget, "coffee" asks the <em>sport</em> head. Coffee's sport feature is 0. What shares does it give the eight words?</p>
     <div class="opts">
       <button data-why="A query of 0 gives every word a score of 0, whatever its key. Softmax of equal scores is equal shares: 1/8 each.">All of it to cricket</button>
-      <button data-correct data-why="Right. Coffee's query on the sport rod is 0, so every score is 0 and every share is 1/8 = 0.125. This head simply has nothing to ask about coffee.">1/8 each — an even spread</button>
+      <button data-correct data-why="Right. Coffee's query in the sport head is 0, so every score is 0 and every share is 1/8 = 0.125. This head simply has nothing to ask about coffee.">1/8 each — an even spread</button>
       <button data-why="Shares are softmax outputs, so they always add up to 1 — they cannot all be 0. With equal scores each word gets 1/8.">0 each — the head is switched off</button>
     </div>
     <div class="why"></div>
   </div>
-<!--@ALG s6-->
-  <p class="onesent reveal"><b>In one sentence:</b> Multi-head attention cuts \(d\) into \(h\) heads of size \(d/h\), lets each head attend through its own projection, then glues the answers and mixes them with \(W_O\) — \(h\) different questions for the same \(4d^2\) weights.</p>
+<!--@ALG s7-->
+  <p class="onesent reveal"><b>In one sentence:</b> Multi-head attention cuts \(d\) into \(h\) heads of size \(d/h\), each looking at the words through its own glasses, then glues the answers and mixes them with \(W_O\) — a commentary box of experts, \(h\) questions for the same \(4d^2\) weights.</p>
 </section>

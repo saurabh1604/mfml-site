@@ -1,28 +1,58 @@
-<!-- ================= 13 · PRACTICE ARENA ================= -->
+<!-- ================= 15 · PRACTICE ARENA ================= -->
 <section class="unit" id="spractice">
-  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Practice arena — fourteen problems, solved in full</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">15</span><h2>Practice arena — sixteen problems, solved in full</h2></div>
   <div class="prose reveal">
-    <p>Fourteen problems, easy to hard: one lookup by hand, a whole attention table, the \(\sqrt d\) scaling and the spread, the causal mask, head shapes and weight counts, rotary and clock positions, layer norm, a block's weights, the \(n^2\) bill, a residual step, a reverse-engineering puzzle and a spiky row to diagnose. Every number here was checked by machine.</p>
+    <p>Sixteen problems, in the order of the unit: the look-back of §1 and two ways to score it, lookups by hand, a key to reverse-engineer and a frozen row to diagnose, one word with two meanings, heads, clocks and turns, layer norm and a block's weights, the mask, BERT against GPT, weight tying and the \(n^2\) bill. The tags say which are easy and which are hard. Every number here was checked by machine.</p>
     <p>Three habits do most of the work. <strong>Write the shapes first</strong>: \(QK^{\mathsf T}\) is words × words, and the answer has one row per word. <strong>Work row by row</strong>: each row of the attention map is its own little softmax. And <strong>check that each row of shares adds up to 1</strong> before you blend the values.</p>
   </div>
 
   <!-- ===== Problem 1 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span><span class="chip">one lookup</span></div>
-    <p class="pq">Queries and keys have length \(d=4\). The query is \(\mathbf q=(2,0,0,0)\). Two words have keys \(\mathbf k_1=(1,0,0,0)\), \(\mathbf k_2=(0,1,0,0)\) and values \(\mathbf v_1=(4,2)\), \(\mathbf v_2=(0,6)\). Find <b>(a)</b> the two scaled scores, <b>(b)</b> the two shares, <b>(c)</b> the answer.</p>
-    <p class="ptest"><b>What this tests.</b> The four moves of §3: dot product, divide by \(\sqrt d\), softmax, blend. <b>Plan.</b> \(\sqrt4=2\); then one softmax of two numbers.</p>
+    <div class="prob-head"><span class="ptag">Problem 1</span><span class="pdiff easy">easy</span><span class="chip">look back</span></div>
+    <p class="pq">An encoder wrote three notes \(\mathbf h_1=(1,0)\), \(\mathbf h_2=(0,1)\), \(\mathbf h_3=(1,1)\). The decoder's state is \(\mathbf q=(2,1)\). With dot-product scoring (no \(\sqrt d\) here), find <b>(a)</b> the three scores, <b>(b)</b> the attention weights, <b>(c)</b> the context vector. <b>(d)</b> Which note does the decoder look at most, and why?</p>
+    <p class="ptest"><b>What this tests.</b> The three moves of §1: score, softmax, blend. <b>Plan.</b> Dot products first; then one softmax of three numbers; then a weighted sum of the notes.</p>
     <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — scores.</b> \(\mathbf q\cdot\mathbf k_1=2\), \(\mathbf q\cdot\mathbf k_2=0\). Divide by \(\sqrt4=2\): \((1,\ 0)\).</div>
-      <div class="pstep"><b>Step 2 — shares.</b> \(e^1\approx2.718\), \(e^0=1\), total \(3.718\): \((0.731,\ 0.269)\).</div>
-      <div class="pstep"><b>Step 3 — blend.</b> \(0.731\,(4,2)+0.269\,(0,6)=(2.924,\ 1.462+1.613)\approx(2.924,\ 3.076)\).</div>
-      <p class="pans">answers at a glance: (a) \((1,0)\). (b) \((0.731,\ 0.269)\). (c) \(\approx(2.924,\ 3.076)\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>The keys decide the shares; the values decide what is blended. They can even have different lengths.</p></div>
+      <div class="pstep"><b>Step 1 — (a) scores.</b> \(\mathbf q\cdot\mathbf h_1=2\), \(\mathbf q\cdot\mathbf h_2=1\), \(\mathbf q\cdot\mathbf h_3=2+1=3\).</div>
+      <div class="pstep"><b>Step 2 — (b) weights.</b> \(e^2\approx7.389\), \(e^1\approx2.718\), \(e^3\approx20.086\); total \(30.193\). Weights \(\approx(0.245,\ 0.090,\ 0.665)\).</div>
+      <div class="pstep"><b>Step 3 — (c) context.</b> \(0.245\,(1,0)+0.090\,(0,1)+0.665\,(1,1)=(0.245+0.665,\ 0.090+0.665)\approx(0.910,\ 0.755)\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Note 3. It agrees with both entries of \(\mathbf q\), so it has the biggest score, 3, and softmax gives it about two thirds of the attention.</div>
+      <p class="pans">answers at a glance: (a) \((2,\ 1,\ 3)\). (b) \(\approx(0.245,\ 0.090,\ 0.665)\). (c) \(\approx(0.910,\ 0.755)\). (d) note 3.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A context vector is a blend of the notes, so each of its entries lies between the smallest and the biggest entries of the notes.</p></div>
     </details>
   </div>
 
   <!-- ===== Problem 2 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff easy">easy</span><span class="chip">the whole table</span></div>
+    <div class="prob-head"><span class="ptag">Problem 2</span><span class="pdiff medium">medium</span><span class="chip">additive vs dot</span></div>
+    <p class="pq">Notes \((1,0)\), \((0,1)\), \((1,1)\); decoder state \(\mathbf q=(0.5,\ -0.5)\). <b>(a)</b> Find the additive scores \(\mathbf v^{\mathsf T}\tanh(W_1\mathbf h+W_2\mathbf q)\) with \(W_1=W_2=I\) and \(\mathbf v=(1,1)\). <b>(b)</b> Their weights. <b>(c)</b> The dot-product scores \(\mathbf q\cdot\mathbf h\) and their weights. <b>(d)</b> Which note wins under each scoring?</p>
+    <p class="ptest"><b>What this tests.</b> Two ways to score the same notes (§1) — and that they can disagree. <b>Plan.</b> Additive: add the state to the note, squash each entry with tanh, add the entries. Dot: multiply and add. Then softmax each set.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(\mathbf h+\mathbf q\): \((1.5,\ -0.5)\), \((0.5,\ 0.5)\), \((1.5,\ 0.5)\). tanh of each entry: \((0.905,\ -0.462)\), \((0.462,\ 0.462)\), \((0.905,\ 0.462)\). Add the two entries: \((0.443,\ 0.924,\ 1.367)\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(e^{0.443}\approx1.557\), \(e^{0.924}\approx2.519\), \(e^{1.367}\approx3.924\); total \(\approx8.000\): \((0.195,\ 0.315,\ 0.490)\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(\mathbf q\cdot\mathbf h=(0.5,\ -0.5,\ 0)\). \(e^{0.5}\approx1.649\), \(e^{-0.5}\approx0.607\), \(e^0=1\); total \(3.255\): \((0.506,\ 0.186,\ 0.307)\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Additive: note 3 (0.490). Dot: note 1 (0.506). The dot product multiplies, so note 3's second entry meets the state's \(-0.5\) and costs it. The additive score adds the state to the note first, turning that entry into \(+0.5\), so note 3 comes out on top.</div>
+      <p class="pans">answers at a glance: (a) \((0.443,\ 0.924,\ 1.367)\). (b) \((0.195,\ 0.315,\ 0.490)\). (c) scores \((0.5,\ -0.5,\ 0)\), weights \((0.506,\ 0.186,\ 0.307)\). (d) additive: note 3; dot: note 1.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The scoring function is a design choice, and different scores can prefer different notes. Transformers use the dot product (with \(\sqrt d\)) because it is the cheapest.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 3 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span><span class="chip">one lookup</span></div>
+    <p class="pq">Queries and keys have length \(d=4\). The query is \(\mathbf q=(2,0,0,0)\). Two words have keys \(\mathbf k_1=(1,0,0,0)\), \(\mathbf k_2=(0,1,0,0)\) and values \(\mathbf v_1=(4,2)\), \(\mathbf v_2=(0,6)\). Find <b>(a)</b> the two scaled scores, <b>(b)</b> the two shares, <b>(c)</b> the answer.</p>
+    <p class="ptest"><b>What this tests.</b> The four moves of §3: dot product, divide by \(\sqrt d\), softmax, blend. <b>Plan.</b> \(\sqrt4=2\); then one softmax of two numbers.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — scores.</b> \(\mathbf q\cdot\mathbf k_1=2\), \(\mathbf q\cdot\mathbf k_2=0\). Divide by \(\sqrt4=2\): \((1,\ 0)\).</div>
+      <div class="pstep"><b>Step 2 — shares.</b> \(e^1\approx2.718\), \(e^0=1\), total \(3.718\): \((0.731,\ 0.269)\).</div>
+      <div class="pstep"><b>Step 3 — blend.</b> \(0.731\,(4,2)+0.269\,(0,6)=(2.924,\ 1.462+1.614)\approx(2.924,\ 3.076)\).</div>
+      <p class="pans">answers at a glance: (a) \((1,0)\). (b) \((0.731,\ 0.269)\). (c) \(\approx(2.924,\ 3.076)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The keys decide the shares; the values decide what is blended. They can even have different lengths.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 4 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff easy">easy</span><span class="chip">the whole table</span></div>
     <p class="pq">Three words have vectors \(\mathbf x_1=(1,0)\), \(\mathbf x_2=(0,1)\), \(\mathbf x_3=(1,1)\), and each word uses its own vector as query, key and value (\(Q=K=V=X\), \(d=2\)). Find <b>(a)</b> the scaled score table \(QK^{\mathsf T}/\sqrt2\), <b>(b)</b> the attention matrix, <b>(c)</b> the three answers.</p>
     <p class="ptest"><b>What this tests.</b> \(\operatorname{softmax}(QK^{\mathsf T}/\sqrt d)V\) row by row. <b>Plan.</b> All dot products are 0, 1 or 2; divide by 1.414; softmax each row.</p>
     <details class="sol"><summary>Show the full solution</summary>
@@ -35,155 +65,9 @@
     </details>
   </div>
 
-  <!-- ===== Problem 3 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 3</span><span class="pdiff easy">easy</span><span class="chip">√d scaling</span></div>
-    <p class="pq">Two raw scores are \(8\) and \(0\), with \(d=64\). Find the first share and its slope \(p(1-p)\) <b>(a)</b> without scaling, <b>(b)</b> after dividing by \(\sqrt d\). <b>(c)</b> By roughly what factor did the slope grow?</p>
-    <p class="ptest"><b>What this tests.</b> How scaling changes a softmax row and its gradient. <b>Plan.</b> Two-word softmax is \(1/(1+e^{-\text{gap}})\).</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> Gap 8: \(p=1/(1+e^{-8})\approx0.99966\); slope \(0.99966\times0.00034\approx0.000335\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \(\sqrt{64}=8\), so the gap is 1: \(p=1/(1+e^{-1})\approx0.731\); slope \(0.731\times0.269\approx0.197\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \(0.197/0.000335\approx586\).</div>
-      <p class="pans">answers at a glance: (a) \(p\approx0.99966\), slope \(\approx0.000335\). (b) \(p\approx0.731\), slope \(\approx0.197\). (c) about 590 times.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>A nearly one-hot row passes almost no blame. Scaling by \(\sqrt d\) keeps rows soft and trainable.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 4 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 4</span><span class="pdiff easy">easy</span><span class="chip">the spread</span></div>
-    <p class="pq">Entries of \(\mathbf q\) and \(\mathbf k\) are independent with mean 0 and variance 1. Give the spread (standard deviation) of \(\mathbf q\cdot\mathbf k\) for <b>(a)</b> \(d=16\), <b>(b)</b> \(d=256\), <b>(c)</b> \(d=128\). <b>(d)</b> A model divides its scores by 8 while \(d=256\). What is the spread of its scaled scores?</p>
-    <p class="ptest"><b>What this tests.</b> \(\operatorname{Var}(\mathbf q\cdot\mathbf k)=d\). <b>Plan.</b> Take square roots; dividing by \(c\) divides the spread by \(c\).</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a), (b), (c).</b> \(\sqrt{16}=4\), \(\sqrt{256}=16\), \(\sqrt{128}\approx11.31\).</div>
-      <div class="pstep"><b>Step 2 — (d).</b> The raw spread is 16; divided by 8 it is 2. The right divisor would have been \(\sqrt{256}=16\).</div>
-      <p class="pans">answers at a glance: (a) 4. (b) 16. (c) \(\approx11.31\). (d) 2 (it should have divided by 16).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Spread grows like \(\sqrt d\), so divide by \(\sqrt d\) — not by \(d\), and not by a number picked for another size.</p></div>
-    </details>
-  </div>
-
   <!-- ===== Problem 5 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff medium">medium</span><span class="chip">causal mask</span></div>
-    <p class="pq">A 3-word decoder has scaled scores \(S=\begin{pmatrix}2&1&0\\ 1&3&1\\ 0&2&2\end{pmatrix}\). Apply the causal mask and find <b>(a)</b> the masked score table, <b>(b)</b> the attention matrix.</p>
-    <p class="ptest"><b>What this tests.</b> \(-\infty\) above the diagonal, then a row softmax. <b>Plan.</b> Row 1 has one cell, row 2 two cells, row 3 all three.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \(\begin{pmatrix}2&-\infty&-\infty\\ 1&3&-\infty\\ 0&2&2\end{pmatrix}\).</div>
-      <div class="pstep"><b>Step 2 — row 1.</b> Only one allowed cell: \((1,0,0)\). (The score 2 does not matter.)</div>
-      <div class="pstep"><b>Step 3 — row 2.</b> \(e^1\approx2.718\), \(e^3\approx20.086\), total \(22.804\): \((0.119,\ 0.881,\ 0)\).</div>
-      <div class="pstep"><b>Step 4 — row 3.</b> \(e^0=1\), \(e^2\approx7.389\) twice, total \(15.778\): \((0.063,\ 0.468,\ 0.468)\).</div>
-      <p class="pans">answers at a glance: (a) as above. (b) rows \((1,0,0)\), \((0.119,0.881,0)\), \((0.063,0.468,0.468)\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>The first row of a masked map is always \((1,0,\dots,0)\). The last row is never changed by the mask.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 6 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff medium">medium</span><span class="chip">head shapes</span></div>
-    <p class="pq">A model has \(d=768\) and \(h=12\) heads. Find <b>(a)</b> \(d_k\); <b>(b)</b> the shape and weight count of one head's \(W_Q^{(i)}\); <b>(c)</b> the weights of \(W_Q,W_K,W_V,W_O\) together; <b>(d)</b> the same with one bias per output entry of each of the four matrices.</p>
-    <p class="ptest"><b>What this tests.</b> \(d_k=d/h\) and the \(4d^2\) count. <b>Plan.</b> One head, then all heads, then \(W_O\).</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \(d_k=768/12=64\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \(W_Q^{(i)}\) is \(768\times64\): \(49\,152\) weights.</div>
-      <div class="pstep"><b>Step 3 — (c).</b> 12 heads × 3 matrices × 49 152 \(=1\,769\,472=3\times768^2\). Add \(W_O\), \(768^2=589\,824\): total \(2\,359\,296=4\times768^2\).</div>
-      <div class="pstep"><b>Step 4 — (d).</b> Four matrices each have 768 outputs: \(+4\times768=3072\), giving \(2\,362\,368\).</div>
-      <p class="pans">answers at a glance: (a) 64. (b) \(768\times64\), 49 152. (c) 2 359 296. (d) 2 362 368.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>More heads means smaller heads. The weight count, \(4d^2\), does not depend on \(h\).</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 7 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span><span class="chip">rotary positions</span></div>
-    <p class="pq">RoPE with \(\theta=30^\circ\), \(\mathbf q=(1,0)\), \(\mathbf k=(0,1)\). The score is \((R_{m\theta}\mathbf q)\cdot(R_{n\theta}\mathbf k)\). Find it for <b>(a)</b> \(m=4,n=1\), <b>(b)</b> \(m=7,n=4\), <b>(c)</b> \(m=1,n=4\). <b>(d)</b> Give the general formula in terms of \(m-n\).</p>
-    <p class="ptest"><b>What this tests.</b> That the score depends only on the gap. <b>Plan.</b> Turn both arrows, then take the dot product; spot the pattern.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \(\mathbf q\) turned by \(120^\circ\): \((\cos120^\circ,\sin120^\circ)=(-0.5,\ 0.866)\). \(\mathbf k=(0,1)\) points at \(90^\circ\); turned by \(30^\circ\) it points at \(120^\circ\) too: \((-0.5,\ 0.866)\). Dot product \(0.25+0.75=1\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> Same gap 3: arrows at \(210^\circ\) and \(90^\circ+120^\circ=210^\circ\). Score 1.</div>
-      <div class="pstep"><b>Step 3 — (c).</b> Arrows at \(30^\circ\) and \(90^\circ+120^\circ=210^\circ\): opposite. Score \(-1\).</div>
-      <div class="pstep"><b>Step 4 — (d).</b> \(\mathbf q\) points at \(m\theta\), \(\mathbf k\) at \(90^\circ+n\theta\). The dot product of two unit arrows is the cosine of the angle between them: \(\cos(90^\circ+(n-m)\theta)=\sin((m-n)\theta)\).</div>
-      <p class="pans">answers at a glance: (a) 1. (b) 1. (c) −1. (d) \(\sin((m-n)\theta)\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Rotary scores depend only on \(m-n\): "3 words back" scores the same anywhere in the sentence.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 8 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span><span class="chip">clock tags</span></div>
-    <p class="pq">Sinusoidal tags: \(\mathrm{PE}(p,2i)=\sin(p/10000^{2i/d})\), \(\mathrm{PE}(p,2i+1)=\cos(p/10000^{2i/d})\). <b>(a)</b> For \(d=4\), write the tag of position \(p=2\). <b>(b)</b> For \(d=512\), what is the speed \(1/10000^{2i/d}\) of clock \(i=128\)? <b>(c)</b> How many positions does that clock need for one full turn?</p>
-    <p class="ptest"><b>What this tests.</b> Reading the clock formula. <b>Plan.</b> For \(d=4\) the speeds are \(1\) and \(10000^{-1/2}=0.01\).</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> Clock 0: \(\sin2\approx0.909\), \(\cos2\approx-0.416\). Clock 1: \(\sin0.02\approx0.020\), \(\cos0.02\approx1.000\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \(2i/d=256/512=\tfrac12\), so the speed is \(10000^{-1/2}=0.01\) radians per position.</div>
-      <div class="pstep"><b>Step 3 — (c).</b> One full turn is \(2\pi\) radians: \(2\pi/0.01\approx628\) positions.</div>
-      <p class="pans">answers at a glance: (a) \((0.909,\ -0.416,\ 0.020,\ 1.000)\). (b) 0.01. (c) about 628 positions.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Fast clocks separate neighbours; slow clocks separate far-apart positions.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 9 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span><span class="chip">layer norm</span></div>
-    <p class="pq">Layer-normalise \(\mathbf x=(2,4,4,6)\) <b>(a)</b> with \(\boldsymbol\gamma=1,\boldsymbol\beta=0\), <b>(b)</b> with \(\gamma=2,\beta=1\) in every entry. <b>(c)</b> What do you get for \(\mathbf x'=(12,14,14,16)\)?</p>
-    <p class="ptest"><b>What this tests.</b> Mean, variance (divide by \(d\)), then scale and shift. <b>Plan.</b> Centre first.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — mean and variance.</b> Mean 4; centred \((-2,0,0,2)\); variance \((4+0+0+4)/4=2\); spread \(\sqrt2\approx1.414\).</div>
-      <div class="pstep"><b>Step 2 — (a).</b> \((-2,0,0,2)/1.414=(-1.414,\ 0,\ 0,\ 1.414)\).</div>
-      <div class="pstep"><b>Step 3 — (b).</b> \(2\times(\text{a})+1=(-1.828,\ 1,\ 1,\ 3.828)\).</div>
-      <div class="pstep"><b>Step 4 — (c).</b> \(\mathbf x'=\mathbf x+10\): the shift disappears when we centre, so the result is the same as (a).</div>
-      <p class="pans">answers at a glance: (a) \((-1.414,0,0,1.414)\). (b) \((-1.828,1,1,3.828)\). (c) \((-1.414,0,0,1.414)\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>Layer norm forgets the average and the size of a word's numbers; \(\gamma\) and \(\beta\) let the network put back what it needs.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 10 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff medium">medium</span><span class="chip">a block's weights</span></div>
-    <p class="pq">A block has \(d=256\) and \(d_{ff}=1024\). Count <b>(a)</b> the attention weights, <b>(b)</b> the feed-forward weights, <b>(c)</b> the total with all biases, <b>(d)</b> the total with biases and both layer norms.</p>
-    <p class="ptest"><b>What this tests.</b> \(4d^2+2dd_{ff}\), biases \(4d+d_{ff}+d\), layer norms \(4d\). <b>Plan.</b> Add in stages.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \(4\times256^2=262\,144\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \(2\times256\times1024=524\,288\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> Weights \(786\,432\), biases \(4(256)+1024+256=2304\): \(788\,736\).</div>
-      <div class="pstep"><b>Step 4 — (d).</b> Two layer norms: \(2\times(256+256)=1024\): \(789\,760\).</div>
-      <p class="pans">answers at a glance: (a) 262 144. (b) 524 288. (c) 788 736. (d) 789 760.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>With \(d_{ff}=4d\), two thirds of a block's weights are in the feed-forward part.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 11 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">medium</span><span class="chip">the n² bill</span></div>
-    <p class="pq">A model reads \(n=2048\) tokens with 16 heads and 24 layers. <b>(a)</b> How many scores are in one head's map? <b>(b)</b> How many scores in the whole forward pass? <b>(c)</b> At 2 bytes per score, how many gigabytes (\(10^9\) bytes) to keep them all? <b>(d)</b> By what factor does (b) grow at \(n=4096\)?</p>
-    <p class="ptest"><b>What this tests.</b> \(n^2\times h\times L\). <b>Plan.</b> Square, multiply, convert.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \(2048^2=4\,194\,304\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> \(4\,194\,304\times16\times24=1\,610\,612\,736\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \(\times2\) bytes \(=3\,221\,225\,472\) bytes \(\approx3.22\) GB.</div>
-      <div class="pstep"><b>Step 4 — (d).</b> Doubling \(n\) multiplies \(n^2\) by 4.</div>
-      <p class="pans">answers at a glance: (a) 4 194 304. (b) 1 610 612 736. (c) \(\approx3.22\) GB. (d) 4 times.</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>The attention bill grows with the square of the length. That is why long inputs are expensive.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 12 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff medium">medium</span><span class="chip">residual + norm</span></div>
-    <p class="pq">A word has \(\mathbf x=(1,0,-1,0)\) and attention returns \(\mathbf a=(1,2,1,0)\). Find <b>(a)</b> \(\mathbf x+\mathbf a\), <b>(b)</b> its mean and variance, <b>(c)</b> \(\operatorname{LN}(\mathbf x+\mathbf a)\) with \(\gamma=1,\beta=0\). <b>(d)</b> What would \(\operatorname{LN}(\mathbf a)\) alone be (no shortcut)?</p>
-    <p class="ptest"><b>What this tests.</b> The add-and-steady step. <b>Plan.</b> Add, centre, divide.</p>
-    <details class="sol"><summary>Show the full solution</summary>
-      <div class="pstep"><b>Step 1 — (a).</b> \((2,2,0,0)\).</div>
-      <div class="pstep"><b>Step 2 — (b).</b> Mean 1; centred \((1,1,-1,-1)\); variance \(4/4=1\).</div>
-      <div class="pstep"><b>Step 3 — (c).</b> \((1,1,-1,-1)/1=(1,\ 1,\ -1,\ -1)\).</div>
-      <div class="pstep"><b>Step 4 — (d).</b> \(\mathbf a\) has mean 1, centred \((0,1,0,-1)\), variance \(2/4=0.5\): \((0,1,0,-1)/0.707=(0,\ 1.414,\ 0,\ -1.414)\). Without the shortcut the word's own first entry is lost.</div>
-      <p class="pans">answers at a glance: (a) \((2,2,0,0)\). (b) mean 1, variance 1. (c) \((1,1,-1,-1)\). (d) \((0,1.414,0,-1.414)\).</p>
-      <div class="callout remember reveal"><span class="tag">Remember</span><p>The shortcut keeps the word's own information in the sum; layer norm only rescales.</p></div>
-    </details>
-  </div>
-
-  <!-- ===== Problem 13 ===== -->
-  <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 13</span><span class="pdiff hard">hard</span><span class="chip">reverse-engineer</span></div>
+    <div class="prob-head"><span class="ptag">Problem 5</span><span class="pdiff hard">hard</span><span class="chip">reverse-engineer</span></div>
     <p class="pq">Keys \(\mathbf k_1=(1,0)\), \(\mathbf k_3=(1,1)\) and a query \(\mathbf q=(2,0)\), \(d=2\). Word 2's key is changed to \(\mathbf k_2=(c,0)\). <b>(a)</b> Write the three scaled scores in terms of \(c\). <b>(b)</b> Find \(c\) so that word 2 gets exactly half of all the attention. <b>(c)</b> What are the three shares then? <b>(d)</b> For which \(c\) does word 2 get the biggest share of the three?</p>
     <p class="ptest"><b>What this tests.</b> Running softmax backwards. <b>Plan.</b> "Half" means \(e^{s_2}=e^{s_1}+e^{s_3}\).</p>
     <details class="sol"><summary>Show the full solution</summary>
@@ -196,9 +80,9 @@
     </details>
   </div>
 
-  <!-- ===== Problem 14 ===== -->
+  <!-- ===== Problem 6 ===== -->
   <div class="prob reveal">
-    <div class="prob-head"><span class="ptag">Problem 14</span><span class="pdiff hard">hard</span><span class="chip">diagnose a run</span></div>
+    <div class="prob-head"><span class="ptag">Problem 6</span><span class="pdiff hard">hard</span><span class="chip">diagnose a run</span></div>
     <p class="pq">A student's model with \(d=64\) stops learning. One attention row has raw scores \((40,\ 32,\ 8,\ 0)\), and those are the numbers that go into softmax. <b>(a)</b> What shares does the row get? <b>(b)</b> What is the slope \(p(1-p)\) of the top share? <b>(c)</b> What was forgotten, and what are the shares after the fix? <b>(d)</b> What is the top share's slope after the fix?</p>
     <p class="ptest"><b>What this tests.</b> Spotting missing \(\sqrt d\) scaling from a spiky, frozen row. <b>Plan.</b> Softmax cares only about gaps; the gap 8 is huge.</p>
     <details class="sol"><summary>Show the full solution</summary>
@@ -211,10 +95,160 @@
     </details>
   </div>
 
+  <!-- ===== Problem 7 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 7</span><span class="pdiff medium">medium</span><span class="chip">one word, two meanings</span></div>
+    <p class="pq">Toy vectors (nature, money): lake \(=(3,1)\), cash \(=(0,3)\), bank \(=(1,1)\). Each word uses its own vector as query, key and value (\(Q=K=V=X\)), and \(d=2\). <b>(a)</b> Find bank's new vector in "lake bank". <b>(b)</b> In "cash bank". <b>(c)</b> The cosine between the two new banks. <b>(d)</b> Check (a) with the slide formula \(\mathbf b+\sigma(g)(\mathbf a-\mathbf b)\), where \(g=(\mathbf a\cdot\mathbf b-\mathbf b\cdot\mathbf b)/\sqrt d\).</p>
+    <p class="ptest"><b>What this tests.</b> Contextual vectors (§5): one word, two sentences, two vectors — and the general formula for a two-word sentence. <b>Plan.</b> Bank asks with \((1,1)\): score both words, divide by \(\sqrt2\), softmax, blend.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> bank·lake \(=4\), bank·bank \(=2\); divided by \(\sqrt2\): \((2.828,\ 1.414)\). The gap is 1.414, so lake's share is \(1/(1+e^{-1.414})\approx0.804\) and bank keeps \(0.196\). New bank \(=0.804\,(3,1)+0.196\,(1,1)\approx(2.609,\ 1)\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> bank·cash \(=3\), bank·bank \(=2\); divided: \((2.121,\ 1.414)\); shares \((0.670,\ 0.330)\). New bank \(=0.670\,(0,3)+0.330\,(1,1)\approx(0.330,\ 2.340)\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> Dot product \(2.609\times0.330+1\times2.340\approx3.201\). Lengths \(\sqrt{2.609^2+1}\approx2.794\) and \(\sqrt{0.330^2+2.340^2}\approx2.363\). Cosine \(\approx3.201/(2.794\times2.363)\approx0.485\), about \(61^\circ\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(g=(4-2)/\sqrt2\approx1.414\) and \(\sigma(1.414)\approx0.804\): \((1,1)+0.804\,(2,0)\approx(2.609,\ 1)\). It matches (a).</div>
+      <p class="pans">answers at a glance: (a) \(\approx(2.609,\ 1)\). (b) \(\approx(0.330,\ 2.340)\). (c) \(\approx0.485\). (d) it matches (a).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>A word slides towards its neighbour, further when the neighbour matches its query better. Two neighbours pull the same word two ways.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 8 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 8</span><span class="pdiff medium">medium</span><span class="chip">head shapes</span></div>
+    <p class="pq">A model has \(d=768\) and \(h=12\) heads. Find <b>(a)</b> \(d_k\); <b>(b)</b> the shape and weight count of one head's \(W_Q^{(i)}\); <b>(c)</b> the weights of \(W_Q,W_K,W_V,W_O\) together; <b>(d)</b> the same with one bias per output entry of each of the four matrices.</p>
+    <p class="ptest"><b>What this tests.</b> \(d_k=d/h\) and the \(4d^2\) count. <b>Plan.</b> One head, then all heads, then \(W_O\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(d_k=768/12=64\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(W_Q^{(i)}\) is \(768\times64\): \(49\,152\) weights.</div>
+      <div class="pstep"><b>Step 3 — (c).</b> 12 heads × 3 matrices × 49 152 \(=1\,769\,472=3\times768^2\). Add \(W_O\), \(768^2=589\,824\): total \(2\,359\,296=4\times768^2\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Four matrices each have 768 outputs: \(+4\times768=3072\), giving \(2\,362\,368\).</div>
+      <p class="pans">answers at a glance: (a) 64. (b) \(768\times64\), 49 152. (c) 2 359 296. (d) 2 362 368.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>More heads means smaller heads. The weight count, \(4d^2\), does not depend on \(h\).</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 9 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 9</span><span class="pdiff medium">medium</span><span class="chip">clock tags</span></div>
+    <p class="pq">Sinusoidal tags: \(\mathrm{PE}(p,2i)=\sin(p/10000^{2i/d})\), \(\mathrm{PE}(p,2i+1)=\cos(p/10000^{2i/d})\). <b>(a)</b> For \(d=4\), write the tag of position \(p=2\). <b>(b)</b> Compute \(\mathrm{PE}(5)\cdot\mathrm{PE}(6)\) for \(d=4\) and compare it with \(\cos1+\cos0.01\). <b>(c)</b> For \(d=512\), what is the speed \(1/10000^{2i/d}\) of clock \(i=128\)? <b>(d)</b> How many positions does that clock need for one full turn?</p>
+    <p class="ptest"><b>What this tests.</b> Reading the clock formula, and the distance property of §8. <b>Plan.</b> For \(d=4\) the speeds are \(1\) and \(10000^{-1/2}=0.01\).</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> Clock 0: \(\sin2\approx0.909\), \(\cos2\approx-0.416\). Clock 1: \(\sin0.02\approx0.020\), \(\cos0.02\approx1.000\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(\mathrm{PE}(5)\approx(-0.9589,\ 0.2837,\ 0.0500,\ 0.9988)\) and \(\mathrm{PE}(6)\approx(-0.2794,\ 0.9602,\ 0.0600,\ 0.9982)\). The products are \(0.2679+0.2724+0.0030+0.9970\approx1.5403\) — the same as \(\cos1+\cos0.01\approx0.5403+1.0000\), because the two positions are 1 apart.</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(2i/d=256/512=\tfrac12\), so the speed is \(10000^{-1/2}=0.01\) radians per position.</div>
+      <div class="pstep"><b>Step 4 — (d).</b> One full turn is \(2\pi\) radians: \(2\pi/0.01\approx628\) positions.</div>
+      <p class="pans">answers at a glance: (a) \((0.909,\ -0.416,\ 0.020,\ 1.000)\). (b) \(\approx1.5403\), equal to \(\cos1+\cos0.01\). (c) 0.01. (d) about 628 positions.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Fast clocks separate neighbours, slow clocks separate far-apart positions — and the dot product of two tags depends only on how far apart they are.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 10 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 10</span><span class="pdiff medium">medium</span><span class="chip">rotary positions</span></div>
+    <p class="pq">RoPE with \(\theta=30^\circ\), \(\mathbf q=(1,0)\), \(\mathbf k=(0,1)\). The score is \((R_{m\theta}\mathbf q)\cdot(R_{n\theta}\mathbf k)\). Find it for <b>(a)</b> \(m=4,n=1\), <b>(b)</b> \(m=7,n=4\), <b>(c)</b> \(m=1,n=4\). <b>(d)</b> Give the general formula in terms of \(m-n\).</p>
+    <p class="ptest"><b>What this tests.</b> That the score depends only on the gap. <b>Plan.</b> Turn both arrows, then take the dot product; spot the pattern.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(\mathbf q\) turned by \(120^\circ\): \((\cos120^\circ,\sin120^\circ)=(-0.5,\ 0.866)\). \(\mathbf k=(0,1)\) points at \(90^\circ\); turned by \(30^\circ\) it points at \(120^\circ\) too: \((-0.5,\ 0.866)\). Dot product \(0.25+0.75=1\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> Same gap 3: arrows at \(210^\circ\) and \(90^\circ+120^\circ=210^\circ\). Score 1.</div>
+      <div class="pstep"><b>Step 3 — (c).</b> Arrows at \(30^\circ\) and \(90^\circ+120^\circ=210^\circ\): opposite. Score \(-1\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(\mathbf q\) points at \(m\theta\), \(\mathbf k\) at \(90^\circ+n\theta\). The dot product of two unit arrows is the cosine of the angle between them: \(\cos(90^\circ+(n-m)\theta)=\sin((m-n)\theta)\).</div>
+      <p class="pans">answers at a glance: (a) 1. (b) 1. (c) −1. (d) \(\sin((m-n)\theta)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Rotary scores depend only on \(m-n\): "3 words back" scores the same anywhere in the sentence.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 11 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 11</span><span class="pdiff medium">medium</span><span class="chip">layer norm</span></div>
+    <p class="pq">Layer-normalise \(\mathbf x=(2,4,4,6)\) <b>(a)</b> with \(\boldsymbol\gamma=1,\boldsymbol\beta=0\), <b>(b)</b> with \(\gamma=2,\beta=1\) in every entry. <b>(c)</b> What do you get for \(\mathbf x'=(12,14,14,16)\)? <b>(d)</b> A word has \(\mathbf x=(1,0,-1,0)\) and attention hands back \(\mathbf a=(1,2,1,0)\). Find \(\operatorname{LN}(\mathbf x+\mathbf a)\) with \(\gamma=1,\beta=0\).</p>
+    <p class="ptest"><b>What this tests.</b> Mean, variance (divide by \(d\)), then scale and shift. <b>Plan.</b> Centre first.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — mean and variance.</b> Mean 4; centred \((-2,0,0,2)\); variance \((4+0+0+4)/4=2\); spread \(\sqrt2\approx1.414\).</div>
+      <div class="pstep"><b>Step 2 — (a).</b> \((-2,0,0,2)/1.414=(-1.414,\ 0,\ 0,\ 1.414)\).</div>
+      <div class="pstep"><b>Step 3 — (b).</b> \(2\times(\text{a})+1=(-1.828,\ 1,\ 1,\ 3.828)\).</div>
+      <div class="pstep"><b>Step 4 — (c).</b> \(\mathbf x'=\mathbf x+10\): the shift disappears when we centre, so the result is the same as (a).</div>
+      <div class="pstep"><b>Step 5 — (d).</b> The shortcut first: \(\mathbf x+\mathbf a=(2,2,0,0)\). Mean 1; centred \((1,1,-1,-1)\); variance \(4/4=1\). So \(\operatorname{LN}=(1,\ 1,\ -1,\ -1)\).</div>
+      <p class="pans">answers at a glance: (a) \((-1.414,0,0,1.414)\). (b) \((-1.828,1,1,3.828)\). (c) \((-1.414,0,0,1.414)\). (d) \((1,1,-1,-1)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>Layer norm forgets the average and the size of a word's numbers; \(\gamma\) and \(\beta\) let the network put back what it needs.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 12 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 12</span><span class="pdiff medium">medium</span><span class="chip">a block's weights</span></div>
+    <p class="pq">A block has \(d=256\) and \(d_{ff}=1024\). Count <b>(a)</b> the attention weights, <b>(b)</b> the feed-forward weights, <b>(c)</b> the total with all biases, <b>(d)</b> the total with biases and both layer norms.</p>
+    <p class="ptest"><b>What this tests.</b> \(4d^2+2dd_{ff}\), biases \(4d+d_{ff}+d\), layer norms \(4d\). <b>Plan.</b> Add in stages.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(4\times256^2=262\,144\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(2\times256\times1024=524\,288\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> Weights \(786\,432\), biases \(4(256)+1024+256=2304\): \(788\,736\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Two layer norms: \(2\times(256+256)=1024\): \(789\,760\).</div>
+      <p class="pans">answers at a glance: (a) 262 144. (b) 524 288. (c) 788 736. (d) 789 760.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>With \(d_{ff}=4d\), two thirds of a block's weights are in the feed-forward part.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 13 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 13</span><span class="pdiff medium">medium</span><span class="chip">causal mask</span></div>
+    <p class="pq">A 3-word decoder has scaled scores \(S=\begin{pmatrix}2&1&0\\ 1&3&1\\ 0&2&2\end{pmatrix}\). Apply the causal mask and find <b>(a)</b> the masked score table, <b>(b)</b> the attention matrix.</p>
+    <p class="ptest"><b>What this tests.</b> \(-\infty\) above the diagonal, then a row softmax. <b>Plan.</b> Row 1 has one cell, row 2 two cells, row 3 all three.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(\begin{pmatrix}2&-\infty&-\infty\\ 1&3&-\infty\\ 0&2&2\end{pmatrix}\).</div>
+      <div class="pstep"><b>Step 2 — row 1.</b> Only one allowed cell: \((1,0,0)\). (The score 2 does not matter.)</div>
+      <div class="pstep"><b>Step 3 — row 2.</b> \(e^1\approx2.718\), \(e^3\approx20.086\), total \(22.804\): \((0.119,\ 0.881,\ 0)\).</div>
+      <div class="pstep"><b>Step 4 — row 3.</b> \(e^0=1\), \(e^2\approx7.389\) twice, total \(15.778\): \((0.063,\ 0.468,\ 0.468)\).</div>
+      <p class="pans">answers at a glance: (a) as above. (b) rows \((1,0,0)\), \((0.119,0.881,0)\), \((0.063,0.468,0.468)\).</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The first row of a masked map is always \((1,0,\dots,0)\). The last row is never changed by the mask.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 14 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 14</span><span class="pdiff medium">medium</span><span class="chip">BERT vs GPT</span></div>
+    <p class="pq">A text has 1 024 tokens. <b>(a)</b> How many tokens does BERT choose for guessing (15%)? <b>(b)</b> How many of those become [MASK], a random word, or stay unchanged (80/10/10)? <b>(c)</b> How many graded next-word guesses does GPT get from the same text? <b>(d)</b> How many times as many as BERT?</p>
+    <p class="ptest"><b>What this tests.</b> The two training games of §11. <b>Plan.</b> Percentages of 1 024, then of the chosen tokens; for GPT, one guess at every position except the last.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(0.15\times1\,024=153.6\), about 154 tokens.</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(0.8\times153.6=122.88\) become [MASK]; \(0.1\times153.6=15.36\) become a random word; \(15.36\) stay unchanged — about 123, 15 and 15.</div>
+      <div class="pstep"><b>Step 3 — (c).</b> Every position guesses the token after it, except the last: \(1\,023\).</div>
+      <div class="pstep"><b>Step 4 — (d).</b> \(1\,023/153.6\approx6.7\).</div>
+      <p class="pans">answers at a glance: (a) \(153.6\approx154\). (b) \(122.88\), \(15.36\), \(15.36\) (about 123, 15, 15). (c) 1 023. (d) about 6.7 times.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>BERT learns from about 15% of each text and GPT from almost all of it — but BERT sees both sides of every word it guesses.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 15 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 15</span><span class="pdiff medium">medium</span><span class="chip">weight tying</span></div>
+    <p class="pq">A model with \(d=768\) saves exactly 38 597 376 weights by tying its output matrix to its embedding table. <b>(a)</b> What is its vocabulary size \(V\)? <b>(b)</b> How many weights would the embedding table and the output matrix hold together without tying, and with it? <b>(c)</b> With tying, the score of word \(w\) is \(\mathbf h\cdot\mathbf e_w\). For \(\mathbf h=(1,2)\), \(\mathbf e_{\text{chai}}=(0.5,1)\) and \(\mathbf e_{\text{coffee}}=(1,-1)\), which word scores higher?</p>
+    <p class="ptest"><b>What this tests.</b> Weight tying (§13), run backwards to find \(V\), then used forwards. <b>Plan.</b> The saving is one whole \(V\times d\) table.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(V\times768=38\,597\,376\), so \(V=38\,597\,376/768=50\,257\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> Without tying: two tables, \(2\times38\,597\,376=77\,194\,752\). With tying: one table, \(38\,597\,376\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> chai: \(1(0.5)+2(1)=2.5\); coffee: \(1(1)+2(-1)=-1\). Chai scores higher.</div>
+      <p class="pans">answers at a glance: (a) \(V=50\,257\). (b) 77 194 752 without, 38 597 376 with. (c) chai, 2.5 against −1.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>With tying, "is \(w\) the next word?" is asked with \(w\)'s own look-up vector: the final vector must point where the word's embedding points.</p></div>
+    </details>
+  </div>
+
+  <!-- ===== Problem 16 ===== -->
+  <div class="prob reveal">
+    <div class="prob-head"><span class="ptag">Problem 16</span><span class="pdiff medium">medium</span><span class="chip">the n² bill</span></div>
+    <p class="pq">A model reads \(n=2048\) tokens with 16 heads and 24 layers. <b>(a)</b> How many scores are in one head's map? <b>(b)</b> How many scores in the whole forward pass? <b>(c)</b> At 2 bytes per score, how many gigabytes (\(10^9\) bytes) to keep them all? <b>(d)</b> By what factor does (b) grow at \(n=4096\)?</p>
+    <p class="ptest"><b>What this tests.</b> \(n^2\times h\times L\). <b>Plan.</b> Square, multiply, convert.</p>
+    <details class="sol"><summary>Show the full solution</summary>
+      <div class="pstep"><b>Step 1 — (a).</b> \(2048^2=4\,194\,304\).</div>
+      <div class="pstep"><b>Step 2 — (b).</b> \(4\,194\,304\times16\times24=1\,610\,612\,736\).</div>
+      <div class="pstep"><b>Step 3 — (c).</b> \(\times2\) bytes \(=3\,221\,225\,472\) bytes \(\approx3.22\) GB.</div>
+      <div class="pstep"><b>Step 4 — (d).</b> Doubling \(n\) multiplies \(n^2\) by 4.</div>
+      <p class="pans">answers at a glance: (a) 4 194 304. (b) 1 610 612 736. (c) \(\approx3.22\) GB. (d) 4 times.</p>
+      <div class="callout remember reveal"><span class="tag">Remember</span><p>The attention bill grows with the square of the length. That is why long inputs are expensive.</p></div>
+    </details>
+  </div>
+
   <div class="next-card reveal">
     <div class="kicker" style="color:var(--ink-muted)">Next up</div>
     <p style="margin:.35rem 0 .6rem"><strong>Unit 19 · The Maths Inside an LLM</strong> <span style="color:var(--ink-muted)">— upcoming</span></p>
-    <p style="margin:0 0 .6rem;font-family:var(--serif)">Stack these blocks a hundred deep and train them on the whole internet to predict the next word. Then learn how the machine picks its words — temperature, top-k, top-p — and how it is steered.</p>
+    <p style="margin:0 0 .6rem;font-family:var(--serif)">Stack these blocks a hundred deep and train them on a huge pile of text to predict the next word. Then learn how the machine picks its words — temperature, top-k, top-p — and how it is steered.</p>
     <p style="margin:0;font-size:.85rem"><a href="unit-17.html">← Unit 17 · Machines with Memory</a> · <a href="index.html">All units</a></p>
   </div>
 </section>

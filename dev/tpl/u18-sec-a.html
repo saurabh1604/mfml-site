@@ -1,60 +1,100 @@
-<!-- ================= ACT I · ASKING EVERY WORD ================= -->
-<!-- ================= 1 · THE PROBLEM UNIT 17 LEFT ================= -->
+<!-- ================= ACT I · LOOK BACK INSTEAD OF REMEMBERING ================= -->
+<!-- ================= 1 · THE BOTTLENECK, AND THE FIX ================= -->
 <section class="unit" id="s1">
-  <div class="sec-head reveal"><span class="sec-num">1</span><h2>The problem Unit 17 left behind</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">1</span><h2>The bottleneck, and the fix: look back</h2></div>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>A class of eight students plays "pass the message". The first student whispers to the second, the second to the third, and so on. By the time it reaches the eighth student, the message is faint and mixed up. And it took eight turns.</p>
-    <p>Now change the rule. Every student may stand up and ask <strong>any</strong> other student a question directly, and everyone asks at the same time. One turn. Nothing gets lost on the way.</p>
+    <p>A minister gives a speech in English, and an interpreter must say it in Hindi. The first interpreter listens to the whole speech, holds it in her head, and then speaks. For a short speech this works. For a long one, the details are gone before she opens her mouth.</p>
+    <p>The second interpreter keeps <strong>notes</strong>, one line for every phrase. Before each Hindi word she glances back at her notes, and she looks hardest at the line that matters <em>right now</em>. She never has to remember the whole speech. She only has to know where to look.</p>
   </div>
 
   <div class="prose reveal">
-    <p>The first game is how the machines of <a href="unit-17.html">Unit 17</a> read. A recurrent network reads one word, updates its running note, reads the next word, updates the note again. It has two problems.</p>
+    <p><strong>The question.</strong> How can a machine translate a fifty-word sentence if only a handful of numbers may pass from the part that reads to the part that writes?</p>
+    <p>That was the trouble with the translator of <a href="unit-17.html#s12">Unit 17</a>. Its <strong>encoder</strong> reads "I drink tea" one word at a time. After each word it writes a note — a short list of numbers: \(\mathbf h_1\) after "I", \(\mathbf h_2\) after "drink", \(\mathbf h_3\) after "tea". Then it hands the <strong>decoder</strong> only the last note, the summary. A five-word sentence and a fifty-word sentence must squeeze through the same few numbers. That squeeze is the <strong>bottleneck</strong>. It is the first interpreter, speaking from memory.</p>
+    <p>The fix (Bahdanau, Cho and Bengio, 2015) is the second interpreter. <strong>Keep every note.</strong> Before the decoder writes each word, it makes three small moves.</p>
     <ol class="roadmap">
-      <li><strong>It is slow.</strong> Word 8 must wait for word 7, which waits for word 6. A computer with a thousand workers can still use only one of them at a time.</li>
-      <li><strong>It forgets.</strong> The first word's voice is passed along seven times to reach word 8. If each hand-over keeps about half of it, what arrives is \(0.5^7\approx0.0078\) — less than 1%. And in an encoder–decoder, the whole sentence must squeeze through <strong>one</strong> small note: the bottleneck.</li>
+      <li><strong>Score every note.</strong> How well does this note match what I am about to write? The simplest score is the dot product (<a href="unit-03.html#s2d">Unit 3</a>) of the decoder's current state \(\mathbf q\) with the note.</li>
+      <li><strong>Turn the scores into shares</strong> with softmax (<a href="unit-14.html#s10">Unit 14</a>). The shares are positive and add up to 1. They are called the <strong>attention weights</strong>.</li>
+      <li><strong>Blend the notes</strong> with those shares. The blend is the <strong>context vector</strong>. The decoder uses it, together with its own state, to choose the next word.</li>
     </ol>
-    <p>The second game is <strong>attention</strong>. Every word looks at every other word <em>directly</em>. The path from word 1 to word 8 is one step long, not seven. And all the looking happens at once, so all thousand workers can help.</p>
-    <p>The price is the number of questions. With 8 words, each of the 8 asks all 8 (itself too): \(8\times8=64\) questions. We will come back to that price in §10.</p>
+    <p><strong>By hand.</strong> We keep the numbers tiny and make them by hand, so that you can see everything. Each note simply points at its own word: \(\mathbf h_{\text{I}}=(1,0,0)\), \(\mathbf h_{\text{drink}}=(0,1,0)\), \(\mathbf h_{\text{tea}}=(0,0,1)\). (Real notes are long lists that mix many words together.) The decoder has written मैं (<em>main</em>, "I") and is about to write चाय (<em>chai</em>, "tea"). Its state — the decoder's own running note, as in Unit 17 — is, say, \(\mathbf q=(0,\ 0.5,\ 2)\).</p>
+    <p>\[\begin{aligned}\text{scores: }&\mathbf q\cdot\mathbf h=(0,\ 0.5,\ 2)\\ \text{softmax: }&\frac{(e^{0},\ e^{0.5},\ e^{2})}{1+1.649+7.389}\\ &\approx(0.100,\ 0.164,\ 0.736)\\ \text{context: }&0.100\,\mathbf h_{\text{I}}+0.164\,\mathbf h_{\text{drink}}\\ &\quad+0.736\,\mathbf h_{\text{tea}}\\ &=(0.100,\ 0.164,\ 0.736)\end{aligned}\]</p>
+    <p>Almost three quarters of the attention goes to the note of "tea". The machine is about to write "chai", and it is looking at "tea". Nobody told it to — the scores did.</p>
+    <p>Do this for every Hindi word and stack the weights as rows. You get the <strong>alignment map</strong>: one row for each word written, one column for each word read. In "I drink tea" → "मैं चाय पीता हूँ" (<em>main chai peeta hoon</em>) Hindi puts the verb at the end. So the bright cells do not run straight down the diagonal. They <strong>bend</strong>: चाय looks at "tea", and then पीता (<em>peeta</em>, "drink") looks back at "drink". The last word, हूँ (<em>hoon</em>, "am"), has no single English partner, so it spreads its attention over "I" and "drink".</p>
   </div>
 
-  <div class="widget reveal" id="w-relay">
-    <div class="widget-head"><span class="w-title">Pass the message, or ask directly</span><span class="w-sub">Top: the relay of Unit 17 — each word hands the note to the next, and the first word's voice fades. Bottom: attention — every word is joined to every word by a direct line.</span></div>
-    <p class="try"><b>Try:</b> Press <em>▶ send the message</em> in the relay and watch the first word's glow shrink on its way. Switch to <em>everyone at once</em> and press play again: every line lights in the same moment. Then drag the number of words up to 12 and read both counts.</p>
-    <div class="svgstage"><svg id="rl-svg" viewBox="0 0 760 330" class="svg-lab" role="img" aria-label="A row of word beads. In the relay picture a glowing note travels from the first bead to the last, one hop at a time, and gets dimmer at each hop. In the attention picture curved lines join every bead to every other bead and all of them light up at once."></svg></div>
+  <div class="widget reveal" id="w-align">
+    <div class="widget-head"><span class="w-title">The interpreter looks back</span><span class="w-sub">Top: the English notes the encoder wrote. Bottom: the Hindi the decoder writes, one word at a time. Gold beams: where the decoder looks before each word — the thicker the beam, the bigger the share. Right: the alignment map fills one row per word, and the context vector is the blend. All numbers are hand-made.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ translate</em> and watch the four Hindi words appear. Before each word the beams reach back to the notes, and one more row of the map lights up — see it bend at चाय and पीता. Click चाय and push <em>how sure</em> to 2: the share of "tea" climbs to 0.936. Then switch to <em>no attention (Unit 17)</em>: every word gets the same summary, and there is no map at all.</p>
+    <div class="svgstage"><svg id="al-svg" viewBox="0 0 760 400" class="svg-lab" role="img" aria-label="Three English note cards, I, drink and tea, along the top. Four Hindi words along the bottom: main, chai, peeta, hoon. Gold beams of different thickness run from the Hindi word being written up to each English note. On the right a four by three grid, the alignment map, fills in row by row: main looks at I, chai at tea, peeta at drink, and hoon splits between I and drink."></svg></div>
     <div class="wrow" style="margin-top:.6rem">
-      <div class="wcol" style="flex:1 1 260px">
-        <div class="tabs" id="rl-mode" role="tablist"><button role="tab" aria-selected="true" data-t="relay">one at a time (Unit 17)</button><button role="tab" aria-selected="false" data-t="all">everyone at once</button></div>
-        <div class="controls"><div class="ctl"><label for="rl-n">words</label><input id="rl-n" type="range" min="4" max="12" step="1" value="8"><output id="rl-n-o">8</output></div></div>
-        <div class="presets"><button class="play" id="rl-play">▶ send the message</button></div>
+      <div class="wcol" style="flex:1 1 280px">
+        <div class="tabs" id="al-mode" role="tablist"><button role="tab" aria-selected="true" data-t="att">with attention</button><button role="tab" aria-selected="false" data-t="none">no attention (Unit 17)</button></div>
+        <div class="lbl-row">word being written</div>
+        <div class="tabs" id="al-step" role="tablist"><button role="tab" aria-selected="false" data-t="0">मैं</button><button role="tab" aria-selected="true" data-t="1">चाय</button><button role="tab" aria-selected="false" data-t="2">पीता</button><button role="tab" aria-selected="false" data-t="3">हूँ</button></div>
+        <div class="controls"><div class="ctl"><label for="al-k">how sure</label><input id="al-k" type="range" min="0" max="3" step="0.1" value="1"><output id="al-k-o">1</output></div></div>
+        <div class="presets"><button class="play" id="al-play">▶ translate</button></div>
       </div>
-      <div class="wcol" style="flex:1.2 1 280px"><div id="rl-read" class="readout" style="line-height:1.75"></div></div>
+      <div class="wcol" style="flex:1.2 1 300px"><div id="al-read" class="readout" style="line-height:1.75"></div></div>
     </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Two reasons. First, <strong>nothing is squeezed</strong>. A long sentence simply has more notes, and every note stays exactly as it was written. Second, <strong>the blame has a short road</strong>. When the decoder writes a wrong word, backprop (<a href="unit-15.html#s8">Unit 15</a>) sends the blame back through the context vector straight into the notes it used — one hop, in proportion to their shares. In the relay, the blame for an early word had to crawl back through every step, and it faded on the way (<a href="unit-17.html#s7">Unit 17</a>).</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Three ways to score a note.</strong> The dot product is not the only way to ask "how well does this note match?". Here are the three classic choices side by side.</p>
+    <table class="plain cmp">
+      <thead><tr><th>score</th><th>formula</th><th>extra weights</th><th>in plain words</th></tr></thead>
+      <tbody>
+        <tr><td data-l="score"><b>dot</b> (Luong, 2015)</td><td data-l="formula">\(\mathbf q\cdot\mathbf h\)</td><td data-l="extra weights">none</td><td data-l="in plain words">"how much do we agree?" — needs \(\mathbf q\) and \(\mathbf h\) of the same length</td></tr>
+        <tr><td data-l="score"><b>general</b> (Luong, 2015)</td><td data-l="formula">\(\mathbf q^{\mathsf T}W\mathbf h\)</td><td data-l="extra weights">one matrix \(W\)</td><td data-l="in plain words">first re-express the note with \(W\), then agree</td></tr>
+        <tr><td data-l="score"><b>additive</b> (Bahdanau, 2015)</td><td data-l="formula">\(\mathbf v^{\mathsf T}\tanh(W_1\mathbf h+W_2\mathbf q)\)</td><td data-l="extra weights">\(W_1,\ W_2,\ \mathbf v\)</td><td data-l="in plain words">a tiny one-layer network judges the match</td></tr>
+      </tbody>
+    </table>
+    <p><strong>An additive score by hand.</strong> Take \(W_1=W_2=I\), \(\mathbf v=(1,1)\), a decoder state \(\mathbf q=(0.5,\ -0.5)\) and three notes \((1,0)\), \((0,1)\), \((1,1)\). Both matrices are \(I\), so \(W_1\mathbf h+W_2\mathbf q\) is just \(\mathbf h+\mathbf q\): add the state to each note: \((1.5,\ -0.5)\), \((0.5,\ 0.5)\), \((1.5,\ 0.5)\). Squash each entry with tanh: \((0.905,\ -0.462)\), \((0.462,\ 0.462)\), \((0.905,\ 0.462)\). Now \(\mathbf v=(1,1)\) simply adds the two entries: the scores are \((0.443,\ 0.924,\ 1.367)\), and softmax turns them into the weights \((0.195,\ 0.315,\ 0.490)\).</p>
+    <p class="rule"><b>Rule of thumb.</b> The dot product is the cheapest, and it is the one the transformer uses (with the \(\sqrt d\) of §4). Additive scoring came first. Like general, it copes when the decoder state and the notes have different lengths: its matrices first bring both to one size.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>There is not one context vector for the sentence. There is a <strong>new one for every word the decoder writes</strong>: four Hindi words, four context vectors, four rows of the map. The notes stay the same; what changes is where the decoder looks.</p>
   </div>
 
   <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{gathered}\text{relay: }n-1\text{ hops,}\\ \text{one after another}\\ \text{attention: }1\text{ hop,}\\ \text{all }n\times n\text{ at once}\end{gathered}\]</p>
-    <p>Reading one word at a time makes the path between far-apart words long, so their link fades, and it makes the work wait in a queue. Attention joins every pair of words <strong>directly</strong> and does all the joining <strong>at the same time</strong>. It pays for this with \(n^2\) questions.</p>
+    <p>\[\begin{gathered}\alpha_{tj}=\operatorname{softmax}_j\big(\operatorname{score}(\mathbf q_t,\mathbf h_j)\big)\\ \mathbf c_t=\sum_j\alpha_{tj}\,\mathbf h_j\end{gathered}\]</p>
+    <p>Before writing word \(t\), score every note \(\mathbf h_j\) against the decoder's state \(\mathbf q_t\), turn the scores into shares \(\alpha_{tj}\), and blend the notes into the context \(\mathbf c_t\). Keep every note and look back, instead of carrying one summary and hoping it holds everything.</p>
   </div>
   <div class="check reveal" data-check="c1">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">A sentence has 10 words. In a relay, how many hand-overs does the first word's voice need to reach the last word? With attention, how many questions are asked in total (each word asks every word, itself included)?</p>
+    <p class="q">In the worked example you make the decoder's state for चाय twice as long: \(\mathbf q=(0,\ 1,\ 4)\). What happens to the three attention weights?</p>
     <div class="opts">
-      <button data-why="The number of hand-overs is right: 9. But attention asks 10 × 10 = 100 questions, because every one of the 10 words asks all 10.">9 hand-overs, and 10 questions</button>
-      <button data-correct data-why="Right. From word 1 to word 10 is 9 hops in a relay. With attention each of the 10 words asks each of the 10 words: 10 × 10 = 100 questions, all at the same time, and every path is a single hop.">9 hand-overs, and 100 questions</button>
-      <button data-why="Between word 1 and word 10 there are 9 gaps, so 9 hand-overs, not 10. The question count is 10 × 10 = 100.">10 hand-overs, and 100 questions</button>
+      <button data-why="Softmax cares about the gaps between the scores, not only about which one is biggest. Doubling q doubles every gap, so the biggest share grows: (0.017, 0.047, 0.936).">Nothing changes: the note of "tea" still wins</button>
+      <button data-correct data-why="Right. The scores become (0, 1, 4), so every gap has doubled. e⁴ ≈ 54.6 against e¹ ≈ 2.72 and e⁰ = 1 gives (0.017, 0.047, 0.936). A longer state means a more decided look.">The share of "tea" grows to about 0.94, and the other two shrink</button>
+      <button data-why="The weights are shares, so they always add up to 1 — they cannot all double. The biggest share grows and the others shrink: (0.017, 0.047, 0.936).">All three weights double</button>
     </div>
     <div class="why"></div>
   </div>
+  <div class="check reveal" data-check="c2">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A 30-word English sentence is translated into 35 Hindi words, with attention. How many context vectors does the decoder build, and how many numbers are in the alignment map?</p>
+    <div class="opts">
+      <button data-why="That is the Unit 17 picture: one summary for the whole sentence. With attention the decoder builds a fresh context vector for each of the 35 words it writes, each from 30 shares.">1 context vector, and 30 numbers</button>
+      <button data-correct data-why="Right. One row for each Hindi word written, one column for each English note: 35 rows of 30 shares, 35 × 30 = 1 050 numbers. Each row adds up to 1, and each row gives one context vector.">35 context vectors, and 35 × 30 = 1 050 numbers</button>
+      <button data-why="The number of cells is right, but the rows belong to the words being written: one context vector per Hindi word, so 35, not 30.">30 context vectors, and 30 × 35 = 1 050 numbers</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s1-->
   <div class="prose reveal">
     <p><strong>The road ahead.</strong> The unit has four acts.</p>
     <ol class="roadmap">
-      <li><strong>Asking every word</strong> (§1–§3): attention as a soft lookup; queries, keys and values worked by hand with tiny numbers.</li>
-      <li><strong>Making it work</strong> (§4–§7): why we divide by \(\sqrt d\); the attention lab, where you type a sentence and watch "it" find "ball"; many heads; and how a word knows where it stands.</li>
-      <li><strong>The transformer</strong> (§8–§9): the block — attention, a shortcut, layer norm, a small network — and the mask that stops a word peeking at the future.</li>
-      <li><strong>The whole machine</strong> (§10–§12): the \(n^2\) price, a tiny transformer walked end to end with every number shown, and what to carry to Unit 19.</li>
+      <li><strong>Look back instead of remembering</strong> (§1–§2): the decoder's look-back, and attention as a soft lookup.</li>
+      <li><strong>Every word asks every word</strong> (§3–§7): self-attention by hand, why we divide by \(\sqrt d\), one word with many meanings, an attention lab where you type your own sentence, and many heads.</li>
+      <li><strong>Order and depth</strong> (§8–§9): three ways to tell the model where each word stands, and the transformer block.</li>
+      <li><strong>How transformers learn</strong> (§10–§14): the mask that trains every next word at once; BERT, GPT and the encoder–decoder; the \(n^2\) price; and a tiny transformer walked end to end.</li>
     </ol>
   </div>
-  <p class="onesent reveal"><b>In one sentence:</b> A relay makes far words wait and fade, so attention lets every word ask every other word directly and all at once, at the price of \(n^2\) questions.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> Instead of squeezing the sentence into one summary, the decoder keeps every note and, before each word it writes, scores the notes, turns the scores into shares and blends them — an interpreter glancing back at the speaker's notes, looking hardest where it matters now.</p>
 </section>
 
 <!-- ================= 2 · A SOFT LOOKUP ================= -->
@@ -66,8 +106,9 @@
   </div>
 
   <div class="prose reveal">
-    <p>A dictionary is a strict shopkeeper. You bring a <strong>query</strong> (what you ask for). Each entry has a <strong>key</strong> (its label) and a <strong>value</strong> (what it gives back). If your query matches a key exactly, you get that one value. Otherwise, nothing.</p>
-    <p>Attention is the kind shopkeeper. It never gives just one value. It gives a <strong>blend of all the values</strong>, and the recipe of the blend comes from how well each key matches the query.</p>
+    <p><strong>The question.</strong> The decoder of §1 did not pick the best note. It took a blend of all of them. Why a blend — why not simply pick the winner?</p>
+    <p>First, give the three parts their names, with the help of a library. Your <strong>query</strong> is what you are looking for: "a cricket book for beginners". Every book has a label on its spine — its <strong>key</strong>. Inside the book is what you actually take home — its <strong>value</strong>. A strict librarian hands you the one book whose label matches best. A kind librarian photocopies a few pages from <em>every</em> book, more pages from the books whose labels match your wish better, and staples them into one bundle. That bundle is attention's answer.</p>
+    <p>In §1 each note played both parts at once: the decoder compared its state with the note (the note as a key) and then blended the notes themselves (the note as a value). Split the two parts and you have the general tool, the <strong>soft lookup</strong>.</p>
     <p><strong>A tiny example.</strong> The stall has two drinks. Chai costs ₹10, coffee costs ₹20. Your wish matches chai with a score of 2 and coffee with a score of 0. Turn the scores into shares with softmax (<a href="unit-14.html#s10">Unit 14</a>):</p>
     <p>\[\begin{aligned}\text{chai: }&\frac{e^{2}}{e^{2}+e^{0}}=\frac{7.389}{8.389}\approx0.881\\ \text{coffee: }&\frac{e^{0}}{e^{2}+e^{0}}=\frac{1}{8.389}\approx0.119\end{aligned}\]</p>
     <p>The two shares add up to 1. Your mixed cup is 88% chai and 12% coffee, so its price is the same blend of the prices: \(0.881\times10+0.119\times20\approx11.19\) — ₹11.19. A strict lookup would have said ₹10, full stop.</p>
@@ -75,8 +116,8 @@
   </div>
 
   <div class="widget reveal" id="w-lookup">
-    <div class="widget-head"><span class="w-title">The strict shopkeeper and the kind one</span><span class="w-sub">Four drinks sit on a "taste map": right = more milky, up = more strong. Each drink's position is its <b>key</b>. Its colour and price are its <b>value</b>. Your wish is the orange <b>query</b> arrow.</span></div>
-    <p class="try"><b>Try:</b> Drag the orange arrow around the map. In <em>strict</em> mode the cup snaps from one drink to another. In <em>kind</em> mode the cup's colour and price change smoothly. Then push <em>how picky</em> to the right: the kind shopkeeper becomes the strict one.</p>
+    <div class="widget-head"><span class="w-title">The strict shopkeeper and the kind one</span><span class="w-sub">Four drinks sit on a "taste map": right = more milky, up = more strong. Each drink's position is its <b>key</b>. Its colour and price are its <b>value</b>. Your wish is the orange <b>query</b> arrow, q.</span></div>
+    <p class="try"><b>Try:</b> Drag the orange arrow around the map. In <em>strict</em> mode the cup snaps from one drink to another. In <em>kind</em> mode the cup's colour and price change smoothly. Push <em>how picky</em> to 6: the kind shopkeeper becomes the strict one. Pull it to 0: every drink gets 0.25 and the cup costs the plain average, ₹18.75.</p>
     <div class="wrow">
       <div class="wcol" style="flex:3 1 440px"><div class="svgstage"><svg id="lk-svg" viewBox="0 0 640 380" class="svg-lab" role="img" aria-label="A taste map with four drinks marked as blue key arrows: masala chai, black coffee, lassi and lemon tea. An orange query arrow can be dragged. On the right, gold bars show each drink's share, and a cup shows the colour and price of the blended drink."></svg></div></div>
       <div class="wcol" style="flex:1 1 250px">
@@ -91,109 +132,53 @@
     </div>
   </div>
 
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Because a blend can be <strong>nudged</strong>. If the answer comes out a little wrong, training can move a little share from one key to another: every share has a slope (<a href="unit-14.html#s10">Unit 14</a>). A strict pick has no useful slope at all. Nudge the query and nothing changes — until the winner suddenly flips. Backprop gets no hint about which key it should have liked a bit more. The soft lookup is a lookup that can <strong>learn</strong>.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Strict against soft, side by side.</strong></p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>strict lookup (a dictionary)</th><th>soft lookup (attention)</th></tr></thead>
+      <tbody>
+        <tr><td data-l=""><b>you bring</b></td><td data-l="strict">a key to match exactly</td><td data-l="soft">a query</td></tr>
+        <tr><td data-l=""><b>it compares</b></td><td data-l="strict">equal or not equal</td><td data-l="soft">a dot product with every key</td></tr>
+        <tr><td data-l=""><b>you get back</b></td><td data-l="strict">one value</td><td data-l="soft">a blend of all the values</td></tr>
+        <tr><td data-l=""><b>when nothing matches</b></td><td data-l="strict">an error: "not found"</td><td data-l="soft">still a blend — with equal scores, the plain average</td></tr>
+        <tr><td data-l=""><b>can it learn?</b></td><td data-l="strict">no slope: the winner just flips</td><td data-l="soft">yes: every share has a slope</td></tr>
+      </tbody>
+    </table>
+    <p class="rule"><b>Rule of thumb.</b> Inside a network, always go soft. If you want it nearly strict, make the scores big: a very picky soft lookup behaves like a dictionary, and it can still learn.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Attention never says "no match". A query that matches nothing still gets an answer: with equal scores, every key gets the same share and the answer is the plain average of the values. A bad query does not give an empty answer — it gives a vague one.</p>
+  </div>
+
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\begin{gathered}\text{output}=\sum_i w_i\,\mathbf v_i,\\ w_i=\frac{e^{\,\mathbf q\cdot\mathbf k_i}}{\sum_j e^{\,\mathbf q\cdot\mathbf k_j}}\end{gathered}\]</p>
     <p>Attention is a lookup that never says "no match". Every key gets a score by a dot product with the query. Softmax turns the scores into shares that add up to 1. The answer is the blend of all the values with those shares. Make the scores bigger and bigger, and the biggest share swallows the rest: the soft lookup becomes a strict one.</p>
   </div>
-  <div class="check reveal" data-check="c2">
+  <div class="check reveal" data-check="c3">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">Three keys give scores 1, 1 and 1 with your query. The values are 3, 6 and 9. What does attention return?</p>
     <div class="opts">
       <button data-why="With equal scores no value wins. Softmax gives equal shares, and the answer is the plain average, not the largest value.">9, the biggest value</button>
-      <button data-correct data-why="Right. Equal scores give equal shares: e¹/(3e¹) = 1/3 each. The blend is (3 + 6 + 9)/3 = 6 — a plain average.">6, the plain average</button>
+      <button data-correct data-why="Right. Equal scores give equal shares: e¹/(3e¹) = 1/3 each. The blend is (3 + 6 + 9)/3 = 6 — the plain average. A query that prefers nothing gets a vague answer, not an empty one.">6, the plain average</button>
       <button data-why="Softmax shares always add up to 1, so the answer is a blend, never a sum. Here each share is 1/3, giving 6.">18, the sum of the values</button>
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c3">
+  <div class="check reveal" data-check="c4">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">In the tiny example, you multiply both scores by 10: chai 20, coffee 0. What happens to the price of your cup?</p>
     <div class="opts">
-      <button data-correct data-why="Right. The chai share becomes e²⁰/(e²⁰ + 1), which is 0.999999998, so the cup is almost pure chai: about ₹10. Big scores turn the kind shopkeeper into the strict one.">It moves to almost exactly ₹10 — nearly pure chai</button>
+      <button data-correct data-why="Right. The chai share becomes e²⁰/(e²⁰ + 1) ≈ 0.999999998, so the cup is almost pure chai: about ₹10. Big scores turn the kind shopkeeper into the strict one.">It moves to almost exactly ₹10 — nearly pure chai</button>
       <button data-why="Multiplying the scores does not keep the shares the same: softmax cares about the gap between scores, and the gap grew from 2 to 20. Chai's share goes to almost 1.">It stays at ₹11.19</button>
       <button data-why="Coffee's score is still 0 and chai's is now far higher, so coffee's share shrinks, not grows. The price falls towards ₹10.">It moves towards ₹20</button>
     </div>
     <div class="why"></div>
   </div>
 <!--@ALG s2-->
-  <p class="onesent reveal"><b>In one sentence:</b> Attention answers a query with a blend of every value, weighted by softmax of the dot products between the query and the keys — a dictionary that never says "no match".</p>
-</section>
-
-<!-- ================= 3 · Q, K, V BY HAND ================= -->
-<section class="unit" id="s3">
-  <div class="sec-head reveal"><span class="sec-num">3</span><h2>Queries, keys and values, worked by hand</h2></div>
-  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>At a school fair each student wears two badges. One badge says <strong>what I am looking for</strong>. The other says <strong>what I can help with</strong>. And each student carries a small bag with <strong>what I will hand over</strong> if you come to me.</p>
-    <p>You walk around, compare your "looking for" badge with everyone's "can help with" badge, and collect a little from each bag — more from the students who match you best.</p>
-  </div>
-
-  <div class="prose reveal">
-    <p>Those three things have names. The "looking for" badge is the <strong>query</strong> \(\mathbf q\). The "can help with" badge is the <strong>key</strong> \(\mathbf k\). The bag is the <strong>value</strong> \(\mathbf v\). In this unit queries are <span class="k-q">orange</span>, keys are <span class="k-k">blue</span>, values are <span class="k-v">green</span> and attention weights are <span class="k-w">gold</span>.</p>
-    <p><strong>Three words, worked by hand.</strong> Each word has a key and a value, each a list of two numbers (so the size is \(d=2\)):</p>
-    <p>\[\begin{aligned}&\mathbf k_1=(1,0),\ \ \mathbf k_2=(0,1),\ \ \mathbf k_3=(1,1)\\ &\mathbf v_1=(2,0),\ \ \mathbf v_2=(0,2),\ \ \mathbf v_3=(1,1)\end{aligned}\]</p>
-    <p>A word arrives with the query \(\mathbf q=(2,0)\). Four small moves:</p>
-    <ol class="roadmap">
-      <li><strong>Score each key</strong> with a dot product, then divide by \(\sqrt d=\sqrt2\approx1.414\) (§4 says why): \(\mathbf q\cdot\mathbf k_1=2\), \(\mathbf q\cdot\mathbf k_2=0\), \(\mathbf q\cdot\mathbf k_3=2\). Divided: \((1.414,\ 0,\ 1.414)\).</li>
-      <li><strong>Turn scores into shares</strong> with softmax: \(e^{1.414}\approx4.113\) and \(e^{0}=1\), total \(9.227\). Shares \(\approx(0.446,\ 0.108,\ 0.446)\).</li>
-      <li><strong>Blend the values</strong> with those shares: \(0.446\,(2,0)+0.108\,(0,2)+0.446\,(1,1)\).</li>
-      <li><strong>Read the answer:</strong> \(\approx(1.337,\ 0.663)\).</li>
-    </ol>
-    <p>The query points along the first direction, so it matched keys 1 and 3 equally well and key 2 badly. The answer leans towards \(\mathbf v_1\) and \(\mathbf v_3\).</p>
-    <p><strong>Where do q, k and v come from?</strong> From the words themselves. Each word starts as one list of numbers (its vector, <a href="unit-16.html">Unit 16</a>). Three learned matrices turn that one list into three:</p>
-    <p>\[\mathbf q=W_Q^{\mathsf T}\mathbf x,\qquad\mathbf k=W_K^{\mathsf T}\mathbf x,\qquad\mathbf v=W_V^{\mathsf T}\mathbf x.\]</p>
-    <p>So the same word asks one thing (its query), advertises another (its key) and hands over a third (its value). Training chooses the three matrices.</p>
-  </div>
-
-  <div class="widget reveal" id="w-qkv">
-    <div class="widget-head"><span class="w-title">One lookup, in space</span><span class="w-sub">The floor holds the orange query and the three blue keys. Over each key stands a gold pillar: its share. Above floats a second floor with the three green values. Each value is shrunk by its share and they are laid tip to tail — where the chain ends is the answer.</span></div>
-    <p class="try"><b>Try:</b> Press <em>▶ run the lookup</em> and follow the four moves. Then turn the query with the angle slider: point it at \(\mathbf k_2\) and watch the tallest pillar move and the answer swing towards \(\mathbf v_2\). Last, pick the three queries of the matrix below one by one.</p>
-    <div class="wrow">
-      <div class="wcol" style="flex:3 1 460px"><div id="qk-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On a glass floor an orange query arrow and three blue key arrows start from the same point. Over the tip of each key stands a gold pillar whose height is that key's share. Above, on a second glass floor, three green value arrows. Shrunken copies of the values are laid tip to tail, and a bright white arrow from the start to the end of the chain is the answer."></div><p class="stage-tap">drag the picture to orbit</p></div>
-      <div class="wcol" style="flex:1 1 250px">
-        <div class="tabs" id="qk-row" role="tablist"><button role="tab" aria-selected="true" data-t="0">q = (2, 0)</button><button role="tab" aria-selected="false" data-t="1">q = (0, 2)</button><button role="tab" aria-selected="false" data-t="2">q = (1, 1)</button></div>
-        <div class="controls">
-          <div class="ctl"><label for="qk-ang">angle</label><input id="qk-ang" type="range" min="0" max="360" step="1" value="0"><output id="qk-ang-o">0°</output></div>
-          <div class="ctl"><label for="qk-len">length</label><input id="qk-len" type="range" min="0" max="4" step="0.05" value="2"><output id="qk-len-o">2</output></div>
-        </div>
-        <div class="presets"><button class="play" id="qk-play">▶ run the lookup</button></div>
-        <div id="qk-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
-      </div>
-    </div>
-    <div id="qk-mat" class="qk-mat"></div>
-  </div>
-
-  <div class="prose reveal">
-    <p><strong>All three words at once.</strong> In a sentence every word asks its own question. Stack the queries as the rows of a matrix \(Q\), the keys as the rows of \(K\) and the values as the rows of \(V\). Take the three queries \((2,0)\), \((0,2)\) and \((1,1)\). Then all the lookups happen in one line:</p>
-    <p>\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\!\Big(\frac{QK^{\mathsf T}}{\sqrt d}\Big)\,V.\]</p>
-    <p>Read it from the inside out. \(QK^{\mathsf T}\) is a table of every query dotted with every key. Dividing by \(\sqrt d\) calms the numbers. Softmax works along each row, so each row becomes shares that add up to 1. That table of shares is the <strong>attention matrix</strong>:</p>
-    <p>\[A\approx\begin{pmatrix}0.446&0.108&0.446\\ 0.108&0.446&0.446\\ 0.248&0.248&0.503\end{pmatrix}.\]</p>
-    <p>Multiplying by \(V\) blends the values, one row per word. The answers are \((1.337,0.663)\), \((0.663,1.337)\) and \((1,1)\). The third query \((1,1)\) likes key 3 most, and its answer is exactly \(\mathbf v_3\) — the other two values balance each other.</p>
-  </div>
-
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\operatorname{softmax}\!\Big(\frac{QK^{\mathsf T}}{\sqrt d}\Big)V\]</p>
-    <p>Every word turns itself into a question, a label and a gift. Each question is scored against every label by a dot product; softmax makes the scores into shares; each word collects the gifts in those shares. One matrix line does it for all the words at once. This is Unit 13's <a href="unit-13.html#s12">kernel vote</a>: similarity by a dot product, then a weighted sum.</p>
-  </div>
-  <div class="check reveal" data-check="c4">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">With the same keys and values, a new query is \(\mathbf q=(0,0)\). What is the answer?</p>
-    <div class="opts">
-      <button data-why="A zero query gives zero scores, but softmax of (0, 0, 0) is not zero: it is (1/3, 1/3, 1/3). The answer is the average of the values.">(0, 0), because the query is zero</button>
-      <button data-correct data-why="Right. All three scores are 0, so the shares are 1/3 each, and the answer is the average value: ((2,0) + (0,2) + (1,1))/3 = (1, 1).">(1, 1), the plain average of the values</button>
-      <button data-why="(1, 1) is v₃, but not because key 3 wins — with a zero query no key wins. Each gets 1/3, and the average of the three values also happens to be (1, 1).">(1, 1), because key 3 is the longest</button>
-    </div>
-    <div class="why"></div>
-  </div>
-  <div class="check reveal" data-check="c5">
-    <span class="tag">Pause &amp; predict</span>
-    <p class="q">A sentence has 5 words and \(d=2\). What are the shapes of \(QK^{\mathsf T}\) and of the output \(\operatorname{softmax}(QK^{\mathsf T}/\sqrt d)\,V\)?</p>
-    <div class="opts">
-      <button data-why="QKᵀ compares words with words, so it is 5 × 5, not 2 × 2. The 2 is the length of each list, which is summed away inside each dot product.">2 × 2 and 5 × 2</button>
-      <button data-why="The table QKᵀ is 5 × 5 — right. But multiplying a 5 × 5 table by V (5 × 2) gives 5 × 2: one answer of length 2 per word.">5 × 5 and 5 × 5</button>
-      <button data-correct data-why="Right. Q is 5 × 2 and Kᵀ is 2 × 5, so QKᵀ is 5 × 5: every word against every word. Then (5 × 5)(5 × 2) = 5 × 2: one new vector of length 2 for each of the 5 words.">5 × 5 and 5 × 2</button>
-    </div>
-    <div class="why"></div>
-  </div>
-<!--@ALG s3-->
-  <p class="onesent reveal"><b>In one sentence:</b> Each word makes a query, a key and a value with three learned matrices, and \(\operatorname{softmax}(QK^{\mathsf T}/\sqrt d)\,V\) lets every word collect a blend of every value, weighted by how well its query matches each key.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> Attention answers a query with a blend of every value, weighted by softmax of how well the query matches each key — a librarian who staples a few pages from every book, more from the books whose labels match your wish, and so can learn where to look.</p>
 </section>

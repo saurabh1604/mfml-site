@@ -1,21 +1,201 @@
-<!-- ================= ACT IV · THE WHOLE MACHINE ================= -->
-<!-- ================= 10 · THE PRICE ================= -->
+<!-- ================= ACT IV · HOW TRANSFORMERS LEARN ================= -->
+<!-- ================= 10 · THE MASK, AND EVERY GUESS AT ONCE ================= -->
 <section class="unit" id="s10">
-  <div class="sec-head reveal"><span class="sec-num">10</span><h2>The price: every pair of words</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>No peeking: the mask, and every guess at once</h2></div>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>At a party of 10 people, everyone shakes hands with everyone: about 100 handshakes. At a wedding of 1 000 guests the same rule means about a million handshakes. The guests have only grown 100 times, but the handshakes have grown 10 000 times.</p>
+    <p>A teacher writes a sentence on the board, one word per column: "I drink chai daily". She wants the class to practise guessing the next word. The first student may look only at "I" and must guess the second word. The second student may look at "I drink" and must guess the third. And so on.</p>
+    <p>Nobody waits for anybody. Each student simply covers everything to the right of their own column with a sheet of paper — and the whole class answers at the same moment.</p>
   </div>
 
   <div class="prose reveal">
-    <p>Attention compares <strong>every pair</strong> of words. For \(n\) words that is an \(n\times n\) table of scores, in every head of every layer.</p>
+    <p><strong>The question.</strong> A model that writes must guess the next word without seeing it. How can we train it on a whole sentence at once, without letting it cheat?</p>
+    <p>While it learns to predict word 3, it must not see word 3. So in the attention map every word may look only at itself and the words to its <strong>left</strong>. The trick is tiny. Before softmax, set every score above the diagonal to \(-\infty\). Since \(e^{-\infty}=0\), those words get a share of exactly 0, and softmax spreads the whole share among the allowed words. This is the <strong>causal mask</strong> — the sheet of paper.</p>
+    <p><strong>With the numbers of §3.</strong> Row 1 may only see word 1, so its shares are \((1,0,0)\) and its answer is \(\mathbf v_1=(2,0)\). Row 2 sees words 1 and 2, with scores \(0\) and \(1.414\):</p>
+    <p>\[\begin{aligned}&\Big(\frac{1}{1+e^{1.414}},\ \frac{e^{1.414}}{1+e^{1.414}}\Big)\\ &\approx(0.196,\ 0.804)\end{aligned}\]</p>
+    <p>and its answer is \(0.196\,(2,0)+0.804\,(0,2)\approx(0.391,\ 1.609)\). Row 3 is the last word, so it may see everything, and it is unchanged: \((0.248,0.248,0.503)\), answer \((1,1)\).</p>
+    <p><strong>Every guess at once.</strong> Now the payoff. With the mask, the output at position \(t\) is built only from words 1 to \(t\) — in this layer and in every layer above it. So the output at position \(t\) can be asked to predict word \(t+1\), and it is an honest guess. One pass over "I drink chai daily" makes three guesses at the same time: after "I" → drink, after "I drink" → chai, after "I drink chai" → daily. The loss is the average surprise of all of them (the cross-entropy of <a href="unit-14.html#s12">Unit 14</a>). An \(n\)-word sentence gives \(n-1\) guesses in one pass.</p>
+    <p>The recurrent network of <a href="unit-17.html#s5">Unit 17</a> also guessed at every word, but it had to walk: word 2's guess waited for word 1's note, word 3's for word 2's. The masked transformer makes all its guesses in one pass through each layer. That is why transformers could be trained on so much text.</p>
+  </div>
+
+  <div class="widget reveal" id="w-mask">
+    <div class="widget-head"><span class="w-title">Mask the future</span><span class="w-sub">Encoder and decoder: the scores, the shares and the answers of the §3 example; in decoder mode the top-right cells become −∞ and their shares exactly 0. Every guess at once: what each position may see, and the word it must guess — one relay step after another, or all in one pass.</span></div>
+    <p class="try"><b>Try:</b> Switch from <em>encoder</em> to <em>decoder</em> and watch row 2 re-share its weight between the two cells it may still see: (0.196, 0.804). Press <em>▶ fill row by row</em>. Then open <em>every guess at once</em> and press play: on “I drink hot chai daily” the relay makes its 4 guesses in 4 steps, one after another; the masked transformer makes the same 4 guesses in one step.</p>
+    <div class="svgstage"><svg id="mk-svg" viewBox="0 0 760 330" class="svg-lab" role="img" aria-label="Three tables side by side: the scores, the attention shares and the answers. Masked cells are hatched and show minus infinity and zero. In the every-guess view, a staircase grid shows which words each position may see and the word each must guess."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 280px">
+        <div class="tabs" id="mk-mode" role="tablist"><button role="tab" aria-selected="true" data-t="enc">encoder (both ways)</button><button role="tab" aria-selected="false" data-t="dec">decoder (no peeking)</button><button role="tab" aria-selected="false" data-t="all">every guess at once</button></div>
+        <div class="presets"><button class="play" id="mk-play">▶ fill row by row</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="mk-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Row \(t\) of a masked attention map mixes only words 1 to \(t\), and every later layer keeps the same rule, so the output at position \(t\) has never seen word \(t+1\). Predicting word \(t+1\) from it is a fair test — and it is a fair test at every position at once. One pass gives the same guesses as running the model separately on every beginning of the sentence (the drawer proves it).</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Learning to guess the next word: the relay against the masked transformer.</strong></p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>recurrent network (Unit 17)</th><th>masked transformer</th></tr></thead>
+      <tbody>
+        <tr><td data-l=""><b>guesses from an \(n\)-word sentence</b></td><td data-l="relay">\(n-1\)</td><td data-l="transformer">\(n-1\)</td></tr>
+        <tr><td data-l=""><b>steps that wait in a row</b></td><td data-l="relay">\(n\): each note needs the one before</td><td data-l="transformer">1 per layer: all rows at once</td></tr>
+        <tr><td data-l=""><b>what stops cheating</b></td><td data-l="relay">the future is not read yet</td><td data-l="transformer">\(-\infty\) above the diagonal</td></tr>
+      </tbody>
+    </table>
+    <p class="rule"><b>Rule of thumb.</b> To train a writer, use the mask: the same honest guesses as a relay, for the price of one pass.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>The \(-\infty\) goes into the <strong>scores, before softmax</strong> — not into the shares after it. If you set the shares above the diagonal to 0 after softmax, the rows no longer add up to 1. Putting \(-\infty\) in first lets softmax share out the whole 100% among the allowed words. (And the mask never hides a word from itself.)</p>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\operatorname{softmax}\!\Big(\frac{QK^{\mathsf T}}{\sqrt d}+M\Big)V,\\ M_{ij}=\begin{cases}0&j\le i\\ -\infty&j>i\end{cases}\end{gathered}\]</p>
+    <p>Adding \(-\infty\) above the diagonal gives the future words a share of exactly zero, so each word's answer is built only from the words before it. Because of that, one pass over a sentence trains every next-word guess at once — word 1 predicting word 2, words 1–2 predicting word 3, and so on — like a class answering together, each student covering the answers to the right.</p>
+  </div>
+  <div class="check reveal" data-check="c21">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">With the causal mask, row 1 of any attention map is always the same. What is it, for a 4-word sentence?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. The first word may look only at itself, so it gets the whole share: (1, 0, 0, 0), and its answer is its own value.">(1, 0, 0, 0)</button>
+      <button data-why="Equal shares would mean looking at all four words, including the future ones. With the mask, word 1 sees only itself: (1, 0, 0, 0).">(0.25, 0.25, 0.25, 0.25)</button>
+      <button data-why="The row must add up to 1 — softmax over the one allowed cell gives that cell 1. So (1, 0, 0, 0), not all zeros.">(0, 0, 0, 0)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c22">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In a masked (decoder) attention you change the value of word 4 in a 5-word sentence. Which words' answers can change?</p>
+    <div class="opts">
+      <button data-why="Word 4 is visible to itself and to the words after it, not only to itself: word 5 may look left at word 4 too.">Only word 4's</button>
+      <button data-why="Words 1–3 may not look to the right, so they never see word 4: their shares on it are exactly 0.">All five</button>
+      <button data-correct data-why="Right. Only words at position 4 or later are allowed to look at word 4, so only the answers of words 4 and 5 can change. Words 1–3 give it a share of exactly 0.">Words 4 and 5 only</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c23">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A 6-word sentence goes through a masked transformer once, and every position guesses the next word. How many guesses does this one pass train, and how many steps must wait for each other in each layer?</p>
+    <div class="opts">
+      <button data-why="The mask makes every position's guess honest, not only the last one: positions 1 to 5 each guess their next word, all in the same pass.">1 guess (only the last word can be predicted), in 1 step</button>
+      <button data-why="That is the relay's way: 5 guesses, but each waiting for the one before. The masked transformer computes all the rows at once: 5 guesses in 1 step per layer.">5 guesses, in 5 steps one after another</button>
+      <button data-correct data-why="Right. Positions 1 to 5 each guess the word after them — 5 guesses — and because no row waits for another, each layer computes them all in one step.">5 guesses, all in 1 step</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s10-->
+  <p class="onesent reveal"><b>In one sentence:</b> Setting the scores above the diagonal to \(-\infty\) before softmax gives future words exactly zero share, so every position's output is an honest guess of the next word and one pass trains them all at once — the whole class answering together, each student covering the answers to the right.</p>
+</section>
+
+<!-- ================= 11 · THREE FAMILIES ================= -->
+<section class="unit" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Three families: BERT, GPT and the encoder–decoder</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>Three people work with text. A <strong>proofreader</strong> gets a page with a few smudged words and fills them in; she reads the whole page, both sides of every smudge. A <strong>storyteller</strong> writes a story one word at a time and never looks ahead — there is nothing ahead yet. An <strong>interpreter</strong> first listens to a whole speech, then speaks it in another language, glancing back at her notes (§1).</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The question.</strong> If every modern language model is built from the same transformer blocks, why do some fill in blanks while others write essays?</p>
+    <p>Because the same blocks can be wired in three ways — and trained with three different games.</p>
+    <p><strong>1 · Encoder-only: BERT</strong> (Google, 2018) — the proofreader. There is no mask: every word sees both sides. The training game is <strong>masked-word guessing</strong>. Pick 15% of the tokens — the word pieces a text is cut into (<a href="unit-16.html">Unit 16</a>); think "words"; in a 512-token text that is \(0.15\times512=76.8\), about 77 tokens. Of those, 80% are replaced by a special token [MASK] (about 61), 10% by a random word (about 8) and 10% are left as they are (about 8). At each of the ~77 chosen places the model must say what the original token was. (The first BERT also played a second, smaller game — does sentence B really follow sentence A? — which later models such as RoBERTa dropped.) Why not always [MASK]? Because when BERT is used later there are no [MASK] tokens, so it must also learn to check real-looking words. BERT is good at <em>understanding</em>: sorting reviews, finding an answer in a paragraph, tagging the names in a sentence, search.</p>
+    <p><strong>2 · Decoder-only: GPT</strong> (OpenAI, 2018 onward) — the storyteller. It uses the causal mask of §10, and its game is <strong>next-word guessing at every position</strong>. A 512-token text gives 511 guesses — about 6.7 times as many learning signals as BERT's 77. GPT is good at <em>writing</em>: chat, stories, code.</p>
+    <p><strong>3 · Encoder–decoder: the original Transformer</strong> (2017), <strong>T5</strong> (2019) — the interpreter. An encoder reads the input both ways. A decoder writes the output with a causal mask, and every decoder block has one more attention: <strong>cross-attention</strong>, whose queries come from the decoder and whose keys and values come from the encoder. That is the look-back of §1, rebuilt from attention alone. It is good at turning one text into another: translation, summaries.</p>
+  </div>
+
+  <div class="widget reveal" id="w-families">
+    <div class="widget-head"><span class="w-title">Who may look at whom — and who is graded</span><span class="w-sub">Pick a family. The grid is its permission map: a gold cell means the row's word may look at the column's word. A red dot at the end of a row means "this position is graded": the model's guess there enters the loss.</span></div>
+    <p class="try"><b>Try:</b> Start with <em>BERT</em> and press <em>new masking</em> a few times: about 15% of the 12 words are chosen (here 2), most become [MASK], and only those places are graded — while the whole grid stays gold. Switch to <em>GPT</em>: the grid becomes a staircase and every position but the last is graded (11 guesses). Open <em>encoder–decoder</em>: three grids, and the cross-attention one is §1's alignment map. The text-length slider starts at 512 tokens: BERT grades 76.8 places, GPT 511. Drag it to 1 024: 153.6 against 1 023 — still about 6.7 times as many.</p>
+    <div class="tabs" id="fm-fam" role="tablist" style="margin-bottom:.5rem"><button role="tab" aria-selected="true" data-t="bert">BERT · encoder-only</button><button role="tab" aria-selected="false" data-t="gpt">GPT · decoder-only</button><button role="tab" aria-selected="false" data-t="t5">encoder–decoder</button></div>
+    <div class="svgstage"><svg id="fm-svg" viewBox="0 0 760 420" class="svg-lab" role="img" aria-label="A permission grid: rows are the words that look, columns the words looked at. For BERT every cell is gold; for GPT only the cells on and below the diagonal. Red marks under the tokens show which positions are graded. The encoder-decoder view shows three grids: the encoder's, the decoder's staircase, and the cross-attention map from Hindi to English."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 280px">
+        <div class="presets"><button class="play" id="fm-mask">new masking</button></div>
+        <div class="controls"><div class="ctl"><label for="fm-n">text length</label><input id="fm-n" type="range" min="4" max="10" step="1" value="9"><output id="fm-n-o">512</output></div></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="fm-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Each game fits a job. Take "He said Teddy bears are on sale" and "He said Teddy Roosevelt was a president" (<a href="unit-17.html#s11">Unit 17</a>). Whether "Teddy" is a name depends on the <em>next</em> word. BERT sees both sides, so it understands such a word better. GPT sees only the left side — which is exactly right for writing, because while you write, the right side does not exist yet. And the encoder–decoder keeps the two jobs apart: understand the input fully, then write the output one word at a time, never peeking ahead.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The three families, side by side.</strong></p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>encoder-only</th><th>decoder-only</th><th>encoder–decoder</th></tr></thead>
+      <tbody>
+        <tr><td data-l=""><b>each position sees</b></td><td data-l="encoder-only">both sides</td><td data-l="decoder-only">only the left (the mask)</td><td data-l="encoder–decoder">encoder: both sides · decoder: its left + all of the input</td></tr>
+        <tr><td data-l=""><b>training game</b></td><td data-l="encoder-only">fill in ~15% hidden words</td><td data-l="decoder-only">guess the next word, everywhere</td><td data-l="encoder–decoder">write the target text, word by word</td></tr>
+        <tr><td data-l=""><b>graded places in a 512-token text</b></td><td data-l="encoder-only">about 77</td><td data-l="decoder-only">511</td><td data-l="encoder–decoder">one per output word</td></tr>
+        <tr><td data-l=""><b>good at</b></td><td data-l="encoder-only">understanding: sort, search, tag</td><td data-l="decoder-only">writing: chat, stories, code</td><td data-l="encoder–decoder">one text into another: translate, summarise</td></tr>
+        <tr><td data-l=""><b>examples</b></td><td data-l="encoder-only">BERT, RoBERTa</td><td data-l="decoder-only">GPT-2, GPT-3, LLaMA</td><td data-l="encoder–decoder">the original Transformer, T5, BART</td></tr>
+      </tbody>
+    </table>
+    <p class="rule"><b>Rule of thumb.</b> To understand, use an encoder. To write, use a decoder. To turn one text into another, use both. (Today's very large decoder-only models are big enough to do all three, by writing the answer out.)</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>BERT cannot simply write text: it was never trained to guess a word without seeing the words after it. And a GPT vector for a word knows only the words to its <em>left</em> — so for understanding one sentence, a BERT of the same size often does better. Same blocks, different wiring, different talents.</p>
+  </div>
+
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p><b>BERT</b> — no mask; grade the ≈ 15% hidden words.<br><b>GPT</b> — causal mask; grade every next word.<br><b>Encoder–decoder</b> — both, joined by cross-attention.</p>
+    <p>One kind of block, three wirings. Who may look at whom (the mask) and which positions are graded (the game) decide whether a transformer becomes a proofreader, a storyteller or an interpreter.</p>
+  </div>
+  <div class="check reveal" data-check="c24">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">BERT is trained on a 256-token text. About how many tokens are chosen for guessing, and about how many of those become [MASK]?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. 15% of 256 is 38.4, so about 38 tokens are chosen; 80% of them, about 31 (30.72), become [MASK]. The rest become a random word or stay as they are.">about 38 chosen, about 31 become [MASK]</button>
+      <button data-why="Only 80% of the chosen tokens become [MASK]: 10% become a random word and 10% stay unchanged, so that the model also learns to check real-looking words. 0.8 × 38.4 ≈ 31.">about 38 chosen, and all 38 become [MASK]</button>
+      <button data-why="The 80% is a share of the chosen tokens, not of the text. First take 15% of 256 (38.4 ≈ 38), then 80% of those (≈ 31) become [MASK].">about 205 chosen (80%), and 38 become [MASK]</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c25">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You need a model that marks every name in a sentence — and "Teddy" is a name in "Teddy Roosevelt was a president" but not in "Teddy bears are on sale". Which family fits best?</p>
+    <div class="opts">
+      <button data-why="A decoder sees only the words to the left, so at “Teddy” it has not yet seen “bears” or “Roosevelt” — the very word that decides. It is built for writing, not for this.">Decoder-only, like GPT: it reads left to right like we do</button>
+      <button data-correct data-why="Right. Tagging is understanding, and the deciding word comes after “Teddy”. An encoder sees both sides of every word, so its vector for “Teddy” already knows about “bears” or “Roosevelt”.">Encoder-only, like BERT: every word sees both sides</button>
+      <button data-why="An encoder–decoder is for turning one text into a different one. Tagging only needs to understand the input, and the encoder half alone already does that.">Encoder–decoder: it has the most parts</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c26">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">From the same 1 000-token text, how many graded guesses does GPT get, compared with BERT?</p>
+    <div class="opts">
+      <button data-why="BERT grades only the ~15% of tokens it hid. GPT grades a next-word guess at every position except the last: 999.">About the same: both grade about 150 places</button>
+      <button data-correct data-why="Right. GPT: one guess per position, 999. BERT: 15% of 1 000 = 150. About 6.7 times more signal per text for GPT — one reason next-word training scales so well.">GPT 999, BERT about 150</button>
+      <button data-why="The mask does not reduce GPT to one guess: every position predicts the word after it, all in one pass (§10). That is 999 guesses, against BERT's 150.">GPT 1 (only the last word), BERT about 150</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> The same blocks become three families — BERT reads both ways and fills in hidden words (the proofreader), GPT reads left to right and guesses every next word (the storyteller), and the encoder–decoder joins the two with cross-attention (the interpreter of §1).</p>
+</section>
+
+<!-- ================= 12 · THE PRICE ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>The price: every pair of words</h2></div>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>At a party of 10 people, everyone shakes hands with everyone else: 45 handshakes. At a wedding of 1 000 guests the same rule means about half a million handshakes (499 500). The guests have grown only 100 times, but the handshakes have grown more than 10 000 times.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The question.</strong> Attention compares every pair of words. What does that cost when the text is a whole book?</p>
+    <p>For \(n\) words attention builds an \(n\times n\) table of scores, in every head of every layer. It counts a little more than the handshakes: every pair from both sides ("it" asks "ball", and "ball" asks "it"), and every word with itself. So 10 words give \(10\times10=100\) scores.</p>
     <p>\[\begin{aligned}n=10&:\ 100\text{ scores}\\ n=1\,000&:\ 1\,000\,000\text{ scores}\\ n=100\,000&:\ 10\,000\,000\,000\text{ scores}\end{aligned}\]</p>
-    <p>Double the length and the work goes up four times. With 12 heads and 12 layers, 1 000 words need \(144\) such tables: 144 million scores. Stored with 2 bytes each, that is 288 MB — for one sentence of 1 000 words.</p>
-    <p>A recurrent network of <a href="unit-17.html">Unit 17</a> does only about \(n\) steps of work for \(n\) words. Cheaper on paper. But those steps come <strong>one after another</strong>, so 1 000 words means 1 000 waits in a row. Attention's million scores do not depend on each other, so a graphics card with thousands of little workers computes them all <strong>at the same time</strong>. That is the trade: more total work, far less waiting. For the lengths people used, the trade won — and it is why "long context" is expensive and a busy research topic.</p>
+    <p>Double the length and the work goes up four times. With 12 heads and 12 layers, 1 000 words need \(144\) such tables: 144 million scores. Stored with 2 bytes each, that is 288 MB — for one text of 1 000 words.</p>
+    <p>A recurrent network of <a href="unit-17.html">Unit 17</a> does only about \(n\) steps of work for \(n\) words. Cheaper on paper. But those steps come <strong>one after another</strong>, so 1 000 words means 1 000 waits in a row. Attention's million scores do not depend on each other, so a graphics card with thousands of little workers computes them all <strong>at the same time</strong>. That is the trade: more total work, far less waiting.</p>
   </div>
 
   <div class="widget reveal" id="w-cost">
     <div class="widget-head"><span class="w-title">Handshakes against the relay</span><span class="w-sub">Both axes grow by ×10 per step. Gold: the scores attention computes (\(n^2\) per head per layer). Blue: the steps a relay must take one after another (\(n\)). Green: the steps attention must take one after another (1 per layer).</span></div>
-    <p class="try"><b>Try:</b> Drag the length from 10 to 100 000 words and read the three numbers. Then add heads and layers: the gold count grows, the green count only grows with layers.</p>
+    <p class="try"><b>Try:</b> Drag the length from 10 to 100 000 words and read the three numbers: at 1 000 words, 1 000 000 scores. Then set 12 heads and 12 layers: 144 000 000 scores, about 288 MB — while the green count is only 12.</p>
     <div class="svgstage"><svg id="cs-svg" viewBox="0 0 760 330" class="svg-lab" role="img" aria-label="A log-log chart of cost against sentence length. A steep gold line for attention scores, a gentler blue line for the relay's steps in a row, and a flat green line for attention's steps in a row. A marker shows the chosen length."></svg></div>
     <div class="wrow" style="margin-top:.6rem">
       <div class="wcol" style="flex:1 1 280px"><div class="controls">
@@ -27,11 +207,34 @@
     </div>
   </div>
 
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Why pay \(n^2\) when a relay pays \(n\)? Because the \(n^2\) scores do not wait for each other, and waiting is what really costs. A graphics card is a room of thousands of small calculators: attention keeps all of them busy at once, while a relay can hand them only one small step at a time, so most of them wait. For texts of a few thousand words, the arithmetic is cheaper than the queue.</p>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>The bill, side by side.</strong></p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>relay (recurrent network)</th><th>attention</th></tr></thead>
+      <tbody>
+        <tr><td data-l=""><b>work for \(n\) words</b></td><td data-l="relay">about \(n\) steps</td><td data-l="attention">\(n^2\) scores per head per layer</td></tr>
+        <tr><td data-l=""><b>steps that must wait in a row</b></td><td data-l="relay">\(n\)</td><td data-l="attention">1 per layer</td></tr>
+        <tr><td data-l=""><b>memory for the scores</b></td><td data-l="relay">none</td><td data-l="attention">\(n^2\) per head per layer</td></tr>
+        <tr><td data-l=""><b>1 000 words, 12 heads, 12 layers</b></td><td data-l="relay">1 000 steps in a row</td><td data-l="attention">144 000 000 scores, all at once</td></tr>
+      </tbody>
+    </table>
+    <p class="rule"><b>Rule of thumb.</b> Attention wins while the \(n^2\) table fits in memory. That is why "long context" is expensive — and a busy research topic.</p>
+    <p><strong>A preview of Unit 19: the cache.</strong> When a model writes, it adds one word at a time. Because of the mask, the keys and values of the earlier words never change. So a writing model keeps them in a <strong>key–value cache</strong> and computes only the new word's query, key and value: \(n\) scores for the new word, not \(n^2\). Unit 19 opens that cache.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>The \(n^2\) is about <strong>work and memory, not weights</strong>. A transformer has exactly the same weights for 10 words and for 10 000 words: \(W_Q, W_K, W_V, W_O\) and the small network do not depend on \(n\). A longer text costs time and memory, not a bigger model.</p>
+  </div>
+
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\begin{gathered}\text{scores}=n^2\times\text{heads}\times\text{layers}\\ \text{steps in a row}=\text{layers}\end{gathered}\]</p>
     <p>Attention pays \(n^2\) for joining every pair of words directly. A relay pays only \(n\), but in a queue. Attention's work can all happen at once, which is why transformers train so fast on graphics cards — and why very long inputs are costly.</p>
   </div>
-  <div class="check reveal" data-check="c18">
+  <div class="check reveal" data-check="c27">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">A model handles 2 000 words. You switch to 8 000 words. By what factor does the number of attention scores grow?</p>
     <div class="opts">
@@ -41,33 +244,43 @@
     </div>
     <div class="why"></div>
   </div>
-  <p class="onesent reveal"><b>In one sentence:</b> Attention computes \(n^2\) scores per head per layer — a million for a thousand words — but all at once, while a relay needs only \(n\) steps that must wait for each other.</p>
+  <div class="check reveal" data-check="c28">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">You feed a trained transformer a text twice as long as before. What happens to the number of its weights?</p>
+    <div class="opts">
+      <button data-why="The scores grow 4 times, but the scores are computed, not learned. The weights — W_Q, W_K, W_V, W_O and the small network — do not depend on the length at all.">It grows 4 times, like the scores</button>
+      <button data-why="Nothing in the weights is tied to the length: the same matrices are used for every word. (Only a learned position table has one row per position — and that sets a maximum length, it does not grow.)">It doubles: one more set per word</button>
+      <button data-correct data-why="Right. The same W_Q, W_K, W_V, W_O and feed-forward weights serve every word, whatever the length. Only the work and the memory for the scores grow — 4 times.">It does not change at all</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> Attention computes \(n^2\) scores per head per layer — a million for a thousand words, the handshakes of a big wedding counted from both sides — but all at once and with no extra weights, while a relay needs only \(n\) steps that must wait for each other.</p>
 </section>
 
-<!-- ================= 11 · A TINY TRANSFORMER ================= -->
-<section class="unit" id="s11">
-  <div class="sec-head reveal"><span class="sec-num">11</span><h2>A tiny transformer, whole</h2></div>
+<!-- ================= 13 · A TINY TRANSFORMER ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>A tiny transformer, whole</h2></div>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>A shopkeeper's notebook has a few pages: a page to look up each word, a page for who-looks-at-whom, a page for thinking, and a last page that turns the thinking into a guess for the next word. Nothing on any page is magic. It is all adding and multiplying, done in the right order.</p>
+    <p>A shopkeeper's notebook has a few pages: a page to look up each word, a page for who looks at whom, a page for thinking, and a last page that turns the thinking into a guess for the next word. Nothing on any page is magic. It is all adding and multiplying, done in the right order.</p>
   </div>
 
   <div class="prose reveal">
-    <p>Now put every piece together into a real, whole — but tiny — transformer:</p>
+    <p><strong>The question.</strong> Put every piece together. What does one complete transformer do, number by number, from a sentence to a guess?</p>
     <ol class="roadmap">
-      <li><strong>Look up</strong> each word's vector in an embedding table (<a href="unit-16.html">Unit 16</a>), and add its position vector.</li>
-      <li><strong>One block</strong>: two heads of masked attention, add and layer norm, a small network, add and layer norm (§8–§9).</li>
+      <li><strong>Look up</strong> each word's vector in an embedding table (<a href="unit-16.html">Unit 16</a>), and add its position vector (§8).</li>
+      <li><strong>One block</strong>: two heads of masked attention, add and layer norm, a small network, add and layer norm (§9–§10).</li>
       <li><strong>Score every word of the vocabulary</strong> with one more matrix, and turn the scores into probabilities with softmax (<a href="unit-14.html#s10">Unit 14</a>).</li>
       <li><strong>Learn</strong>: the loss is the cross-entropy \(-\ln(\text{probability of the true next word})\) (<a href="unit-14.html#s12">Unit 14</a>), and backprop (<a href="unit-15.html#s8">Unit 15</a>) sends the blame back through every matrix.</li>
     </ol>
     <p>Our toy has a vocabulary of five words — <em>I, drink, play, chai, cricket</em> — lists of length \(d=4\), and two heads of size 2. Its weights are <strong>set by hand</strong> so that you can read them, not learned. Feed it "I drink". Because of the mask, it makes a guess at <strong>every</strong> position at once: after "I" it guesses the next word, and after "I drink" it guesses again.</p>
     <p>At the end, after "I drink" it gives <em>chai</em> a probability of about <strong>0.877</strong>. After "I" it splits between <em>drink</em> and <em>play</em>, about 0.468 each. If the true sentence is "I drink chai", the loss is the average surprise</p>
-    <p>\[L=\tfrac12\big(-\ln0.468-\ln0.877\big)\approx\tfrac12(0.76+0.13)\approx0.45.\]</p>
+    <p>\[\begin{aligned}L&=\tfrac12\big(-\ln0.468-\ln0.877\big)\\ &\approx\tfrac12(0.76+0.13)\approx0.45.\end{aligned}\]</p>
     <p>Change "drink" to "play" and the same machine now says <em>cricket</em>. Nobody told it "drink goes with chai" in a rule — the numbers carry it.</p>
   </div>
 
   <div class="widget reveal" id="w-tiny">
-    <div class="widget-head"><span class="w-title">A tiny transformer, step by step</span><span class="w-sub">Twelve steps from words to a guess. Every number is shown. Rows are the two positions, "I" and the second word.</span></div>
-    <p class="try"><b>Try:</b> Step through with <em>next →</em> and check a few numbers by hand: in step 4 row 2 of head 1 is \((0.944,\ 0.056)\). At step 12 read the probability of <em>chai</em>. Then switch the sentence to "I play" and jump to the end.</p>
+    <div class="widget-head"><span class="w-title">A tiny transformer, step by step</span><span class="w-sub">Twelve steps from words to a guess. Every number is shown. Rows are the two positions, "I" and the second word. Hand-set weights.</span></div>
+    <p class="try"><b>Try:</b> Step through with <em>next →</em> and check a few numbers by hand: in step 4 row 2 of head 1 is \((0.944,\ 0.056)\). At step 12 read the probability of <em>chai</em>, 0.877, and the loss, 0.446. Then switch the sentence to "I play" and jump to the end: cricket, 0.874.</p>
     <div class="toolbar"><span class="lbl">sentence</span><div class="tabs" id="tn-sent" role="tablist"><button role="tab" aria-selected="true" data-t="drink">I drink</button><button role="tab" aria-selected="false" data-t="play">I play</button></div></div>
     <div class="st-scrub" id="tn-scrub" role="tablist" aria-label="Steps"></div>
     <div class="tn-grid">
@@ -77,11 +290,23 @@
     <div class="toolbar st-nav"><button class="preset" id="tn-prev">← back</button><button class="play" id="tn-next">next →</button><button class="preset" id="tn-end">jump to the end</button><span class="st-count" id="tn-count"></span></div>
   </div>
 
+  <div class="prose reveal">
+    <p><strong>One more trick: weight tying.</strong> Step 11 scores every vocabulary word with a matrix \(W_U\) of shape \(d\times V\). Step 1 used an embedding table \(E\) of shape \(V\times d\). Many models simply use the same numbers twice: \(W_U=E^{\mathsf T}\). Then the score of word \(w\) is \(\mathbf h\cdot\mathbf e_w\) — how well the final vector agrees with that word's own look-up vector. It makes sense: a word's "look me up" vector and its "am I the next word?" vector ought to agree. And it saves a whole table: with \(V=50\,000\) and \(d=512\), that is \(50\,000\times512=25\,600\,000\) weights. (Our tiny toy is not tied: its \(W_U\) is set by hand.)</p>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why does this work?</span>
+    <p>Every page of the notebook is a part you already know, and each one is trained against the truth: the mask makes every position's guess honest (§10), the cross-entropy grades every guess, and the residual lanes carry the blame down to every matrix (§9). Repeat the same simple block many times, train on a lot of text, and the numbers come to carry grammar, facts and style.</p>
+  </div>
+
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>At every position the model's output is a whole <strong>probability list</strong> over the vocabulary, not one word. Picking the word — the top one, or a random draw with a temperature (<a href="unit-17.html#s5">Unit 17</a>) — is a separate decision that comes after the model. Unit 19 is about that choice.</p>
+  </div>
+
   <div class="callout remember reveal"><span class="tag">The realization</span>
     <p>\[\begin{gathered}\text{words}\to\text{embed}+\text{position}\\ \to\big[\text{block}\big]^{N}\to\text{scores}\to\operatorname{softmax}\\ L=-\tfrac1n\sum_t\ln p(\text{next word at }t)\end{gathered}\]</p>
     <p>A transformer is a lookup table at the bottom, a stack of blocks in the middle and a softmax over the vocabulary at the top. With the mask, one sentence gives a next-word guess at every position, and the loss scores all of them at once. Training is the backprop of Unit 15 running through all these matrices.</p>
   </div>
-  <div class="check reveal" data-check="c19">
+  <div class="check reveal" data-check="c29">
     <span class="tag">Pause &amp; predict</span>
     <p class="q">The true next words were given probabilities 0.5 and 0.25 at the two positions. What is the average cross-entropy loss?</p>
     <div class="opts">
@@ -91,7 +316,7 @@
     </div>
     <div class="why"></div>
   </div>
-  <div class="check reveal" data-check="c20">
+  <div class="check reveal" data-check="c30">
     <span class="tag">Try it, then answer</span>
     <p class="q">In the tiny transformer with "I play", which word gets the highest probability after "play", and about how much?</p>
     <div class="opts">
@@ -101,39 +326,16 @@
     </div>
     <div class="why"></div>
   </div>
-  <p class="onesent reveal"><b>In one sentence:</b> A whole transformer is embeddings plus positions, a stack of attention-and-network blocks, and a softmax over the vocabulary, trained on every next-word guess of a sentence at once by cross-entropy and backprop.</p>
+  <div class="check reveal" data-check="c31">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A model with a vocabulary of \(V=32\,000\) and \(d=4\,096\) ties its output matrix to its embedding table. How many weights does that save?</p>
+    <div class="opts">
+      <button data-why="Tying shares the whole table, not one row: the output matrix W_U (d × V) is replaced by Eᵀ, so all 32 000 × 4 096 of its weights are saved.">4 096 — one row</button>
+      <button data-correct data-why="Right. W_U has d × V = 4 096 × 32 000 = 131 072 000 weights, and with tying it simply reuses E. That whole table is saved.">131 072 000</button>
+      <button data-why="Only one of the two tables disappears; the embedding table E is still stored once. The saving is 32 000 × 4 096 = 131 072 000, not twice that.">262 144 000 — both tables</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s13-->
+  <p class="onesent reveal"><b>In one sentence:</b> A whole transformer is embeddings plus positions, a stack of talk-and-think blocks, and a softmax over the vocabulary — often read out through the embedding table itself — trained on every next-word guess of a sentence at once by cross-entropy and backprop.</p>
 </section>
-
-<!-- ================= 12 · CARRY FORWARD ================= -->
-<section class="unit" id="s12">
-  <div class="sec-head reveal"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
-  <div class="prose reveal">
-    <p>The whole unit fits on one card. Here it is, piece by piece.</p>
-  </div>
-  <div class="cards reveal-stagger">
-    <div class="cd"><h4>Why attention</h4>A relay reads one word at a time, fades and waits. Attention joins every pair of words directly, all at once.</div>
-    <div class="cd"><h4>A soft lookup</h4>Score every key against the query, softmax the scores, blend the values. Big scores make it a strict lookup.</div>
-    <div class="cd"><h4>The formula</h4>\(\operatorname{softmax}(QK^{\mathsf T}/\sqrt d)\,V\), with \(Q=XW_Q\), \(K=XW_K\), \(V=XW_V\). Each row of shares adds up to 1.</div>
-    <div class="cd"><h4>Divide by √d</h4>Random dot products spread like \(\sqrt d\). Dividing keeps softmax soft and the blame flowing.</div>
-    <div class="cd"><h4>Words that know their sentence</h4>\(\mathbf x_i+\sum_jA_{ij}\mathbf v_j\): "it" picks up "ball". A word's vector now depends on its context.</div>
-    <div class="cd"><h4>Many heads</h4>\(h\) heads of size \(d/h\), each its own projection, glued and mixed by \(W_O\). Same \(4d^2\) weights.</div>
-    <div class="cd"><h4>Positions</h4>Attention is order-blind. Add clock-hand tags, or turn \(\mathbf q\) and \(\mathbf k\) (RoPE) so scores depend only on \(m-n\).</div>
-    <div class="cd"><h4>The block</h4>\(\operatorname{LN}(\mathbf x+\operatorname{Attn})\), then \(\operatorname{LN}(\mathbf h+\operatorname{FFN})\). The adds are the blame's express lane.</div>
-    <div class="cd"><h4>Mask and price</h4>\(-\infty\) above the diagonal: no peeking. Cost \(n^2\) per head per layer, but all in parallel.</div>
-  </div>
-  <div class="prose reveal">
-    <p><strong>The one idea under it all.</strong> Look back at <a href="unit-13.html#s12">Unit 13</a>. A kernel classifier decided by a <em>vote</em>: every training point voted, with a weight given by its similarity to the new point. Attention is that vote. The similarity is \(e^{\mathbf q\cdot\mathbf k/\sqrt d}\), the voters hand over their values, and softmax makes the weights add up to 1. The dot product of <a href="unit-03.html#s2d">Unit 3</a> — agreement between two lists — ends up deciding what a machine pays attention to.</p>
-    <p><strong>Where this goes next.</strong></p>
-    <ul>
-      <li><strong>Unit 19 · The Maths Inside an LLM.</strong> Stack these blocks a hundred deep, make \(d\) in the thousands, and train on a huge pile of text to predict the next word. Then the new questions: how the machine <em>picks</em> its word — temperature, top-k, top-p — why it keeps a cache of old keys and values, and how a small add-on can steer a giant model.</li>
-      <li><strong>Unit 20 · From Noise to Pictures.</strong> The same attention blocks, turned from reading to drawing.</li>
-    </ul>
-  </div>
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{aligned}\mathbf x_i\ \leftarrow\ &\mathbf x_i\\ &+\sum_j\operatorname{softmax}_j\!\Big(\frac{\mathbf q_i\cdot\mathbf k_j}{\sqrt d}\Big)\,\mathbf v_j\end{aligned}\]</p>
-    <p>Every word asks every other word a question, scores the answers by a dot product, and adds a softmax-weighted blend of what they carry to itself. Repeat in many heads, with positions, shortcuts and layer norm, block after block — that is a transformer.</p>
-  </div>
-  <p class="onesent reveal"><b>In one sentence:</b> Attention is a similarity-weighted vote — dot products, softmax, a weighted sum of values — and a transformer stacks it with positions, residual paths, layer norm and small networks into a machine that reads a whole sentence at once.</p>
-</section>
-
-<!--@PRACTICE-->

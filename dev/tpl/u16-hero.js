@@ -10,15 +10,15 @@
   const PEOPLE=[['man',MAN],['woman',WOMAN],['king',KING],['queen',QUEEN]];
   const r=rng16(7), scat=()=>[(r()*2-1)*3.6+.6,(r()*2-1)*2.1+.2,(r()*2-1)*1.8];
   const WORDS=[...TEA.map(([w,p])=>({w,home:p,from:scat(),g:'tea'})),...CRI.map(([w,p])=>({w,home:p,from:scat(),g:'cricket'})),...PEOPLE.map(([w,p])=>({w,home:p,from:p,g:'people'}))];
-  const LOFF={queen:[.66,.02],woman:[.05,-.34],man:[-.42,.05],king:[-.1,.32]};
+  const LOFF={queen:[.66,.02],woman:[.05,-.34],man:[-.42,.05],king:[-.1,.32],over:[-.52,.05]};   /* "over" sits left of its dot: above it, bat's dot covered the label */
   const cl=v=>Math.max(0,Math.min(1,v)), seg=(t,a,b)=>cl((t-a)/(b-a)), E=CIN.ease.inOut, lerp=(a,b,u)=>a.map((x,i)=>x+(b[i]-x)*u);
   function build(){
     const wide=innerWidth>=760, fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
-    const look=[wide?.75:1.0,wide?.15:-.05,0], cam0={theta:.34,phi:1.28,radius:wide?10.3:9.3};
+    const look=[wide?.75:.95,wide?.15:-.98,0], cam0={theta:.34,phi:1.28,radius:wide?10.3:11.9};   /* on a phone the scene sits higher and smaller, above the title */
     const pos=[look[0]+cam0.radius*Math.sin(cam0.phi)*Math.sin(cam0.theta),look[1]+cam0.radius*Math.cos(cam0.phi),look[2]+cam0.radius*Math.sin(cam0.phi)*Math.cos(cam0.theta)];
     return CIN.stage3d(box,{fill:true,orbit:fine,zoom:false,autoRotate:0,camera:{pos,look,fov:wide?34:44},
       build(ctx){
-        const {THREE,root,colors,isLight,camera}=ctx, hx=hxOf(ctx), dark=!isLight, SC=wide?.0078:.0112;
+        const {THREE,root,colors,isLight,camera}=ctx, hx=hxOf(ctx), dark=!isLight, SC=wide?.0078:.0122;
         let offW=0; const applyOffset=()=>{ const w=ctx.size.w, h=ctx.size.h; if(!wide||!w||w===offW) return; offW=w; camera.setViewOffset(w,h,-Math.round(w*.25),0,w,h); };
         applyOffset();
         starfield(ctx,640,26);

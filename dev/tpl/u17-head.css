@@ -88,3 +88,36 @@ details.lb-how p{font-size:.9rem}
 .stage3d .hud.hud-b{max-width:calc(100% - 1.4rem)}
 @media (max-width:640px){.em-grid{grid-template-columns:repeat(2,4.2rem)}}
 @media (max-width:640px){.lb-read td,.lb-read th{font-size:.7rem;padding-left:.2rem}.lb-read td{letter-spacing:-.02em}}
+/* ---- Round 22: the opening question, comparison tables, traps ---- */
+.bigq{max-width:var(--prose);margin:.3rem auto 1.1rem;font-family:var(--display);font-size:1.24rem;line-height:1.45;color:var(--ink);padding:.1rem 0 .1rem 1rem;border-left:3px solid var(--s6)}
+.bigq::before{content:'The question';display:block;font-family:var(--ui);font-size:.68rem;font-weight:750;letter-spacing:.14em;text-transform:uppercase;color:var(--s6);margin-bottom:.25rem}
+table.cmp{width:100%;font-size:.84rem;margin:.6rem 0 .8rem}
+table.cmp td,table.cmp th{vertical-align:top;line-height:1.45}
+table.cmp td:first-child{white-space:nowrap}
+.callout.watch .tag::before{content:'⚠ ';}
+@media (max-width:640px){.bigq{font-size:1.1rem}table.cmp{font-size:.78rem}table.cmp th,table.cmp td{padding:.35rem .4rem;hyphens:auto}table.cmp td:first-child{white-space:normal}table.cmp th{letter-spacing:.02em}}   /* phones: the comparison tables fit the screen instead of hiding their last column off to the right */
+/* ---- w-talk: the tiny language model ---- */
+.tk-stage{border:1px solid var(--line);border-radius:var(--r-md);padding:.75rem .85rem;margin-top:.6rem;background:radial-gradient(90% 90% at 50% 30%,color-mix(in srgb,var(--s6) 6%,transparent),transparent 75%)}
+.tk-lab{font-family:var(--ui);font-size:.74rem;font-weight:600;color:var(--ink-muted);margin:.1rem 0 .4rem}
+.tk-k{font-style:normal;border-radius:4px;padding:.02rem .35rem;margin-left:.3rem;color:var(--ink)}
+.tk-k.seed{background:color-mix(in srgb,var(--s1) 26%,transparent)} .tk-k.gen{background:color-mix(in srgb,var(--s6) 24%,transparent)} .tk-k.bad{background:color-mix(in srgb,var(--critical) 26%,transparent)}
+.tk-tape{display:flex;flex-wrap:wrap;gap:2px 1px;font-family:var(--mono);font-size:.98rem;min-height:3.6rem;align-content:flex-start;line-height:1}
+.tk-c{display:inline-flex;align-items:center;justify-content:center;min-width:.8em;height:1.6em;padding:0 .06em;border-radius:4px;color:var(--ink)}
+.tk-c.seed{background:color-mix(in srgb,var(--s1) 22%,transparent)}
+.tk-c.gen{background:color-mix(in srgb,var(--s6) 16%,transparent)}
+.tk-c.sp{color:var(--ink-muted)}
+.tk-c.last{outline:2px solid var(--s4);outline-offset:-1px}
+.tk-pair{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.tk-pair .tk-c{background:color-mix(in srgb,var(--s1) 18%,transparent)}
+.tk-pair .tk-g{font-size:.7rem;height:1.3em;display:inline-flex;align-items:center;justify-content:center;min-width:.8em;border-radius:3px;color:var(--s3)}
+.tk-pair .tk-g.bad{color:var(--critical)}
+.tk-pair.next .tk-c{outline:2px dashed var(--s4);outline-offset:-1px;background:none;color:var(--ink-muted)}
+.tk-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.9rem;margin-top:.8rem}
+.tk-grid svg{display:block;width:100%;height:auto}
+@media (max-width:700px){.tk-grid{grid-template-columns:minmax(0,1fr)}}
+.tk-seedrow{display:flex;align-items:center;gap:.55rem;margin:.1rem 0 .55rem;font-family:var(--ui);font-size:.85rem;color:var(--ink-2)}
+.tk-seedrow label{min-width:3.2rem}
+.tk-seedrow input{flex:1;min-width:0;font-family:var(--mono);font-size:.9rem;background:color-mix(in srgb,var(--surface-2,var(--surface)) 85%,transparent);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.38rem .55rem}
+.tk-seedrow input:focus{outline:2px solid var(--s4);outline-offset:1px}
+.bl-ref{font-family:var(--ui);font-size:.86rem;color:var(--ink-2);margin:.2rem 0 .5rem}
+.bl-ref span{font-family:var(--mono);color:var(--ink);background:color-mix(in srgb,var(--s3) 14%,transparent);border-radius:6px;padding:.12rem .45rem}

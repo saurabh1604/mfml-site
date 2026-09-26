@@ -1,0 +1,209 @@
+<!-- ================= ACT V · TRANSLATING THROUGH ONE SUMMARY ================= -->
+<!-- ================= 12 · ENCODER–DECODER ================= -->
+<section class="unit" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>Encoder–decoder: translate through one summary</h2></div>
+  <p class="bigq reveal">English and Hindi sentences have different lengths and different word orders. How can one machine read one and write the other?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>An interpreter at a meeting listens to a whole sentence in English. She holds its meaning in her head. Then she speaks it in Hindi, word by word.</p>
+    <p>Now give her a rule: she may keep only <strong>one small card</strong> of notes between listening and speaking. A short sentence fits easily. A very long speech does not.</p>
+  </div>
+  <div class="prose reveal">
+    <p>To translate, the input and the output have different lengths and different word orders. "The train to Delhi is late" is six English words; in Hindi it is "Delhi ki train late hai", five words, in another order. So we use <strong>two</strong> recurrent cells:</p>
+    <ul>
+      <li>The <strong>encoder</strong> reads the English sentence word by word. Its final note, \(\mathbf s=\mathbf h_T\), is the <strong>summary</strong> of the whole sentence (people also call it the context vector). The encoder is often a two-way reader (§11), because the whole English sentence is already there; then the summary puts the two readers' final notes side by side.</li>
+      <li>The <strong>decoder</strong> is a language model (§5) that starts from that summary and writes the Hindi sentence one word at a time. After each word it reads what it just wrote as its next input, and it stops when it writes a special word, \(\langle\text{end}\rangle\).</li>
+    </ul>
+    <p>Training uses §5's trick. While learning, we feed the decoder the <strong>true</strong> previous Hindi word, not its own guess — teacher forcing — so one early slip does not ruin the rest of the sentence. At test time there is no teacher, and the decoder must use its own words.</p>
+    <p><strong>The bottleneck.</strong> The summary has a fixed size — say 8 numbers in our toy, 512 in a real system. Picture a 5-word sentence and a 50-word paragraph, each word bringing 8 numbers of its own. The short one pours 40 numbers into the 8-number card: a squeeze of 5 to 1. The long one pours 400 numbers into the <strong>same</strong> 8: a squeeze of 50 to 1. And the first word must survive the whole encoder: if the encoder keeps 90% of an old word at each step (a toy rate), word 1 of a 50-word sentence speaks in the summary at \(0.9^{49}\approx0.0057\) of its first strength. This is what researchers found with the first neural translation systems in 2014 (Cho and colleagues): good on short sentences, worse and worse on long ones.</p>
+  </div>
+
+  <div class="widget reveal" id="w-seq2seq">
+    <div class="widget-head"><span class="w-title">English in, one summary orb, Hindi out</span><span class="w-sub">Blue words flow into the encoder's chain and are pressed into one green summary orb of 8 slots. Inside the orb, each word is a spark as bright as it still speaks. The decoder unpacks the orb into Hindi words (written here in Roman letters).</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ translate</em> and follow the words through the orb. Then press <em>50 words</em>: the orb stays the same size, 400 numbers crowd into its 8 slots, and word 1's gold spark fades to 0.0057. Press <em>5 words</em> to compare: 40 numbers, word 1 at 0.6561. Switch on <em>teacher forcing</em> to see which words the decoder is fed while training.</p>
+    <div id="sq-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On the left, a chain of glass encoder cells with blue English word tiles. In the middle, one glowing green orb with eight slots: the summary. On the right, a chain of decoder cells writing cyan Hindi word tiles. As the sentence gets longer, more word sparks crowd into the same orb, and the gold spark of the first word grows faint."></div><p class="stage-tap">drag the picture to orbit</p>
+    <div class="wrow" style="margin-top:.7rem">
+      <div class="wcol" style="flex:1 1 280px">
+        <div class="controls"><div class="ctl"><label for="sq-n">sentence length</label><input id="sq-n" type="range" min="3" max="50" step="1" value="6"><output id="sq-n-o">6</output></div></div>
+        <div class="presets"><button class="preset" id="sq-5">5 words</button><button class="preset" id="sq-50">50 words</button><button class="play" id="sq-play">▶ translate</button><button class="preset" id="sq-tf" aria-pressed="false">teacher forcing</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="sq-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why it works</span>
+    <p>The encoder is trained together with the decoder, through the summary. So the blame from every wrong Hindi word flows back into the encoder and teaches it what to put on the card: whatever the decoder needs to write a good translation. The two halves learn a private code between them — and for short sentences, one card is enough.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{English}\xrightarrow{\ \text{encoder}\ }\mathbf s\ (\text{fixed size})\\ \mathbf s\xrightarrow{\ \text{decoder}\ }\text{Hindi}\end{gathered}\]</p>
+    <p>An encoder–decoder translates through <strong>one summary vector</strong>. It works, and it was a breakthrough. But everything the decoder knows about the source sentence must pass through that one fixed-size vector — a bottleneck that hurts more with every extra word. <strong>What if the decoder could look back at every English word, whenever it needs to?</strong> That question is <a href="unit-18.html#s1">Unit 18</a>.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>The summary is not a shorter sentence, and it is not a list of the English words. It is one note — the encoder's last card, a fixed list of numbers. Everything the decoder will ever know about the English sentence is on that card, however long the sentence was.</p>
+  </div>
+  <div class="check reveal" data-check="c19">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">An encoder has a note of 256 numbers. It reads a 40-word sentence whose words are vectors of 100 numbers. How many numbers go in, and how many come out as the summary?</p>
+    <div class="opts">
+      <button data-why="The summary is the encoder's final note, so it has as many numbers as the note: 256, whatever the sentence length.">4000 in, 4000 out</button>
+      <button data-correct data-why="Right. 40 words × 100 numbers = 4000 numbers go in. The summary is one note: 256 numbers. A squeeze of more than 15 to 1 — and a 400-word input would have to fit into the same 256.">4000 in, 256 out</button>
+      <button data-why="The input is 40 × 100 = 4000 numbers, not 40 × 256. The summary is 256 numbers.">10 240 in, 256 out</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c34">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">An encoder with a 512-number note reads a 20-word sentence, then a 40-word one. With the toy rate of 0.9 per step, what happens to the summary's size, and to word 1's voice in it?</p>
+    <div class="opts">
+      <button data-why="The summary is the encoder's last note, so its size never changes: 512 numbers for any length. What changes is how much of word 1 survives.">The summary doubles to 1024 numbers; word 1 keeps its voice</button>
+      <button data-correct data-why="Right. The summary is always one 512-number note. Word 1's voice falls from 0.9¹⁹ ≈ 0.135 to 0.9³⁹ ≈ 0.0164 — about eight times fainter. Twice the words, the same card.">The size stays 512; word 1's voice falls from about 0.135 to about 0.016</button>
+      <button data-why="Word 1's voice does not halve: it is multiplied by 0.9 twenty more times, 0.9²⁰ ≈ 0.12. It falls from about 0.135 to about 0.016, and the summary stays 512 numbers.">The size stays 512; word 1's voice halves</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s12-->
+  <p class="onesent reveal"><b>In one sentence:</b> An encoder squeezes the whole source sentence into one fixed-size summary and a decoder writes the translation from it, trained with teacher forcing — and that single card is the bottleneck: 40 numbers into 8 for five words, 400 into the same 8 for fifty, with word 1 at 0.9⁴⁹ ≈ 0.0057.</p>
+</section>
+
+<!-- ================= 13 · GREEDY, BEAM, BLEU ================= -->
+<section class="unit" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>Choosing the words, and grading them: greedy, beam search, BLEU</h2></div>
+  <p class="bigq reveal">The decoder gives a probability to every possible next word. Which sentence should it actually write — and how do we score its translation without asking a human?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>You are driving across a city. At every junction you take the road that looks fastest right now. Sometimes that road leads straight into a traffic jam, and a road that looked a little slower at first would have got you home sooner.</p>
+    <p>Keeping two or three routes in mind, instead of one, often finds the better trip.</p>
+  </div>
+  <div class="prose reveal">
+    <p>At each step the decoder gives a probability for every possible next word. The probability of a whole sentence is the <strong>product</strong> of its word probabilities (the chain rule of probability, <a href="unit-16.html#s2">Unit 16</a>). We want the sentence with the biggest product. But there are far too many sentences to try them all.</p>
+    <p><strong>Greedy decoding</strong> takes the single most likely word at each step and never looks back. <strong>Beam search</strong> keeps the \(k\) best partial sentences at every step (\(k\) is the <em>beam width</em>), grows each by one word, and again keeps only the best \(k\). With \(k=1\) it is greedy.</p>
+    <p><strong>A tiny example.</strong> The decoder is writing the English for "hamari train late hai". First word: "the" 0.5, "our" 0.4, "a" 0.1. Second word, after "the": "train" 0.4, "bus" 0.3, "rain" 0.3. After "our": "train" 0.9, "bus" 0.1. After "a": "train" 0.6, "bus" 0.4.</p>
+    <ul>
+      <li><strong>Greedy:</strong> take "the" (0.5), then its best, "train" (0.4). The sentence "the train" gets \(0.5\times0.4=0.20\).</li>
+      <li><strong>Beam, \(k=2\):</strong> keep "the" (0.5) and "our" (0.4). Grow both: the train 0.20, the bus 0.15, the rain 0.15, our train \(0.4\times0.9=0.36\), our bus 0.04. The best is <strong>"our train", 0.36</strong>.</li>
+    </ul>
+    <p>Greedy lost because "our" looked slightly worse at the first step, even though it led to a far surer second word. In practice we add log-probabilities instead of multiplying (products of many small numbers become too tiny for a computer): \(\ln0.36\approx-1.022\) beats \(\ln0.20\approx-1.609\).</p>
+  </div>
+
+  <div class="widget reveal" id="w-beam">
+    <div class="widget-head"><span class="w-title">Greedy against beam search, on a tree of choices</span><span class="w-sub">Each branch is a possible next word with its probability. Gold paths are the ones the search is keeping; the number at each leaf is the whole sentence's probability.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ search</em> with width 1 (greedy): it commits to "the" and ends at 0.20. Switch to width 2 and search again: "our" survives the first cut and wins with 0.36. Width 3 keeps everything and finds the same 0.36.</p>
+    <div class="svgstage"><svg id="bm-svg" viewBox="0 0 760 360" class="svg-lab" role="img" aria-label="A tree of word choices from left to right. From the start, three branches: the 0.5, our 0.4, a 0.1. From each, two or three second words with their probabilities. Kept paths glow gold; dropped paths fade. Each leaf shows the product of the probabilities along its path."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 280px">
+        <div class="tabs" id="bm-k" role="tablist"><button role="tab" aria-selected="true" data-t="1">width 1 (greedy)</button><button role="tab" aria-selected="false" data-t="2">width 2</button><button role="tab" aria-selected="false" data-t="3">width 3</button></div>
+        <div class="presets" style="margin-top:.5rem"><button class="play" id="bm-play">▶ search</button><button class="preset" id="bm-log" aria-pressed="false">show log-probabilities</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="bm-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Three ways to choose, side by side</strong> — greedy and beam from this section, sampling from §5.</p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>greedy</th><th>beam search, width k</th><th>sampling, temperature T</th></tr></thead>
+      <tbody>
+        <tr><td><strong>keeps</strong></td><td>one best sentence-so-far</td><td>the k best sentences-so-far</td><td>one random path</td></tr>
+        <tr><td><strong>work</strong></td><td>1 path</td><td>about k paths</td><td>1 path</td></tr>
+        <tr><td><strong>gets</strong></td><td>a likely sentence, fast</td><td>a more likely sentence</td><td>a different sentence each time</td></tr>
+        <tr><td><strong>weakness</strong></td><td>locks in early choices</td><td>can be bland and generic</td><td>makes mistakes at high T</td></tr>
+        <tr><td><strong>use it for</strong></td><td>quick, short answers</td><td>translation, captions</td><td>stories, chat, ideas</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Grading a translation without a human: BLEU.</strong> Checking thousands of translations by hand is slow. <strong>BLEU</strong> (Papineni and colleagues, 2002) gives a quick score by counting how many short pieces of the candidate also appear in a human's reference translation. A piece of \(n\) words in a row is an <em>\(n\)-gram</em>. Reference: "the train is running late". Candidate: "the train is late".</p>
+    <ol>
+      <li><strong>Words that match.</strong> Of the candidate's 4 words, how many appear in the reference? the ✓, train ✓, is ✓, late ✓: unigram precision \(p_1=4/4=1\).</li>
+      <li><strong>Pairs that match.</strong> Of its 3 word pairs, how many appear in the reference? "the train" ✓, "train is" ✓, "is late" ✗ (the reference says "is running"): bigram precision \(p_2=2/3\).</li>
+      <li><strong>Too short is punished.</strong> A candidate could get perfect precision by saying almost nothing. So when the candidate (\(c=4\) words) is shorter than the reference (\(r=5\)), multiply by the <em>brevity penalty</em> \(e^{1-r/c}=e^{1-5/4}\approx0.7788\).</li>
+      <li><strong>Combine.</strong> Take the geometric mean of the precisions: \(\text{BLEU-2}=0.7788\cdot\sqrt{1\cdot\tfrac23}\approx0.7788\cdot0.8165\approx0.636\).</li>
+    </ol>
+    <p>One more rule: each word of the reference can be matched only as many times as it appears there. The candidate "the the the the" matches "the" only once, so \(p_1=1/4\), not \(4/4\). Real systems use pieces up to four words long (BLEU-4) and add up the counts over thousands of sentences before combining, but the recipe is the same.</p>
+  </div>
+
+  <div class="widget reveal" id="w-bleu">
+    <div class="widget-head"><span class="w-title">BLEU, piece by piece</span><span class="w-sub">Type a candidate translation. Gold words and pairs also appear in the fixed reference; grey ones do not. The score is the brevity penalty times the geometric mean of the two precisions.</span></div>
+    <p class="try"><b>Try:</b> Start with "the train is late": 1, 2/3, 0.7788 → 0.636. Load <em>word salad</em> ("late is the train"): every word matches, but only one pair does, and the score drops to 0.450. <em>Too short</em> ("the train") has perfect precision and is still punished to 0.2231. <em>the the the the</em> shows why matches are clipped: one "the" counts, the others do not.</p>
+    <div class="bl-ref">reference: <span id="bl-ref"></span></div>
+    <div class="tk-seedrow"><label for="bl-cand">candidate</label><input id="bl-cand" type="text" value="the train is late" maxlength="60" spellcheck="false" autocomplete="off"></div>
+    <div class="presets" id="bl-pre"><button class="preset" data-c="the train is late">the train is late</button><button class="preset" data-c="the train is running late">perfect</button><button class="preset" data-c="late is the train">word salad</button><button class="preset" data-c="the train">too short</button><button class="preset" data-c="the the the the">the the the the</button><button class="preset" data-c="the train is delayed">same meaning</button><button class="preset" id="bl-reset">reset</button></div>
+    <div class="svgstage" style="margin-top:.6rem"><svg id="bl-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="The candidate's words as tiles, gold when they also appear in the reference. Under them, its word pairs, gold when the pair appears in the reference. On the right, three bars: word precision, pair precision and the brevity penalty, and the final BLEU score."></svg></div>
+    <div id="bl-read" class="readout" style="margin-top:.6rem;line-height:1.75"></div>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why it works</span>
+    <p>A good translation shares many words, and many short runs of words, with a careful human one. Word matches check that the right content is there; pair matches check that it comes in a sensible order; the brevity penalty stops a machine from winning by saying less. None of this understands meaning — but averaged over thousands of sentences, it ranks translation systems much as people do.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{score}=\sum_t\ln P(\text{word}_t\mid\dots)\\ \text{BLEU-2}=\text{BP}\cdot\sqrt{p_1\,p_2}\\ \text{BP}=e^{\min(0,\,1-r/c)}\end{gathered}\]</p>
+    <p>Greedy picks the best word now; beam search keeps the \(k\) best sentences-so-far and can recover when a slightly weaker first word leads somewhere much better. BLEU grades the result by the pieces it shares with a reference, with a penalty for being too short.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>BLEU only counts overlapping pieces. "the train is delayed" means the same as "the train is running late", yet it scores only about 0.55, because "delayed" appears nowhere in the reference. A correct translation in different words can score low. BLEU is a quick average over many sentences, not a judge of one.</p>
+  </div>
+  <div class="check reveal" data-check="c20">
+    <span class="tag">Try it, then answer</span>
+    <p class="q">On this tree, does beam width 3 find a better sentence than beam width 2?</p>
+    <div class="opts">
+      <button data-why="Width 3 does keep all three first words, but 'a train' is only 0.1 × 0.6 = 0.06. The best of all seven sentences is still 'our train', 0.36 — which width 2 already found.">Yes: it finds "a train"</button>
+      <button data-correct data-why="Right. Both find 'our train' with 0.36, and that is the best of all seven possible sentences (the next best is 'the train', 0.20). A wider beam only helps if the narrower one threw the best path away.">No: both find "our train", 0.36 — the best of all seven</button>
+      <button data-why="Width 3 cannot do worse than width 2 here: it keeps everything width 2 keeps. Both end at 'our train', 0.36.">It does worse: it ends at "the train"</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c35">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Reference "the train is running late" (5 words). Candidate "the train" (2 words). What is its BLEU-2?</p>
+    <div class="opts">
+      <button data-why="Both precisions are perfect (2/2 and 1/1), but the candidate is far too short: the brevity penalty e^(1 − 5/2) ≈ 0.2231 pulls the score down.">1, because every word and pair matches</button>
+      <button data-correct data-why="Right. p₁ = 2/2 = 1 and p₂ = 1/1 = 1, but c = 2 is much shorter than r = 5, so BP = e^(1 − 5/2) = e^(−1.5) ≈ 0.2231. BLEU-2 = 0.2231 · √(1 · 1) ≈ 0.2231. Saying less does not pay.">\(\approx0.2231\)</button>
+      <button data-why="BLEU does not divide by the reference length directly. It uses precisions (both 1 here) and the brevity penalty e^(1 − 5/2) ≈ 0.2231.">\(0.4\), because 2 of the 5 reference words appear</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c36">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Reference "the train is running late". The candidate "the the the the" has four words, and every one of them is "the", which does appear in the reference. What is its unigram precision?</p>
+    <div class="opts">
+      <button data-why="Each reference word can be matched only as often as it appears in the reference. 'the' appears once, so only one of the four counts: 1/4.">4/4, because "the" is in the reference</button>
+      <button data-correct data-why="Right. Matches are clipped: 'the' appears once in the reference, so only one of the candidate's four 'the's can match. p₁ = 1/4. Without clipping, repeating a common word would score perfectly.">1/4, because "the" appears only once in the reference</button>
+      <button data-why="The word does appear in the reference, so it is not 0. But it can be matched only once: p₁ = 1/4.">0, because the sentence makes no sense</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s13-->
+  <p class="onesent reveal"><b>In one sentence:</b> Greedy takes the best word each time and can land on 0.20, a beam of width 2 keeps two candidates and finds 0.36, and BLEU grades the result by matching pieces with a reference — "the train is late" scores 0.7788 · √(1 · ⅔) ≈ 0.636.</p>
+</section>
+
+<!-- ================= 14 · CARRY FORWARD ================= -->
+<section class="unit" id="s14">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>What to carry forward</h2></div>
+  <div class="prose reveal">
+    <p>The whole unit, one card at a time.</p>
+  </div>
+  <div class="cards reveal-stagger">
+    <div class="cd"><h4>Order needs memory</h4>A bag of words loses order; a window loses the past. A running note that changes the old note before adding the new word keeps both.</div>
+    <div class="cd"><h4>The recurrent cell</h4>One card of fixed size, rewritten at every word: \(\mathbf h_t=\tanh(W\mathbf h_{t-1}+U\mathbf x_t+\mathbf b)\), the same weights every time.</div>
+    <div class="cd"><h4>Unrolled twins</h4>A deep network as long as the sentence whose layers are one cell: \(h(h+d)+h\) numbers for any length.</div>
+    <div class="cd"><h4>A cell that talks</h4>Train with the true text fed in (teacher forcing); talk by feeding back your own picks. \(\operatorname{softmax}(s/T)\): small \(T\) bold, big \(T\) adventurous. Beware exposure bias.</div>
+    <div class="cd"><h4>Backprop through time</h4>Rule A and Rule B on the unrolled chain; the shared weight adds up every step's vote. Truncated BPTT cuts the blame into chunks of \(k\) words.</div>
+    <div class="cd"><h4>The whisper line</h4>Blame is multiplied by the same matrix at every step, so the biggest \(|\lambda|\) decides: \(0.5^{10}\approx0.001\), \(1.5^{10}\approx58\).</div>
+    <div class="cd"><h4>First aid</h4>If \(\|\mathbf g\|&gt;c\), rescale to length \(c\): a cure for explosions, not for fading. Start \(W\) with every \(|\lambda|\) near 1.</div>
+    <div class="cd"><h4>LSTM</h4>\(\mathbf c_t=\mathbf f\odot\mathbf c_{t-1}+\mathbf i\odot\mathbf g\): an express lane where blame is multiplied only by the forget (keep) gate. Start its shift at 1–2.</div>
+    <div class="cd"><h4>GRU</h4>\(\mathbf h_t=(1-\mathbf z)\odot\mathbf h_{t-1}+\mathbf z\odot\tilde{\mathbf h}_t\): one blend dial and a reset gate. Blocks: plain 1, GRU 3, LSTM 4.</div>
+    <div class="cd"><h4>Both ways, and floors</h4>Two-way notes \([\overrightarrow{\mathbf h};\overleftarrow{\mathbf h}]\) see the whole sentence but cannot write; floors stack readers for depth.</div>
+    <div class="cd"><h4>Encoder–decoder</h4>Squeeze the source into one summary, write the target from it. The summary is a fixed-size bottleneck.</div>
+    <div class="cd"><h4>Choose and grade</h4>Greedy, beam search or sampling to choose; BLEU = brevity penalty × geometric mean of matching pieces to grade.</div>
+  </div>
+  <div class="prose reveal">
+    <p><strong>Where this goes next.</strong></p>
+    <ul>
+      <li><strong><a href="unit-18.html">Unit 18 · Attention and Transformers</a>.</strong> Two problems are left over from this unit. The decoder sees the source only through one summary card, and every word must wait for the word before it. Attention fixes both at once: the decoder — and then every word — can look directly at every other word, with weights from dot products (<a href="unit-03.html#s2d">Unit 3</a>) and softmax (<a href="unit-14.html#s10">Unit 14</a>). The transformer's residual path is another express lane, and its causal mask is a one-way reader in disguise.</li>
+      <li><strong>Unit 19 · The Maths Inside an LLM.</strong> A language model at huge scale: next-word probabilities, and how chat models pick their words — the temperature of §5, and its cousins top-k and top-p.</li>
+    </ul>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\frac{\partial\mathbf h_T}{\partial\mathbf h_k}\ \text{carries}\ W^{T-k}\\ \Longrightarrow\ \text{eigenvalues decide}\end{gathered}\]</p>
+    <p>A machine with memory multiplies by the same matrix at every word, so its memory and its blame live or die by that matrix's eigenvalues. Gates build an express lane where the multiplier is a number the network controls, close to 1 when it wants to remember.</p>
+  </div>
+  <p class="onesent reveal"><b>In one sentence:</b> A recurrent cell reads one word at a time with shared weights, learns to talk by guessing the next word, trains by backprop through time where powers of one matrix make memory fade or explode, is rescued by gates that open an express lane, reads both ways or in floors, and translates through a single summary — the bottleneck that attention removes next.</p>
+</section>
+
+<!--@PRACTICE-->

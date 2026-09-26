@@ -5,9 +5,9 @@
   <header class="hero">
     <div class="kicker reveal">Unit 18 of 20 · by Prof. Saurabh</div>
     <h1 class="reveal">Attention and Transformers</h1>
-    <p class="lede reveal">In Unit 17 a machine read one word at a time and squeezed the whole sentence into one small note. Here we throw that note away. <strong>Every word asks every other word a question</strong>, all at the same time. Each word gets a score for how well it answers — a plain <strong>dot product</strong> from Unit 3. Softmax from Unit 14 turns the scores into shares that add up to 1. Then each word takes a <strong>weighted blend</strong> of what the others offer. That is attention. It is Unit 13's kernel vote in new clothes. Stack it with a few simple parts and you have the <strong>transformer</strong> — the engine inside every modern language model.</p>
+    <p class="lede reveal">In Unit 17 a translator squeezed a whole sentence into one small note, and long sentences got lost. Here we remove that bottleneck. First the translator learns to <strong>look back</strong> at every word it read before it writes each word. Then <strong>every word asks every other word a question</strong>, all at once: a <strong>dot product</strong> from Unit 3 scores the answers, softmax from Unit 14 turns the scores into shares, and each word takes a <strong>weighted blend</strong> of what the others offer. That is attention. Add positions, shortcuts and a small network, and you have the <strong>transformer</strong> — the engine inside BERT, GPT and every modern language model.</p>
     <div class="meta reveal-stagger">
-      <span class="chip">≈ 120 min read + play</span>
+      <span class="chip">≈ 150 min read + play</span>
       <span class="chip">@@WIDGETS@@ interactive widgets · @@W3D@@ in 3D · an attention lab to type your own sentence</span>
       <span class="chip">@@CHECKS@@ inline checks</span>
       <span class="chip">🧾 @@DERIVES@@ proofs, folded away — open "if you want the algebra" when you are ready</span>

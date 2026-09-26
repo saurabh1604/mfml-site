@@ -1,130 +1,356 @@
-<!-- ================= ACT IV · TRANSLATING ================= -->
-<!-- ================= 10 · ENCODER–DECODER ================= -->
-<section class="unit" id="s10">
-  <div class="sec-head reveal"><span class="sec-num">10</span><h2>Encoder–decoder: translate through one summary</h2></div>
+<!-- ================= ACT IV · GATES, AND READING BOTH WAYS ================= -->
+<!-- ================= 9 · LSTM ================= -->
+<section class="unit" id="s9">
+  <div class="sec-head reveal"><span class="sec-num">9</span><h2>The LSTM: a memory with an express lane</h2></div>
+  <p class="bigq reveal">If every step multiplies the memory by a number below 1, how can a network ever carry a word across fifty steps?</p>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>An interpreter at a meeting listens to a whole sentence in English. She holds its meaning in her head. Then she speaks it in Hindi, word by word.</p>
-    <p>Now give her a rule: she may keep only <strong>one small card</strong> of notes between listening and speaking. A short sentence fits easily. A very long speech does not.</p>
+    <p>A shopkeeper's ledger — the bahi-khata — passes from day to day. Each evening he makes three small choices. With an <strong>eraser</strong>: what to rub out. With a <strong>pen</strong>: what to write in. And at the <strong>window</strong>: what to read out to the customer.</p>
+    <p>The ledger itself is never torn up and rewritten. It rides from day to day almost untouched. That is the LSTM's secret.</p>
   </div>
   <div class="prose reveal">
-    <p>To translate, the input and the output have different lengths and different word orders. "The train to Delhi is late" is six English words; in Hindi it is "Delhi ki train late hai", five words, in another order. So we use <strong>two</strong> recurrent cells:</p>
+    <p>Why does the plain cell forget? At every step its whole note is multiplied by \(W\) and squeezed by tanh — the whisper line of §7. There is no way to carry a number along <em>unchanged</em>. So in 1997 Hochreiter and Schmidhuber added a second note that runs along the top: the <strong>cell state</strong> \(\mathbf c_t\). People call the whole design <strong>LSTM</strong>, "long short-term memory". (The eraser below, the forget gate, came three years later, from Gers, Schmidhuber and Cummins.) Think of the cell state as an <strong>express lane</strong>: at each step only two gentle things happen to it.</p>
+    <p>First, three <strong>gates</strong> are computed. A gate is a list of numbers between 0 and 1, made with a sigmoid (<a href="unit-15.html#s2">Unit 15</a>). 0 means "shut", 1 means "wide open". Each gate looks at the new word and the last note:</p>
     <ul>
-      <li>The <strong>encoder</strong> reads the English sentence word by word. Its final note, \(\mathbf s=\mathbf h_T\), is the <strong>summary</strong> of the whole sentence (people also call it the context vector).</li>
-      <li>The <strong>decoder</strong> starts from that summary and writes the Hindi sentence one word at a time. After each word it reads what it just wrote as its next input, and it stops when it writes a special word, \(\langle\text{end}\rangle\).</li>
+      <li>the <strong>forget gate</strong> \(\mathbf f_t\) — the eraser: how much of the old cell state to keep;</li>
+      <li>the <strong>input gate</strong> \(\mathbf i_t\) — the pen: how much of the new candidate to write in;</li>
+      <li>the <strong>output gate</strong> \(\mathbf o_t\) — the window: how much of the cell state to show as the note.</li>
     </ul>
-    <p>Training uses one small trick. While learning, we feed the decoder the <strong>true</strong> previous Hindi word, not its own guess. This is called <strong>teacher forcing</strong> — like a teacher who corrects a student after every word, so one early slip does not ruin the rest of the sentence. At test time there is no teacher, and the decoder must use its own words.</p>
-    <p><strong>The bottleneck.</strong> The summary has a fixed size — say 8 numbers in our toy, 512 in a real system. A 5-word sentence and a 50-word sentence must both squeeze into those same 8 numbers. If each word brings 8 numbers of its own, that is 40 numbers into 8 for the short sentence, and 400 into 8 for the long one. And the first word must survive the whole encoder: if the encoder keeps 90% of an old word at each step (a toy rate), word 1 of a 50-word sentence speaks in the summary at \(0.9^{49}\approx0.0057\) of its first strength. This is exactly what the first translation systems of 2014 showed: good on short sentences, worse and worse on long ones.</p>
+    <p>The candidate \(\mathbf g_t=\tanh(\dots)\) is what the pen would write. Then:</p>
+    <p>\[\begin{aligned}\mathbf c_t&=\mathbf f_t\odot\mathbf c_{t-1}+\mathbf i_t\odot\mathbf g_t\\ \mathbf h_t&=\mathbf o_t\odot\tanh(\mathbf c_t)\end{aligned}\]</p>
+    <p>Read the first line aloud: "keep the part of the old ledger the eraser allows, and add the part of the draft the pen allows." The second: "show the ledger through the window, squeezed." The symbol \(\odot\) just means "multiply entry by entry". Each gate has its own weights, like a small layer: \(\mathbf f_t=\sigma(W_f\mathbf h_{t-1}+U_f\mathbf x_t+\mathbf b_f)\), and the same shape for \(\mathbf i_t\), \(\mathbf o_t\) and \(\mathbf g_t\) (with tanh for \(\mathbf g_t\)).</p>
+    <p><strong>A tiny example.</strong> Forget gate \(f=0.9\), old cell state \(c_{t-1}=1\), input gate \(i=0.2\), candidate \(g=0.5\):</p>
+    <p>\[c_t=0.9\cdot1+0.2\cdot0.5=0.9+0.1=1.0.\]</p>
+    <p>We erased a tenth, then wrote in a little. With the window fully open (\(o=1\)), the note is \(h_t=\tanh(1.0)\approx0.7616\).</p>
+    <p><strong>The full step, from the weights.</strong> In a real cell nobody sets the gates by hand: each gate adds up its weighted inputs into a score, then squeezes it. Take a one-number LSTM with \(c_{t-1}=1\), \(h_{t-1}=0\), input \(x=1\), and weights that give the four scores \(z_f=2x=2\), \(z_i=0\), \(z_o=x=1\), \(z_g=x=1\):</p>
+    <p>\[\begin{aligned}f&=\sigma(2)\approx0.8808\\ i&=\sigma(0)=0.5\\ o&=\sigma(1)\approx0.7311\\ g&=\tanh(1)\approx0.7616\\ c_t&=0.8808\cdot1+0.5\cdot0.7616\\ &=0.8808+0.3808=1.2616\\ h_t&=0.7311\cdot\tanh(1.2616)\\ &=0.7311\cdot0.8515\approx0.6225\end{aligned}\]</p>
+    <p>Notice \(c_t=1.2616\) is bigger than 1: nothing squeezes the ledger itself. Only the note \(h_t\) is squeezed, on its way out through the window.</p>
   </div>
 
-  <div class="widget reveal" id="w-seq2seq">
-    <div class="widget-head"><span class="w-title">English in, one summary orb, Hindi out</span><span class="w-sub">Blue words flow into the encoder's chain and are pressed into one green summary orb of 8 slots. The decoder unpacks it into Hindi words. Hindi is written in Roman letters here.</span></div>
-    <p class="try"><b>Try:</b> Press <em>▶ translate</em> and follow the words through the orb. Then drag the sentence length from 6 to 50: the orb stays the same size, the words crowd into it, and the glow of word 1 fades almost to nothing. Switch on <em>teacher forcing</em> to see which words the decoder is fed while training.</p>
-    <div id="sq-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene. On the left, a chain of glass encoder cells with blue English word tiles rising into them. In the middle, one glowing green orb with eight slots: the summary. On the right, a chain of decoder cells writing cyan Hindi word tiles. As the sentence gets longer, more word sparks crowd into the same orb, and the spark of the first word grows faint."></div><p class="stage-tap">drag the picture to orbit</p>
-    <div class="wrow" style="margin-top:.7rem">
-      <div class="wcol" style="flex:1 1 280px">
-        <div class="controls"><div class="ctl"><label for="sq-n">sentence length</label><input id="sq-n" type="range" min="3" max="50" step="1" value="6"><output id="sq-n-o">6</output></div></div>
-        <div class="presets"><button class="play" id="sq-play">▶ translate</button><button class="preset" id="sq-tf" aria-pressed="false">teacher forcing</button></div>
+  <div class="widget reveal" id="w-notebook">
+    <div class="widget-head"><span class="w-title">The cell state as a tank with three valves</span><span class="w-sub">The tank holds the cell state. Three valves control it: the forget gate \(f\) says how much of the tank is <em>kept</em> (the drain lets out the rest, \(1-f\)), the input gate \(i\) is the inlet, and the output gate \(o\) is the window. Each gold ring shows its gate's value, from 0 to 1 — so a full gold ring on \(f\) means "keep everything".</span></div>
+    <p class="try"><b>Try:</b> Start from the worked example and press <em>▶ one step</em>: 0.9 stays, 0.1 flows in, the tank reads 1.0. Close the drain completely (\(f=1\)) and shut the inlet (\(i=0\)): the tank holds its level exactly — memory with no fading at all. Then shut the window (\(o=0\)): the tank is still full, but the note shows 0. Last, open <em>from scores</em>: the scores 2, 0, 1, 1 are squeezed into \(f=0.8808\), \(i=0.5\), \(o=0.7311\), \(g=0.7616\), and the tank rises to 1.2616 with the note at 0.6225.</p>
+    <div class="tabs" id="nb-mode" role="tablist"><button role="tab" aria-selected="true" data-t="gates">set the gates</button><button role="tab" aria-selected="false" data-t="scores">from scores (the full step)</button></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage"><svg id="nb-svg" viewBox="0 0 560 340" class="svg-lab" role="img" aria-label="A glass tank of glowing green liquid: the cell state. A drain valve at the bottom (the forget gate), an inlet pipe from a candidate cup above (the input gate), and a window valve on the side leading to the note (the output gate). Each valve has a gold ring that fills as the gate opens."></svg></div></div>
+      <div class="wcol" style="flex:2 1 260px">
+        <div class="controls" style="margin-bottom:.55rem">
+          <div class="ctl"><label for="nb-c">old \(c_{t-1}\)</label><input id="nb-c" type="range" min="-2" max="2" step="0.1" value="1"><output id="nb-c-o">1</output></div>
+        </div>
+        <div class="controls" id="nb-ctl-gates">
+          <div class="ctl"><label for="nb-f">forget \(f\)</label><input id="nb-f" type="range" min="0" max="1" step="0.05" value="0.9"><output id="nb-f-o">0.9</output></div>
+          <div class="ctl"><label for="nb-i">input \(i\)</label><input id="nb-i" type="range" min="0" max="1" step="0.05" value="0.2"><output id="nb-i-o">0.2</output></div>
+          <div class="ctl"><label for="nb-g">candidate \(g\)</label><input id="nb-g" type="range" min="-1" max="1" step="0.05" value="0.5"><output id="nb-g-o">0.5</output></div>
+          <div class="ctl"><label for="nb-o">output \(o\)</label><input id="nb-o" type="range" min="0" max="1" step="0.05" value="1"><output id="nb-o-o">1</output></div>
+        </div>
+        <div class="controls" id="nb-ctl-scores" style="display:none">
+          <div class="ctl"><label for="nb-zf">score \(z_f\)</label><input id="nb-zf" type="range" min="-4" max="4" step="0.1" value="2"><output id="nb-zf-o">2</output></div>
+          <div class="ctl"><label for="nb-zi">score \(z_i\)</label><input id="nb-zi" type="range" min="-4" max="4" step="0.1" value="0"><output id="nb-zi-o">0</output></div>
+          <div class="ctl"><label for="nb-zg">score \(z_g\)</label><input id="nb-zg" type="range" min="-4" max="4" step="0.1" value="1"><output id="nb-zg-o">1</output></div>
+          <div class="ctl"><label for="nb-zo">score \(z_o\)</label><input id="nb-zo" type="range" min="-4" max="4" step="0.1" value="1"><output id="nb-zo-o">1</output></div>
+        </div>
+        <div class="presets"><button class="play" id="nb-play">▶ one step</button><button class="preset" id="nb-hold">hold forever</button><button class="preset" id="nb-reset">worked example</button></div>
+        <div id="nb-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div>
       </div>
-      <div class="wcol" style="flex:1.3 1 300px"><div id="sq-read" class="readout" style="line-height:1.75"></div></div>
     </div>
   </div>
 
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{gathered}\text{English}\xrightarrow{\ \text{encoder}\ }\mathbf s\ (\text{fixed size})\\ \mathbf s\xrightarrow{\ \text{decoder}\ }\text{Hindi}\end{gathered}\]</p>
-    <p>An encoder–decoder translates through <strong>one summary vector</strong>. It works, and it was a breakthrough. But everything the decoder knows about the source sentence must pass through that one fixed-size vector — a bottleneck that hurts more with every extra word. <strong>What if the decoder could look back at every English word, whenever it needs to?</strong> That question is Unit 18.</p>
+  <div class="prose reveal">
+    <p><strong>Why the express lane saves the blame.</strong> Look at how the cell state moves from one step to the next: \(\mathbf c_t=\mathbf f_t\odot\mathbf c_{t-1}+\dots\) Along this lane there is no \(W\) to multiply by, and no tanh to squeeze. So walking back along the lane, the blame is multiplied by just \(f\) at each step (<a href="#s6">§6</a>'s product, with a much kinder factor):</p>
+    <p>\[\frac{\partial c_T}{\partial c_k}=f_{k+1}\,f_{k+2}\cdots f_T.\]</p>
+    <p>With \(f=0.9\) for ten steps: \(0.9^{10}\approx0.349\). Compare the plain cell with \(w=0.5\): \(0.5^{10}\approx0.000977\). The express lane carries about <strong>350 times</strong> more blame back to the start.</p>
+    <p>Be honest, though: a gate of 0.9 still fades over long distances. After 50 steps, \(0.9^{50}\approx0.00515\). What saves the LSTM is that the network <strong>chooses</strong> \(f\) at every word. When it needs to remember, it learns to hold \(f\) very close to 1: \(0.99^{50}\approx0.605\). And when it wants to forget — at a full stop, say — it can drop \(f\) to 0 and wipe the slate.</p>
+    <p><strong>Start with the lane open.</strong> At the start of training all weights are small, so every gate score is near 0 and every gate near \(\sigma(0)=0.5\). A forget gate of 0.5 is the whisper line again: \(0.5^{10}\approx0.001\). So people start the forget gate's shift \(b_f\) at 1 or 2. Then \(f\) begins near \(\sigma(1)\approx0.73\) or \(\sigma(2)\approx0.88\), and \(0.8808^{10}\approx0.281\) of the blame survives ten steps instead of a thousandth.</p>
+    <p>This idea — a lane where the signal is <em>added to</em>, never rewritten — is worth remembering. It returns in <a href="unit-18.html">Unit 18</a> as the <strong>residual path</strong> of every transformer block.</p>
   </div>
-  <div class="check reveal" data-check="c19">
+
+  <div class="widget reveal" id="w-lstm">
+    <div class="widget-head"><span class="w-title">The memory lab: race a plain cell, an LSTM and a GRU</span><span class="w-sub">The task: remember the first word. Each sentence starts with <em>chai</em> or <em>coffee</em>, then comes a string of filler words that each nudge the note at random. At the end we ask: which drink was first? The three cells have <strong>hand-set weights</strong> (not trained) — chosen to show each design at its most sensible.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ read the sentence</em> and watch the three memories travel along the lanes; gold rings are gates opening. Then open <em>blame through time</em> and slide the length from 5 to 50: the plain cell's blame collapses, the gated cells' stays high. Last, press <em>honest LSTM (f = 0.9)</em> and look at the accuracy at 50 words: 85.5%.</p>
+    <div id="lb-3d" class="stage3d tall" role="img" aria-label="Orbitable 3D scene of three glowing lanes running from left to right, one per cell: a plain recurrent cell, a GRU and an LSTM. A tile at the start of each lane shows the first word, chai or coffee. Beads along each lane show that cell's memory after each word, lifted up for chai and down for coffee. The plain cell's beads drift back to the middle and get lost among the random nudges; the GRU's and LSTM's stay lifted. Gold rings around the gated lanes glow where a gate opens. At the end of each lane a tick or a cross shows whether that cell answered right."></div><p class="stage-tap">drag the picture to orbit</p>
+    <div class="wrow" style="margin-top:.7rem">
+      <div class="wcol" style="flex:1 1 300px">
+        <div class="controls">
+          <div class="ctl"><label for="lb-T">sentence length</label><input id="lb-T" type="range" min="5" max="50" step="1" value="20"><output id="lb-T-o">20</output></div>
+          <div class="ctl"><label for="lb-A">filler noise</label><input id="lb-A" type="range" min="0" max="1" step="0.05" value="0.5"><output id="lb-A-o">0.5</output></div>
+          <div class="ctl"><label for="lb-w">plain cell \(w\)</label><input id="lb-w" type="range" min="0.5" max="1.2" step="0.01" value="0.9"><output id="lb-w-o">0.9</output></div>
+          <div class="ctl"><label for="lb-f">LSTM forget \(f\)</label><input id="lb-f" type="range" min="0.5" max="0.999" step="0.001" value="0.99"><output id="lb-f-o">0.99</output></div>
+        </div>
+        <div class="presets"><button class="play" id="lb-run">▶ read the sentence</button><button class="preset" id="lb-new">new sentence</button><button class="preset" id="lb-honest">honest LSTM (f = 0.9)</button><button class="preset" id="lb-reset">reset</button></div>
+      </div>
+      <div class="wcol" style="flex:1.3 1 320px"><div id="lb-read" class="readout lb-read"></div></div>
+    </div>
+    <div class="tabs" id="lb-tabs" role="tablist" style="margin-top:.7rem"><button role="tab" aria-selected="true" data-t="acc">accuracy vs length</button><button role="tab" aria-selected="false" data-t="blame">blame through time</button></div>
+    <div class="svgstage" style="margin-top:.5rem"><svg id="lb-svg" viewBox="0 0 760 284" class="svg-lab" role="img" aria-label="A chart. In accuracy mode: for each sentence length from 5 to 50, the share of 400 random sentences each cell answers right. In blame mode: on a log scale, how much blame from the end reaches each earlier word, for the three cells."></svg></div>
+    <details class="lb-how"><summary>How the three cells are wired (the hand-set weights)</summary>
+      <p>Each word is one number \(s\): chai is \(+1\), coffee is \(-1\), and each filler is a random number between \(-A\) and \(A\) (the filler noise). A marker \(m\) is 1 on the first word and 0 after it.</p>
+      <p>\[\begin{aligned}\text{plain: }&h_t=\tanh(w\,h_{t-1}+s_t)\\ \text{LSTM: }&i_t=\sigma(10m_t-5)\\ &c_t=f\,c_{t-1}+i_t\tanh(s_t)\\ \text{GRU: }&z_t=\sigma(10m_t-5)\\ &h_t=(1-z_t)h_{t-1}\\ &\qquad+z_t\tanh(s_t)\end{aligned}\]</p>
+      <p>So the input gate and the update gate are wide open on the first word (\(\sigma(5)\approx0.993\)) and nearly shut afterwards (\(\sigma(-5)\approx0.0067\)). The answer is the sign of the final memory. Because these gates look only at the word, the blame along each lane is exactly \(\prod w(1-h^2)\), \(\prod f\) and \(\prod(1-z)\).</p>
+    </details>
+  </div>
+
+  <div class="callout aha reveal"><span class="tag">Why it works</span>
+    <p>The plain cell must <em>rewrite</em> its whole note at every word, and every rewrite multiplies by \(W\). The LSTM does not rewrite its ledger: it only erases a little (\(\times f\)) and adds a little (\(+\,i\,g\)). Adding does not shrink the blame on its way back, and the erasing is a number the network chooses — so when it matters, the network can keep \(f\) near 1 and hear a word from fifty steps away.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\mathbf c_t=\mathbf f_t\odot\mathbf c_{t-1}+\mathbf i_t\odot\mathbf g_t\\ \frac{\partial c_T}{\partial c_k}=\prod_{t=k+1}^{T}f_t\end{gathered}\]</p>
+    <p>The LSTM keeps a second memory on an express lane. Nothing multiplies it by \(W\) or squeezes it — only the forget gate scales it and the input gate adds to it. So blame travels back along the lane multiplied only by \(f\), which the network can hold near 1 for as long as it needs to remember.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>The "forget gate" is really a <strong>keep</strong> gate. \(f=1\) means "keep everything", and \(f=0\) means "forget everything". Read it as "how much of the old ledger survives" and you will never get the sign of the story backwards.</p>
+  </div>
+  <div class="check reveal" data-check="c14">
     <span class="tag">Pause &amp; predict</span>
-    <p class="q">An encoder has a note of 256 numbers. It reads a 40-word sentence whose words are vectors of 100 numbers. How many numbers go in, and how many come out as the summary?</p>
+    <p class="q">One LSTM step: \(f=0.5\), \(c_{t-1}=2\), \(i=1\), \(g=-0.4\). What is the new cell state \(c_t\)?</p>
     <div class="opts">
-      <button data-why="The summary is the encoder's final note, so it has as many numbers as the note: 256, whatever the sentence length.">4000 in, 4000 out</button>
-      <button data-correct data-why="Right. 40 words × 100 numbers = 4000 numbers go in. The summary is one note: 256 numbers. A squeeze of more than 15 to 1 — and a 400-word input would have to fit into the same 256.">4000 in, 256 out</button>
-      <button data-why="The input is 40 × 100 = 4000 numbers, not 40 × 256. The summary is 256 numbers.">10 240 in, 256 out</button>
+      <button data-correct data-why="Right. c = f·c_prev + i·g = 0.5 · 2 + 1 · (−0.4) = 1 − 0.4 = 0.6. Half the old memory was erased, and a negative candidate was written in fully.">\(0.6\)</button>
+      <button data-why="The candidate g = −0.4 is negative, so writing it in lowers the level: 0.5 · 2 + 1 · (−0.4) = 0.6, not 1.4.">\(1.4\)</button>
+      <button data-why="The forget gate multiplies the OLD state (2), not the new one: 0.5 · 2 + 1 · (−0.4) = 0.6.">\(0.3\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c15">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Along the express lane the forget gate stays at \(f=0.95\). How much blame reaches a word 20 steps back?</p>
+    <div class="opts">
+      <button data-why="The factors multiply: 0.95²⁰, not 1 − 20 × 0.05 = 0. That is about 0.358.">0, because \(20\times0.05=1\) is used up</button>
+      <button data-correct data-why="Right. Twenty factors of 0.95: 0.95²⁰ ≈ 0.358. More than a third of the blame arrives — a plain cell with w = 0.5 would pass on less than one millionth.">\(0.95^{20}\approx0.358\)</button>
+      <button data-why="0.95 is the factor for one step. Over twenty steps it is 0.95²⁰ ≈ 0.358.">\(0.95\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c16">
+    <span class="tag">Try it, then answer</span>
+    <p class="q">In the memory lab, keep the filler noise at 0.5, press <em>honest LSTM (f = 0.9)</em> and look at the accuracy curves at 50 words. What do you see?</p>
+    <div class="opts">
+      <button data-why="With f = 0.9 the LSTM's memory of the first word shrinks to 0.9⁴⁹ ≈ 0.006 of its size by the end, and the filler noise starts to win sometimes. It does not stay perfect.">The LSTM still gets 100%, the plain cell 100% too</button>
+      <button data-correct data-why="Right. The GRU (its lane is held at 0.993) stays at 100%, the plain cell is a coin toss near 50%, and the honest LSTM slips to about 86% at 50 words. A gate of 0.9 is kind, but over 50 steps it still fades.">The GRU stays at 100%, the LSTM slips to about 86%, the plain cell is near 50%</button>
+      <button data-why="The LSTM does slip, but not all the way: at 50 words it still gets about 86% right, far better than the plain cell's coin toss near 50%.">All three fall to about 50%</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c29">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">At the start of training every gate score is near 0. If the forget gate's shift starts at \(b_f=0\), about how much blame survives 10 steps along the lane? And with \(b_f=2\)?</p>
+    <div class="opts">
+      <button data-why="With b_f = 0 the gate starts at σ(0) = 0.5, the same fading as a plain cell: 0.5¹⁰ ≈ 0.001. Only a bigger shift opens the lane.">About the same either way: the lane never fades</button>
+      <button data-correct data-why="Right. With b_f = 0, f starts at σ(0) = 0.5 and 0.5¹⁰ ≈ 0.001 survives — the whisper line again. With b_f = 2, f starts at σ(2) ≈ 0.8808 and 0.8808¹⁰ ≈ 0.281 survives. That is why the forget shift is started at 1 or 2.">About 0.001 with \(b_f=0\); about 0.281 with \(b_f=2\)</button>
+      <button data-why="Other way round: a bigger shift b_f makes the forget gate more open (closer to 1), so more survives: 0.8808¹⁰ ≈ 0.281 for b_f = 2 against 0.5¹⁰ ≈ 0.001 for b_f = 0.">About 0.281 with \(b_f=0\); about 0.001 with \(b_f=2\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+<!--@ALG s9-->
+  <p class="onesent reveal"><b>In one sentence:</b> The LSTM carries a cell state on an express lane, \(c_t=f\,c_{t-1}+i\,g\) — 0.8808 · 1 + 0.5 · 0.7616 = 1.2616 in the full step — so blame flows back multiplied only by the forget gate, \(0.9^{10}\approx0.349\) instead of \(0.5^{10}\approx0.000977\), and a forget shift of 1–2 starts that lane open.</p>
+</section>
+
+<!-- ================= 10 · GRU ================= -->
+<section class="unit" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>The GRU: a lighter cousin with one blend dial</h2></div>
+  <p class="bigq reveal">Does an express lane really need a separate tank and three gates — or can one dial do the job?</p>
+  <div class="callout scenario reveal"><span class="tag">Imagine this</span>
+    <p>A chaiwala keeps one big pot on the stove all day. Every hour he pours in some fresh tea. A little fresh, and the pot tastes much as before. A lot fresh, and the old taste is gone.</p>
+    <p>How much fresh tea to pour — that is one dial. The GRU is built around this dial.</p>
+  </div>
+  <div class="prose reveal">
+    <p>In 2014 Cho and colleagues asked: can we keep the express lane with fewer parts? Their <strong>GRU</strong> ("gated recurrent unit") drops the separate cell state. It keeps one note and two gates:</p>
+    <ul>
+      <li>the <strong>update gate</strong> \(\mathbf z_t\) — the dial: how much new to pour in;</li>
+      <li>the <strong>reset gate</strong> \(\mathbf r_t\) — how much of the old note to <em>consult</em> while drafting the new one.</li>
+    </ul>
+    <p>\[\begin{aligned}\tilde{\mathbf h}_t&=\tanh\big(W(\mathbf r_t\odot\mathbf h_{t-1})+U\mathbf x_t+\mathbf b\big)\\ \mathbf h_t&=(1-\mathbf z_t)\odot\mathbf h_{t-1}+\mathbf z_t\odot\tilde{\mathbf h}_t\end{aligned}\]</p>
+    <p>Read the first line aloud: "draft a fresh note from the new word and the <em>part of the old note the reset gate lets you look at</em>." The second line is a <strong>blend</strong>: part old note, part fresh draft, with the dial \(\mathbf z_t\) between 0 and 1. When \(z\) is near 0, the old note passes straight through — the express lane again, now multiplied by \(1-z\) at each step. The reset gate is how a GRU starts a new thought: with \(r\) near 0 the draft ignores the old note, as if the sentence had just begun.</p>
+    <p><strong>A tiny example.</strong> Old note \(h_{t-1}=0.8\), candidate \(\tilde h_t=-0.4\), dial \(z=0.25\):</p>
+    <p>\[\begin{aligned}h_t&=0.75\cdot0.8+0.25\cdot(-0.4)\\ &=0.6-0.1=0.5.\end{aligned}\]</p>
+    <p>Three quarters old, one quarter new. And since it is a blend, the new note always lies <strong>between</strong> the old note and the candidate.</p>
+    <p><strong>The full step, from the weights.</strong> A one-number GRU with \(h_{t-1}=0.5\) and input \(x=1\). The update score is 0 and the reset score is 2, so \(z=\sigma(0)=0.5\) and \(r=\sigma(2)\approx0.8808\). The draft uses weight 1 on the word and 1 on the consulted old note:</p>
+    <p>\[\begin{aligned}\tilde h_t&=\tanh(1\cdot x+1\cdot r\,h_{t-1})\\ &=\tanh(1+0.8808\cdot0.5)\\ &=\tanh(1.4404)\approx0.8938\\ h_t&=0.5\cdot0.5+0.5\cdot0.8938\approx0.6969\end{aligned}\]</p>
+  </div>
+
+  <div class="widget reveal" id="w-gru">
+    <div class="widget-head"><span class="w-title">The blend dial</span><span class="w-sub">The GRU's update: a note with two numbers (a green arrow), a fresh candidate (a blue arrow), and the new note (gold) on the straight line between them.</span></div>
+    <p class="try"><b>Try:</b> Turn the dial \(z\) from 0 to 1 and watch the new note slide from the old arrow to the candidate along a straight line: at \(z=0.25\) it is (0.5, 0), at \(z=0.5\) it is (0.2, 0.2). Lower the reset gate \(r\): the candidate stops looking at the old note. Press <em>▶ ten steps</em> with \(z=0.1\): the note drifts only slowly — a long memory.</p>
+    <div class="wrow">
+      <div class="wcol" style="flex:3 1 440px"><div class="svgstage"><svg id="gr-svg" viewBox="0 0 560 360" class="svg-lab" role="img" aria-label="A plane with three arrows from the origin: the old note in green, the candidate in blue and the new note in gold, whose tip lies on the dashed straight line joining the other two tips. A dial on the right shows z."></svg></div></div>
+      <div class="wcol" style="flex:2 1 260px">
+        <div class="controls">
+          <div class="ctl"><label for="gr-z">update \(z\)</label><input id="gr-z" type="range" min="0" max="1" step="0.05" value="0.25"><output id="gr-z-o">0.25</output></div>
+          <div class="ctl"><label for="gr-r">reset \(r\)</label><input id="gr-r" type="range" min="0" max="1" step="0.05" value="1"><output id="gr-r-o">1</output></div>
+        </div>
+        <div class="presets"><button class="play" id="gr-play">▶ ten steps</button><button class="preset" id="gr-reset">worked example</button></div>
+        <div id="gr-read" class="readout" style="margin-top:.5rem;line-height:1.75"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>What do the gates cost?</strong> Each gate, and each candidate, is a small layer of its own: a matrix for the old note (\(h\times h\)), a matrix for the word (\(h\times d\)) and a shift (\(h\)). That is \(h(h+d)+h\) numbers — exactly a plain cell's worth. A plain cell has one such block, a GRU has three (\(\mathbf z\), \(\mathbf r\), the candidate), an LSTM four (\(\mathbf f\), \(\mathbf i\), \(\mathbf o\), \(\mathbf g\)).</p>
+    <p>For a note of \(h=128\) numbers and words of \(d=64\) numbers: one block is \(128\cdot192+128=24\,704\). So a plain cell has 24 704 numbers to learn, a GRU \(3\times24\,704=74\,112\), and an LSTM \(4\times24\,704=98\,816\).</p>
+  </div>
+
+  <div class="widget reveal" id="w-gates-compare">
+    <div class="widget-head"><span class="w-title">Three cells side by side</span><span class="w-sub">The same note size and word size. Each gold block is one small layer, \(h(h+d)+h\) numbers.</span></div>
+    <p class="try"><b>Try:</b> Leave \(h=128\), \(d=64\) and read 24 704, 74 112 and 98 816. Double \(h\): the counts almost quadruple, because \(h\cdot h\) dominates. Click a cell to see its equations.</p>
+    <div class="svgstage"><svg id="gc-svg" viewBox="0 0 760 300" class="svg-lab" role="img" aria-label="Three cell diagrams side by side — plain, GRU, LSTM — each made of gold blocks, one per gate or candidate, with a bar under each showing its parameter count."></svg></div>
+    <div class="wrow" style="margin-top:.6rem">
+      <div class="wcol" style="flex:1 1 280px"><div class="controls">
+        <div class="ctl"><label for="gc-h">note size \(h\)</label><input id="gc-h" type="range" min="8" max="512" step="8" value="128"><output id="gc-h-o">128</output></div>
+        <div class="ctl"><label for="gc-d">word size \(d\)</label><input id="gc-d" type="range" min="8" max="512" step="8" value="64"><output id="gc-d-o">64</output></div>
+      </div></div>
+      <div class="wcol" style="flex:1.3 1 300px"><div id="gc-read" class="readout" style="line-height:1.75"></div></div>
+    </div>
+  </div>
+
+  <div class="prose reveal">
+    <p><strong>Plain, GRU or LSTM?</strong></p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>plain cell</th><th>GRU</th><th>LSTM</th></tr></thead>
+      <tbody>
+        <tr><td><strong>gates</strong></td><td>none</td><td>2: update \(z\), reset \(r\)</td><td>3: forget \(f\), input \(i\), output \(o\)</td></tr>
+        <tr><td><strong>memories</strong></td><td>one note \(\mathbf h\)</td><td>one note \(\mathbf h\)</td><td>note \(\mathbf h\) + ledger \(\mathbf c\)</td></tr>
+        <tr><td><strong>numbers (h = 128, d = 64)</strong></td><td>24 704</td><td>74 112</td><td>98 816</td></tr>
+        <tr><td><strong>blame along the lane</strong></td><td>\(\prod w(1-h^2)\): fades</td><td>\(\prod(1-z)\): can stay near 1</td><td>\(\prod f\): can stay near 1</td></tr>
+        <tr><td><strong>choose it when</strong></td><td>short patterns, speed</td><td>you want gates at ¾ of the cost</td><td>long, complex sequences</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Rule of thumb.</strong> On most tasks the GRU and the LSTM do about equally well; try the GRU first when data or memory is short, the LSTM when the sequences are long and rich. The plain cell is best kept for short memories — and for understanding the other two.</p>
+  </div>
+  <div class="callout aha reveal"><span class="tag">Why it works</span>
+    <p>A blend never has to shrink what it keeps: with \(z\) near 0 the old note is copied almost exactly, so both the memory and the blame ride along at \(1-z\approx1\) per step. The GRU simply merges the LSTM's eraser and pen into one dial — whatever is not kept is replaced — and that turns out to be enough.</p>
+  </div>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\mathbf h_t=(1-\mathbf z_t)\odot\mathbf h_{t-1}+\mathbf z_t\odot\tilde{\mathbf h}_t\]</p>
+    <p>A GRU is one blend dial: keep the old note, or pour in the new. With \(z\) near 0 the old note rides straight through — an express lane without a separate tank. It learns three blocks of weights where an LSTM learns four and a plain cell one.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>Check which way the dial turns. On this page \(z\) near 0 means "keep the old note" and \(z\) near 1 means "replace it". Some books and code libraries swap the roles of \(z\) and \(1-z\). The idea is the same; read which one multiplies the old note before you compute.</p>
+  </div>
+  <div class="check reveal" data-check="c17">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A GRU step with \(z=0.5\), old note \(h_{t-1}=0.2\) and candidate \(\tilde h_t=0.6\). What is \(h_t\)?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. (1 − 0.5) · 0.2 + 0.5 · 0.6 = 0.1 + 0.3 = 0.4 — exactly halfway between the old note and the candidate.">\(0.4\)</button>
+      <button data-why="That adds the two in full. A GRU blends: (1 − z) of the old plus z of the new: 0.1 + 0.3 = 0.4.">\(0.8\)</button>
+      <button data-why="The dial z multiplies the candidate, and 1 − z the old note: 0.5 · 0.2 + 0.5 · 0.6 = 0.4. With z = 0.5 both get half.">\(0.3\)</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c18">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">An LSTM has a note of \(h=10\) numbers and words of \(d=5\) numbers. How many numbers does it learn?</p>
+    <div class="opts">
+      <button data-why="160 is one block: 10 · 15 + 10. An LSTM has four blocks (f, i, o, g): 4 × 160 = 640.">160</button>
+      <button data-why="480 is three blocks — that would be a GRU. An LSTM has four: 640.">480</button>
+      <button data-correct data-why="Right. One block is h(h + d) + h = 10 · 15 + 10 = 160, and the LSTM has four of them (forget, input, output, candidate): 640.">640</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c30">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">The reset gate is shut: \(r=0\). What does the GRU's draft \(\tilde h_t\) depend on?</p>
+    <div class="opts">
+      <button data-correct data-why="Right. With r = 0 the term W(r ⊙ h) is zero, so the draft is tanh(U x + b): only the new word. The old note can still survive through the blend (1 − z)·h — the reset gate hides it from the draft, it does not erase it.">Only on the new word — the old note is hidden from the draft</button>
+      <button data-why="r = 0 hides the old note from the draft, so the draft cannot depend on it. What remains is tanh(U x + b): only the new word.">Only on the old note</button>
+      <button data-why="The reset gate does not erase memory. The draft ignores the old note, but the blend (1 − z)·h still carries it forward if z is small.">On nothing: the whole memory is erased</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c37">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">A GRU's update gate stays at exactly \(z=0\) for 50 words. What happens to its note?</p>
+    <div class="opts">
+      <button data-why="With z = 0 the blend is 1·h + 0·draft: the old note is copied exactly. Nothing fades.">It fades like a plain cell's</button>
+      <button data-correct data-why="Right. h = (1 − 0)·h + 0·draft = h. The note is copied unchanged for all 50 words, and the blame flows back at (1 − z) = 1 per step. That is the express lane in its purest form — though the cell learns nothing new while z = 0.">It stays exactly the same, for all 50 words</button>
+      <button data-why="z = 0 pours in none of the fresh draft, so the note cannot become the draft. It is copied unchanged.">It becomes the latest draft</button>
     </div>
     <div class="why"></div>
   </div>
 <!--@ALG s10-->
-  <p class="onesent reveal"><b>In one sentence:</b> An encoder squeezes the whole source sentence into one fixed-size summary and a decoder writes the translation from it, trained with teacher forcing — and that single summary is the bottleneck that long sentences overflow.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> A GRU blends old and new with one dial, \(h_t=(1-z)h_{t-1}+z\tilde h_t\) — 0.5 · 0.5 + 0.5 · 0.8938 ≈ 0.6969 in the full step — uses a reset gate to decide how much old note to consult, and costs three blocks of \(h(h+d)+h\) numbers against the LSTM's four.</p>
 </section>
 
-<!-- ================= 11 · BEAM SEARCH ================= -->
+<!-- ================= 11 · TWO WAYS AND FLOORS ================= -->
 <section class="unit" id="s11">
-  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Picking the words: greedy or beam search</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>Reading both ways, and stacking floors</h2></div>
+  <p class="bigq reveal">"He said Teddy…" — is Teddy a person? You cannot tell until you read the next word. How can a reader use the words that come later?</p>
   <div class="callout scenario reveal"><span class="tag">Imagine this</span>
-    <p>You are driving across a city. At every junction you take the road that looks fastest right now. Sometimes that road leads straight into a traffic jam, and a road that looked a little slower at first would have got you home sooner.</p>
-    <p>Keeping two or three routes in mind, instead of one, often finds the better trip.</p>
+    <p>Two friends read the same sentence. One starts at the left end, the other at the right end. Then, for every word, they put their two notes side by side.</p>
+    <p>Now every word knows what came before it <em>and</em> what comes after it.</p>
   </div>
   <div class="prose reveal">
-    <p>At each step the decoder gives a probability for every possible next word. The probability of a whole sentence is the <strong>product</strong> of its word probabilities (the chain rule of <a href="unit-14.html">Unit 14</a>). We want the sentence with the biggest product. But there are far too many sentences to try them all.</p>
-    <p><strong>Greedy decoding</strong> takes the single most likely word at each step and never looks back. <strong>Beam search</strong> keeps the \(k\) best partial sentences at every step (\(k\) is the <em>beam width</em>), grows each by one word, and again keeps only the best \(k\). With \(k=1\) it is greedy.</p>
-    <p><strong>A tiny example.</strong> The decoder is writing the English for "hamari train late hai". First word: "the" 0.5, "our" 0.4, "a" 0.1. Second word, after "the": "train" 0.4, "bus" 0.3, "rain" 0.3. After "our": "train" 0.9, "bus" 0.1. After "a": "train" 0.6, "bus" 0.4.</p>
+    <p>Compare "He said <strong>Teddy</strong> bears are on sale" with "He said <strong>Teddy</strong> Roosevelt was a president". In the first, Teddy is part of "teddy bears" — a toy. In the second, Teddy is a man's name. The words <em>before</em> Teddy are identical. Only the words <em>after</em> it decide. A one-way reader standing at "Teddy" has read "He said Teddy" in both cases, so its note there must be the same. It cannot tell them apart.</p>
+    <p><strong>A bidirectional RNN</strong> runs two cells over the sentence. The <strong>forward</strong> cell reads left → right, as before. The <strong>backward</strong> cell reads right → left. Each word's final note is the two notes side by side: \([\overrightarrow{\mathbf h}_t\,;\,\overleftarrow{\mathbf h}_t]\). The forward half knows the past; the backward half knows the future.</p>
+    <p><strong>A tiny example.</strong> Two one-number cells, both with \(w=0.5\), \(u=1\), \(b=0\), read \(x=(0,0,1)\): nothing, nothing, then one real word at the end.</p>
     <ul>
-      <li><strong>Greedy:</strong> take "the" (0.5), then its best, "train" (0.4). Sentence "the train": \(0.5\times0.4=0.20\).</li>
-      <li><strong>Beam, \(k=2\):</strong> keep "the" (0.5) and "our" (0.4). Grow both: the train 0.20, the bus 0.15, the rain 0.15, our train \(0.4\times0.9=0.36\), our bus 0.04. The best is <strong>"our train", 0.36</strong>.</li>
+      <li><strong>Forward</strong> (words 1, 2, 3): \(\overrightarrow h=(0,\ 0,\ \tanh1)\approx(0,\ 0,\ 0.7616)\). Words 1 and 2 have not seen anything yet.</li>
+      <li><strong>Backward</strong> (words 3, 2, 1): \(\overleftarrow h_3=\tanh1\approx0.7616\), \(\overleftarrow h_2=\tanh(0.5\cdot0.7616)\approx0.3634\), \(\overleftarrow h_1=\tanh(0.5\cdot0.3634)\approx0.1797\) — §2's fading numbers, read from the other end.</li>
     </ul>
-    <p>Greedy lost because "our" looked slightly worse at the first step, even though it led to a far surer second word. In practice we add log-probabilities instead of multiplying (products of many small numbers become too tiny for a computer): \(\ln0.36\approx-1.022\) beats \(\ln0.20\approx-1.609\).</p>
+    <p>So word 1's note is \((0,\ 0.1797)\). Its forward half is blind; its backward half carries word 3's news. Word 1 learns about word 3 <strong>only</strong> through the backward reader.</p>
+    <p><strong>Stacking floors.</strong> We can also build a recurrent network in floors, like a building. Floor 1 reads the words. Floor 2 reads floor 1's notes as its inputs, one per word, and keeps a note of its own. Time runs along each corridor; depth goes up the stairs. Lower floors catch short, local patterns — letters into words, words into phrases. Higher floors build on those and can follow longer-range patterns. Two to four floors are common.</p>
+    <p><strong>What they cost</strong> (\(h=128\), \(d=64\)). One-way, one floor: 24 704 (§10). Two-way: two cells, \(2\times24\,704=49\,408\). Two floors: floor 1 is 24 704, and floor 2 reads 128-number notes instead of 64-number words, so it is \(128\cdot(128+128)+128=32\,896\) — together <strong>57 600</strong>.</p>
+    <table class="plain cmp">
+      <thead><tr><th></th><th>each word's note knows</th><th>numbers (h = 128, d = 64)</th><th>can it write text?</th><th>typical use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>one-way</strong></td><td>the words before it</td><td>24 704</td><td>yes</td><td>language models, live speech</td></tr>
+        <tr><td><strong>two-way</strong></td><td>the whole sentence</td><td>49 408</td><td>no</td><td>tagging, reading a whole text, the encoder of §12</td></tr>
+        <tr><td><strong>two floors</strong></td><td>the words before it, in two layers of detail</td><td>57 600</td><td>yes</td><td>harder language tasks</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="widget reveal" id="w-beam">
-    <div class="widget-head"><span class="w-title">Greedy against beam search, on a tree of choices</span><span class="w-sub">Each branch is a possible next word with its probability. Gold paths are the ones the search is keeping; the number at each leaf is the whole sentence's probability.</span></div>
-    <p class="try"><b>Try:</b> Press <em>▶ search</em> with width 1 (greedy): it commits to "the" and ends at 0.20. Switch to width 2 and search again: "our" survives the first cut and wins with 0.36. Width 3 keeps everything and finds the same 0.36.</p>
-    <div class="svgstage"><svg id="bm-svg" viewBox="0 0 760 360" class="svg-lab" role="img" aria-label="A tree of word choices from left to right. From the start, three branches: the 0.5, our 0.4, a 0.1. From each, two or three second words with their probabilities. Kept paths glow gold; dropped paths fade. Each leaf shows the product of the probabilities along its path."></svg></div>
+  <div class="widget reveal" id="w-bidir">
+    <div class="widget-head"><span class="w-title">Reading both ways, and in floors</span><span class="w-sub">The words sit in the middle, with the forward reader (green) on one side of them and the backward reader (pink) on the other. Each word's final note is drawn as two halves: green from the forward reader, pink from the backward one.</span></div>
+    <p class="try"><b>Try:</b> In <em>toy numbers</em>, switch between <em>one-way</em> and <em>two-way</em>: word 1's note goes from (0) to (0, 0.1797). Click any word to light up the words that can reach its note. Load the two Teddy sentences: one-way, the note at "Teddy" is the same in both; two-way, it differs. Then press <em>two floors</em> to see a second floor reading the first.</p>
+    <div class="tabs" id="bd-mode" role="tablist"><button role="tab" aria-selected="false" data-t="one">one-way</button><button role="tab" aria-selected="true" data-t="two">two-way</button><button role="tab" aria-selected="false" data-t="stack">two floors</button></div>
+    <div class="presets" id="bd-sent" style="margin-top:.5rem"><button class="preset" data-s="toy" aria-pressed="true">toy numbers</button><button class="preset" data-s="bears" aria-pressed="false">Teddy bears…</button><button class="preset" data-s="pres" aria-pressed="false">Teddy Roosevelt…</button></div>
+    <div class="svgstage" style="margin-top:.6rem"><svg id="bd-svg" viewBox="0 0 760 360" class="svg-lab" role="img" aria-label="A row of word tiles. Above them a chain of green cells with arrows pointing right: the forward reader. Below them a chain of pink cells with arrows pointing left: the backward reader. Under each word a small bar split into a green half and a pink half: the word's final note. Clicking a word highlights the words that can reach its note."></svg></div>
     <div class="wrow" style="margin-top:.6rem">
       <div class="wcol" style="flex:1 1 280px">
-        <div class="tabs" id="bm-k" role="tablist"><button role="tab" aria-selected="true" data-t="1">width 1 (greedy)</button><button role="tab" aria-selected="false" data-t="2">width 2</button><button role="tab" aria-selected="false" data-t="3">width 3</button></div>
-        <div class="presets" style="margin-top:.5rem"><button class="play" id="bm-play">▶ search</button><button class="preset" id="bm-log" aria-pressed="false">show log-probabilities</button></div>
+        <div class="controls"><div class="ctl"><label for="bd-w">keep old \(w\)</label><input id="bd-w" type="range" min="0" max="1.5" step="0.05" value="0.5"><output id="bd-w-o">0.5</output></div></div>
+        <div class="presets"><button class="play" id="bd-play">▶ read</button><button class="preset" id="bd-reset">reset</button></div>
       </div>
-      <div class="wcol" style="flex:1.3 1 300px"><div id="bm-read" class="readout" style="line-height:1.75"></div></div>
+      <div class="wcol" style="flex:1.3 1 320px"><div id="bd-read" class="readout" style="line-height:1.75"></div></div>
     </div>
   </div>
 
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{gathered}P(\text{sentence})=\prod_t P(\text{word}_t\mid\dots)\\ \text{score}=\sum_t\ln P(\text{word}_t\mid\dots)\end{gathered}\]</p>
-    <p>Greedy decoding picks the best word now; beam search keeps the \(k\) best sentences-so-far and can recover when a slightly weaker first word leads somewhere much better. It costs about \(k\) times the work of greedy, and it is still not a guarantee of the very best sentence — just a much better bet.</p>
+  <div class="callout aha reveal"><span class="tag">Why it works</span>
+    <p>Each reader is an ordinary recurrent cell, so each half of the note is an honest summary of one side of the sentence. Putting the halves side by side costs nothing extra to compute and gives every word a view of the whole sentence. Floors work for the same reason deep networks do (<a href="unit-15.html#s4">Unit 15</a>): each floor builds a slightly more abstract summary on top of the one below.</p>
   </div>
-  <div class="check reveal" data-check="c20">
-    <span class="tag">Try it, then answer</span>
-    <p class="q">On this tree, does beam width 3 find a better sentence than beam width 2?</p>
+  <div class="callout remember reveal"><span class="tag">The realization</span>
+    <p>\[\begin{gathered}\text{note}_t=[\overrightarrow{\mathbf h}_t\,;\,\overleftarrow{\mathbf h}_t]\\ \text{floor }2\text{ reads floor }1\text{'s notes}\end{gathered}\]</p>
+    <p>A two-way reader gives every word both its past and its future. Floors give the reader depth. Both are built from the same cell, run in a different direction or on a different input.</p>
+  </div>
+  <div class="callout watch reveal"><span class="tag">Trap</span>
+    <p>A two-way reader cannot <strong>write</strong> text. Its backward half needs the words to the right — and while you are writing, they do not exist yet. Two-way readers are for jobs where the whole sentence is already there: tagging words, judging a review, or reading the source sentence of a translation (§12).</p>
+  </div>
+  <div class="check reveal" data-check="c31">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">In the toy example, \(x=(0,0,1)\). Which reader gives word 1 a non-zero note, and how big is it?</p>
     <div class="opts">
-      <button data-why="Width 3 does keep all three first words, but 'a train' is only 0.1 × 0.6 = 0.06. The best of all seven sentences is still 'our train', 0.36 — which width 2 already found.">Yes: it finds "a train"</button>
-      <button data-correct data-why="Right. Both find 'our train' with 0.36, and that is the best of all seven possible sentences (the next best is 'the train', 0.20). A wider beam only helps if the narrower one threw the best path away.">No: both find "our train", 0.36 — the best of all seven</button>
-      <button data-why="Width 3 cannot do worse than width 2 here: it keeps everything width 2 keeps. Both end at 'our train', 0.36.">It does worse: it ends at "the train"</button>
+      <button data-why="The forward reader reaches word 1 before it has seen anything: its note there is tanh(0) = 0. Only the backward reader has already read word 3.">The forward reader: 0.7616</button>
+      <button data-correct data-why="Right. The backward reader starts at word 3 (0.7616), then passes it on: 0.3634 at word 2 and 0.1797 at word 1. The forward half at word 1 is 0, so word 1's note is (0, 0.1797).">The backward reader: 0.1797</button>
+      <button data-why="Word 1 does hear about word 3 — through the backward reader, which carries tanh(0.5 · 0.3634) ≈ 0.1797 back to it.">Neither: word 1 cannot know about word 3</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c32">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Can you use a two-way RNN as a language model that writes a sentence word by word, as in §5?</p>
+    <div class="opts">
+      <button data-why="The backward half would need the words to the right of each position before they are written. When you are generating, those words do not exist yet.">Yes, and it writes better because it sees both sides</button>
+      <button data-correct data-why="Right. While writing, the future is not written yet, so the backward reader has nothing to read. (During training it would even 'see' the very word it is asked to guess.) Writing needs a one-way reader.">No: the backward reader would need words that are not written yet</button>
+      <button data-why="The reason is not the size. A two-way reader needs the words to its right, and a writer does not have them yet.">No, because it has twice as many numbers</button>
+    </div>
+    <div class="why"></div>
+  </div>
+  <div class="check reveal" data-check="c33">
+    <span class="tag">Pause &amp; predict</span>
+    <p class="q">Two floors of plain cells, \(h=128\), \(d=64\). Floor 1 has 24 704 numbers. How many does floor 2 have?</p>
+    <div class="opts">
+      <button data-why="Floor 2 does not read the 64-number words; it reads floor 1's 128-number notes. So its U is 128 × 128, not 128 × 64.">24 704, the same as floor 1</button>
+      <button data-correct data-why="Right. Floor 2's input is a 128-number note, so it learns 128 · (128 + 128) + 128 = 32 896. Together the two floors have 24 704 + 32 896 = 57 600.">32 896, because its inputs are 128-number notes</button>
+      <button data-why="That would be two whole two-way cells. Floor 2 is one plain cell whose inputs have 128 numbers: 128 · 256 + 128 = 32 896.">49 408</button>
     </div>
     <div class="why"></div>
   </div>
 <!--@ALG s11-->
-  <p class="onesent reveal"><b>In one sentence:</b> A sentence's probability is the product of its word probabilities; greedy takes the best word each time and can land on 0.20, while a beam of width 2 keeps two candidates and finds 0.36.</p>
+  <p class="onesent reveal"><b>In one sentence:</b> A two-way reader puts a forward note and a backward note side by side — word 1 of \(x=(0,0,1)\) gets \((0,\ 0.1797)\) — so every word sees the whole sentence (but it cannot write text), and floors stack readers on readers: 24 704, 49 408 and 57 600 numbers for one-way, two-way and two floors.</p>
 </section>
-
-<!-- ================= 12 · CARRY FORWARD ================= -->
-<section class="unit" id="s12">
-  <div class="sec-head reveal"><span class="sec-num">12</span><h2>What to carry forward</h2></div>
-  <div class="prose reveal">
-    <p>The whole unit, one card at a time.</p>
-  </div>
-  <div class="cards reveal-stagger">
-    <div class="cd"><h4>Order needs memory</h4>A bag of words loses order; a window loses the past. A running note that changes the old note before adding the new word keeps both.</div>
-    <div class="cd"><h4>The recurrent cell</h4>\(\mathbf h_t=\tanh(W\mathbf h_{t-1}+U\mathbf x_t+\mathbf b)\), the same weights at every word: \(h(h+d)+h\) numbers for any length.</div>
-    <div class="cd"><h4>Unrolled</h4>A deep network as long as the sentence, whose layers are twins. Read out with \(\operatorname{softmax}(V\mathbf h_t)\); the loss adds up over steps.</div>
-    <div class="cd"><h4>Backprop through time</h4>Rule A and Rule B on the unrolled chain. The shared weight's gradient is the sum over steps. The blame to an early word is a product of one factor per step.</div>
-    <div class="cd"><h4>Fade or explode</h4>The factors are powers of one matrix, so the biggest \(|\lambda|\) decides: \(0.5^{10}\approx0.001\), \(1.5^{10}\approx58\).</div>
-    <div class="cd"><h4>Clipping</h4>If \(\|\mathbf g\|>c\), rescale to length \(c\). A cure for explosions, not for fading.</div>
-    <div class="cd"><h4>LSTM</h4>\(\mathbf c_t=\mathbf f\odot\mathbf c_{t-1}+\mathbf i\odot\mathbf g\): an express lane where blame is multiplied only by the forget gate.</div>
-    <div class="cd"><h4>GRU</h4>\(\mathbf h_t=(1-\mathbf z)\odot\mathbf h_{t-1}+\mathbf z\odot\tilde{\mathbf h}_t\): one blend dial. Blocks: plain 1, GRU 3, LSTM 4.</div>
-    <div class="cd"><h4>Encoder–decoder</h4>Squeeze the source into one summary, write the target from it; teacher forcing to train, beam search to decode. The summary is a bottleneck.</div>
-  </div>
-  <div class="prose reveal">
-    <p><strong>Where this goes next.</strong></p>
-    <ul>
-      <li><strong>Unit 18 · Attention and Transformers.</strong> Two problems are left over from this unit. The decoder sees the source only through one summary, and every word must wait for the word before it. Attention fixes both at once: every word can look directly at every other word, with weights from dot products (<a href="unit-03.html">Unit 3</a>) and softmax (<a href="unit-14.html">Unit 14</a>). The residual path of a transformer is another express lane — the same idea as the LSTM's.</li>
-      <li><strong>Unit 19 · The Maths Inside an LLM.</strong> A language model at huge scale: next-word probabilities, and how the machine picks its words — greedy, beam, and the random sampling with temperature, top-k and top-p that chat models use.</li>
-    </ul>
-  </div>
-  <div class="callout remember reveal"><span class="tag">The realization</span>
-    <p>\[\begin{gathered}\frac{\partial\mathbf h_T}{\partial\mathbf h_k}\ \text{carries}\ W^{T-k}\\ \Longrightarrow\ \text{eigenvalues decide}\end{gathered}\]</p>
-    <p>A machine with memory multiplies by the same matrix at every word, so its memory and its blame live or die by that matrix's eigenvalues. Gates build an express lane where the multiplier is a number the network controls, close to 1 when it wants to remember.</p>
-  </div>
-  <p class="onesent reveal"><b>In one sentence:</b> A recurrent cell reads one word at a time with shared weights, trains by backprop through time where powers of one matrix make memory fade or explode, is rescued by gates that open an express lane, and translates through a single summary — the bottleneck that attention removes next.</p>
-</section>
-
-<!--@PRACTICE-->

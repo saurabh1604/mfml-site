@@ -11,6 +11,19 @@
   </div>
 <!--@D s2-->
   <div class="derive">
+    <span class="tag">Prove it · the chain rule is "and then", again and again</span>
+    <p class="dgoal"><b>Claim.</b> For any three words, \(P(w_1w_2w_3)=P(w_1)\,P(w_2\mid w_1)\,P(w_3\mid w_1w_2)\) — and the same peeling works for any number of words.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">"The chance of \(B\) given \(A\)" means: of all the times \(A\) happens, the share in which \(B\) happens too (<a href="unit-14.html#s3">Unit 14</a>). So
+      \[\begin{aligned}&P(A\text{ and }B)\\ &=P(A)\,P(B\mid A).\end{aligned}\]
+      <span class="dwhy">First \(A\) must happen, and then \(B\) must happen given \(A\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Take \(A\) = "the sentence starts \(w_1w_2\)" and \(B\) = "the third word is \(w_3\)":
+      \[\begin{aligned}&P(w_1w_2w_3)\\ &=P(w_1w_2)\\ &\quad\cdot P(w_3\mid w_1w_2).\end{aligned}\]
+      <span class="dwhy">Peel off the last word.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Peel again: \(P(w_1w_2)=P(w_1)\,P(w_2\mid w_1)\). Put the two together.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">No approximation anywhere. The Markov assumption comes <em>after</em> this, when we shorten each history.</span></div></div>
+  </div>
+  <div class="derive">
     <span class="tag">Prove it · count ÷ total is the best guess</span>
     <p class="dgoal"><b>Claim.</b> After a word \(w\), the next words were seen with counts \(c_1,\dots,c_V\) (total \(n\)). The probabilities \(p_1,\dots,p_V\) that make the seen text most likely are \(p_j=c_j/n\).</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">The text's probability contains \(p_j\) once for every time word \(j\) followed \(w\). Take the log (<a href="unit-14.html#s7">Unit 14's likelihood</a>):
@@ -18,11 +31,12 @@
       <span class="dwhy">Maximise \(\ell\) with the rule \(p_1+\dots+p_V=1\).</span></div></div>
     <div class="dstep"><span class="dn">2</span><div class="dbody">Add a Lagrange multiplier \(\lambda\) for the rule and set each slope to zero:
       \[\frac{c_j}{p_j}-\lambda=0\ \Rightarrow\ p_j=\frac{c_j}{\lambda}.\]
-      <span class="dwhy">The same trick as fitting a Gaussian in Unit 14.</span></div></div>
+      <span class="dwhy">The Lagrange recipe of <a href="unit-11.html">Unit 11</a>: one extra number for the rule, then every slope is zero.</span></div></div>
     <div class="dstep"><span class="dn">3</span><div class="dbody">The rule \(\sum p_j=1\) gives \(\lambda=\sum c_j=n\). So \(p_j=c_j/n\).
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">With our corpus: after "drink" the counts are chai 2, coffee 1, so \(p=(2/3,\,1/3)\).</span></div></div>
   </div>
+<!--@D s3-->
   <div class="derive">
     <span class="tag">Prove it · add-one still adds up to one</span>
     <p class="dgoal"><b>Claim.</b> With add-one smoothing, \(p_j=\dfrac{c_j+1}{n+V}\), and these \(V\) numbers add up to 1.</p>
@@ -33,7 +47,17 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">After "drink" (\(n=3\), \(V=7\)): \(\tfrac{3}{10}+\tfrac{2}{10}+5\cdot\tfrac{1}{10}=1\).</span></div></div>
   </div>
-<!--@D s3-->
+  <div class="derive">
+    <span class="tag">Prove it · a blend of two advisers still adds up to one</span>
+    <p class="dgoal"><b>Claim.</b> If \(P_b\) and \(P_u\) each add up to 1 over the next words, then so does \(P=\lambda P_b+(1-\lambda)P_u\) for any \(0\le\lambda\le1\) — and if \(\lambda&lt;1\), every word with \(P_u(w)&gt;0\) gets a chance above 0.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Add the blend over all words and split the sum:
+      \[\begin{aligned}&\sum_wP(w)\\ &=\lambda\sum_wP_b(w)\\ &\quad+(1-\lambda)\sum_wP_u(w)\\ &=\lambda+(1-\lambda)=1.\end{aligned}\]
+      <span class="dwhy">A weighted average of two lists that add to 1.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Both parts are never negative, and the second part is \((1-\lambda)P_u(w)&gt;0\) whenever \(\lambda&lt;1\) and \(P_u(w)&gt;0\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">With \(\lambda=0.8\): \(P(\text{cricket}\mid\text{drink})=0.8\cdot0+0.2\cdot\tfrac1{16}=0.0125\). Not zero, because the generalist has seen cricket.</span></div></div>
+  </div>
+<!--@D s4-->
   <div class="derive">
     <span class="tag">Prove it · perplexity is one over the average probability, the geometric way</span>
     <p class="dgoal"><b>Claim.</b> \(2^{\frac1N\sum_t\log_2(1/p_t)}=\big(p_1p_2\cdots p_N\big)^{-1/N}\), and the answer is the same if you use natural logs and \(e\) instead of \(\log_2\) and 2.</p>
@@ -53,7 +77,7 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">A fair die with \(V\) faces. Any model worth training should beat this.</span></div></div>
   </div>
-<!--@D s4-->
+<!--@D s5-->
   <div class="derive">
     <span class="tag">Prove it · the cosine ignores how often a word is used</span>
     <p class="dgoal"><b>Claim.</b> For any numbers \(s,t>0\): \(\cos(s\mathbf a,\,t\mathbf b)=\cos(\mathbf a,\mathbf b)\).</p>
@@ -64,7 +88,29 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">So chai's row \((10,8,0,2)\) and \((5,4,0,1)\) have the same cosine with coffee: \(80/(\sqrt{168}\sqrt{41})=40/(\sqrt{42}\sqrt{41})\approx0.964\).</span></div></div>
   </div>
-<!--@D s5-->
+<!--@D s6-->
+  <div class="derive">
+    <span class="tag">Prove it · PMI straight from the counts</span>
+    <p class="dgoal"><b>Claim.</b> With \(n(w,c)\) meetings out of \(N\) counted pairs, row total \(n(w)\) and column total \(n(c)\): \(\operatorname{PMI}(w,c)=\log_2\dfrac{n(w,c)\,N}{n(w)\,n(c)}\) — the count divided by what chance alone would give, \(n(w)\,n(c)/N\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Turn counts into probabilities: \(P(w,c)=n(w,c)/N\), \(P(w)=n(w)/N\), \(P(c)=n(c)/N\).
+      <span class="dwhy">Every probability here is a share of the same \(N\) pairs.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Divide, and two of the three \(N\)s cancel:
+      \[\begin{aligned}&\frac{P(w,c)}{P(w)P(c)}\\ &=\frac{n(w,c)/N}{n(w)\,n(c)/N^2}\\ &=\frac{n(w,c)}{n(w)\,n(c)/N}.\end{aligned}\]
+      <span class="dwhy">The bottom, \(n(w)\,n(c)/N\), is the "if strangers" count of the widget's step ②.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Chai and hot: \(8\big/(20\cdot10/40)=8/5=1.6\), so \(\operatorname{PMI}=\log_21.6\approx0.678\). Chai and "the": \(10\big/(20\cdot20/40)=1\), so \(\operatorname{PMI}=0\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Strangers score exactly 0: if \(w\) and \(c\) are independent, \(P(w,c)=P(w)P(c)\), the ratio is 1 and its log is 0.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · a word in every document weighs nothing</span>
+    <p class="dgoal"><b>Claim.</b> If a word appears in all \(N\) documents, its TF-IDF weight is 0 in every document, however often it appears.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Its document frequency is \(\text{df}=N\), so \(\text{idf}=\log_{10}(N/N)=\log_{10}1=0\).
+      <span class="dwhy">The log of 1 is 0 in any base.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The weight is \(\text{tf}\times0=0\) for every tf.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">"the" in D1: \(3\times\log_{10}(3/3)=0\). Meanwhile "hot", in just one of 3 documents, gets \(1\times\log_{10}3\approx0.477\).</span></div></div>
+  </div>
+<!--@D s7-->
   <div class="derive">
     <span class="tag">Prove it · the energy of a table is the sum of σ²</span>
     <p class="dgoal"><b>Claim.</b> For any matrix \(C=U\Sigma V^{\mathsf T}\), the sum of the squares of all entries equals \(\sigma_1^2+\sigma_2^2+\cdots\).</p>
@@ -88,18 +134,68 @@
       <span class="dwhy">The energy kept is \(1-\text{error}^2/\text{total}=1-2.49/166\approx98.5\%\).</span></div></div>
   </div>
   <div class="derive">
-    <span class="tag">Prove it · PPMI, worked on one box</span>
-    <p class="dgoal"><b>Claim.</b> \(\operatorname{PMI}(w,c)=\log_2\dfrac{P(w,c)}{P(w)\,P(c)}\) measures "together more often than chance", and PPMI keeps only positive values: \(\max(0,\operatorname{PMI})\).</p>
-    <div class="dstep"><span class="dn">1</span><div class="dbody">If \(w\) and \(c\) had nothing to do with each other, the chance of seeing them together would be \(P(w)P(c)\) (independence, <a href="unit-14.html#s2">Unit 14</a>). The ratio says how many times more often they really appear together.
-      <span class="dwhy">Ratio 1 → log 0 → "nothing special".</span></div></div>
-    <div class="dstep"><span class="dn">2</span><div class="dbody">In our 4 × 4 table the total count is 166. Chai's row adds to 42, the "drink" column to 9, and the box holds 5:
-      \[\begin{aligned}&\frac{P(w,c)}{P(w)P(c)}\\ &=\frac{5/166}{(42/166)(9/166)}\\ &=\frac{5\cdot166}{42\cdot9}\approx2.196.\end{aligned}\]
-      <span class="dwhy">Chai and "drink" meet about 2.2 times more often than chance.</span></div></div>
-    <div class="dstep"><span class="dn">3</span><div class="dbody">So \(\operatorname{PMI}\approx\log_2 2.196\approx1.135\) bits, and PPMI is the same. A box with count 0 would give \(\log 0=-\infty\), which PPMI turns into 0.
+    <span class="tag">Prove it · coffee makes chai and tea friends</span>
+    <p class="dgoal"><b>Claim.</b> In the friends table, \(\mathbf v_1=\tfrac12(1,1,1,1,0,0,0)\) is the top direction, with \(\sigma_1=\sqrt{68}\); chai and tea both get the coordinate 4 on it (coffee gets 6). The direction \(\mathbf v_3=\tfrac12(-1,-1,1,1,0,0,0)\) has \(\sigma_3=\sqrt{32}\) and gives chai \(-4\), tea \(+4\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The directions of the SVD are the eigenvectors of \(C^{\mathsf T}C\) (<a href="unit-05.html#s8">Unit 5</a>). On the four drink columns, \(C^{\mathsf T}C\) adds up chai's, tea's and coffee's contributions:
+      \[\begin{pmatrix}25&25&9&9\\ 25&25&9&9\\ 9&9&25&25\\ 9&9&25&25\end{pmatrix}.\]
+      <span class="dwhy">Chai gives \(4\cdot4=16\) in the top-left block, tea 16 in the bottom-right block, coffee \(3\cdot3=9\) everywhere.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Multiply by \((1,1,1,1)\): every row gives \(25+25+9+9=68\). Multiply by \((-1,-1,1,1)\): the first rows give \(-25-25+9+9=-32\), the last \(+32\). So the eigenvalues are 68 and 32, and \(\sigma=\sqrt{68}\approx8.246\), \(\sqrt{32}\approx5.657\).
+      <span class="dwhy">The sport columns give eigenvalues 48 and 16, so \(\sqrt{68}\) is the biggest of all.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">A word's coordinate is its row dotted with the direction. On \(\mathbf v_1\): chai \(\tfrac12(4+4)=4\), tea \(\tfrac12(4+4)=4\), coffee \(\tfrac12(3+3+3+3)=6\). On \(\mathbf v_3\): chai \(\tfrac12(-4-4)=-4\), tea \(\tfrac12(4+4)=4\), coffee 0.
       <span class="nw"><span class="dqed">∎</span></span>
-      <span class="dwhy">A column like "the", which appears with everyone about as often as chance predicts, gets PMI near 0 everywhere — and stops dominating.</span></div></div>
+      <span class="dwhy">So at \(k=2\) chai and tea are both \((4,0)\): cosine 1. At \(k=3\) they are \((4,0,-4)\) and \((4,0,4)\): dot product \(16-16=0\), cosine 0.</span></div></div>
   </div>
-<!--@D s6-->
+<!--@D s8-->
+  <div class="derive">
+    <span class="tag">Prove it · how many pairs skip-gram makes from one sentence</span>
+    <p class="dgoal"><b>Claim.</b> A sentence of \(n\) words (with \(n\ge C+1\)) and a window of \(C\) words on each side give CBOW \(n\) examples and skip-gram \(2Cn-C(C+1)\) pairs.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Number the positions \(0,1,\dots,n-1\). Position \(i\) has \(\min(i,C)\) neighbours on its left and \(\min(n-1-i,C)\) on its right. CBOW makes one example per position: \(n\).
+      <span class="dwhy">Near the ends the window hangs over the edge, so fewer neighbours fit.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Add up the left neighbours. The first \(C+1\) positions give \(0+1+\dots+C\); every later position gives \(C\):
+      \[\begin{aligned}&\tfrac12C(C+1)\\ &\quad+C\,(n-1-C)\\ &=Cn-\tfrac12C(C+1).\end{aligned}\]
+      <span class="dwhy">The right neighbours add up to the same total — read the sentence backwards.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Left plus right: \(2Cn-C(C+1)\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Check: \(n=6\), \(C=2\) gives \(24-6=18\). For a long text the ratio to CBOW's \(n\) examples tends to \(2C\).</span></div></div>
+  </div>
+<!--@D s9-->
+  <div class="derive">
+    <span class="tag">Prove it · why the committee shares the blame equally</span>
+    <p class="dgoal"><b>Claim.</b> With \(\mathbf h=\frac1{2C}\sum_c\mathbf v_c\), scores \(s_w=\mathbf u_w\cdot\mathbf h\) and \(L=-\ln\operatorname{softmax}(\mathbf s)_o\), the gradients are \(\partial L/\partial\mathbf u_w=e_w\,\mathbf h\) and \(\partial L/\partial\mathbf v_c=\frac1{2C}\sum_w e_w\,\mathbf u_w\) for every context word \(c\), where \(\mathbf e=\mathbf p-\mathbf y\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">A softmax followed by cross-entropy sends back prediction − truth to the scores: \(\partial L/\partial s_w=p_w-y_w=e_w\).
+      <span class="dwhy">Proved in <a href="unit-15.html#s6">Unit 15</a>.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Each score is a dot product, so its slope is \(\mathbf h\) with respect to \(\mathbf u_w\), and \(\mathbf u_w\) with respect to \(\mathbf h\). Chain them:
+      \[\begin{aligned}\frac{\partial L}{\partial\mathbf u_w}&=e_w\,\mathbf h,\\ \frac{\partial L}{\partial\mathbf h}&=\sum_w e_w\,\mathbf u_w.\end{aligned}\]
+      <span class="dwhy">Local slope times incoming blame — Rule B of <a href="unit-15.html#s7">Unit 15</a>.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Changing one \(\mathbf v_c\) moves \(\mathbf h\) by only \(\frac1{2C}\) of that change, so \(\partial L/\partial\mathbf v_c=\frac1{2C}\,\partial L/\partial\mathbf h\) — the same for every member.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Toy round: \(\partial L/\partial\mathbf h=(-0.458,-0.458)\) and \(2C=2\), so a step with \(\eta=1\) moves drink and daily by \((0.229,\ 0.229)\) each.</span></div></div>
+    <p class="dgoal"><b>A note on the real program.</b> The lab in §11 follows this exact rule: with \(n\) words on the committee, each one gets \(\tfrac1n\) of the blame on \(\mathbf h\), because \(\mathbf h\) is their average. The original word2vec program (the C code released with the 2013 papers) takes a shortcut. It also averages the committee to make \(\mathbf h\), but then it hands <em>every</em> member the <em>full</em> blame on \(\mathbf h\), not a share. That is like giving the input vectors a step \(n\) times bigger. It still learns well; it is simply not the exact slope of the average.</p>
+  </div>
+<!--@D s10-->
+  <div class="derive">
+    <span class="tag">Prove it · skip-gram adds up the errors of all its neighbours</span>
+    <p class="dgoal"><b>Claim.</b> For \(L=-\sum_{c}\ln p_c\), with one list \(\mathbf p=\operatorname{softmax}(\mathbf s)\) and \(s_w=\mathbf u_w\cdot\mathbf h\), the blame on the scores is \(\mathbf E=\sum_c(\mathbf p-\mathbf y_c)\), and the blame on the centre word is \(\sum_w E_w\,\mathbf u_w\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Each term \(-\ln p_c\) is a softmax with cross-entropy, so it sends back \(\mathbf p-\mathbf y_c\). The terms are added, so their blames add:
+      \[\mathbf E=\sum_c\big(\mathbf p-\mathbf y_c\big).\]
+      <span class="dwhy">With two neighbours: \(\mathbf E=2\mathbf p-\mathbf y_{\text{drink}}-\mathbf y_{\text{daily}}\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">As in CBOW, the blame on \(\mathbf h\) is \(\sum_w E_w\,\mathbf u_w\). But now \(\mathbf h\) <em>is</em> \(\mathbf v_{\text{centre}}\), so the centre word receives the whole of it — nothing is divided.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Toy: \(\mathbf E=(0.143,-0.611,1.059,-0.611,0.019)\) gives \((0.429,\ 0.429)\), and \(\mathbf v_{\text{chai}}\) becomes \((0.571,\ 0.571)\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · with two different neighbours the loss never reaches zero</span>
+    <p class="dgoal"><b>Claim.</b> If a centre word's neighbours are two different words \(a\) and \(b\), then \(L=-\ln p_a-\ln p_b\ge2\ln2\approx1.386\), with equality only when \(p_a=p_b=\tfrac12\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The chances of one softmax add up to 1, so \(p_a+p_b\le1\).
+      <span class="dwhy">Both neighbours are read from the same list.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Two positive numbers with a fixed sum have the largest product when they are equal:
+      \[p_a\,p_b\le\Big(\frac{p_a+p_b}{2}\Big)^2\le\frac14.\]
+      <span class="dwhy">Because \(\big(\tfrac{x+y}2\big)^2-xy=\big(\tfrac{x-y}2\big)^2\ge0\).</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">So \(L=-\ln(p_a\,p_b)\ge-\ln\tfrac14=2\ln2\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">A word with several different neighbours can never be sure of any one of them — which is exactly why its list of chances describes its company.</span></div></div>
+  </div>
+<!--@D s12-->
   <div class="derive">
     <span class="tag">Prove it · the slope of −ln σ</span>
     <p class="dgoal"><b>Claim.</b> \(\dfrac{d}{dz}\big(-\ln\sigma(z)\big)=-(1-\sigma(z))\) and \(\dfrac{d}{dz}\big(-\ln\sigma(-z)\big)=\sigma(z)\).</p>
@@ -122,17 +218,61 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">Worked: \(g_+=g_-=1-\sigma(0.5)\approx0.378\), so \(\mathbf v\leftarrow(1,0)+0.378\,\big((0.5,0.5)-(-0.5,1)\big)=(1.378,-0.189)\).</span></div></div>
   </div>
-<!--@D s7-->
   <div class="derive">
     <span class="tag">Prove it · a full softmax touches every word</span>
     <p class="dgoal"><b>Claim.</b> For \(L=-\ln\operatorname{softmax}(\mathbf s)_o\) with scores \(s_w=\mathbf u_w\cdot\mathbf v\), the gradient is \(\partial L/\partial\mathbf u_w=(q_w-y_w)\,\mathbf v\) for <em>every</em> word \(w\), where \(\mathbf q\) is the softmax and \(\mathbf y\) the one-hot truth.</p>
     <div class="dstep"><span class="dn">1</span><div class="dbody">From <a href="unit-14.html#s13">Unit 14</a>: the blame on the scores of a softmax with cross-entropy is prediction minus truth, \(\partial L/\partial s_w=q_w-y_w\).
       <span class="dwhy">The same "prediction minus truth" as Unit 15's output layer.</span></div></div>
-    <div class="dstep"><span class="dn">2</span><div class="dbody">Each score depends on its own \(\mathbf u_w\) with slope \(\mathbf v\), so \(\partial L/\partial\mathbf u_w=(q_w-y_w)\mathbf v\). Since \(q_w>0\) for every word, every one of the \(V\) neighbour lists gets a non-zero update.
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Each score depends on its own \(\mathbf u_w\) with slope \(\mathbf v\), so \(\partial L/\partial\mathbf u_w=(q_w-y_w)\mathbf v\). Since \(q_w>0\) for every word, every one of the \(V\) output vectors gets a non-zero update.
       <span class="nw"><span class="dqed">∎</span></span>
-      <span class="dwhy">Negative sampling touches only \(k+1\) lists, so its cost is independent of \(V\).</span></div></div>
+      <span class="dwhy">Negative sampling touches only \(k+1\) output vectors, so its cost does not grow with \(V\).</span></div></div>
   </div>
-<!--@D s8-->
+  <div class="derive">
+    <span class="tag">Prove it · the leaves of the tree always add up to one</span>
+    <p class="dgoal"><b>Claim.</b> If every fork sends a share \(\sigma(\boldsymbol\theta\cdot\mathbf h)\) of what reaches it to the left and \(\sigma(-\boldsymbol\theta\cdot\mathbf h)\) to the right, the chances of all the leaves add up to 1 — without ever adding over the vocabulary.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The two branches of a fork share out exactly what arrives, because
+      \[\begin{aligned}&\sigma(z)+\sigma(-z)\\ &=\frac{1}{1+e^{-z}}+\frac{e^{-z}}{1+e^{-z}}\\ &=1.\end{aligned}\]
+      <span class="dwhy">Multiply top and bottom of \(\sigma(-z)=1/(1+e^{z})\) by \(e^{-z}\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The root starts with 1. Each fork splits its amount into two parts with the same total, so after every level the total is still 1. The leaves are the last level.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Our tree: \(0.2760+0.4551+0.0723+0.1966=1\). A leaf at depth \(D\) costs \(D\) sigmoids, and a balanced tree over \(V\) words has depth \(\lceil\log_2V\rceil\).</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · subsampling turns counts into square roots</span>
+    <p class="dgoal"><b>Claim.</b> After subsampling, a word that makes up a share \(f>t\) of the text makes up about \(\sqrt{t\,f}\) of it. So a word 100 times more common than another keeps only 10 times as many copies.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Each copy survives with chance \(\sqrt{t/f}\), so on average the surviving share is
+      \[f\cdot\sqrt{t/f}=\sqrt{t\,f}.\]
+      <span class="dwhy">Expected value: share of copies times the chance each survives.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">For two words with \(f_1=100\,f_2\) (both above \(t\)): \(\sqrt{t\cdot100f_2}\big/\sqrt{t\,f_2}=\sqrt{100}=10\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">"The" (\(f=0.05\)) is 1 250 times as common as a word with \(f=4\times10^{-5}\); after subsampling it is only \(\sqrt{1250}\approx35.4\) times as common.</span></div></div>
+  </div>
+<!--@D s13-->
+  <div class="derive">
+    <span class="tag">Prove it · negative sampling aims at PMI − ln k</span>
+    <p class="dgoal"><b>Claim.</b> Suppose the score \(x=\mathbf u_c\cdot\mathbf v_w\) of each pair could be chosen freely. Then the negative-sampling loss is smallest at \(x=\operatorname{PMI}(w,c)-\ln k\) (natural log), when negatives are drawn in proportion to plain counts.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Over the whole text, \((w,c)\) appears \(n(w,c)\) times as a real pair. Word \(w\) is the centre of \(n(w)\) pairs, and for each of them \(k\) negatives are drawn, so \(c\) turns up as a negative for \(w\) about \(k\,n(w)\,n(c)/N\) times. The part of the loss that depends on \(x\) is
+      \[\begin{aligned}\ell(x)=&-n(w,c)\ln\sigma(x)\\ &-\tfrac{k\,n(w)\,n(c)}{N}\\ &\quad\cdot\ln\sigma(-x).\end{aligned}\]
+      <span class="dwhy">\(N\) is the total number of pairs; \(n(c)/N\) is the chance of drawing \(c\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Set the slope to zero, using the slopes of \(-\ln\sigma\) from §12's drawer:
+      \[\begin{aligned}&-n(w,c)\big(1-\sigma(x)\big)\\ &+\tfrac{k\,n(w)\,n(c)}{N}\,\sigma(x)=0.\end{aligned}\]
+      <span class="dwhy">Real pairs push \(x\) up, negatives push it down; the best \(x\) balances them.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Since \(\sigma(x)/(1-\sigma(x))=e^{x}\), this gives \(e^{x}=\dfrac{n(w,c)\,N}{k\,n(w)\,n(c)}\), so
+      \[\begin{aligned}x&=\ln\frac{n(w,c)\,N}{n(w)\,n(c)}-\ln k\\ &=\operatorname{PMI}(w,c)-\ln k.\end{aligned}\]
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">Chai and hot: \(\ln1.6-\ln5\approx0.470-1.609=-1.139\). With the ¾-power noise of §12, the counts \(n(c)\) are simply smoothed. (Levy and Goldberg, 2014.)</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · in GloVe, a difference of vectors reads a ratio</span>
+    <p class="dgoal"><b>Claim.</b> If \(\mathbf w_i\cdot\tilde{\mathbf w}_k+b_i+\tilde b_k=\ln X_{ik}\) for every pair, then \((\mathbf w_i-\mathbf w_j)\cdot\tilde{\mathbf w}_k=\ln\dfrac{X_{ik}}{X_{jk}}-(b_i-b_j)\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Write the rule for \(i\) and for \(j\) with the same probe \(k\), and subtract. The probe's own bias \(\tilde b_k\) cancels:
+      \[\begin{aligned}&(\mathbf w_i-\mathbf w_j)\cdot\tilde{\mathbf w}_k+b_i-b_j\\ &=\ln X_{ik}-\ln X_{jk}.\end{aligned}\]
+      <span class="dwhy">A difference of logs is the log of a ratio.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">Chai and lassi were each counted with 1 000 context words, so \(X_{ik}/X_{jk}=P(k\mid i)/P(k\mid j)\), and equal biases are free to fit both rows. Then the difference arrow reads the log ratio directly.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">hot: \(\ln20\approx2.996\); cold: \(\ln0.05\approx-2.996\); drink and cricket: \(\ln1=0\) — at right angles to chai − lassi.</span></div></div>
+  </div>
+<!--@D s14-->
   <div class="derive">
     <span class="tag">Prove it · one-hot times a matrix picks a row</span>
     <p class="dgoal"><b>Claim.</b> If \(\mathbf e_i\) is the one-hot row vector with a 1 in slot \(i\), then \(\mathbf e_iE\) is row \(i\) of \(E\).</p>
@@ -151,7 +291,7 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">So a training step only moves the rows of the words in the example — cheap, even with a 50 000-row table.</span></div></div>
   </div>
-<!--@D s9-->
+<!--@D s15-->
   <div class="derive">
     <span class="tag">Prove it · a shadow keeps parallelograms</span>
     <p class="dgoal"><b>Claim.</b> If \(\mathbf d=\mathbf a-\mathbf b+\mathbf c\) (so \(\mathbf b,\mathbf a,\mathbf d,\mathbf c\) make a parallelogram) and \(f(\mathbf x)=P\mathbf x+\mathbf t\) is any projection plus shift, then \(f(\mathbf d)=f(\mathbf a)-f(\mathbf b)+f(\mathbf c)\).</p>
@@ -160,7 +300,6 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">That is why the explorer can draw 13-number vectors in 3-D without breaking the parallelograms. Lengths and angles <em>do</em> change in a shadow, so cosines are always computed on all 13 numbers.</span></div></div>
   </div>
-<!--@D s11-->
   <div class="derive">
     <span class="tag">Prove it · for unit vectors, distance is a cosine in disguise</span>
     <p class="dgoal"><b>Claim.</b> If \(\lVert\hat{\mathbf a}\rVert=\lVert\hat{\mathbf b}\rVert=1\), then \(\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2=2-2\cos\theta\).</p>
@@ -168,4 +307,23 @@
       \[\begin{aligned}&\lVert\hat{\mathbf a}-\hat{\mathbf b}\rVert^2\\ &=\hat{\mathbf a}\cdot\hat{\mathbf a}-2\,\hat{\mathbf a}\cdot\hat{\mathbf b}+\hat{\mathbf b}\cdot\hat{\mathbf b}\\ &=1-2\cos\theta+1.\end{aligned}\]
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">The distance grows exactly as the cosine shrinks, so the nearest word by distance is the nearest by cosine. At \(\cos\theta=0.5\): distance 1.</span></div></div>
+  </div>
+<!--@D s16-->
+  <div class="derive">
+    <span class="tag">Prove it · a blend leans toward its common meaning</span>
+    <p class="dgoal"><b>Claim.</b> If the two meanings are unit vectors at right angles, \(\mathbf m_1\perp\mathbf m_2\), and a word is used in meaning 1 a share \(s\) of the time, its blend \(\mathbf b=s\,\mathbf m_1+(1-s)\,\mathbf m_2\) has \(\cos(\mathbf b,\mathbf m_1)=\dfrac{s}{\sqrt{s^2+(1-s)^2}}\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The dot product keeps only the part along \(\mathbf m_1\): \(\mathbf b\cdot\mathbf m_1=s\), because \(\mathbf m_1\cdot\mathbf m_1=1\) and \(\mathbf m_2\cdot\mathbf m_1=0\).
+      <span class="dwhy">Right angles make the cross term vanish.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">By Pythagoras, \(\lVert\mathbf b\rVert=\sqrt{s^2+(1-s)^2}\). Divide.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(s=0.8\): \(0.8/\sqrt{0.68}\approx0.970\) with cricket and \(0.2/\sqrt{0.68}\approx0.243\) with the animal. \(s=0.5\): \(0.5/\sqrt{0.5}\approx0.707\) with each.</span></div></div>
+  </div>
+  <div class="derive">
+    <span class="tag">Prove it · a word of L letters has L pieces of 3</span>
+    <p class="dgoal"><b>Claim.</b> With the markers &lt; and &gt; added, a word of \(L\) letters has exactly \(L\) character 3-grams.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">With the two markers the string has \(L+2\) characters. A window of 3 can start at positions \(1,2,\dots,(L+2)-3+1\).
+      <span class="dwhy">The last window must end on the last character.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">That is \((L+2)-3+1=L\) windows.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">chai: 4 pieces; chaiwala: 8 pieces, 3 of them shared with chai. Common endings like "wala" or "ing" become pieces shared by many words.</span></div></div>
   </div>

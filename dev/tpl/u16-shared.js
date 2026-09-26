@@ -42,8 +42,22 @@ function ppmi(M){ const tot=M.flat().reduce((a,b)=>a+b,0), rs=M.map(r=>r.reduce(
 function rng16(seed){ let s=(seed>>>0)||1; return ()=>{ s=(s*16807)%2147483647; return (s-1)/2147483646; }; }
 
 /* ================= the unit's small worlds (all hand-made, and the page says so) ================= */
-/* §2 · the bigram corpus */
-const BIGRAM_DEFAULT='I drink chai .\nI drink coffee .\nI drink chai .\nI play cricket .';
+/* every widget registers itself here: window.U16['w-…'] = {state(), …} — the verify suite reads the numbers the picture was drawn from */
+const U16=window.U16=window.U16||{};
+const BOS='<s>', EOS='</s>';
+/* §2 · the bigram corpus (the markers are added to every line by the widget) */
+const BIGRAM_DEFAULT='I drink chai\nI drink coffee\nI drink chai\nI play cricket';
+/* §3 · the row for "drink" and the unigram adviser (16 tokens after the <s> markers) */
+const SM_WORDS=['I','drink','chai','coffee','play','cricket',EOS];
+const SM_ROW={chai:2,coffee:1}, SM_N=3;
+const SM_UNI={I:4,drink:3,chai:2,coffee:1,play:1,cricket:1,[EOS]:4}, SM_UNI_N=16;
+function smoothRow(mode,V,k,lam){ const p={}; let kept=0;
+  SM_WORDS.forEach(w=>{ const c=SM_ROW[w]||0; let x;
+    if(mode==='mle') x=c/SM_N; else if(mode==='add1') x=(c+1)/(SM_N+V); else if(mode==='addk') x=(c+k)/(SM_N+k*V); else x=lam*c/SM_N+(1-lam)*SM_UNI[w]/SM_UNI_N;
+    p[w]=x; if(c>0) kept+=x; });
+  const nOther=mode==='interp'?0:Math.max(0,V-SM_WORDS.length), each=mode==='mle'||mode==='interp'?0:(mode==='add1'?1/(SM_N+V):k/(SM_N+k*V));
+  const sum=SM_WORDS.reduce((a,w)=>a+p[w],0)+nOther*each;
+  return {p,others:{n:nOther,each,total:nOther*each},sum,kept,moved:1-kept}; }
 /* §4 · the co-occurrence corpus: with a window of 2 it gives exactly the 4 × 4 table worked by hand */
 const CO_TARGETS=['chai','coffee','cricket','football'], CO_CTX=['drink','hot','play','match'];
 const CO_SENT=['we drink hot chai','we drink hot chai','they drink hot chai','I drink hot chai','drink your chai','match day chai','chai before every match',
@@ -55,6 +69,36 @@ function coCounts(win){ const M=CO_TARGETS.map(()=>CO_CTX.map(()=>0));
     for(let j=Math.max(0,i-win);j<=Math.min(w.length-1,i+win);j++){ const c=CO_CTX.indexOf(w[j]); if(j!==i&&c>=0) M[r][c]++; } }); }); return M; }
 const CO4=[[5,4,0,1],[4,5,0,0],[0,0,5,4],[0,1,4,5]];
 
+/* §5 · four tiny documents (hand-written): by neighbours chai is like coffee, by documents it is like kettle */
+const CD_DOCS=[['at home','we put the kettle on the stove . the kettle boils . we drink hot chai with milk'],['the tea stall','the kettle sings at the stall . a cup of hot chai . we drink hot chai'],
+  ['the café','we drink hot coffee . a cup of hot coffee with milk'],['the match','we play cricket at the park . the cricket match is on']];
+const CD_T=['chai','coffee','kettle','cricket'];
+function cdTables(win){ const docs=CD_DOCS.map(d=>d[1].split(' ').filter(w=>w!=='.')), sents=CD_DOCS.flatMap(d=>d[1].split(' . ').map(x=>x.split(' ')));
+  const TD=CD_T.map(w=>docs.map(d=>d.filter(x=>x===w).length));
+  const vocab=[...new Set(sents.flat())].sort(), NB=CD_T.map(()=>vocab.map(()=>0));
+  sents.forEach(s=>s.forEach((w,i)=>{ const r=CD_T.indexOf(w); if(r<0) return; for(let j=Math.max(0,i-win);j<=Math.min(s.length-1,i+win);j++) if(j!==i) NB[r][vocab.indexOf(s[j])]++; }));
+  return {TD,NB,vocab}; }
+/* §6 · the PMI table (40 counted pairs) and the three TF-IDF documents */
+const PM_R=['chai','cricket'], PM_C=['hot','the','match'], PM_M0=[[8,10,2],[2,10,8]];
+function pmiSteps(M){ const N=M.flat().reduce((a,b)=>a+b,0), rs=M.map(r=>r.reduce((a,b)=>a+b,0)), cs=M[0].map((_,j)=>M.reduce((a,r)=>a+r[j],0));
+  const E=M.map((r,i)=>r.map((_,j)=>N?rs[i]*cs[j]/N:0)), R=M.map((r,i)=>r.map((x,j)=>E[i][j]>0?x/E[i][j]:NaN));
+  const P=R.map(r=>r.map(x=>x>0?Math.log2(x):(x===0?-Infinity:NaN))), PP=P.map(r=>r.map(x=>isFinite(x)?Math.max(0,x):(x===-Infinity?0:NaN)));
+  return {N,rs,cs,E,R,P,PP}; }
+const TF_DOCS=[{n:'D1',w:{the:3,chai:2,hot:1}},{n:'D2',w:{the:2,cricket:3}},{n:'D3',w:{the:1,chai:1,cricket:1}}], TF_W=['the','chai','hot','cricket'];
+function tfidf(){ const N=TF_DOCS.length, tf=TF_W.map(w=>TF_DOCS.map(d=>d.w[w]||0)), df=tf.map(r=>r.filter(x=>x>0).length), idf=df.map(d=>d?Math.log10(N/d):0);
+  return {N,tf,df,idf,W:tf.map((r,i)=>r.map(x=>x*idf[i]))}; }
+/* §7 · friends of friends: chai and tea never meet, coffee meets both */
+const FR_W=['chai','tea','coffee','cricket','football'], FR_C=['drink','hot','cup','kettle','play','match','bat'];
+const FR_M=[[4,4,0,0,0,0,0],[0,0,4,4,0,0,0],[3,3,3,3,0,0,0],[0,0,0,0,4,4,0],[0,0,0,0,0,4,4]];
+const FR=(function(){ const c=FR_C.length, MtM=Array.from({length:c},(_,i)=>Array.from({length:c},(_,j)=>FR_M.reduce((s,r)=>s+r[i]*r[j],0)));
+  const {vals,vecs}=symEig(MtM), S=vals.map(v=>Math.sqrt(Math.max(0,v))), V=Array.from({length:c},(_,j)=>vecs.map(r=>r[j]));
+  /* fix the free signs: direction 1 gives coffee +, direction 2 cricket +, direction 3 tea +, direction 4 football + */
+  const anchor=[2,3,1,4]; for(let j=0;j<4;j++){ if(dot(FR_M[anchor[j]],V[j])<0) V[j]=V[j].map(x=>-x); }
+  const coord=(i,k)=>V.slice(0,k).map(v=>dot(FR_M[i],v));
+  const rebuilt=k=>FR_M.map((row,i)=>FR_C.map((_,j)=>V.slice(0,k).reduce((s,v)=>s+dot(row,v)*v[j],0)));
+  const energy=k=>S.slice(0,k).reduce((a,x)=>a+x*x,0)/S.reduce((a,x)=>a+x*x,0);
+  return {S,V,coord,rebuilt,energy}; })();
+
 /* §5 · a bigger toy table: 16 words × 12 neighbour words (made up, like a tiny newspaper) */
 const SV_W=['chai','coffee','milk','sugar','cup','cricket','football','bat','ball','goal','wicket','train','bus','ticket','station','platform'];
 const SV_G=['tea','tea','tea','tea','tea','sport','sport','sport','sport','sport','sport','travel','travel','travel','travel','travel'];
@@ -63,18 +107,35 @@ const SV_M=[[9,6,5,3,4,0,1,0,0,0,0,0],[8,5,6,1,4,0,0,0,0,0,1,0],[7,5,3,2,2,0,0,0
   [9,0,0,0,1,6,5,4,4,0,0,0],[8,0,1,0,0,6,6,5,3,0,0,0],[7,0,0,0,0,4,2,1,2,0,0,0],[8,0,0,0,0,5,3,2,1,0,0,0],[6,0,0,0,0,2,3,3,5,0,0,0],[7,0,0,0,0,3,4,1,3,0,0,0],
   [9,0,0,0,4,0,0,0,0,5,6,3],[8,0,0,0,3,0,0,0,0,6,4,4],[7,0,0,0,0,0,2,0,0,3,1,5],[6,1,1,0,2,0,0,0,0,2,3,1],[6,0,0,0,1,0,0,0,0,2,4,1]];
 
+/* §8 · the toy network of §9–§10 (hand-made numbers; the word2vec widgets use the same ones) */
+const TOY_V=['we','drink','chai','daily','cricket'], TOY_IN=[[0,1],[1,0],[1,1],[0,1],[-1,0]], TOY_OUT=[[0,0],[1,0],[1,1],[0,1],[-1,-1]];
+/* §12 · the four-leaf tree: each fork sends σ(θ·h) of its share to the left */
+const HS={h:[1,1],nodes:[{q:'drink or sport?',th:[.5,.5]},{q:'chai or coffee?',th:[-.5,0]},{q:'cricket or football?',th:[1,-2]}],
+  leaves:[{w:'chai',path:[[0,1],[1,1]]},{w:'coffee',path:[[0,1],[1,0]]},{w:'cricket',path:[[0,0],[2,1]]},{w:'football',path:[[0,0],[2,0]]}]};
+function hsLeaf(i){ return HS.leaves[i].path.reduce((p,[n,left])=>{ const z=dot(HS.nodes[n].th,HS.h); return p*(left?sigm(z):sigm(-z)); },1); }
+/* §12 · subsampling: one sentence with made-up but typical word frequencies f (share of all words); keep each copy with √(t/f) */
+const SS_T=1e-5;
+const SS_TEXT=[['the',.05],['kettle',2e-5],['is',.01],['on',.008],['the',.05],['stove',1e-5],['and',.03],['the',.05],['chai',4e-5],['is',.01],['kadak',5e-6],['and',.03],['hot',1.2e-4]];
+const ssKeep=f=>Math.min(1,Math.sqrt(SS_T/f));
+/* §13 · the convergence demo: chai and coffee never share a sentence but share their company; wicket keeps cricket company */
+const WV_TOP={tea:['drink','hot','cup','morning','sweet','kettle','milk'],cricket:['bowler','over','pitch','six','bat','umpire','ball'],travel:['train','ticket','station','platform','seat','bus','late']}, WV_SH=['the','a','we','is'];
+function wvCorpus(seed,n){ const r=rng16(seed), out=[];
+  for(let i=0;i<n;i++){ const t=['tea','cricket','tea','travel'][i%4], W=WV_TOP[t], len=4+Math.floor(r()*3), s=[];
+    for(let j=0;j<len;j++) s.push(r()<.2?WV_SH[Math.floor(r()*WV_SH.length)]:W[Math.floor(r()*W.length)]);
+    const ins=w=>s.splice(Math.floor(r()*(s.length+1)),0,w);
+    if(t==='tea') ins(i%8===0?'chai':i%8===2?'coffee':(r()<.5?'chai':'coffee'));   /* exactly one of chai / coffee: they never meet */
+    if(t==='cricket'&&r()<.7) ins('wicket');
+    out.push(s); } return out; }
+/* §13 · GloVe: two targets, four probes (1 000 context words counted around each); hand-made 2-D vectors that satisfy (w_chai − w_lassi)·w̃_k = ln ratio */
+const GR_P=['hot','cold','drink','cricket'], GR_CHAI={hot:40,cold:2,drink:60,cricket:4}, GR_LASSI={hot:2,cold:40,drink:60,cricket:4}, GR_N=1000;
+const GR_DIFF=[Math.log(20),0], GR_VEC={hot:[1,.55],cold:[-1,.45],drink:[0,1],cricket:[0,-.8]};
+const gloveF=x=>x<100?Math.pow(x/100,.75):1;
+
 /* §6 · the skip-gram worked example */
 const SG0={v:[1,0], up:[0.5,0.5], un:[-0.5,1]};
 function sgLoss(s){ return -Math.log(sigm(dot(s.up,s.v)))-Math.log(sigm(-dot(s.un,s.v))); }
 function sgStep(s,eta){ const gp=1-sigm(dot(s.up,s.v)), gn=sigm(dot(s.un,s.v));   /* how wrong each guess is */
   return {v:vadd(s.v,vscale(vsub(vscale(s.up,gp),vscale(s.un,gn)),eta)), up:vadd(s.up,vscale(s.v,eta*gp)), un:vsub(s.un,vscale(s.v,eta*gn))}; }
-
-/* §6 · the word2vec training corpus: short sentences drawn from three topics (made up, seeded) */
-const W2V_TOPICS={tea:['chai','coffee','milk','sugar','cup','hot','kettle'], cricket:['cricket','bat','wicket','over','six','bowler','pitch'], travel:['train','bus','ticket','station','platform','late','seat']};
-const W2V_SHARED=['the','a','we','is'];
-function w2vCorpus(seed,nSent){ const r=rng16(seed), keys=Object.keys(W2V_TOPICS), out=[];
-  for(let n=0;n<nSent;n++){ const T=W2V_TOPICS[keys[n%3]], len=4+Math.floor(r()*3), s=[];
-    for(let k=0;k<len;k++) s.push(r()<.22?W2V_SHARED[Math.floor(r()*W2V_SHARED.length)]:T[Math.floor(r()*T.length)]); out.push(s); } return out; }
 
 /* §8 · a tiny neural language model, trained by us (numpy, 20 000 Adam steps, weight decay 0.03) on seven sentences; weights rounded to 2 decimals */
 const NLM_V=['I','we','drink','play','hot','chai','coffee','cricket','football','.'];

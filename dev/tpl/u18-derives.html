@@ -1,3 +1,17 @@
+<!--@D s1-->
+  <div class="derive">
+    <span class="tag">Prove it · the blame reaches every note in one hop</span>
+    <p class="dgoal"><b>Claim.</b> With dot-product scores \(s_j=\mathbf q\cdot\mathbf h_j\), shares \(\alpha_j\) and context \(\mathbf c=\sum_j\alpha_j\mathbf h_j\), the slope of the context with respect to one note is \(\partial\mathbf c/\partial\mathbf h_j=\alpha_j\big(I+(\mathbf h_j-\mathbf c)\,\mathbf q^{\mathsf T}\big)\). The blame reaches note \(j\) directly, scaled by its own share — however long ago the note was written.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Note \(j\) moves \(\mathbf c\) in two ways: directly, through its own term \(\alpha_j\mathbf h_j\), and through the scores — \(s_j\) changes, so every share changes:
+      \[\frac{\partial\mathbf c}{\partial\mathbf h_j}=\alpha_jI+\sum_i\mathbf h_i\,\frac{\partial\alpha_i}{\partial\mathbf h_j}.\]
+      <span class="dwhy">Only the score \(s_j\) contains \(\mathbf h_j\), and \(\partial s_j/\partial\mathbf h_j=\mathbf q^{\mathsf T}\).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The slope of softmax is \(\partial\alpha_i/\partial s_j=\alpha_i(\delta_{ij}-\alpha_j)\) (the drawer of §4). So
+      \[\begin{aligned}&\textstyle\sum_i\mathbf h_i\,\alpha_i(\delta_{ij}-\alpha_j)\,\mathbf q^{\mathsf T}\\ &=\big(\alpha_j\mathbf h_j-\alpha_j\mathbf c\big)\mathbf q^{\mathsf T}\\ &=\alpha_j(\mathbf h_j-\mathbf c)\,\mathbf q^{\mathsf T}.\end{aligned}\]
+      <span class="dwhy">\(\sum_i\alpha_i\mathbf h_i\) is the context \(\mathbf c\) itself.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Add the two parts: \(\alpha_jI+\alpha_j(\mathbf h_j-\mathbf c)\mathbf q^{\mathsf T}=\alpha_j\big(I+(\mathbf h_j-\mathbf c)\mathbf q^{\mathsf T}\big)\). No long product of step-by-step slopes appears: one hop.
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">In Unit 17 the blame for an early note passed through one slope matrix for every later step of the relay, and a long product of them fades (<a href="unit-17.html#s7">Unit 17</a>). Here the note of "tea", with share 0.736, gets its blame at 0.736 strength, wherever it sits.</span></div></div>
+  </div>
 <!--@D s2-->
   <div class="derive">
     <span class="tag">Prove it · the answer is always a blend, never outside the values</span>
@@ -62,7 +76,18 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">Scores 8 and 0: \(p_1(1-p_1)\approx0.00034\). Scores 1 and 0: \(\approx0.197\).</span></div></div>
   </div>
-<!--@D s6-->
+<!--@D s5-->
+  <div class="derive">
+    <span class="tag">Prove it · a word slides towards its neighbour</span>
+    <p class="dgoal"><b>Claim.</b> In a two-word sentence with \(Q=K=V=X\), word \(\mathbf b\) after attention is \(\mathbf b+\sigma(g)\,(\mathbf a-\mathbf b)\), where \(\mathbf a\) is its neighbour, \(g=(\mathbf a\cdot\mathbf b-\mathbf b\cdot\mathbf b)/\sqrt d\) and \(\sigma(g)=1/(1+e^{-g})\). So it slides along the straight road from \(\mathbf b\) to \(\mathbf a\), past halfway exactly when \(\mathbf a\cdot\mathbf b&gt;\mathbf b\cdot\mathbf b\).</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Word \(\mathbf b\) asks with \(\mathbf b\). Its two scores are \(s_a=\mathbf a\cdot\mathbf b/\sqrt d\) and \(s_b=\mathbf b\cdot\mathbf b/\sqrt d\). The share of the neighbour is
+      \[\begin{aligned}&\frac{e^{s_a}}{e^{s_a}+e^{s_b}}\\ &=\frac{1}{1+e^{-(s_a-s_b)}}=\sigma(g).\end{aligned}\]
+      <span class="dwhy">Divide the top and the bottom by \(e^{s_a}\). A softmax of two numbers only sees their gap.</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The new vector is \(\sigma(g)\,\mathbf a+\big(1-\sigma(g)\big)\,\mathbf b=\mathbf b+\sigma(g)(\mathbf a-\mathbf b)\): the point a fraction \(\sigma(g)\) of the way from \(\mathbf b\) to \(\mathbf a\). And \(\sigma(g)&gt;\tfrac12\) exactly when \(g&gt;0\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">River: \(\mathbf a\cdot\mathbf b=2=\mathbf b\cdot\mathbf b\), so \(g=0\), halfway: \((1.5,\ 0.5)\). Stream \((3,0)\): \(g=(3-2)/\sqrt2\approx0.707\), \(\sigma\approx0.670\), and bank lands at \((2.340,\ 0.330)\).</span></div></div>
+  </div>
+<!--@D s7-->
   <div class="derive">
     <span class="tag">Prove it · h heads cost the same as one</span>
     <p class="dgoal"><b>Claim.</b> With \(h\) heads of size \(d_k=d/h\), the matrices \(W_Q^{(i)},W_K^{(i)},W_V^{(i)}\) (each \(d\times d_k\)) and \(W_O\) (\(d\times d\)) hold \(4d^2\) weights — the same for every \(h\).</p>
@@ -73,7 +98,7 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">In fact the \(h\) matrices \(W_Q^{(i)}\) placed side by side are just one \(d\times d\) matrix, cut into \(h\) column blocks.</span></div></div>
   </div>
-<!--@D s7-->
+<!--@D s8-->
   <div class="derive">
     <span class="tag">Prove it · without positions, attention cannot see order</span>
     <p class="dgoal"><b>Claim.</b> Shuffle the rows of \(X\) with a permutation matrix \(P\). Then the attention answers are shuffled the same way and nothing else changes: \(\operatorname{Att}(PX)=P\,\operatorname{Att}(X)\).</p>
@@ -104,7 +129,18 @@
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">That is why one fixed \(W_Q\) can make a word ask "who is \(k\) places before me?" — the attention lab's head 2 does exactly this, with \(k=1\).</span></div></div>
   </div>
-<!--@D s8-->
+
+  <div class="derive">
+    <span class="tag">Prove it · the clock tags' dot product depends only on the distance</span>
+    <p class="dgoal"><b>Claim.</b> For sinusoidal tags with clock speeds \(\omega_i\), \(\text{PE}(p)\cdot\text{PE}(p+k)=\sum_i\cos(\omega_ik)\) — there is no \(p\) in it.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">One clock contributes two products, one from its sine and one from its cosine. Write \(a=\omega p\) and \(b=\omega(p+k)\) for the two angles:
+      \[\sin a\,\sin b+\cos a\,\cos b.\]
+      <span class="dwhy">A dot product pairs up matching entries (<a href="unit-03.html#s2d">Unit 3</a>).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">By the identity \(\cos(b-a)=\cos b\cos a+\sin b\sin a\), that is \(\cos(b-a)=\cos(\omega k)\) — the angle between the two hands. Add over the clocks: \(\sum_i\cos(\omega_ik)\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">For \(d=4\) (speeds 1 and 0.01) and \(k=1\): \(\cos1+\cos0.01\approx0.5403+0.99995\approx1.5403\), for every neighbouring pair.</span></div></div>
+  </div>
+<!--@D s9-->
   <div class="derive">
     <span class="tag">Prove it · layer norm gives mean 0 and spread 1</span>
     <p class="dgoal"><b>Claim.</b> For \(\mathbf x\in\mathbb R^d\) with mean \(\mu\) and variance \(\sigma^2>0\), the list \(\hat{\mathbf x}=(\mathbf x-\mu)/\sigma\) has mean 0 and variance 1, and it does not change if \(\mathbf x\) is shifted by a constant or scaled by a positive number.</p>
@@ -127,20 +163,33 @@
   <div class="derive">
     <span class="tag">Prove it · the weights of one block</span>
     <p class="dgoal"><b>Claim.</b> A block with size \(d\) and feed-forward width \(d_{ff}\) has \(4d^2+2dd_{ff}\) weights, \(4d+d_{ff}+d\) biases and \(4d\) layer-norm numbers. For \(d=512\), \(d_{ff}=2048\): 3 145 728, then 3 150 336, then 3 152 384.</p>
-    <div class="dstep"><span class="dn">1</span><div class="dbody">Attention: \(W_Q,W_K,W_V,W_O\) are each \(d\times d\) in total (§6), so \(4d^2=1\,048\,576\), plus \(4d=2048\) biases.
+    <div class="dstep"><span class="dn">1</span><div class="dbody">Attention: \(W_Q,W_K,W_V,W_O\) are each \(d\times d\) in total (§7), so \(4d^2=1\,048\,576\), plus \(4d=2048\) biases.
       <span class="dwhy">One bias per output entry of each matrix.</span></div></div>
     <div class="dstep"><span class="dn">2</span><div class="dbody">Feed-forward: \(W_1\) is \(d\times d_{ff}\) and \(W_2\) is \(d_{ff}\times d\), so \(2dd_{ff}=2\,097\,152\), plus biases \(d_{ff}+d=2560\). Two layer norms, each with \(\boldsymbol\gamma,\boldsymbol\beta\) of length \(d\): \(4d=2048\).
       \[\begin{aligned}&1\,048\,576+2\,097\,152\\ &=3\,145\,728;\\ &+2048+2560\\ &=3\,150\,336;\\ &+2048=3\,152\,384.\end{aligned}\]
       <span class="nw"><span class="dqed">∎</span></span>
       <span class="dwhy">With \(d_{ff}=4d\) the weights are \(4d^2+8d^2=12d^2\): a third in attention, two thirds in the small network.</span></div></div>
   </div>
-<!--@D s9-->
+<!--@D s10-->
   <div class="derive">
-    <span class="tag">Prove it · masked words have no influence at all</span>
-    <p class="dgoal"><b>Claim.</b> With the causal mask, the answer of word \(i\) does not change when you change anything about the words \(j>i\).</p>
-    <div class="dstep"><span class="dn">1</span><div class="dbody">For \(j>i\) the masked score is \(-\infty\), so \(e^{-\infty}=0\) and \(A_{ij}=0\) exactly — whatever \(\mathbf q_i\cdot\mathbf k_j\) was.
+    <span class="tag">Prove it · one masked pass is n honest runs</span>
+    <p class="dgoal"><b>Claim.</b> With the causal mask, the output of any layer at position \(t\) does not depend on anything about the words after \(t\). So one pass over the whole sentence gives, at every position \(t\), exactly what a run on the first \(t\) words alone would give.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">For \(j&gt;i\) the masked score is \(-\infty\), so \(e^{-\infty}=0\) and \(A_{ij}=0\) exactly — whatever \(\mathbf q_i\cdot\mathbf k_j\) was.
       <span class="dwhy">In practice a very large negative number such as \(-10^9\) is used; its exponential is 0 in computer arithmetic.</span></div></div>
-    <div class="dstep"><span class="dn">2</span><div class="dbody">The shares on \(j\le i\) are \(e^{s_{ij}}/\sum_{l\le i}e^{s_{il}}\): only keys \(l\le i\) appear. The answer \(\sum_{j\le i}A_{ij}\mathbf v_j\) uses only values \(j\le i\). No key, query or value of a later word appears anywhere.
+    <div class="dstep"><span class="dn">2</span><div class="dbody">The shares on \(j\le i\) are \(e^{s_{ij}}/\sum_{l\le i}e^{s_{il}}\): only keys \(l\le i\) appear. The answer \(\sum_{j\le i}A_{ij}\mathbf v_j\) uses only values \(j\le i\). The add, the layer norm and the small network work on each word alone, so they keep the rule.
+      <span class="dwhy">Position \(i\)'s output in this layer is built from positions \(1,\dots,i\) of the layer below.</span></div></div>
+    <div class="dstep"><span class="dn">3</span><div class="dbody">Go up the stack one layer at a time: if the layer below, at positions \(1,\dots,i\), depends only on words \(1,\dots,i\), then so does this layer at position \(i\). At the bottom that is true (each word's own vector). So the top output at \(t\) is a function of words \(1,\dots,t\) only — the same as a run on that beginning alone.
       <span class="nw"><span class="dqed">∎</span></span>
-      <span class="dwhy">So one masked pass over "I drink chai" is three honest guessing games at once: predict "drink" from "I", "chai" from "I drink", and so on.</span></div></div>
+      <span class="dwhy">So one masked pass over "I drink chai daily" is three honest guessing games at once: "drink" from "I", "chai" from "I drink", "daily" from "I drink chai".</span></div></div>
+  </div>
+<!--@D s13-->
+  <div class="derive">
+    <span class="tag">Prove it · with tied weights, a word's score is its agreement with the final vector</span>
+    <p class="dgoal"><b>Claim.</b> Let the embedding table \(E\) (\(V\times d\)) have row \(\mathbf e_w\) for word \(w\). If the output matrix is tied, \(W_U=E^{\mathsf T}\), then the score of word \(w\) at a position with final vector \(\mathbf h\) is \(\mathbf h\cdot\mathbf e_w\), and the model saves \(V\cdot d\) weights.</p>
+    <div class="dstep"><span class="dn">1</span><div class="dbody">The scores are \(\mathbf h\,W_U=\mathbf h\,E^{\mathsf T}\). Entry \(w\) is \(\mathbf h\) times column \(w\) of \(E^{\mathsf T}\), which is row \(w\) of \(E\):
+      \[(\mathbf h\,E^{\mathsf T})_w=\mathbf h\cdot\mathbf e_w.\]
+      <span class="dwhy">Row times column is a dot product (<a href="unit-01.html#s6">Unit 1</a>).</span></div></div>
+    <div class="dstep"><span class="dn">2</span><div class="dbody">An untied \(W_U\) would have \(d\times V\) numbers of its own. Tied, it has none: it reuses \(E\). The saving is \(V\cdot d\).
+      <span class="nw"><span class="dqed">∎</span></span>
+      <span class="dwhy">\(V=50\,000\), \(d=512\): \(25\,600\,000\) weights. In training each row \(\mathbf e_w\) now gets blame from both ends — when \(w\) is read, and when \(w\) is (or is not) the next word.</span></div></div>
   </div>

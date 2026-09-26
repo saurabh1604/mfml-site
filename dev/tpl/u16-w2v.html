@@ -1,0 +1,104 @@
+<!--@W2VFRAG window-->
+  <div class="widget reveal" id="w-window">
+    <div class="widget-head"><span class="w-title">The sliding window: one sentence, two kinds of examples</span><span class="w-sub">A window of C words on each side slides along the sentence. At every stop, CBOW makes <b>one</b> fill-in-the-blank example (the neighbours guess the middle word); skip-gram makes <b>one guess per neighbour</b> (the middle word guesses each neighbour).</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ slide</em> on “we drink hot chai every morning” with window 2: CBOW makes 6 examples, skip-gram makes 18 pairs (2 + 3 + 4 + 4 + 3 + 2). The first and last stops hang over the edge of the sentence, so they have fewer neighbours. Flip between CBOW and skip-gram and watch the arrows turn round. Then try window 1 and window 4.</p>
+    <div class="w2-bar">
+      <div class="w2-grp" role="group" aria-label="Sentence"><span class="w2-lbl">sentence</span><span class="w2-chips" id="w2w-sents"></span></div>
+      <div class="w2-grp"><label class="w2-lbl" for="w2w-c">window C</label><input id="w2w-c" type="range" min="1" max="4" step="1" value="2"><output id="w2w-c-o">2</output></div>
+      <div class="w2-grp" role="group" aria-label="Which game"><span class="w2-lbl">game</span><span class="w2-seg" id="w2w-mode"><button data-v="cbow" aria-pressed="true">CBOW</button><button data-v="sg" aria-pressed="false">skip-gram</button></span></div>
+      <div class="w2-grp w2-btns"><button class="w2-b pri" id="w2w-play">▶ slide</button><button class="w2-b" id="w2w-step" title="Move the window one word">step ▸</button><button class="w2-b" id="w2w-reset">↺ reset</button></div>
+    </div>
+    <div class="w2-stage w2w-stage"><svg id="w2w-svg" role="img" aria-label="The sentence as a row of word tiles. A glowing window covers the middle word (gold) and up to C neighbours on each side (green). Curved arrows show the game: in CBOW they run from the neighbours into the middle word; in skip-gram they run from the middle word out to each neighbour. Under every word, small squares count the examples made at that stop."></svg></div>
+    <div class="w2w-now" id="w2w-now" aria-live="polite"></div>
+    <div class="w2w-trays">
+      <div class="w2w-tray" data-k="cbow"><div class="w2w-th"><span class="w2-dot cb"></span>CBOW examples <b id="w2w-ncb">0</b></div><div class="w2w-cards" id="w2w-tcb"></div><div class="w2w-sum" id="w2w-scb"></div></div>
+      <div class="w2w-tray" data-k="sg"><div class="w2w-th"><span class="w2-dot sg"></span>skip-gram pairs <b id="w2w-nsg">0</b></div><div class="w2w-cards" id="w2w-tsg"></div><div class="w2w-sum" id="w2w-ssg"></div></div>
+    </div>
+  </div>
+<!--@W2VFRAG cbow-->
+  <div class="widget reveal w2-mach" id="w-cbow">
+    <div class="widget-head"><span class="w-title">The committee machine: CBOW, one move at a time</span><span class="w-sub">The neighbours’ input vectors (blue) are averaged into h (gold). Every word’s output vector (green) is scored against h, softmax turns the scores into a guess, and the error p − y decides who is pulled and who is pushed. Toy vectors set by hand, V = 5, d = 2.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ next move</em> seven times: the guess for chai is 0.3682 and the loss 0.9993; after one update with η = 1 they become 0.5942 and 0.5205. Watch move ⑥: both neighbours move by the <em>same</em> little arrow, half of the blame each. Press <em>↻ another round</em> to keep training: one blank has one right answer, so the loss heads toward 0. Then switch on <em>window 2</em>: four neighbours share the blame, so each gets a quarter.</p>
+    <div class="w2-top">
+      <div class="w2-sent" id="w2c-sent" aria-label="The sentence, with the middle word hidden"></div>
+      <div class="w2-opts">
+        <div class="w2-grp"><label class="w2-lbl" for="w2c-eta">step size <span class="w2-nc">η</span></label><input id="w2c-eta" type="range" min="0.1" max="2" step="0.1" value="1"><output id="w2c-eta-o">1</output></div>
+        <label class="w2-chk"><input type="checkbox" id="w2c-win2"> window 2 (four neighbours)</label>
+      </div>
+    </div>
+    <ol class="w2-rail" id="w2c-rail" aria-label="The seven moves"></ol>
+    <div class="w2-panels">
+      <figure class="w2-pan"><figcaption><i>1</i>the committee · input vectors</figcaption><svg id="w2c-in" viewBox="0 0 340 300" role="img" aria-label="A plane showing the input vectors of the neighbours as blue arrows and their average h as a gold point."></svg></figure>
+      <figure class="w2-pan"><figcaption><i>2</i>score every word · output vectors</figcaption><svg id="w2c-out" viewBox="0 0 340 300" role="img" aria-label="A plane showing every word’s output vector as a green arrow, with h as a dashed gold arrow; each word’s score is its dot product with h."></svg></figure>
+      <figure class="w2-pan"><figcaption><i>3</i>the guess and the error</figcaption><svg id="w2c-prob" viewBox="0 0 340 316" role="img" aria-label="Bars: the softmax probability of each word, the true word marked; below them the error bars, guess minus truth."></svg></figure>
+    </div>
+    <div class="w2-hud" id="w2c-hud" aria-live="polite"></div>
+    <div class="w2-ctl">
+      <div class="w2-btns"><button class="w2-b" id="w2c-back" title="One move back">◀</button><button class="w2-b pri" id="w2c-next">▶ next move</button><button class="w2-b" id="w2c-all" title="Play every move of this round">⏭ all moves</button><button class="w2-b" id="w2c-more" title="Update again from the new vectors">↻ another round</button><button class="w2-b" id="w2c-reset">↺ reset</button></div>
+      <div class="w2-hist" id="w2c-hist"></div>
+    </div>
+    <div class="w2-legend"><span><i class="lin"></i>input vector v (a row of the input table)</span><span><i class="lh"></i>h, the committee’s average</span><span><i class="lout"></i>output vector u (a row of the output table)</span><span><i class="lp"></i>probability</span><span><i class="le"></i>error / blame</span></div>
+  </div>
+<!--@W2VFRAG skipgram-->
+  <div class="widget reveal w2-mach" id="w-skipgram">
+    <div class="widget-head"><span class="w-title">One word, many guesses: skip-gram, one move at a time</span><span class="w-sub">The middle word’s own input vector is h — no averaging. One softmax guess is made and used for every neighbour slot; the errors of all the slots are added up, and the middle word takes the whole sum. Same toy vectors as the committee machine; the lab below plays a cheaper version, with negative sampling in place of this full softmax.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ next move</em> seven times: each neighbour slot gets probability 0.1947 and the loss is 3.2725; after one update with η = 1 each slot gets 0.3862 and the loss is 1.9026. At move ⑥ watch chai’s own output vector swing through the origin while its input vector shrinks to (0.5714, 0.5714): chai stops pointing at itself. Then press <em>↻ another round</em> again and again: each slot creeps toward 0.5 and the loss toward 2 ln 2 ≈ 1.386, never lower — one list of chances must be shared by both neighbours.</p>
+    <div class="w2-top">
+      <div class="w2-sent" id="w2s-sent" aria-label="The sentence, with the neighbours to be guessed"></div>
+      <div class="w2-opts">
+        <div class="w2-grp"><label class="w2-lbl" for="w2s-eta">step size <span class="w2-nc">η</span></label><input id="w2s-eta" type="range" min="0.1" max="2" step="0.1" value="1"><output id="w2s-eta-o">1</output></div>
+      </div>
+    </div>
+    <ol class="w2-rail" id="w2s-rail" aria-label="The seven moves"></ol>
+    <div class="w2-panels">
+      <figure class="w2-pan"><figcaption><i>1</i>the middle word · its input vector</figcaption><svg id="w2s-in" viewBox="0 0 340 300" role="img" aria-label="A plane showing chai’s input vector as a blue arrow; it is h itself."></svg></figure>
+      <figure class="w2-pan"><figcaption><i>2</i>score every word · output vectors</figcaption><svg id="w2s-out" viewBox="0 0 340 300" role="img" aria-label="A plane showing every word’s output vector as a green arrow, with h as a dashed gold arrow."></svg></figure>
+      <figure class="w2-pan"><figcaption><i>3</i>one guess, used for every slot</figcaption><svg id="w2s-prob" viewBox="0 0 340 394" role="img" aria-label="Bars: one softmax guess, copied to the two neighbour slots with their true words marked; below, the errors of the two slots stacked into their sum."></svg></figure>
+    </div>
+    <div class="w2-hud" id="w2s-hud" aria-live="polite"></div>
+    <div class="w2-ctl">
+      <div class="w2-btns"><button class="w2-b" id="w2s-back" title="One move back">◀</button><button class="w2-b pri" id="w2s-next">▶ next move</button><button class="w2-b" id="w2s-all" title="Play every move of this round">⏭ all moves</button><button class="w2-b" id="w2s-more" title="Update again from the new vectors">↻ another round</button><button class="w2-b" id="w2s-reset">↺ reset</button></div>
+      <div class="w2-hist" id="w2s-hist"></div>
+    </div>
+    <div class="w2-legend"><span><i class="lin"></i>input vector v · here h = v(chai)</span><span><i class="lout"></i>output vector u</span><span><i class="lp"></i>probability</span><span><i class="le"></i>error / blame</span></div>
+  </div>
+<!--@W2VFRAG lab-->
+  <div class="widget reveal" id="w-lab">
+    <div class="widget-head"><span class="w-title">CBOW vs skip-gram, raced on the same text</span><span class="w-sub">Both models read the same 102 short sentences in the same order, from the same random start, and learn by negative sampling. Each word gets 8 numbers; each map is a flat shadow (PCA) of them. The colours are our topic labels — the models never see them.</span></div>
+    <p class="try"><b>Try:</b> Press <em>▶ race</em>. Within about 10 passes skip-gram’s map sorts itself into four colour groups; CBOW’s groups form more slowly — but CBOW does about 3 times less work (with window 2, skip-gram makes 2.95 guesses for every CBOW guess). At the end, compare the rare word kadak (seen 3 times): its “fits drinks” score is far higher for skip-gram, while for the everyday word chai the two models are close. Switch on <em>slow motion</em> to watch the guesses each model makes from one sentence.</p>
+    <div class="w2-bar w2l-bar">
+      <div class="w2-grp w2-btns"><button class="w2-b pri" id="w2l-play">▶ race</button><button class="w2-b" id="w2l-step" title="Read one more sentence (one more word in slow motion)">step ▸</button><button class="w2-b" id="w2l-reset" title="Back to the random start">↺ reset</button><button class="w2-b" id="w2l-seed" title="A different random start">seed <b id="w2l-seed-v">1</b> ⟳</button></div>
+      <label class="w2-chk w2l-slow"><input type="checkbox" id="w2l-slow"> slow motion</label>
+      <div class="w2-grp" role="group" aria-label="Speed"><span class="w2-lbl">speed</span><span class="w2-seg" id="w2l-speed"><button data-v="1" aria-pressed="false">1×</button><button data-v="2" aria-pressed="true">2×</button><button data-v="4" aria-pressed="false">4×</button><button data-v="8" aria-pressed="false">8×</button></span></div>
+    </div>
+    <div class="w2-bar w2l-set" role="group" aria-label="Settings (changing one starts a new race)">
+      <div class="w2-grp"><label class="w2-lbl" for="w2l-c">window C</label><input id="w2l-c" type="range" min="1" max="4" step="1" value="2"><output id="w2l-c-o">2</output></div>
+      <div class="w2-grp"><label class="w2-lbl" for="w2l-k">negatives k</label><input id="w2l-k" type="range" min="1" max="10" step="1" value="5"><output id="w2l-k-o">5</output></div>
+      <div class="w2-grp"><label class="w2-lbl" for="w2l-eta">step size <span class="w2-nc">η</span></label><input id="w2l-eta" type="range" min="0.02" max="0.4" step="0.02" value="0.1"><output id="w2l-eta-o">0.1</output></div>
+      <label class="w2-chk"><input type="checkbox" id="w2l-sub"> subsampling</label>
+    </div>
+    <div class="w2l-prog" id="w2l-prog" aria-live="polite"></div>
+    <div class="w2l-slowbox" id="w2l-slowbox" hidden></div>
+    <div class="w2l-duo">
+      <section class="w2l-side" data-k="cbow" aria-label="CBOW">
+        <header class="w2l-sh"><span class="w2l-badge cb">CBOW</span><span class="w2l-tag">the committee fills each blank</span></header>
+        <div class="w2l-mapw"><canvas id="w2l-map-cbow" role="img" aria-label="CBOW’s word map: a flat shadow of every word’s 8 numbers. Dots are coloured by our topic labels."></canvas></div>
+        <div class="w2l-stats" id="w2l-st-cbow"></div>
+        <div class="w2l-nbs" id="w2l-nb-cbow"></div>
+      </section>
+      <section class="w2l-side" data-k="sg" aria-label="skip-gram">
+        <header class="w2l-sh"><span class="w2l-badge sg">skip-gram</span><span class="w2l-tag">each word guesses its neighbours</span></header>
+        <div class="w2l-mapw"><canvas id="w2l-map-sg" role="img" aria-label="Skip-gram’s word map: a flat shadow of every word’s 8 numbers. Dots are coloured by our topic labels."></canvas></div>
+        <div class="w2l-stats" id="w2l-st-sg"></div>
+        <div class="w2l-nbs" id="w2l-nb-sg"></div>
+      </section>
+    </div>
+    <p class="w2l-key"><b>fits drinks +0.57</b> = the word’s average cosine to the other drinks minus its average cosine to the words of the other topics. Higher means the word sits more firmly among the drinks. The <b>topic score</b> is the same idea for all the topic words at once.</p>
+    <div class="w2l-rare" role="group" aria-label="Which rare word to follow"><span class="w2-lbl">rare word to follow</span><span class="w2-seg" id="w2l-rare"><button data-v="kadak" aria-pressed="true">kadak</button><button data-v="googly" aria-pressed="false">googly</button></span></div>
+    <div class="w2l-charts">
+      <figure class="w2l-ch"><figcaption>How tight are the topic groups? <span>mean cosine inside a topic − mean cosine across topics</span></figcaption><canvas id="w2l-ch-score" role="img" aria-label="Topic score against passes over the text, one line for each model."></canvas></figure>
+      <figure class="w2l-ch"><figcaption>Work done <span>dot products computed so far</span></figcaption><canvas id="w2l-ch-work" role="img" aria-label="Dot products computed against passes over the text, one line for each model; skip-gram’s line climbs about three times as steeply."></canvas></figure>
+      <figure class="w2l-ch"><figcaption>Loss <span>average surprise per guess, this pass</span></figcaption><canvas id="w2l-ch-loss" role="img" aria-label="Average loss per guess against passes over the text, one line for each model."></canvas></figure>
+    </div>
+    <div class="w2-legend w2l-legend" id="w2l-legend"></div>
+  </div>

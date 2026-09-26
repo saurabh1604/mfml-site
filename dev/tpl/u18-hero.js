@@ -64,6 +64,12 @@
           if(ctx.orbit&&!ctx.userCam){ ctx.orbit.sph.radius=R; ctx.orbit.place(); }
           box.dataset.fit=[Math.round(textR),Math.round(fL),Math.round(R*100)/100].join(','); }
         applyOffset(); setTimeout(()=>{ if(ctx.dead) return; offW=0; applyOffset(); RR(ctx); },0);
+        /* test hook: where the scene's key points land on screen right now, and where the intro text ends */
+        U18.hero={bounds(){ const hdr=document.querySelector('.hero-stage header.hero'), br=box.getBoundingClientRect(), V=THREE.Vector3, w=ctx.size.w, hh=ctx.size.h;
+          const textR=hdr?Math.max(...[...hdr.children].map(c=>c.getBoundingClientRect().right))-br.left:0; camera.updateMatrixWorld();
+          const P=[]; beads.forEach(b=>P.push(new V(b.x,Y,Z))); pillars.forEach(p=>{ if(p.m.visible) P.push(p.m.position.clone()); });
+          let lo=1e9,hi=-1e9; P.forEach(p=>{ const q=p.clone().project(camera), x=(q.x+1)/2*w; lo=Math.min(lo,x); hi=Math.max(hi,x); });
+          return {textR,lo,hi,w,h:hh,wide}; }};
         const hudEl=hud(box,wide?'hud-r':''); hudEl.style.maxWidth='calc(100% - 1.4rem)';
         if(fine) hint(box,'drag to orbit');
         ctx.renderer.domElement.addEventListener('pointerdown',()=>{ ctx.userCam=true; });
