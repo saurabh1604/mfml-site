@@ -52,13 +52,12 @@ if (!top.includes(`<span id="score-total">${nChecks}</span>`)) throw new Error('
 const shared = R('tpl/u11-shared.js').split("'mfml-u11-checks'").join("'mfml-u14-checks'");
 if (/u11/.test(shared.replace(/U11/g, ''))) throw new Error('shared runtime still mentions u11');
 const ux = u13.slice(u13.lastIndexOf('/* ================= MBM-UX-V2'), u13.lastIndexOf('</script>\n</body>'));
-const OLD_TAIL = '{"n":12,"t":"Principal Component Analysis"},{"n":13,"t":"Support Vector Machines"}]';
-const NEW_TAIL = '{"n":12,"t":"Principal Component Analysis"},{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"}]';
-/* Unit 13's chrome already lists Units 14-15 once they are live; older chrome ends at 13 */
-if (!ux.includes('var U = 13;') || !(ux.includes(OLD_TAIL) || ux.includes(NEW_TAIL))) throw new Error('ux block: anchors missing');
-const ux14 = ux.replace('var U = 13;', 'var U = 14;')
-  .replace(ux.includes(NEW_TAIL) ? NEW_TAIL : OLD_TAIL, '{"n":12,"t":"Principal Component Analysis"},{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"}]');
-if (!ux14.includes('var U = 14;') || !ux14.includes('{"n":15,"t":"The Network, Whole"}]') || (ux14.match(/"n":14,/g) || []).length !== 1) throw new Error('ux block not patched');
+/* Unit 13's chrome may end the UNITS list at 13, 15 or 18 (whatever is live); normalise it to the full live list */
+const FULL_TAIL = '{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"},{"n":16,"t":"Words as Vectors"},{"n":17,"t":"Machines with Memory"},{"n":18,"t":"Attention and Transformers"}]';
+const TAIL_RE = /\{"n":13,"t":"Support Vector Machines"\}[^\]]*\]/;
+if (!ux.includes('var U = 13;') || !TAIL_RE.test(ux)) throw new Error('ux block: anchors missing');
+const ux14 = ux.replace('var U = 13;', 'var U = 14;').replace(TAIL_RE, FULL_TAIL);
+if (!ux14.includes('var U = 14;') || !ux14.includes(FULL_TAIL) || (ux14.match(/"n":14,/g) || []).length !== 1) throw new Error('ux block not patched');
 const JS = ['tpl/u14-kit.js', 'tpl/u14-shared.js', 'tpl/u14-hero.js', 'tpl/u14-w1.js', 'tpl/u14-w2.js', 'tpl/u14-w3.js', 'tpl/u14-w4.js'].filter(f => fs.existsSync(f));
 const script = '<!--@cinema-js-->\n<script>\n(function(){\n"use strict";\n' + shared.trimEnd() + '\n\n' + JS.map(f => R(f).trimEnd()).join('\n\n') + '\n\n})();\n' + ux14 + '</script>\n</body>\n</html>\n';
 

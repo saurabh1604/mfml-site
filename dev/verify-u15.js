@@ -42,7 +42,7 @@ const okay = m => console.log('  ok   ' + m);
   const leak = await page.evaluate(() => { const h = document.documentElement.innerHTML.replace(/mfml-/g, ''); return (h.match(/MFML|ZC416|BITS|WILP/) || h.match(/exam paper|question bank|past paper/i) || [''])[0]; });
   if (!leak) okay('no brand leak, no "exam paper" wording'); else fail('brand leak: ' + leak);
   const nav = await page.evaluate(() => ({ prev: !!document.querySelector('.hero-prev a[href="unit-14.html"]'), toc: document.querySelector('.toc-nav') && document.querySelector('.toc-nav').textContent, u16: !!document.querySelector('a[href="unit-16.html"]') }));
-  if (nav.prev && /Unit 14/.test(nav.toc || '') && !nav.u16) okay('previous-unit link to Unit 14; no link to the upcoming Unit 16'); else fail('nav ' + JSON.stringify(nav));
+  if (nav.prev && /Unit 14/.test(nav.toc || '') && nav.u16) okay('previous-unit link to Unit 14; live link to Unit 16'); else fail('nav ' + JSON.stringify(nav));
   const hero = await page.evaluate(() => ({ c: !!document.querySelector('#hero-3d canvas'), r: document.getElementById('hero-3d').dataset.ready }));
   if (hero.c && hero.r === '1') okay('hero stage mounted'); else fail('hero ' + JSON.stringify(hero));
 
@@ -177,7 +177,8 @@ const okay = m => console.log('  ok   ' + m);
   if (dr) okay('all 8 drawers open and show their derivations'); else fail('drawers');
   const pr = await page.evaluate(() => { const ss = [...document.querySelectorAll('#spractice details.sol')]; const closed = ss.every(d => !d.open); ss.forEach(d => d.open = true); return [ss.length, closed, document.querySelectorAll('#spractice .pans').length, document.querySelectorAll('#spractice .pstep').length, !!document.querySelector('#spractice .next-card'), document.querySelector('#spractice .sec-num').textContent]; });
   if (pr[0] === 14 && pr[1] && pr[2] === 14 && pr[3] > 45 && pr[4] && pr[5] === '13') okay('practice: 14 solutions (closed at load), 14 answer lines, ' + pr[3] + ' steps, next-card inside, § 13'); else fail('practice ' + JSON.stringify(pr));
-  const nc = norm(await text('#spractice .next-card')); if (/Unit 16 · Words as Vectors/.test(nc) && /upcoming/.test(nc)) okay('next-card: Unit 16 · Words as Vectors — upcoming'); else fail('next-card: ' + nc);
+  const nc = norm(await text('#spractice .next-card')); const ncLive = await page.evaluate(() => !!document.querySelector('#spractice .next-card a[href="unit-16.html"]'));
+  if (/Unit 16 · Words as Vectors/.test(nc) && !/upcoming/.test(nc) && ncLive) okay('next-card: live link to Unit 16 · Words as Vectors'); else fail('next-card: ' + nc);
   const wide2 = await page.evaluate(() => [...document.querySelectorAll('.katex-display')].filter(k => k.scrollWidth > k.clientWidth + 2).length);
   if (!wide2) okay('with every drawer and solution open, no display equation overflows at 1300px'); else fail(wide2 + ' display equations overflow (drawers open)');
 

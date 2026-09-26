@@ -61,9 +61,11 @@ if (!top.includes(`<span id="score-total">${nChecks}</span>`)) throw new Error('
 const shared = R('tpl/u11-shared.js').split("'mfml-u11-checks'").join("'mfml-u15-checks'");
 if (/u11/.test(shared.replace(/U11/g, ''))) throw new Error('shared runtime still mentions u11');
 const ux = u13.slice(u13.lastIndexOf('/* ================= MBM-UX-V2'), u13.lastIndexOf('</script>\n</body>'));
-const ux15 = ux.replace('var U = 13;', 'var U = 15;')
-  .replace(ux.includes('{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"}]') ? '{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"}]' : '{"n":13,"t":"Support Vector Machines"}]', '{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"}]');
-if (!ux15.includes('var U = 15;') || !ux15.includes('{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"}]') || (ux15.match(/"n":15,/g) || []).length !== 1) throw new Error('ux block not patched');
+const FULL_TAIL = '{"n":13,"t":"Support Vector Machines"},{"n":14,"t":"Thinking in Probabilities"},{"n":15,"t":"The Network, Whole"},{"n":16,"t":"Words as Vectors"},{"n":17,"t":"Machines with Memory"},{"n":18,"t":"Attention and Transformers"}]';
+const TAIL_RE = /\{"n":13,"t":"Support Vector Machines"\}[^\]]*\]/;
+if (!TAIL_RE.test(ux)) throw new Error('ux block: UNITS anchor missing');
+const ux15 = ux.replace('var U = 13;', 'var U = 15;').replace(TAIL_RE, FULL_TAIL);
+if (!ux15.includes('var U = 15;') || !ux15.includes(FULL_TAIL) || (ux15.match(/"n":15,/g) || []).length !== 1) throw new Error('ux block not patched');
 const JS = ['tpl/u15-kit.js', 'tpl/u15-shared.js', 'tpl/u15-hero.js', 'tpl/u15-w1.js', 'tpl/u15-w2.js', 'tpl/u15-w3.js', 'tpl/u15-w4.js', 'tpl/u15-play.js'].filter(has);
 const script = '<!--@cinema-js-->\n<script>\n(function(){\n"use strict";\n' + shared.trimEnd() + '\n\n' + JS.map(f => '/* ---- ' + f.replace('tpl/', '') + ' ---- */\n' + R(f).trimEnd()).join('\n\n') + '\n\n})();\n' + ux15 + '</script>\n</body>\n</html>\n';
 
