@@ -161,7 +161,7 @@
     <p class="pq">Consider the system</p>
     \[ \begin{aligned} x + y + z &= 6\\ x + 2y + 3z &= 14\\ x + 2y + az &= b \end{aligned} \]
     <p class="pq">where \(a\) and \(b\) are real constants. Find all values of \(a\) and \(b\) for which the system has (i) a unique solution, (ii) no solution, (iii) infinitely many solutions. In case (i) give the solution in terms of \(a\) and \(b\). In case (iii) give the general solution.</p>
-    <p class="ptest"><b>What this tests.</b> Eliminating while a pivot might secretly be zero. This is the classic exam problem, and the classic way to lose marks is to divide by \(a-3\) without checking whether it is zero.</p>
+    <p class="ptest"><b>What this tests.</b> Eliminating while a pivot might secretly be zero. This is the classic textbook problem, and the classic way to go wrong is to divide by \(a-3\) without checking whether it is zero.</p>
     <details class="sol"><summary>Show the worked solution — every step</summary>
       <div class="pstep"><b>Step 1 · Augmented matrix.</b> Here \(n=3\). \[ \left[\begin{array}{ccc|c}1&1&1&6\\1&2&3&14\\1&2&a&b\end{array}\right] \]</div>
       <div class="pstep"><b>Step 2 · Clear column 1.</b> The pivot is a plain \(1\), and it does not depend on \(a\) or \(b\), so this step is always safe. \(R_2\to R_2-R_1\): \[ 1-1=0,\quad 2-1=1,\quad 3-1=2,\quad 14-6=8. \] \(R_3\to R_3-R_1\): \[ 1-1=0,\quad 2-1=1,\quad a-1,\quad b-6. \] \[ \left[\begin{array}{ccc|c}1&1&1&6\\0&1&2&8\\0&1&a-1&b-6\end{array}\right] \]</div>
